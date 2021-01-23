@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Gc7HBHEqLSLLNrS87l1T5moHnEh4QTNEGyWcVpDfGRjHmFQzR+8AWyGJxhz3jL5oD4DgvayYSiEKsK+hvSsl5A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Hien\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\OvermorrowMod\\OvermorrowMod.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Hien\\.nuget\\packages\\tmodloader.codeassist\\0.1.1\\tmodloader.codeassist.0.1.1.nupkg.sha512"
+  ],
+  "logs": []
+}
