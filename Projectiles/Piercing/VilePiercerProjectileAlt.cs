@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
-    public class VilePiercerProjectile : PiercingProjectile
+    public class VilePiercerProjectileAlt : PiercingProjectile
     {
         public override void SetStaticDefaults()
         {

@@ -30,6 +30,13 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.magic = false;
             item.thrown = false;
             item.summon = false;
+            item.noMelee = true;
+        }
+
+        // Allows for Dual-Use
+        public override bool AltFunctionUse(Player player)
+        {
+            return true;
         }
 
         // As a modder, you could also opt to make these overrides also sealed. Up to the modder

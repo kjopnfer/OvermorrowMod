@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,24 +11,71 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Vile Piercer");
+            Tooltip.SetDefault("[c/00FF00:Right Click] to launch 3 chains.\nHas a 5% chance to drop Soul Essence on hit.");
         }
 
         public override void SafeSetDefaults()
         {
-            item.CloneDefaults(ItemID.ChainKnife);
-            item.damage = 32;
+            item.autoReuse = true;
+            item.useStyle = ItemUseStyleID.SwingThrow;
+            item.useTurn = true;
+            item.useAnimation = 14;
+            item.useTime = 14;
+            item.knockBack = 0f;
             item.width = 30;
             item.height = 10;
-            item.useTime = 10;
-            item.shootSpeed = 24f;
-
-            item.noUseGraphic = true;
-            item.useStyle = 5;
-            item.color = Color.Purple;
-            item.knockBack = 0;
-
-            item.useStyle = ItemUseStyleID.HoldingOut;
+            item.damage = 6;
+            item.shootSpeed = 14f;
+            item.shoot = mod.ProjectileType("VilePiercerProjectile");
+            item.rare = ItemRarityID.Blue;
             item.UseSound = SoundID.Item71;
+            item.noUseGraphic = true;
+        }
+
+        public override bool CanUseItem(Player player)
+        {
+            if(player.altFunctionUse == 2)
+            {
+                item.useStyle = ItemUseStyleID.SwingThrow;
+                item.useAnimation = 14;
+                item.useTime = 14;
+                item.knockBack = 0f;
+                item.damage = 12;
+                item.shootSpeed = 28f;
+                item.shoot = mod.ProjectileType("VilePiercerProjectileAlt");
+                item.UseSound = SoundID.Item71;
+            }
+            else
+            {
+                item.autoReuse = true;
+                item.useStyle = ItemUseStyleID.SwingThrow;
+                item.useTurn = true;
+                item.useAnimation = 14;
+                item.useTime = 14;
+                item.damage = 6;
+                item.shootSpeed = 14f;
+                item.shoot = mod.ProjectileType("VilePiercerProjectile");
+            }
+
+            return base.CanUseItem(player);
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            if(type == mod.ProjectileType("VilePiercerProjectileAlt"))
+            {
+                float numberProjectiles = 3; // This defines how many projectiles to shot
+                float rotation = MathHelper.ToRadians(15);
+                position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
+                for (int i = 0; i < numberProjectiles; i++)
+                {
+                    Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
+                    Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockBack, player.whoAmI);
+                }
+                return false;
+            }
+
+            return true;
         }
     }
 }
