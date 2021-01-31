@@ -12,7 +12,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Vile Piercer");
-            Tooltip.SetDefault("[c/00FF00:Right Click] to launch 3 chains.\nHas a 5% chance to drop Soul Essence on hit.");
+            Tooltip.SetDefault("[c/00FF00:{ Special Ability }]\n[c/800080:Right Click] to launch 3 chains that deal increased damage\nConsumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()
@@ -48,6 +48,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.shootSpeed = 28f;
                 item.shoot = mod.ProjectileType("VilePiercerProjectileAlt");
                 item.UseSound = SoundID.Item71;
+
+                Main.PlaySound(SoundID.Item67, Main.projectile[i].position);
 
                 // Get the instance of the first projectile in the list
                 int removeProjectile = modPlayer.soulList[0];
@@ -98,6 +100,16 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             }
 
             return true;
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.DemoniteBar, 12);
+            recipe.AddIngredient(ItemID.Chain, 10);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }

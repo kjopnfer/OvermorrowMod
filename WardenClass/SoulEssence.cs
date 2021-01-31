@@ -24,12 +24,21 @@ namespace WardenClass
             projectile.tileCollide = false;
             projectile.alpha = 255;
             projectile.ignoreWater = true;
+            projectile.timeLeft = 2;
         }
 
         public override void AI()
         {
             //Making player variable "p" set as the projectile's owner
             Player player = Main.player[projectile.owner];
+
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            
+            // Make sure the projectile does not naturally expire while active
+            if(modPlayer.soulList.Count > 0)
+            {
+                projectile.timeLeft = 2;
+            }
 
             projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 4f)
