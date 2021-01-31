@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,6 +12,9 @@ namespace WardenClass
         {
             return player.GetModPlayer<WardenDamagePlayer>();
         }
+
+        // List to keep track of the resource visuals for Soul Essences
+        public List<int> soulList = new List<int> ();
 
         // Vanilla only really has damage multipliers in code
         // And crit and knockback is usually just added to
@@ -33,12 +37,13 @@ namespace WardenClass
 
         public override void Initialize()
         {
+            soulResourceCurrent = 0;
             soulResourceMax = DefaultSoulResourceMax;
         }
 
         public override void ResetEffects()
         {
-            ResetVariables();
+            //ResetVariables();
         }
 
         public override void UpdateDead()
@@ -49,7 +54,13 @@ namespace WardenClass
         private void ResetVariables()
         {
             soulResourceCurrent = 0;
+            soulResourceMax2 = soulResourceMax;
         }
+
+        /*public override void PostUpdateMiscEffects()
+        {
+            UpdateResource();
+        }*/
 
         private void UpdateResource()
         {

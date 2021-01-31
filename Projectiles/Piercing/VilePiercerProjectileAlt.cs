@@ -24,11 +24,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             //projectile.extraUpdates = 0;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 3;
-        }
-
         public override void AI()
         {
             Vector2 mountedCenter = Main.player[projectile.owner].MountedCenter;
@@ -242,6 +237,11 @@ namespace OvermorrowMod.Projectiles.Piercing
             }
 
             return true;
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.immune[projectile.owner] = 3;
         }
     }
 }

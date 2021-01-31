@@ -3,6 +3,7 @@ using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 {
@@ -34,7 +35,10 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
         public override bool CanUseItem(Player player)
         {
-            if(player.altFunctionUse == 2)
+            // Get the class info from the player
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+
+            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0)
             {
                 item.useStyle = ItemUseStyleID.SwingThrow;
                 item.useAnimation = 14;
@@ -44,6 +48,24 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.shootSpeed = 28f;
                 item.shoot = mod.ProjectileType("VilePiercerProjectileAlt");
                 item.UseSound = SoundID.Item71;
+
+                // Get the instance of the first projectile in the list
+                int removeProjectile = modPlayer.soulList[0];
+
+                // Remove the projectile from the list
+                modPlayer.soulList.RemoveAt(0);
+                modPlayer.soulResourceCurrent--; 
+
+                // Call the projectile's method to kill itself
+                for(int i = 0; i < Main.maxProjectiles; i++) // Loop through the projectile array
+                {
+                    // Check that the projectile is the same as the removed projectile and it is active
+                    if(Main.projectile[i] == Main.projectile[removeProjectile] && Main.projectile[i].active)
+                    {
+                        // Kill the projectile
+                        Main.projectile[i].Kill();
+                    }
+                }
             }
             else
             {

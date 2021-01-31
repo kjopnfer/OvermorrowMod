@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WardenClass;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
@@ -22,11 +23,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.penetrate = -1;
             projectile.alpha = 255;
             //projectile.extraUpdates = 0;
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 3;
         }
 
         public override void AI()
@@ -242,6 +238,28 @@ namespace OvermorrowMod.Projectiles.Piercing
             }
 
             return true;
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            // Get the projectile owner
+            Player player = Main.player[projectile.owner];
+
+            // Get the class info from the player
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+
+            if (Main.rand.Next(0, 5) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax))
+            {
+                modPlayer.soulResourceCurrent++; // Increase number of resource
+
+                // Add the projectile to the WardenDamagePlayer list of projectiles
+                modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+                //Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f); 
+                // Kill projectiles by index when consumed and decrease resource
+                // Remove the projectile from the array
+
+            }
+            target.immune[projectile.owner] = 3;
         }
     }
 }
