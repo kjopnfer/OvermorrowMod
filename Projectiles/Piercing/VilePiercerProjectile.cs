@@ -122,7 +122,7 @@ namespace OvermorrowMod.Projectiles.Piercing
         {
             var player = Main.player[projectile.owner];
             Vector2 mountedCenter = player.MountedCenter;
-            Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/Chain23");
+            Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/VilePiercerChain");
 
             float num751 = projectile.Center.X;
             float num750 = projectile.Center.Y;
@@ -254,10 +254,6 @@ namespace OvermorrowMod.Projectiles.Piercing
 
                 // Add the projectile to the WardenDamagePlayer list of projectiles
                 modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
-                //Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f); 
-                // Kill projectiles by index when consumed and decrease resource
-                // Remove the projectile from the array
-
             }
             target.immune[projectile.owner] = 3;
         }

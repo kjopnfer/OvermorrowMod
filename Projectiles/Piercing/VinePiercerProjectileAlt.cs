@@ -4,14 +4,17 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WardenClass;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
-    public class VilePiercerProjectileAlt : PiercingProjectile
+    public class VinePiercerProjectileAlt : PiercingProjectile
     {
+        private bool firstHit = false;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Vile Piercer");
+            DisplayName.SetDefault("Thorns of the Jungle");
         }
 
         public override void SetDefaults()
@@ -21,7 +24,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.friendly = true;
             projectile.penetrate = -1;
             projectile.alpha = 255;
-            //projectile.extraUpdates = 0;
         }
 
         public override void AI()
@@ -76,7 +78,8 @@ namespace OvermorrowMod.Projectiles.Piercing
                 {
                     projectile.ai[0] = 1f;
                     projectile.netUpdate = true;
-                }else if (num501 > 350f) // Projectile's max length
+                }
+                else if (num501 > 375f) // Projectile's max length
                 {
                     projectile.ai[0] = 1f;
                     projectile.netUpdate = true;
@@ -84,12 +87,12 @@ namespace OvermorrowMod.Projectiles.Piercing
 
                 projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
                 projectile.ai[1] += 1f;
-                if(projectile.ai[1] > 5f)
+                if (projectile.ai[1] > 5f)
                 {
                     projectile.alpha = 0;
                 }
 
-                if(projectile.ai[1] > 8f)
+                if (projectile.ai[1] > 8f)
                 {
                     projectile.ai[1] = 8f;
                 }
@@ -100,7 +103,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                     projectile.velocity.Y = projectile.velocity.Y + 0.3f;
                 }
             } // When ai[0] == 1f, the projectile has either hit a tile or has reached maxChainLength, so now we retract the projectile
-            else if (projectile.ai[0] == 1f) 
+            else if (projectile.ai[0] == 1f)
             {
                 projectile.tileCollide = false; // Allows for retraction without collision
                 projectile.rotation = (float)Math.Atan2(num499, num494) - 1.57f;
@@ -121,7 +124,7 @@ namespace OvermorrowMod.Projectiles.Piercing
         {
             var player = Main.player[projectile.owner];
             Vector2 mountedCenter = player.MountedCenter;
-            Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/VilePiercerChain");
+            Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/VinePiercerChain");
 
             float num751 = projectile.Center.X;
             float num750 = projectile.Center.Y;
@@ -241,6 +244,23 @@ namespace OvermorrowMod.Projectiles.Piercing
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
+            // Get the projectile owner
+            Player player = Main.player[projectile.owner];
+
+            // Get the class info from the player
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+
+            // Spawn gas on only the first hit
+            if (!firstHit)
+            {
+                Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("ToxicCloud"), 0, 0f, projectile.owner, projectile.damage + 5, 0f);
+                firstHit = true;
+            }
+
+            
+            target.AddBuff(BuffID.Poisoned, 180); // Poison Debuff
+            
+
             target.immune[projectile.owner] = 3;
         }
     }
