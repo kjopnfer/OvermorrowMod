@@ -1,13 +1,30 @@
+using IL.Terraria.GameContent.Biomes;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using Terraria.Graphics.Shaders;
+using OvermorrowMod.UI;
+using static Terraria.ModLoader.ModContent;
+using OvermorrowMod;
 
 namespace WardenClass
 {
     // This class stores necessary player info for our custom damage class, such as damage multipliers, additions to knockback and crit, and our custom resource that governs the usage of the weapons of this damage class.
     public class WardenDamagePlayer : ModPlayer
     {
+        public bool UIToggled = false;
+
         public static WardenDamagePlayer ModPlayer(Player player)
         {
             return player.GetModPlayer<WardenDamagePlayer>();
@@ -43,7 +60,20 @@ namespace WardenClass
 
         public override void ResetEffects()
         {
+            UIToggled = false;
             //ResetVariables();
+        }
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if(UIToggled)
+            {
+                ModContent.GetInstance<OvermorrowModFile>().ShowMyUI();
+            }
+            else
+            {
+                ModContent.GetInstance<OvermorrowModFile>().HideMyUI();
+            }
         }
 
         public override void UpdateDead()

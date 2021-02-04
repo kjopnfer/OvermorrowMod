@@ -13,6 +13,12 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override bool CloneNewInstances => true;
         public int soulResourceCost = 0;
 
+        public override void HoldItem(Player player)
+        {
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            modPlayer.UIToggled = true;
+        }
+
         public virtual void SafeSetDefaults()
         {
 
