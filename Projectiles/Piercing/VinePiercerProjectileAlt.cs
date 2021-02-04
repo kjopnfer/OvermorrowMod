@@ -24,6 +24,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.friendly = true;
             projectile.penetrate = -1;
             projectile.alpha = 255;
+            projectile.extraUpdates = 0;
         }
 
         public override void AI()
@@ -57,14 +58,14 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
             }
 
-            /*if(projectile.ai[0] == 0f)
+            if(projectile.ai[0] == 0f)
             {
                 projectile.extraUpdates = 0;
             }
             else
             {
                 projectile.extraUpdates = 1;
-            }*/
+            }
 
             Vector2 vector221 = new Vector2(projectile.position.X + projectile.width * 0.5f, projectile.position.Y + projectile.height * 0.5f);
             float num494 = player.position.X + (player.width / 2) - vector221.X;

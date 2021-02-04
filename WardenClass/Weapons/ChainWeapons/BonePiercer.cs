@@ -1,5 +1,5 @@
-using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Piercing;
+using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -8,13 +8,13 @@ using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 {
-    public class VinePiercer : PiercingItem
+    public class BonePiercer : PiercingItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Thorns of the Jungle");
-            Tooltip.SetDefault("Launches chains that have a chance to poison\n[c/00FF00:{ Special Ability }]\n" +
-                            "[c/800080:Right Click] to launch a chain that releases toxic gas on hit\nConsumes 1 Soul Essence");
+            DisplayName.SetDefault("Bone Spike");
+            Tooltip.SetDefault("[c/00FF00:{ Special Ability }]\n" +
+                            "[c/800080:Right Click] to launch a chain that explodes into bones on hit\nConsumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()
@@ -27,11 +27,11 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.knockBack = 0f;
             item.width = 30;
             item.height = 10;
-            item.damage = 14;
+            item.damage = 9;
             item.shootSpeed = 14f;
-            item.shoot = mod.ProjectileType("VinePiercerProjectile");
-            item.rare = ItemRarityID.Orange;
-            item.UseSound = new LegacySoundStyle(SoundID.Grass, 0); // Grass
+            item.shoot = mod.ProjectileType("BonePiercerProjectile");
+            item.rare = ItemRarityID.Green;
+            item.UseSound = SoundID.Item1;
             item.noUseGraphic = true;
         }
 
@@ -46,9 +46,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useAnimation = 14;
                 item.useTime = 14;
                 item.knockBack = 0f;
-                item.damage = 15;
+                item.damage = 11;
                 item.shootSpeed = 28f;
-                item.shoot = mod.ProjectileType("VinePiercerProjectileAlt");
+                item.shoot = mod.ProjectileType("BonePiercerProjectileAlt");
                 //item.UseSound = SoundID.Item71;
 
                 // Get the instance of the first projectile in the list
@@ -76,9 +76,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                item.damage = 14;
+                item.damage = 10;
                 item.shootSpeed = 14f;
-                item.shoot = mod.ProjectileType("VinePiercerProjectile");
+                item.shoot = mod.ProjectileType("BonePiercerProjectile");
             }
 
             return base.CanUseItem(player);
@@ -87,9 +87,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.Stinger, 18);
-            recipe.AddIngredient(ItemID.JungleSpores, 6);
-            recipe.AddIngredient(ItemID.Vine, 12);
+            recipe.AddIngredient(ItemID.Bone, 125);
+            recipe.AddIngredient(ItemID.Cobweb, 40);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();

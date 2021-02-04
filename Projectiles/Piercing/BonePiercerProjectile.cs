@@ -8,11 +8,11 @@ using WardenClass;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
-    public class VinePiercerProjectile : PiercingProjectile
+    public class BonePiercerProjectile : PiercingProjectile
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Thorns of the Jungle");
+            DisplayName.SetDefault("Bone Spike");
         }
 
         public override void SetDefaults()
@@ -56,7 +56,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
             }
 
-            if(projectile.ai[0] == 0f)
+            if (projectile.ai[0] == 0f)
             {
                 projectile.extraUpdates = 0;
             }
@@ -123,7 +123,7 @@ namespace OvermorrowMod.Projectiles.Piercing
         {
             var player = Main.player[projectile.owner];
             Vector2 mountedCenter = player.MountedCenter;
-            Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/VinePiercerChain");
+            Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/BonePiercerChain");
 
             float num751 = projectile.Center.X;
             float num750 = projectile.Center.Y;
@@ -257,10 +257,6 @@ namespace OvermorrowMod.Projectiles.Piercing
                 modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
             }
 
-            if (Main.rand.Next(0, 5) == 0) // 20% chance
-            {
-                target.AddBuff(BuffID.Poisoned, 240); // Poison Debuff
-            }
             target.immune[projectile.owner] = 3;
         }
     }

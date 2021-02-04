@@ -8,11 +8,13 @@ using WardenClass;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
-    public class VinePiercerProjectile : PiercingProjectile
+    public class BonePiercerProjectileAlt : PiercingProjectile
     {
+        private bool firstHit = false;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Thorns of the Jungle");
+            DisplayName.SetDefault("Bone Spike");
         }
 
         public override void SetDefaults()
@@ -56,7 +58,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
             }
 
-            if(projectile.ai[0] == 0f)
+            if (projectile.ai[0] == 0f)
             {
                 projectile.extraUpdates = 0;
             }
@@ -78,7 +80,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                     projectile.ai[0] = 1f;
                     projectile.netUpdate = true;
                 }
-                else if (num501 > 400f) // Projectile's max length
+                else if (num501 > 375f) // Projectile's max length
                 {
                     projectile.ai[0] = 1f;
                     projectile.netUpdate = true;
@@ -123,7 +125,7 @@ namespace OvermorrowMod.Projectiles.Piercing
         {
             var player = Main.player[projectile.owner];
             Vector2 mountedCenter = player.MountedCenter;
-            Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/VinePiercerChain");
+            Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/BonePiercerChain");
 
             float num751 = projectile.Center.X;
             float num750 = projectile.Center.Y;
@@ -249,18 +251,25 @@ namespace OvermorrowMod.Projectiles.Piercing
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (Main.rand.Next(0, 5) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax))
+            // Spawn bones on only the first hit
+            if (!firstHit)
             {
-                modPlayer.soulResourceCurrent++; // Increase number of resource
-
-                // Add the projectile to the WardenDamagePlayer list of projectiles
-                modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+                float numberProjectiles = 3; // This defines how many projectiles to shot
+                float rotation = MathHelper.ToRadians(15);
+                for(int i = 0; i < numberProjectiles; i++)
+                {
+                    Vector2 speed = new Vector2(1, Main.rand.Next(15, 35));
+                    Vector2 perturbedSpeed = new Vector2(speed.X, speed.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
+                    Projectile.NewProjectile(projectile.position.X, projectile.position.Y, perturbedSpeed.X, perturbedSpeed.Y, mod.ProjectileType("Bones"), damage * 2, 0f, player.whoAmI);
+                }
+                firstHit = true;
+                /*for (int i = 0; i < Main.rand.Next(3, 5); i++) {
+                    Vector2 value28 = new Vector2(Main.rand.Next(-20, 21), Main.rand.Next(9, 31));
+                    Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value28.X, value28.Y, ProjectileID.Bone, 0, 0f, projectile.owner, projectile.damage + 5, 0f);
+                    firstHit = true;
+                }*/
             }
 
-            if (Main.rand.Next(0, 5) == 0) // 20% chance
-            {
-                target.AddBuff(BuffID.Poisoned, 240); // Poison Debuff
-            }
             target.immune[projectile.owner] = 3;
         }
     }

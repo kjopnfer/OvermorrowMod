@@ -31,10 +31,10 @@ namespace OvermorrowMod.Projectiles.Piercing
         {
             if (projectile.ai[1] % 30 == 0)
             {
-                int num898 = Main.rand.Next(10, 21);
+                int num898 = Main.rand.Next(5, 10);
                 for (int num897 = 0; num897 < num898; num897++)
                 {
-                    Vector2 value28 = new Vector2(Main.rand.Next(-50, 51), Main.rand.Next(-50, 51));
+                    Vector2 value28 = new Vector2(Main.rand.Next(-20, 21), Main.rand.Next(-20, 21));
                     value28.Normalize();
                     value28 *= (float)Main.rand.Next(10, 51) * 0.01f;
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value28.X, value28.Y, 511 + Main.rand.Next(3), (int)projectile.ai[0], 1f, projectile.owner, 0f, Main.rand.Next(-45, 1));
