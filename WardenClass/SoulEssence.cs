@@ -72,5 +72,10 @@ namespace WardenClass
             //Increase the counter/angle in degrees by 1 point, you can change the rate here too, but the orbit may look choppy depending on the value
             projectile.ai[1] += 4f;
         }
+
+        public override bool? CanCutTiles()
+        {
+            return false;
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Thorns of the Jungle");
-            Tooltip.SetDefault("Launches chains that have a chance to poison\n[c/00FF00:{ Special Ability }]\n" +
+            Tooltip.SetDefault("Attacks have a chance to poison\n[c/00FF00:{ Special Ability }]\n" +
                             "[c/800080:Right Click] to launch a chain that releases toxic gas on hit\nConsumes 1 Soul Essence");
         }
 
