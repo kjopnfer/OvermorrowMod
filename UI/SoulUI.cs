@@ -19,12 +19,10 @@ namespace OvermorrowMod.UI
         public override void OnInitialize()
         {
             UIElement panel = new UIElement();
-            panel.Width.Set(Main.screenWidth / 2, 0); // 3
-            panel.Height.Set(Main.screenHeight / 2, 0); // 3
-            //panel.BackgroundColor = Color.White * 0.99f;
-            //panel.BorderColor = new Color(91, 0, 0, 255);
-            panel.HAlign = panel.VAlign = 0.5f; // 1
-            Append(panel); // 4
+            panel.Width.Set(Main.screenWidth / 2, 0);
+            panel.Height.Set(Main.screenHeight / 2, 0);
+            panel.HAlign = panel.VAlign = 0.5f;
+            Append(panel);
 
             if (!Main.gameMenu)
             {
