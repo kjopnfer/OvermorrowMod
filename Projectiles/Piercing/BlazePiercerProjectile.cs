@@ -18,7 +18,7 @@ namespace OvermorrowMod.Projectiles.Piercing
         public override void SetDefaults()
         {
             projectile.width = 22;
-            projectile.height = 32;
+            projectile.height = 22;
             projectile.friendly = true;
             projectile.penetrate = -1;
             projectile.alpha = 255;
@@ -28,7 +28,20 @@ namespace OvermorrowMod.Projectiles.Piercing
         public override void AI()
         {
             Vector2 mountedCenter = Main.player[projectile.owner].MountedCenter;
-            // TODO: Add fire particle effects
+
+            // Fire particle effects
+            if (!projectile.wet) // Check if projectile is not in water
+            {
+                for (int num453 = 0; num453 < 2; num453++)
+                {
+                    int num451 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y - 10), projectile.width, projectile.height, 6, projectile.velocity.X * 0.2f + (float)(projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, default(Color), 2.5f);
+                    Main.dust[num451].noGravity = true;
+                    Dust expr_D6EA_cp_0 = Main.dust[num451];
+                    expr_D6EA_cp_0.velocity.X = expr_D6EA_cp_0.velocity.X * 2f;
+                    Dust expr_D70A_cp_0 = Main.dust[num451];
+                    expr_D70A_cp_0.velocity.Y = expr_D70A_cp_0.velocity.Y * 2f;
+                }
+            }
 
             // Light effect
             Lighting.AddLight(projectile.Center, 0.5f, 0, 0);
@@ -244,6 +257,27 @@ namespace OvermorrowMod.Projectiles.Piercing
             return true;
         }
 
+        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            Texture2D texture = mod.GetTexture("Projectiles/Piercing/BlazePiercerProjectileGlowmask");
+            spriteBatch.Draw
+            (
+                texture,
+                new Vector2
+                (
+                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
+                    projectile.position.Y - Main.screenPosition.Y + projectile.height - texture.Height * 0.5f + 2f
+                ),
+                new Rectangle(0, 0, texture.Width, texture.Height),
+                Color.White,
+                projectile.rotation,
+                texture.Size() * 0.5f,
+                projectile.scale,
+                SpriteEffects.None,
+                0f
+            );
+        }
+
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             // Get the projectile owner
@@ -260,9 +294,12 @@ namespace OvermorrowMod.Projectiles.Piercing
                 modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
             }
 
-            if (Main.rand.Next(0, 3) == 0) // 33% chance
-            {
-                target.AddBuff(BuffID.OnFire, 300); // Fire Debuff
+            if (!projectile.wet) // Check if projectile is not in water
+            { 
+                if (Main.rand.Next(0, 3) == 0) // 33% chance
+                {
+                    target.AddBuff(BuffID.OnFire, 300); // Fire Debuff
+                }
             }
 
             target.immune[projectile.owner] = 3;

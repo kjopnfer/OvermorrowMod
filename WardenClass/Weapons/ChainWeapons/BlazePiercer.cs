@@ -27,7 +27,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.knockBack = 0f;
             item.width = 30;
             item.height = 10;
-            item.damage = 25;
+            item.damage = 21;
             item.shootSpeed = 18f;
             item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             item.rare = ItemRarityID.Orange;
@@ -76,7 +76,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                item.damage = 25;
+                item.damage = 21;
                 item.shootSpeed = 18f;
                 item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             }

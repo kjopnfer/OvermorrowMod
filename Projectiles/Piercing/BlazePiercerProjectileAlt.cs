@@ -18,7 +18,7 @@ namespace OvermorrowMod.Projectiles.Piercing
         public override void SetDefaults()
         {
             projectile.width = 22;
-            projectile.height = 32;
+            projectile.height = 22;
             projectile.friendly = true;
             projectile.penetrate = -1;
             projectile.alpha = 255;
@@ -28,7 +28,20 @@ namespace OvermorrowMod.Projectiles.Piercing
         public override void AI()
         {
             Vector2 mountedCenter = Main.player[projectile.owner].MountedCenter;
-            // TODO: Add fire particle effects
+
+            // Fire particle effects
+            if (!projectile.wet) // Check if projectile is not in water
+            {
+                for (int num453 = 0; num453 < 2; num453++)
+                {
+                    int num451 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y - 10), projectile.width, projectile.height, 6, projectile.velocity.X * 0.2f + (float)(projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, default(Color), 2.5f);
+                    Main.dust[num451].noGravity = true;
+                    Dust expr_D6EA_cp_0 = Main.dust[num451];
+                    expr_D6EA_cp_0.velocity.X = expr_D6EA_cp_0.velocity.X * 2f;
+                    Dust expr_D70A_cp_0 = Main.dust[num451];
+                    expr_D70A_cp_0.velocity.Y = expr_D70A_cp_0.velocity.Y * 2f;
+                }
+            }
 
             // Light effect
             Lighting.AddLight(projectile.Center, 0.5f, 0, 0);
@@ -252,8 +265,11 @@ namespace OvermorrowMod.Projectiles.Piercing
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            target.AddBuff(BuffID.OnFire, 300); // Fire Debuff
-            // TODO: Add Additional Fire Debuff
+            if (!projectile.wet) // Check if projectile is not in water
+            {
+                target.AddBuff(BuffID.OnFire, 300); // Fire Debuff
+                // TODO: Add Additional Fire Debuff
+            }
             target.immune[projectile.owner] = 3;
         }
     }
