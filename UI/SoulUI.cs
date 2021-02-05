@@ -30,7 +30,8 @@ namespace OvermorrowMod.UI
             }
 
             showSouls = new UIText(soulCount.ToString());
-            showSouls.VAlign = showSouls.HAlign = 0.5f;
+            showSouls.HAlign = 0.4975f;
+            showSouls.VAlign = 0.655f;
             panel.Append(showSouls);
         }
 
@@ -43,6 +44,11 @@ namespace OvermorrowMod.UI
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
+            base.DrawSelf(spriteBatch);
+
+            Texture2D background = ModContent.GetTexture("OvermorrowMod/UI/SoulBG");
+            // 47 - > 40 - > 54 -> 72
+            spriteBatch.Draw(background, new Vector2(Main.screenWidth / 2 - 69, Main.screenHeight / 2 + 20), Color.White);
 
         }
     }
