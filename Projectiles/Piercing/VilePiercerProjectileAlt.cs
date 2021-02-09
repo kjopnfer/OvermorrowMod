@@ -9,6 +9,8 @@ namespace OvermorrowMod.Projectiles.Piercing
 {
     public class VilePiercerProjectileAlt : PiercingProjectile
     {
+        public override string Texture => "OvermorrowMod/Projectiles/Piercing/VilePiercerProjectile";
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Vile Piercer");

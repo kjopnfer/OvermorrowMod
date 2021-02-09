@@ -1,5 +1,5 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Piercing;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -8,13 +8,13 @@ using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 {
-    public class BonePiercer : PiercingItem
+    public class LightningPiercer : PiercingItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bone Spike");
-            Tooltip.SetDefault("[c/00FF00:{ Special Ability }]\n" +
-                            "[c/800080:Right Click] to launch a chain that explodes into bouncing bones on hit\nConsumes 1 Soul Essence");
+            DisplayName.SetDefault("Lightning Cutter");
+            Tooltip.SetDefault("Attacks have a chance to Electrified\n[c/00FF00:{ Special Ability }]\n" +
+                            "[c/800080:Right Click] to launch an electrically charged chain\nConsumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()
@@ -27,11 +27,11 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.knockBack = 0f;
             item.width = 30;
             item.height = 10;
-            item.damage = 9;
-            item.shootSpeed = 14f;
-            item.shoot = mod.ProjectileType("BonePiercerProjectile");
-            item.rare = ItemRarityID.Green;
-            item.UseSound = SoundID.Item1;
+            item.damage = 16;
+            item.shootSpeed = 18f;
+            item.shoot = mod.ProjectileType("LightningPiercerProjectile");
+            item.rare = ItemRarityID.Orange;
+            item.UseSound = SoundID.Item71;
             item.noUseGraphic = true;
         }
 
@@ -46,10 +46,10 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useAnimation = 14;
                 item.useTime = 14;
                 item.knockBack = 0f;
-                item.damage = 11;
-                item.shootSpeed = 28f;
-                item.shoot = mod.ProjectileType("BonePiercerProjectileAlt");
-               
+                item.damage = 19;
+                item.shootSpeed = 32f;
+                item.shoot = mod.ProjectileType("LightningPiercerProjectileAlt");
+
                 ConsumeSouls(1, player);
             }
             else
@@ -59,9 +59,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                item.damage = 10;
-                item.shootSpeed = 14f;
-                item.shoot = mod.ProjectileType("BonePiercerProjectile");
+                item.damage = 16;
+                item.shootSpeed = 18f;
+                item.shoot = mod.ProjectileType("LightningPiercerProjectile");
             }
 
             return base.CanUseItem(player);
@@ -70,8 +70,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.Bone, 125);
-            recipe.AddIngredient(ItemID.Cobweb, 40);
+            recipe.AddIngredient(ItemID.HellstoneBar, 24);
+            recipe.AddIngredient(ItemID.Chain, 12);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();

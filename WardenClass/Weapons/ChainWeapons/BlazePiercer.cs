@@ -14,7 +14,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Blaze Binder");
             Tooltip.SetDefault("Attacks have a chance to set enemies on fire\n[c/00FF00:{ Special Ability }]\n" +
-                            "[c/800080:Right Click] to launch a chain that explodes into fire\nConsumes 1 Soul Essence");
+                            "[c/800080:Right Click] to launch a chain dealing increased damage and inflicting an additional fire debuff\nConsumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()
@@ -46,28 +46,11 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useAnimation = 14;
                 item.useTime = 14;
                 item.knockBack = 0f;
-                item.damage = 30;
+                item.damage = 36;
                 item.shootSpeed = 32f;
                 item.shoot = mod.ProjectileType("BlazePiercerProjectileAlt");
-                //item.UseSound = SoundID.Item71;
 
-                // Get the instance of the first projectile in the list
-                int removeProjectile = modPlayer.soulList[0];
-
-                // Remove the projectile from the list
-                modPlayer.soulList.RemoveAt(0);
-                modPlayer.soulResourceCurrent--;
-
-                // Call the projectile's method to kill itself
-                for (int i = 0; i < Main.maxProjectiles; i++) // Loop through the projectile array
-                {
-                    // Check that the projectile is the same as the removed projectile and it is active
-                    if (Main.projectile[i] == Main.projectile[removeProjectile] && Main.projectile[i].active)
-                    {
-                        // Kill the projectile
-                        Main.projectile[i].Kill();
-                    }
-                }
+                ConsumeSouls(1, player);
             }
             else
             {

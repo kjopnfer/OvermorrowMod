@@ -49,25 +49,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.damage = 15;
                 item.shootSpeed = 28f;
                 item.shoot = mod.ProjectileType("VinePiercerProjectileAlt");
-                //item.UseSound = SoundID.Item71;
 
-                // Get the instance of the first projectile in the list
-                int removeProjectile = modPlayer.soulList[0];
-
-                // Remove the projectile from the list
-                modPlayer.soulList.RemoveAt(0);
-                modPlayer.soulResourceCurrent--;
-
-                // Call the projectile's method to kill itself
-                for (int i = 0; i < Main.maxProjectiles; i++) // Loop through the projectile array
-                {
-                    // Check that the projectile is the same as the removed projectile and it is active
-                    if (Main.projectile[i] == Main.projectile[removeProjectile] && Main.projectile[i].active)
-                    {
-                        // Kill the projectile
-                        Main.projectile[i].Kill();
-                    }
-                }
+                ConsumeSouls(1, player);
             }
             else
             {

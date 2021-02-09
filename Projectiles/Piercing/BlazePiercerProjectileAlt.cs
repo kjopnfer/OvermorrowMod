@@ -10,6 +10,8 @@ namespace OvermorrowMod.Projectiles.Piercing
 {
     public class BlazePiercerProjectileAlt : PiercingProjectile
     {
+        public override string Texture => "OvermorrowMod/Projectiles/Piercing/BlazePiercerProjectile";
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Blazing Spike");

@@ -10,6 +10,7 @@ namespace OvermorrowMod.Projectiles.Piercing
 {
     public class BonePiercerProjectileAlt : PiercingProjectile
     {
+        public override string Texture => "OvermorrowMod/Projectiles/Piercing/BonePiercerProjectile";
         private bool firstHit = false;
 
         public override void SetStaticDefaults()

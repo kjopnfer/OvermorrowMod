@@ -10,6 +10,8 @@ namespace OvermorrowMod.Projectiles.Piercing
 {
     public class CrimsonPiercerProjectileAlt : PiercingProjectile
     {
+        public override string Texture => "OvermorrowMod/Projectiles/Piercing/CrimsonPiercerProjectile";
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Sanguine Impaler");

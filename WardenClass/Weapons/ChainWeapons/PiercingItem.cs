@@ -73,5 +73,31 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 tooltips.Add(new TooltipLine(mod, "Example Resource Cost", $"Uses {soulResourceCost} Soul Essences"));
             }
         }
+
+        protected void ConsumeSouls(int numSouls, Player player)
+        {
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+
+            for (int i = 0; i < numSouls; i++)
+            {
+                // Get the instance of the first projectile in the list
+                int removeProjectile = modPlayer.soulList[0];
+
+                // Remove the projectile from the list
+                modPlayer.soulList.RemoveAt(0);
+                modPlayer.soulResourceCurrent--;
+
+                // Call the projectile's method to kill itself
+                for (int j = 0; j < Main.maxProjectiles; j++) // Loop through the projectile array
+                {
+                    // Check that the projectile is the same as the removed projectile and it is active
+                    if (Main.projectile[j] == Main.projectile[removeProjectile] && Main.projectile[j].active)
+                    {
+                        // Kill the projectile
+                        Main.projectile[j].Kill();
+                    }
+                }
+            }
+        }
     }
 }
