@@ -29,7 +29,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override void SetDefaults()
         {
             // Afterimage effect
-            NPCID.Sets.TrailCacheLength[npc.type] = 5;
+            NPCID.Sets.TrailCacheLength[npc.type] = 7;
             NPCID.Sets.TrailingMode[npc.type] = 0;
 
             npc.width = 296;
@@ -48,6 +48,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.boss = true;
             npc.value = Item.buyPrice(gold: 5);
             npc.npcSlots = 5f;
+            music = MusicID.Boss5;
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
@@ -69,6 +70,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 npc.velocity.Y = npc.velocity.Y - 0.1f;
                 if (npc.timeLeft > 20)
                 {
+                    if (Main.raining)
+                    {
+                        Main.raining = false;
+                    }
+
                     npc.timeLeft = 20;
                     return;
                 }
@@ -87,10 +93,20 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             // Chase after player (case 5)
             // Position on top of player (case 4)
 
-            // PHASE 2:
-            // Maybe cause rain effect?
+            // Handles PHASE 2:
             if(npc.life <= npc.lifeMax * 0.5)
             {
+                // Maybe cause rain effect?
+                if (!Main.raining)
+                {
+                    Main.raining = true;
+                    Main.rainTime = 180;
+                }
+                else
+                {
+                    Main.rainTime += 120;
+                }
+
                 if (!textSent) // Print phase 2 notifier
                 {
                     if (Main.netMode == 0) // Singleplayer
@@ -121,7 +137,51 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                     }
                 }
+
+                // Eye dust
+                if (!hasCharged)
+                {
+                    if (npc.direction == 1)
+                    {
+                        for (int num1202 = 0; num1202 < 6; num1202++)
+                        {
+                            Vector2 vector304 = npc.position - new Vector2(-165, 74);
+                            vector304 -= npc.velocity * ((float)num1202 * 0.25f);
+                            //int num1200 = Dust.NewDust(vector304, 2, 2, 206);
+                            Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
+                            /*Main.dust[num1200].position = vector304;
+                            Dust expr_140F1_cp_0 = Main.dust[num1200];
+                            expr_140F1_cp_0.position.X = expr_140F1_cp_0.position.X + (float)(npc.width / 2);
+                            Dust expr_14115_cp_0 = Main.dust[num1200];
+                            expr_14115_cp_0.position.Y = expr_14115_cp_0.position.Y + (float)(npc.height / 2);
+                            Main.dust[num1200].scale = (float)Main.rand.Next(70, 110) * 0.013f;
+                            Dust dust81 = Main.dust[num1200];
+                            dust81.velocity *= 0.2f;*/
+                        }
+                    }
+                    else
+                    {
+                        for (int num1202 = 0; num1202 < 6; num1202++)
+                        {
+                            Vector2 vector304 = npc.position + new Vector2(-165, -74);
+                            vector304 -= npc.velocity * ((float)num1202 * 0.25f);
+                            //int num1200 = Dust.NewDust(vector304, 2, 2, 206);
+                            Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
+                            /*Main.dust[num1200].position = vector304;
+                            Dust expr_140F1_cp_0 = Main.dust[num1200];
+                            expr_140F1_cp_0.position.X = expr_140F1_cp_0.position.X + (float)(npc.width / 2);
+                            Dust expr_14115_cp_0 = Main.dust[num1200];
+                            expr_14115_cp_0.position.Y = expr_14115_cp_0.position.Y + (float)(npc.height / 2);
+                            Main.dust[num1200].scale = (float)Main.rand.Next(70, 110) * 0.013f;
+                            Dust dust81 = Main.dust[num1200];
+                            dust81.velocity *= 0.2f;*/
+                        }
+                    }
+                }
             }
+
+            // DEBUG TESTING
+            
 
             switch (npc.ai[0])
             {
@@ -313,7 +373,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 if (chooseDirection == hoverDirection.left) // Charge to right
                                 {
                                     Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
-                                    float chargeSpeed = npc.life <= npc.lifeMax * 0.5 ? 20 : 15;
+                                    float chargeSpeed = npc.life <= npc.lifeMax * 0.5 ? 21 : 16;
                                     Vector2 moveTo = npc.Center + new Vector2(450, 0);
                                     Vector2 move = moveTo - npc.Center;
                                     float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
@@ -323,7 +383,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 else // Charge to left
                                 {
                                     Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
-                                    float chargeSpeed = npc.life <= npc.lifeMax * 0.5 ? 20: 15;
+                                    float chargeSpeed = npc.life <= npc.lifeMax * 0.5 ? 21: 16;
                                     Vector2 moveTo = npc.Center - new Vector2(450, 0);
                                     Vector2 move = moveTo - npc.Center;
                                     float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
@@ -422,7 +482,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     break;
             }
 
-            if (npc.ai[0] == 0 || npc.ai[0] == 1 || npc.ai[0] == 2)
+            if (npc.ai[0] == 0 || npc.ai[0] == 1 || npc.ai[0] == 2 || npc.ai[0] == 5) 
             {
                 npc.FaceTarget();
                 npc.spriteDirection = npc.direction;
@@ -463,7 +523,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 {
                     // Adjust drawPos if the hitbox does not match sprite dimension
                     Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin - new Vector2(60f, 290);
-                    Color color = npc.GetAlpha(drawColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
+                    Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.Teal : drawColor;
+                    Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
                     spriteBatch.Draw(Main.npcTexture[npc.type], drawPos, npc.frame, color, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
             }
@@ -471,10 +532,20 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             return true;
         }
 
+        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            Texture2D texture = mod.GetTexture("NPCs/Bosses/StormDrake/StormDrake_Glowmask");
+            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y- 141), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+        }
+
         public override void NPCLoot()
         {
-            int choice = Main.rand.Next(2);
+            if (Main.raining)
+            {
+                Main.raining = false;
+            }
 
+            int choice = Main.rand.Next(2);
             // Always drops one of:
             if (choice == 0)
             {
