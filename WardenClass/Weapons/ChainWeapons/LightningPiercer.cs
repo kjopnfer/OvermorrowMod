@@ -28,7 +28,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.width = 30;
             item.height = 10;
             item.damage = 16;
-            item.shootSpeed = 18f;
+            item.shootSpeed = 22f;
             item.shoot = mod.ProjectileType("LightningPiercerProjectile");
             item.rare = ItemRarityID.Orange;
             item.UseSound = SoundID.Item71;

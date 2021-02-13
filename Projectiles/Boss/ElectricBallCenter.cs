@@ -46,6 +46,8 @@ namespace OvermorrowMod.Projectiles.Boss
             if (projectile.ai[0] < 180) // Stay still for 120 seconds
             {
                 projectile.velocity = new Vector2(0, 0);
+                NPC parent = Main.npc[projectile.owner];
+                projectile.Center = parent.Center;
             }
             else // Launch at the nearest player
             {
@@ -65,8 +67,10 @@ namespace OvermorrowMod.Projectiles.Boss
                                 move = newMove;
                                 distance = distanceTo;
                                 target = true;
-                                projectile.velocity = (move) / 100f;
+                                float launchSpeed = Main.expertMode ? 75f : 100f;
+                                projectile.velocity = (move) / launchSpeed;
                                 launchedProjectile = true;
+                                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)projectile.position.X, (int)projectile.position.Y);
                             }
                         }
                     }
