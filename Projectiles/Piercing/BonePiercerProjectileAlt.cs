@@ -253,24 +253,21 @@ namespace OvermorrowMod.Projectiles.Piercing
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
             // Spawn bones on only the first hit
-            if (!firstHit)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                float numberProjectiles = 3; // This defines how many projectiles to shot
-                float rotation = MathHelper.ToRadians(15);
-                for(int i = 0; i < numberProjectiles; i++)
+                if (!firstHit)
                 {
-                    Vector2 speed = new Vector2(1, Main.rand.Next(15, 35));
-                    Vector2 perturbedSpeed = new Vector2(speed.X, speed.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
-                    Projectile.NewProjectile(projectile.position.X, projectile.position.Y, perturbedSpeed.X, perturbedSpeed.Y, mod.ProjectileType("Bones"), damage * 2, 0f, player.whoAmI);
-                }
-                firstHit = true;
-                /*for (int i = 0; i < Main.rand.Next(3, 5); i++) {
-                    Vector2 value28 = new Vector2(Main.rand.Next(-20, 21), Main.rand.Next(9, 31));
-                    Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value28.X, value28.Y, ProjectileID.Bone, 0, 0f, projectile.owner, projectile.damage + 5, 0f);
+                    float numberProjectiles = 3; // This defines how many projectiles to shot
+                    float rotation = MathHelper.ToRadians(15);
+                    for (int i = 0; i < numberProjectiles; i++)
+                    {
+                        Vector2 speed = new Vector2(1, Main.rand.Next(15, 35));
+                        Vector2 perturbedSpeed = new Vector2(speed.X, speed.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
+                        Projectile.NewProjectile(projectile.position.X, projectile.position.Y, perturbedSpeed.X, perturbedSpeed.Y, mod.ProjectileType("Bones"), damage * 2, 0f, player.whoAmI);
+                    }
                     firstHit = true;
-                }*/
+                }
             }
-
             target.immune[projectile.owner] = 3;
         }
     }

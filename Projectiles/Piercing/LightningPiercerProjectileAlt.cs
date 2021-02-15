@@ -11,6 +11,7 @@ namespace OvermorrowMod.Projectiles.Piercing
     public class LightningPiercerProjectileAlt : PiercingProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Piercing/LightningPiercerProjectile";
+        private bool spawnedLightning = false;
 
         public override void SetStaticDefaults()
         {
@@ -268,11 +269,12 @@ namespace OvermorrowMod.Projectiles.Piercing
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            if (!projectile.wet) // Check if projectile is not in water
-            { 
-                if (Main.rand.Next(0, 3) == 0) // 33% chance
+            if (!spawnedLightning)
+            {
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    target.AddBuff(BuffID.Electrified, 300); // Electric Debuff
+                    Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<LightningAura>(), projectile.damage, 1, Main.myPlayer, projectile.whoAmI, 0);
+                    spawnedLightning = true;
                 }
             }
 

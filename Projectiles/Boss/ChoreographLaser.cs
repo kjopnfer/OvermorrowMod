@@ -50,22 +50,6 @@ namespace OvermorrowMod.Projectiles.Boss
                     dust81.velocity *= 0.2f;
                 }
             }
-
-            /*for (int num1220 = 0; num1220 < 4; num1220++)
-            {
-                Vector2 vector309 = projectile.position;
-                vector309 -= projectile.velocity * ((float)num1220 * 0.25f);
-                int num1218 = Dust.NewDust(vector309, 1, 1, 160);
-                Main.dust[num1218].position = vector309;
-                Dust expr_13BD1_cp_0 = Main.dust[num1218];
-                expr_13BD1_cp_0.position.X = expr_13BD1_cp_0.position.X + (float)(projectile.width / 2);
-                Dust expr_13BF5_cp_0 = Main.dust[num1218];
-                expr_13BF5_cp_0.position.Y = expr_13BF5_cp_0.position.Y + (float)(projectile.height / 2);
-                Main.dust[num1218].scale = (float)Main.rand.Next(70, 110) * 0.013f;
-                Dust dust81 = Main.dust[num1218];
-                dust81.velocity *= 0.2f;
-            }
-            Projectile.NewProjectile(projectile.Center, new Vector2(0, 20), ProjectileID.HeatRay, 0, 0, Main.myPlayer, 0, 0);*/
         }
     }
 }

@@ -18,7 +18,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
         public override void SafeSetDefaults()
         {
-            item.autoReuse = true;
+            item.autoReuse = false;
             item.useStyle = ItemUseStyleID.SwingThrow;
             item.useTurn = true;
             item.useAnimation = 14;
@@ -54,7 +54,6 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             }
             else
             {
-                item.autoReuse = true;
                 item.useStyle = ItemUseStyleID.SwingThrow;
                 item.useTurn = true;
                 item.useAnimation = 14;

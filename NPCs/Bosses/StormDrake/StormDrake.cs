@@ -9,10 +9,10 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
+    [AutoloadBossHead]
     public class StormDrake : ModNPC
     {
         private bool createAfterimage = false;
-        //private string chooseDirection; // Make this an enum later
         enum hoverDirection { left, right };
         private hoverDirection chooseDirection;
         private bool secondBalls = false;
@@ -34,8 +34,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
             npc.width = 296;
             npc.height = 232;
+
+            // Actual sprite dimensions:
             //npc.width = 416;
             //npc.height = 522;
+
             npc.aiStyle = -1;
             npc.damage = 45;
             npc.defense = 14;
@@ -62,6 +65,16 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         {
             Player player = Main.player[npc.target];
 
+            // Force player to be in the sky
+            if (!player.ZoneSkyHeight)
+            {
+                npc.dontTakeDamage = true;
+            }
+            else
+            {
+                npc.dontTakeDamage = false;
+            }
+
             // Handles Despawning
             if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
             {
@@ -75,6 +88,18 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         Main.raining = false;
                     }
 
+                    if (npc.timeLeft <= 1)
+                    {
+                        if (Main.netMode == 0) // Singleplayer
+                        {
+                            Main.NewText("The Storm Drake has flown away!", Color.Teal);
+                        }
+                        else if (Main.netMode == 2) // Multiplayer
+                        {
+                            NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The Storm Drake has flown away!"), Color.Teal);
+                        }
+                    }
+
                     npc.timeLeft = 20;
                     return;
                 }
@@ -86,17 +111,21 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 npc.velocity.Y = -2000;
             }
 
-            // PHASE 1 MOVESET:
-            // Hover over on side of player for 300 seconds (case 0)
-            // Position to side for 200 seconds (case 3)
-            // Spawn balls (case 1)
-            // Chase after player (case 5)
-            // Position on top of player (case 4)
+            // General MOVESET:
+            // Position on top of player
+            // Hover over on side of player
+            // Position to side
+            // Charge thrice
+            // Position on top of player
+            // Hover over on side of player
+            // Position to side
+            // Spawn balls
+            // Chase after player
 
             // Handles PHASE 2:
-            if(npc.life <= npc.lifeMax * 0.5)
+            if (npc.life <= npc.lifeMax * 0.5)
             {
-                // Maybe cause rain effect?
+                // Causes rain effect
                 if (!Main.raining)
                 {
                     Main.raining = true;
@@ -147,16 +176,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             Vector2 vector304 = npc.position - new Vector2(-165, 74);
                             vector304 -= npc.velocity * ((float)num1202 * 0.25f);
-                            //int num1200 = Dust.NewDust(vector304, 2, 2, 206);
                             Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
-                            /*Main.dust[num1200].position = vector304;
-                            Dust expr_140F1_cp_0 = Main.dust[num1200];
-                            expr_140F1_cp_0.position.X = expr_140F1_cp_0.position.X + (float)(npc.width / 2);
-                            Dust expr_14115_cp_0 = Main.dust[num1200];
-                            expr_14115_cp_0.position.Y = expr_14115_cp_0.position.Y + (float)(npc.height / 2);
-                            Main.dust[num1200].scale = (float)Main.rand.Next(70, 110) * 0.013f;
-                            Dust dust81 = Main.dust[num1200];
-                            dust81.velocity *= 0.2f;*/
                         }
                     }
                     else
@@ -165,23 +185,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             Vector2 vector304 = npc.position + new Vector2(-165, -74);
                             vector304 -= npc.velocity * ((float)num1202 * 0.25f);
-                            //int num1200 = Dust.NewDust(vector304, 2, 2, 206);
                             Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
-                            /*Main.dust[num1200].position = vector304;
-                            Dust expr_140F1_cp_0 = Main.dust[num1200];
-                            expr_140F1_cp_0.position.X = expr_140F1_cp_0.position.X + (float)(npc.width / 2);
-                            Dust expr_14115_cp_0 = Main.dust[num1200];
-                            expr_14115_cp_0.position.Y = expr_14115_cp_0.position.Y + (float)(npc.height / 2);
-                            Main.dust[num1200].scale = (float)Main.rand.Next(70, 110) * 0.013f;
-                            Dust dust81 = Main.dust[num1200];
-                            dust81.velocity *= 0.2f;*/
                         }
                     }
                 }
-            }
-
-            // DEBUG TESTING
-            
+            }            
 
             switch (npc.ai[0])
             {
@@ -298,9 +306,10 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             npc.ai[1] = 0;
                         }
 
+                        int distanceBuffer = npc.life <= npc.lifeMax * 0.5 ? 125 : 0;
                         if (chooseDirection == hoverDirection.left)
                         {
-                            Vector2 moveTo = player.Center - new Vector2(450, 0);
+                            Vector2 moveTo = player.Center - new Vector2(450 + distanceBuffer, 0);
                             var move = moveTo - npc.Center;
                             //var move = target - npc.Center;
                             var speed = 7;
@@ -320,7 +329,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         else
                         {
-                            Vector2 moveTo = player.Center + new Vector2(450, 0);
+                            Vector2 moveTo = player.Center + new Vector2(450 + distanceBuffer, 0);
                             var move = moveTo - npc.Center;
                             var speed = 7;
                             float length = move.Length();
@@ -360,7 +369,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 3: // Charge at player
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        if(npc.ai[2] < 40) // Pause before charging, also get position to charge towards
+                        int delayTime = npc.life <= npc.lifeMax * 0.5 ? 13 : 20;
+                        if (npc.ai[2] < delayTime) // Pause before charging, also get position to charge towards
                         {
                             // Process takes ~3/4ths a second
                             npc.velocity = new Vector2(0, 0);
@@ -392,6 +402,27 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 }
                                 hasCharged = true;
                             }
+
+                            if (hasCharged && npc.life <= npc.lifeMax * 0.5)
+                            {
+                                if (npc.ai[1] % 6 == 0)
+                                {
+                                    for (int i = 0; i < 2; i++)
+                                    {
+                                        int damage = Main.expertMode ? 10 : 1;
+                                        if (chooseDirection == hoverDirection.left)
+                                        {
+                                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 50, -4, Main.rand.Next(-3, -1), ModContent.ProjectileType<ElectricSparks>(), damage, 1, Main.myPlayer, 0, 0);
+                                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 50, -4, Main.rand.Next(1, 3), ModContent.ProjectileType<ElectricSparks>(), damage, 1, Main.myPlayer, 0, 0);
+                                        }
+                                        else
+                                        {
+                                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 50, 4, Main.rand.Next(-3, -1), ModContent.ProjectileType<ElectricSparks>(), damage, 1, Main.myPlayer, 0, 0);
+                                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 50, 4, Main.rand.Next(1, 3), ModContent.ProjectileType<ElectricSparks>(), damage, 1, Main.myPlayer, 0, 0);
+                                        }
+                                    }
+                                }
+                            }
                         }
                         npc.ai[2]++;
 
@@ -405,6 +436,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                             npc.ai[0] = 0;
                             npc.ai[1] = 0;
+                            npc.ai[2] = 0;
 
                             // Reset variables
                             hasCharged = false;
@@ -464,7 +496,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         if (npc.ai[1] == 160) 
                         {
                             
-                            if (!secondBalls && npc.life <= npc.lifeMax * 0.5f)
+                            if (!secondBalls && npc.life <= npc.lifeMax * 0.25f)
                             {
                                 secondBalls = true;
                                 npc.ai[0] = 4;
@@ -491,12 +523,17 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
             // PHASE CHANGE: Duke Fishron pulse effect
 
-            // Phase 2
-            // Calls columns of lightning down from the sky
-            // Dash from one side to the other, summons clone projectiles above and bottom to dash after a delay
-
             // EXPERT MODE: Phase 3
             // EXPERT VERSION: Summon a lightning clone with similar movements
+        }
+
+        public override void OnHitPlayer(Player target, int damage, bool crit)
+        {
+            // Phase 2 Debuff
+            if (npc.life <= npc.lifeMax * 0.5)
+            {
+                target.AddBuff(BuffID.Electrified, Main.expertMode ? 240 : 120);
+            }
         }
 
         public override void FindFrame(int frameHeight)
@@ -545,7 +582,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 Main.raining = false;
             }
 
-            int choice = Main.rand.Next(2);
+            int choice = Main.rand.Next(3);
             // Always drops one of:
             if (choice == 0)
             {
@@ -553,7 +590,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
             else if (choice == 1)
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("LightningPiercer"));
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("BoltStream"));
+            }
+            else if (choice == 2)
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("StormTalon"));
             }
         }
 

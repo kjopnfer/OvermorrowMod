@@ -253,16 +253,16 @@ namespace OvermorrowMod.Projectiles.Piercing
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
             // Spawn gas on only the first hit
-            if (!firstHit)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("ToxicCloud"), 0, 0f, projectile.owner, projectile.damage + 5, 0f);
-                firstHit = true;
+                if (!firstHit)
+                {
+                    Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("ToxicCloud"), 0, 0f, projectile.owner, projectile.damage + 5, 0f);
+                    firstHit = true;
+                }
             }
 
-            
             target.AddBuff(BuffID.Poisoned, 180); // Poison Debuff
-            
-
             target.immune[projectile.owner] = 3;
         }
     }

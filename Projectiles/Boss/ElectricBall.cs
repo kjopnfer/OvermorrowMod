@@ -110,5 +110,10 @@ namespace OvermorrowMod.Projectiles.Boss
                 return base.GetAlpha(lightColor);
             }
         }
+
+        public override void OnHitPlayer(Player target, int damage, bool crit)
+        {
+            target.AddBuff(BuffID.Electrified, Main.expertMode ? 360 : 180);
+        }
     }
 }

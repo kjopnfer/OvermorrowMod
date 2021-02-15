@@ -87,9 +87,12 @@ namespace OvermorrowMod.Projectiles.Piercing
                 projectile.ai[1] += 1f;
 
                 // Spawn spores
-                if(projectile.ai[1] % 4 == 0)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), mod.ProjectileType("FungiSpore"), projectile.damage, 0f, projectile.owner, 0f, 0f);
+                    if (projectile.ai[1] % 4 == 0)
+                    {
+                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), mod.ProjectileType("FungiSpore"), projectile.damage, 0f, projectile.owner, 0f, 0f);
+                    }
                 }
 
                 if (projectile.ai[1] > 5f)

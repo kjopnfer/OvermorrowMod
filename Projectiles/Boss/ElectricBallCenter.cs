@@ -25,7 +25,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.height = 38;
             projectile.friendly = false;
             projectile.hostile = true;
-            projectile.penetrate = 1;
+            projectile.penetrate = -1;
             projectile.timeLeft = 600;
             projectile.alpha = 255;
             projectile.tileCollide = false;
@@ -77,14 +77,17 @@ namespace OvermorrowMod.Projectiles.Boss
                 }
             }
 
-            if (!spawnedProjectiles)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                for (int i = 0; i < 7; i++)
+                if (!spawnedProjectiles)
                 {
-                    // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
-                    Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<ElectricBall>(), (int)projectile.ai[1], 1, Main.myPlayer, projectile.whoAmI, 30f * i);
+                    for (int i = 0; i < 7; i++)
+                    {
+                        // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
+                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<ElectricBall>(), (int)projectile.ai[1], 1, Main.myPlayer, projectile.whoAmI, 30f * i);
+                    }
+                    spawnedProjectiles = true;
                 }
-                spawnedProjectiles = true;
             }
 
             projectile.ai[0]++;
