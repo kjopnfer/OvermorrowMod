@@ -50,7 +50,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.noTileCollide = true;
             npc.boss = true;
             npc.value = Item.buyPrice(gold: 5);
-            npc.npcSlots = 5f;
+            npc.npcSlots = 10f;
             music = MusicID.Boss5;
         }
 
@@ -189,7 +189,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                     }
                 }
-            }            
+            }
 
             switch (npc.ai[0])
             {
@@ -461,7 +461,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                             int direction = npc.direction == 1 ? 175 : -175; // Facing right, otherwise
 
-                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 50, 0, 0, ModContent.ProjectileType<ElectricBallCenter>(), 0, 1, Main.myPlayer, 0, damage);
+                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 50, 0, 0, ModContent.ProjectileType<ElectricBallCenter>(), damage, 1, Main.myPlayer, 0, npc.whoAmI);
                         }
 
                         if (npc.ai[1] == 20)

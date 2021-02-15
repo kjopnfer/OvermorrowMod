@@ -105,7 +105,7 @@ namespace OvermorrowMod.Projectiles.Piercing
 
 		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            target.immune[projectile.owner] = 2;
+            target.immune[projectile.owner] = 3;
         }
     }
 }

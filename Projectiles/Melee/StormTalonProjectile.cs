@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -74,7 +75,7 @@ namespace OvermorrowMod.Projectiles.Melee
 
             if (projectile.ai[1] % 1 == 0);
             {
-                Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<StormTalonSparks>(), projectile.damage / 6, 1, projectile.owner, 0, 0);
+                Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<StormTalonSparks>(), (projectile.damage / 4) + 2, 1, projectile.owner, 0, 0);
             }
 
             // When we reach the end of the animation, we can kill the spear projectile

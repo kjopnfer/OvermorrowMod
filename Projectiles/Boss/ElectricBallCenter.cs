@@ -12,6 +12,7 @@ namespace OvermorrowMod.Projectiles.Boss
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
         private bool spawnedProjectiles = false;
         private bool launchedProjectile = false;
+        private int storeDamage = 0;
 
         public override void SetStaticDefaults()
         {
@@ -33,6 +34,12 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void AI()
         {
+            if(projectile.ai[0] == 0) // Make this projectile deal no damage
+            {
+                storeDamage = projectile.damage;
+                projectile.damage = 0;
+            }
+
             // Unnecessary code
             if (++projectile.frameCounter >= 5)
             {
@@ -46,7 +53,9 @@ namespace OvermorrowMod.Projectiles.Boss
             if (projectile.ai[0] < 180) // Stay still for 120 seconds
             {
                 projectile.velocity = new Vector2(0, 0);
-                NPC parent = Main.npc[projectile.owner];
+
+                // Get the ID of the Parent NPC that was passed in via AI[1]
+                NPC parent = Main.npc[(int)projectile.ai[1]];
                 projectile.Center = parent.Center;
             }
             else // Launch at the nearest player
@@ -84,7 +93,7 @@ namespace OvermorrowMod.Projectiles.Boss
                     for (int i = 0; i < 7; i++)
                     {
                         // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
-                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<ElectricBall>(), (int)projectile.ai[1], 1, Main.myPlayer, projectile.whoAmI, 30f * i);
+                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<ElectricBall>(), storeDamage, 1, Main.myPlayer, projectile.whoAmI, 30f * i);
                     }
                     spawnedProjectiles = true;
                 }
