@@ -28,6 +28,7 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.timeLeft = 600;
             projectile.alpha = 255;
             projectile.tileCollide = true;
+            projectile.magic = true;
         }
 
         public override void AI()

@@ -65,8 +65,18 @@ namespace OvermorrowMod.Projectiles.Melee
                 }
             }
 
+            
+
+            projectile.ai[1]++;
+
             // Change the spear position based off of the velocity and the movementFactor
             projectile.position += projectile.velocity * movementFactor;
+
+            if (projectile.ai[1] % 1 == 0);
+            {
+                Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<StormTalonSparks>(), projectile.damage / 6, 1, projectile.owner, 0, 0);
+            }
+
             // When we reach the end of the animation, we can kill the spear projectile
             if (projOwner.itemAnimation == 0)
             {
