@@ -18,6 +18,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         private bool secondBalls = false;
         private bool hasCharged = false;
         private bool textSent = false;
+        private bool changedPhase = false;
         private int chargeCount = 0;
 
         public override void SetStaticDefaults()
@@ -30,7 +31,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         {
             // Afterimage effect
             NPCID.Sets.TrailCacheLength[npc.type] = 7;
-            NPCID.Sets.TrailingMode[npc.type] = 0;
+            NPCID.Sets.TrailingMode[npc.type] = 1;
 
             npc.width = 296;
             npc.height = 232;
@@ -88,18 +89,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         Main.raining = false;
                     }
 
-                    if (npc.timeLeft <= 1)
-                    {
-                        if (Main.netMode == 0) // Singleplayer
-                        {
-                            Main.NewText("The Storm Drake has flown away!", Color.Teal);
-                        }
-                        else if (Main.netMode == 2) // Multiplayer
-                        {
-                            NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The Storm Drake has flown away!"), Color.Teal);
-                        }
-                    }
-
                     npc.timeLeft = 20;
                     return;
                 }
@@ -123,37 +112,12 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             // Chase after player
 
             // Handles PHASE 2:
-            if (npc.life <= npc.lifeMax * 0.5)
+            if (npc.life <= npc.lifeMax * 0.5 && changedPhase)
             {
-                // Causes rain effect
-                if (!Main.raining)
-                {
-                    Main.raining = true;
-                    Main.rainTime = 180;
-                }
-                else
-                {
-                    Main.rainTime += 120;
-                }
-
-                if (!textSent) // Print phase 2 notifier
-                {
-                    if (Main.netMode == 0) // Singleplayer
-                    {
-                        Main.NewText("The air crackles with electricity...", Color.Teal);
-                    }
-                    else if (Main.netMode == 2) // Multiplayer
-                    {
-                        NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The air crackles with electricity..."), Color.Teal);
-                    }
-                    textSent = true;
-                }
-
                 // Lightning now rains down periodically
                 // AI[0] = -4.75, AI[1] = Main.rand.Next(-10, 10)
                 if (npc.ai[1] % 120 == 0)
                 {
-
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int randCeiling = Main.expertMode ? 6 : 4;
@@ -196,6 +160,15 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 0: // NEUTRAL POSITION: Hover above the player
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        if (npc.life <= npc.lifeMax * 0.5 && !changedPhase) // Break out condition
+                        {
+                            // If the NPC reaches below half health, break out of switch statement and become stationary
+                            npc.ai[0] = 6;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            break;
+                        }
+
                         if (npc.ai[1] == 240)
                         {
                             npc.ai[0] = 1;
@@ -236,6 +209,15 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 1: // Begin aligning self to one side of the player
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        if (npc.life <= npc.lifeMax * 0.5 && !changedPhase) // Break out condition
+                        {
+                            // If the NPC reaches below half health, break out of switch statement and become stationary
+                            npc.ai[0] = 6;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            break;
+                        }
+
                         npc.TargetClosest(true);
                         Vector2 target = npc.HasPlayerTarget ? player.Center : Main.npc[npc.target].Center;
 
@@ -297,6 +279,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 2: // Position self to one side of the player
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        if (npc.life <= npc.lifeMax * 0.5 && !changedPhase) // Break out condition
+                        {
+                            // If the NPC reaches below half health, break out of switch statement and become stationary
+                            npc.ai[0] = 6;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            break;
+                        }
                         npc.TargetClosest(true);
                         Vector2 target = npc.HasPlayerTarget ? player.Center : Main.npc[npc.target].Center;
 
@@ -369,6 +359,15 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 3: // Charge at player
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        if (npc.life <= npc.lifeMax * 0.5 && !changedPhase) // Break out condition
+                        {
+                            // If the NPC reaches below half health, break out of switch statement and become stationary
+                            npc.ai[0] = 6;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            break;
+                        }
+
                         int delayTime = npc.life <= npc.lifeMax * 0.5 ? 13 : 20;
                         if (npc.ai[2] < delayTime) // Pause before charging, also get position to charge towards
                         {
@@ -449,6 +448,15 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 4: // Spawn electric balls
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        if (npc.life <= npc.lifeMax * 0.5 && !changedPhase) // Break out condition
+                        {
+                            // If the NPC reaches below half health, break out of switch statement and become stationary
+                            npc.ai[0] = 6;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            break;
+                        }
+
                         createAfterimage = false;
 
                         npc.velocity = new Vector2(0, 0);
@@ -475,6 +483,15 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 5: // Chase after the player
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        if (npc.life <= npc.lifeMax * 0.5 && !changedPhase) // Break out condition
+                        {
+                            // If the NPC reaches below half health, break out of switch statement and become stationary
+                            npc.ai[0] = 6;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            break;
+                        }
+
                         npc.TargetClosest(true);
                         Vector2 target = npc.HasPlayerTarget ? player.Center : Main.npc[npc.target].Center;
                         var move = target - npc.Center;
@@ -512,6 +529,44 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                     }
                     break;
+                case 6: // Phase change
+                    npc.velocity = new Vector2(0, 0);
+                    if (npc.ai[1] == 180)
+                    {
+                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
+
+                        // Go back to neutral
+                        npc.ai[0] = 0;
+                        npc.ai[1] = 0;
+                        npc.ai[2] = 0;
+
+                        changedPhase = true;
+                    }
+
+                    // Causes rain effect
+                    if (!Main.raining)
+                    {
+                        Main.raining = true;
+                        Main.rainTime = 180;
+                    }
+                    else
+                    {
+                        Main.rainTime += 120;
+                    }
+
+                    if (!textSent) // Print phase 2 notifier
+                    {
+                        if (Main.netMode == 0) // Singleplayer
+                        {
+                            Main.NewText("The air crackles with electricity...", Color.Teal);
+                        }
+                        else if (Main.netMode == 2) // Multiplayer
+                        {
+                            NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The air crackles with electricity..."), Color.Teal);
+                        }
+                        textSent = true;
+                    }
+                    break;
             }
 
             if (npc.ai[0] == 0 || npc.ai[0] == 1 || npc.ai[0] == 2 || npc.ai[0] == 5) 
@@ -525,6 +580,31 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
             // EXPERT MODE: Phase 3
             // EXPERT VERSION: Summon a lightning clone with similar movements
+        }
+
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            if(npc.life <= 0)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, 206, 2 * hitDirection, -2f);
+                    if (Main.rand.NextBool(2))
+                    {
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].scale = 1.2f * npc.scale;
+                    }
+                    else
+                    {
+                        Main.dust[dust].scale = 0.7f * npc.scale;
+                    }
+                }
+
+                Gore.NewGore(npc.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, mod.GetGoreSlot("Gores/DrakeHead"), npc.scale);
+                Gore.NewGore(npc.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, mod.GetGoreSlot("Gores/DrakeWing"), npc.scale);
+                Gore.NewGore(npc.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, mod.GetGoreSlot("Gores/DrakeLeg"), npc.scale);
+                Gore.NewGore(npc.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, mod.GetGoreSlot("Gores/DrakeTail"), npc.scale);
+            }
         }
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
@@ -552,20 +632,230 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
+            Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
+            Vector2 drawPos2 = Main.screenPosition + drawOrigin - new Vector2(60f, 290);
+
             if (createAfterimage)
             {
-                Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
+                //Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
                 //Vector2 drawOrigin = new Vector2(416, 522);
                 for (int k = 0; k < npc.oldPos.Length; k++)
                 {
                     // Adjust drawPos if the hitbox does not match sprite dimension
                     Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin - new Vector2(60f, 290);
-                    Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.Teal : drawColor;
+                    Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.LightCyan : drawColor;
                     Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
                     spriteBatch.Draw(Main.npcTexture[npc.type], drawPos, npc.frame, color, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
             }
+
+            Texture2D texture2D16 = mod.GetTexture("NPCs/Bosses/StormDrake/StormDrake");
+            // this gets the npc's frame
+            Vector2 vector47 = drawOrigin;
+            Color color51 = drawColor; // This gets input from the method parameter
+            Color color55 = Color.White; // This is just white lol
+            float amount10 = 0f; // I think this controls amount of color
+            int num178 = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
+            int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
+
+            // buff color just creates a color, idk the significance of it though
+            /*if (phase3 && calamityGlobalNPC.newAI[3] == 1f)
+            {
+                color51 = CalamityGlobalNPC.buffColor(color51, 0.9f, 0.6f, 0.2f, 1f);
+            }
+            else if (phase2 && calamityGlobalNPC.newAI[2] == 1f)
+            {
+                color51 = CalamityGlobalNPC.buffColor(color51, 0.7f, 0.7f, 0.3f, 1f);
+            }
+            else if (phase2 && calamityGlobalNPC.newAI[0] > (float)num178)
+            {
+                float num180 = calamityGlobalNPC.newAI[0] - (float)num178;
+                num180 /= (float)num179;
+                color51 = CalamityGlobalNPC.buffColor(color51, 1f - 0.3f * num180, 1f - 0.3f * num180, 1f - 0.7f * num180, 1f);
+            }*/
+
+            // these go into a loop later to control something
+            int num182 = 6; // # Frames to loop
+            int num184 = 2; // idk
+
+            // does some weird shenanigans regarding num182, we know it effects the # of frames to loop, having it higher than cachelength = outofbounds
+            /*if (((ModNPC)this).get_npc().ai[0] == 0f || ((ModNPC)this).get_npc().ai[0] == 3.1f || ((ModNPC)this).get_npc().ai[0] == 4f || ((ModNPC)this).get_npc().ai[0] == 4.2f)
+            {
+                num182 = 4;
+            }
+            if (((ModNPC)this).get_npc().ai[0] == 1f || ((ModNPC)this).get_npc().ai[0] == 3f || ((ModNPC)this).get_npc().ai[0] == 4.1f)
+            {
+                num182 = 7;
+            }
+            if (((ModNPC)this).get_npc().ai[0] == 2f || ((ModNPC)this).get_npc().ai[0] == 3.2f || (phase2 && calamityGlobalNPC.newAI[2] == 1f))
+            {
+                color55 = Color.Yellow;
+                amount10 = 0.5f;
+            }
+            else
+            {
+                color51 = lightColor;
+            }*/
+
+            // this checks the config file if afterimages is allowed, then it draws the afterimage for the npc
+            /*if (CalamityMod.CalamityConfig.Afterimages)
+            {
+                for (int num183 = 1; num183 < num182; num183 += num184)
+                {
+                    Color color58 = color51;
+                    color58 = Color.Lerp(color58, color55, amount10);
+                    color58 = ((ModNPC)this).get_npc().GetAlpha(color58);
+                    color58 *= (float)(num182 - num183) / 15f;
+                    Vector2 vector49 = ((ModNPC)this).get_npc().oldPos[num183] + new Vector2(((Entity)((ModNPC)this).get_npc()).width, ((Entity)((ModNPC)this).get_npc()).height) / 2f - Main.screenPosition;
+                    vector49 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[((ModNPC)this).get_npc().type]) * ((ModNPC)this).get_npc().scale / 2f;
+                    vector49 += vector47 * ((ModNPC)this).get_npc().scale + new Vector2(0f, 4f + ((ModNPC)this).get_npc().gfxOffY);
+                    spriteBatch.Draw(texture2D16, vector49, ((ModNPC)this).get_npc().frame, color58, ((ModNPC)this).get_npc().rotation, vector47, ((ModNPC)this).get_npc().scale, spriteEffects, 0f);
+                }
+            }*/
+
+            // default value
+            int num177 = 0; // ok i think this controls the number of afterimage frames
+            float num176 = 0f; // this assigns the pulsing effect
+            float scaleFactor10 = 0f; // why are you zero, this is initialization
+
+            // num177 shenanigans
+            /*if (((ModNPC)this).get_npc().ai[0] == 0f || ((ModNPC)this).get_npc().ai[0] == 3.1f || ((ModNPC)this).get_npc().ai[0] == 4f || ((ModNPC)this).get_npc().ai[0] == 4.2f)
+            {
+                num177 = 4;
+            }*/
+
+            // check if the mod ai is 5, assign values, change num177, num176, and scaleFactor10
+            /*if (((ModNPC)this).get_npc().ai[0] == 5f)
+            {
+                int num175 = 60;
+                int num174 = 30;
+                if (((ModNPC)this).get_npc().ai[1] > (float)num175)
+                {
+                    num177 = 6;
+                    num176 = 1f - (float)Math.Cos((((ModNPC)this).get_npc().ai[1] - (float)num175) / (float)num174 * ((float)Math.PI * 2f));
+                    num176 /= 3f;
+                    scaleFactor10 = 40f;
+                }
+            }*/
+
+            // this is some phase switch thing, i grabbed from above
+            num177 = 6; // Reassigned num177
+            num176 = 1f - (float)Math.Cos((npc.ai[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
+            num176 /= 3f;
+            scaleFactor10 = 40f; // Change scale factor of the pulsing effect and how far it draws outwards
+
+            // this does stuff whenever switching phase
+            /*if (phaseSwitchPhase)
+            {
+                if (phase3 && calamityGlobalNPC.newAI[1] > (float)num178) // does on phase 3
+                {
+                    num177 = 6;
+                    num176 = 1f - (float)Math.Cos((calamityGlobalNPC.newAI[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));
+                    num176 /= 3f;
+                    scaleFactor10 = 60f;
+                }
+                else if (phase2 && calamityGlobalNPC.newAI[0] > (float)num178) // does on phase 2
+                {
+                    num177 = 6;
+                    num176 = 1f - (float)Math.Cos((calamityGlobalNPC.newAI[0] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));
+                    num176 /= 3f;
+                    scaleFactor10 = 60f;
+                }
+            }*/
+
+            // there is a lot of changes to num177, num176, and scaleFactor10
+
+            // another afterimage check
+            /*if (CalamityMod.CalamityConfig.Afterimages)
+            {
+                for (int num170 = 0; num170 < num177; num170++)
+                {
+                    Color color54 = lightColor;
+                    color54 = Color.Lerp(color54, color55, amount10);
+                    color54 = ((ModNPC)this).get_npc().GetAlpha(color54);
+                    color54 *= 1f - num176;
+                    Vector2 vector48 = ((Entity)((ModNPC)this).get_npc()).get_Center() + Utils.ToRotationVector2((float)num170 / (float)num177 * ((float)Math.PI * 2f) + ((ModNPC)this).get_npc().rotation) * scaleFactor10 * num176 - Main.screenPosition;
+                    vector48 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[((ModNPC)this).get_npc().type]) * ((ModNPC)this).get_npc().scale / 2f;
+                    vector48 += vector47 * ((ModNPC)this).get_npc().scale + new Vector2(0f, 4f + ((ModNPC)this).get_npc().gfxOffY);
+                    spriteBatch.Draw(texture2D16, vector48, ((ModNPC)this).get_npc().frame, color54, ((ModNPC)this).get_npc().rotation, vector47, ((ModNPC)this).get_npc().scale, spriteEffects, 0f);
+                }
+            }*/
+
+            // Draws a normal sprite for some reason
+            Vector2 vector46 = ((Entity)((ModNPC)this).npc).Center - Main.screenPosition;
+            vector46 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[((ModNPC)this).npc.type]) * ((ModNPC)this).npc.scale / 2f;
+            vector46 += vector47 * ((ModNPC)this).npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
+            spriteBatch.Draw(texture2D16, drawPos2, ((ModNPC)this).npc.frame, drawColor, ((ModNPC)this).npc.rotation, vector47, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+
+            Color color47 = Color.Lerp(Color.White, Color.Blue, 0.5f);
+            color55 = Color.Cyan;
+            amount10 = 1f;
+            //num176 = 0.5f; // Reassigned num176, i think this is the one that does the pulsing effect, do not uncomment
+            //scaleFactor10 = 10f; // okay so this controls the size of the pulsing, lower is pulses closer to body, higher is further
+            num184 = 1; // this controls the increment rate in the for loops
+
+            // confirmed num176 does actually do the pulsing effect
+
+            // draws an opaque version but in a different color
+            /*for (int num165 = 1; num165 < num182; num165 += num184)
+            {
+                Color color42 = color47;
+                color42 = Color.Lerp(color42, color55, amount10);
+                color42 *= (float)(num182 - num165) / 15f;
+                Vector2 vector44 = ((ModNPC)this).npc.oldPos[num165] + new Vector2(((Entity)((ModNPC)this).npc).width, ((Entity)((ModNPC)this).npc).height) / 2f - Main.screenPosition;
+                vector44 += vector47 * ((ModNPC)this).npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
+                spriteBatch.Draw(texture2D16, vector44 - new Vector2(60, 290), ((ModNPC)this).npc.frame, color42, ((ModNPC)this).npc.rotation, vector47, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            }*/
+
             
+            // ok this is the pulsing effect drawing
+            for (int num164 = 1; num164 < num177; num164++)
+            {
+                // these assign the color of the pulsing
+                Color color45 = color47;
+                color45 = Color.Lerp(color45, color55, amount10);
+                color45 = ((ModNPC)this).npc.GetAlpha(color45);
+                color45 *= 1f - num176; // num176 is put in here to effect the pulsing
+
+                // num176 is used here too
+                Vector2 vector45 = ((Entity)((ModNPC)this).npc).Center + Utils.ToRotationVector2((float)num164 / (float)num177 * ((float)Math.PI * 2f) + ((ModNPC)this).npc.rotation) * scaleFactor10 * num176 - Main.screenPosition;
+                vector45 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[((ModNPC)this).npc.type]) * ((ModNPC)this).npc.scale / 2f;
+                vector45 += vector47 * ((ModNPC)this).npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
+
+                // the actual drawing of the pulsing effect
+                spriteBatch.Draw(texture2D16, vector45 - new Vector2(0, 290 / 2), ((ModNPC)this).npc.frame, color45, ((ModNPC)this).npc.rotation, vector47, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            }
+
+            // draws the boss but blue, lol
+            //spriteBatch.Draw(texture2D16, vector46, ((ModNPC)this).npc.frame, color47, ((ModNPC)this).npc.rotation, vector47, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+
+            int numFrames = 0; // ok i think this controls the number of afterimage frames
+            int pulseDistance = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
+            int pulseSpeed = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
+            float pulseEffect = 1f - (float)Math.Cos((npc.ai[1] - (float)pulseDistance) / (float)pulseSpeed * ((float)Math.PI * 2f));  // this controls pulsing effect
+            pulseEffect /= 3f;
+
+            float pulseScale = 10f; // Change scale factor of the pulsing effect and how far it draws outwards
+
+            Color bwMix = Color.Lerp(Color.White, Color.Blue, 0.5f);
+
+            // create a passive pulsing effect
+            /*for (int i = 1; i < numFrames; i++)
+            {
+                // these assign the color of the pulsing
+                Color color45 = bwMix;
+                color45 = Color.Lerp(color45, color55, amount10);
+                color45 = ((ModNPC)this).npc.GetAlpha(color45);
+                color45 *= 1f - pulseEffect; // num176 is put in here to effect the pulsing
+
+                // num176 is used here too, this rotates the image
+                Vector2 vector45 = npc.Center + Utils.ToRotationVector2(i / numFrames * ((float)Math.PI * 2f) + npc.rotation) * pulseScale * pulseEffect - Main.screenPosition;
+                vector45 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[npc.type]) * npc.scale / 2f;
+                vector45 += drawOrigin * npc.scale + new Vector2(0f, 4f + npc.gfxOffY);
+
+                // the actual drawing of the pulsing effect
+                spriteBatch.Draw(texture2D16, vector45 - new Vector2(0, 290 / 2), npc.frame, color45, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            }*/
             return true;
         }
 

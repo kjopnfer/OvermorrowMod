@@ -20,8 +20,8 @@ namespace OvermorrowMod.Projectiles.Magic
 
         public override void SetDefaults()
         {
-            projectile.width = 4;
-            projectile.height = 4;
+            projectile.width = 12;
+            projectile.height = 12;
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.penetrate = -1;
@@ -88,7 +88,7 @@ namespace OvermorrowMod.Projectiles.Magic
 
                     if (projectile.ai[0] % 4 == 0)
                     {
-                        projectile.velocity *= 1.75f;
+                        projectile.velocity *= 1.47f;
                     }
                 }
             }
@@ -98,6 +98,11 @@ namespace OvermorrowMod.Projectiles.Magic
                 Dust.NewDust(projectile.position, 1, 1, 206);
             }
             projectile.ai[0]++;
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.immune[projectile.owner] = 6;
         }
     }
 }
