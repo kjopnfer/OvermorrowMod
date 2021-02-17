@@ -142,6 +142,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             int randomX = Main.rand.Next(-500, 500);
                             npc.netUpdate = true;
                             Projectile.NewProjectile(player.Center - new Vector2(randomX, 500), new Vector2(0, 20), ModContent.ProjectileType<ChoreographLaser>(), 0, 0f, Main.myPlayer, 0f, 0f);
+                            //Projectile.NewProjectile(player.Center - new Vector2(randomX, 500), new Vector2(0, 4), ModContent.ProjectileType<Lightning>(), npc.damage / 4, 0f, Main.myPlayer, (float)-4.75, Main.rand.Next(-10, 10));
                             Projectile.NewProjectile(player.Center - new Vector2(randomX, 500), new Vector2(0, 4), ProjectileID.CultistBossLightningOrbArc, npc.damage / 4, 0f, Main.myPlayer, (float)-4.75, Main.rand.Next(-10, 10));
                         }
                     }
@@ -289,7 +290,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             npc.ai[1] = 0;
                         }
 
-                        int distanceBuffer = npc.life <= npc.lifeMax * 0.5 ? 125 : 0;
+                        int distanceBuffer = npc.life <= npc.lifeMax * 0.5 ? 125 : 95;
                         if (chooseDirection == hoverDirection.left)
                         {
                             Vector2 moveTo = player.Center - new Vector2(450 + distanceBuffer, 0);
@@ -328,6 +329,56 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 move *= speed / length;
                             }
                             npc.velocity = move;
+                        }
+
+                        // Shoot projectiles at player
+                        if (npc.ai[1] % 40 == 0)
+                        {
+                            if (npc.direction == 1) // facing right
+                            {
+                                //npc.position + new Vector2(-165, 74);
+                                Vector2 headPosition = new Vector2(npc.position.X - 165, npc.position.Y + 74);
+                                float speedX = player.Center.X - headPosition.X;
+                                float speedY = player.Center.Y - headPosition.Y;
+                                float length = (float)Math.Sqrt(speedX * speedX + speedY * speedY);
+                                float speed = 10;
+                                float num12 = speed / length;
+                                speedX = speedX * num12;
+                                speedY = speedY * num12;
+
+                                Vector2 position = npc.position - new Vector2(-165 * 2, (-74 / 2) - 20);
+                                Vector2 targetPosition = Main.player[npc.target].Center;
+                                Vector2 direction = targetPosition - position;
+                                direction.Normalize();
+
+                                Main.PlaySound(SoundID.Item109, (int)npc.position.X, (int)npc.position.Y);
+                                Projectile.NewProjectile(npc.position - new Vector2(-165 * 2, (-74 / 2) - 20), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage, 3f, Main.myPlayer, 0, 0);
+
+                            }
+                            else // facing left
+                            {
+                                //npc.position + new Vector2(-165, -74);
+                                Vector2 headPosition = new Vector2(npc.position.X - 165, npc.position.Y - 74);
+                                headPosition += new Vector2((npc.width / 2), (npc.height / 2));
+
+                                float speedX = player.Center.X - headPosition.X;
+                                float speedY = player.Center.Y - headPosition.Y;
+                                float length = (float)Math.Sqrt(speedX * speedX + speedY * speedY);
+                                float speed = 10;
+                                float num12 = speed / length;
+                                speedX = speedX * num12;
+                                speedY = speedY * num12;
+
+                                Vector2 position = npc.position - new Vector2((-165 / 4) + 90, (-74 / 2) - 18);
+                                Vector2 targetPosition = Main.player[npc.target].Center;
+                                Vector2 direction = targetPosition - position;
+                                direction.Normalize();
+
+                                Main.PlaySound(SoundID.Item109, (int)npc.position.X, (int)npc.position.Y);
+                                Projectile.NewProjectile(npc.position - new Vector2((-165 / 4) + 90, (-74 / 2) - 18), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage, 3f, Main.myPlayer, 0, 0);
+
+                            }
+
                         }
 
                         if (npc.ai[1] == 190)
@@ -402,7 +453,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 {
                                     for (int i = 0; i < 2; i++)
                                     {
-                                        int damage = Main.expertMode ? 10 : 1;
+                                        int damage = Main.expertMode ? npc.damage : npc.damage / 2;
                                         if (chooseDirection == hoverDirection.left)
                                         {
                                             Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 50, -4, Main.rand.Next(-3, -1), ModContent.ProjectileType<ElectricSparks>(), damage, 1, Main.myPlayer, 0, 0);

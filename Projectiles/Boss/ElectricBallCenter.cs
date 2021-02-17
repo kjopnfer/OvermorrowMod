@@ -86,7 +86,7 @@ namespace OvermorrowMod.Projectiles.Boss
                 }
             }
 
-            if(projectile.ai[0] == 480)
+            if(projectile.ai[0] == 390)
             {
                 projectile.velocity *= Main.expertMode ? 2 : 3;
             }
