@@ -32,7 +32,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override void SetDefaults()
         {
             // Afterimage effect
-            NPCID.Sets.TrailCacheLength[npc.type] = 7;
+            NPCID.Sets.TrailCacheLength[npc.type] = 14;
             NPCID.Sets.TrailingMode[npc.type] = 1;
 
             npc.width = 296;
@@ -54,7 +54,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.boss = true;
             npc.value = Item.buyPrice(gold: 5);
             npc.npcSlots = 10f;
-            music = MusicID.Boss5;
+            //music = MusicID.Boss5;
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/StormDrake");
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
@@ -89,6 +90,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     if (Main.raining)
                     {
                         Main.raining = false;
+                        Main.rainTime = 0;
                     }
 
                     npc.timeLeft = 20;
@@ -116,6 +118,17 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             // Handles PHASE 2:
             if (npc.life <= npc.lifeMax * 0.5 && changedPhase)
             {
+                // Causes rain effect
+                if (!Main.raining)
+                {
+                    Main.raining = true;
+                    Main.rainTime = 180;
+                }
+                else
+                {
+                    Main.rainTime += 120;
+                }
+
                 npc.defense = Main.expertMode ? 25 : 17;
                 // Lightning now rains down periodically
                 // AI[0] = -4.75, AI[1] = Main.rand.Next(-10, 10)
@@ -384,7 +397,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                             if (hasCharged && npc.life <= npc.lifeMax * 0.5)
                             {
-                                if (npc.ai[1] % 6 == 0)
+                                int numSparks = npc.life <= npc.lifeMax * 0.25 ? 3 : 6;
+                                if (npc.ai[1] % numSparks == 0)
                                 {
                                     for (int i = 0; i < 2; i++)
                                     {
@@ -493,7 +507,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         if (npc.ai[1] == 160) 
                         {
                             
-                            if (!secondBalls && npc.life <= npc.lifeMax * 0.25f)
+                            if (!secondBalls && npc.life <= npc.lifeMax * 0.35f)
                             {
                                 secondBalls = true;
                                 npc.ai[0] = 4;
@@ -669,7 +683,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             {
                 // this gets the npc's frame
                 Vector2 vector47 = drawOrigin;
-                Color color51 = drawColor; // This gets input from the method parameter
                 Color color55 = Color.White; // This is just white lol
                 float amount10 = 0f; // I think this controls amount of color
                 int num178 = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
@@ -710,7 +723,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             {
                 // this gets the npc's frame
                 Vector2 vector472 = drawOrigin;
-                Color color512 = drawColor; // This gets input from the method parameter
                 Color color552 = Color.White; // This is just white lol
                 float amount102 = 0f; // I think this controls amount of color
                 int num1782 = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
@@ -759,6 +771,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             if (Main.raining)
             {
                 Main.raining = false;
+                Main.rainTime = 0;
             }
 
             int choice = Main.rand.Next(3);

@@ -86,6 +86,11 @@ namespace OvermorrowMod.Projectiles.Boss
                 }
             }
 
+            if(projectile.ai[0] == 480)
+            {
+                projectile.velocity *= Main.expertMode ? 2 : 3;
+            }
+
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (!spawnedProjectiles)
