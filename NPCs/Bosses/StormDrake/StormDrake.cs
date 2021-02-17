@@ -129,7 +129,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Main.rainTime += 120;
                 }
 
-                npc.defense = Main.expertMode ? 25 : 17;
                 // Lightning now rains down periodically
                 // AI[0] = -4.75, AI[1] = Main.rand.Next(-10, 10)
                 if (npc.ai[1] % 120 == 0)
@@ -334,14 +333,13 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         // Shoot projectiles at player
                         if (npc.ai[1] % 40 == 0)
                         {
-                            if (npc.direction == 1) // facing right
+                            float speed = npc.life <= npc.lifeMax * 0.70 ? 15 : 10;
+                            if (npc.direction == 1) // Facing right
                             {
-                                //npc.position + new Vector2(-165, 74);
                                 Vector2 headPosition = new Vector2(npc.position.X - 165, npc.position.Y + 74);
                                 float speedX = player.Center.X - headPosition.X;
                                 float speedY = player.Center.Y - headPosition.Y;
                                 float length = (float)Math.Sqrt(speedX * speedX + speedY * speedY);
-                                float speed = 10;
                                 float num12 = speed / length;
                                 speedX = speedX * num12;
                                 speedY = speedY * num12;
@@ -352,19 +350,17 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 direction.Normalize();
 
                                 Main.PlaySound(SoundID.Item109, (int)npc.position.X, (int)npc.position.Y);
-                                Projectile.NewProjectile(npc.position - new Vector2(-165 * 2, (-74 / 2) - 20), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage, 3f, Main.myPlayer, 0, 0);
+                                Projectile.NewProjectile(npc.position - new Vector2(-165 * 2, (-74 / 2) - 20), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
 
                             }
-                            else // facing left
+                            else // Facing left
                             {
-                                //npc.position + new Vector2(-165, -74);
                                 Vector2 headPosition = new Vector2(npc.position.X - 165, npc.position.Y - 74);
                                 headPosition += new Vector2((npc.width / 2), (npc.height / 2));
 
                                 float speedX = player.Center.X - headPosition.X;
                                 float speedY = player.Center.Y - headPosition.Y;
                                 float length = (float)Math.Sqrt(speedX * speedX + speedY * speedY);
-                                float speed = 10;
                                 float num12 = speed / length;
                                 speedX = speedX * num12;
                                 speedY = speedY * num12;
@@ -375,7 +371,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 direction.Normalize();
 
                                 Main.PlaySound(SoundID.Item109, (int)npc.position.X, (int)npc.position.Y);
-                                Projectile.NewProjectile(npc.position - new Vector2((-165 / 4) + 90, (-74 / 2) - 18), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage, 3f, Main.myPlayer, 0, 0);
+                                Projectile.NewProjectile(npc.position - new Vector2((-165 / 4) + 90, (-74 / 2) - 18), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
 
                             }
 
@@ -586,6 +582,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         npc.ai[0] = 0;
                         npc.ai[1] = 0;
                         npc.ai[2] = 0;
+                        createAfterimage = false;
 
                         changedPhase = true;
                     }
