@@ -57,6 +57,7 @@ namespace OvermorrowMod.Projectiles.Boss
                 {
                     // Set the parent projectile
                     parentProjectile = Main.projectile[i];
+                    projectile.netUpdate = true;
                 }
             }
 
@@ -97,6 +98,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
             projectile.position.X = position.X - (int)(Math.Cos(rad) * distance) - projectile.width / 2;
             projectile.position.Y = position.Y - (int)(Math.Sin(rad) * distance) - projectile.height / 2;
+            projectile.netUpdate = true;
         }
 
         public override Color? GetAlpha(Color lightColor)

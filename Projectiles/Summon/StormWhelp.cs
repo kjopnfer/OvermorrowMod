@@ -245,6 +245,37 @@ namespace OvermorrowMod.Projectiles.Summon
                         direction *= speed;
                         projectile.velocity = (projectile.velocity * (inertia - 1) + direction) / inertia;
                     }
+                    else
+                    {
+                        // Minion doesn't have a target: return to player and idle
+                        if (distanceToIdlePosition > 600f)
+                        {
+                            // Speed up the minion if it's away from the player
+                            speed = 20f;
+                            inertia = 60f;
+                        }
+                        else
+                        {
+                            // Slow down the minion if closer to the player
+                            speed = 4f;
+                            inertia = 80f;
+                        }
+                        if (distanceToIdlePosition > 20f)
+                        {
+                            // The immediate range around the player (when it passively floats about)
+
+                            // This is a simple movement formula using the two parameters and its desired direction to create a "homing" movement
+                            vectorToIdlePosition.Normalize();
+                            vectorToIdlePosition *= speed;
+                            projectile.velocity = (projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
+                        }
+                        else if (projectile.velocity == Vector2.Zero)
+                        {
+                            // If there is a case where it's not moving at all, give it a little "poke"
+                            projectile.velocity.X = -0.15f;
+                            projectile.velocity.Y = -0.05f;
+                        }
+                    }
                 }
                 projectile.ai[0]++;
                 if (projectile.ai[0] > 300)
