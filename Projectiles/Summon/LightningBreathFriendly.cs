@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
-    public class LightningBreath : ModProjectile
+    public class LightningBreathFriendly : ModProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
 
@@ -22,8 +22,8 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.height = 14;
             projectile.alpha = 255;
             projectile.penetrate = 1;
-            projectile.friendly = false;
-            projectile.hostile = true;
+            projectile.friendly = true;
+            projectile.hostile = false;
         }
 
         public override void AI()

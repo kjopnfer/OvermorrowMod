@@ -1,7 +1,14 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Placeable.Boss;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -52,10 +59,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.noGravity = true;
             npc.noTileCollide = true;
             npc.boss = true;
-            npc.value = Item.buyPrice(gold: 5);
+            npc.value = Item.buyPrice(gold: 3);
             npc.npcSlots = 10f;
             //music = MusicID.Boss5;
             music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/StormDrake");
+            bossBag = ModContent.ItemType<DrakeBag>();
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
@@ -822,19 +830,39 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 Main.rainTime = 0;
             }
 
-            int choice = Main.rand.Next(3);
-            // Always drops one of:
-            if (choice == 0)
+            if (Main.expertMode)
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("LightningPiercer"));
+                npc.DropBossBags();
             }
-            else if (choice == 1)
+            else
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("BoltStream"));
-            }
-            else if (choice == 2)
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("StormTalon"));
+                int choice = Main.rand.Next(5);
+                // Always drops one of:
+                if (choice == 0) // Warden
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<LightningPiercer>());
+                }
+                else if (choice == 1) // Mage
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BoltStream>());
+                }
+                else if (choice == 2) // Warrior
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StormTalon>());
+                }
+                else if (choice == 3) // Ranger
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TempestGreatbow>());
+                }
+                else if (choice == 4) // Summoner
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrakeStaff>());
+                }
+
+                if (Main.rand.Next(10) == 0) // Trophy Dropchance
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrakeTrophy>());
+                }
             }
         }
 

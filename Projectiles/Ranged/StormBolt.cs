@@ -1,33 +1,43 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Boss
+namespace OvermorrowMod.Projectiles.Ranged
 {
-    public class LightningBreath : ModProjectile
+    public class StormBolt : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
-
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Breath");
+            DisplayName.SetDefault("Storm Bolt");
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 14;
-            projectile.height = 14;
+            projectile.width = 8;
+            projectile.height = 8;
+            projectile.friendly = true;
+            projectile.hostile = false;
+            projectile.penetrate = 3;
+            projectile.timeLeft = 600;
             projectile.alpha = 255;
-            projectile.penetrate = 1;
-            projectile.friendly = false;
-            projectile.hostile = true;
+            projectile.tileCollide = true;
+            projectile.ranged = true;
+            projectile.extraUpdates = 120;
         }
 
         public override void AI()
         {
+            if(projectile.ai[0] < 1)
+            {
+                projectile.tileCollide = false;
+            }
+            else
+            {
+                projectile.tileCollide = true;
+            }
+            
             for (int num1101 = 0; num1101 < 3; num1101++)
             {
                 int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 111, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1.2f);
@@ -54,6 +64,16 @@ namespace OvermorrowMod.Projectiles.Boss
                 Main.dust[num1106].noGravity = true;
                 Main.dust[num1106].fadeIn = 1f;
             }
+
+            projectile.ai[0]++;
+        }
+        
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            // Makes dust based on tile
+            Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
+
+            return true;
         }
     }
 }
