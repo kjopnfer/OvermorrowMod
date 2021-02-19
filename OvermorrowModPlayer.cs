@@ -1,3 +1,4 @@
+using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,6 +8,7 @@ namespace OvermorrowMod
     public class OvermorrowModPlayer : ModPlayer
     {
         public bool StormScale;
+		private int sparkCounter;
 
         public override void ResetEffects()
         {
@@ -27,5 +29,57 @@ namespace OvermorrowMod
 			// Here we would make a backup clone of values that are only correct on the local players Player instance.
 			// Some examples would be RPG stats from a GUI, Hotkey states, and Extra Item Slots
 		}
+
+		public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
+		{
+			if (StormScale) // Create sparks while moving, increase defense if health is below 50%
+			{
+				if(player.statLife <= player.statLifeMax2 * 0.5f)
+				{
+					player.statDefense += 5;
+				}
+
+				if(player.velocity.X != 0 || player.velocity.Y != 0)
+				{
+					if (sparkCounter % 30 == 0)
+					{
+						for (int i = 0; i < Main.rand.Next(1, 3); i++)
+						{
+							Projectile.NewProjectile(player.Center.X, player.Center.Y + Main.rand.Next(-15, 18), 0, 0, ModContent.ProjectileType<ElectricSparksFriendly>(), 20, 1, player.whoAmI, 0, 0);
+						}
+					}
+					sparkCounter++;
+				}
+			}
+			base.UpdateEquips(ref wallSpeedBuff, ref tileSpeedBuff, ref tileRangeBuff);
+		}
+
+		// Synchronization Code
+		/*public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
+		{
+			ModPacket packet = mod.GetPacket();
+			packet.Write((byte)ExampleModMessageType.ExamplePlayerSyncPlayer);
+			packet.Write((byte)player.whoAmI);
+			packet.Write(exampleLifeFruits);
+			packet.Write(nonStopParty); // While we sync nonStopParty in SendClientChanges, we still need to send it here as well so newly joining players will receive the correct value.
+			packet.Send(toWho, fromWho);
+		}
+
+		public override void SendClientChanges(ModPlayer clientPlayer)
+		{
+			// Here we would sync something like an RPG stat whenever the player changes it.
+			ExamplePlayer clone = clientPlayer as ExamplePlayer;
+			if (clone.nonStopParty != nonStopParty)
+			{
+				// Send a Mod Packet with the changes.
+				var packet = mod.GetPacket();
+				packet.Write((byte)ExampleModMessageType.NonStopPartyChanged);
+				packet.Write((byte)player.whoAmI);
+				packet.Write(nonStopParty);
+				packet.Send();
+			}
+		}*/
+
+
 	}
 }

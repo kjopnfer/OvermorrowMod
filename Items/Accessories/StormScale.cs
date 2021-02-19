@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lightning Infused Scale");
-            Tooltip.SetDefault("Leaves a trail of sparks behind you\nIncreases your defense when below 50% health");
+            Tooltip.SetDefault("1 defense\nLeaves a trail of sparks behind you\nIncreases your defense when below 50% health");
         }
 
         public override void SetDefaults()
@@ -26,7 +26,11 @@ namespace OvermorrowMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<OvermorrowModPlayer>().StormScale = true;
-            player.statDefense += 2;
+            player.statDefense += 1;
+            /*if(player.statLife <= player.statLifeMax2 * 0.5f)
+            {
+                player.statDefense += 5;
+            }*/
         }
     }
 }
