@@ -11,7 +11,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Book of the Reaper");
-            Tooltip.SetDefault("Enemies killed by the holder have a 25% chance to drop a Soul Essence on death" +
+            Tooltip.SetDefault("Enemies you kill have a 25% chance to drop a Soul Essence on death" +
                 "\n'Hey look! This has my name in it!'");
         }
 
