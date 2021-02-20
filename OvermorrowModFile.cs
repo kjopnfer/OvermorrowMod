@@ -33,6 +33,17 @@ namespace OvermorrowMod
             Mod = this;
         }
 
+        public override void HandlePacket(BinaryReader reader, int whoAmI)
+        {
+            Message msg = (Message)reader.ReadByte();
+            switch (msg)
+            {
+                case Message.AddSoul:
+                    XPPacket.Read(reader);
+                    break;
+            }
+        }
+
         public override void Load()
         {
             if (!Main.dedServ)

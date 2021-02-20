@@ -27,10 +27,6 @@ namespace OvermorrowMod.Items.Accessories
         {
             player.GetModPlayer<OvermorrowModPlayer>().StormScale = true;
             player.statDefense += 1;
-            /*if(player.statLife <= player.statLifeMax2 * 0.5f)
-            {
-                player.statDefense += 5;
-            }*/
         }
     }
 }

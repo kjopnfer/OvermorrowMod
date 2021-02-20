@@ -24,6 +24,10 @@ namespace WardenClass
     public class WardenDamagePlayer : ModPlayer
     {
         public bool UIToggled = false;
+        public bool AncientCrystal;
+        public bool ObsidianShackle;
+        public bool ReaperBook;
+        public bool SoulRing;
 
         public static WardenDamagePlayer ModPlayer(Player player)
         {
@@ -52,6 +56,14 @@ namespace WardenClass
         // We can use this for CombatText, if you create an item that replenishes exampleResourceCurrent.
         public static readonly Color GainSoulResource = new Color(187, 91, 201);
 
+        public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
+        {
+            if (AncientCrystal)
+            {
+                soulResourceMax2 += 1;
+            }
+        }
+
         public override void Initialize()
         {
             soulResourceCurrent = 0;
@@ -61,8 +73,15 @@ namespace WardenClass
         public override void ResetEffects()
         {
             UIToggled = false;
+            soulResourceMax2 = soulResourceMax;
+            AncientCrystal = false;
+            ObsidianShackle = false;
+            ReaperBook = false;
+            SoulRing = false;
+
             //ResetVariables();
         }
+
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
@@ -96,6 +115,36 @@ namespace WardenClass
         {
             // Limit exampleResourceCurrent from going over the limit imposed by exampleResourceMax.
             soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
+        }
+
+        public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
+        {
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)player.whoAmI);
+            packet.Send(toWho, fromWho);
+        }
+
+        public void AddSoul(int soulEssence)
+        {
+            if (Main.gameMenu)
+            {
+                return;
+            }
+
+            soulResourceCurrent += soulEssence;
+            CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y + 50, player.width, player.height), Color.DarkCyan, "Soul Essence Gained", true, false);
+        }
+
+        public float modifyShootSpeed()
+        {
+            int modifierFactor = 0;
+
+            if (ObsidianShackle)
+            {
+                modifierFactor += 6;
+            }
+
+            return modifierFactor;
         }
     }
 }

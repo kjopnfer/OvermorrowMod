@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WardenClass;
@@ -22,6 +23,23 @@ namespace OvermorrowMod.Projectiles.Piercing
             Main.PlaySound(SoundID.Dig, projectile.position); // Plays impact sound
 
             return false; // Prevents projectile from disappearing on contact
+        }
+
+        protected void SoulGain(NPC target, int randCeiling)
+        {
+            // Get the projectile owner
+            Player player = Main.player[projectile.owner];
+
+            // Get the class info from the player
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+
+            if (Main.rand.Next(0, randCeiling) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2) && target.type != NPCID.TargetDummy)
+            {
+                modPlayer.soulResourceCurrent++; // Increase number of resource
+
+                // Add the projectile to the WardenDamagePlayer list of projectiles
+                modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+            }
         }
 
         /*public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)

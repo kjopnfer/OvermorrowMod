@@ -60,7 +60,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useAnimation = 14;
                 item.useTime = 14;
                 item.damage = 21;
-                item.shootSpeed = 18f;
+                item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             }
 
