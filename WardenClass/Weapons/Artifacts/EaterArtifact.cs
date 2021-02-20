@@ -24,7 +24,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.useAnimation = 45;
             item.useTime = 45;
             item.useStyle = ItemUseStyleID.HoldingUp;
-            item.maxStack = 20;
             item.noMelee = true;
             item.UseSound = SoundID.Item103;
             item.consumable = false;
