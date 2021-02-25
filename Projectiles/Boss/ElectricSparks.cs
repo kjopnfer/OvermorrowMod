@@ -85,12 +85,6 @@ namespace OvermorrowMod.Projectiles.Boss
                 }
 
                 Dust.NewDustPerfect(projectile.Center, 206, null, 0, default, 1.5f);
-                /*for (int num1202 = 0; num1202 < 2; num1202++)
-                {
-                    Vector2 vector304 = projectile.position;
-                    vector304 -= projectile.velocity * ((float)num1202 * 0.25f);
-                    Dust.NewDustPerfect(vector304 + new Vector2((projectile.width / 2), (projectile.height / 2)), 206, null, 0, default, 1.5f);
-                }*/
             }
         }
 

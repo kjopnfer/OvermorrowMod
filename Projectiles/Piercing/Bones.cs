@@ -32,10 +32,10 @@ namespace OvermorrowMod.Projectiles.Piercing
             // copy aiStyle = 2
             projectile.rotation += (Math.Abs(projectile.velocity.X) + Math.Abs(projectile.velocity.Y)) * 0.03f * (float)projectile.direction;
             projectile.ai[0] += 1f;
+
             if (projectile.ai[0] >= 20f)
             {
                 projectile.velocity.Y = projectile.velocity.Y + 0.4f;
-                projectile.velocity.X = projectile.velocity.X * 0.97f;
             }
 
             if (projectile.velocity.Y > 16f) // Maximum acceleration

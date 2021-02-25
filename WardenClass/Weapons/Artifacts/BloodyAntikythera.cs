@@ -7,23 +7,24 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {
-    public class EaterArtifact : ModItem
+    public class BloodyAntikythera : ModItem
     {
-      
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Maw of the Eater");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nUse to consume all your Soul Essences, healing for 10 hp each" +
-                "\n'Like a big dream catcher that eats your face when you sleep'");
+            DisplayName.SetDefault("Bloody Antikythera");
+            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 3 Soul Essences to summon a miniature Blood Moon\n" +
+                "All players within range have their attack and health regen increased\n" +
+                "'Its gaze is the light of the Blood Moon'");
         }
 
         public override void SetDefaults()
         {
-            item.width = 42;
-            item.height = 42;
+            item.width = 50;
+            item.height = 50;
             item.rare = ItemRarityID.Green;
-            item.useAnimation = 45;
-            item.useTime = 45;
+            item.useAnimation = 30;
+            item.useTime = 30;
             item.useStyle = ItemUseStyleID.HoldingUp;
             item.noMelee = true;
             item.UseSound = SoundID.Item103;
@@ -34,7 +35,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override bool CanUseItem(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            if(modPlayer.soulResourceCurrent > 0)
+            if (modPlayer.soulResourceCurrent >= 3)
             {
                 return true;
             }
@@ -47,7 +48,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override bool UseItem(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            for (int i = 0; i < modPlayer.soulResourceCurrent; i++)
+            for (int i = 0; i < 3; i++)
             {
                 // Get the instance of the first projectile in the list
                 int removeProjectile = modPlayer.soulList[0];
@@ -64,8 +65,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     {
                         // Kill the projectile
                         Main.projectile[j].Kill();
-                        player.statLife += 10;
-                        player.HealEffect(10);
                     }
                 }
             }
