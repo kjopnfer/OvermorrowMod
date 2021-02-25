@@ -65,8 +65,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             switch (npc.ai[2])
             {
                 case 0: // Do nothing
-                    int reduceTimer = parentNPC.life <= parentNPC.lifeMax * 0.25 ? 60 : 0;
-                    if (npc.ai[0] % Main.rand.Next(240 - reduceTimer, 300 - reduceTimer) == 0)
+                    int reduceTimer = Main.expertMode ? 60 : 0;
+                    if (npc.ai[0] % Main.rand.Next(280 - reduceTimer, 500 - reduceTimer) == 0)
                     {
                         npc.ai[0] = 0;
                         npc.ai[2] = 1;
@@ -75,7 +75,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 1: // Shoot projectile
                     if(npc.ai[0] % 60 == 0)
                     {
-                        float numberProjectiles = 6 + Main.rand.Next(7);
+                        int randCeiling = Main.expertMode ? 4 : 2;
+                        float numberProjectiles = 4 + Main.rand.Next(2);
                         float rotation = MathHelper.ToRadians(360);
                         Vector2 delta = player.Center - npc.Center;
                         float magnitude = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
@@ -107,6 +108,28 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
                 npc.ai[0] = 0;
             }
+        }
+
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            if (npc.life > 0)
+            {
+                for (int num826 = 0; (double)num826 < 10 / (double)npc.lifeMax * 100.0; num826++)
+                {
+                    Dust.NewDust(npc.position, npc.width, npc.height, 5, hitDirection, -1f);
+                }
+                return;
+            }
+            for (int num827 = 0; num827 < 50; num827++)
+            {
+                Dust.NewDust(npc.position, npc.width, npc.height, 5, 2.5f * (float)hitDirection, -2.5f);
+            }
+
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/Driplad1"), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/Driplad2"), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/Driplad3"), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/Driplad" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/Driplad" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
         }
 
         public override void FindFrame(int frameHeight)
