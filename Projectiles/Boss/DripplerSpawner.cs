@@ -44,11 +44,11 @@ namespace OvermorrowMod.Projectiles.Boss
         {
             if (projectile.ai[0] == 0)
             {
-                NPC.NewNPC((int)(projectile.Center.X), (int)(projectile.Center.Y), ModContent.NPCType<LoomingDrippler>());
+                NPC.NewNPC((int)(projectile.Center.X), (int)(projectile.Center.Y), ModContent.NPCType<LoomingDrippler>(), 0, 0, projectile.ai[1]);
             }
             else
             {
-                NPC.NewNPC((int)(projectile.Center.X), (int)(projectile.Center.Y), ModContent.NPCType<Driplad>());
+                NPC.NewNPC((int)(projectile.Center.X), (int)(projectile.Center.Y), ModContent.NPCType<Driplad>(), 0, 0, projectile.ai[1]);
             }
         }
     }

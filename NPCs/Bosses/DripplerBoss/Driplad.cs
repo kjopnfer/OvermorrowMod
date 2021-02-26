@@ -44,7 +44,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void AI()
         {
-            if (!Main.npc[(int)npc.ai[1]].active && !Main.npc[(int)npc.ai[1]].boss)
+            if ((!Main.npc[(int)npc.ai[1]].boss) || !Main.bloodMoon)
             {
                 npc.TargetClosest(false);
                 npc.direction = 1;
@@ -158,7 +158,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void NPCLoot()
         {
-            if (Main.npc[(int)npc.ai[1]].active)
+            if (Main.npc[(int)npc.ai[1]].active && Main.npc[(int)npc.ai[1]].boss)
             {
                 NPC parentNPC = Main.npc[(int)npc.ai[1]];
                 parentNPC.life -= 200;

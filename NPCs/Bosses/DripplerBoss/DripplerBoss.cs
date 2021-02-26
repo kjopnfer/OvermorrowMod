@@ -64,7 +64,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             if(npc.life <= 0)
             {
                 npc.NPCLoot();
-                npc.HitEffect();
             }
 
             Player player = Main.player[npc.target];
@@ -101,6 +100,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 npc.TargetClosest(false);
                 npc.velocity.Y = -2000;
             }
+
+            npc.chaseable = false;
 
             // Inflicts 'Congealed Blood' debuff that slows down player movement
 
@@ -276,6 +277,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             for (int i = 0; i < 5; i++)
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
+                                // Pass in AI[1] for Driplads
                                 Projectile.NewProjectile(position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 1, npc.whoAmI);
                             }
                         }
@@ -304,7 +306,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             for (int i = 0; i < 12; i++)
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                //NPC.NewNPC((int)(position.X), (int)(position.Y), NPCID.Drippler);
+                                // Pass in AI[0] for Dripplers
                                 Projectile.NewProjectile(position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 0, npc.whoAmI);
                             }
                         }
