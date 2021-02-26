@@ -89,6 +89,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         {
                             delta = new Vector2(0f, 5f);
                         }
+                        Main.PlaySound(SoundID.Item95, (int)npc.Center.X, (int)npc.Center.Y);
                         for (int i = 0; i < numberProjectiles; i++)
                         {
                             Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .3f;

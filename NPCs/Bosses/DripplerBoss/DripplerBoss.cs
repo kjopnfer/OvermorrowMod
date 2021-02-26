@@ -14,6 +14,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
     [AutoloadBossHead]
     public class DripplerBoss : ModNPC
     {
+        private bool spawnedRotaters = false; // Makes it so that it cannot skip phase 2, even if 0 rotaters
         private bool changedPhase2 = false;
         private bool changedPhase3 = false;
 
@@ -146,13 +147,19 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 }
             }
 
-            if(changedPhase2 && countRotaters <= 0) 
+            // Sometimes health shenanigans happen and the rotaters don't get spawned
+            if(countRotaters >= 1)
+            {
+                spawnedRotaters = true;
+            }
+
+            if (changedPhase2 && spawnedRotaters && countRotaters <= 0) 
             {
                 // Phase 3 starts when there are no Rotaters and is already in Phase 2
                 changedPhase3 = true;
             }
 
-            if(!changedPhase2 && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
+            if(countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
             {
                 // Phase 2 starts when it is not in phase 2, all dripplers are dead, and NPC life is less than 2/3rds gone
                 npc.ai[0] = 1; // Phase 2 initiator
@@ -274,6 +281,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             Vector2 origin = npc.Center; // Origin of the circle
                             float radius = 750; // Distance from the circle
                             int numSpawns = 5; // Points spawned on the circle
+                            Main.PlaySound(SoundID.Item95, (int)npc.Center.X, (int)npc.Center.Y);
                             for (int i = 0; i < 5; i++)
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;

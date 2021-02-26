@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Materials;
+using OvermorrowMod.WardenClass.Accessories;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +32,22 @@ namespace OvermorrowMod
                 int dropChance = Main.rand.Next(10);
                 if(dropChance == 0) // 10% drop chance
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("HarpyLeg"));
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HarpyLeg>());
+                }
+            }
+
+            if (npc.type == NPCID.Drippler || npc.type == NPCID.BloodZombie)
+            {
+                int dropChance = Main.rand.Next(30);
+                if (dropChance == 0) // 3.33% drop chance
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<AncientCrystal>());
+                }
+
+                int dropChance2 = Main.rand.Next(5); // 20% drop chance
+                if(dropChance2 == 0)
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrippingFlesh>());
                 }
             }
 

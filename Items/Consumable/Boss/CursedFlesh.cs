@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
+using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,18 +10,18 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.Items.Consumable.Boss
 {
-    public class HarpyLegBasket : ModItem
+    public class CursedFlesh : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Basket of Harpy Legs");
-            Tooltip.SetDefault("Summons The Storm Drake\n'Hey there, we both got baskets of Harpy Legs'");
+            DisplayName.SetDefault("Cursed Flesh");
+            Tooltip.SetDefault("Summons Dripplord, The Bloody Assimilator\n'Make us whole...'");
         }
 
         public override void SetDefaults()
         {
-            item.width = 38;
-            item.height = 38;
+            item.width = 28;
+            item.height = 36;
             item.rare = ItemRarityID.Green;
             item.useAnimation = 45;
             item.useTime = 45;
@@ -34,14 +35,14 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override bool CanUseItem(Player player)
         {
             // Make sure that the boss doesn't already exist and player is in correct zone
-            return !NPC.AnyNPCs(ModContent.NPCType<StormDrake>()) && player.ZoneSkyHeight;
+            return !NPC.AnyNPCs(ModContent.NPCType<DripplerBoss>()) && Main.bloodMoon;
         }
 
         public override bool UseItem(Player player)
         {
-            if (player.ZoneSkyHeight)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<StormDrake>());
+                NPC.NewNPC((int)player.position.X, (int)(player.position.Y - 450f), ModContent.NPCType<DripplerBoss>(), 0, 0f, 0f, 0f, 0f, 255);
                 Main.PlaySound(SoundID.Roar, player.position, 0);
                 return true;
             }
@@ -51,7 +52,15 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<HarpyLeg>(), 4);
+            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 25);
+            recipe.AddIngredient(ItemID.VilePowder, 15);
+            recipe.AddTile(TileID.DemonAltar);
+            recipe.SetResult(this, 1);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 25);
+            recipe.AddIngredient(ItemID.ViciousPowder, 15);
             recipe.AddTile(TileID.DemonAltar);
             recipe.SetResult(this, 1);
             recipe.AddRecipe();

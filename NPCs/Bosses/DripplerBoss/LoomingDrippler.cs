@@ -131,6 +131,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 {
                                     delta = new Vector2(0f, 5f);
                                 }
+
+                                Main.PlaySound(SoundID.Item17, (int)npc.Center.X, (int)npc.Center.Y);
                                 for (int i = 0; i < numberProjectiles; i++)
                                 {
                                     Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .3f;
@@ -140,6 +142,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                             else
                             {
+                                Main.PlaySound(SoundID.Item17, (int)npc.Center.X, (int)npc.Center.Y);
                                 Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
                             }
                         }
