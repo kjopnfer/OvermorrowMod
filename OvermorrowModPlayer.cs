@@ -1,3 +1,4 @@
+using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ID;
@@ -7,11 +8,18 @@ namespace OvermorrowMod
 {
     public class OvermorrowModPlayer : ModPlayer
     {
+		public bool BloodyTeeth;
+		public bool DripplerEye;
         public bool StormScale;
+
+		// Accessory Counters
+		public int dripplerStack;
 		private int sparkCounter;
 
         public override void ResetEffects()
         {
+			BloodyTeeth = false;
+			DripplerEye = false;
             StormScale = false;
         }
 
@@ -30,8 +38,25 @@ namespace OvermorrowMod
 			// Some examples would be RPG stats from a GUI, Hotkey states, and Extra Item Slots
 		}
 
+		public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+		{
+			if (BloodyTeeth)
+			{
+				int bleedChance = Main.rand.Next(4);
+				if(bleedChance == 0 && item.melee)
+				{
+					target.AddBuff(ModContent.BuffType<Bleeding>(), 360);
+				}
+			}
+		}
+
 		public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
 		{
+			if (DripplerEye)
+			{
+				player.rangedCrit += dripplerStack;
+			}
+
 			if (StormScale) // Create sparks while moving, increase defense if health is below 50%
 			{
 				if(player.statLife <= player.statLifeMax2 * 0.5f)

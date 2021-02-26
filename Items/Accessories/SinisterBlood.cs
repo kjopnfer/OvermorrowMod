@@ -13,7 +13,7 @@ namespace OvermorrowMod.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Sinister Blood Sample");
-            Tooltip.SetDefault("Summons a Looming Drippler to protect you");
+            Tooltip.SetDefault("5% increased minion damage\nSummons a Looming Drippler to protect you");
         }
 
         public override void SetDefaults()
@@ -27,6 +27,7 @@ namespace OvermorrowMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            player.minionDamage += .05f;
             player.AddBuff(ModContent.BuffType<DripplerBuff>(), 2);
             if ((int)player.ownedProjectileCounts[ModContent.ProjectileType<DripplerFriendly>()] >= 1)
             {

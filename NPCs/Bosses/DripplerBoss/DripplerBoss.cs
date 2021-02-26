@@ -381,13 +381,19 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
 
-            int choice = Main.rand.Next(2);
+            int choice = Main.rand.Next(4);
             if(choice == 0) // Warden
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodyAntikythera>());
             }else if(choice == 1) // Summoner
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SinisterBlood>());
+            }else if(choice == 2) // Warrior
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodyTeeth>());
+            }else if(choice == 3) // Ranger
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripplerEye>());
             }
 
             int necklaceChance = Main.rand.Next(5);

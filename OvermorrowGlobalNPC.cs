@@ -14,7 +14,15 @@ namespace OvermorrowMod
 {
     public class OvermorrowGlobalNPC : GlobalNPC
     {
-        
+        public override bool InstancePerEntity => true;
+
+        public bool bleedingDebuff;
+
+        public override void ResetEffects(NPC npc)
+        {
+            bleedingDebuff = false;
+        }
+
         public override void NPCLoot(NPC npc)
         {
             if (npc.type == NPCID.Harpy)
@@ -25,6 +33,7 @@ namespace OvermorrowMod
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("HarpyLeg"));
                 }
             }
+
             if(Main.netMode == NetmodeID.Server)
             {
                 if (npc.type != NPCID.WaterSphere && npc.type != NPCID.ChaosBall && npc.type != NPCID.BurningSphere && npc.type != NPCID.SolarFlare && npc.type != NPCID.VileSpit)
@@ -51,7 +60,9 @@ namespace OvermorrowMod
                 {
                     Player player = Main.LocalPlayer;
                     var modPlayer = WardenDamagePlayer.ModPlayer(player);
-                    if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook)
+                    var modPlayer2 = player.GetModPlayer<OvermorrowModPlayer>();
+
+                    if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook) // Warden Reaper Book
                     {
                         if (Main.rand.Next(4) == 0) // 25% chance to gain Soul Essence on death
                         {
@@ -60,6 +71,42 @@ namespace OvermorrowMod
                             CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.DarkCyan, "Soul Essence Gained", true, false);
                         }
                     }
+
+                    if (modPlayer2.DripplerEye)
+                    {
+                        if (modPlayer2.dripplerStack < 25)
+                        {
+                            modPlayer2.dripplerStack++;
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void UpdateLifeRegen(NPC npc, ref int damage)
+        {
+            if (bleedingDebuff)
+            {
+                if(npc.lifeRegen > 0)
+                {
+                    npc.lifeRegen = 0;
+                }
+
+                npc.lifeRegen -= 4;
+                damage = 1;
+            }
+        }
+
+        public override void DrawEffects(NPC npc, ref Color drawColor)
+        {
+            if (bleedingDebuff)
+            {
+                if (Main.rand.Next(4) < 3)
+                {
+                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, 5, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
+                    //Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity *= 1.8f;
+                    Main.dust[dust].velocity.Y -= 0.5f;
                 }
             }
         }
