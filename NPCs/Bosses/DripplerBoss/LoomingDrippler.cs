@@ -26,7 +26,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.width = 28;
             npc.height = 30;
             npc.damage = 28;
-            npc.defense = 18;
+            npc.defense = 17;
             npc.lifeMax = 110;
             npc.HitSound = SoundID.NPCHit19;
             npc.knockBackResist = 0.4f;
@@ -39,6 +39,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
             npc.damage = (int)(npc.damage * 1.2f);
+            npc.defense = 19;
             npc.knockBackResist = 0f;
         }
 
@@ -48,7 +49,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             // You can only count on your own code nowadays
             // This is the stupidest NPC I've ever made and I've made bosses, it LITERALLY WON'T MOVE
 
-            if (!Main.npc[(int)npc.ai[1]].active)
+            if (!Main.npc[(int)npc.ai[1]].active && !Main.npc[(int)npc.ai[1]].boss)
             {
                 npc.TargetClosest(false);
                 npc.direction = 1;

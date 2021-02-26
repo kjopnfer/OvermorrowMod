@@ -44,7 +44,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void AI()
         {
-            if (!Main.npc[(int)npc.ai[1]].active)
+            if (!Main.npc[(int)npc.ai[1]].active && !Main.npc[(int)npc.ai[1]].boss)
             {
                 npc.TargetClosest(false);
                 npc.direction = 1;
@@ -84,7 +84,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 1: // Shoot projectile
                     if(npc.ai[0] % 60 == 0)
                     {
-                        float numberProjectiles = 6 + Main.rand.Next(3);
+                        float numberProjectiles = 6 + Main.rand.Next(4);
                         float rotation = MathHelper.ToRadians(360);
                         Vector2 delta = player.Center - npc.Center;
                         float magnitude = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);

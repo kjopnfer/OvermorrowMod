@@ -22,7 +22,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         {
             item.width = 50;
             item.height = 50;
-            item.rare = ItemRarityID.Green;
+            item.rare = ItemRarityID.Orange;
             item.useAnimation = 30;
             item.useTime = 30;
             item.useStyle = ItemUseStyleID.HoldingUp;

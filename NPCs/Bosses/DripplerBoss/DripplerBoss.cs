@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using Terraria;
@@ -63,6 +64,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             if(npc.life <= 0)
             {
                 npc.NPCLoot();
+                npc.HitEffect();
             }
 
             Player player = Main.player[npc.target];
@@ -178,9 +180,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
                         npc.velocity = move;
 
-                        if(npc.life <= npc.lifeMax * 0.33f)
+                        if(changedPhase3)
                         {
-                            if(npc.ai[1] % 100 == 0)
+                            if(npc.ai[1] % 135 == 0)
                             {
                                 // I'm lazy
                                 Projectile.NewProjectile(npc.Center.X, npc.Center.Y, -10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
@@ -321,7 +323,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void HitEffect(int hitDirection, double damage)
         {
-            if (npc.life > 0)
+            if (npc.life <= 0)
             {
                 for (int num826 = 0; (double)num826 < 10 / (double)npc.lifeMax * 100.0; num826++)
                 {
@@ -369,10 +371,29 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void NPCLoot()
         {
-            int choice = Main.rand.Next(1);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
+            for (int i = 0; i < 2; i++)
+            {
+                Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss2"), npc.scale);
+                Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss3"), npc.scale);
+            }
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
+
+            int choice = Main.rand.Next(2);
             if(choice == 0) // Warden
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodyAntikythera>());
+            }else if(choice == 1) // Summoner
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SinisterBlood>());
+            }
+
+            int necklaceChance = Main.rand.Next(5);
+            if(necklaceChance == 0)
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemID.SharkToothNecklace);
             }
         }
 

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Buffs;
+using OvermorrowMod.Buffs.Summon;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
@@ -365,7 +365,7 @@ namespace OvermorrowMod.Projectiles.Summon
                 new Vector2
                 (
                     projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
-                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f + 2f
+                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f + 1f
                 ),
                 drawRectangle,
                 Color.White,

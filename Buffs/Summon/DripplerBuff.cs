@@ -2,14 +2,14 @@ using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs
+namespace OvermorrowMod.Buffs.Summon
 {
-    public class DrakeBuff : ModBuff
+    public class DripplerBuff : ModBuff
     {
         public override void SetDefaults()
         {
-            DisplayName.SetDefault("Storm Whelp");
-            Description.SetDefault("The Storm Whelp will fight for you");
+            DisplayName.SetDefault("Looming Drippler");
+            Description.SetDefault("A Looming Drippler will protect you");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }

@@ -26,7 +26,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.width = 68;
             npc.height = 110;
             npc.damage = 30;
-            npc.defense = 20;
+            npc.defense = 19;
             npc.lifeMax = 250;
             npc.HitSound = SoundID.NPCHit19;
             npc.knockBackResist = 0f;
@@ -39,11 +39,12 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
             npc.damage = (int)(npc.damage * 1.2f);
+            npc.defense = 23;
         }
 
         public override void AI()
         {
-            if (!Main.npc[(int)npc.ai[1]].active)
+            if (!Main.npc[(int)npc.ai[1]].active && !Main.npc[(int)npc.ai[1]].boss)
             {
                 npc.TargetClosest(false);
                 npc.direction = 1;

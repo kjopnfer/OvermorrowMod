@@ -50,7 +50,7 @@ namespace OvermorrowMod.Projectiles.Boss
             Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, -6f, 6f, ModContent.ProjectileType<BloodyBall>(), projectile.damage, 2f, Main.myPlayer, 0f, 0f);
             Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 6, 6f, ModContent.ProjectileType<BloodyBall>(), projectile.damage, 2f, Main.myPlayer, 0f, 0f);
             Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 6f, -6f, ModContent.ProjectileType<BloodyBall>(), projectile.damage, 2f, Main.myPlayer, 0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, -6, 6f, ModContent.ProjectileType<BloodyBall>(), projectile.damage, 2f, Main.myPlayer, 0f, 0f);
+            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, -6, -6f, ModContent.ProjectileType<BloodyBall>(), projectile.damage, 2f, Main.myPlayer, 0f, 0f);
 
             base.Kill(timeLeft);
         }
