@@ -33,7 +33,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (Main.rand.Next(0, randCeiling) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2) && target.type != NPCID.TargetDummy)
+            if (Main.rand.Next(0, randCeiling) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)/* && target.type != NPCID.TargetDummy*/)
             {
                 modPlayer.soulResourceCurrent++; // Increase number of resource
 

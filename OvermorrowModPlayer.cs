@@ -8,19 +8,27 @@ namespace OvermorrowMod
 {
     public class OvermorrowModPlayer : ModPlayer
     {
+		// Accessories
 		public bool BloodyTeeth;
 		public bool DripplerEye;
+		public bool ShatteredOrb;
         public bool StormScale;
 
 		// Accessory Counters
 		public int dripplerStack;
 		private int sparkCounter;
 
+		// Buffs
+		public bool moonBuff;
+
         public override void ResetEffects()
         {
 			BloodyTeeth = false;
 			DripplerEye = false;
+			ShatteredOrb = false;
             StormScale = false;
+
+			moonBuff = false;
         }
 
 		// In MP, other clients need accurate information about your player or else bugs happen.
@@ -37,6 +45,7 @@ namespace OvermorrowMod
 			// Here we would make a backup clone of values that are only correct on the local players Player instance.
 			// Some examples would be RPG stats from a GUI, Hotkey states, and Extra Item Slots
 		}
+
 
 		public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
 		{
@@ -76,6 +85,12 @@ namespace OvermorrowMod
 					sparkCounter++;
 				}
 			}
+
+			if (moonBuff)
+			{
+				player.allDamage += .25f;
+			}
+
 			base.UpdateEquips(ref wallSpeedBuff, ref tileSpeedBuff, ref tileRangeBuff);
 		}
 

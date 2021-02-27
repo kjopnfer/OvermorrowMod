@@ -159,7 +159,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 changedPhase3 = true;
             }
 
-            if(countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
+            if(!spawnedRotaters && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
             {
                 // Phase 2 starts when it is not in phase 2, all dripplers are dead, and NPC life is less than 2/3rds gone
                 npc.ai[0] = 1; // Phase 2 initiator
@@ -391,7 +391,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
 
-            int choice = Main.rand.Next(4);
+            int choice = Main.rand.Next(5);
             if(choice == 0) // Warden
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodyAntikythera>());
@@ -404,6 +404,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             }else if(choice == 3) // Ranger
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripplerEye>());
+            }else if(choice == 4) // Mage
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<ShatteredOrb>());
             }
 
             int necklaceChance = Main.rand.Next(5);

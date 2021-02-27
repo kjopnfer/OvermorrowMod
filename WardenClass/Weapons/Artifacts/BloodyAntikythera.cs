@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Artifact;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,18 +8,18 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {
-    public class BloodyAntikythera : ModItem
+    public class BloodyAntikythera : Artifact
     {
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloody Antikythera");
             Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 3 Soul Essences to summon a miniature Blood Moon\n" +
-                "All players within range have their attack and health regen increased\n" +
-                "'Its gaze is the light of the Blood Moon'");
+                "All players within range have their attack increased\n" +
+                "'Blood spilled onto the Earth shall rain from the sky'");
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             item.width = 50;
             item.height = 50;
@@ -30,6 +31,32 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.UseSound = SoundID.Item103;
             item.consumable = false;
             item.autoReuse = false;
+            item.shoot = ModContent.ProjectileType<RedCloud>();
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            // Not sure why this isn't running in UseItem
+            ConsumeSouls(3, player);
+
+            // Allow only one instance of the projectile
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0) 
+            { 
+                for(int i = 0; i < Main.maxProjectiles; i++)
+                {
+                    if (Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == ModContent.ProjectileType<RedCloud>())
+                    {
+                        Main.projectile[i].Kill();
+                    }
+                }
+                position = Main.MouseWorld;
+            }
+            else
+            {
+                position = Main.MouseWorld;
+            }
+
+            return true;
         }
 
         public override bool CanUseItem(Player player)

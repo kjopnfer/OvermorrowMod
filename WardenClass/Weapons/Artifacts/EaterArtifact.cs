@@ -7,7 +7,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {
-    public class EaterArtifact : ModItem
+    public class EaterArtifact : Artifact
     {
       
         public override void SetStaticDefaults()
@@ -17,7 +17,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 "\n'Like a big dream catcher that eats your face when you sleep'");
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             item.width = 42;
             item.height = 42;
@@ -47,6 +47,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override bool UseItem(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            ConsumeSouls(modPlayer.soulResourceCurrent, player);
+
+            /*var modPlayer = WardenDamagePlayer.ModPlayer(player);
             for (int i = 0; i < modPlayer.soulResourceCurrent; i++)
             {
                 // Get the instance of the first projectile in the list
@@ -68,7 +71,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         player.HealEffect(10);
                     }
                 }
-            }
+            }*/
             return base.UseItem(player);
         }
     }
