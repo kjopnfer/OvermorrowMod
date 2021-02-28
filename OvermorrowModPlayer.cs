@@ -1,5 +1,7 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Projectiles.Accessory;
+using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,6 +11,7 @@ namespace OvermorrowMod
     public class OvermorrowModPlayer : ModPlayer
     {
 		// Accessories
+		public bool BloodyHeart;
 		public bool BloodyTeeth;
 		public bool DripplerEye;
 		public bool ShatteredOrb;
@@ -23,6 +26,7 @@ namespace OvermorrowMod
 
         public override void ResetEffects()
         {
+			BloodyHeart = false;
 			BloodyTeeth = false;
 			DripplerEye = false;
 			ShatteredOrb = false;
@@ -55,6 +59,18 @@ namespace OvermorrowMod
 				if(bleedChance == 0 && item.melee)
 				{
 					target.AddBuff(ModContent.BuffType<Bleeding>(), 360);
+				}
+			}
+		}
+
+		public override void Hurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit)
+		{
+			if (BloodyHeart)
+			{
+				int projectiles = 3;
+				for (int i = 0; i < projectiles; i++)
+				{
+					Projectile.NewProjectile(player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, player.whoAmI);
 				}
 			}
 		}

@@ -1,4 +1,5 @@
-using OvermorrowMod.Items.Accessories;
+using OvermorrowMod.Items.Accessories.Expert;
+using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
@@ -60,6 +61,11 @@ namespace OvermorrowMod.Items.BossBags
             else if (choice == 4) // Summoner
             {
                 player.QuickSpawnItem(ModContent.ItemType<DrakeStaff>());
+            }
+
+            if (Main.rand.Next(10) == 0) // Trophy Dropchance
+            {
+                player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());
             }
 
             player.QuickSpawnItem(ModContent.ItemType<StormScale>());

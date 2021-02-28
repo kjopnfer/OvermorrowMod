@@ -3,20 +3,20 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Accessories
+namespace OvermorrowMod.Items.Accessories.Expert
 {
-    public class StormScale : ModItem
+    public class BloodyHeart : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Infused Scale");
-            Tooltip.SetDefault("1 defense\nLeaves a trail of sparks behind you\nIncreases your defense when below 50% health");
+            DisplayName.SetDefault("Bloody Heart");
+            Tooltip.SetDefault("Increases max health by 10\nReleases bouncing blood projectiles when damaged");
         }
 
         public override void SetDefaults()
         {
-            item.width = 28;
-            item.height = 28;
+            item.width = 20;
+            item.height = 32;
             item.value = Item.buyPrice(0, 5, 0, 0);
             item.rare = ItemRarityID.Expert;
             item.accessory = true;
@@ -25,8 +25,8 @@ namespace OvermorrowMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetModPlayer<OvermorrowModPlayer>().StormScale = true;
-            player.statDefense += 1;
+            player.GetModPlayer<OvermorrowModPlayer>().BloodyHeart = true;
+            player.statLifeMax2 += 10;
         }
     }
 }

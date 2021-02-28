@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -25,6 +26,11 @@ namespace OvermorrowMod.Projectiles.Piercing
             return false; // Prevents projectile from disappearing on contact
         }
 
+        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        {
+            damage += target.defense / 2;
+        }
+
         protected void SoulGain(NPC target, int randCeiling)
         {
             // Get the projectile owner
@@ -33,7 +39,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (Main.rand.Next(0, randCeiling) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)/* && target.type != NPCID.TargetDummy*/)
+            if (Main.rand.Next(0, randCeiling) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)/* && target.type != NPCID.TargetDummy*/ && target.type != ModContent.NPCType<DripplerBoss>())
             {
                 modPlayer.soulResourceCurrent++; // Increase number of resource
 

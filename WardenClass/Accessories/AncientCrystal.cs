@@ -11,7 +11,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Ancient Crystal");
-            Tooltip.SetDefault("Increases your max Soul Essences by 1\n'Whispers emanante from the crystal, willing you to become whole'");
+            Tooltip.SetDefault("Increases your max Soul Essences by 1\n'Whispers emanate from the crystal, willing you to become whole'");
         }
 
         public override void SetDefaults()

@@ -46,10 +46,11 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 
         public override bool UseItem(Player player)
         {
-            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            ConsumeSouls(modPlayer.soulResourceCurrent, player);
+            //var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            //ConsumeSouls(modPlayer.soulResourceCurrent, player);
 
-            /*var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            // Doing it manually is less janky, I guess
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
             for (int i = 0; i < modPlayer.soulResourceCurrent; i++)
             {
                 // Get the instance of the first projectile in the list
@@ -71,7 +72,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         player.HealEffect(10);
                     }
                 }
-            }*/
+            }
             return base.UseItem(player);
         }
     }

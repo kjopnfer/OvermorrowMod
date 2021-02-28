@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Accessories;
+using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using Terraria;
@@ -413,6 +414,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             if(necklaceChance == 0)
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemID.SharkToothNecklace);
+            }
+
+            if (Main.rand.Next(10) == 0) // Trophy Dropchance
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripplerTrophy>());
             }
         }
 

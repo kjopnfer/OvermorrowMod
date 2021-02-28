@@ -104,12 +104,15 @@ namespace OvermorrowMod
         {
             if (bleedingDebuff)
             {
-                if(npc.lifeRegen > 0)
+                // These lines zero out any positive lifeRegen. This is expected for all bad life regeneration effects.
+                if (npc.lifeRegen > 0)
                 {
                     npc.lifeRegen = 0;
                 }
+                // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 4 life lost per second.
+                npc.lifeRegen -= 8;
 
-                npc.lifeRegen -= 4;
+                // The damage visual value
                 damage = 1;
             }
         }

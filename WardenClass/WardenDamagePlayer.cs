@@ -64,6 +64,28 @@ namespace WardenClass
             }
         }
 
+        public override void UpdateLifeRegen()
+        {
+            if (SoulRing)
+            {
+                // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 0.5 life gained per 2 Souls per second.
+                player.lifeRegen += SoulRingCalculation(soulResourceCurrent);
+            }
+            base.UpdateLifeRegen();
+        }
+
+        private int SoulRingCalculation(int soulInput)
+        {
+            if(soulInput % 2 == 0)
+            {
+                return soulInput / 2;
+            }
+            else
+            {
+                return (int)(((float)soulInput / 2) + 0.5f);
+            }
+        }
+
         public override void Initialize()
         {
             soulResourceCurrent = 0;
