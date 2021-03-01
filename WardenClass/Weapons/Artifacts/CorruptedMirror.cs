@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,7 +8,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {
-    public class CorruptedMirror : ModItem
+    public class CorruptedMirror : Artifact
     {
 
         public override void SetStaticDefaults()
@@ -18,7 +19,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 "'You can't shake the feeling of something otherworldy watching you'");
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             item.width = 28;
             item.height = 44;
@@ -47,28 +48,24 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 
         public override bool UseItem(Player player)
         {
-            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            for (int i = 0; i < 2; i++)
+            if (Main.netMode == NetmodeID.SinglePlayer)
             {
-                // Get the instance of the first projectile in the list
-                int removeProjectile = modPlayer.soulList[0];
+                ConsumeSouls(2, player);
+            }
+            player.AddBuff(ModContent.BuffType<MirrorBuff>(), 3600);
 
-                // Remove the projectile from the list
-                modPlayer.soulList.RemoveAt(0);
-                modPlayer.soulResourceCurrent--;
-
-                // Call the projectile's method to kill itself
-                for (int j = 0; j < Main.maxProjectiles; j++) // Loop through the projectile array
+            // Loop through all players and check if they are on the same team
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                for (int i = 0; i < Main.maxPlayers; i++)
                 {
-                    // Check that the projectile is the same as the removed projectile and it is active
-                    if (Main.projectile[j] == Main.projectile[removeProjectile] && Main.projectile[j].active)
+                    if (Main.player[i].team == player.team && player.team != 0)
                     {
-                        // Kill the projectile
-                        Main.projectile[j].Kill();
+                        Main.player[i].AddBuff(ModContent.BuffType<MirrorBuff>(), 3600);
                     }
                 }
             }
-            return base.UseItem(player);
+            return true;
         }
     }
 }

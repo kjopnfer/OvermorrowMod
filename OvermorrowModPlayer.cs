@@ -22,6 +22,7 @@ namespace OvermorrowMod
 		private int sparkCounter;
 
 		// Buffs
+		public bool mirrorBuff;
 		public bool moonBuff;
 
         public override void ResetEffects()
@@ -32,6 +33,7 @@ namespace OvermorrowMod
 			ShatteredOrb = false;
             StormScale = false;
 
+			mirrorBuff = false;
 			moonBuff = false;
         }
 
@@ -73,6 +75,15 @@ namespace OvermorrowMod
 					Projectile.NewProjectile(player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, player.whoAmI);
 				}
 			}
+		}
+
+		public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
+		{
+			if (mirrorBuff)
+			{
+				damage /= 2;
+			}
+			base.ModifyHitByNPC(npc, ref damage, ref crit);
 		}
 
 		public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)

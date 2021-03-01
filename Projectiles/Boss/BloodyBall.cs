@@ -23,7 +23,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.penetrate = -1;
-            projectile.timeLeft = 690;
+            projectile.timeLeft = 540;
             projectile.alpha = 255;
             projectile.tileCollide = false;
         }

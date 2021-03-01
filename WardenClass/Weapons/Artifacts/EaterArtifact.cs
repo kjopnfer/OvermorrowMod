@@ -9,7 +9,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {
     public class EaterArtifact : Artifact
     {
-      
+        private int consumedSouls = 0;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Maw of the Eater");
@@ -22,8 +22,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.width = 42;
             item.height = 42;
             item.rare = ItemRarityID.Green;
-            item.useAnimation = 45;
-            item.useTime = 45;
+            item.useAnimation = 60;
+            item.useTime = 60;
             item.useStyle = ItemUseStyleID.HoldingUp;
             item.noMelee = true;
             item.UseSound = SoundID.Item103;
@@ -51,7 +51,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 
             // Doing it manually is less janky, I guess
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            for (int i = 0; i < modPlayer.soulResourceCurrent; i++)
+            int soulCount = modPlayer.soulResourceCurrent;
+            for (int i = 0; i < soulCount; i++)
             {
                 // Get the instance of the first projectile in the list
                 int removeProjectile = modPlayer.soulList[0];
@@ -68,12 +69,17 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     {
                         // Kill the projectile
                         Main.projectile[j].Kill();
-                        player.statLife += 10;
-                        player.HealEffect(10);
+                        //player.statLife += 10;
+                        //player.HealEffect(10);
+                        consumedSouls++;
                     }
                 }
             }
-            return base.UseItem(player);
+            player.statLife += 10 * consumedSouls;
+            player.HealEffect(10 * consumedSouls);
+            consumedSouls = 0;
+            //return base.UseItem(player);
+            return true;
         }
     }
 }

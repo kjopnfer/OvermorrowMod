@@ -30,7 +30,7 @@ namespace OvermorrowMod.NPCs
             npc.height = 46;
             npc.damage = 29;
             npc.defense = 10;
-            npc.lifeMax = 500;
+            npc.lifeMax = 350;
             npc.HitSound = SoundID.NPCHit2;
             npc.DeathSound = SoundID.NPCDeath2;
             npc.knockBackResist = 0.6f;

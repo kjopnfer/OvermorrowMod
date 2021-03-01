@@ -61,11 +61,21 @@ namespace OvermorrowMod
                         {
                             Player player = Main.player[i];
                             var modPlayer = WardenDamagePlayer.ModPlayer(player);
+                            var modPlayer2 = player.GetModPlayer<OvermorrowModPlayer>();
+
                             if (modPlayer.ReaperBook)
                             {
                                 if (!XPPacket.Write(1, npc.target))
                                 {
                                     player.GetModPlayer<WardenDamagePlayer>().AddSoul(1);
+                                }
+                            }
+
+                            if (modPlayer2.DripplerEye)
+                            {
+                                if (modPlayer2.dripplerStack < 25)
+                                {
+                                    modPlayer2.dripplerStack++;
                                 }
                             }
                         }
@@ -98,6 +108,16 @@ namespace OvermorrowMod
                     }
                 }
             }
+        }
+
+        public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
+        {
+            if (target.GetModPlayer<OvermorrowModPlayer>().mirrorBuff)
+            {
+                npc.life -= damage;
+                CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.Purple, damage, false, false);
+            }
+            base.OnHitPlayer(npc, target, damage, crit);
         }
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)
