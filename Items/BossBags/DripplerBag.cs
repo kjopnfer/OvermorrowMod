@@ -1,18 +1,15 @@
+using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Accessories.Expert;
 using OvermorrowMod.Items.Placeable.Boss;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
+using OvermorrowMod.NPCs.Bosses.DripplerBoss;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.BossBags
 {
-    public class DrakeBag : ModItem
+    public class DripplerBag : ModItem
     {
         public override void SetStaticDefaults()
         {
@@ -44,33 +41,39 @@ namespace OvermorrowMod.Items.BossBags
             // Always drops one of:
             if (choice == 0) // Warden
             {
-                player.QuickSpawnItem(ModContent.ItemType<LightningPiercer>());
+                player.QuickSpawnItem(ModContent.ItemType<BloodyAntikythera>());
             }
             else if (choice == 1) // Mage
             {
-                player.QuickSpawnItem(ModContent.ItemType<BoltStream>());
+                player.QuickSpawnItem(ModContent.ItemType<ShatteredOrb>());
             }
             else if (choice == 2) // Warrior
             {
-                player.QuickSpawnItem(ModContent.ItemType<StormTalon>());
+                player.QuickSpawnItem(ModContent.ItemType<BloodyTeeth>());
             }
             else if (choice == 3) // Ranger
             {
-                player.QuickSpawnItem(ModContent.ItemType<TempestGreatbow>());
+                player.QuickSpawnItem(ModContent.ItemType<DripplerEye>());
             }
             else if (choice == 4) // Summoner
             {
-                player.QuickSpawnItem(ModContent.ItemType<DrakeStaff>());
+                player.QuickSpawnItem(ModContent.ItemType<SinisterBlood>());
             }
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());
+                player.QuickSpawnItem(ModContent.ItemType<DripplerTrophy>());
             }
 
-            player.QuickSpawnItem(ModContent.ItemType<StormScale>());
+            int necklaceChance = Main.rand.Next(5);
+            if (necklaceChance == 0)
+            {
+                player.QuickSpawnItem(ItemID.SharkToothNecklace);
+            }
+
+            player.QuickSpawnItem(ModContent.ItemType<BloodyHeart>());
         }
 
-        public override int BossBagNPC => ModContent.NPCType<StormDrake>();
+        public override int BossBagNPC => ModContent.NPCType<DripplerBoss>();
     }
 }

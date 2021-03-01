@@ -66,7 +66,7 @@ namespace OvermorrowMod.Projectiles.Summon
             // Teleport to player if distance is too big
             Vector2 vectorToIdlePosition = idlePosition - projectile.Center;
             float distanceToIdlePosition = vectorToIdlePosition.Length();
-            if (Main.myPlayer == player.whoAmI && distanceToIdlePosition > 3000f)
+            if (Main.myPlayer == player.whoAmI && distanceToIdlePosition > 1000f)
             {
                 // Whenever you deal with non-regular events that change the behavior or position drastically, make sure to only run the code on the owner of the projectile,
                 // and then set netUpdate to true

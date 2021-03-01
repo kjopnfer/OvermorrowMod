@@ -627,11 +627,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                     if (!textSent) // Print phase 2 notifier
                     {
-                        if (Main.netMode == 0) // Singleplayer
+                        if (Main.netMode == NetmodeID.SinglePlayer) // Singleplayer
                         {
                             Main.NewText("The air crackles with electricity...", Color.Teal);
                         }
-                        else if (Main.netMode == 2) // Multiplayer
+                        else if (Main.netMode == NetmodeID.Server) // Server
                         {
                             NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The air crackles with electricity..."), Color.Teal);
                         }
