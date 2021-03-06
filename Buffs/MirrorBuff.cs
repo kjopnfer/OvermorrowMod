@@ -8,7 +8,8 @@ namespace OvermorrowMod.Buffs
 		public override void SetDefaults()
 		{
 			DisplayName.SetDefault("Twisted Reflection");
-			Description.SetDefault("Damage taken from enemies is reduced by 50%\nEnemies are then dealt their damage");
+			Description.SetDefault("Damage taken from enemies is reduced by 50%\nEnemies are then dealt their damage" +
+				"\n(Will not deal fatal damage to enemies)");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;

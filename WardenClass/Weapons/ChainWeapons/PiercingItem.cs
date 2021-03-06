@@ -95,8 +95,10 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                         // Check that the projectile is the same as the removed projectile and it is active
                         if (Main.projectile[j] == Main.projectile[removeProjectile] && Main.projectile[j].active)
                         {
+                            Main.NewText("projectile " + j + " killed");
                             // Kill the projectile
                             Main.projectile[j].Kill();
+                            break;
                         }
                     }
                 }

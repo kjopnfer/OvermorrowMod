@@ -112,10 +112,17 @@ namespace OvermorrowMod
 
         public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
         {
-            if (target.GetModPlayer<OvermorrowModPlayer>().mirrorBuff)
+            if (target.GetModPlayer<OvermorrowModPlayer>().mirrorBuff && !npc.dontTakeDamage)
             {
-                npc.life -= damage;
-                CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.Purple, damage, false, false);
+                if (damage < npc.life)
+                {
+                    npc.life -= damage;
+                    CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.Purple, damage, false, false);
+                }
+                else
+                {
+                    npc.life = 1;
+                }
             }
             base.OnHitPlayer(npc, target, damage, crit);
         }

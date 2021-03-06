@@ -26,7 +26,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         {
             npc.width = 68;
             npc.height = 110;
-            npc.damage = 30;
+            npc.damage = 25;
             npc.defense = 20;
             npc.lifeMax = 250;
             npc.HitSound = SoundID.NPCHit19;
@@ -39,7 +39,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
-            npc.damage = (int)(npc.damage * 1.2f);
         }
 
         public override void AI()

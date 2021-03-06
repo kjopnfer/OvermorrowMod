@@ -1,0 +1,332 @@
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Projectiles.Boss;
+
+namespace OvermorrowMod.NPCs.Bosses.TreeBoss
+{
+    public class TreeBoss : ModNPC
+    {
+        private bool changedPhase2 = false;
+        private int bufferCount = 0;
+
+        private enum spawnDirection { left, right }
+        private spawnDirection chooseDirection;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Iorich, the Guardian");
+            Main.npcFrameCount[npc.type] = 4;
+        }
+
+        public override void SetDefaults()
+        {
+            // Reduced size
+            npc.width = 203;
+            npc.height = 298;
+
+            // Actual dimensions
+            //npc.width = 372;
+            //npc.height = 300;
+
+            npc.aiStyle = -1;
+            //npc.damage = 31;
+            npc.damage = 0;
+            npc.defense = 14;
+            npc.lifeMax = 3300;
+            npc.HitSound = SoundID.NPCHit1;
+            npc.DeathSound = SoundID.DD2_BetsyDeath;
+            npc.knockBackResist = 0f;
+            npc.noGravity = false;
+            npc.noTileCollide = false;
+            npc.boss = true;
+            npc.value = Item.buyPrice(gold: 3);
+            npc.npcSlots = 10f;
+            music = MusicID.Boss5;
+            //music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/StormDrake");
+        }
+
+        public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
+        {
+            npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
+            npc.damage = (int)(npc.damage * 1.2f);
+            npc.defense = 17;
+        }
+
+        public override void AI()
+        {
+            Player player = Main.player[npc.target];
+
+            // Handles Despawning
+            if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
+            {
+                npc.TargetClosest(false);
+                npc.direction = 1;
+                npc.velocity.Y = npc.velocity.Y - 0.1f;
+                if (npc.timeLeft > 20)
+                {
+                    if (Main.raining)
+                    {
+                        Main.raining = false;
+                        Main.rainTime = 0;
+                    }
+
+                    npc.timeLeft = 20;
+                    return;
+                }
+            }
+
+            if (!player.active || player.dead)
+            {
+                npc.TargetClosest(false);
+                npc.velocity.Y = 2000;
+            }
+
+            if(npc.life <= npc.lifeMax * 0.5f)
+            {
+                changedPhase2 = true;
+            }
+
+            // General MOVESET:
+            // Shoot thorns from under the ground (50% thorns linger longer)
+            // Drop seeds that float down from above
+            // (50%) Shoot multiple thorns from under the ground that are close together at the player
+            // (25%) Shoot multiple seeds the float down from above
+
+            // EXPERT MODE:
+            // Shoots a wave of thorns
+
+
+            switch (npc.ai[0])
+            {
+                case 0: // General case
+                    // Do nothing
+                    if (npc.ai[1] == 30)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int randChoice = Main.rand.Next(2);
+                            npc.netUpdate = true;
+                            if (randChoice == 0)
+                            {
+                                chooseDirection = spawnDirection.left;
+                                npc.netUpdate = true;
+                            }
+                            else
+                            {
+                                chooseDirection = spawnDirection.right;
+                                npc.netUpdate = true;
+                            }
+                        }
+
+                        int waveChance = Main.expertMode ? Main.rand.Next(0, 5) : -1;
+
+                        if (changedPhase2)
+                        {
+                            if (waveChance != -1) // Expert mode version
+                            {
+                                if (waveChance == 0)
+                                {
+                                    npc.ai[0] = 4;
+                                    npc.ai[1] = 0;
+                                }
+                                else
+                                {
+                                    npc.ai[0] = 2;
+                                    npc.ai[1] = 0;
+                                }
+                            }
+                            else // Default Non-expert mode version
+                            {
+                                npc.ai[0] = 2;
+                                npc.ai[1] = 0;
+                            }
+                        }
+                        else
+                        {
+                            if (waveChance != -1) // Expert mode version
+                            {
+                                if (waveChance == 0)
+                                {
+                                    npc.ai[0] = 4;
+                                    npc.ai[1] = 0;
+                                }
+                                else
+                                {
+                                    npc.ai[0] = 2;
+                                    npc.ai[1] = 0;
+                                }
+                            }
+                            else // Default Non-expert mode version
+                            {
+                                npc.ai[0] = 2;
+                                npc.ai[1] = 0;
+                            }
+                        }
+                    }
+                    break;
+                case 1: // Spawn thorns
+                    if (npc.ai[1] % 60 == 0)
+                    {
+                        // Get the ground beneath the player
+                        Vector2 playerPos = new Vector2(player.position.X / 16, player.position.Y / 16);
+                        Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                        while (!tile.active() || tile.type == TileID.Trees)
+                        {
+                            playerPos.Y += 1;
+                            tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                        }
+
+                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 26, 2.5f, Main.myPlayer, 0f, 0f);
+                    }
+
+                    if (npc.ai[1] == 300)
+                    {
+                        npc.ai[0] = 0;
+                        npc.ai[1] = 1;
+                    }
+                    break;
+                case 2: // Shoot seeds
+                    if (npc.ai[1] % 75 == 0)
+                    {
+                        int numSeeds = npc.life <= npc.lifeMax * 0.25f ? 16 : 13;
+                        float numberProjectiles = Main.rand.Next(7, numSeeds);
+                        Vector2 position = npc.Center;
+                        int speedX = 1;
+                        int speedY = Main.rand.Next(-96, -48);
+                        float rotation = MathHelper.ToRadians(45);
+                        position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
+                        for (int i = 0; i < numberProjectiles; i++)
+                        {
+                            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
+                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
+                        }
+                    }
+
+                    if (npc.ai[1] == 300)
+                    {
+                        if (changedPhase2)
+                        {
+                            npc.ai[0] = 3;
+                            npc.ai[1] = 0;
+                        }
+                        else
+                        {
+                            npc.ai[0] = 1;
+                            npc.ai[1] = 0;
+                        }
+                    }
+                    break;
+                case 3: // Multiple thorns
+                    if(npc.ai[1] % 160 == 0)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            // Get the ground beneath the player
+                            Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
+                            Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
+                            Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                            while (!tile.active() || tile.type == TileID.Trees)
+                            {
+                                playerPos.Y += 1;
+                                tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                            }
+
+                            Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
+                            while (!tile2.active() || tile2.type == TileID.Trees)
+                            {
+                                playerPos2.Y += 1;
+                                tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
+                            }
+
+                            if (i == 0)
+                            {
+                                Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                            }
+                            else
+                            {
+                                Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                            }
+                        }
+                    }
+
+                    if(npc.ai[1] == 320)
+                    {
+                        npc.ai[0] = 0;
+                        npc.ai[1] = 0;
+                    }
+                    break;
+                case 4: // Thorns wave
+                    if (chooseDirection == spawnDirection.left) // Wave goes left from boss
+                    {
+                        if (npc.ai[1] % 15 == 0)
+                        {
+                            // Get the ground beneath the player
+                            Vector2 npcPos = new Vector2((npc.position.X - 60 * bufferCount) / 16, npc.position.Y / 16);
+                            Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
+                            while (!tile.active() || tile.type == TileID.Trees)
+                            {
+                                npcPos.Y += 1;
+                                tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
+                            }
+
+                            Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                            bufferCount++;
+                        }
+                    }
+                    else // Wave goes right from boss
+                    {
+                        if (npc.ai[1] % 15 == 0)
+                        {
+                            // Get the ground beneath the player
+                            Vector2 npcPos = new Vector2((npc.position.X + npc.width + (60 * bufferCount)) / 16, npc.position.Y / 16);
+                            Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
+                            while (!tile.active() || tile.type == TileID.Trees)
+                            {
+                                npcPos.Y += 1;
+                                tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
+                            }
+
+                            Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                            bufferCount++;
+                        }
+                    }
+
+                    if(npc.ai[1] == 180)
+                    {
+                        npc.ai[0] = 2;
+                        npc.ai[1] = 0;
+
+                        bufferCount = 0;
+                    }
+                    break;
+            }
+
+            npc.ai[1]++;
+        }
+
+        public override void FindFrame(int frameHeight)
+        {
+            npc.frameCounter++;
+
+            if (npc.frameCounter % 12f == 11f) // Ticks per frame
+            {
+                npc.frame.Y += frameHeight;
+            }
+            if (npc.frame.Y >= frameHeight * 4) // 4 is max # of frames
+            {
+                npc.frame.Y = 0; // Reset back to default
+            }
+        }
+
+        public override void NPCLoot()
+        {
+            // Spawn 2nd Phase
+        }
+    }
+}
