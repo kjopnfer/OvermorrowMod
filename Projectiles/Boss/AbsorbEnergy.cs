@@ -10,12 +10,10 @@ namespace OvermorrowMod.Projectiles.Boss
     public class AbsorbEnergy : ModProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
-        private int randDelay;
-        private bool foundTarget;
-
+      
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Nature Bolt");
+            DisplayName.SetDefault("Natural Energy");
         }
 
         public override void SetDefaults()
@@ -74,6 +72,18 @@ namespace OvermorrowMod.Projectiles.Boss
             {
                 projectile.Kill();
             }
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            // Get the ID of the Parent NPC that was passed in via AI[1]
+            NPC parent = Main.npc[(int)projectile.ai[1]];
+            if(parent.life < parent.lifeMax)
+            {
+                parent.life += 5;
+            }
+
+            base.Kill(timeLeft);
         }
     }
 }

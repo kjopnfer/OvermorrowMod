@@ -9,6 +9,7 @@ using OvermorrowMod.Projectiles.Boss;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
+    [AutoloadBossHead]
     public class TreeBossP2 : ModNPC
     {
         private bool changedPhase2 = false;
@@ -81,6 +82,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 npc.TargetClosest(false);
                 npc.velocity.Y = -2000;
+            }
+
+            if(npc.life > npc.lifeMax)
+            {
+                npc.life = npc.lifeMax;
             }
 
             npc.ai[1]++;

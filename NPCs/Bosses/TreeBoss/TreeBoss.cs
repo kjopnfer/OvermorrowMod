@@ -9,6 +9,7 @@ using OvermorrowMod.Projectiles.Boss;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
+    [AutoloadBossHead]
     public class TreeBoss : ModNPC
     {
         private bool changedPhase2 = false;
@@ -66,12 +67,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity.Y = npc.velocity.Y - 0.1f;
                 if (npc.timeLeft > 20)
                 {
-                    if (Main.raining)
-                    {
-                        Main.raining = false;
-                        Main.rainTime = 0;
-                    }
-
                     npc.timeLeft = 20;
                     return;
                 }
@@ -79,7 +74,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (!player.active || player.dead)
             {
-                npc.noTileCollide = false;
                 npc.TargetClosest(false);
                 npc.velocity.Y = 2000;
             }

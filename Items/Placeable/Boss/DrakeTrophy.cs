@@ -8,7 +8,7 @@ namespace OvermorrowMod.Items.Placeable.Boss
     {
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Storm Drake Trophy");
+			DisplayName.SetDefault("Storm Drake of Oris Trophy");
 		}
 
 		public override void SetDefaults()

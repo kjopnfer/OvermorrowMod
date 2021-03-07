@@ -14,7 +14,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Basket of Harpy Legs");
-            Tooltip.SetDefault("Summons The Storm Drake\n'Hey there, we both got baskets of Harpy Legs'");
+            Tooltip.SetDefault("Summons The Storm Drake of Oris\n'Hey there, we both got baskets of Harpy Legs'");
         }
 
         public override void SetDefaults()

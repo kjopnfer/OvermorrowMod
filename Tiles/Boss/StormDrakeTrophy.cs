@@ -20,7 +20,7 @@ namespace OvermorrowMod.Tiles.Boss
 			dustType = 7;
 			disableSmartCursor = true;
 			ModTranslation name = CreateMapEntryName();
-			name.SetDefault("Storm Drake Trophy");
+			name.SetDefault("Storm Drake of Oris Trophy");
 			AddMapEntry(new Color(120, 85, 60), name);
 		}
 

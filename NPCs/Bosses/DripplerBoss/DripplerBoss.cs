@@ -66,6 +66,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             if(npc.life <= 0)
             {
                 npc.NPCLoot();
+                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
             }
 
             Player player = Main.player[npc.target];

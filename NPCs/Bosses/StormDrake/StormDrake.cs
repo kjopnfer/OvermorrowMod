@@ -33,7 +33,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Storm Drake");
+            DisplayName.SetDefault("The Storm Drake of Oris");
             Main.npcFrameCount[npc.type] = 6;
         }
 
@@ -196,7 +196,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                         Vector2 moveTo = player.Center + new Vector2(0, -300);
                         var move = moveTo - npc.Center;
-                        var speed = 10;
+                        float distance = Vector2.Distance(npc.Center, player.Center);
+                        var speed = distance >= 600 ? 16 : 10;
                         
                         float length = move.Length();
                         if (length > speed)
@@ -233,7 +234,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             Vector2 moveTo = player.Center - new Vector2(450, 0);
                             var move = moveTo - npc.Center;
-                            var speed = 8;
+                            float distance = Vector2.Distance(npc.Center, player.Center);
+                            var speed = distance >= 600 ? 12 : 8;
                             float length = move.Length();
                             if (length > speed)
                             {
@@ -253,7 +255,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             Vector2 moveTo = player.Center + new Vector2(450, 0);
                             var move = moveTo - npc.Center;
-                            var speed = 8;
+                            float distance = Vector2.Distance(npc.Center, player.Center);
+                            var speed = distance >= 600 ? 12 : 8;
                             float length = move.Length();
                             if (length > speed)
                             {
@@ -297,7 +300,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Vector2 moveTo = player.Center - new Vector2(450 + distanceBuffer, 0);
                             var move = moveTo - npc.Center;
                             //var move = target - npc.Center;
-                            var speed = 7;
+                            float distance = Vector2.Distance(npc.Center, player.Center);
+                            var speed = distance >= 600 ? 10 : 7;
                             float length = move.Length();
                             if (length > speed)
                             {
@@ -317,7 +321,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             Vector2 moveTo = player.Center + new Vector2(450 + distanceBuffer, 0);
                             var move = moveTo - npc.Center;
-                            var speed = 7;
+                            float distance = Vector2.Distance(npc.Center, player.Center);
+                            var speed = distance >= 600 ? 10 : 7;
                             float length = move.Length();
                             if (length > speed)
                             {
