@@ -9,11 +9,11 @@ namespace OvermorrowMod.Projectiles.Boss
 {
     public class ThornBody1 : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.NettleBurstLeft; // TODO: Get actual texture
         private Projectile parentProjectile;
 
         public override void SetStaticDefaults()
         {
+            // Left facing thorn
             DisplayName.SetDefault("Thorn of Iorich");
         }
 

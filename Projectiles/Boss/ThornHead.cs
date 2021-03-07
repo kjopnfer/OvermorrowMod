@@ -10,7 +10,6 @@ namespace OvermorrowMod.Projectiles.Boss
 {
     public class ThornHead : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.NettleBurstEnd; // TODO: Get actual texture
         private bool canGrow = false;
         private int storeDamage;
         private Vector2 storeVelocity;

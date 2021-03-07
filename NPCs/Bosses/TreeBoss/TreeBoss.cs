@@ -39,12 +39,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.defense = 14;
             npc.lifeMax = 3300;
             npc.HitSound = SoundID.NPCHit1;
-            npc.DeathSound = SoundID.DD2_BetsyDeath;
             npc.knockBackResist = 0f;
             npc.noGravity = false;
             npc.noTileCollide = false;
             npc.boss = true;
-            npc.value = Item.buyPrice(gold: 3);
             npc.npcSlots = 10f;
             music = MusicID.Boss5;
             //music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/StormDrake");
@@ -53,7 +51,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
-            npc.damage = (int)(npc.damage * 1.2f);
             npc.defense = 17;
         }
 
@@ -82,11 +79,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (!player.active || player.dead)
             {
+                npc.noTileCollide = false;
                 npc.TargetClosest(false);
                 npc.velocity.Y = 2000;
             }
 
-            if(npc.life <= npc.lifeMax * 0.5f)
+            if (npc.life <= npc.lifeMax * 0.5f)
             {
                 changedPhase2 = true;
             }
@@ -123,7 +121,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             }
                         }
 
-                        int waveChance = Main.expertMode ? Main.rand.Next(0, 5) : -1;
+                        int randCeiling = npc.life <= npc.lifeMax * 0.5f ? 3 : 5;
+                        int waveChance = Main.expertMode ? Main.rand.Next(0, randCeiling) : -1;
 
                         if (changedPhase2)
                         {
@@ -197,13 +196,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         float numberProjectiles = Main.rand.Next(7, numSeeds);
                         Vector2 position = npc.Center;
                         int speedX = 1;
-                        int speedY = Main.rand.Next(-96, -48);
+                        int speedY = Main.rand.Next(-25, -15);
                         float rotation = MathHelper.ToRadians(45);
                         position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
                         for (int i = 0; i < numberProjectiles; i++)
                         {
                             Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
-                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
                         }
                     }
 
@@ -222,7 +221,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     }
                     break;
                 case 3: // Multiple thorns
-                    if(npc.ai[1] % 160 == 0)
+                    if (npc.ai[1] % 160 == 0)
                     {
                         for (int i = 0; i < 3; i++)
                         {
@@ -255,49 +254,40 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if(npc.ai[1] == 320)
+                    if (npc.ai[1] == 320)
                     {
                         npc.ai[0] = 0;
                         npc.ai[1] = 0;
                     }
                     break;
                 case 4: // Thorns wave
-                    if (chooseDirection == spawnDirection.left) // Wave goes left from boss
+                    if (npc.ai[1] % 15 == 0)
                     {
-                        if (npc.ai[1] % 15 == 0)
+                        // Get the ground beneath the player
+                        Vector2 npcPos = new Vector2((npc.position.X - 60 * bufferCount) / 16, npc.position.Y / 16);
+                        Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
+                        while (!tile.active() || tile.type == TileID.Trees)
                         {
-                            // Get the ground beneath the player
-                            Vector2 npcPos = new Vector2((npc.position.X - 60 * bufferCount) / 16, npc.position.Y / 16);
-                            Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                            while (!tile.active() || tile.type == TileID.Trees)
-                            {
-                                npcPos.Y += 1;
-                                tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                            }
-
-                            Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
-                            bufferCount++;
+                            npcPos.Y += 1;
+                            tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
                         }
-                    }
-                    else // Wave goes right from boss
-                    {
-                        if (npc.ai[1] % 15 == 0)
+
+                        // Same thing going right, I'm lazy
+                        Vector2 npcPos2 = new Vector2((npc.position.X + npc.width + (60 * bufferCount)) / 16, npc.position.Y / 16);
+                        Tile tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
+                        while (!tile2.active() || tile2.type == TileID.Trees)
                         {
-                            // Get the ground beneath the player
-                            Vector2 npcPos = new Vector2((npc.position.X + npc.width + (60 * bufferCount)) / 16, npc.position.Y / 16);
-                            Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                            while (!tile.active() || tile.type == TileID.Trees)
-                            {
-                                npcPos.Y += 1;
-                                tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                            }
-
-                            Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
-                            bufferCount++;
+                            npcPos2.Y += 1;
+                            tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
                         }
+
+                        Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+
+                        Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                        bufferCount++;
                     }
 
-                    if(npc.ai[1] == 180)
+                    if (npc.ai[1] == 180)
                     {
                         npc.ai[0] = 2;
                         npc.ai[1] = 0;
@@ -324,9 +314,25 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
         }
 
+        public override bool CheckDead()
+        {
+            npc.boss = false;
+            return base.CheckDead();
+        }
+
         public override void NPCLoot()
         {
+            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<TreeBossP2>(), 0, 0f, 0f, 0f, 0f);
+
             // Spawn 2nd Phase
+            if (Main.netMode == NetmodeID.SinglePlayer) // Singleplayer
+            {
+                Main.NewText("Iorich has uprooted!", Color.Green);
+            }
+            else if (Main.netMode == NetmodeID.Server) // Server
+            {
+                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich has uprooted!"), Color.Green);
+            }
         }
     }
 }

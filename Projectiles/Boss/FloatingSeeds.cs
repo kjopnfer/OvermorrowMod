@@ -9,7 +9,7 @@ namespace OvermorrowMod.Projectiles.Boss
 {
     public class FloatingSeeds : ModProjectile
     {
-        public override string Texture => "Terraria/Item_" + ItemID.Seedling; // TODO: Get actual texture
+        //public override string Texture => "Terraria/Item_" + ItemID.Seedling; // TODO: Get actual texture
         private bool canDescend = false;
         private bool goLeft = true;
 
@@ -20,8 +20,8 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            projectile.width = 28;
-            projectile.height = 26;
+            projectile.width = 36;
+            projectile.height = 16;
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.penetrate = -1;
@@ -31,11 +31,16 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void AI()
         {
+            if(projectile.ai[0] == 0)
+            {
+                projectile.spriteDirection = Main.rand.NextBool(2) ? -1 : 1;
+            }
             projectile.ai[0]++;
             if (!canDescend)
             {
+                projectile.rotation += 1f;
                 // Be affected by the shoot initial velocity
-                if(projectile.ai[0] % 60 == 0) // After 3 seconds, set velocity to zero
+                if(projectile.ai[0] % 180 == 0) // After 3 seconds, set velocity to zero
                 {
                     projectile.velocity = Vector2.Zero;
                     canDescend = true;
@@ -56,6 +61,7 @@ namespace OvermorrowMod.Projectiles.Boss
             {
                 // Start descending
                 projectile.velocity.Y = 4.5f;
+                projectile.rotation = 0.0f;
 
                 // Float left and right
                 if (goLeft)
@@ -77,7 +83,6 @@ namespace OvermorrowMod.Projectiles.Boss
                     }
                 }
             }
-
         }
     }
 }

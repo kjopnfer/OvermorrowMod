@@ -69,7 +69,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             }
 
             Player player = Main.player[npc.target];
-            //npc.dontTakeDamage = true;
             
             // Check that it is a Blood Moon & that it is night time
             if (!Main.bloodMoon)
