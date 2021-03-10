@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Boss
+namespace OvermorrowMod.Projectiles.Accessory
 {
     public class BouncingBlood : ModProjectile
     {

@@ -7,12 +7,13 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {
-    public class BloodStaff : ModItem
+    public class IorichStaff : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bloodburst Staff");
-            Tooltip.SetDefault("Shoots a blood ball that explodes into bouncing balls upon hitting an enemy");
+            DisplayName.SetDefault("Iorich's Sorrow");
+            Tooltip.SetDefault("Shoots a bolt infused with the energies of nature\n" +
+                "'The veil of darkness did little to hide the inferno that devourered his people'");
             Item.staff[item.type] = true;
         }
 
@@ -20,21 +21,21 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         {
             item.autoReuse = true;
             item.rare = ItemRarityID.Orange;
-            item.mana = 10;
-            item.UseSound = SoundID.Item21;
+            item.mana = 12;
+            item.UseSound = SoundID.Item8;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 17;
+            item.damage = 21;
             item.useTurn = false;
-            item.useAnimation = 24;
-            item.useTime = 24;
+            item.useAnimation = 32;
+            item.useTime = 32;
             item.width = 56;
-            item.height = 56;
-            item.shoot = ModContent.ProjectileType<SplittingBlood_Magic>();
-            item.shootSpeed = 15f;
+            item.height = 60;
+            item.shoot = ModContent.ProjectileType<NatureBolt>();
+            item.shootSpeed = 9f;
             item.knockBack = 3f;
             item.magic = true;
-            item.value = Item.sellPrice(gold: 1, silver:75);
+            item.value = Item.sellPrice(gold: 1, silver: 75);
         }
     }
 }

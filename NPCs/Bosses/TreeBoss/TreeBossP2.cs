@@ -6,6 +6,11 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.Items.Placeable.Boss;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
@@ -265,6 +270,33 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override void NPCLoot()
         {
             // Drop loots
+            int choice = Main.rand.Next(5);
+            // Always drops one of:
+            if (choice == 0) // Warden
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EarthCrystal>());
+            }
+            else if (choice == 1) // Mage
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichStaff>());
+            }
+            if (choice == 2) // Warrior
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichHarvester>());
+            }
+            else if (choice == 3) // Ranger
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichBow>());
+            }
+            else if (choice == 4) // Summoner
+            {
+                //Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrakeStaff>());
+            }
+
+            if (Main.rand.Next(10) == 0) // Trophy Dropchance
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TreeTrophy>());
+            }
         }
     }
 }

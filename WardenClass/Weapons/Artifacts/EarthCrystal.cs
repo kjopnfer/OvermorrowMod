@@ -8,30 +8,29 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {
-    public class BloodyAntikythera : Artifact
+    public class EarthCrystal : Artifact
     {
-
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bloody Antikythera");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 3 Soul Essences to summon a miniature Blood Moon\n" +
-                "All players within range have their attack increased\n" +
-                "'Blood spilled onto the Earth shall rain from the sky'");
+            DisplayName.SetDefault("Earthen Crystal");
+            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 3 Soul Essences to summon an ancient tree\n" +
+                "All players within range have their health regen increased\n" +
+                "'An ancient crystal that once grew on the World Tree that had long since disappeared'");
         }
 
         public override void SafeSetDefaults()
         {
-            item.width = 50;
-            item.height = 50;
+            item.width = 28;
+            item.height = 44;
             item.rare = ItemRarityID.Orange;
             item.useAnimation = 30;
             item.useTime = 30;
             item.useStyle = ItemUseStyleID.HoldingUp;
             item.noMelee = true;
-            item.UseSound = SoundID.Item103;
+            item.UseSound = SoundID.Item25;
             item.consumable = false;
             item.autoReuse = false;
-            item.shoot = ModContent.ProjectileType<RedCloud>();
+            item.shoot = ModContent.ProjectileType<WorldTree>();
         }
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
@@ -40,11 +39,11 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             ConsumeSouls(3, player);
 
             // Allow only one instance of the projectile
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<WorldTree>()] > 0) 
-            { 
-                for(int i = 0; i < Main.maxProjectiles; i++)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<WorldTree>()] > 0)
+            {
+                for (int i = 0; i < Main.maxProjectiles; i++)
                 {
-                    if (Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI && 
+                    if (Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI &&
                         (Main.projectile[i].type == ModContent.ProjectileType<RedCloud>() || Main.projectile[i].type == ModContent.ProjectileType<WorldTree>()))
                     {
                         Main.projectile[i].Kill();

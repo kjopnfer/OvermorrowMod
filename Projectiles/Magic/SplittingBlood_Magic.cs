@@ -1,11 +1,12 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Boss
+namespace OvermorrowMod.Projectiles.Magic
 {
     public class SplittingBlood_Magic : ModProjectile
     {

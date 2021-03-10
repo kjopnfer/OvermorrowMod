@@ -24,6 +24,7 @@ namespace OvermorrowMod
 		// Buffs
 		public bool mirrorBuff;
 		public bool moonBuff;
+		public bool treeBuff;
 
         public override void ResetEffects()
         {
@@ -35,6 +36,7 @@ namespace OvermorrowMod
 
 			mirrorBuff = false;
 			moonBuff = false;
+			treeBuff = false;
         }
 
 		// In MP, other clients need accurate information about your player or else bugs happen.
@@ -119,6 +121,15 @@ namespace OvermorrowMod
 			}
 
 			base.UpdateEquips(ref wallSpeedBuff, ref tileSpeedBuff, ref tileRangeBuff);
+		}
+
+		public override void UpdateLifeRegen()
+		{
+			if (treeBuff)
+			{
+				// lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 2 life gained per second.
+				player.lifeRegen += 4;
+			}
 		}
 
 		// Synchronization Code

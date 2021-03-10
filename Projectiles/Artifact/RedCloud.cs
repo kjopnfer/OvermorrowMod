@@ -34,7 +34,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             Lighting.AddLight(projectile.Center, 1.2f, 0f, 0f);
 
             projectile.ai[0] += 1;
-            if(projectile.ai[1] < 450)
+            if(projectile.ai[1] < 450) // The radius
             {
                 projectile.ai[1] += 15;
             }

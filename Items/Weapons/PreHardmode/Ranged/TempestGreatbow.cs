@@ -8,7 +8,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 {
     public class TempestGreatbow : ModItem
     {
-        private int chargeValue = 0;
 
         public override void SetStaticDefaults()
         {
@@ -23,7 +22,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.UseSound = SoundID.Item5;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 56;
+            item.damage = 46;
             item.useAnimation = 50;
             item.useTime = 50;
             item.width = 40;

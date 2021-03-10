@@ -7,7 +7,7 @@ using Terraria.ObjectData;
 
 namespace OvermorrowMod.Tiles.Boss
 {
-	public class DripplerBossTrophy : ModTile
+	public class TreeBossTrophy : ModTile
 	{
 		public override void SetDefaults()
 		{
@@ -20,13 +20,13 @@ namespace OvermorrowMod.Tiles.Boss
 			dustType = 7;
 			disableSmartCursor = true;
 			ModTranslation name = CreateMapEntryName();
-			name.SetDefault("Dripplord, the Bloody Assimilator Trophy");
+			name.SetDefault("Iorich, the Guardian Trophy");
 			AddMapEntry(new Color(120, 85, 60), name);
 		}
 
 		public override void KillMultiTile(int i, int j, int frameX, int frameY)
 		{
-			Item.NewItem(i * 16, j * 16, 48, 48, ModContent.ItemType<DripplerTrophy>());
+			Item.NewItem(i * 16, j * 16, 48, 48, ModContent.ItemType<TreeTrophy>());
 
 		}
 	}

@@ -24,7 +24,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.height = 38;
             projectile.friendly = false;
             projectile.hostile = true;
-            projectile.penetrate = 1;
+            projectile.penetrate = -1;
             projectile.timeLeft = 600;
             projectile.tileCollide = false;
         }
