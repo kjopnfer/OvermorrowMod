@@ -72,9 +72,12 @@ namespace OvermorrowMod
 			if (BloodyHeart)
 			{
 				int projectiles = 3;
-				for (int i = 0; i < projectiles; i++)
+				if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
 				{
-					Projectile.NewProjectile(player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, player.whoAmI);
+					for (int i = 0; i < projectiles; i++)
+					{
+						Projectile.NewProjectile(player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, player.whoAmI);
+					}
 				}
 			}
 		}
@@ -106,9 +109,12 @@ namespace OvermorrowMod
 				{
 					if (sparkCounter % 30 == 0)
 					{
-						for (int i = 0; i < Main.rand.Next(1, 3); i++)
+						if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
 						{
-							Projectile.NewProjectile(player.Center.X, player.Center.Y + Main.rand.Next(-15, 18), 0, 0, ModContent.ProjectileType<ElectricSparksFriendly>(), 20, 1, player.whoAmI, 0, 0);
+							for (int i = 0; i < Main.rand.Next(1, 3); i++)
+							{
+								Projectile.NewProjectile(player.Center.X, player.Center.Y + Main.rand.Next(-15, 18), 0, 0, ModContent.ProjectileType<ElectricSparksFriendly>(), 20, 1, player.whoAmI, 0, 0);
+							}
 						}
 					}
 					sparkCounter++;

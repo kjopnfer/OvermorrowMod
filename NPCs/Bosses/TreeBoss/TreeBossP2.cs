@@ -11,6 +11,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
+using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
@@ -173,12 +174,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             Vector2 targetPosition = Main.player[npc.target].Center;
                             Vector2 direction = targetPosition - position;
                             direction.Normalize();
-                            Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
-
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                            }
                             //Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureWave>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
                         }
 
-                        if (npc.ai[1] == 300)
+                        if (npc.ai[1] == 600)
                         {
                             npc.ai[0] = 2;
                             npc.ai[1] = 0;
@@ -195,7 +198,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         {
                             float randPositionX = npc.Center.X + Main.rand.Next(-10, 10) * 600;
                             float randPositionY = npc.Center.Y + Main.rand.Next(-10, 10) * 600;
-                            Projectile.NewProjectile(new Vector2(randPositionX, randPositionY), new Vector2(0, 0), ModContent.ProjectileType<AbsorbEnergy>(), npc.damage / 3, 0f, Main.myPlayer, 0f, npc.whoAmI);
+                            npc.netUpdate = true;
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(new Vector2(randPositionX, randPositionY), new Vector2(0, 0), ModContent.ProjectileType<AbsorbEnergy>(), npc.damage / 3, 0f, Main.myPlayer, 0f, npc.whoAmI);
+                            }
                         }
                     }
 
@@ -211,9 +218,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     if (npc.ai[1] % 300 == 0)
                     {
                         int projectiles = Main.rand.Next((changedPhase2 ? 13 : 9), (changedPhase2 ? 18 : 13));
-                        for (int i = 0; i < projectiles; i++)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<NatureBlast>(), 19, 2, player.whoAmI);
+                            for (int i = 0; i < projectiles; i++)
+                            {
+                                Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<NatureBlast>(), 19, 2, player.whoAmI);
+                            }
                         }
                     }
 
@@ -290,7 +300,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
             else if (choice == 4) // Summoner
             {
-                //Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrakeStaff>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichWand>());
             }
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance

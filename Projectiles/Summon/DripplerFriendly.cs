@@ -135,7 +135,7 @@ namespace OvermorrowMod.Projectiles.Summon
                 if (projectile.ai[0] % randDelay == 0 && lineOfSight) // prevent from instantly shooting when spawned
                 {
                     Main.PlaySound(SoundID.NPCHit19, (int)projectile.position.X, (int)projectile.position.Y);
-                    if (Main.netMode != 1)
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         Projectile.NewProjectile(projectile.Center, delta * 2, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage, 0f, projectile.owner);
                         projectile.netUpdate = true;
@@ -161,7 +161,7 @@ namespace OvermorrowMod.Projectiles.Summon
                 new Vector2
                 (
                     projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f + 2f,
-                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f + 15f
+                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f + 14f
                 ),
                 drawRectangle,
                 Color.White,

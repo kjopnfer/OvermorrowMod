@@ -191,13 +191,16 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                         if(changedPhase3)
                         {
-                            if(npc.ai[1] % 135 == 0)
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                // I'm lazy
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, -10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0f, 10f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0f, -10f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
+                                if (npc.ai[1] % 135 == 0)
+                                {
+                                    // I'm lazy
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, -10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0f, 10f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0f, -10f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
+                                }
                             }
                         }
 
@@ -254,10 +257,13 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         Vector2 origin = npc.Center; // Origin of the circle
                         float radius = 450; // Distance from the circle
                         int numSpawns = 5; // Points spawned on the circle
-                        for (int i = 0; i < 5; i++)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI);
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
+                                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI);
+                            }
                         }
                     }
 
@@ -283,11 +289,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             float radius = 750; // Distance from the circle
                             int numSpawns = 5; // Points spawned on the circle
                             Main.PlaySound(SoundID.Item95, (int)npc.Center.X, (int)npc.Center.Y);
-                            for (int i = 0; i < 5; i++)
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                // Pass in AI[1] for Driplads
-                                Projectile.NewProjectile(position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 1, npc.whoAmI);
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
+                                    // Pass in AI[1] for Driplads
+                                    Projectile.NewProjectile(position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 1, npc.whoAmI);
+                                }
                             }
                         }
 
@@ -312,11 +321,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             Vector2 origin = npc.Center; // Origin of the circle
                             float radius = 975; // Distance from the circle
                             int numSpawns = 12; // Points spawned on the circle
-                            for (int i = 0; i < 12; i++)
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                // Pass in AI[0] for Dripplers
-                                Projectile.NewProjectile(position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 0, npc.whoAmI);
+                                for (int i = 0; i < 12; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
+                                    // Pass in AI[0] for Dripplers
+                                    Projectile.NewProjectile(position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 0, npc.whoAmI);
+                                }
                             }
                         }
 

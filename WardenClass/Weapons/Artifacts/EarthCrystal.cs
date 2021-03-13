@@ -15,7 +15,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             DisplayName.SetDefault("Earthen Crystal");
             Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 3 Soul Essences to summon an ancient tree\n" +
                 "All players within range have their health regen increased\n" +
-                "'An ancient crystal that once grew on the World Tree that had long since disappeared'");
+                "'A crystal that once grew on the World Tree that had long since disappeared'");
         }
 
         public override void SafeSetDefaults()

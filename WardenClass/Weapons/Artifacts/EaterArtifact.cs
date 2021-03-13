@@ -13,7 +13,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Maw of the Eater");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nUse to consume all your Soul Essences, healing for 10 hp each" +
+            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nUse to consume all your Soul Essences, \n" +
+                "Each Soul Essence consumed heals for 10 life each" +
                 "\n'Like a big dream catcher that eats your face when you sleep'");
         }
 

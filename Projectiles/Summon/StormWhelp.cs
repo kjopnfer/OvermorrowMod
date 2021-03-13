@@ -230,7 +230,10 @@ namespace OvermorrowMod.Projectiles.Summon
                     if (projectile.ai[0] % randDelay == 0 && lineOfSight) // prevent from instantly shooting when spawned
                     {
                         Main.PlaySound(SoundID.Item109, (int)projectile.position.X, (int)projectile.position.Y);
-                        Projectile.NewProjectile(projectile.Center, delta, ModContent.ProjectileType<LightningBreathFriendly>(), projectile.damage / 2, 0f, projectile.owner);
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            Projectile.NewProjectile(projectile.Center, delta, ModContent.ProjectileType<LightningBreathFriendly>(), projectile.damage / 2, 0f, projectile.owner);
+                        }
                     }
                 }
                 else

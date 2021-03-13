@@ -80,10 +80,13 @@ namespace OvermorrowMod.Projectiles.Magic
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             int projectiles = 8;
-            for (int i = 0; i < projectiles; i++)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                Projectile.NewProjectile(projectile.Center + Utils.RotatedBy(new Vector2(40f, 0f), MathHelper.ToRadians(i * 45)), Vector2.Zero, ModContent.ProjectileType<NatureDust>(), projectile.damage / 2, 2, Main.myPlayer);
-                //Dust.NewDustPerfect(projectile.Center + Utils.RotatedBy(new Vector2(80f, 0f), MathHelper.ToRadians(i * 20)), 107, Vector2.Zero, 0, default, 1);
+                for (int i = 0; i < projectiles; i++)
+                {
+                    Projectile.NewProjectile(projectile.Center + Utils.RotatedBy(new Vector2(40f, 0f), MathHelper.ToRadians(i * 45)), Vector2.Zero, ModContent.ProjectileType<NatureDust>(), projectile.damage / 2, 2, Main.myPlayer);
+                    //Dust.NewDustPerfect(projectile.Center + Utils.RotatedBy(new Vector2(80f, 0f), MathHelper.ToRadians(i * 20)), 107, Vector2.Zero, 0, default, 1);
+                }
             }
             projectile.Kill();
         }

@@ -165,8 +165,10 @@ namespace OvermorrowMod.NPCs
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         Vector2 direction = targetPosition - position;
                         direction.Normalize();
-
-                        Projectile.NewProjectile(npc.Center + new Vector2(0, -20), direction * speed, ModContent.ProjectileType<SplittingBlood_Hemomancer>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            Projectile.NewProjectile(npc.Center + new Vector2(0, -20), direction * speed, ModContent.ProjectileType<SplittingBlood_Hemomancer>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                        }
                     }
                 }
             }

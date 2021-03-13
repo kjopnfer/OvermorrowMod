@@ -46,13 +46,16 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void Kill(int timeLeft)
         {
-            // Im lazy
+            // I'm lazy
             int projectiles = Main.rand.Next(4, 7);
-            for (int i = 0; i < projectiles; i++)
+            projectile.netUpdate = true;
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                Projectile.NewProjectile(projectile.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BloodyBall>(), projectile.damage / 2, 2, Main.myPlayer);
+                for (int i = 0; i < projectiles; i++)
+                {
+                    Projectile.NewProjectile(projectile.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BloodyBall>(), projectile.damage / 2, 2, Main.myPlayer);
+                }
             }
-            base.Kill(timeLeft);
         }
     }
 }
