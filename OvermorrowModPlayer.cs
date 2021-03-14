@@ -16,10 +16,13 @@ namespace OvermorrowMod
 		public bool DripplerEye;
 		public bool ShatteredOrb;
         public bool StormScale;
+		public bool TreeNecklace;
 
 		// Accessory Counters
 		public int dripplerStack;
 		private int sparkCounter;
+		private int treeCounter;
+		private int treeDefenseStack;
 
 		// Buffs
 		public bool mirrorBuff;
@@ -33,6 +36,7 @@ namespace OvermorrowMod
 			DripplerEye = false;
 			ShatteredOrb = false;
             StormScale = false;
+			TreeNecklace = false;
 
 			mirrorBuff = false;
 			moonBuff = false;
@@ -119,6 +123,28 @@ namespace OvermorrowMod
 					}
 					sparkCounter++;
 				}
+			}
+
+			if (TreeNecklace)
+			{
+				Lighting.AddLight(player.Center, 0f, 0.75f, 0f);
+
+				// The player is standing still
+				if(player.velocity == Vector2.Zero)
+				{
+					treeCounter++;
+					if(treeCounter % 60 == 0 && treeDefenseStack <= 15)
+					{
+						treeDefenseStack++;
+					}
+				}
+				else // Reset the counter
+				{
+					treeCounter = 0;
+					treeDefenseStack = 0;
+				}
+
+				player.statDefense += treeDefenseStack;
 			}
 
 			if (moonBuff)

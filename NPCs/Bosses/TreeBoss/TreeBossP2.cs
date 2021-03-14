@@ -12,6 +12,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.Items.BossBags;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
@@ -55,7 +56,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.npcSlots = 10f;
             music = MusicID.Boss5;
             //music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/StormDrake");
-            //bossBag = ModContent.ItemType<DrakeBag>();
+            bossBag = ModContent.ItemType<TreeBag>();
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
@@ -279,34 +280,45 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void NPCLoot()
         {
-            // Drop loots
-            int choice = Main.rand.Next(5);
-            // Always drops one of:
-            if (choice == 0) // Warden
+            if (Main.expertMode)
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EarthCrystal>());
+                npc.DropBossBags();
             }
-            else if (choice == 1) // Mage
+            else
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichStaff>());
-            }
-            if (choice == 2) // Warrior
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichHarvester>());
-            }
-            else if (choice == 3) // Ranger
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichBow>());
-            }
-            else if (choice == 4) // Summoner
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichWand>());
-            }
+                int choice = Main.rand.Next(5);
+                // Always drops one of:
+                if (choice == 0) // Warden
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EarthCrystal>());
+                }
+                else if (choice == 1) // Mage
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichStaff>());
+                }
+                if (choice == 2) // Warrior
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichHarvester>());
+                }
+                else if (choice == 3) // Ranger
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichBow>());
+                }
+                else if (choice == 4) // Summoner
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichWand>());
+                }
 
-            if (Main.rand.Next(10) == 0) // Trophy Dropchance
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TreeTrophy>());
+                if (Main.rand.Next(10) == 0) // Trophy Dropchance
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TreeTrophy>());
+                }
             }
+        }
+
+        public override void BossLoot(ref string name, ref int potionType)
+        {
+            potionType = ItemID.LesserHealingPotion;
         }
     }
 }

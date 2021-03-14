@@ -13,7 +13,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Renewal Wand of Iorich");
-            Tooltip.SetDefault("Summons a miniature Ent to impale your enemies");
+            Tooltip.SetDefault("Summons a miniature Ent to impale your enemies\n'Perhaps in time, the Ents shall return'");
         }
 
         public override void SetDefaults()
