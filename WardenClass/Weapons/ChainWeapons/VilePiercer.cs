@@ -32,6 +32,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.rare = ItemRarityID.Blue;
             item.UseSound = SoundID.Item71;
             item.noUseGraphic = true;
+
+            soulGainChance = 5;
         }
 
         public override bool CanUseItem(Player player)

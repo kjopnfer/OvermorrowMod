@@ -11,7 +11,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
     public abstract class PiercingItem : ModItem
     {
         public override bool CloneNewInstances => true;
-        public int soulResourceCost = 0;
+        public int soulGainChance = 0;
 
         public override void HoldItem(Player player)
         {
@@ -55,6 +55,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         // Because we want the damage tooltip to show our custom damage, we need to modify it
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            var modPlayer = WardenDamagePlayer.ModPlayer(Main.LocalPlayer);
+
             // Get the vanilla damage tooltip
             TooltipLine tt = tooltips.FirstOrDefault(x => x.Name == "Damage" && x.mod == "Terraria");
             if (tt != null)
@@ -66,11 +68,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 string damageWord = splitText.Last();
                 // Change the tooltip text
                 tt.text = damageValue + " piercing " + damageWord;
-            }
-
-            if (soulResourceCost > 0)
-            {
-                tooltips.Add(new TooltipLine(mod, "Example Resource Cost", $"Uses {soulResourceCost} Soul Essences"));
+                tooltips.Add(new TooltipLine(mod, "Soul Gain Probability", $"Soul Gain Chance: {soulGainChance} [+{modPlayer.soulGainBonus}]%"));
             }
         }
 

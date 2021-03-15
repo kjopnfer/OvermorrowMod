@@ -45,6 +45,8 @@ namespace WardenClass
         public float piercingKnockback;
         public int piercingCrit;
 
+        public int soulGainBonus = 0;
+
         // Here we include a custom resource, similar to mana or health.
         // Creating some variables to define the current value of our example resource as well as the current maximum value. We also include a temporary max value, as well as some variables to handle the natural regeneration of this resource.
         public int soulResourceCurrent;
@@ -100,7 +102,7 @@ namespace WardenClass
             ReaperBook = false;
             SoulRing = false;
 
-            //ResetVariables();
+            ResetVariables();
         }
 
 
@@ -121,10 +123,16 @@ namespace WardenClass
             ResetVariables();
         }
 
+        // Reset variables to prevent infinite scaling
         private void ResetVariables()
         {
-            soulResourceCurrent = 0;
+            piercingDamageAdd = 0f;
+            piercingDamageMult = 1f;
+            piercingKnockback = 0f;
+            piercingCrit = 0;
+
             soulResourceMax2 = soulResourceMax;
+            soulGainBonus = 0;
         }
 
         /*public override void PostUpdateMiscEffects()

@@ -33,6 +33,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.rare = ItemRarityID.Orange;
             item.UseSound = new LegacySoundStyle(SoundID.Grass, 0); // Grass
             item.noUseGraphic = true;
+
+            soulGainChance = 5;
         }
 
         public override bool CanUseItem(Player player)

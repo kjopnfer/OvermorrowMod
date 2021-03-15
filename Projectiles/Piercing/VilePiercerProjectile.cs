@@ -242,7 +242,7 @@ namespace OvermorrowMod.Projectiles.Piercing
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            // Get the projectile owner
+            /*// Get the projectile owner
             Player player = Main.player[projectile.owner];
 
             // Get the class info from the player
@@ -254,7 +254,8 @@ namespace OvermorrowMod.Projectiles.Piercing
 
                 // Add the projectile to the WardenDamagePlayer list of projectiles
                 modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
-            }
+            }*/
+            SoulGain(target, 5);
             target.immune[projectile.owner] = 3;
         }
     }

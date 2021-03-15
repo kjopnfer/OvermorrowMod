@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Consumable;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Projectiles.Boss;
 using System;
@@ -229,6 +230,7 @@ namespace OvermorrowMod.NPCs
         public override void NPCLoot()
         {
             // Drops Bloodburst Staff and Sanguine Beacon (Replace with Bloody Tear when 1.4)
+
             if (Main.rand.Next(2) == 0) // Beacon Dropchance
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodBeacon>());
@@ -237,6 +239,11 @@ namespace OvermorrowMod.NPCs
             if (Main.rand.Next(3) == 0) // Staff Dropchance
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodStaff>());
+            }
+
+            if (Main.rand.Next(4) == 0) // Blood Gem Dropchance
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodGem>());
             }
         }
 

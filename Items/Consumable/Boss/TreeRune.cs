@@ -1,28 +1,24 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Materials;
-using OvermorrowMod.NPCs.Bosses.DripplerBoss;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
+using OvermorrowMod.NPCs.Bosses.TreeBoss;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.Items.Consumable.Boss
 {
-    public class CursedFlesh : ModItem
+    public class TreeRune : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cursed Flesh");
-            Tooltip.SetDefault("Summons Dripplord, The Bloody Assimilator\n'Make us whole...'");
+            DisplayName.SetDefault("Mossy Runestone");
+            Tooltip.SetDefault("Summons Iorich, the Guardian\n'Holding it gives you feelings of serenity'");
         }
 
         public override void SetDefaults()
         {
-            item.width = 28;
-            item.height = 36;
+            item.width = 26;
+            item.height = 28;
             item.rare = ItemRarityID.Green;
             item.useAnimation = 45;
             item.useTime = 45;
@@ -36,7 +32,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override bool CanUseItem(Player player)
         {
             // Make sure that the boss doesn't already exist and player is in correct zone
-            return !NPC.AnyNPCs(ModContent.NPCType<DripplerBoss>()) && Main.bloodMoon;
+            return !NPC.AnyNPCs(ModContent.NPCType<TreeBoss>()) && !NPC.AnyNPCs(ModContent.NPCType<TreeBossP2>()) && Main.dayTime;
         }
 
         public override bool UseItem(Player player)
@@ -45,14 +41,14 @@ namespace OvermorrowMod.Items.Consumable.Boss
             {
                 if (Main.netMode == NetmodeID.SinglePlayer)
                 {
-                    Main.NewText("Dripplord, the Bloody Assimilator has awoken!", 175, 75, 255);
+                    Main.NewText("Iorich, the Guardian has awoken!", 175, 75, 255);
                 }
                 else if (Main.netMode == NetmodeID.Server)
                 {
-                    NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Dripplord, the Bloody Assimilator has awoken!"), new Color(175, 75, 255));
+                    NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich, the Guardian has awoken!"), new Color(175, 75, 255));
                 }
 
-                NPC.NewNPC((int)player.position.X, (int)(player.position.Y - 450f), ModContent.NPCType<DripplerBoss>(), 0, 0f, 0f, 0f, 0f, 255);
+                NPC.NewNPC((int)player.position.X, (int)(player.position.Y - 50f), ModContent.NPCType<TreeBoss>(), 0, 0f, 0f, 0f, 0f, 255);
                 Main.PlaySound(SoundID.Roar, player.position, 0);
                 return true;
             }
@@ -62,15 +58,10 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 25);
-            recipe.AddIngredient(ItemID.VilePowder, 15);
-            recipe.AddTile(TileID.DemonAltar);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 25);
-            recipe.AddIngredient(ItemID.ViciousPowder, 15);
+            recipe.AddIngredient(ItemID.PurificationPowder, 15);
+            recipe.AddIngredient(ItemID.Emerald, 1);
+            recipe.AddIngredient(ItemID.StoneBlock, 25);
+            recipe.AddIngredient(ItemID.Acorn, 10);
             recipe.AddTile(TileID.DemonAltar);
             recipe.SetResult(this, 1);
             recipe.AddRecipe();

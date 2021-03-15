@@ -31,7 +31,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             damage += target.defense / 2;
         }
 
-        protected void SoulGain(NPC target, int randCeiling)
+        protected void SoulGain(NPC target, int defaultCeiling)
         {
             // Get the projectile owner
             Player player = Main.player[projectile.owner];
@@ -39,7 +39,8 @@ namespace OvermorrowMod.Projectiles.Piercing
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (Main.rand.Next(0, randCeiling) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)/* && target.type != NPCID.TargetDummy*/ && target.type != ModContent.NPCType<DripplerBoss>())
+            int randChance = Main.rand.Next(0, 100);
+            if ((randChance < defaultCeiling + modPlayer.soulGainBonus) && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2) /* && target.type != NPCID.TargetDummy*/ && target.type != ModContent.NPCType<DripplerBoss>())
             {
                 modPlayer.soulResourceCurrent++; // Increase number of resource
 

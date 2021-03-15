@@ -7,19 +7,19 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.Items.Materials
 {
-    public class DrippingFlesh : ModItem
+    public class BloodGem : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dripping Flesh");
+            DisplayName.SetDefault("Blood Gem");
         }
 
         public override void SetDefaults()
         {
             item.width = 18;
-            item.height = 26;
-            item.rare = ItemRarityID.Green;
-            item.maxStack = 999;
+            item.height = 18;
+            item.rare = ItemRarityID.Orange;
+            item.maxStack = 99;
         }
     }
 }
