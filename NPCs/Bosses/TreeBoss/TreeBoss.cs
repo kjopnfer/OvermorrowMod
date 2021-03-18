@@ -13,10 +13,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     public class TreeBoss : ModNPC
     {
         private bool changedPhase2 = false;
+        private bool introMessage = true;
         private int bufferCount = 0;
 
         private enum spawnDirection { left, right }
         private spawnDirection chooseDirection;
+
 
         public override void SetStaticDefaults()
         {
@@ -45,8 +47,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.noTileCollide = false;
             npc.boss = true;
             npc.npcSlots = 10f;
-            music = MusicID.Boss5;
-            //music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/StormDrake");
+            //music = MusicID.Boss5;
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
@@ -55,8 +57,51 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.defense = 17;
         }
 
+        private void BossText(string text) // boss messages
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+            { 
+                Main.NewText(text, Color.Green);
+            }
+            else if (Main.netMode == NetmodeID.MultiplayerClient)
+            { 
+                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Green);
+            }
+        }
+
         public override void AI()
         {
+            if (!OvermorrowWorld.downedTree && introMessage)
+            {
+                npc.dontTakeDamage = true;
+                npc.ai[3]++;
+
+                if (npc.ai[3] == 180)
+                {
+                    BossText("I heed thy call.");
+                }
+
+                if(npc.ai[3] == 360)
+                {
+                    BossText("Thoust wishes to unlock the secrets of the Dryads?");
+                }
+
+                if (npc.ai[3] == 540)
+                {
+                    BossText("Very well, I shalt test thy resolve.");
+                }
+
+                if (npc.ai[3] <= 600)
+                {
+                    return;
+                }
+                else
+                {
+                    introMessage = false;
+                    npc.dontTakeDamage = false;
+                }
+            }
+
             Player player = Main.player[npc.target];
 
             // Handles Despawning
@@ -163,7 +208,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     }
                     break;
                 case 1: // Spawn thorns
-                    if (npc.ai[1] % 60 == 0)
+                    if (npc.ai[1] % 60 == 0 && npc.ai[1] < 240)
                     {
                         // Get the ground beneath the player
                         Vector2 playerPos = new Vector2(player.position.X / 16, player.position.Y / 16);
@@ -176,6 +221,41 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 26, 2.5f, Main.myPlayer, 0f, 0f);
+                        }
+                    }
+
+                    if(npc.ai[1] == 240)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            // Get the ground beneath the player
+                            Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
+                            Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
+                            Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                            while (!tile.active() || tile.type == TileID.Trees)
+                            {
+                                playerPos.Y += 1;
+                                tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                            }
+
+                            Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
+                            while (!tile2.active() || tile2.type == TileID.Trees)
+                            {
+                                playerPos2.Y += 1;
+                                tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
+                            }
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                if (i == 0)
+                                {
+                                    Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                }
+                                else
+                                {
+                                    Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                }
+                            }
                         }
                     }
 
@@ -220,36 +300,75 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     }
                     break;
                 case 3: // Multiple thorns
-                    if (npc.ai[1] % 160 == 0)
+                    if (npc.ai[1] % 120 == 0)
                     {
-                        for (int i = 0; i < 3; i++)
+                        int randChoice = Main.rand.Next(2);
+                        npc.netUpdate = true;
+                        if (randChoice == 0)
                         {
-                            // Get the ground beneath the player
-                            Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
-                            Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
-                            Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                            while (!tile.active() || tile.type == TileID.Trees)
+                            for (int i = 0; i < 3; i++)
                             {
-                                playerPos.Y += 1;
-                                tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                            }
-
-                            Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                            while (!tile2.active() || tile2.type == TileID.Trees)
-                            {
-                                playerPos2.Y += 1;
-                                tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                            }
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                if (i == 0)
+                                // Get the ground beneath the player
+                                Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
+                                Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
+                                Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                                while (!tile.active() || tile.type == TileID.Trees)
                                 {
-                                    Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    playerPos.Y += 1;
+                                    tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
                                 }
-                                else
+
+                                Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
+                                while (!tile2.active() || tile2.type == TileID.Trees)
                                 {
-                                    Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
-                                    Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    playerPos2.Y += 1;
+                                    tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
+                                }
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    if (i == 0)
+                                    {
+                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    }
+                                    else
+                                    {
+                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < 3; i++)
+                            {
+                                // Get the ground beneath the player
+                                Vector2 playerPos = new Vector2((player.position.X - 90 * i) / 16, (player.position.Y) / 16);
+                                Vector2 playerPos2 = new Vector2((player.position.X + 90 * i) / 16, (player.position.Y) / 16);
+                                Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                                while (!tile.active() || tile.type == TileID.Trees)
+                                {
+                                    playerPos.Y += 1;
+                                    tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                                }
+
+                                Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
+                                while (!tile2.active() || tile2.type == TileID.Trees)
+                                {
+                                    playerPos2.Y += 1;
+                                    tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
+                                }
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    if (i == 0)
+                                    {
+                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    }
+                                    else
+                                    {
+                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    }
                                 }
                             }
                         }

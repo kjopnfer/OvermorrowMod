@@ -60,7 +60,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                item.damage = 12;
+                item.damage = 5;
                 item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("FungiPiercerProjectile");
             }

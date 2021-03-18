@@ -34,7 +34,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.UseSound = SoundID.Item71;
             item.noUseGraphic = true;
 
-            soulGainChance = 5;
+            soulGainChance = 2;
         }
 
         public override bool CanUseItem(Player player)

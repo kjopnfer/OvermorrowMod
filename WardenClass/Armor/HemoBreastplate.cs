@@ -38,6 +38,8 @@ namespace OvermorrowMod.WardenClass.Armor
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = "Piercing weapons have a chance to inflict two stacks of Bleeding";
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            modPlayer.HemoArmor = true;
         }
 
         public override void AddRecipes()

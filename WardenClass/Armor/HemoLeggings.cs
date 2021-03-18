@@ -2,6 +2,7 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 using OvermorrowMod.Items.Materials;
+using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Armor
 {
@@ -36,6 +37,8 @@ namespace OvermorrowMod.WardenClass.Armor
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = "All piercing weapons have a chance to inflict two stacks of Bleeding";
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            modPlayer.HemoArmor = true;
         }
 
         public override void AddRecipes()

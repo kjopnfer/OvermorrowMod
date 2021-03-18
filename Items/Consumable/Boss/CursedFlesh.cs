@@ -62,14 +62,14 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 25);
+            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 9);
             recipe.AddIngredient(ItemID.VilePowder, 15);
             recipe.AddTile(TileID.DemonAltar);
             recipe.SetResult(this, 1);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 25);
+            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 9);
             recipe.AddIngredient(ItemID.ViciousPowder, 15);
             recipe.AddTile(TileID.DemonAltar);
             recipe.SetResult(this, 1);

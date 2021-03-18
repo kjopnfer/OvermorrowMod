@@ -47,26 +47,113 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.defense = 14;
             npc.lifeMax = 3300;
             npc.HitSound = SoundID.NPCHit1;
-            npc.DeathSound = SoundID.DD2_BetsyDeath;
+            npc.DeathSound = SoundID.Item25;
             npc.knockBackResist = 0f;
             npc.noGravity = true;
             npc.noTileCollide = true;
             npc.boss = true;
             npc.value = Item.buyPrice(gold: 3);
             npc.npcSlots = 10f;
-            music = MusicID.Boss5;
-            //music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/StormDrake");
+            //music = MusicID.Boss5;
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
             bossBag = ModContent.ItemType<TreeBag>();
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
-            npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
             npc.defense = 17;
+        }
+
+        private void BossText(string text) // boss messages
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                Main.NewText(text, Color.Green);
+            }
+            else if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Green);
+            }
         }
 
         public override void AI()
         {
+            // Death animation code
+            if(npc.ai[3] > 0f)
+            {
+                npc.velocity = Vector2.Zero;
+
+                if (npc.ai[2] > 0)
+                {
+                    npc.ai[2]--;
+
+                    if(npc.ai[2] == 480)
+                    {
+                        BossText("I deem thee fit to inherit their powers.");
+                    }
+
+                    if (npc.ai[2] == 300)
+                    {
+                        BossText("Thoust Dryad shalt guide thee.");
+                    }
+
+                    if (npc.ai[2] == 120)
+                    {
+                        BossText("Fare thee well.");
+                    }
+                }
+                else
+                {
+                    npc.dontTakeDamage = true;
+                    npc.ai[3]++; // Death timer
+                    npc.velocity.X *= 0.95f;
+
+                    if (npc.velocity.Y < 0.5f)
+                    {
+                        npc.velocity.Y = npc.velocity.Y + 0.01f;
+                    }
+
+                    if (npc.velocity.X > 0.5f)
+                    {
+                        npc.velocity.Y = npc.velocity.Y - 0.01f;
+                    }
+
+                    if (npc.ai[3] > 120f)
+                    {
+                        npc.Opacity = 1f - (npc.ai[3] - 120f) / 60f;
+                    }
+
+                    if (Main.rand.NextBool(5) && npc.ai[3] < 120f)
+                    {
+                        // This dust spawn adapted from the Pillar death code in vanilla.
+                        for (int dustNumber = 0; dustNumber < 6; dustNumber++)
+                        {
+                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, 107, 0f, 0f, 0, default(Color), 1f)];
+                            dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
+                            dust.velocity.X = 0f;
+                            dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;
+                            dust.noGravity = true;
+                            dust.fadeIn = 1f;
+                            dust.scale = 1f + Main.rand.NextFloat() + (float)dustNumber * 0.3f;
+                        }
+                    }
+
+                    if (npc.ai[3] % 30f == 1f)
+                    {
+                        //Main.PlaySound(4, npc.Center, 22);
+                        Main.PlaySound(SoundID.Item25, npc.Center); // every half second while dying, play a sound
+                    }
+
+                    if (npc.ai[3] >= 180f)
+                    {
+                        npc.life = 0;
+                        npc.HitEffect(0, 0);
+                        npc.checkDead(); // This will trigger ModNPC.CheckDead the second time, causing the real death.
+                    }
+                }
+                return;
+            }
+
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
 
@@ -278,8 +365,25 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             return base.PreDraw(spriteBatch, drawColor);
         }
 
+        public override bool CheckDead()
+        {
+            if (npc.ai[3] == 0f)
+            {
+                npc.ai[2] = OvermorrowWorld.downedTree ? 0 : 540;
+                npc.ai[3] = 1f;
+                npc.damage = 0;
+                npc.life = npc.lifeMax;
+                npc.dontTakeDamage = true;
+                npc.netUpdate = true;
+                return false;
+            }
+            return true;
+        }
+
         public override void NPCLoot()
         {
+            //OvermorrowWorld.downedTree = true;
+
             if (Main.expertMode)
             {
                 npc.DropBossBags();

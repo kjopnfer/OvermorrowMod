@@ -241,7 +241,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             return true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        /*public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             SoulGain(target, 5); // 1 in 5 chance
            
@@ -250,6 +250,6 @@ namespace OvermorrowMod.Projectiles.Piercing
                 target.AddBuff(BuffID.Poisoned, 240); // Poison Debuff
             }
             target.immune[projectile.owner] = 3;
-        }
+        }*/
     }
 }

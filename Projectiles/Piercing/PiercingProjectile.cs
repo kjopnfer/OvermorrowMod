@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,39 @@ namespace OvermorrowMod.Projectiles.Piercing
 
                 // Add the projectile to the WardenDamagePlayer list of projectiles
                 modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+            }
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            var modPlayer = WardenDamagePlayer.ModPlayer(Main.player[projectile.owner]);
+
+            if (modPlayer.HemoArmor)
+            {
+                int randChance = Main.rand.Next(3);
+                if (randChance == 0)
+                {
+                    target.AddBuff(ModContent.BuffType<Bleeding>(), 240);
+                    target.AddBuff(ModContent.BuffType<Bleeding2>(), 240);
+                }
+            }
+
+            if (projectile.type == ModContent.ProjectileType<LightningPiercerProjectile>())
+            {
+                SoulGain(target, 2);
+
+                target.immune[projectile.owner] = 3;
+            }
+
+            if (projectile.type == ModContent.ProjectileType<VinePiercerProjectile>())
+            {
+                SoulGain(target, 4); // 1 in 5 chance
+
+                if (Main.rand.Next(0, 5) == 0) // 20% chance
+                {
+                    target.AddBuff(BuffID.Poisoned, 240); // Poison Debuff
+                }
+                target.immune[projectile.owner] = 3;
             }
         }
 

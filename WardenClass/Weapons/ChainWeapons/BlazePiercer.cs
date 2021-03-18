@@ -27,14 +27,14 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.knockBack = 0f;
             item.width = 30;
             item.height = 10;
-            item.damage = 21;
+            item.damage = 12;
             item.shootSpeed = 18f;
             item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             item.rare = ItemRarityID.Orange;
             item.UseSound = SoundID.Item71;
             item.noUseGraphic = true;
 
-            soulGainChance = 5;
+            soulGainChance = 4;
         }
 
         public override bool CanUseItem(Player player)
@@ -48,7 +48,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useAnimation = 14;
                 item.useTime = 14;
                 item.knockBack = 0f;
-                item.damage = 36;
+                item.damage = 24;
                 item.shootSpeed = 32f;
                 item.shoot = mod.ProjectileType("BlazePiercerProjectileAlt");
 
@@ -61,7 +61,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                item.damage = 21;
+                item.damage = 12;
                 item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             }

@@ -17,6 +17,7 @@ using Terraria.Graphics.Shaders;
 using OvermorrowMod.UI;
 using static Terraria.ModLoader.ModContent;
 using OvermorrowMod;
+using OvermorrowMod.Buffs.Debuffs;
 
 namespace WardenClass
 {
@@ -28,6 +29,8 @@ namespace WardenClass
         public bool ObsidianShackle;
         public bool ReaperBook;
         public bool SoulRing;
+
+        public bool HemoArmor;
 
         public static WardenDamagePlayer ModPlayer(Player player)
         {
@@ -66,6 +69,19 @@ namespace WardenClass
             }
         }
 
+        public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+        {
+            /*if (HemoArmor)
+            {
+                int randChance = Main.rand.Next(3);
+                if (randChance == 0)
+                {
+                    target.AddBuff(ModContent.BuffType<Bleeding>(), 240);
+                    target.AddBuff(ModContent.BuffType<Bleeding2>(), 240);
+                }
+            }*/
+        }
+
         public override void UpdateLifeRegen()
         {
             if (SoulRing)
@@ -102,6 +118,8 @@ namespace WardenClass
             ReaperBook = false;
             SoulRing = false;
 
+            HemoArmor = false;
+
             ResetVariables();
         }
 
@@ -121,6 +139,7 @@ namespace WardenClass
         public override void UpdateDead()
         {
             ResetVariables();
+            soulResourceCurrent = 0;
         }
 
         // Reset variables to prevent infinite scaling

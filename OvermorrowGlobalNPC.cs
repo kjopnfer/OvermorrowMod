@@ -19,6 +19,7 @@ namespace OvermorrowMod
         public override bool InstancePerEntity => true;
 
         public bool bleedingDebuff;
+        public bool bleedingDebuff2;
 
         public override void ResetEffects(NPC npc)
         {
@@ -27,6 +28,15 @@ namespace OvermorrowMod
 
         public override void NPCLoot(NPC npc)
         {
+            if (npc.type == NPCID.AngryBones || npc.type == NPCID.AngryBonesBig || npc.type == NPCID.AngryBonesBigHelmet || npc.type == NPCID.AngryBonesBigMuscle ||
+                npc.type == NPCID.DarkCaster || npc.type == NPCID.CursedSkull)
+            {
+                int dropChance = Main.rand.Next(100);
+                if (dropChance == 0) // 1% drop chance
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFragment>());
+                }
+            }
             if (npc.type == NPCID.Harpy)
             {
                 int dropChance = Main.rand.Next(10);
@@ -44,10 +54,10 @@ namespace OvermorrowMod
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<AncientCrystal>());
                 }
 
-                int dropChance2 = Main.rand.Next(5); // 20% drop chance
+                int dropChance2 = Main.rand.Next(2); // 50% drop chance
                 if(dropChance2 == 0)
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrippingFlesh>());
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrippingFlesh>(), Main.rand.Next(1, 3));
                 }
             }
 
@@ -142,10 +152,19 @@ namespace OvermorrowMod
                 {
                     npc.lifeRegen = 0;
                 }
-                // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 4 life lost per second.
-                npc.lifeRegen -= 8;
 
-                // The damage visual value
+                if (bleedingDebuff2) // This is only applied in tandem with the bleedingDebuff anyways
+                {
+                    // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 4 + 4 life lost per second.
+                    npc.lifeRegen -= 16;
+                }
+                else
+                {
+                    // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 4 life lost per second.
+                    npc.lifeRegen -= 8;
+                    // The damage visual value
+                }
+
                 damage = 1;
             }
         }

@@ -280,7 +280,7 @@ namespace OvermorrowMod.Projectiles.Piercing
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            SoulGain(target, 5); // 1 in 5 chance
+            SoulGain(target, 4);
 
             if (!projectile.wet) // Check if projectile is not in water
             { 

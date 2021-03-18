@@ -26,7 +26,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.knockBack = 0f;
             item.width = 30;
             item.height = 10;
-            item.damage = 6;
+            item.damage = 3;
             item.shootSpeed = 14f;
             item.shoot = mod.ProjectileType("VilePiercerProjectile");
             item.rare = ItemRarityID.Blue;
@@ -47,7 +47,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useAnimation = 14;
                 item.useTime = 14;
                 item.knockBack = 0f;
-                item.damage = 12;
+                item.damage = 11;
                 item.shootSpeed = 28f;
                 item.shoot = mod.ProjectileType("VilePiercerProjectileAlt");
                 item.UseSound = SoundID.Item71;
@@ -60,7 +60,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                item.damage = 6;
+                item.damage = 3;
                 item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("VilePiercerProjectile");
             }
