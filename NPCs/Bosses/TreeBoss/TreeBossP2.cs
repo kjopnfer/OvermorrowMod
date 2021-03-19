@@ -61,6 +61,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
+            npc.lifeMax = (int)(npc.lifeMax * bossLifeScale * 0.65f);
             npc.defense = 17;
         }
 

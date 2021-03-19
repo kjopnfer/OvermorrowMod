@@ -653,7 +653,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             // Eye dust
             if (!hasCharged && canPulse)
             {
-                if (npc.direction == 1)
+                if (npc.direction == 1) // Facing right
                 {
                     for (int num1202 = 0; num1202 < 6; num1202++)
                     {
@@ -662,7 +662,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
                     }
                 }
-                else
+                else // Facing left
                 {
                     for (int num1202 = 0; num1202 < 6; num1202++)
                     {
