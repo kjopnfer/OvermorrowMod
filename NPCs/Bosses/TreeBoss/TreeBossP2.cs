@@ -256,7 +256,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         npc.velocity.X = move.X;
                         npc.velocity.Y = move.Y * .98f;
 
-                        if (npc.ai[1] % 45 == 0)
+                        if (npc.ai[1] % 90 == 0)
                         {
                             int shootSpeed = Main.rand.Next(8, 12);
                             Vector2 position = npc.Center;

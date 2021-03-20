@@ -277,20 +277,5 @@ namespace OvermorrowMod.Projectiles.Piercing
                 0f
             );
         }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            SoulGain(target, 4);
-
-            if (!projectile.wet) // Check if projectile is not in water
-            { 
-                if (Main.rand.Next(0, 3) == 0) // 33% chance
-                {
-                    target.AddBuff(BuffID.OnFire, 300); // Fire Debuff
-                }
-            }
-
-            target.immune[projectile.owner] = 3;
-        }
     }
 }

@@ -27,7 +27,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.knockBack = 0f;
             item.width = 30;
             item.height = 10;
-            item.damage = 12;
+            item.damage = 5;
             item.shootSpeed = 14f;
             item.shoot = mod.ProjectileType("FungiPiercerProjectile");
             item.rare = ItemRarityID.Green;
@@ -48,7 +48,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useAnimation = 14;
                 item.useTime = 14;
                 item.knockBack = 0f;
-                item.damage = 12;
+                item.damage = 7;
                 item.shootSpeed = 28f;
                 item.shoot = mod.ProjectileType("FungiPiercerProjectileAlt");
 

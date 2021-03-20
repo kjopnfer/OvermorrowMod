@@ -10,7 +10,7 @@ namespace OvermorrowMod.Projectiles.Boss
     public class NatureScythe : ModProjectile
     {
         private Vector2 storeVelocity;
-
+        private bool reverseDirection = false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Nature Scythe");
@@ -26,7 +26,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.tileCollide = false;
-            projectile.timeLeft = 360;
+            projectile.timeLeft = 540;
         }
 
         public override void AI()
@@ -42,16 +42,41 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.ai[0]++;
             projectile.ai[1]++;
 
-            if(projectile.ai[0] == 60) // Begin accelerating
+            if (!reverseDirection)
             {
-                projectile.velocity = storeVelocity;
-            }
-
-            if(projectile.ai[0] > 66)
-            {
-                if (projectile.ai[0] % 6 == 0) // Increase velocity by 25% every 6 ticks
+                if (projectile.ai[0] == 60) // Begin accelerating
                 {
-                    projectile.velocity *= 1.25f;
+                    projectile.velocity = storeVelocity;
+                }
+
+                if (projectile.ai[0] > 66)
+                {
+                    if (projectile.ai[0] % 15 == 0) // Increase velocity by 25% every 6 ticks
+                    {
+                        projectile.velocity *= 1.25f;
+                    }
+                }
+
+                if (projectile.ai[0] == 140)
+                {
+                    reverseDirection = true;
+                    projectile.velocity = Vector2.Zero;
+                }
+            }
+            else
+            {
+                if(projectile.ai[0] == 161)
+                {
+                    // Reverse the direction
+                    projectile.velocity = storeVelocity * -1;
+                }
+
+                if (projectile.ai[0] > 226)
+                {
+                    if (projectile.ai[0] % 15 == 0) // Increase velocity by 25% every 6 ticks
+                    {
+                        projectile.velocity *= 1.25f;
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.WardenClass.Accessories;
+using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,6 +38,16 @@ namespace OvermorrowMod
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFragment>());
                 }
             }
+
+            if (npc.type == NPCID.FungiBulb)
+            {
+                int dropChance = Main.rand.Next(2);
+                if (dropChance == 0) // 8.33% drop chance
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<FungiPiercer>());
+                }
+            }
+
             if (npc.type == NPCID.Harpy)
             {
                 int dropChance = Main.rand.Next(10);

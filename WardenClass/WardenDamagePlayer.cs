@@ -26,6 +26,7 @@ namespace WardenClass
     {
         public bool UIToggled = false;
         public bool AncientCrystal;
+        public bool FrostburnRune;
         public bool ObsidianShackle;
         public bool ReaperBook;
         public bool SoulRing;

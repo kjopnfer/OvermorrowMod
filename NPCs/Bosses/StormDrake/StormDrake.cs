@@ -361,7 +361,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
 
-                                    Projectile.NewProjectile(npc.position - new Vector2(-165 * 2, (-74 / 2) - 20), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                                    Projectile.NewProjectile(npc.position - new Vector2(-165 * 2, (-74 / 2) - 20), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / 4, 3f, Main.myPlayer, 0, 0);
                                 }
                                 else // Facing left
                                 {
@@ -465,7 +465,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     {
                                         for (int i = 0; i < 2; i++)
                                         {
-                                            int damage = Main.expertMode ? npc.damage : npc.damage / 2;
+                                            int damage = Main.expertMode ? npc.damage / 4 : npc.damage / 2;
                                             if (chooseDirection == hoverDirection.left)
                                             {
                                                 Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 50, -4, Main.rand.Next(-3, -1), ModContent.ProjectileType<ElectricSparks>(), damage, 1, Main.myPlayer, 0, 0);

@@ -53,6 +53,14 @@ namespace OvermorrowMod.Projectiles.Piercing
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(Main.player[projectile.owner]);
+            if (modPlayer.FrostburnRune)
+            {
+                int randChance = Main.rand.Next(3);
+                if (randChance == 0)
+                {
+                    target.AddBuff(BuffID.Frostburn, 240);
+                }
+            }
 
             if (modPlayer.HemoArmor)
             {
@@ -64,9 +72,28 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
             }
 
-            if (projectile.type == ModContent.ProjectileType<LightningPiercerProjectile>())
+            if (projectile.type == ModContent.ProjectileType<LightningPiercerProjectile>() || projectile.type == ModContent.ProjectileType<VilePiercerProjectile>()
+                || projectile.type == ModContent.ProjectileType<CrimsonPiercerProjectile>())
             {
                 SoulGain(target, 2);
+
+                target.immune[projectile.owner] = 3;
+            }
+
+            if (projectile.type == ModContent.ProjectileType<BonePiercerProjectile>() || projectile.type == ModContent.ProjectileType<BlazePiercerProjectile>())
+            {
+                SoulGain(target, 3);
+
+                if (projectile.type == ModContent.ProjectileType<BlazePiercerProjectile>())
+                {
+                    if (!projectile.wet) // Check if projectile is not in water
+                    {
+                        if (Main.rand.Next(0, 3) == 0) // 33% chance
+                        {
+                            target.AddBuff(BuffID.OnFire, 300); // Fire Debuff
+                        }
+                    }
+                }
 
                 target.immune[projectile.owner] = 3;
             }
@@ -79,6 +106,12 @@ namespace OvermorrowMod.Projectiles.Piercing
                 {
                     target.AddBuff(BuffID.Poisoned, 240); // Poison Debuff
                 }
+                target.immune[projectile.owner] = 3;
+            }
+
+            if (projectile.type == ModContent.ProjectileType<FungiPiercerProjectile>())
+            {
+                SoulGain(target, 5);
                 target.immune[projectile.owner] = 3;
             }
         }

@@ -37,7 +37,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.noTileCollide = true;
             npc.boss = true;
             npc.npcSlots = 10f;
-            music = MusicID.Boss5;
+            //music = MusicID.Boss5;
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/SandstormBoss");
         }
 
         public static void SandstormStuff()
@@ -166,7 +167,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     {
                         for (int i = 0; i < Main.rand.Next(4, 7); i++)
                         {
-                            Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-13, -8), 0), ModContent.ProjectileType<SandBall>(), npc.damage / 3, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-13, -8), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
                         }
                     }
 
@@ -203,7 +204,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 case 2: // Turn into dust cloud
                     npc.hide = true;
 
-                    if (npc.ai[2] == (Main.expertMode ? 50 : 60))
+                    if (npc.ai[2] == (Main.expertMode ? 50 : 66))
                     {
                         npc.velocity = Vector2.Zero;
                     }
@@ -213,12 +214,19 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (npc.ai[2] <= 0)
                     {
-                        float chargeSpeed = 22;
+                        float chargeSpeed = !player.ZoneDesert ? 30 : 22;
                         move = player.Center - npc.Center;
                         float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
                         move *= chargeSpeed / magnitude;
                         npc.velocity = move;
-                        npc.ai[2] = 80; // charging delay
+                        if (!player.ZoneDesert)
+                        {
+                            npc.ai[2] = 40;
+                        }
+                        else
+                        {
+                            npc.ai[2] = 80; // charging delay
+                        }
                     }
                     npc.ai[2] -= 1f;
 

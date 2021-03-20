@@ -283,12 +283,5 @@ namespace OvermorrowMod.Projectiles.Piercing
                 0f
             );
         }
-
-        /*public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            SoulGain(target, 2);
-
-            target.immune[projectile.owner] = 3;
-        }*/
     }
 }
