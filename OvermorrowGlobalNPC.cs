@@ -51,7 +51,7 @@ namespace OvermorrowMod
             if (npc.type == NPCID.Harpy)
             {
                 int dropChance = Main.rand.Next(10);
-                if(dropChance == 0) // 10% drop chance
+                if (dropChance == 0) // 10% drop chance
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HarpyLeg>());
                 }
@@ -66,13 +66,13 @@ namespace OvermorrowMod
                 }
 
                 int dropChance2 = Main.rand.Next(2); // 50% drop chance
-                if(dropChance2 == 0)
+                if (dropChance2 == 0)
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrippingFlesh>(), Main.rand.Next(1, 3));
                 }
             }
 
-            if(Main.netMode == NetmodeID.Server)
+            if (Main.netMode == NetmodeID.Server)
             {
                 if (npc.type != NPCID.WaterSphere && npc.type != NPCID.ChaosBall && npc.type != NPCID.BurningSphere && npc.type != NPCID.SolarFlare && npc.type != NPCID.VileSpit)
                 {
@@ -102,7 +102,8 @@ namespace OvermorrowMod
                         }
                     }
                 }
-            }else if(Main.netMode == NetmodeID.SinglePlayer)
+            }
+            else if (Main.netMode == NetmodeID.SinglePlayer)
             {
                 if (npc.type != NPCID.WaterSphere && npc.type != NPCID.ChaosBall && npc.type != NPCID.BurningSphere && npc.type != NPCID.SolarFlare && npc.type != NPCID.VileSpit)
                 {
@@ -156,7 +157,7 @@ namespace OvermorrowMod
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
-            if (bleedingDebuff)
+            if (bleedingDebuff || bleedingDebuff2)
             {
                 // These lines zero out any positive lifeRegen. This is expected for all bad life regeneration effects.
                 if (npc.lifeRegen > 0)
@@ -182,7 +183,7 @@ namespace OvermorrowMod
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            if (bleedingDebuff)
+            if (bleedingDebuff || bleedingDebuff2)
             {
                 if (Main.rand.Next(4) < 3)
                 {
@@ -194,54 +195,93 @@ namespace OvermorrowMod
             }
         }
 
-        /*public override void HitEffect(NPC npc, int hitDirection, double damage)
+        // New method to apply buffs to NPCs, this is WIP
+        public void AddNewBuff(NPC npc, int type, int time)
         {
-            // There might be server shenanigans we'll see
-            if (npc.life <= 0)
+            // Check to make sure that the NPC is not immune to the applied debuff
+            if (npc.buffImmune[type])
             {
-                if (npc.type != NPCID.WaterSphere && npc.type != NPCID.ChaosBall && npc.type != NPCID.BurningSphere && npc.type != NPCID.SolarFlare && npc.type != NPCID.VileSpit)
+                return;
+            }
+
+            // The netcode to send for updating NPC buff
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                NetMessage.SendData(MessageID.AddNPCBuff, -1, -1, null, npc.whoAmI, type, time, 0f, 0, 0, 0);
+            }
+            else if (Main.netMode == NetmodeID.Server)
+            {
+                NetMessage.SendData(MessageID.SendNPCBuffs, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+            }
+
+            // This handles reapplying an existing buff on an NPC
+            // Loop through the NPC's buffs
+            for (int i = 0; i < npc.buffType.Length; i++)
+            {
+                // Check if the buff matches the type being applied
+                if (npc.buffType[i] == type)
                 {
-                    for (int i = 0; i < Main.maxPlayers; i++)
+                    // Reapply the debuff
+                    if (!BuffLoader.ReApply(type, npc, time, i) && npc.buffTime[i] < time)
                     {
-                        if (npc.playerInteraction[i])
-                        {
-                            Player player = Main.player[i];
-                            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-                            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook)
-                            {
-                                if (Main.rand.Next(4) == 0) // 25% chance to gain Soul Essence on death
-                                {
-                                    modPlayer.soulResourceCurrent += 1;
-                                    modPlayer.soulList.Add(Projectile.NewProjectile(npc.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f));
-                                    CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.DarkCyan, "Soul Essence Gained", true, false);
-                                }
-                            }
-                        }
+                        npc.buffTime[i] = time;
                     }
+                    return;
                 }
             }
-            /*if (Main.netMode == 2)
+
+            // While loop flag
+            int num3 = -1;
+            while (num3 == -1)
             {
-                if (npc.life <= 0)
+                // Default break-out int
+                int num2 = -1;
+
+                // Loop through the NPC's buffs
+                for (int i = 0; i < npc.buffType.Length; i++)
                 {
-                    if (npc.type != NPCID.WaterSphere && npc.type != NPCID.ChaosBall && npc.type != NPCID.BurningSphere && npc.type != NPCID.SolarFlare && npc.type != NPCID.VileSpit)
+                    // Check if the buff is NOT a debuff
+                    if (!Main.debuff[npc.buffType[i]])
                     {
-                        for (int i = 0; i < Main.maxPlayers; i++)
-                        {
-                            if (npc.playerInteraction[i])
-                            {
-                                Player player = Main.player[i];
-                                var modPlayer = WardenDamagePlayer.ModPlayer(player);
-                                if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)
-                                {
-                                    modPlayer.soulResourceCurrent += 1;
-                                }
-                                CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.DarkCyan, "1 Soul Essence", true, false);
-                            }
-                        }
+                        // Set the default break-out int to be the index
+                        // This prevents the while loop from exiting
+                        num2 = i;
+
+                        // Break out of the for loop
+                        break;
                     }
                 }
+
+                // Catch the default break-out int
+                if (num2 == -1)
+                {
+                    // Exit from the while loop
+                    return;
+                }
+
+                // Loop through the NPC's buffs, using the int obtained from the not debuff checker
+                for (int i = num2; i < npc.buffType.Length; i++)
+                {
+                    // Break out of the while loop if the buff index is 0
+                    if (npc.buffType[i] == 0)
+                    {
+                        // Set the loop value to the index, thus breaking out of the loop by end of loop
+                        // This is because the value is no longer -1
+                        num3 = i;
+                        break;
+                    }
+                }
+
+                // If the looping int is still valid, remove the buff passed by the buff check
+                if(num3 == -1)
+                {
+                    npc.DelBuff(num2);
+                }
             }
-        }*/
+
+            // Apply the buff to the NPC
+            npc.buffType[num3] = type;
+            npc.buffTime[num3] = time;
+        }
     }
 }

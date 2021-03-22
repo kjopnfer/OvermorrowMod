@@ -69,7 +69,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.TargetClosest(true);
             npc.ai[0]++;
 
-            if(npc.ai[3] == 0)
+            if (npc.ai[3] == 0)
             {
                 speed = Main.rand.Next(14, 21);
                 npc.ai[3]++;
@@ -113,7 +113,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         Vector2 direction = targetPosition - position;
                         direction.Normalize();
 
-                        if(parentNPC.life <= parentNPC.lifeMax * 0.39f)
+                        if (parentNPC.life <= parentNPC.lifeMax * 0.39f)
                         {
                             int chooseShoot = Main.rand.Next(2);
                             if (chooseShoot == 0)

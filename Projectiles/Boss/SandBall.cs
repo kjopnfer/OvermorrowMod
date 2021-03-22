@@ -30,6 +30,12 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void AI()
         {
+            if(projectile.ai[0] == 0)
+            {
+                projectile.netUpdate = true;
+                projectile.ai[0]++;
+            }
+
             projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 3f)
             {

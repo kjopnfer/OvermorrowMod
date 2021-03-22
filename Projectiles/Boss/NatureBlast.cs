@@ -35,6 +35,7 @@ namespace OvermorrowMod.Projectiles.Boss
             if (projectile.ai[0] == 0)
             {
                 randDelay = Main.rand.Next(90, 200);
+                projectile.netUpdate = true;
             }
 
             for (int num1101 = 0; num1101 < 3; num1101++)

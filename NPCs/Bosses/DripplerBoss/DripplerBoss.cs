@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Placeable.Boss;
@@ -47,6 +48,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             bossBag = ModContent.ItemType<DripplerBag>();
 
             npc.buffImmune[BuffID.Bleeding] = true;
+            npc.buffImmune[ModContent.BuffType<Bleeding2>()] = true;
             npc.buffImmune[BuffID.OnFire] = true;
             npc.buffImmune[BuffID.Poisoned] = true;
             npc.buffImmune[BuffID.Frostburn] = true;
@@ -63,14 +65,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void AI()
         {
-            if(npc.life <= 0)
+            if (npc.life <= 0)
             {
                 npc.NPCLoot();
                 Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
             }
 
             Player player = Main.player[npc.target];
-            
+
             // Check that it is a Blood Moon & that it is night time
             if (!Main.bloodMoon)
             {
@@ -149,18 +151,18 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             }
 
             // Sometimes health shenanigans happen and the rotaters don't get spawned
-            if(countRotaters >= 1)
+            if (countRotaters >= 1)
             {
                 spawnedRotaters = true;
             }
 
-            if (changedPhase2 && spawnedRotaters && countRotaters <= 0) 
+            if (changedPhase2 && spawnedRotaters && countRotaters <= 0)
             {
                 // Phase 3 starts when there are no Rotaters and is already in Phase 2
                 changedPhase3 = true;
             }
 
-            if(!spawnedRotaters && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
+            if (!spawnedRotaters && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
             {
                 // Phase 2 starts when it is not in phase 2, all dripplers are dead, and NPC life is less than 2/3rds gone
                 npc.ai[0] = 1; // Phase 2 initiator
@@ -189,7 +191,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
                         npc.velocity = move;
 
-                        if(changedPhase3)
+                        if (changedPhase3)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -223,7 +225,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                     npc.ai[0] = 0;
                                     npc.ai[1] = 0;
                                 }
-                            }else if (changedPhase2) // Make the NPC follow until all Rotaters are dead
+                            }
+                            else if (changedPhase2) // Make the NPC follow until all Rotaters are dead
                             {
                                 // Phase 2
                                 npc.ai[0] = 0;
@@ -242,7 +245,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                     npc.ai[1] = 0;
                                 }
                             }
-                        } 
+                        }
                     }
                     break;
                 case 1: // Phase 2 Initiator
@@ -312,7 +315,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     {
                         npc.velocity = Vector2.Zero;
 
-                        if(npc.ai[1] == 90)
+                        if (npc.ai[1] == 90)
                         {
                             // Wall of Flesh scream sound
                             Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
@@ -394,6 +397,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void NPCLoot()
         {
+            OvermorrowWorld.downedDrippler = true;
+
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
             for (int i = 0; i < 2; i++)

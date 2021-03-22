@@ -91,7 +91,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 npc.ai[1]++;
             }
 
-            if(npc.ai[0] == 2 || npc.ai[0] == 3)
+            if (npc.ai[0] == 2 || npc.ai[0] == 3)
             {
                 npc.dontTakeDamage = true;
             }
@@ -165,9 +165,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (npc.ai[1] % 60 == 0)
                     {
-                        for (int i = 0; i < Main.rand.Next(4, 7); i++)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-13, -8), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                            for (int i = 0; i < Main.rand.Next(4, 7); i++)
+                            {
+                                npc.netUpdate = true;
+                                Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-13, -8), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                            }
                         }
                     }
 
@@ -219,6 +223,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
                         move *= chargeSpeed / magnitude;
                         npc.velocity = move;
+                        npc.netUpdate = true;
                         if (!player.ZoneDesert)
                         {
                             npc.ai[2] = 40;
@@ -261,7 +266,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 case 3: // Spin in a circle
 
                     // Get center to spin around
-                    if (npc.ai[1] == 10) 
+                    if (npc.ai[1] == 10)
                     {
                         rotationCenter = new Vector2(npc.Center.X + 50, npc.Center.Y);
                     }
@@ -275,9 +280,12 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (npc.ai[1] % 50 == 0)
                     {
-                        for (int i = 0; i < 2; i++)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(Math.PI) * 6, ModContent.ProjectileType<SandBall2>(), npc.damage / 4, 0f, Main.myPlayer);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(Math.PI) * 6, ModContent.ProjectileType<SandBall2>(), npc.damage / 4, 0f, Main.myPlayer);
+                            }
                         }
                     }
                     // Move the NPC around the center
@@ -372,7 +380,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 }
             }
 
-            if(npc.ai[0] == 2 || npc.ai[0] == 3) {
+            if (npc.ai[0] == 2 || npc.ai[0] == 3)
+            {
                 return false;
             }
 
@@ -381,6 +390,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void NPCLoot()
         {
+            OvermorrowWorld.downedDarude = true;
+
             if (Sandstorm.Happening)
             {
                 Sandstorm.Happening = false;

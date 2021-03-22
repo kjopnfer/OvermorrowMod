@@ -15,19 +15,41 @@ namespace OvermorrowMod
 {
     public class OvermorrowWorld : ModWorld
     {
+        public static bool downedDarude;
         public static bool downedTree;
+        public static bool downedDrippler;
+        public static bool downedDrake;
 
         public override void Initialize()
         {
             downedTree = false;
+            downedDarude = false;
+            downedDrippler = false;
+            downedDrake = false;
         }
 
         public override TagCompound Save()
         {
             var downed = new List<string>();
+       
             if (downedTree)
             {
                 downed.Add("Iorich");
+            }
+
+            if (downedDarude)
+            {
+                downed.Add("Dharuud");
+            }
+
+            if (downedDrippler)
+            {
+                downed.Add("Dripplord");
+            }
+
+            if (downedDrake)
+            {
+                downed.Add("Storm Drake");
             }
 
             
@@ -42,6 +64,9 @@ namespace OvermorrowMod
         {
             var downed = tag.GetList<string>("downed");
             downedTree = downed.Contains("Iorich");
+            downedDarude = downed.Contains("Dharuud");
+            downedDrippler = downed.Contains("Dripplord");
+            downedDrake = downed.Contains("Storm Drake");
         }
 
         public override void LoadLegacy(BinaryReader reader)
@@ -51,6 +76,9 @@ namespace OvermorrowMod
             {
                 BitsByte flags = reader.ReadByte();
                 downedTree = flags[0];
+                downedDarude = flags[1];
+                downedDrippler = flags[2];
+                downedDrake = flags[3];
             }
             else
             {
@@ -62,6 +90,9 @@ namespace OvermorrowMod
         {
             var flags = new BitsByte();
             flags[0] = downedTree;
+            flags[1] = downedDarude;
+            flags[2] = downedDrippler;
+            flags[3] = downedDrake;
 
             writer.Write(flags);
 
@@ -102,6 +133,9 @@ namespace OvermorrowMod
         {
             BitsByte flags = reader.ReadByte();
             downedTree = flags[0];
+            downedDarude = flags[1];
+            downedDrippler = flags[2];
+            downedDrake = flags[3];
 
             // As mentioned in NetSend, BitBytes can contain 8 values. If you have more, be sure to read the additional data:
             // BitsByte flags2 = reader.ReadByte();

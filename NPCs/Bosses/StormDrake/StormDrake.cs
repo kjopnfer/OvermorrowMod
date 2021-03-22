@@ -835,6 +835,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
         public override void NPCLoot()
         {
+            OvermorrowWorld.downedDrake = true;
+
             if (Main.raining)
             {
                 Main.raining = false;

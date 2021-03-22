@@ -30,9 +30,12 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void AI()
         {
-            /*NPC parentNPC = Main.npc[(int)projectile.ai[0]];
+            if (projectile.ai[0] == 0)
+            {
+                projectile.netUpdate = true;
+                projectile.ai[0]++;
+            }
 
-            if(parentNPC.convergeProjectiles)*/
             projectile.ai[1]++;
 
             if (projectile.ai[1] >= 120 && projectile.ai[1] % 40 == 0)

@@ -63,8 +63,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             { 
                 Main.NewText(text, Color.Green);
             }
-            else if (Main.netMode == NetmodeID.MultiplayerClient)
-            { 
+            else if (Main.netMode == NetmodeID.Server)
+            {
                 NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Green);
             }
         }
@@ -74,6 +74,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (!OvermorrowWorld.downedTree && introMessage)
             {
                 npc.dontTakeDamage = true;
+                npc.netUpdate = true;
                 npc.ai[3]++;
 
                 if (npc.ai[3] == 180)
@@ -83,7 +84,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 if(npc.ai[3] == 360)
                 {
-                    BossText("Thoust wishes to unlock the secrets of the Dryads?");
+                    BossText("Thou wishes to unlock the secrets of the Dryads?");
                 }
 
                 if (npc.ai[3] == 540)
@@ -99,6 +100,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 {
                     introMessage = false;
                     npc.dontTakeDamage = false;
+                    npc.netUpdate = true;
                 }
             }
 
@@ -144,22 +146,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     // Do nothing
                     if (npc.ai[1] == 30)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            int randChoice = Main.rand.Next(2);
-                            npc.netUpdate = true;
-                            if (randChoice == 0)
-                            {
-                                chooseDirection = spawnDirection.left;
-                                npc.netUpdate = true;
-                            }
-                            else
-                            {
-                                chooseDirection = spawnDirection.right;
-                                npc.netUpdate = true;
-                            }
-                        }
-
                         int randCeiling = npc.life <= npc.lifeMax * 0.5f ? 3 : 5;
                         int waveChance = Main.expertMode ? Main.rand.Next(0, randCeiling) : -1;
 

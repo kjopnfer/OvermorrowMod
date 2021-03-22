@@ -71,7 +71,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 Main.NewText(text, Color.Green);
             }
-            else if (Main.netMode == NetmodeID.MultiplayerClient)
+            else if (Main.netMode == NetmodeID.Server)
             {
                 NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Green);
             }
@@ -80,7 +80,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override void AI()
         {
             // Death animation code
-            if(npc.ai[3] > 0f)
+            if (npc.ai[3] > 0f)
             {
                 npc.velocity = Vector2.Zero;
 
@@ -88,14 +88,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 {
                     npc.ai[2]--;
 
-                    if(npc.ai[2] == 480)
+                    if (npc.ai[2] == 480)
                     {
                         BossText("I deem thee fit to inherit their powers.");
                     }
 
                     if (npc.ai[2] == 300)
                     {
-                        BossText("Thoust Dryad shalt guide thee.");
+                        BossText("Thou Dryad shalt guide thee.");
                     }
 
                     if (npc.ai[2] == 120)
@@ -159,7 +159,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Player player = Main.player[npc.target];
 
             npc.spriteDirection = npc.direction;
-            
+
             // Handles Despawning
             if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
             {
@@ -179,7 +179,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity.Y = -2000;
             }
 
-            if(npc.life > npc.lifeMax)
+            if (npc.life > npc.lifeMax)
             {
                 npc.life = npc.lifeMax;
             }
@@ -193,7 +193,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // Spawn nature waves in all directions
             // Move toward player slowly
 
-            if(npc.life <= npc.lifeMax * 0.5f)
+            if (npc.life <= npc.lifeMax * 0.5f)
             {
                 changedPhase2 = true;
             }
@@ -283,7 +283,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     // Summon projectiles from off-screen that move towards the boss
                     if (npc.ai[1] % 20 == 0)
                     {
-                        for(int i = 0; i < 6; i++)
+                        for (int i = 0; i < 6; i++)
                         {
                             float randPositionX = npc.Center.X + Main.rand.Next(-10, 10) * 600;
                             float randPositionY = npc.Center.Y + Main.rand.Next(-10, 10) * 600;
@@ -295,7 +295,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if (npc.ai[1] == (changedPhase2 ? 480: 360))
+                    if (npc.ai[1] == (changedPhase2 ? 480 : 360))
                     {
                         npc.ai[0] = 3;
                         npc.ai[1] = 0;
@@ -307,16 +307,18 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     if (npc.ai[1] % 300 == 0)
                     {
                         int projectiles = Main.rand.Next((changedPhase2 ? 13 : 9), (changedPhase2 ? 18 : 13));
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        npc.netUpdate = true;
+
+                        for (int i = 0; i < projectiles; i++)
                         {
-                            for (int i = 0; i < projectiles; i++)
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<NatureBlast>(), 19, 2, player.whoAmI);
+                                Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<NatureBlast>(), 19, 2, Main.myPlayer);
                             }
                         }
                     }
 
-                    if(npc.ai[1] == 420)
+                    if (npc.ai[1] == 420)
                     {
                         if (secondAbsorb)
                         {
@@ -331,13 +333,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                     }
                     break;
-               
+
             }
         }
 
         public override void FindFrame(int frameHeight)
         {
-           
+
             npc.rotation = npc.velocity.X * 0.015f;
 
             npc.frameCounter++;
@@ -383,7 +385,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void NPCLoot()
         {
-            //OvermorrowWorld.downedTree = true;
+            OvermorrowWorld.downedTree = true;
 
             if (Main.expertMode)
             {
