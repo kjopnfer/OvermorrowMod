@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
@@ -13,8 +14,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Demonic Monocle");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to summon Demon Eyes that home in on enemies\n" +
-                "'Why? I don't know either'");
+            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to summon 6 Demon Eyes\n" +
+                "Demon eyes will home in on nearby enemies\n" +
+                "'Why do Demons wear monocles? I don't know either'");
         }
 
         public override void SafeSetDefaults()
@@ -29,6 +31,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.UseSound = SoundID.Item103;
             item.consumable = false;
             item.autoReuse = false;
+            item.damage = 21;
         }
 
         public override bool CanUseItem(Player player)
@@ -51,15 +54,33 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 ConsumeSouls(2, player);
             }
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            int projectiles = 6;
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
             {
-                for(int i = 0; i < 2; i++)
+                for (int i = 0; i < projectiles; i++)
                 {
-                    Vector2 randPosition = new Vector2(Main.rand.Next(-2, 2) * 20, Main.rand.Next(-2, 2) * 20);
-                    Projectile.NewProjectile(player.Center + randPosition, Vector2.Zero, ModContent.ProjectileType<BloodyBallFriendly>(), 16, 4f, player.whoAmI, 0f, 0f);
+                    Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<DemonEye>(), item.damage, 2, player.whoAmI);
                 }
             }
+
             return true;
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.LeadBar, 12);
+            recipe.AddIngredient(ItemID.Lens, 6);
+            recipe.AddTile(TileID.DemonAltar);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.IronBar, 12);
+            recipe.AddIngredient(ItemID.Lens, 6);
+            recipe.AddTile(TileID.DemonAltar);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }

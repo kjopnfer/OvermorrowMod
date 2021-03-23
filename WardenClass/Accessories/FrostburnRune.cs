@@ -28,5 +28,15 @@ namespace OvermorrowMod.WardenClass.Accessories
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             modPlayer.FrostburnRune = true;
         }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.IceTorch, 333);
+            recipe.AddIngredient(ItemID.IceBlock, 333);
+            recipe.AddTile(TileID.WorkBenches);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+        }
     }
 }

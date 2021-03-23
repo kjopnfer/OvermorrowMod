@@ -25,6 +25,7 @@ namespace OvermorrowMod
         public override void ResetEffects(NPC npc)
         {
             bleedingDebuff = false;
+            bleedingDebuff2 = false;
         }
 
         public override void NPCLoot(NPC npc)
