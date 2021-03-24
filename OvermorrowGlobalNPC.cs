@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System;
@@ -85,11 +86,14 @@ namespace OvermorrowMod
                             var modPlayer = WardenDamagePlayer.ModPlayer(player);
                             var modPlayer2 = player.GetModPlayer<OvermorrowModPlayer>();
 
-                            if (modPlayer.ReaperBook)
+                            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook)
                             {
-                                if (!XPPacket.Write(1, npc.target))
-                                {
-                                    player.GetModPlayer<WardenDamagePlayer>().AddSoul(1);
+                                if (Main.rand.Next(8) == 0) // 12.5% chance to gain Soul Essence on death
+                                { 
+                                    if (!XPPacket.Write(1, npc.target))
+                                    {
+                                        player.GetModPlayer<WardenDamagePlayer>().AddSoul(1);
+                                    }
                                 }
                             }
 
@@ -118,7 +122,7 @@ namespace OvermorrowMod
 
                             if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook) // Warden Reaper Book
                             {
-                                if (Main.rand.Next(4) == 0) // 25% chance to gain Soul Essence on death
+                                if (Main.rand.Next(8) == 0) // 12.5% chance to gain Soul Essence on death
                                 {
                                     modPlayer.soulResourceCurrent += 1;
                                     modPlayer.soulList.Add(Projectile.NewProjectile(npc.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f));
@@ -135,6 +139,19 @@ namespace OvermorrowMod
                             }
                         }
                     }
+                }
+            }
+        }
+
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        {
+            Player owner = Main.player[projectile.owner];
+            if (owner.GetModPlayer<OvermorrowModPlayer>().ArmBracer && (projectile.minion == true || projectile.magic == true))
+            {
+                if (Main.rand.Next(6) == 0 && owner.GetModPlayer<OvermorrowModPlayer>().sandCount <= 10)
+                {
+                    Projectile.NewProjectile(owner.Center, Vector2.Zero, ModContent.ProjectileType<SandBallFriendly>(), 24, 2f, projectile.owner, Main.rand.Next(60, 95), Main.rand.Next(3, 6));
+                    owner.GetModPlayer<OvermorrowModPlayer>().sandCount++;
                 }
             }
         }

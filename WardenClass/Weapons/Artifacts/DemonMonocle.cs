@@ -69,14 +69,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.LeadBar, 12);
-            recipe.AddIngredient(ItemID.Lens, 6);
-            recipe.AddTile(TileID.DemonAltar);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.IronBar, 12);
+            recipe.AddIngredient(ItemID.CrimtaneBar, 12);
+            recipe.AddIngredient(ItemID.TissueSample, 10);
+            recipe.AddIngredient(ItemID.Chain, 12);
             recipe.AddIngredient(ItemID.Lens, 6);
             recipe.AddTile(TileID.DemonAltar);
             recipe.SetResult(this);

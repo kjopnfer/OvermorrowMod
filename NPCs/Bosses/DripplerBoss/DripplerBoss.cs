@@ -198,10 +198,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 if (npc.ai[1] % 135 == 0)
                                 {
                                     // I'm lazy
-                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, -10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
-                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0f, 10f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
-                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
-                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0f, -10f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 2, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, -10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 3, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0f, 10f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 3, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 10f, 0f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 3, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0f, -10f, ModContent.ProjectileType<SplittingBlood>(), npc.damage / 3, 2f, Main.myPlayer, 0f, 0f);
                                 }
                             }
                         }

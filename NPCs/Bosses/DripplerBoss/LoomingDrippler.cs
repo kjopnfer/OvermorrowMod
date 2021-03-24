@@ -138,7 +138,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                     {
                                         Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .3f;
                                         // * 3f increases speed
-                                        Projectile.NewProjectile(npc.Center.X, npc.Center.Y, perturbedSpeed.X * 3f, perturbedSpeed.Y * 3f, ModContent.ProjectileType<BloodyBall>(), npc.damage, 2f, Main.myPlayer, 0f, 0f);
+                                        Projectile.NewProjectile(npc.Center.X, npc.Center.Y, perturbedSpeed.X * 3f, perturbedSpeed.Y * 3f, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 2f, Main.myPlayer, 0f, 0f);
                                     }
                                 }
                             }
@@ -147,7 +147,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 Main.PlaySound(SoundID.Item17, (int)npc.Center.X, (int)npc.Center.Y);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                                    Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                                 }
                             }
                         }
@@ -155,7 +155,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 4, 3f, Main.myPlayer, 0, 0);
                             }
                         }
                     }

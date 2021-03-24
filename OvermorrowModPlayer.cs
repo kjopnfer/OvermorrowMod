@@ -5,6 +5,7 @@ using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Boss;
 using System;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,6 +15,7 @@ namespace OvermorrowMod
     public class OvermorrowModPlayer : ModPlayer
     {
         // Accessories
+        public bool ArmBracer;
         public bool BloodyHeart;
         public bool BloodyTeeth;
         public bool DripplerEye;
@@ -45,6 +47,9 @@ namespace OvermorrowMod
 
         // Accessory Counters
         public int dripplerStack;
+        public int sandCount;
+        public int sandMode = 0;
+        public bool launchSand = false;
         private int sparkCounter;
         private int treeCounter;
         private int treeDefenseStack;
@@ -56,6 +61,7 @@ namespace OvermorrowMod
 
         public override void ResetEffects()
         {
+            ArmBracer = false;
             BloodyHeart = false;
             BloodyTeeth = false;
             DripplerEye = false;
@@ -67,6 +73,8 @@ namespace OvermorrowMod
             mirrorBuff = false;
             moonBuff = false;
             treeBuff = false;
+
+            sandCount = 0;
 
             bool dashAccessoryEquipped = false;
 
@@ -162,11 +170,6 @@ namespace OvermorrowMod
 
             if (StormScale) // Create sparks while moving, increase defense if health is below 50%
             {
-                if (player.dashDelay > 0)
-                {
-                    Main.NewText("player is dashing");
-                }
-
                 if (player.statLife <= player.statLifeMax2 * 0.5f)
                 {
                     player.statDefense += 5;
@@ -241,6 +244,23 @@ namespace OvermorrowMod
             {
                 player.dashDelay = 10;
                 DashType = 0;
+            }
+        }
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if (OvermorrowModFile.SandModeKey.JustPressed)
+            {
+                if(sandMode == 0) // Defense
+                {
+                    sandMode = 1;
+                    Main.NewText("Swapped to Attack", Color.Yellow);
+                }
+                else // Attack
+                {
+                    sandMode = 0;
+                    Main.NewText("Swapped to Defense", Color.Yellow);
+                }
             }
         }
 

@@ -79,8 +79,19 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             player.statLife += 10 * consumedSouls;
             player.HealEffect(10 * consumedSouls);
             consumedSouls = 0;
-            //return base.UseItem(player);
+
             return true;
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.DemoniteBar, 12);
+            recipe.AddIngredient(ItemID.ShadowScale, 10);
+            recipe.AddIngredient(ItemID.WormTooth, 6);
+            recipe.AddTile(TileID.DemonAltar);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }

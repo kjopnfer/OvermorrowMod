@@ -51,7 +51,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             //npc.height = 522;
 
             npc.aiStyle = -1;
-            npc.damage = 45;
+            npc.damage = 37;
             npc.defense = 14;
             npc.lifeMax = 7600;
             npc.HitSound = SoundID.NPCHit1;
@@ -380,7 +380,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
 
-                                    Projectile.NewProjectile(npc.position - new Vector2((-165 / 4) + 90, (-74 / 2) - 18), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                                    Projectile.NewProjectile(npc.position - new Vector2((-165 / 4) + 90, (-74 / 2) - 18), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / 4, 3f, Main.myPlayer, 0, 0);
                                 }
                             }
                         }

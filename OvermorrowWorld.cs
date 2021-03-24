@@ -10,6 +10,7 @@ using System.IO;
 using Terraria.World.Generation;
 using Terraria.GameContent.Generation;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.WardenClass.Accessories;
 
 namespace OvermorrowMod
 {
@@ -19,6 +20,8 @@ namespace OvermorrowMod
         public static bool downedTree;
         public static bool downedDrippler;
         public static bool downedDrake;
+
+        private bool placedBook = false; 
 
         public override void Initialize()
         {
@@ -140,6 +143,52 @@ namespace OvermorrowMod
             // As mentioned in NetSend, BitBytes can contain 8 values. If you have more, be sure to read the additional data:
             // BitsByte flags2 = reader.ReadByte();
             // downed9thBoss = flags[0];
+        }
+
+        public override void PostWorldGen()
+        {
+            // Place items in Gold Chests
+            int[] itemsToPlaceInDungeonChests = { ModContent.ItemType<ReaperBook>() };
+            int itemsToPlaceInDungeonChestsChoice = 0;
+            for (int chestIndex = 0; chestIndex < 1000; chestIndex++)
+            {
+                Chest chest = Main.chest[chestIndex];
+                // If you look at the sprite for Chests by extracting Tiles_21.xnb, you'll see that the 12th chest is the Ice Chest. Since we are counting from 0, this is where 11 comes from. 36 comes from the width of each tile including padding. 
+                // For a Locked Dungeon Chest, it is the 3rd chest therefore the value will be 2.
+                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 2 * 36)
+                {
+                    if (!placedBook) // Guarantees at least one book in a Dungeon Chest
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (inventoryIndex == 0)
+                            {
+                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInDungeonChests[itemsToPlaceInDungeonChestsChoice]);
+                                itemsToPlaceInDungeonChestsChoice = (itemsToPlaceInDungeonChestsChoice + 1) % itemsToPlaceInDungeonChests.Length;
+                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                break;
+                            }
+                        }
+                        placedBook = true;
+                    }
+                    else
+                    {
+                        if (Main.rand.Next(5) == 0)
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (inventoryIndex == 0)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInDungeonChests[itemsToPlaceInDungeonChestsChoice]);
+                                    itemsToPlaceInDungeonChestsChoice = (itemsToPlaceInDungeonChestsChoice + 1) % itemsToPlaceInDungeonChests.Length;
+                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

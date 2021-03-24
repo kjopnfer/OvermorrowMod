@@ -16,6 +16,8 @@ using Terraria.UI;
 using static Terraria.ModLoader.ModContent;
 using Steamworks;
 using OvermorrowMod.UI;
+using Terraria.GameInput;
+using System.Text;
 
 namespace OvermorrowMod
 {
@@ -25,6 +27,9 @@ namespace OvermorrowMod
         internal UserInterface MyInterface;
         internal SoulUI Souls;
         private GameTime _lastUpdateUiGameTime;
+
+        // Hotkeys
+        public static ModHotKey SandModeKey;
 
         public static OvermorrowModFile Mod { get; set; }
 
@@ -46,6 +51,7 @@ namespace OvermorrowMod
 
         public override void Load()
         {
+            SandModeKey = RegisterHotKey("Swap Sand Mode", "Q");
             if (!Main.dedServ)
             {
                 MyInterface = new UserInterface();
@@ -96,6 +102,8 @@ namespace OvermorrowMod
         public override void Unload()
         {
             Souls = null;
+
+            SandModeKey = null;
         }
     }
 }

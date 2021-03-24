@@ -7,6 +7,8 @@ using Terraria.GameContent.Events;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 
 namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
@@ -392,6 +394,17 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             OvermorrowWorld.downedDarude = true;
 
+            int choice = Main.rand.Next(2);
+            // Always drops one of:
+            if (choice == 0) // Warrior
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandstormSpinner>());
+            }
+            else if (choice == 1) // Mage
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandStaff>());
+            }
+            
             if (Sandstorm.Happening)
             {
                 Sandstorm.Happening = false;
