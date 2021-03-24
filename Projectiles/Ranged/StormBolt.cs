@@ -70,7 +70,7 @@ namespace OvermorrowMod.Projectiles.Ranged
         
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            // Makes dust based on tile
+            // Makes dust projectiled on tile
             Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
 
             return true;

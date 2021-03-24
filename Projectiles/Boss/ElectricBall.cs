@@ -109,7 +109,7 @@ namespace OvermorrowMod.Projectiles.Boss
             }
             else
             {
-                return base.GetAlpha(lightColor);
+                return projectile.GetAlpha(lightColor);
             }
         }
 

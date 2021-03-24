@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Accessories
+namespace OvermorrowMod.Items.Accessories.Expert
 {
     public class ArmBracer : ModItem
     {

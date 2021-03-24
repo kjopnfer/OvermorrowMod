@@ -35,7 +35,6 @@ namespace OvermorrowMod.Items.Accessories
                     line.text = "[" + player.GetModPlayer<OvermorrowModPlayer>().dripplerStack + " out of 25]";
                 }
             }
-            base.ModifyTooltips(tooltips);
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

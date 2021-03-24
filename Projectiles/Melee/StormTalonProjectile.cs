@@ -40,7 +40,7 @@ namespace OvermorrowMod.Projectiles.Melee
         {
             Player projOwner = Main.player[projectile.owner];
 
-            // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile direction and position based on the player
+            // Here we set some of the projectile's owner properties, such as held item and itemtime, along with projectile direction and position projectiled on the player
             Vector2 ownerMountedCenter = projOwner.RotatedRelativePoint(projOwner.MountedCenter, true);
             projectile.direction = projOwner.direction;
             projOwner.heldProj = projectile.whoAmI;
@@ -70,7 +70,7 @@ namespace OvermorrowMod.Projectiles.Melee
 
             projectile.ai[1]++;
 
-            // Change the spear position based off of the velocity and the movementFactor
+            // Change the spear position projectiled off of the velocity and the movementFactor
             projectile.position += projectile.velocity * movementFactor;
 
             if (projectile.ai[1] % 1 == 0);

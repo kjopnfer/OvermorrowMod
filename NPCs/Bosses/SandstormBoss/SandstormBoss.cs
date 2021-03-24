@@ -9,6 +9,8 @@ using System;
 using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 
 namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
@@ -394,7 +396,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             OvermorrowWorld.downedDarude = true;
 
-            int choice = Main.rand.Next(2);
+            int choice = Main.rand.Next(4);
             // Always drops one of:
             if (choice == 0) // Warrior
             {
@@ -404,7 +406,15 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandStaff>());
             }
-            
+            else if (choice == 2) // Ranger
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandThrower>());
+            }
+            else if (choice == 3) // Summoner
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DustStaff>());
+            }
+
             if (Sandstorm.Happening)
             {
                 Sandstorm.Happening = false;

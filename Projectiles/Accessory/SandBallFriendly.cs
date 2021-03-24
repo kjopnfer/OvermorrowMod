@@ -99,7 +99,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                     double rad = deg * (Math.PI / 180); //Convert degrees to radians
                     double dist = projectile.ai[0]; //Distance away from the player
 
-                    /*Position the player based on where the player is, the Sin/Cos of the angle times the /
+                    /*Position the player projectiled on where the player is, the Sin/Cos of the angle times the /
                     /distance for the desired distance away from the player minus the projectile's width   /
                     /and height divided by two so the center of the projectile is at the right place.     */
                     projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
@@ -118,7 +118,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                 double rad = deg * (Math.PI / 180); //Convert degrees to radians
                 double dist = projectile.ai[0]; //Distance away from the player
 
-                /*Position the player based on where the player is, the Sin/Cos of the angle times the /
+                /*Position the player projectiled on where the player is, the Sin/Cos of the angle times the /
                 /distance for the desired distance away from the player minus the projectile's width   /
                 /and height divided by two so the center of the projectile is at the right place.     */
                 projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;

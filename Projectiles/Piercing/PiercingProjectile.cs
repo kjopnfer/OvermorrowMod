@@ -15,7 +15,7 @@ namespace OvermorrowMod.Projectiles.Piercing
     {
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            // Makes dust based on tile
+            // Makes dust projectiled on tile
             Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
 
             projectile.ai[0] = 1f;

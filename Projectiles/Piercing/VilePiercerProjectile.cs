@@ -43,7 +43,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             player.itemAnimation = 5;
             player.itemTime = 5;
 
-            // Here we turn the player and projectile based on the relative positioning of the player and projectile.
+            // Here we turn the player and projectile projectiled on the relative positioning of the player and projectile.
             if (projectile.alpha == 0)
             {
                 if (projectile.position.X + (projectile.width / 2) > player.position.X + (player.width / 2))

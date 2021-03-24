@@ -151,7 +151,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             npc.netUpdate = true;
                             Projectile.NewProjectile(player.Center - new Vector2(randomX, 500), new Vector2(0, 20), ModContent.ProjectileType<ChoreographLaser>(), 0, 0f, Main.myPlayer, 0f, 0f);
                             //Projectile.NewProjectile(player.Center - new Vector2(randomX, 500), new Vector2(0, 4), ModContent.ProjectileType<Lightning>(), npc.damage / 4, 0f, Main.myPlayer, (float)-4.75, Main.rand.Next(-10, 10));
-                            Projectile.NewProjectile(player.Center - new Vector2(randomX, 500), new Vector2(0, 4), ProjectileID.CultistBossLightningOrbArc, npc.damage / 4, 0f, Main.myPlayer, (float)-4.75, Main.rand.Next(-10, 10));
+                            Projectile.NewProjectile(player.Center - new Vector2(randomX, 500), new Vector2(0, 4), ProjectileID.CultistBossLightningOrbArc, npc.damage / (Main.expertMode ? 6: 3), 0f, Main.myPlayer, (float)-4.75, Main.rand.Next(-10, 10));
                         }
                     }
                 }
@@ -361,7 +361,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
 
-                                    Projectile.NewProjectile(npc.position - new Vector2(-165 * 2, (-74 / 2) - 20), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / 4, 3f, Main.myPlayer, 0, 0);
+                                    Projectile.NewProjectile(npc.position - new Vector2(-165 * 2, (-74 / 2) - 20), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / (Main.expertMode ? 5 : 4), 3f, Main.myPlayer, 0, 0);
                                 }
                                 else // Facing left
                                 {
@@ -380,7 +380,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
 
-                                    Projectile.NewProjectile(npc.position - new Vector2((-165 / 4) + 90, (-74 / 2) - 18), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / 4, 3f, Main.myPlayer, 0, 0);
+                                    Projectile.NewProjectile(npc.position - new Vector2((-165 / 4) + 90, (-74 / 2) - 18), direction * speed, ModContent.ProjectileType<LightningBreath>(), npc.damage / (Main.expertMode ? 5 : 4), 3f, Main.myPlayer, 0, 0);
                                 }
                             }
                         }

@@ -82,8 +82,6 @@ namespace OvermorrowMod.Projectiles.Boss
             {
                 parent.life += 5;
             }
-
-            base.Kill(timeLeft);
         }
     }
 }

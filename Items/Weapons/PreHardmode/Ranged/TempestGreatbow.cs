@@ -28,7 +28,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.width = 40;
             item.height = 66;
             item.shoot = ModContent.ProjectileType<StormBolt>();
-            item.shootSpeed = 45f;
+            item.shootSpeed = 30f;
             item.knockBack = 10f;
             item.ranged = true;
             item.value = Item.sellPrice(gold: 1);

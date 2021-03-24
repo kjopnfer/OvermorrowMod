@@ -170,7 +170,6 @@ namespace OvermorrowMod
                     npc.life = 1;
                 }
             }
-            base.OnHitPlayer(npc, target, damage, crit);
         }
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)

@@ -158,7 +158,6 @@ namespace OvermorrowMod
             {
                 damage /= 2;
             }
-            base.ModifyHitByNPC(npc, ref damage, ref crit);
         }
 
         public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
@@ -217,8 +216,6 @@ namespace OvermorrowMod
             {
                 player.allDamage += .25f;
             }
-
-            base.UpdateEquips(ref wallSpeedBuff, ref tileSpeedBuff, ref tileRangeBuff);
         }
 
         public override void UpdateLifeRegen()
@@ -506,8 +503,8 @@ namespace OvermorrowMod
                     if (flag4)
                     {
                         velocity.X = 14.5f * (float)num30;
-                        Point point9 = (base.Center + new Vector2(num30 * width / 2 + 2, gravDir * (0f - (float)height) / 2f + gravDir * 2f)).ToTileCoordinates();
-                        Point point8 = (base.Center + new Vector2(num30 * width / 2 + 2, 0f)).ToTileCoordinates();
+                        Point point9 = (projectile.Center + new Vector2(num30 * width / 2 + 2, gravDir * (0f - (float)height) / 2f + gravDir * 2f)).ToTileCoordinates();
+                        Point point8 = (projectile.Center + new Vector2(num30 * width / 2 + 2, 0f)).ToTileCoordinates();
                         if (WorldGen.SolidOrSlopedTile(point9.X, point9.Y) || WorldGen.SolidOrSlopedTile(point8.X, point8.Y))
                         {
                             velocity.X /= 2f;

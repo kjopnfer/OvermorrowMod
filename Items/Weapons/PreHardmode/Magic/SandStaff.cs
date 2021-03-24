@@ -23,7 +23,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.UseSound = SoundID.Item8;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 13;
+            item.damage = 12;
             item.useTurn = false;
             item.useAnimation = 20;
             item.useTime = 20;
@@ -31,7 +31,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.height = 54;
             item.shoot = ModContent.ProjectileType<SandBolt>();
             item.shootSpeed = 14f;
-            item.knockBack = 3f;
+            item.knockBack = 0.5f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
         }
