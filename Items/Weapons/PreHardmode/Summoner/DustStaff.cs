@@ -22,7 +22,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
         {
             item.width = 50;
             item.height = 50;
-            item.damage = 16;
+            item.damage = 12;
             item.mana = 10;
             item.useTime = 30;
             item.useAnimation = 30;

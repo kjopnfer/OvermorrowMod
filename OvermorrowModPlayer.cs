@@ -74,8 +74,6 @@ namespace OvermorrowMod
             moonBuff = false;
             treeBuff = false;
 
-            sandCount = 0;
-
             bool dashAccessoryEquipped = false;
 
             //This is the loop used in vanilla to update/check the not-vanity accessories

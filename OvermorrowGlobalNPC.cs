@@ -148,7 +148,7 @@ namespace OvermorrowMod
             Player owner = Main.player[projectile.owner];
             if (owner.GetModPlayer<OvermorrowModPlayer>().ArmBracer && (projectile.minion == true || projectile.magic == true))
             {
-                if (Main.rand.Next(6) == 0 && owner.GetModPlayer<OvermorrowModPlayer>().sandCount <= 10)
+                if (Main.rand.Next(6) == 0 && owner.GetModPlayer<OvermorrowModPlayer>().sandCount < 10)
                 {
                     Projectile.NewProjectile(owner.Center, Vector2.Zero, ModContent.ProjectileType<SandBallFriendly>(), 24, 2f, projectile.owner, Main.rand.Next(60, 95), Main.rand.Next(3, 6));
                     owner.GetModPlayer<OvermorrowModPlayer>().sandCount++;

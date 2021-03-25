@@ -32,6 +32,8 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.minion = true;
             projectile.minionSlots = 1f;
             projectile.penetrate = -1;
+            projectile.usesLocalNPCImmunity = true;
+            projectile.localNPCHitCooldown = 30;
         }
 
         public override void AI()
@@ -239,10 +241,10 @@ namespace OvermorrowMod.Projectiles.Summon
 
 
 
-                        if (distanceFromTarget <= 10 && Main.rand.Next(15) == 0) 
+                        if (distanceFromTarget <= 10 && Main.rand.Next(20) == 0) 
                         {
                             makeStorm = true;
-                            int proj = Projectile.NewProjectile(projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, projectile.damage, 0f, projectile.owner);
+                            int proj = Projectile.NewProjectile(projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, projectile.damage / 2, 0f, projectile.owner);
                             Main.projectile[proj].timeLeft = 240;
                         }
                     }
