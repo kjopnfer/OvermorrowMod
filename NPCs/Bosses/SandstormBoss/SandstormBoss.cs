@@ -11,6 +11,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.Items.BossBags;
 
 namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
@@ -43,6 +44,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.npcSlots = 10f;
             //music = MusicID.Boss5;
             music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/SandstormBoss");
+            bossBag = ModContent.ItemType<SandstormBag>();
         }
 
         public static void SandstormStuff()
@@ -66,11 +68,19 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 npc.TargetClosest(false);
                 npc.direction = 1;
                 npc.velocity.Y = npc.velocity.Y - 0.1f;
+                if (Sandstorm.Happening)
+                {
+                    Sandstorm.Happening = false;
+                    Sandstorm.TimeLeft = 18000;
+                    SandstormStuff();
+                }
+
                 if (npc.timeLeft > 20)
                 {
                     npc.timeLeft = 20;
                     return;
                 }
+
             }
 
             if (!player.active || player.dead)
@@ -396,23 +406,30 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             OvermorrowWorld.downedDarude = true;
 
-            int choice = Main.rand.Next(4);
-            // Always drops one of:
-            if (choice == 0) // Warrior
+            if (Main.expertMode)
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandstormSpinner>());
+                npc.DropBossBags();
             }
-            else if (choice == 1) // Mage
+            else
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandStaff>());
-            }
-            else if (choice == 2) // Ranger
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandThrower>());
-            }
-            else if (choice == 3) // Summoner
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DustStaff>());
+                int choice = Main.rand.Next(4);
+                // Always drops one of:
+                if (choice == 0) // Warrior
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandstormSpinner>());
+                }
+                else if (choice == 1) // Mage
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandStaff>());
+                }
+                else if (choice == 2) // Ranger
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandThrower>());
+                }
+                else if (choice == 3) // Summoner
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DustStaff>());
+                }
             }
 
             if (Sandstorm.Happening)

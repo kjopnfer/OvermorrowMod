@@ -157,5 +157,10 @@ namespace OvermorrowMod.Projectiles.Accessory
             Player owner = Main.player[projectile.owner];
             owner.GetModPlayer<OvermorrowModPlayer>().sandCount--;
         }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.immune[projectile.owner] = 1;
+        }
     }
 }

@@ -246,17 +246,17 @@ namespace OvermorrowMod
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            if (OvermorrowModFile.SandModeKey.JustPressed)
+            if (OvermorrowModFile.SandModeKey.JustPressed && ArmBracer)
             {
                 if(sandMode == 0) // Defense
                 {
                     sandMode = 1;
-                    Main.NewText("Swapped to Attack", Color.Yellow);
+                    Main.NewText("Swapped to Attack Mode", Color.Yellow);
                 }
                 else // Attack
                 {
                     sandMode = 0;
-                    Main.NewText("Swapped to Defense", Color.Yellow);
+                    Main.NewText("Swapped to Defense Mode", Color.Yellow);
                 }
             }
         }
