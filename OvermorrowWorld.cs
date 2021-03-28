@@ -11,6 +11,8 @@ using Terraria.World.Generation;
 using Terraria.GameContent.Generation;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.WardenClass.Accessories;
+using Microsoft.Xna.Framework.Input;
+using OvermorrowMod.Tiles;
 
 namespace OvermorrowMod
 {
@@ -21,7 +23,7 @@ namespace OvermorrowMod
         public static bool downedDrippler;
         public static bool downedDrake;
 
-        private bool placedBook = false; 
+        private bool placedBook = false;
 
         public override void Initialize()
         {
@@ -34,7 +36,7 @@ namespace OvermorrowMod
         public override TagCompound Save()
         {
             var downed = new List<string>();
-       
+
             if (downedTree)
             {
                 downed.Add("Iorich");
@@ -55,7 +57,7 @@ namespace OvermorrowMod
                 downed.Add("Storm Drake");
             }
 
-            
+
             return new TagCompound
             {
                 ["downed"] = downed
@@ -185,6 +187,269 @@ namespace OvermorrowMod
                                     break;
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Worldgen Debugging
+        public static bool JustPressed(Keys key)
+        {
+            return Main.keyState.IsKeyDown(key) && !Main.oldKeyState.IsKeyDown(key);
+        }
+
+        public override void PostUpdate()
+        {
+            /*if (JustPressed(Keys.D1))
+            {
+                TestMethod((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
+            }*/
+        }
+
+        private void TestMethod(int x, int y)
+        {
+            Dust.QuickBox(new Vector2(x, y) * 16, new Vector2(x + 1, y + 1) * 16, 2, Color.YellowGreen, null);
+
+            int randSize = Main.rand.Next(36, 60);
+            for (int i = 0; i < randSize; i++)
+            {
+                // Runs across X forwards
+                WorldGen.TileRunner(x + i, y, Main.rand.Next(21, 55), 8, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                // Runs down Y
+                WorldGen.TileRunner(x + i, y + ((randSize - 5) - i), Main.rand.Next(29, 65), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
+
+                // Runs across X backwards
+                WorldGen.TileRunner(x - i, y, Main.rand.Next(21, 55), Main.rand.Next(5, 8), ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
+                // Runs down Y
+                WorldGen.TileRunner(x - i, y + ((randSize - 5) - i), Main.rand.Next(29, 65), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
+            }
+
+            for (int i = 0; i < 20; i++)
+            {
+                WorldGen.digTunnel(x + i, y - Main.rand.Next(3), -2 * i, 0, 4, Main.rand.Next(5, 9), false);
+                WorldGen.digTunnel(x - i, y - Main.rand.Next(3), 2 * i, 0, 4, Main.rand.Next(5, 9), false);
+                for (int j = 21 - i; j > 0; j--)
+                {
+                    WorldGen.digTunnel(x + (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(8, 9), j > 10 ? true : false);
+                    WorldGen.digTunnel(x - (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(5, 9), j > 10 ? true : false);
+                }
+            }
+
+            // Generate walls
+
+            // This loops across the inner space of the biome to generate walls
+            // Loop across X
+            for (int i = 0; i < 70; i++)
+            {
+                // Loop across X forwards
+                Tile tileForwards = Framing.GetTileSafely(x + i, y);
+                if (tileForwards.wall == 0 || tileForwards.wall == WallID.Dirt)
+                {
+                    if (tileForwards.type != ModContent.TileType<GlowBlock>())
+                    {
+                        tileForwards.wall = (ushort)ModContent.WallType<GlowWall>();
+                    }
+                }
+
+                // Loop across X backwards
+                Tile tileBackwards = Framing.GetTileSafely(x - i, y);
+                if (tileBackwards.wall == 0 || tileBackwards.wall == WallID.Dirt)
+                {
+                    if (tileBackwards.type != ModContent.TileType<GlowBlock>())
+                    {
+                        tileBackwards.wall = (ushort)ModContent.WallType<GlowWall>();
+                    }
+                }
+
+                // Loop across Y
+                for (int j = 0; j < 40; j++)
+                {
+                    // Loop up Y
+                    Tile tileUp = Framing.GetTileSafely(x + i, y + j);
+                    if (tileUp.wall == 0 || tileUp.wall == WallID.Dirt)
+                    {
+                        if (tileUp.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileUp.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+
+                    // Loop up Y backwards
+                    Tile tileUp2 = Framing.GetTileSafely(x - i, y + j);
+                    if (tileUp2.wall == 0 || tileUp2.wall == WallID.Dirt)
+                    {
+                        if (tileUp2.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileUp2.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+
+                    // Loop down Y
+                    Tile tileDown = Framing.GetTileSafely(x + i, y - j);
+                    if (tileDown.wall == 0 || tileDown.wall == WallID.Dirt)
+                    {
+                        if (tileDown.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileDown.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+
+                    // Loop down Y backwards
+                    Tile tileDown2 = Framing.GetTileSafely(x - i, y - j);
+                    if (tileDown2.wall == 0 || tileDown2.wall == WallID.Dirt)
+                    {
+                        if (tileDown2.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileDown2.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        {
+            int GenPass = tasks.FindIndex(genpass => genpass.Name.Equals("Lakes"));
+            if (GenPass != -1)
+            {
+                tasks.Insert(GenPass + 1, new PassLegacy("Generating Glowing Lakes", GenerateGlowingLakes));
+            }
+        }
+
+        private void GenerateGlowingLakes(GenerationProgress progress)
+        {
+            // Setting a progress message is always a good idea. This is the message the user sees during world generation and can be useful for identifying infinite loops.      
+            progress.Message = "Generating Glowing Lakes";
+
+            /*
+             * In a small world, this math results in 4200 * 1200 * 0.0000009, which is about 4. 
+             * This means that we'll run the code inside the for loop 4 times. 
+             * Since we are scaling by both dimensions of the world size, the amount spawned will adjust automatically to different world sizes for a consistent distribution of ores.
+             */
+            for (int i = 0; i < (int)((Main.maxTilesX * Main.maxTilesY) * 16E-07); i++)
+            {
+                int x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
+                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 600);
+
+                // While loop to find a valid tile
+                while (!Main.tile[x, y].active() || Main.tile[x, y].type == TileID.SnowBlock || Main.tile[x, y].type == TileID.IceBlock || Main.tile[x, y].type == TileID.BlueDungeonBrick ||
+                    Main.tile[x, y].type == TileID.Sand || Main.tile[x, y].type == TileID.HardenedSand || Main.tile[x, y].type == TileID.GreenDungeonBrick || Main.tile[x, y].type == TileID.PinkDungeonBrick)
+                {
+                    x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
+                    y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 600);
+                }
+
+                GenerateGlowingLake(x, y);
+            }
+
+            // This goes through each GlowBlock and places a wall behind it
+            for (int i = 0; i < Main.maxTilesX; i++)
+            {
+                for (int j = 0; j < Main.maxTilesY; j++)
+                {
+                    Tile checkTiles = Framing.GetTileSafely(i, j);
+                    if (checkTiles.type == ModContent.TileType<GlowBlock>() && checkTiles.wall != ModContent.WallType<GlowWall>())
+                    {
+                        checkTiles.wall = (ushort)ModContent.WallType<GlowWall>();
+                    }
+                }
+            }
+        }
+
+        private void GenerateGlowingLake(int x, int y)
+        {
+            int randSize = Main.rand.Next(36, 60);
+            for (int i = 0; i < randSize; i++)
+            {
+                // Runs across X forwards
+                WorldGen.TileRunner(x + i, y, Main.rand.Next(21, 55), 8, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                // Runs down Y
+                WorldGen.TileRunner(x + i, y + ((randSize - 5) - i), Main.rand.Next(29, 65), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
+
+                // Runs across X backwards
+                WorldGen.TileRunner(x - i, y, Main.rand.Next(21, 55), Main.rand.Next(5, 8), ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
+                // Runs down Y
+                WorldGen.TileRunner(x - i, y + ((randSize - 5) - i), Main.rand.Next(29, 65), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
+            }
+
+            for (int i = 0; i < 20; i++)
+            {
+                WorldGen.digTunnel(x + i, y - Main.rand.Next(3), -2 * i, 0, 4, Main.rand.Next(5, 9), false);
+                WorldGen.digTunnel(x - i, y - Main.rand.Next(3), 2 * i, 0, 4, Main.rand.Next(5, 9), false);
+                for (int j = 21 - i; j > 0; j--)
+                {
+                    WorldGen.digTunnel(x + (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(8, 9), j > 7 ? true : false);
+                    WorldGen.digTunnel(x - (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(5, 9), j > 7 ? true : false);
+                }
+            }
+
+            // Generate walls
+
+            // This loops across the inner space of the biome to generate walls
+            // Loop across X
+            for (int i = 0; i < 70; i++)
+            {
+                // Loop across X forwards
+                Tile tileForwards = Framing.GetTileSafely(x + i, y);
+                if (tileForwards.wall == 0 || tileForwards.wall == WallID.Dirt)
+                {
+                    if (tileForwards.type != ModContent.TileType<GlowBlock>())
+                    {
+                        tileForwards.wall = (ushort)ModContent.WallType<GlowWall>();
+                    }
+                }
+
+                // Loop across X backwards
+                Tile tileBackwards = Framing.GetTileSafely(x - i, y);
+                if (tileBackwards.wall == 0 || tileBackwards.wall == WallID.Dirt)
+                {
+                    if (tileBackwards.type != ModContent.TileType<GlowBlock>())
+                    {
+                        tileBackwards.wall = (ushort)ModContent.WallType<GlowWall>();
+                    }
+                }
+
+                // Loop across Y
+                for (int j = 0; j < 70; j++)
+                {
+                    // Loop up Y
+                    Tile tileUp = Framing.GetTileSafely(x + i, y + j);
+                    if (tileUp.wall == 0 || tileUp.wall == WallID.Dirt)
+                    {
+                        if (tileUp.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileUp.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+
+                    // Loop up Y backwards
+                    Tile tileUp2 = Framing.GetTileSafely(x - i, y + j);
+                    if (tileUp2.wall == 0 || tileUp2.wall == WallID.Dirt)
+                    {
+                        if (tileUp2.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileUp2.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+
+                    // Loop down Y
+                    Tile tileDown = Framing.GetTileSafely(x + i, y - j);
+                    if (tileDown.wall == 0 || tileDown.wall == WallID.Dirt)
+                    {
+                        if (tileDown.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileDown.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+
+                    // Loop down Y backwards
+                    Tile tileDown2 = Framing.GetTileSafely(x - i, y - j);
+                    if (tileDown2.wall == 0 || tileDown2.wall == WallID.Dirt)
+                    {
+                        if (tileDown2.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileDown2.wall = (ushort)ModContent.WallType<GlowWall>();
                         }
                     }
                 }

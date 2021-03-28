@@ -1,0 +1,107 @@
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ModLoader;
+using Terraria.ID;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Placeable;
+using OvermorrowMod.Tiles.Ambient;
+using Terraria.Graphics.Shaders;
+
+namespace OvermorrowMod.Tiles
+{
+    public class GlowBlock : ModTile
+    {
+        public override void SetDefaults()
+        {
+            Main.tileSolid[Type] = true;
+            Main.tileMergeDirt[Type] = true;
+            Main.tileBlockLight[Type] = true;
+            Main.tileLighted[Type] = true;
+            drop = ModContent.ItemType<OvermorrowMod.Items.Placeable.GlowBlock>();
+            AddMapEntry(new Color(0, 25, 25));
+        }
+
+        public override void RandomUpdate(int i, int j)
+        {
+            Tile tile = Framing.GetTileSafely(i, j);
+            Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+            Tile tileAbove = Framing.GetTileSafely(i, j - 1);
+
+            // Grow vines
+            if (WorldGen.genRand.NextBool(2) && !tileBelow.active() && !tileBelow.lava())
+            {
+                if (!tile.bottomSlope())
+                {
+                    tileBelow.type = (ushort)ModContent.TileType<GlowWorms>();
+                    tileBelow.active(true);
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.netMode == NetmodeID.Server)
+                    {
+                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
+                    }
+                }
+            }
+
+            // Grow plants
+            if (WorldGen.genRand.NextBool(2) && !tileAbove.active() && !tileBelow.lava())
+            {
+                if (!tile.bottomSlope() && !tile.topSlope() && !tile.halfBrick())
+                {
+                    tileAbove.type = (ushort)ModContent.TileType<GlowPlants>();
+                    tileAbove.active(true);
+                    tileAbove.frameY = 0;
+                    tileAbove.frameX = (short)(WorldGen.genRand.Next(7) * 18); // 7 is the amount of plants in the sprite
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.netMode == NetmodeID.Server)
+                    {
+                        NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
+                    }
+                }
+            }
+        }
+
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex)
+        {
+            Tile tileAbove = Framing.GetTileSafely(i, j - 1);
+            if (!tileAbove.active() && tileAbove.liquid > 0)
+            {
+                if (Main.rand.NextFloat() < 0.0001f)
+                {
+                    Dust dust;
+                    // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
+                    Vector2 position = new Vector2(i * 16, j * 16);
+                    dust = Terraria.Dust.NewDustPerfect(position, 92, new Vector2(0f, -5.53f), 0, new Color(255, 255, 255), 1f);
+                    dust.noGravity = true;
+                }
+            }
+
+            Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+            Tile tileLeft = Framing.GetTileSafely(i - 1, j);
+            Tile tileRight = Framing.GetTileSafely(i + 1, j);
+            if (tileBelow.active() && tileAbove.active() && tileLeft.active() && tileRight.active() &&
+                tileBelow.type == Type && tileAbove.type == Type && tileLeft.type == Type && tileRight.type == Type)
+            {
+                /*if (Main.rand.NextFloat() < 0.0001f)
+                {
+                    Dust dust;
+                    // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
+                    Vector2 position = new Vector2(i * 16, j * 16);
+                    dust = Terraria.Dust.NewDustPerfect(position, 92, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1.2f);
+                    dust.noGravity = true;
+                    dust.fadeIn = 0.7105263f;
+                }*/
+
+                if (Main.rand.NextFloat() < 0.0001f)
+                {
+                    Dust dust;
+                    // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
+                    Vector2 position = new Vector2(i * 16, j * 16);
+                    dust = Main.dust[Terraria.Dust.NewDust(position, 30, 30, 41, 0f, 0f, 0, new Color(0, 255, 242), 0.9210526f)];
+                    dust.shader = GameShaders.Armor.GetSecondaryShader(25, Main.LocalPlayer);
+                }
+
+
+            }
+        }
+    }
+}
