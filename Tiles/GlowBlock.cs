@@ -17,7 +17,7 @@ namespace OvermorrowMod.Tiles
             Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            drop = ModContent.ItemType<OvermorrowMod.Items.Placeable.GlowBlock>();
+            drop = ModContent.ItemType<OvermorrowMod.Items.Placeable.Tiles.GlowBlock>();
             AddMapEntry(new Color(0, 25, 25));
         }
 

@@ -317,6 +317,8 @@ namespace OvermorrowMod
             }
         }
 
+        bool notInvalid = true;
+        bool notNear = true;
         private void GenerateGlowingLakes(GenerationProgress progress)
         {
             // Setting a progress message is always a good idea. This is the message the user sees during world generation and can be useful for identifying infinite loops.      
@@ -327,17 +329,81 @@ namespace OvermorrowMod
              * This means that we'll run the code inside the for loop 4 times. 
              * Since we are scaling by both dimensions of the world size, the amount spawned will adjust automatically to different world sizes for a consistent distribution of ores.
              */
-            for (int i = 0; i < (int)((Main.maxTilesX * Main.maxTilesY) * 16E-07); i++)
+            for (int i = 0; i < (int)((Main.maxTilesX * Main.maxTilesY) * 9E-07); i++)
             {
                 int x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
-                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 600);
+                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY == 2400 ? WorldGen.lavaLine - 125 : WorldGen.lavaLine - 75); // Check if world is large
 
-                // While loop to find a valid tile
-                while (!Main.tile[x, y].active() || Main.tile[x, y].type == TileID.SnowBlock || Main.tile[x, y].type == TileID.IceBlock || Main.tile[x, y].type == TileID.BlueDungeonBrick ||
-                    Main.tile[x, y].type == TileID.Sand || Main.tile[x, y].type == TileID.HardenedSand || Main.tile[x, y].type == TileID.GreenDungeonBrick || Main.tile[x, y].type == TileID.PinkDungeonBrick)
+                while (true)
                 {
-                    x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
-                    y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 600);
+                    // While loop to find a valid tile
+                    if (!Main.tile[x, y].active() || Main.tile[x, y].type == TileID.SnowBlock || Main.tile[x, y].type == TileID.IceBlock || Main.tile[x, y].type == TileID.BlueDungeonBrick ||
+                        Main.tile[x, y].type == TileID.Sand || Main.tile[x, y].type == TileID.HardenedSand || Main.tile[x, y].type == TileID.GreenDungeonBrick || Main.tile[x, y].type == TileID.PinkDungeonBrick)
+                    {
+                        notInvalid = false;
+                    }
+
+                    // For loop to check for nearby Glowing Lakes, The Jungle Temple, or The Dungeon with a distance of 60
+                    for (int ii = 0; ii < 60; ii++)
+                    {
+                        if (Main.tile[x + ii, y].type == ModContent.TileType<GlowBlock>() || Main.tile[x + ii, y].type == TileID.GreenDungeonBrick || Main.tile[x + ii, y].type == TileID.PinkDungeonBrick || 
+                            Main.tile[x + ii, y].type == TileID.BlueDungeonBrick || Main.tile[x + ii, y].type == TileID.LihzahrdBrick)
+                        {
+                            notNear = false;
+                        }
+
+                        if (Main.tile[x - ii, y].type == ModContent.TileType<GlowBlock>() || Main.tile[x - ii, y].type == TileID.GreenDungeonBrick || Main.tile[x - ii, y].type == TileID.PinkDungeonBrick || 
+                            Main.tile[x - ii, y].type == TileID.BlueDungeonBrick || Main.tile[x - ii, y].type == TileID.LihzahrdBrick)
+                        {
+                            notNear = false;
+                        }
+
+                        for (int ij = 0; ij < 60; ij++)
+                        {
+                            // -> v
+                            if (Main.tile[x + ii, y + ij].type == ModContent.TileType<GlowBlock>() || Main.tile[x + ii, y + ij].type == TileID.GreenDungeonBrick || Main.tile[x + ii, y + ij].type == TileID.PinkDungeonBrick ||
+                            Main.tile[x + ii, y + ij].type == TileID.BlueDungeonBrick || Main.tile[x + ii, y + ij].type == TileID.LihzahrdBrick)
+                            {
+                                notNear = false;
+                            }
+
+                            // <- v
+                            if (Main.tile[x - ii, y + ij].type == ModContent.TileType<GlowBlock>() || Main.tile[x - ii, y + ij].type == TileID.GreenDungeonBrick || Main.tile[x - ii, y + ij].type == TileID.PinkDungeonBrick ||
+                            Main.tile[x - ii, y + ij].type == TileID.BlueDungeonBrick || Main.tile[x - ii, y + ij].type == TileID.LihzahrdBrick)
+                            {
+                                notNear = false;
+                            }
+
+                            // -> ^
+                            if (Main.tile[x + ii, y - ij].type == ModContent.TileType<GlowBlock>() || Main.tile[x + ii, y - ij].type == TileID.GreenDungeonBrick || Main.tile[x + ii, y - ij].type == TileID.PinkDungeonBrick ||
+                            Main.tile[x + ii, y - ij].type == TileID.BlueDungeonBrick || Main.tile[x + ii, y - ij].type == TileID.LihzahrdBrick)
+                            {
+                                notNear = false;
+                            }
+
+                            // <- ^
+                            if (Main.tile[x - ii, y - ij].type == ModContent.TileType<GlowBlock>() || Main.tile[x - ii, y - ij].type == TileID.GreenDungeonBrick || Main.tile[x - ii, y - ij].type == TileID.PinkDungeonBrick ||
+                            Main.tile[x - ii, y - ij].type == TileID.BlueDungeonBrick || Main.tile[x - ii, y - ij].type == TileID.LihzahrdBrick)
+                            {
+                                notNear = false;
+                            }
+                        }
+                    }
+
+                    if(!notInvalid || !notNear)
+                    {
+                        // Reset the flags
+                        notInvalid = true;
+                        notNear = true;
+
+                        // Get new coordinates
+                        x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
+                        y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 600);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 GenerateGlowingLake(x, y);
@@ -363,14 +429,14 @@ namespace OvermorrowMod
             for (int i = 0; i < randSize; i++)
             {
                 // Runs across X forwards
-                WorldGen.TileRunner(x + i, y, Main.rand.Next(21, 55), 8, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                WorldGen.TileRunner(x + i, y, Main.rand.Next(21, 32), 8, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
                 // Runs down Y
-                WorldGen.TileRunner(x + i, y + ((randSize - 5) - i), Main.rand.Next(29, 65), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
+                WorldGen.TileRunner(x + i, y + ((randSize - 5) - i), Main.rand.Next(29, 40), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
 
                 // Runs across X backwards
-                WorldGen.TileRunner(x - i, y, Main.rand.Next(21, 55), Main.rand.Next(5, 8), ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
+                WorldGen.TileRunner(x - i, y, Main.rand.Next(21, 32), Main.rand.Next(5, 8), ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
                 // Runs down Y
-                WorldGen.TileRunner(x - i, y + ((randSize - 5) - i), Main.rand.Next(29, 65), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
+                WorldGen.TileRunner(x - i, y + ((randSize - 5) - i), Main.rand.Next(29, 40), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
             }
 
             for (int i = 0; i < 20; i++)
@@ -379,8 +445,8 @@ namespace OvermorrowMod
                 WorldGen.digTunnel(x - i, y - Main.rand.Next(3), 2 * i, 0, 4, Main.rand.Next(5, 9), false);
                 for (int j = 21 - i; j > 0; j--)
                 {
-                    WorldGen.digTunnel(x + (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(8, 9), j > 7 ? true : false);
-                    WorldGen.digTunnel(x - (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(5, 9), j > 7 ? true : false);
+                    WorldGen.digTunnel(x + (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(8, 9), j > 11 ? true : false);
+                    WorldGen.digTunnel(x - (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(5, 9), j > 11 ? true : false);
                 }
             }
 
@@ -388,7 +454,7 @@ namespace OvermorrowMod
 
             // This loops across the inner space of the biome to generate walls
             // Loop across X
-            for (int i = 0; i < 70; i++)
+            for (int i = 0; i < 40; i++)
             {
                 // Loop across X forwards
                 Tile tileForwards = Framing.GetTileSafely(x + i, y);
@@ -411,7 +477,7 @@ namespace OvermorrowMod
                 }
 
                 // Loop across Y
-                for (int j = 0; j < 70; j++)
+                for (int j = 0; j < 30; j++)
                 {
                     // Loop up Y
                     Tile tileUp = Framing.GetTileSafely(x + i, y + j);

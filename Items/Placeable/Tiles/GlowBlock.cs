@@ -1,9 +1,10 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
+using GlowBlockBlock = OvermorrowMod.Tiles.GlowBlock;
 
-namespace OvermorrowMod.Items.Placeable
+
+namespace OvermorrowMod.Items.Placeable.Tiles
 {
 	public class GlowBlock : ModItem
 	{
@@ -23,7 +24,7 @@ namespace OvermorrowMod.Items.Placeable
 			item.useTime = 10;
 			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.consumable = true;
-			item.createTile = TileType<Tiles.GlowBlock>();
+			item.createTile = ModContent.TileType<GlowBlockBlock>();
 		}
 	}
 
