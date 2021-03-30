@@ -429,14 +429,14 @@ namespace OvermorrowMod
             for (int i = 0; i < randSize; i++)
             {
                 // Runs across X forwards
-                WorldGen.TileRunner(x + i, y, Main.rand.Next(21, 32), 8, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                WorldGen.TileRunner(x + i, y, Main.rand.Next(21, 32), 8, ModContent.TileType<GlowBlock>(), i > randSize - 6 ? true : false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
                 // Runs down Y
-                WorldGen.TileRunner(x + i, y + ((randSize - 5) - i), Main.rand.Next(29, 40), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
+                WorldGen.TileRunner(x + i, y + ((randSize - 5) - i), Main.rand.Next(29, 40), 7, ModContent.TileType<GlowBlock>(), i > randSize - 6 ? true : false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
 
                 // Runs across X backwards
-                WorldGen.TileRunner(x - i, y, Main.rand.Next(21, 32), Main.rand.Next(5, 8), ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
+                WorldGen.TileRunner(x - i, y, Main.rand.Next(21, 32), Main.rand.Next(5, 8), ModContent.TileType<GlowBlock>(), i > randSize - 6 ? true : false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
                 // Runs down Y
-                WorldGen.TileRunner(x - i, y + ((randSize - 5) - i), Main.rand.Next(29, 40), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
+                WorldGen.TileRunner(x - i, y + ((randSize - 5) - i), Main.rand.Next(29, 40), 7, ModContent.TileType<GlowBlock>(), i > randSize - 6 ? true : false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
             }
 
             for (int i = 0; i < 20; i++)

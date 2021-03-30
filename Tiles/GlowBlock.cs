@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Placeable;
 using OvermorrowMod.Tiles.Ambient;
 using Terraria.Graphics.Shaders;
+using Terraria.ObjectData;
+using Terraria.DataStructures;
 
 namespace OvermorrowMod.Tiles
 {
@@ -19,6 +21,16 @@ namespace OvermorrowMod.Tiles
             Main.tileLighted[Type] = true;
             drop = ModContent.ItemType<OvermorrowMod.Items.Placeable.Tiles.GlowBlock>();
             AddMapEntry(new Color(0, 25, 25));
+
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
+            //TileObjectData.newTile.Origin = new Point16(0, 0);
+            //TileObjectData.newTile.StyleHorizontal = true;
+            //TileObjectData.newTile.StyleMultiplier = 5;
+            //TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
+            TileObjectData.newAlternate.AnchorBottom = AnchorData.Empty;
+            TileObjectData.addAlternate(0);
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<TEShenanigans>().Hook_AfterPlacement, -1, 0, true);
+            TileObjectData.addTile(Type);
         }
 
         public override void RandomUpdate(int i, int j)
@@ -81,16 +93,6 @@ namespace OvermorrowMod.Tiles
             if (tileBelow.active() && tileAbove.active() && tileLeft.active() && tileRight.active() &&
                 tileBelow.type == Type && tileAbove.type == Type && tileLeft.type == Type && tileRight.type == Type)
             {
-                /*if (Main.rand.NextFloat() < 0.0001f)
-                {
-                    Dust dust;
-                    // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
-                    Vector2 position = new Vector2(i * 16, j * 16);
-                    dust = Terraria.Dust.NewDustPerfect(position, 92, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1.2f);
-                    dust.noGravity = true;
-                    dust.fadeIn = 0.7105263f;
-                }*/
-
                 if (Main.rand.NextFloat() < 0.0001f)
                 {
                     Dust dust;
