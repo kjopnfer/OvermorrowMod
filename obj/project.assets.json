@@ -37,9 +37,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mlai\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\OvermorrowMod\\Overmorrow.csproj",
+      "projectUniqueName": "C:\\Users\\mlai\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\OvermorrowMod\\OvermorrowMod.csproj",
       "projectName": "Overmorrow",
-      "projectPath": "C:\\Users\\mlai\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\OvermorrowMod\\Overmorrow.csproj",
+      "projectPath": "C:\\Users\\mlai\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\OvermorrowMod\\OvermorrowMod.csproj",
       "packagesPath": "C:\\Users\\mlai\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\mlai\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\OvermorrowMod\\obj\\",
       "projectStyle": "PackageReference",

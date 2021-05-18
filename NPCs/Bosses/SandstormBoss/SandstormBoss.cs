@@ -181,10 +181,19 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            for (int i = 0; i < Main.rand.Next(4, 7); i++)
+                            for (int i = 0; i < Main.rand.Next(3, 6); i++)
                             {
                                 npc.netUpdate = true;
-                                Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-13, -8), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                                Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-11, -6), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                            }
+
+                            if(npc.life <= npc.lifeMax * 0.5f)
+                            {
+                                for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                                {
+                                    npc.netUpdate = true;
+                                    Projectile.NewProjectile(new Vector2(player.Center.X - Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(6, 11), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                                }
                             }
                         }
                     }

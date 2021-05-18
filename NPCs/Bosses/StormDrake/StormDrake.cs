@@ -79,14 +79,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             Player player = Main.player[npc.target];
 
             // Force player to be in the sky
-            if (!player.ZoneSkyHeight)
+            /*if (!player.ZoneSkyHeight)
             {
                 npc.dontTakeDamage = true;
             }
             else
             {
                 npc.dontTakeDamage = false;
-            }
+            }*/
 
             // Handles Despawning
             if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)

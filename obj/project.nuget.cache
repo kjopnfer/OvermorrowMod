@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "FgX2kUqjSYCY/QHUCXh2SQZq81qmoTHgri+WYvfU6zA2Bgjl1+O0o/uPTktB2c7e9IQ7fsswxmfkE2rc31xP+w==",
+  "dgSpecHash": "IDjXa1x20L8FTq5vYnoDdBqPmTfKywLkuVtJ1To5+AHKTXnMuhqPoEac84CZU9S2vkr3Yzbvv/lfA9URPOXkJg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\mlai\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\OvermorrowMod\\Overmorrow.csproj",
+  "projectFilePath": "C:\\Users\\mlai\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\OvermorrowMod\\OvermorrowMod.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mlai\\.nuget\\packages\\tmodloader.codeassist\\0.1.2\\tmodloader.codeassist.0.1.2.nupkg.sha512"
   ],
