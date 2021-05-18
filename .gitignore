@@ -1,3 +1,7 @@
-obj
-bin
 .vs
+*.suo
+*.user
+_ReSharper.*
+bin
+obj
+packages
