@@ -222,15 +222,31 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 }
                                 else // Follow player
                                 {
-                                    npc.ai[0] = 0;
-                                    npc.ai[1] = 0;
+                                    if (Main.rand.Next(4) == 0)
+                                    {
+                                        npc.ai[0] = 4;
+                                        npc.ai[1] = 0;
+                                    }
+                                    else
+                                    {
+                                        npc.ai[0] = 0;
+                                        npc.ai[1] = 0;
+                                    }
                                 }
                             }
                             else if (changedPhase2) // Make the NPC follow until all Rotaters are dead
                             {
                                 // Phase 2
-                                npc.ai[0] = 0;
-                                npc.ai[1] = 0;
+                                if (Main.rand.Next(6) == 0)
+                                {
+                                    npc.ai[0] = 4;
+                                    npc.ai[1] = 0;
+                                }
+                                else
+                                {
+                                    npc.ai[0] = 0;
+                                    npc.ai[1] = 0;
+                                }
                             }
                             else // Phase 1
                             {
@@ -241,8 +257,16 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 }
                                 else // Follow player
                                 {
-                                    npc.ai[0] = 0;
-                                    npc.ai[1] = 0;
+                                    if (Main.rand.Next(8) == 0)
+                                    {
+                                        npc.ai[0] = 4;
+                                        npc.ai[1] = 0;
+                                    }
+                                    else
+                                    {
+                                        npc.ai[0] = 0;
+                                        npc.ai[1] = 0;
+                                    }
                                 }
                             }
                         }
@@ -255,7 +279,15 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     {
                         // Wall of Flesh scream sound
                         Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
-                        //float rotation = MathHelper.ToRadians(360);
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                            if (distance <= 600)
+                            {
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                                Main.NewText("screenshake");
+                            }
+                        }
 
                         Vector2 origin = npc.Center; // Origin of the circle
                         float radius = 450; // Distance from the circle
@@ -286,7 +318,15 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         {
                             // Wall of Flesh scream sound
                             Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
-                            //float rotation = MathHelper.ToRadians(360);
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                                if (distance <= 600)
+                                {
+                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                                    Main.NewText("screenshake");
+                                }
+                            }
 
                             Vector2 origin = npc.Center; // Origin of the circle
                             float radius = 750; // Distance from the circle
@@ -320,6 +360,15 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             // Wall of Flesh scream sound
                             Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
                             //float rotation = MathHelper.ToRadians(360);
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                                if (distance <= 600)
+                                {
+                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                                    Main.NewText("screenshake");
+                                }
+                            }
 
                             Vector2 origin = npc.Center; // Origin of the circle
                             float radius = 975; // Distance from the circle
@@ -336,6 +385,45 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
 
                         if (npc.ai[1] == 270)
+                        {
+                            npc.ai[0] = 0;
+                            npc.ai[1] = 0;
+                        }
+                    }
+                    break;
+                case 4: // Shoot blood in all directions
+                    if(npc.ai[0] == 4)
+                    {
+                        npc.velocity = Vector2.Zero;
+
+                        if (npc.ai[1] % 180 == 0)
+                        {
+                            float numberProjectiles = 16 + (Main.expertMode ? Main.rand.Next(4, 8) : Main.rand.Next(4));
+                            float rotation = MathHelper.ToRadians(360);
+                            Vector2 delta = player.Center - npc.Center;
+                            float magnitude = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
+                            if (magnitude > 0)
+                            {
+                                delta *= 5f / magnitude;
+                            }
+                            else
+                            {
+                                delta = new Vector2(0f, 5f);
+                            }
+                            Main.PlaySound(SoundID.Item95, (int)npc.Center.X, (int)npc.Center.Y);
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                for (int i = 0; i < numberProjectiles; i++)
+                                {
+                                    Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .3f;
+                                    // * 3f increases speed
+                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, perturbedSpeed.X * 3f, perturbedSpeed.Y * 3f, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 2f, Main.myPlayer, 0f, 0f);
+                                }
+                            }
+                        }
+
+                        if (npc.ai[1] == 530)
                         {
                             npc.ai[0] = 0;
                             npc.ai[1] = 0;

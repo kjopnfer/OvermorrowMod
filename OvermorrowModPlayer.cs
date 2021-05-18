@@ -59,6 +59,13 @@ namespace OvermorrowMod
         public bool moonBuff;
         public bool treeBuff;
 
+        // Misc
+        public bool BossRoar;
+        public int shakeTimer = 0;
+        public bool FocusBoss;
+        public bool canFocus = true;
+        private float amount = 0;
+
         public override void ResetEffects()
         {
             ArmBracer = false;
@@ -255,6 +262,66 @@ namespace OvermorrowMod
                 {
                     sandMode = 0;
                     Main.NewText("Swapped to Defense Mode", Color.Yellow);
+                }
+            }
+        }
+
+        public override void ModifyScreenPosition()
+        {
+            if (FocusBoss)
+            {
+                if (canFocus)
+                {
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        if (Main.npc[i].boss)
+                        {
+                            //Main.screenPosition = new Vector2(Main.npc[i].Center.X - Main.screenWidth / 2, Main.npc[i].Center.Y - Main.screenHeight / 2);
+                            Main.screenPosition = new Vector2(MathHelper.Lerp(player.Center.X - Main.screenWidth / 2, Main.npc[i].Center.X - Main.screenWidth / 2, amount), MathHelper.Lerp(player.Center.Y - Main.screenHeight / 2, Main.npc[i].Center.Y - Main.screenHeight / 2, amount));
+                        }
+                    }
+                    amount += 0.005f;
+                    if(amount >= 1)
+                    {
+                        canFocus = false;
+                        amount = 0;
+                    }
+
+                }
+                else
+                { 
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        if (Main.npc[i].boss)
+                        {
+                            //Main.screenPosition = new Vector2(Main.npc[i].Center.X - Main.screenWidth / 2, Main.npc[i].Center.Y - Main.screenHeight / 2);
+                            Main.screenPosition = new Vector2(MathHelper.Lerp(Main.npc[i].Center.X - Main.screenWidth / 2, player.Center.X - Main.screenWidth / 2, amount), MathHelper.Lerp(Main.npc[i].Center.Y - Main.screenHeight / 2, player.Center.Y - Main.screenHeight / 2, amount));
+                        }
+                    }
+
+                    amount += 0.05f;
+
+                    if(amount >= 1)
+                    {
+                        amount = 0;
+                        FocusBoss = false;
+                        canFocus = true;
+                    }
+                }
+
+            }
+
+            if (BossRoar)
+            {
+                if (shakeTimer <= 60)
+                {
+                    Main.screenPosition += new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10));
+                    shakeTimer++;
+                }
+                else
+                {
+                    shakeTimer = 0;
+                    BossRoar = false;
                 }
             }
         }
