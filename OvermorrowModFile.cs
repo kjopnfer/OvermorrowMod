@@ -61,6 +61,30 @@ namespace OvermorrowMod
             }
         }
 
+        internal void BossTitle(int BossID)
+		{
+			string BossName = "";
+			string BossTitle = "";
+			Color titleColor = Color.White;
+			switch (BossID)
+			{
+				case 1:
+					BossName = "snoop dogg";
+					BossTitle = "high king";
+					titleColor = Color.Green;
+					break;
+			}
+			Vector2 textSize = Main.fontDeathText.MeasureString(BossName);
+			Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
+			float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
+			float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
+			float alpha = 255;
+			float alpha2 = 255;
+
+			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
+			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), Color.LimeGreen, 0f, Vector2.Zero, 1f, 0, 0f);
+		}
+
         public override void UpdateUI(GameTime gameTime)
         {
             _lastUpdateUiGameTime = gameTime;
@@ -86,6 +110,19 @@ namespace OvermorrowMod
                         return true;
                     },
                        InterfaceScaleType.UI));
+
+                OvermorrowModPlayer modPlayer = Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>();
+                if (modPlayer.ShowText)
+                {
+                    layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                    "Overmorrow: Title",
+                    delegate
+                    {
+                        BossTitle(1);
+                        return true;
+                    },
+                    InterfaceScaleType.UI));
+                }
             }
         }
 

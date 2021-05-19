@@ -65,6 +65,7 @@ namespace OvermorrowMod
         public bool FocusBoss;
         public bool canFocus = true;
         private float amount = 0;
+        public bool ShowText;
 
         public override void ResetEffects()
         {
@@ -306,6 +307,7 @@ namespace OvermorrowMod
                         amount = 0;
                         FocusBoss = false;
                         canFocus = true;
+                        ShowText = false;
                     }
                 }
 

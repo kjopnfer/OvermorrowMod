@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
+using ReLogic.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -40,8 +41,10 @@ namespace OvermorrowMod.Items.Consumable.Boss
         }
 
         public override bool UseItem(Player player)
-        {
+        {            
             player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
+            player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (Main.netMode == NetmodeID.SinglePlayer)

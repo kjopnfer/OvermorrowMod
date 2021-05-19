@@ -285,7 +285,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             if (distance <= 600)
                             {
                                 Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
-                                Main.NewText("screenshake");
                             }
                         }
 
@@ -324,7 +323,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 if (distance <= 600)
                                 {
                                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
-                                    Main.NewText("screenshake");
                                 }
                             }
 
@@ -366,7 +364,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 if (distance <= 600)
                                 {
                                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
-                                    Main.NewText("screenshake");
                                 }
                             }
 

@@ -19,8 +19,8 @@ namespace OvermorrowMod.UI
         public override void OnInitialize()
         {
             UIElement panel = new UIElement();
-            panel.Width.Set(Main.screenWidth / 2, 0);
-            panel.Height.Set(Main.screenHeight / 2, 0);
+            panel.Width.Set(Main.screenWidth, 0);
+            panel.Height.Set(Main.screenHeight, 0);
             panel.HAlign = panel.VAlign = 0.5f;
             Append(panel);
 
@@ -30,8 +30,8 @@ namespace OvermorrowMod.UI
             }
 
             showSouls = new UIText(soulCount.ToString());
-            showSouls.HAlign = 0.4975f;
-            showSouls.VAlign = 0.655f;
+            showSouls.HAlign = 0.499f;
+            showSouls.VAlign = 0.57f;
             panel.Append(showSouls);
         }
 
