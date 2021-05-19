@@ -37,6 +37,10 @@ namespace OvermorrowMod.Items.Consumable.Boss
 
         public override bool UseItem(Player player)
         {
+            player.GetModPlayer<OvermorrowModPlayer>().TitleID = 4;
+            player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
+            player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (Main.netMode == NetmodeID.SinglePlayer)

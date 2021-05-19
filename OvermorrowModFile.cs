@@ -66,14 +66,41 @@ namespace OvermorrowMod
 			string BossName = "";
 			string BossTitle = "";
 			Color titleColor = Color.White;
+            Color nameColor = Color.White;
 			switch (BossID)
 			{
 				case 1:
-					BossName = "snoop dogg";
-					BossTitle = "high king";
-					titleColor = Color.Green;
-					break;
-			}
+                    BossName = "Dharuud";
+                    BossTitle = "The Sandstorm";
+                    nameColor = Color.LightGoldenrodYellow;
+                    titleColor = Color.Yellow;
+                    break;
+                case 2:
+                    BossName = "The Storm Drake";
+                    BossTitle = "Apex Predator";
+                    nameColor = Color.Cyan;
+                    titleColor = Color.DarkCyan;
+                    break;
+                case 3:
+                    BossName = "Dripplord";
+                    BossTitle = "Bloody Assimilator";
+                    nameColor = Color.Red;
+                    titleColor = Color.DarkRed;
+                    break;
+                case 4:
+                    BossName = "Iorich";
+                    BossTitle = "The Guardian";
+                    nameColor = Color.LimeGreen;
+                    titleColor = Color.Green;
+                    break;
+                default:
+                    BossName = "snoop dogg";
+                    BossTitle = "high king";
+                    nameColor = Color.LimeGreen;
+                    titleColor = Color.Green;
+                    break;
+
+            }
 			Vector2 textSize = Main.fontDeathText.MeasureString(BossName);
 			Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
 			float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
@@ -82,7 +109,7 @@ namespace OvermorrowMod
 			float alpha2 = 255;
 
 			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
-			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), Color.LimeGreen, 0f, Vector2.Zero, 1f, 0, 0f);
+			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
 		}
 
         public override void UpdateUI(GameTime gameTime)
@@ -118,7 +145,7 @@ namespace OvermorrowMod
                     "Overmorrow: Title",
                     delegate
                     {
-                        BossTitle(1);
+                        BossTitle(modPlayer.TitleID);
                         return true;
                     },
                     InterfaceScaleType.UI));

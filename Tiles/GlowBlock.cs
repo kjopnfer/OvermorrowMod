@@ -22,7 +22,7 @@ namespace OvermorrowMod.Tiles
             drop = ModContent.ItemType<OvermorrowMod.Items.Placeable.Tiles.GlowBlock>();
             AddMapEntry(new Color(0, 25, 25));
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
+            /*TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
             //TileObjectData.newTile.Origin = new Point16(0, 0);
             //TileObjectData.newTile.StyleHorizontal = true;
             //TileObjectData.newTile.StyleMultiplier = 5;
@@ -30,7 +30,7 @@ namespace OvermorrowMod.Tiles
             TileObjectData.newAlternate.AnchorBottom = AnchorData.Empty;
             TileObjectData.addAlternate(0);
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<TEShenanigans>().Hook_AfterPlacement, -1, 0, true);
-            TileObjectData.addTile(Type);
+            TileObjectData.addTile(Type);*/
         }
 
         public override void RandomUpdate(int i, int j)

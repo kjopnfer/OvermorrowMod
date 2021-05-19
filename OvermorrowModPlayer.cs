@@ -66,6 +66,7 @@ namespace OvermorrowMod
         public bool canFocus = true;
         private float amount = 0;
         public bool ShowText;
+        public int TitleID;
 
         public override void ResetEffects()
         {

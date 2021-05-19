@@ -41,6 +41,10 @@ namespace OvermorrowMod.Items.Consumable.Boss
         {
             if (player.ZoneSkyHeight)
             {
+                player.GetModPlayer<OvermorrowModPlayer>().TitleID = 2;
+                player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
+                player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+
                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<StormDrake>());
                 Main.PlaySound(SoundID.Roar, player.position, 0);
                 return true;
