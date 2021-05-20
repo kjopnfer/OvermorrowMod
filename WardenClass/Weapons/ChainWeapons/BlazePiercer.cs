@@ -44,15 +44,14 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
             if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0)
             {
-                item.useStyle = ItemUseStyleID.SwingThrow;
-                item.useAnimation = 14;
-                item.useTime = 14;
-                item.knockBack = 0f;
-                item.damage = 24;
-                item.shootSpeed = 32f;
-                item.shoot = mod.ProjectileType("BlazePiercerProjectileAlt");
+                item.useStyle = ItemUseStyleID.HoldingUp;
+                item.useAnimation = 45;
+                item.useTime = 45;
+                item.damage = 0;
+                item.shoot = ProjectileID.None;
 
                 ConsumeSouls(1, player);
+                player.GetModPlayer<OvermorrowModPlayer>().ActiveSymbol = true;
             }
             else
             {

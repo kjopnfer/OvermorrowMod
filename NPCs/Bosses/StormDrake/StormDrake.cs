@@ -33,7 +33,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Storm Drake of Oris");
+            DisplayName.SetDefault("The Storm Drake");
             Main.npcFrameCount[npc.type] = 6;
         }
 
