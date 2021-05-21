@@ -48,7 +48,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useAnimation = 45;
                 item.useTime = 45;
                 item.knockBack = 0f;
-                item.damage = 0;
+                item.damage = 3;
                 item.shootSpeed = 0f;
                 item.shoot = ProjectileID.None;
                 item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
