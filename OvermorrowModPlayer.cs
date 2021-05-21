@@ -70,7 +70,6 @@ namespace OvermorrowMod
         private float amount = 0;
         public bool ShowText;
         public int TitleID;
-        public bool ActiveSymbol;
 
         public override void ResetEffects()
         {
@@ -332,48 +331,6 @@ namespace OvermorrowMod
                 }
             }
         }
-
-        public override void ModifyDrawLayers(List<PlayerLayer> layers)
-        {
-            if (ActiveSymbol)
-            {
-                Symbol.visible = true;
-                layers.Insert(0, Symbol);
-            }
-
-            if (ActiveSymbol)
-            {
-                int body = layers.FindIndex(l => l == PlayerLayer.MiscEffectsFront);
-                if (body < 0)
-                {
-                    return;
-                }
-
-                layers.Insert(body - 1, Symbol);
-            }
-        }
-
-        public static readonly PlayerLayer Symbol = new PlayerLayer("OvermorrowMod", "Body", delegate (PlayerDrawInfo drawInfo)
-        {
-            Player drawPlayer = drawInfo.drawPlayer;
-            Mod mod = ModLoader.GetMod("OvermorrowMod");
-            OvermorrowModPlayer modPlayer = drawPlayer.GetModPlayer<OvermorrowModPlayer>();
-
-            if (modPlayer.ActiveSymbol == false)
-            {
-                return;
-            }
-
-            // Symbol Texture
-            Texture2D symbolTexture = ModContent.GetTexture("OvermorrowMod/UI/temp");
-            int drawX = (int)(drawInfo.position.X + drawPlayer.width / 2f - Main.screenPosition.X);
-            int drawY = (int)(drawInfo.position.Y + drawPlayer.height / 2f - Main.screenPosition.Y);
-            //int num24 = (int)(((float)(drawPlayer.miscCounter / 300.0)).ToRotationVector2().Y * 4.0);
-            Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2)) + new Vector2((-drawPlayer.direction), 0);
-
-            DrawData data = new DrawData(symbolTexture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.White, drawPlayer.bodyRotation, symbolTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
-            Main.playerDrawData.Add(data);
-        });
 
         public void DashMovement()
         {

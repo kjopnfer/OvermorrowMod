@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs;
 using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.Audio;
@@ -42,16 +43,19 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && !player.GetModPlayer<WardenRunePlayer>().ActiveRune)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
                 item.useTime = 45;
                 item.damage = 0;
+                item.shootSpeed = 0f;
                 item.shoot = ProjectileID.None;
+                item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
 
                 ConsumeSouls(1, player);
-                player.GetModPlayer<OvermorrowModPlayer>().ActiveSymbol = true;
+                player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
+                player.AddBuff(ModContent.BuffType<RuneBuff1>(), 600);
             }
             else
             {
@@ -62,10 +66,31 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTime = 14;
                 item.damage = 12;
                 item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
+                item.UseSound = SoundID.Item71;
                 item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             }
 
             return base.CanUseItem(player);
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            if (player.GetModPlayer<WardenRunePlayer>().Rune1)
+            {
+                float numberProjectiles = 3; // This defines how many projectiles to shot
+                float rotation = MathHelper.ToRadians(15);
+                position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
+                for (int i = 0; i < numberProjectiles; i++)
+                {
+                    Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))); // This defines the projectile roatation and speed. .4f == projectile speed
+                    Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockBack, player.whoAmI);
+                }
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         public override void AddRecipes()
