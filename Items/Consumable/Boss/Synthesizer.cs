@@ -14,7 +14,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Synthesizer of the Sands");
-            Tooltip.SetDefault("Summons Dharuud, the Sandstorm\n'What's the song name?'");
+            Tooltip.SetDefault("Summons Dharuud, the Sandstorm\nCan only be used within the shifting sands of an arid wasteland\n'What's the song name?'");
         }
 
         public override void SetDefaults()

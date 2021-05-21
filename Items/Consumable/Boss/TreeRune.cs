@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Mossy Runestone");
-            Tooltip.SetDefault("Summons Iorich, the Guardian\n'Holding it gives you feelings of serenity'");
+            Tooltip.SetDefault("Summons Iorich, the Guardian\nCan only be used in the serene forests of the Overworld\n'Holding it gives you feelings of serenity'");
         }
 
         public override void SetDefaults()

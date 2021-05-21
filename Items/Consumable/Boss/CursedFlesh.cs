@@ -17,7 +17,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Cursed Flesh");
-            Tooltip.SetDefault("Summons Dripplord, The Bloody Assimilator\n'Make us whole...'");
+            Tooltip.SetDefault("Summons Dripplord, The Bloody Assimilator\nCan only be used under the light of a foul moon\n'Make us whole...'");
         }
 
         public override void SetDefaults()
