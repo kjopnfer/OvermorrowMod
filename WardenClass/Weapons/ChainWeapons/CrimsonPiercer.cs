@@ -13,8 +13,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Sanguine Impaler");
-            Tooltip.SetDefault("[c/00FF00:{ Special Ability }]\n" +
-                "[c/800080:Right Click] to launch 3 chains that deal increased damage\nConsumes 1 Soul Essence");
+            Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
+                "[c/800080:Right Click] to cause all attacks to launch 3 chains that deal increased damage\nConsumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()

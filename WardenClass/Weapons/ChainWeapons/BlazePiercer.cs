@@ -14,8 +14,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Blaze Binder");
-            Tooltip.SetDefault("Attacks have a chance to set enemies on fire\n[c/00FF00:{ Special Ability }]\n" +
-                            "[c/800080:Right Click] to launch a chain dealing increased damage and inflicting an additional fire debuff\nConsumes 1 Soul Essence");
+            Tooltip.SetDefault("Attacks have a chance to set enemies on fire\n[c/00FF00:{ Imbuement }]\n" +
+                            "[c/800080:Right Click] to cause all attacks deal increased damage and inflict an additional fire debuff\nConsumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()

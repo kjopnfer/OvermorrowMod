@@ -14,8 +14,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lightning Cutter");
-            Tooltip.SetDefault("Attacks have a chance to Electrified\n[c/00FF00:{ Special Ability }]\n" +
-                            "[c/800080:Right Click] to launch an electrically charged chain\nConsumes 1 Soul Essence");
+            Tooltip.SetDefault("Attacks have a chance to Electrified\n[c/00FF00:{ Imbuement }]\n" +
+                            "[c/800080:Right Click] to cause all attacks to launch an electrically charged chain\nConsumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()
