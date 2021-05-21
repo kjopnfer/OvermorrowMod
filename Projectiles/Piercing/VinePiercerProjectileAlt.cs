@@ -257,7 +257,8 @@ namespace OvermorrowMod.Projectiles.Piercing
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("ToxicCloud"), 0, 0f, projectile.owner, projectile.damage + 5, 0f);
+                    int proj = Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("ToxicCloud"), 0, 0f, projectile.owner, projectile.damage + 5, 0f);
+                    Main.projectile[proj].magic = false;
                     firstHit = true;
                 }
             }

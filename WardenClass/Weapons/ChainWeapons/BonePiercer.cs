@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.RuneBuffs;
 using OvermorrowMod.Projectiles.Piercing;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using Terraria;
@@ -42,17 +44,19 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && !player.GetModPlayer<WardenRunePlayer>().ActiveRune)
             {
-                item.useStyle = ItemUseStyleID.SwingThrow;
-                item.useAnimation = 14;
-                item.useTime = 14;
-                item.knockBack = 0f;
-                item.damage = 11;
-                item.shootSpeed = 28f;
-                item.shoot = mod.ProjectileType("BonePiercerProjectileAlt");
-               
+                item.useStyle = ItemUseStyleID.HoldingUp;
+                item.useAnimation = 45;
+                item.useTime = 45;
+                item.damage = 0;
+                item.shootSpeed = 0f;
+                item.shoot = ProjectileID.None;
+                item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
+
                 ConsumeSouls(1, player);
+                player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
+                player.AddBuff(ModContent.BuffType<BoneRune>(), 600);
             }
             else
             {
@@ -63,9 +67,19 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.damage = 8;
                 item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("BonePiercerProjectile");
+                item.UseSound = SoundID.Item1;
             }
 
             return base.CanUseItem(player);
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            if (player.GetModPlayer<WardenRunePlayer>().RuneID == 2)
+            {
+                type = ModContent.ProjectileType<BonePiercerProjectileAlt>();
+            }
+            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }
 
         public override void AddRecipes()

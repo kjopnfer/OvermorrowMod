@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Buffs;
+using OvermorrowMod.Buffs.RuneBuffs;
 using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.Audio;
@@ -55,7 +55,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
                 ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
-                player.AddBuff(ModContent.BuffType<RuneBuff1>(), 600);
+                player.AddBuff(ModContent.BuffType<BlazeRune>(), 600);
             }
             else
             {
@@ -75,7 +75,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            if (player.GetModPlayer<WardenRunePlayer>().Rune1)
+            if (player.GetModPlayer<WardenRunePlayer>().RuneID == 1)
             {
                 float numberProjectiles = 3; // This defines how many projectiles to shot
                 float rotation = MathHelper.ToRadians(15);

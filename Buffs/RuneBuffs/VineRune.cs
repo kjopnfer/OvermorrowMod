@@ -2,13 +2,13 @@ using OvermorrowMod.WardenClass;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs
+namespace OvermorrowMod.Buffs.RuneBuffs
 {
-	public class RuneBuff1 : ModBuff
+	public class VineRune : ModBuff
 	{
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Imbuement: Blaze Binder");
+			DisplayName.SetDefault("Imbuement: Thorns of the Jungle");
 			Description.SetDefault("Your attacks launch three chains instead of one!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
@@ -17,7 +17,7 @@ namespace OvermorrowMod.Buffs
 
 		public override void Update(Player player, ref int buffIndex)
 		{
-			player.GetModPlayer<WardenRunePlayer>().Rune1 = true;
+			player.GetModPlayer<WardenRunePlayer>().RuneID = 7;
 			player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
 		}
 	}
