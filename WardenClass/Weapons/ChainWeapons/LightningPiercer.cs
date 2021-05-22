@@ -26,8 +26,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.useAnimation = 14;
             item.useTime = 14;
             item.knockBack = 0f;
-            item.width = 30;
-            item.height = 10;
+            item.width = 36;
+            item.height = 46;
             item.damage = 6;
             item.shootSpeed = 32f;
             item.shoot = mod.ProjectileType("LightningPiercerProjectile");

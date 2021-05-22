@@ -6,18 +6,18 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Materials
 {
-    public class BloodGem : ModItem
+    public class CrystalMana : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blood Gem");
+            DisplayName.SetDefault("Crystallized Mana");
         }
 
         public override void SetDefaults()
         {
-            item.width = 18;
-            item.height = 18;
-            item.rare = ItemRarityID.Orange;
+            item.width = 9;
+            item.height = 14;
+            item.rare = ItemRarityID.Green;
             item.maxStack = 99;
         }
     }
