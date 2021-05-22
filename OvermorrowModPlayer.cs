@@ -27,6 +27,10 @@ namespace OvermorrowMod
         public bool StormShield;
         public bool TreeNecklace;
 
+        // Set Bonuses
+        public bool graniteSet;
+        private int minionCounts;
+
         // Shield Variables
         public int DashType;
 
@@ -251,6 +255,24 @@ namespace OvermorrowMod
             {
                 player.dashDelay = 10;
                 DashType = 0;
+            }
+
+            // Armor Sets
+            if (graniteSet)
+            {
+                // When minions are despawned, the count does not reset
+                minionCounts = 0;
+
+                for (int i = 0; i < Main.maxProjectiles; i++)
+                {
+                    if (Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].minion)
+                    {
+                        minionCounts++;
+                    }
+                }
+
+                player.statDefense += 1 * minionCounts;
+                player.meleeDamage += 0.03f * minionCounts;
             }
         }
 

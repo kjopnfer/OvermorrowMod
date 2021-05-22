@@ -11,7 +11,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Frostburn Rune");
-            Tooltip.SetDefault("Piercing attacks have a chance to inflict Frostburn");
+            Tooltip.SetDefault("Piercing weapons have a chance to inflict Frostburn");
         }
 
         public override void SetDefaults()

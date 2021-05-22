@@ -211,101 +211,69 @@ namespace OvermorrowMod
         {
             Dust.QuickBox(new Vector2(x, y) * 16, new Vector2(x + 1, y + 1) * 16, 2, Color.YellowGreen, null);
 
-            int randSize = Main.rand.Next(36, 60);
-            for (int i = 0; i < randSize; i++)
+            Point point = new Point(x, y);
+            //WorldUtils.Gen(point, new Shapes.Mound(14, 14), new Actions.SetTile(TileID.LunarBlockSolar));
+
+            /*ShapeData shapeData = new ShapeData();
+            WorldUtils.Gen(point, new Shapes.Circle(5, 5), new Actions.Blank().Output(shapeData));
+            WorldUtils.Gen(point, new Shapes.Circle(5, 5), Actions.Chain(new GenAction[]
             {
-                // Runs across X forwards
-                WorldGen.TileRunner(x + i, y, Main.rand.Next(21, 55), 8, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
-                // Runs down Y
-                WorldGen.TileRunner(x + i, y + ((randSize - 5) - i), Main.rand.Next(29, 65), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
+                new Modifiers.Offset(15, 0),
+                new Actions.Blank().Output(shapeData)
+            }));
 
-                // Runs across X backwards
-                WorldGen.TileRunner(x - i, y, Main.rand.Next(21, 55), Main.rand.Next(5, 8), ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
-                // Runs down Y
-                WorldGen.TileRunner(x - i, y + ((randSize - 5) - i), Main.rand.Next(29, 65), 7, ModContent.TileType<GlowBlock>(), Main.rand.Next(2) == 0 ? true : false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
-            }
-
-            for (int i = 0; i < 20; i++)
+            WorldUtils.Gen(point, new Shapes.Rectangle(6, 25), Actions.Chain(new GenAction[]
             {
-                WorldGen.digTunnel(x + i, y - Main.rand.Next(3), -2 * i, 0, 4, Main.rand.Next(5, 9), false);
-                WorldGen.digTunnel(x - i, y - Main.rand.Next(3), 2 * i, 0, 4, Main.rand.Next(5, 9), false);
-                for (int j = 21 - i; j > 0; j--)
-                {
-                    WorldGen.digTunnel(x + (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(8, 9), j > 10 ? true : false);
-                    WorldGen.digTunnel(x - (i * 2), y, 0, (j / 2) + 3, 4, Main.rand.Next(5, 9), j > 10 ? true : false);
-                }
-            }
+                new Modifiers.Offset(5, -25),
+                new Actions.Blank().Output(shapeData)
+            }));
 
-            // Generate walls
-
-            // This loops across the inner space of the biome to generate walls
-            // Loop across X
-            for (int i = 0; i < 70; i++)
+            WorldUtils.Gen(point, new Shapes.Mound(7, 10), Actions.Chain(new GenAction[]
             {
-                // Loop across X forwards
-                Tile tileForwards = Framing.GetTileSafely(x + i, y);
-                if (tileForwards.wall == 0 || tileForwards.wall == WallID.Dirt)
-                {
-                    if (tileForwards.type != ModContent.TileType<GlowBlock>())
-                    {
-                        tileForwards.wall = (ushort)ModContent.WallType<GlowWall>();
-                    }
-                }
+                new Modifiers.Offset(7, -25),
+                new Actions.Blank().Output(shapeData)
+            }));
+            WorldUtils.Gen(point, new ModShapes.InnerOutline(shapeData, true), new Actions.SetTile(TileID.LunarBlockSolar, true));*/
+            //Point surfacePoint;
 
-                // Loop across X backwards
-                Tile tileBackwards = Framing.GetTileSafely(x - i, y);
-                if (tileBackwards.wall == 0 || tileBackwards.wall == WallID.Dirt)
-                {
-                    if (tileBackwards.type != ModContent.TileType<GlowBlock>())
-                    {
-                        tileBackwards.wall = (ushort)ModContent.WallType<GlowWall>();
-                    }
-                }
+            //WorldUtils.Gen(point, new Shapes.Mound(14, 14), Actions.Chain(new Actions.SetTile(TileID.LunarBlockStardust)));
+            ShapeData circleShapeData = new ShapeData();
+            ShapeData halfCircleShapeData = new ShapeData();
+            ShapeData circleShapeData2 = new ShapeData();
 
-                // Loop across Y
-                for (int j = 0; j < 40; j++)
-                {
-                    // Loop up Y
-                    Tile tileUp = Framing.GetTileSafely(x + i, y + j);
-                    if (tileUp.wall == 0 || tileUp.wall == WallID.Dirt)
-                    {
-                        if (tileUp.type != ModContent.TileType<GlowBlock>())
-                        {
-                            tileUp.wall = (ushort)ModContent.WallType<GlowWall>();
-                        }
-                    }
+            // Generate the circle shape
+            WorldUtils.Gen(point, new Shapes.Circle(20), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
 
-                    // Loop up Y backwards
-                    Tile tileUp2 = Framing.GetTileSafely(x - i, y + j);
-                    if (tileUp2.wall == 0 || tileUp2.wall == WallID.Dirt)
-                    {
-                        if (tileUp2.type != ModContent.TileType<GlowBlock>())
-                        {
-                            tileUp2.wall = (ushort)ModContent.WallType<GlowWall>();
-                        }
-                    }
+            // Generate the platform
+            WorldUtils.Gen(point, new Shapes.Circle(8), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.SetTile(TileID.Dirt).Output(circleShapeData2)));
 
-                    // Loop down Y
-                    Tile tileDown = Framing.GetTileSafely(x + i, y - j);
-                    if (tileDown.wall == 0 || tileDown.wall == WallID.Dirt)
-                    {
-                        if (tileDown.type != ModContent.TileType<GlowBlock>())
-                        {
-                            tileDown.wall = (ushort)ModContent.WallType<GlowWall>();
-                        }
-                    }
+            // Clear the top half of the shape
+            WorldUtils.Gen(point, new Shapes.HalfCircle(12), Actions.Chain(new Actions.ClearTile(frameNeighbors: true).Output(halfCircleShapeData)));
 
-                    // Loop down Y backwards
-                    Tile tileDown2 = Framing.GetTileSafely(x - i, y - j);
-                    if (tileDown2.wall == 0 || tileDown2.wall == WallID.Dirt)
-                    {
-                        if (tileDown2.type != ModContent.TileType<GlowBlock>())
-                        {
-                            tileDown2.wall = (ushort)ModContent.WallType<GlowWall>();
-                        }
-                    }
-                }
-            }
+            // Remove the top half of the shape from the shape data
+            circleShapeData2.Subtract(halfCircleShapeData, point, point);
+            WorldUtils.Gen(point, new ModShapes.OuterOutline(circleShapeData2), Actions.Chain(new Actions.SetTile(TileID.Grass), new Actions.SetFrames(frameNeighbors: true)));
+
+            // Place background
+            WorldUtils.Gen(point, new ModShapes.All(circleShapeData), new Actions.PlaceWall(WallID.LivingLeaf));
+            WorldUtils.Gen(point, new Shapes.Circle(7), Actions.Chain(new Modifiers.RadialDither(0.5f, 0.2f), new Actions.PlaceWall(WallID.Flower)));
+
+            // Place grass
+            WorldUtils.Gen(point, new ModShapes.InnerOutline(circleShapeData), Actions.Chain(new Actions.SetTile(TileID.LivingWood), new Actions.SetFrames(frameNeighbors: true)));
+
+            // Place water
+            WorldUtils.Gen(new Point(point.X, point.Y + 2), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
+
+            // Place special tile
+            WorldGen.PlaceTile(point.X, point.Y, TileID.LargePiles2, mute: true, forced: false, -1, 17);
+            WorldGen.PlaceTile(point.X - 5, point.Y, TileID.Campfire, mute: true, forced: true, -1, 0);
+            WorldGen.PlaceTile(point.X + 5, point.Y, TileID.Campfire, mute: true, forced: true, -1, 0);
+
+            // Place plants
+            WorldUtils.Gen(point, new ModShapes.All(halfCircleShapeData), Actions.Chain(new Modifiers.Offset(0, -1), new Modifiers.OnlyTiles(TileID.Dirt), new Modifiers.Offset(0, -1), new ActionGrass()));
+            /*WorldGen.TileRunner(x, y, 20, 1, TileID.WoodBlock, true);
+            WorldGen.digTunnel(x, y, 0, 0, 1, 10);*/
+        
         }
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
