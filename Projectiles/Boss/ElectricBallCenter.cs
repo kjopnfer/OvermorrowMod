@@ -61,7 +61,6 @@ namespace OvermorrowMod.Projectiles.Boss
             }
             else // Launch at the nearest player
             {
-                bool target = false;
                 Vector2 move = Vector2.Zero;
                 float distance = 6000f; // Search distance
                 if (!launchedProjectile)
@@ -76,7 +75,6 @@ namespace OvermorrowMod.Projectiles.Boss
                             {
                                 move = newMove;
                                 distance = distanceTo;
-                                target = true;
                                 float launchSpeed = Main.expertMode ? 75f : 100f;
                                 projectile.velocity = (move) / launchSpeed;
                                 launchedProjectile = true;

@@ -16,7 +16,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Bone Spike");
             Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause all attacks to explode into bouncing bones on hit\nConsumes 1 Soul Essence");
+                            "[c/800080:Right Click] to cause all attacks to explode into bouncing bones on hit\nConsumes 1 Soul Essence" +
+                            "\n'Just gotta put all the femurs together...'");
         }
 
         public override void SafeSetDefaults()

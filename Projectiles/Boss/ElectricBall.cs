@@ -50,22 +50,15 @@ namespace OvermorrowMod.Projectiles.Boss
             }
 
             // Parent projectile will have passed in the ID (projectile.whoAmI) for the projectile through AI fields when spawned
-            for (int i = 0; i < Main.maxProjectiles; i++) // Loop through the projectile array
-            {
-                // Check that the projectile is the same as the parent projectile and it is active
-                if (Main.projectile[i] == Main.projectile[(int)projectile.ai[0]] && Main.projectile[i].active)
-                {
-                    // Set the parent projectile
-                    parentProjectile = Main.projectile[i];
-                    projectile.netUpdate = true;
-                }
+            if (Main.projectile[(int)projectile.ai[0]].active) {
+                parentProjectile = Main.projectile[(int)projectile.ai[0]];
             }
 
             // Orbit around the parent projectile
             DoProjectile_OrbitPosition(projectile, parentProjectile.Center, 250);
 
             // Make projectiles gradually disappear
-            if (projectile.timeLeft <= 60)
+            if (projectile.timeLeft <= 60 && projectile.alpha < 255)
             {
                 projectile.alpha += 5;
             }
@@ -109,7 +102,7 @@ namespace OvermorrowMod.Projectiles.Boss
             }
             else
             {
-                return projectile.GetAlpha(lightColor);
+                return null;
             }
         }
 
