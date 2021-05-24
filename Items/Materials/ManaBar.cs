@@ -14,11 +14,11 @@ namespace OvermorrowMod.Items.Materials
 
 		public override void SetDefaults()
 		{
-			item.width = 30;
-			item.height = 24;
+			item.width = 48;
+			item.height = 30;
 			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.value = 550;
-			item.rare = 1;
+			item.rare = ItemRarityID.Green;
 			item.maxStack = 999;
 			item.autoReuse = true;
 			item.consumable = true;
