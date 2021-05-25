@@ -13,7 +13,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blaze Binder");
+            DisplayName.SetDefault("Infernal Chains");
             Tooltip.SetDefault("Attacks have a chance to set enemies on fire\n[c/00FF00:{ Imbuement }]\n" +
                             "[c/800080:Right Click] to cause all attacks deal increased damage and inflict an additional fire debuff\nConsumes 1 Soul Essence");
         }
@@ -27,7 +27,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.useTime = 14;
             item.knockBack = 0f;
             item.width = 36;
-            item.height = 46;
+            item.height = 48;
             item.damage = 12;
             item.shootSpeed = 18f;
             item.shoot = mod.ProjectileType("BlazePiercerProjectile");

@@ -113,7 +113,7 @@ namespace OvermorrowMod.WardenClass
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
                     break;
                 case 2: // Bone Spike
-                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
+                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DungeonRuneCircle");
                     break;
                 case 3: // Lightning Cutter
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
@@ -140,7 +140,7 @@ namespace OvermorrowMod.WardenClass
 
             // Replaced drawPlayer.miscCounter with modPlayer.symbolCounter, there might be syncing issues idk
 
-            double deg = (modPlayer.rotateCounter * 1.2) * MathHelper.Lerp(1, 4, (float)(!modPlayer.runeDeactivate ? modPlayer.runeCounter / 300.0 : 1));
+            double deg = (modPlayer.rotateCounter * 0.8) * MathHelper.Lerp(1, 4, (float)(!modPlayer.runeDeactivate ? modPlayer.runeCounter / 300.0 : 1));
             float rad = (float)(deg * (Math.PI / 180));
 
             float scale = (float)((modPlayer.runeCounter * 2 >= 300 ? 300 : modPlayer.runeCounter * 2) / 300.0) * 1.5f;

@@ -12,7 +12,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Vile Piercer");
+            DisplayName.SetDefault("Vile Guillotine");
             Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
                 "[c/800080:Right Click] to cause all attacks to launch 3 chains that deal increased damage\nConsumes 1 Soul Essence");
         }
@@ -25,7 +25,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.useAnimation = 14;
             item.useTime = 14;
             item.knockBack = 0f;
-            item.width = 36;
+            item.width = 42;
             item.height = 46;
             item.damage = 3;
             item.shootSpeed = 14f;

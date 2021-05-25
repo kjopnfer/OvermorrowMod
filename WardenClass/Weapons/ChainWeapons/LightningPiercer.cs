@@ -13,7 +13,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Cutter");
+            DisplayName.SetDefault("Heaven's Rope");
             Tooltip.SetDefault("Attacks have a chance to Electrified\n[c/00FF00:{ Imbuement }]\n" +
                             "[c/800080:Right Click] to cause all attacks to launch an electrically charged chain\nConsumes 1 Soul Essence");
         }
@@ -26,8 +26,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.useAnimation = 14;
             item.useTime = 14;
             item.knockBack = 0f;
-            item.width = 36;
-            item.height = 46;
+            item.width = 38;
+            item.height = 48;
             item.damage = 6;
             item.shootSpeed = 32f;
             item.shoot = mod.ProjectileType("LightningPiercerProjectile");
