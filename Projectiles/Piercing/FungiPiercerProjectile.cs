@@ -23,6 +23,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.penetrate = -1;
             projectile.alpha = 255;
             projectile.extraUpdates = 0;
+            drawOriginOffsetY = 2;
         }
 
         public override void AI()
@@ -123,6 +124,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             var player = Main.player[projectile.owner];
             Vector2 mountedCenter = player.MountedCenter;
             Texture2D chainTexture = mod.GetTexture("Projectiles/Piercing/FungiPiercerChain");
+            Texture2D chainTexture2 = mod.GetTexture("Projectiles/Piercing/FungiPiercerChain_Glow");
 
             float num751 = projectile.Center.X;
             float num750 = projectile.Center.Y;
@@ -235,6 +237,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
                 Color color100 = Lighting.GetColor((int)vector73.X / 16, (int)(vector73.Y / 16f));
                 spriteBatch.Draw(chainTexture, new Vector2(vector73.X - Main.screenPosition.X, vector73.Y - Main.screenPosition.Y), new Rectangle(0, 0, chainTexture.Width, chainTexture.Height), color100, rotation20, new Vector2((float)chainTexture.Width * 0.5f, (float)chainTexture.Height * 0.5f), num740, SpriteEffects.None, 0f);
+                spriteBatch.Draw(chainTexture2, new Vector2(vector73.X - Main.screenPosition.X, vector73.Y - Main.screenPosition.Y), new Rectangle(0, 0, chainTexture.Width, chainTexture.Height), Color.White, rotation20, new Vector2((float)chainTexture.Width * 0.5f, (float)chainTexture.Height * 0.5f), num740, SpriteEffects.None, 0f);
             }
 
             return true;

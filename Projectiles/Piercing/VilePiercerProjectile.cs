@@ -17,12 +17,13 @@ namespace OvermorrowMod.Projectiles.Piercing
 
         public override void SetDefaults()
         {
-            projectile.width = 22;
-            projectile.height = 22;
+            projectile.width = 26;
+            projectile.height = 30;
             projectile.friendly = true;
             projectile.penetrate = -1;
             projectile.alpha = 255;
             projectile.extraUpdates = 0;
+            drawOriginOffsetY = 9;
         }
 
         public override void AI()

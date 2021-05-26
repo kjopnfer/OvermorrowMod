@@ -20,6 +20,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
     {
         private bool doDustAttack = false;
         private Vector2 rotationCenter;
+        private int enrageTimer;
+        private bool enraged;
 
         public override void SetStaticDefaults()
         {
@@ -96,6 +98,24 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 SandstormStuff();
             }
 
+            if (!player.ZoneDesert)
+            {
+                if(enrageTimer == 120)
+                {
+                    enraged = true;
+                }
+                else
+                {
+                    enraged = false;
+                    enrageTimer++;
+                }
+            }
+            else
+            {
+                enraged = false;
+                enrageTimer = 0;
+            }
+
             if (npc.ai[0] == 3)
             {
                 npc.ai[1] += 10f;
@@ -117,7 +137,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             switch (npc.ai[0])
             {
                 case 0: // General case: Move towards player
-                    if (!player.ZoneDesert)
+                    if (!player.ZoneDesert && enraged)
                     {
                         npc.ai[0] = 1.5f;
                         npc.ai[1] = 0;
@@ -167,7 +187,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     }
                     break;
                 case 1: // Spawn sand from off screen
-                    if (!player.ZoneDesert)
+                    if (!player.ZoneDesert && enraged)
                     {
                         npc.ai[0] = 1.5f;
                         npc.ai[1] = 0;

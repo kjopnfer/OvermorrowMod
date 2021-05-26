@@ -6,22 +6,22 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
-    public class StormTalon : ModItem
+    public class GraniteSpear : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Storm Talon");
-            Tooltip.SetDefault("Leaves a trail of electric sparks");
+            DisplayName.SetDefault("Granite Pike");
+            Tooltip.SetDefault("Striking enemies temporarily boosts your minion damage by 10%");
         }
 
         public override void SetDefaults()
         {
             //item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
+            item.rare = ItemRarityID.Green;
             item.UseSound = SoundID.Item1;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 33;
+            item.damage = 22;
             item.scale = 1.1f;
             item.useAnimation = 30;
             item.useTime = 30;

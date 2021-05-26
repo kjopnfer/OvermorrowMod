@@ -28,8 +28,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.useAnimation = 14;
             item.useTime = 14;
             item.knockBack = 0f;
-            item.width = 36;
-            item.height = 46;
+            item.width = 38;
+            item.height = 50;
             item.damage = 8;
             item.shootSpeed = 14f;
             item.shoot = mod.ProjectileType("BonePiercerProjectile");
