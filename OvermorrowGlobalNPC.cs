@@ -41,6 +41,14 @@ namespace OvermorrowMod
                 }
             }
 
+            if (npc.type == NPCID.CaveBat)
+            {
+                if (Main.rand.Next(20) == 0) // 5% drop chance
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemID.ChainKnife);
+                }
+            }
+
             if (npc.type == NPCID.FungiBulb)
             {
                 int dropChance = Main.rand.Next(2);

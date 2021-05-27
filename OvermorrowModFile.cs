@@ -58,7 +58,18 @@ namespace OvermorrowMod
 
                 Souls = new SoulUI();
                 Souls.Activate();
+
+                Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
             }
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(this);
+            recipe.AddIngredient(ItemID.Chain, 6);
+            recipe.AddRecipeGroup("IronBar", 1);
+            recipe.SetResult(ItemID.ChainKnife);
+            recipe.AddRecipe();
         }
 
         internal void BossTitle(int BossID)
