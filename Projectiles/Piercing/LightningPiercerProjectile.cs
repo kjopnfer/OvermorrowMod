@@ -23,6 +23,8 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.penetrate = -1;
             projectile.alpha = 255;
             projectile.extraUpdates = 0;
+
+            drawOriginOffsetY = 6;
         }
 
         public override void AI()
@@ -42,7 +44,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 return;
             }
 
-            projectile.localAI[0] += 1f;
+            /*projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 3f)
             {
                 for (int num1202 = 0; num1202 < 4; num1202++)
@@ -60,7 +62,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                     Dust dust81 = Main.dust[num1200];
                     dust81.velocity *= 0.2f;
                 }
-            }
+            }*/
 
             // This prevents the item from being able to be used again prior to this projectile dying
             player.itemAnimation = 5;
@@ -261,27 +263,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             }
 
             return true;
-        }
-
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            Texture2D texture = mod.GetTexture("Projectiles/Piercing/LightningPiercerProjectileGlowmask");
-            spriteBatch.Draw
-            (
-                texture,
-                new Vector2
-                (
-                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
-                    projectile.position.Y - Main.screenPosition.Y + projectile.height - texture.Height * 0.5f + 2f
-                ),
-                new Rectangle(0, 0, texture.Width, texture.Height),
-                Color.White,
-                projectile.rotation,
-                texture.Size() * 0.5f,
-                projectile.scale,
-                SpriteEffects.None,
-                0f
-            );
         }
     }
 }

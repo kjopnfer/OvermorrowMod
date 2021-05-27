@@ -135,6 +135,11 @@ namespace OvermorrowMod.Projectiles.Piercing
             }
         }
 
+        public override Color? GetAlpha(Color lightColor)
+        {
+            return Color.White;
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             var player = Main.player[projectile.owner];
@@ -251,31 +256,10 @@ namespace OvermorrowMod.Projectiles.Piercing
                     }
                 }
                 Color color100 = Lighting.GetColor((int)vector73.X / 16, (int)(vector73.Y / 16f));
-                spriteBatch.Draw(chainTexture, new Vector2(vector73.X - Main.screenPosition.X, vector73.Y - Main.screenPosition.Y), new Rectangle(0, 0, chainTexture.Width, chainTexture.Height), color100, rotation20, new Vector2((float)chainTexture.Width * 0.5f, (float)chainTexture.Height * 0.5f), num740, SpriteEffects.None, 0f);
+                spriteBatch.Draw(chainTexture, new Vector2(vector73.X - Main.screenPosition.X, vector73.Y - Main.screenPosition.Y), new Rectangle(0, 0, chainTexture.Width, chainTexture.Height), Color.White, rotation20, new Vector2((float)chainTexture.Width * 0.5f, (float)chainTexture.Height * 0.5f), num740, SpriteEffects.None, 0f);
             }
 
             return true;
-        }
-
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            Texture2D texture = mod.GetTexture("Projectiles/Piercing/BlazePiercerProjectileGlowmask");
-            spriteBatch.Draw
-            (
-                texture,
-                new Vector2
-                (
-                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
-                    projectile.position.Y - Main.screenPosition.Y + projectile.height - texture.Height * 0.5f + 2f
-                ),
-                new Rectangle(0, 0, texture.Width, texture.Height),
-                Color.White,
-                projectile.rotation,
-                texture.Size() * 0.5f,
-                projectile.scale,
-                SpriteEffects.None,
-                0f
-            );
         }
     }
 }

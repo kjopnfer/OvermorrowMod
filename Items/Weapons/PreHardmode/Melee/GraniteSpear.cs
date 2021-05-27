@@ -23,11 +23,11 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 22;
             item.scale = 1.1f;
-            item.useAnimation = 30;
-            item.useTime = 30;
+            item.useAnimation = 20;
+            item.useTime = 20;
             item.width = 58;
             item.height = 58;
-            item.shoot = ModContent.ProjectileType<StormTalonProjectile>();
+            item.shoot = ModContent.ProjectileType<GraniteSpearProjectile>();
             item.shootSpeed = 4f;
             item.knockBack = 3.9f;
             item.melee = true;
