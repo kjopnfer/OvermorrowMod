@@ -28,12 +28,6 @@ namespace OvermorrowMod.Items.Armor
             return body.type == ModContent.ItemType<GraniteBreastplate>() && head.type == ModContent.ItemType<GraniteHelmet>();
         }
 
-        public override void UpdateArmorSet(Player player)
-        {
-            player.setBonus = "Increases your defense by 1 for each minion\nIncreases melee damage by 3% for each minion";
-            player.GetModPlayer<OvermorrowModPlayer>().graniteSet = true;
-        }
-
         public override void UpdateEquip(Player player)
         {
             player.noKnockback = true;

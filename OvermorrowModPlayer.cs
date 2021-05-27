@@ -92,6 +92,8 @@ namespace OvermorrowMod
             moonBuff = false;
             treeBuff = false;
 
+            minionCounts = 0;
+
             bool dashAccessoryEquipped = false;
 
             //This is the loop used in vanilla to update/check the not-vanity accessories
@@ -269,11 +271,11 @@ namespace OvermorrowMod
             if (graniteSet)
             {
                 // When minions are despawned, the count does not reset
-                minionCounts = 0;
+                //minionCounts = 0;
 
                 for (int i = 0; i < Main.maxProjectiles; i++)
                 {
-                    if (Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].minion)
+                    if (Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].minion && Main.projectile[i].active)
                     {
                         minionCounts++;
                     }

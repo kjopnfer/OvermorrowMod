@@ -36,7 +36,7 @@ namespace OvermorrowMod.Items.Armor
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Increases your defense by 1 for each minion\nIncreases melee damage by 3% for each minion";
+            player.setBonus = "\nIncreases your defense by 1 for each minion\nIncreases melee damage by 3% for each minion";
             player.GetModPlayer<OvermorrowModPlayer>().graniteSet = true;
         }
     }
