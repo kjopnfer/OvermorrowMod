@@ -21,7 +21,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.UseSound = SoundID.Item1;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 22;
+            item.damage = 17;
             item.scale = 1.1f;
             item.useAnimation = 20;
             item.useTime = 20;

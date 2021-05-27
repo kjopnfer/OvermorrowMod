@@ -62,6 +62,7 @@ namespace OvermorrowMod
         private int treeDefenseStack;
 
         // Buffs
+        public bool graniteSpearBuff;
         public bool mirrorBuff;
         public bool moonBuff;
         public bool treeBuff;
@@ -86,6 +87,7 @@ namespace OvermorrowMod
             StormShield = false;
             TreeNecklace = false;
 
+            graniteSpearBuff = false;
             mirrorBuff = false;
             moonBuff = false;
             treeBuff = false;
@@ -224,6 +226,12 @@ namespace OvermorrowMod
                 }
 
                 player.statDefense += treeDefenseStack;
+            }
+
+
+            if (graniteSpearBuff)
+            {
+                player.minionDamage += .1f;
             }
 
             if (moonBuff)
