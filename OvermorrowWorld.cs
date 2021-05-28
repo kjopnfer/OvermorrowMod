@@ -209,34 +209,8 @@ namespace OvermorrowMod
 
         private void TestMethod(int x, int y)
         {
-            Dust.QuickBox(new Vector2(x, y) * 16, new Vector2(x + 1, y + 1) * 16, 2, Color.YellowGreen, null);
-
             Point point = new Point(x, y);
-            //WorldUtils.Gen(point, new Shapes.Mound(14, 14), new Actions.SetTile(TileID.LunarBlockSolar));
-
-            /*ShapeData shapeData = new ShapeData();
-            WorldUtils.Gen(point, new Shapes.Circle(5, 5), new Actions.Blank().Output(shapeData));
-            WorldUtils.Gen(point, new Shapes.Circle(5, 5), Actions.Chain(new GenAction[]
-            {
-                new Modifiers.Offset(15, 0),
-                new Actions.Blank().Output(shapeData)
-            }));
-
-            WorldUtils.Gen(point, new Shapes.Rectangle(6, 25), Actions.Chain(new GenAction[]
-            {
-                new Modifiers.Offset(5, -25),
-                new Actions.Blank().Output(shapeData)
-            }));
-
-            WorldUtils.Gen(point, new Shapes.Mound(7, 10), Actions.Chain(new GenAction[]
-            {
-                new Modifiers.Offset(7, -25),
-                new Actions.Blank().Output(shapeData)
-            }));
-            WorldUtils.Gen(point, new ModShapes.InnerOutline(shapeData, true), new Actions.SetTile(TileID.LunarBlockSolar, true));*/
-            //Point surfacePoint;
-
-            //WorldUtils.Gen(point, new Shapes.Mound(14, 14), Actions.Chain(new Actions.SetTile(TileID.LunarBlockStardust)));
+           
             ShapeData circleShapeData = new ShapeData();
             ShapeData halfCircleShapeData = new ShapeData();
             ShapeData circleShapeData2 = new ShapeData();
@@ -265,15 +239,16 @@ namespace OvermorrowMod
             WorldUtils.Gen(new Point(point.X, point.Y + 2), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
 
             // Place special tile
-            WorldGen.PlaceTile(point.X, point.Y, TileID.LargePiles2, mute: true, forced: false, -1, 17);
-            WorldGen.PlaceTile(point.X - 5, point.Y, TileID.Campfire, mute: true, forced: true, -1, 0);
-            WorldGen.PlaceTile(point.X + 5, point.Y, TileID.Campfire, mute: true, forced: true, -1, 0);
+
+            // Using PlaceObject instead of PlaceTile works for some apparent reason
+            WorldGen.PlaceObject(point.X, point.Y - 1, ModContent.TileType<DruidAltar>(), mute: false, 0);
+            //WorldGen.PlaceTile(point.X, point.Y - 6, TileID.LunarCraftingStation, mute: false, forced: true, -1, 0);
+            //WorldGen.PlaceTile(point.X, point.Y - 3, ModContent.TileType<DruidAltar>(), mute: false, forced: true, -1, 0);
+            WorldGen.PlaceTile(point.X - 5, point.Y - 1, TileID.Campfire, mute: false, forced: true, -1, 0);
+            WorldGen.PlaceTile(point.X + 5, point.Y - 1, TileID.Campfire, mute: false, forced: true, -1, 0);
 
             // Place plants
-            WorldUtils.Gen(point, new ModShapes.All(halfCircleShapeData), Actions.Chain(new Modifiers.Offset(0, -1), new Modifiers.OnlyTiles(TileID.Dirt), new Modifiers.Offset(0, -1), new ActionGrass()));
-            /*WorldGen.TileRunner(x, y, 20, 1, TileID.WoodBlock, true);
-            WorldGen.digTunnel(x, y, 0, 0, 1, 10);*/
-        
+            WorldUtils.Gen(new Point(x, y - 1), new ModShapes.All(halfCircleShapeData), Actions.Chain(new Modifiers.Offset(0, -1), new Modifiers.OnlyTiles(TileID.Dirt), new Modifiers.Offset(0, -1), new ActionGrass()));
         }
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)

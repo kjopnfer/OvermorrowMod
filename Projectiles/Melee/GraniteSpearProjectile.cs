@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee
@@ -91,14 +92,14 @@ namespace OvermorrowMod.Projectiles.Melee
             // These dusts are added later, for the 'ExampleMod' effect
             if (Main.rand.NextBool(3))
             {
-                Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, 206,
+                Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, DustID.UnusedWhiteBluePurple,
                     projectile.velocity.X * .2f, projectile.velocity.Y * .2f, 200, Scale: 1.2f);
                 dust.velocity += projectile.velocity * 0.3f;
                 dust.velocity *= 0.2f;
             }
             if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, 206,
+                Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, DustID.UnusedWhiteBluePurple,
                     0, 0, 254, Scale: 0.3f);
                 dust.velocity += projectile.velocity * 0.5f;
                 dust.velocity *= 0.5f;

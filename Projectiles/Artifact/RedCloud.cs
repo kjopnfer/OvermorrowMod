@@ -50,9 +50,9 @@ namespace OvermorrowMod.Projectiles.Artifact
             Vector2 velocity = Vector2.Normalize(spawnPos - spawn) * 1.5f * 6 / 10f;
 
             Vector2 origin = projectile.Center/* some position */;
-            float radius = 450;
+            //float radius = 450;
             //Get 30 locations in a circle around 'origin'
-            int numLocations = 2;
+            //int numLocations = 2;
             /*for (int i = 0; i < 4; i++)
             {
                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
@@ -74,7 +74,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             for (int i = 0; i < 36; i++)
             {
                 Vector2 dustPos = projectile.Center + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[0]));
-                Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, 60, 0f, 0f, 0, default, 2.04f)];
+                Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, DustID.RedTorch, 0f, 0f, 0, default, 2.04f)];
                 dust.noGravity = true;
             }
 

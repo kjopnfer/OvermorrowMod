@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Projectiles.Accessory;
@@ -68,6 +69,7 @@ namespace OvermorrowMod
         public bool treeBuff;
 
         // Misc
+        public Vector2 AltarCoordinates;
         public bool BossRoar;
         public int shakeTimer = 0;
         public bool FocusBoss;
@@ -75,6 +77,7 @@ namespace OvermorrowMod
         private float amount = 0;
         public bool ShowText;
         public int TitleID;
+        public bool UIToggled = false;
 
         public override void ResetEffects()
         {
@@ -210,7 +213,7 @@ namespace OvermorrowMod
 
             if (TreeNecklace)
             {
-                Lighting.AddLight(player.Center, 0f, 0.75f, 0f);
+                Lighting.AddLight(player.Center, 0f, 1.5f, 0f);
 
                 // The player is standing still
                 if (player.velocity == Vector2.Zero)
@@ -286,6 +289,19 @@ namespace OvermorrowMod
             }
         }
 
+        private bool IsInRange(Vector2 coordinates)
+        {
+            float distance = Vector2.Distance(coordinates, player.Center);
+            if (distance <= 80)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             if (OvermorrowModFile.SandModeKey.JustPressed && ArmBracer)
@@ -300,6 +316,15 @@ namespace OvermorrowMod
                     sandMode = 0;
                     Main.NewText("Swapped to Defense Mode", Color.Yellow);
                 }
+            }
+
+            if (UIToggled && IsInRange(AltarCoordinates))
+            {
+                ModContent.GetInstance<OvermorrowModFile>().ShowAltar();
+            }
+            else
+            {
+                ModContent.GetInstance<OvermorrowModFile>().HideAltar();
             }
         }
 
@@ -458,7 +483,7 @@ namespace OvermorrowMod
                 {
                     for (int n = 0; n < 2; n++)
                     {
-                        int num42 = (player.velocity.Y != 0f) ? Dust.NewDust(new Vector2(player.position.X, player.position.Y + (float)(player.height / 2) - 8f), player.width, 16, 31, 0f, 0f, 100, default(Color), 1.4f) : Dust.NewDust(new Vector2(player.position.X, player.position.Y + (float)player.height - 4f), player.width, 8, 31, 0f, 0f, 100, default(Color), 1.4f);
+                        int num42 = (player.velocity.Y != 0f) ? Dust.NewDust(new Vector2(player.position.X, player.position.Y + (float)(player.height / 2) - 8f), player.width, 16, DustID.Smoke, 0f, 0f, 100, default(Color), 1.4f) : Dust.NewDust(new Vector2(player.position.X, player.position.Y + (float)player.height - 4f), player.width, 8, DustID.Smoke, 0f, 0f, 100, default(Color), 1.4f);
                         Main.dust[num42].velocity *= 0.1f;
                         Main.dust[num42].scale *= 1f + (float)Main.rand.Next(20) * 0.01f;
                         Main.dust[num42].shader = GameShaders.Armor.GetSecondaryShader(cShoe, player);
@@ -546,7 +571,7 @@ namespace OvermorrowMod
                         player.dashDelay = -1;
                         for (int num35 = 0; num35 < 20; num35++)
                         {
-                            int num31 = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, 31, 0f, 0f, 100, default(Color), 2f);
+                            int num31 = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, DustID.Smoke, 0f, 0f, 100, default(Color), 2f);
                             Dust expr_CDB_cp_0 = Main.dust[num31];
                             expr_CDB_cp_0.position.X = expr_CDB_cp_0.position.X + (float)Main.rand.Next(-5, 6);
                             Dust expr_D02_cp_0 = Main.dust[num31];

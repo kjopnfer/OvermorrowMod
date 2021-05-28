@@ -34,7 +34,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             {
                 for (int num453 = 0; num453 < 2; num453++)
                 {
-                    int num451 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y - 10), projectile.width, projectile.height, 6, projectile.velocity.X * 0.2f + (float)(projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, default(Color), 2.5f);
+                    int num451 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y - 10), projectile.width, projectile.height, DustID.Fire, projectile.velocity.X * 0.2f + (float)(projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, default(Color), 2.5f);
                     Main.dust[num451].noGravity = true;
                     Dust expr_D6EA_cp_0 = Main.dust[num451];
                     expr_D6EA_cp_0.velocity.X = expr_D6EA_cp_0.velocity.X * 2f;

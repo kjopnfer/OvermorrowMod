@@ -127,7 +127,7 @@ namespace WardenClass
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            if(UIToggled)
+            if (UIToggled)
             {
                 ModContent.GetInstance<OvermorrowModFile>().ShowMyUI();
             }

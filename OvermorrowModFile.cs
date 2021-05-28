@@ -25,7 +25,10 @@ namespace OvermorrowMod
 	{
         // UI
         internal UserInterface MyInterface;
+
+        public UserInterface AltarUI;
         internal SoulUI Souls;
+        internal AltarUI Altar;
         private GameTime _lastUpdateUiGameTime;
 
         // Hotkeys
@@ -55,9 +58,13 @@ namespace OvermorrowMod
             if (!Main.dedServ)
             {
                 MyInterface = new UserInterface();
+                AltarUI = new UserInterface();
 
                 Souls = new SoulUI();
                 Souls.Activate();
+
+                Altar = new AltarUI();
+                Altar.Activate();
 
                 Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
             }
@@ -116,8 +123,8 @@ namespace OvermorrowMod
 			Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
 			float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
 			float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
-			float alpha = 255;
-			float alpha2 = 255;
+			/*float alpha = 255;
+			float alpha2 = 255;*/
 
 			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
 			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
@@ -126,9 +133,14 @@ namespace OvermorrowMod
         public override void UpdateUI(GameTime gameTime)
         {
             _lastUpdateUiGameTime = gameTime;
-            if(MyInterface?.CurrentState != null && !Main.gameMenu)
+            if (MyInterface?.CurrentState != null && !Main.gameMenu)
             {
                 MyInterface.Update(gameTime);
+            }
+
+            if (AltarUI?.CurrentState != null && !Main.gameMenu)
+            {
+                AltarUI.Update(gameTime);
             }
         }
 
@@ -149,6 +161,18 @@ namespace OvermorrowMod
                     },
                        InterfaceScaleType.UI));
 
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                    "MyMod: AltarUI",
+                    delegate
+                    {
+                        if (_lastUpdateUiGameTime != null && AltarUI?.CurrentState != null)
+                        {
+                            AltarUI.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
+                        }
+                        return true;
+                    },
+                       InterfaceScaleType.UI));
+
                 OvermorrowModPlayer modPlayer = Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>();
                 if (modPlayer.ShowText)
                 {
@@ -164,11 +188,22 @@ namespace OvermorrowMod
             }
         }
 
+        internal void ShowAltar()
+        {
+            AltarUI?.SetState(Altar);
+        }
+
+        internal void HideAltar()
+        {
+            AltarUI?.SetState(null);
+        }
+
         internal void ShowMyUI()
         {
             MyInterface?.SetState(Souls);
         }
 
+        // This sucks because the Warden call will erase the Druid Altar UI
         internal void HideMyUI()
         {
             MyInterface?.SetState(null);
@@ -176,8 +211,11 @@ namespace OvermorrowMod
 
         public override void Unload()
         {
-            Souls = null;
+            Mod = null;
+            PlayerGlowmasks.Unload();
 
+            Souls = null;
+            Altar = null;
             SandModeKey = null;
         }
     }

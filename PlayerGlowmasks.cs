@@ -10,7 +10,14 @@ namespace OvermorrowMod
 {
     public class PlayerGlowmasks : ModPlayer
     {
-        public static readonly PlayerLayer HemoHelmetGlowmask = new PlayerLayer("Overmorrow", "HemoHelmetGlowmask", PlayerLayer.Head, delegate (PlayerDrawInfo drawInfo)
+        private static readonly Dictionary<int, Texture2D> ItemGlowMask = new Dictionary<int, Texture2D>();
+
+        internal static void Unload()
+        {
+            ItemGlowMask.Clear();
+        }
+
+        /*public static readonly PlayerLayer HemoHelmetGlowmask = new PlayerLayer("Overmorrow", "HemoHelmetGlowmask", PlayerLayer.Head, delegate (PlayerDrawInfo drawInfo)
         {
 
             // This glowmask has almost the same code as ExampleBreastplateBodyGlowmask but draws the arm texture
@@ -45,9 +52,9 @@ namespace OvermorrowMod
             drawData.shader = drawInfo.headArmorShader;
 
             Main.playerDrawData.Add(drawData);
-        });
+        });*/
 
-        public override void ModifyDrawLayers(List<PlayerLayer> layers)
+        /*public override void ModifyDrawLayers(List<PlayerLayer> layers)
         {
             int headLayer = layers.FindIndex(l => l == PlayerLayer.Head);
             // We have to find the layer that we want our glowmask to insert to, which is PlayerLayer.Body in this example. For a full list of vanilla layers, check the docs
@@ -66,12 +73,12 @@ namespace OvermorrowMod
                 {
                     layers.Insert(armsLayer + 1, XonixArmsGlowmask);
                 }
-            }*/
+            }
 
             if (headLayer > -1)
             {
                 layers.Insert(headLayer + 1, HemoHelmetGlowmask);
             }
-        }
+        }*/
     }
 }

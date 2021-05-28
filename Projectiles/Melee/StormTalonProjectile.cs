@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee
@@ -73,7 +74,7 @@ namespace OvermorrowMod.Projectiles.Melee
             // Change the spear position projectiled off of the velocity and the movementFactor
             projectile.position += projectile.velocity * movementFactor;
 
-            if (projectile.ai[1] % 1 == 0);
+            if (projectile.ai[1] % 1 == 0)
             {
                 Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<StormTalonSparks>(), (projectile.damage / 4) + 2, 1, projectile.owner, 0, 0);
             }
@@ -95,14 +96,14 @@ namespace OvermorrowMod.Projectiles.Melee
             // These dusts are added later, for the 'ExampleMod' effect
             if (Main.rand.NextBool(3))
             {
-                Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, 206,
+                Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, DustID.UnusedWhiteBluePurple,
                     projectile.velocity.X * .2f, projectile.velocity.Y * .2f, 200, Scale: 1.2f);
                 dust.velocity += projectile.velocity * 0.3f;
                 dust.velocity *= 0.2f;
             }
             if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, 206,
+                Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, DustID.UnusedWhiteBluePurple,
                     0, 0, 254, Scale: 0.3f);
                 dust.velocity += projectile.velocity * 0.5f;
                 dust.velocity *= 0.5f;
