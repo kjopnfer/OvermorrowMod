@@ -48,7 +48,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             return false;
         }
 
-
         public override Vector2? HoldoutOffset()
         {
             return new Vector2(-6, 0);

@@ -54,7 +54,7 @@ namespace OvermorrowMod.Tiles
         {
             Player player = Main.LocalPlayer;
             Tile tile = Main.tile[i, j];
-            Main.PlaySound(SoundID.MenuOpen);
+            //Main.PlaySound(SoundID.MenuOpen);
             /*float distance = Vector2.Distance(new Vector2(i * 16, j * 16), player.Center);
             if (distance <= 200)
             {

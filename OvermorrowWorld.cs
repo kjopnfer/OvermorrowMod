@@ -201,15 +201,209 @@ namespace OvermorrowMod
 
         public override void PostUpdate()
         {
-            /*if (JustPressed(Keys.D1))
+            if (JustPressed(Keys.D1))
             {
                 TestMethod((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
-            }*/
+            }
         }
 
         private void TestMethod(int x, int y)
         {
             Point point = new Point(x, y);
+           
+            ShapeData halfCircleShapeData = new ShapeData();
+            ShapeData circleShapeData2 = new ShapeData();
+
+            int randSize = Main.rand.Next(110, 150);
+            for (int i = 0; i < randSize; i++)
+            {
+                // Runs across X forwards
+                WorldGen.TileRunner(x + i, y, 80, 8, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                // Runs down Y
+                WorldGen.TileRunner(x + i, y + ((randSize - 5) - i), 80, 7, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
+
+                // Runs across X backwards
+                WorldGen.TileRunner(x - i, y, 80, Main.rand.Next(5, 8), ModContent.TileType<GlowBlock>(), false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
+                // Runs down Y
+                WorldGen.TileRunner(x - i, y + ((randSize - 5) - i), 80, 7, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
+
+                // Same above but reversed:
+                // Runs across X forwards
+                WorldGen.TileRunner(x + i, y, 36, 80, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                WorldGen.TileRunner(x, y + i, 36, 80, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
+
+                // Runs up Y
+                WorldGen.TileRunner(x + i, y - ((randSize - 5) - i), Main.rand.Next(29, 40), 7, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(0, 5), Main.rand.Next(0, 5));
+
+                // Runs across X backwards
+                WorldGen.TileRunner(x - i, y, 36, 80, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
+                WorldGen.TileRunner(x, y - i, 36, 80, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(-15, -10), Main.rand.Next(-8, -1));
+
+                // Runs down Y
+                WorldGen.TileRunner(x - i, y - ((randSize - 5) - i), Main.rand.Next(29, 40), 7, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(-5, 0), Main.rand.Next(-5, 0));
+            }
+
+            for (int i = 0; i < randSize / 4; i++)
+            {
+                WorldGen.TileRunner(x + i, y + i, 42, Main.rand.Next(64, 80), ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                WorldGen.TileRunner(x + i, y - i, 42, Main.rand.Next(64, 80), ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                WorldGen.TileRunner(x - i, y + i, 42, Main.rand.Next(64, 80), ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+                WorldGen.TileRunner(x - i, y - i, 42, Main.rand.Next(64, 80), ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
+            }
+
+            // Generate the circle shape
+            WorldUtils.Gen(point, new Shapes.Circle(WorldGen.genRand.Next(25, 30)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
+
+            // Create random circles
+            for (int i = 0; i < WorldGen.genRand.Next(6, 11); i++)
+            {
+                ShapeData circleShapeData = new ShapeData();
+                Point randPoint = new Point(x + WorldGen.genRand.Next(-10, 10) * 10, y + WorldGen.genRand.Next(-10, 10) * 10);
+                WorldUtils.Gen(randPoint, new Shapes.Circle(WorldGen.genRand.Next(8, 17)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
+                WorldUtils.Gen(new Point(point.X, point.Y + 2), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
+            }
+
+            // This loops across the inner space of the biome to generate walls
+            // Loop across X
+            /*for (int i = 0; i < randSize; i++)
+            {
+                // Loop across X forwards
+                Tile tileForwards = Framing.GetTileSafely(x + i, y);
+                if (tileForwards.wall == 0 || tileForwards.wall == WallID.Dirt)
+                {
+                    if (tileForwards.type != ModContent.TileType<GlowBlock>())
+                    {
+                        tileForwards.wall = (ushort)ModContent.WallType<GlowWall>();
+                    }
+                }
+                tileForwards.type = (ushort)ModContent.TileType<GlowBlock>();
+
+                // Loop across X backwards
+                Tile tileBackwards = Framing.GetTileSafely(x - i, y);
+                if (tileBackwards.wall == 0 || tileBackwards.wall == WallID.Dirt)
+                {
+                    if (tileBackwards.type != ModContent.TileType<GlowBlock>())
+                    {
+                        tileBackwards.wall = (ushort)ModContent.WallType<GlowWall>();
+                    }
+                }
+                tileBackwards.type = (ushort)ModContent.TileType<GlowBlock>();
+
+                // Loop across Y
+                for (int j = 0; j < 30; j++)
+                {
+                    // Loop up Y
+                    Tile tileUp = Framing.GetTileSafely(x + i, y + j);
+                    if (tileUp.wall == 0 || tileUp.wall == WallID.Dirt)
+                    {
+                        if (tileUp.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileUp.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+                    tileUp.type = (ushort)ModContent.TileType<GlowBlock>();
+
+                    // Loop up Y backwards
+                    Tile tileUp2 = Framing.GetTileSafely(x - i, y + j);
+                    if (tileUp2.wall == 0 || tileUp2.wall == WallID.Dirt)
+                    {
+                        if (tileUp2.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileUp2.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+                    tileUp2.type = (ushort)ModContent.TileType<GlowBlock>();
+
+
+                    // Loop down Y
+                    Tile tileDown = Framing.GetTileSafely(x + i, y - j);
+                    if (tileDown.wall == 0 || tileDown.wall == WallID.Dirt)
+                    {
+                        if (tileDown.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileDown.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+                    tileDown.type = (ushort)ModContent.TileType<GlowBlock>();
+
+
+                    // Loop down Y backwards
+                    Tile tileDown2 = Framing.GetTileSafely(x - i, y - j);
+                    if (tileDown2.wall == 0 || tileDown2.wall == WallID.Dirt)
+                    {
+                        if (tileDown2.type != ModContent.TileType<GlowBlock>())
+                        {
+                            tileDown2.wall = (ushort)ModContent.WallType<GlowWall>();
+                        }
+                    }
+                    tileDown2.type = (ushort)ModContent.TileType<GlowBlock>();
+                }
+            }*/
+
+            // Dig out to the sides
+            /*WorldGen.digTunnel(x, y, -0.65f, 0, WorldGen.genRand.Next(50, 80), WorldGen.genRand.Next(5, 9), false);
+            WorldGen.digTunnel(x, y, 0, 1, WorldGen.genRand.Next(50, 80), WorldGen.genRand.Next(5, 9), false);
+            WorldGen.digTunnel(x, y, 0, -1, WorldGen.genRand.Next(50, 70), WorldGen.genRand.Next(5, 9), false);
+            WorldGen.digTunnel(x, y, -0.65f, 1, WorldGen.genRand.Next(50, 70), WorldGen.genRand.Next(5, 9), false);
+            WorldGen.digTunnel(x, y, 1, -0.65f, WorldGen.genRand.Next(50, 70), WorldGen.genRand.Next(5, 9), false);
+            WorldGen.digTunnel(x, y, 1, 0, WorldGen.genRand.Next(50, 70), WorldGen.genRand.Next(5, 9), false);
+            WorldGen.digTunnel(x, y, 1, 1, WorldGen.genRand.Next(50, 70), WorldGen.genRand.Next(5, 9), false);*/
+            /*WorldGen.digTunnel(x, y, 1, 0, 120, Main.rand.Next(8, 16), false);
+            WorldGen.digTunnel(x, y, 0, 1, 120, Main.rand.Next(8, 16), false);
+            WorldGen.digTunnel(x, y, 0, -1, 120, Main.rand.Next(8, 16), false);
+            WorldGen.digTunnel(x, y, -1, 1, 120, Main.rand.Next(8, 16), false);
+            WorldGen.digTunnel(x, y, -1, -1, 120, Main.rand.Next(8, 16), false);
+            WorldGen.digTunnel(x, y, 1, 1, 120, Main.rand.Next(8, 16), false);
+            WorldGen.digTunnel(x, y, 1, -1, 120, Main.rand.Next(8, 16), false);*/
+
+            // Choose random points to dig down
+            /*for (int i = 0; i < WorldGen.genRand.Next(4, 8); i++)
+            {
+                int randX = x + WorldGen.genRand.Next(-10, 10) * 15;
+                int randY = y + WorldGen.genRand.Next(-10, 10) * 15;
+                WorldGen.digTunnel(randX, randY, 0, 1, 60, Main.rand.Next(3, 6), false);
+            }*/
+        }
+
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        {
+            int ShiniesIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shinies"));
+            if(ShiniesIndex != -1)
+            {
+                tasks.Insert(ShiniesIndex + 1, new PassLegacy("Mana Stone Ores", ManaStoneOres));
+
+            }
+
+            int GenPass = tasks.FindIndex(genpass => genpass.Name.Equals("Lakes"));
+            if (GenPass != -1)
+            {
+                tasks.Insert(GenPass + 1, new PassLegacy("Generating Glowing Lakes", GenerateGlowingLakes));
+            }
+        }
+        
+        private void ManaStoneOres(GenerationProgress progress)
+        {
+            progress.Message = "Crystallizing Mana";
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-05); k++)
+            {
+                // The inside of this for loop corresponds to one single splotch of our Ore.
+                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+
+                // Strength controls size
+                // Steps control interations
+                Tile tile = Framing.GetTileSafely(x, y);
+                if (tile.active() && tile.type == TileID.Stone)
+                {
+                    WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<ManaStone>());
+                }
+            }
+        }
+
+        private void GenerateAltar(GenerationProgress progress)
+        {
+            /*Point point = new Point(x, y);
            
             ShapeData circleShapeData = new ShapeData();
             ShapeData halfCircleShapeData = new ShapeData();
@@ -248,43 +442,7 @@ namespace OvermorrowMod
             WorldGen.PlaceTile(point.X + 5, point.Y - 1, TileID.Campfire, mute: false, forced: true, -1, 0);
 
             // Place plants
-            WorldUtils.Gen(new Point(x, y - 1), new ModShapes.All(halfCircleShapeData), Actions.Chain(new Modifiers.Offset(0, -1), new Modifiers.OnlyTiles(TileID.Dirt), new Modifiers.Offset(0, -1), new ActionGrass()));
-        }
-
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
-        {
-            int ShiniesIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shinies"));
-            if(ShiniesIndex != -1)
-            {
-                tasks.Insert(ShiniesIndex + 1, new PassLegacy("Mana Stone Ores", ManaStoneOres));
-
-            }
-
-            int GenPass = tasks.FindIndex(genpass => genpass.Name.Equals("Lakes"));
-            if (GenPass != -1)
-            {
-                tasks.Insert(GenPass + 1, new PassLegacy("Generating Glowing Lakes", GenerateGlowingLakes));
-            }
-        }
-        
-        private void ManaStoneOres(GenerationProgress progress)
-        {
-            progress.Message = "Crystallizing Mana";
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-05); k++)
-            {
-                // The inside of this for loop corresponds to one single splotch of our Ore.
-                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
-                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
-
-                // Strength controls size
-                // Steps control interations
-                Tile tile = Framing.GetTileSafely(x, y);
-                if (tile.active() && tile.type == TileID.Stone)
-                {
-                    WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<ManaStone>());
-                }
-            }
+            WorldUtils.Gen(new Point(x, y - 1), new ModShapes.All(halfCircleShapeData), Actions.Chain(new Modifiers.Offset(0, -1), new Modifiers.OnlyTiles(TileID.Dirt), new Modifiers.Offset(0, -1), new ActionGrass()));*/
         }
 
         bool notInvalid = true;

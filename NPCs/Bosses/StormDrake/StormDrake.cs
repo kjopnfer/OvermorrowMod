@@ -130,8 +130,13 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 // Causes rain effect
                 if (!Main.raining)
                 {
+                    if (Main.netMode != NetmodeID.SinglePlayer)
+                    {
+                        NetMessage.SendData(MessageID.WorldData);
+                    }
                     Main.raining = true;
                     Main.rainTime = 180;
+                    Main.maxRaining = 3600;
                 }
                 else
                 {

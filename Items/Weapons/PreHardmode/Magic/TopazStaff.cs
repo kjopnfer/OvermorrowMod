@@ -1,0 +1,37 @@
+using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Magic;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
+{
+    public class TopazStaff : ModItem
+    {
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Greater Topaz Staff");
+            Item.staff[item.type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            item.rare = ItemRarityID.Orange;
+            item.mana = 8;
+            item.UseSound = SoundID.Item8;
+            item.noMelee = true;
+            item.useStyle = ItemUseStyleID.HoldingOut;
+            item.damage = 17;
+            item.useTurn = false;
+            item.useAnimation = 20;
+            item.useTime = 10;
+            item.width = 48;
+            item.height = 48;
+            item.shoot = ProjectileID.TopazBolt;
+            item.shootSpeed = 14f;
+            item.knockBack = 0.5f;
+            item.magic = true;
+            item.value = Item.sellPrice(gold: 1, silver: 75);
+        }
+    }
+}

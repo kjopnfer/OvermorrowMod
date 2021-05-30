@@ -25,14 +25,15 @@ namespace OvermorrowMod
 	{
         // UI
         internal UserInterface MyInterface;
+        internal UserInterface AltarUI;
 
-        public UserInterface AltarUI;
         internal SoulUI Souls;
         internal AltarUI Altar;
         private GameTime _lastUpdateUiGameTime;
 
         // Hotkeys
         public static ModHotKey SandModeKey;
+        public static ModHotKey ToggleUI;
 
         public static OvermorrowModFile Mod { get; set; }
 
@@ -55,16 +56,19 @@ namespace OvermorrowMod
         public override void Load()
         {
             SandModeKey = RegisterHotKey("Swap Sand Mode", "Q");
+            ToggleUI = RegisterHotKey("Toggle UI", "R");
+
             if (!Main.dedServ)
             {
-                MyInterface = new UserInterface();
                 AltarUI = new UserInterface();
 
-                Souls = new SoulUI();
-                Souls.Activate();
+                MyInterface = new UserInterface();
 
                 Altar = new AltarUI();
                 Altar.Activate();
+
+                Souls = new SoulUI();
+                Souls.Activate();
 
                 Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
             }
@@ -150,7 +154,19 @@ namespace OvermorrowMod
             if (mouseTextIndex != -1)
             {
                 layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "MyMod: MyInterface",
+                       "OvermorrowMod: AltarUI",
+                       delegate
+                       {
+                           if (_lastUpdateUiGameTime != null && AltarUI?.CurrentState != null)
+                           {
+                               AltarUI.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
+                           }
+                           return true;
+                       },
+                          InterfaceScaleType.UI));
+
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                    "OvermorrowMod: MyInterface",
                     delegate
                     {
                         if (_lastUpdateUiGameTime != null && MyInterface?.CurrentState != null)
@@ -161,23 +177,12 @@ namespace OvermorrowMod
                     },
                        InterfaceScaleType.UI));
 
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "MyMod: AltarUI",
-                    delegate
-                    {
-                        if (_lastUpdateUiGameTime != null && AltarUI?.CurrentState != null)
-                        {
-                            AltarUI.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
-                        }
-                        return true;
-                    },
-                       InterfaceScaleType.UI));
 
                 OvermorrowModPlayer modPlayer = Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>();
                 if (modPlayer.ShowText)
                 {
                     layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "Overmorrow: Title",
+                    "OvermorrowMod: Title",
                     delegate
                     {
                         BossTitle(modPlayer.TitleID);
@@ -203,7 +208,6 @@ namespace OvermorrowMod
             MyInterface?.SetState(Souls);
         }
 
-        // This sucks because the Warden call will erase the Druid Altar UI
         internal void HideMyUI()
         {
             MyInterface?.SetState(null);
@@ -217,6 +221,7 @@ namespace OvermorrowMod
             Souls = null;
             Altar = null;
             SandModeKey = null;
+            ToggleUI = null;
         }
     }
 }

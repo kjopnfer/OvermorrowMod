@@ -318,14 +318,20 @@ namespace OvermorrowMod
                 }
             }
 
+            if (OvermorrowModFile.ToggleUI.JustPressed)
+            {
+                Main.NewText("a");
+                ModContent.GetInstance<OvermorrowModFile>().ShowAltar();
+            }
+
             if (UIToggled && IsInRange(AltarCoordinates))
             {
                 ModContent.GetInstance<OvermorrowModFile>().ShowAltar();
             }
-            else
+            /*else
             {
                 ModContent.GetInstance<OvermorrowModFile>().HideAltar();
-            }
+            }*/
         }
 
         public override void ModifyScreenPosition()
