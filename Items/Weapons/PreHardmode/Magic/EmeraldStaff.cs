@@ -6,30 +6,30 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {
-    public class TopazStaff : ModItem
+    public class EmeraldStaff : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Greater Topaz Staff");
+            DisplayName.SetDefault("Greater Emerald Staff");
             Item.staff[item.type] = true;
         }
 
         public override void SetDefaults()
         {
             item.rare = ItemRarityID.Orange;
-            item.mana = 7;
+            item.mana = 9;
             item.UseSound = SoundID.Item8;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 14;
+            item.damage = 16;
             item.useTurn = false;
-            item.useAnimation = 28;
-            item.useTime = 14;
+            item.useAnimation = 22;
+            item.useTime = 11;
             item.width = 48;
             item.height = 48;
-            item.shoot = ProjectileID.TopazBolt;
-            item.shootSpeed = 9.5f;
-            item.knockBack = 4.5f;
+            item.shoot = ProjectileID.EmeraldBolt;
+            item.shootSpeed = 12f;
+            item.knockBack = 5f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
         }

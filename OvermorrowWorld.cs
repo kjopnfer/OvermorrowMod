@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.WardenClass.Accessories;
 using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Tiles;
+using System.Linq;
 
 namespace OvermorrowMod
 {
@@ -210,12 +211,284 @@ namespace OvermorrowMod
         private void TestMethod(int x, int y)
         {
             Point point = new Point(x, y);
-           
-            ShapeData halfCircleShapeData = new ShapeData();
-            ShapeData circleShapeData2 = new ShapeData();
 
-            int randSize = Main.rand.Next(110, 150);
-            for (int i = 0; i < randSize; i++)
+            /*
+            for (int yPos = 0; yPos < randSize; yPos++)
+            {
+                for (int xPos = 0; xPos < randSize; xPos++)
+                {
+                    if (Main.tile[xPos + x, yPos + y] != null && Main.tile[xPos, yPos].active())
+                    {
+                        int[] TileArray = { 0 };
+                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
+                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
+
+                        if (TileArray.Contains(Main.tile[xPos, yPos].type))
+                        {
+                            Main.tile[xPos, yPos].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray3.Contains(Main.tile[xPos, yPos].type))
+                        {
+                            Main.tile[xPos, yPos].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+                    }
+                }
+            }*/
+
+            // small world size is 4200x1200 , medium multiplies every axis by 1.5 , and large multiplies every axis by 2.0
+            int xCoord = x;
+            int yCoord = y;
+
+            int xAxis = xCoord;
+            int yAxis = yCoord;
+
+            int randSize = Main.rand.Next(140, 150);
+
+            for (int j = 0; j < randSize; j++)
+            {
+                //int fade = 0;
+                yAxis++;
+                xAxis = xCoord;
+                // Draws bottom right quadrant
+                for (int i = 0; i < randSize - j; i++)
+                {
+                    xAxis++;
+                    /*if (i < 20)
+                    {
+                        fade = 20 - i;
+                    }
+
+                    if (i > randSize - 20)
+                    {
+                        fade = i - randSize - 20;
+                    }
+
+                    if (Main.rand.NextFloat() < fade / 20f)
+                    {
+                        yAxis++;
+                        continue;
+                    }*/
+
+                    if (Main.tile[xAxis, yAxis] != null)
+                    {
+                        /*int[] MossRemover = { 179, 180, 181, 182, 183, 381, 512, 513, 514, 515, 516, 517, 534, 535, 536, 537, 539, 540 };
+                        if (MossRemover.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            WorldGen.KillTile(xAxis, yAxis);
+                            WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
+                        }*/
+                        WorldGen.KillTile(xAxis, yAxis);
+                        WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
+
+                        Tile wall = Framing.GetTileSafely(xAxis, yAxis);
+                        wall.wall = (ushort)ModContent.WallType<GlowWall>();
+
+                        int maxLength = randSize - j;
+                        if (i >= maxLength - 10)
+                        {
+                            if (Main.rand.Next(3) == 0)
+                            {
+                                Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                            }
+                        }
+                        else
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        int[] TileArray = { 0 };
+                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
+                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
+                        if (TileArray.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray2.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray3.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+                    }
+                }
+
+                // Reset the xAxis, offset by 1 to fill in the gap
+                xAxis = xCoord + 1;
+
+                // Draws bottom left quadrant
+                for (int i = 0; i < randSize - j; i++)
+                {
+                    xAxis--;
+                    if (Main.tile[xAxis, yAxis] != null)
+                    {
+                        /*int[] MossRemover = { 179, 180, 181, 182, 183, 381, 512, 513, 514, 515, 516, 517, 534, 535, 536, 537, 539, 540 };
+                        if (MossRemover.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            WorldGen.KillTile(xAxis, yAxis);
+                            WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
+                        }*/
+                        WorldGen.KillTile(xAxis, yAxis);
+                        WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
+
+                        Tile wall = Framing.GetTileSafely(xAxis, yAxis);
+                        wall.wall = (ushort)ModContent.WallType<GlowWall>();
+
+
+                        int maxLength = randSize - j;
+                        if (i >= maxLength - 10)
+                        {
+                            if (Main.rand.Next(3) == 0)
+                            {
+                                Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                            }
+                        }
+                        else
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        int[] TileArray = { 0 };
+                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
+                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
+                        if (TileArray.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray2.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray3.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+                    }
+                }
+            }
+
+
+            // Reset the y axis, offset by 1 to fill in the gap
+            yAxis = yCoord + 1;
+
+            for (int j = 0; j < randSize; j++)
+            {
+                yAxis--;
+                xAxis = xCoord;
+
+                // Draws top right quadrant
+                for (int i = 0; i < randSize - j; i++)
+                {
+                    xAxis++;
+                    if (Main.tile[xAxis, yAxis] != null)
+                    {
+                        /*int[] MossRemover = { 179, 180, 181, 182, 183, 381, 512, 513, 514, 515, 516, 517, 534, 535, 536, 537, 539, 540 };
+                        if (MossRemover.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            WorldGen.KillTile(xAxis, yAxis);
+                            WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
+                        }*/
+                        WorldGen.KillTile(xAxis, yAxis);
+                        WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
+
+                        Tile wall = Framing.GetTileSafely(xAxis, yAxis);
+                        wall.wall = (ushort)ModContent.WallType<GlowWall>();
+
+                        int maxLength = randSize - j;
+                        if (i >= maxLength - 10)
+                        {
+                            if (Main.rand.Next(3) == 0)
+                            {
+                                Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                            }
+                        }
+                        else
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        int[] TileArray = { 0 };
+                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
+                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
+                        if (TileArray.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray2.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray3.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+                    }
+                }
+
+                // Reset the xAxis, offset by 1 to fill in the gap
+                xAxis = xCoord + 1;
+
+                // Draws top left quadrant
+                for (int i = 0; i < randSize - j; i++)
+                {
+                    xAxis--;
+                    if (Main.tile[xAxis, yAxis] != null)
+                    {
+                        /*int[] MossRemover = { 179, 180, 181, 182, 183, 381, 512, 513, 514, 515, 516, 517, 534, 535, 536, 537, 539, 540 };
+                        if (MossRemover.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            WorldGen.KillTile(xAxis, yAxis);
+                            WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
+                        }*/
+                        WorldGen.KillTile(xAxis, yAxis);
+                        WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
+
+                        Tile wall = Framing.GetTileSafely(xAxis, yAxis);
+                        wall.wall = (ushort)ModContent.WallType<GlowWall>();
+
+                        int maxLength = randSize - j;
+                        if (i >= maxLength - 10)
+                        {
+                            if (Main.rand.Next(3) == 0)
+                            {
+                                Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                            }
+                        }
+                        else
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        int[] TileArray = { 0 };
+                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
+                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
+                        if (TileArray.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray2.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+
+                        if (TileArray3.Contains(Main.tile[xAxis, yAxis].type))
+                        {
+                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
+                        }
+                    }
+                }
+            }
+
+            /*for (int i = 0; i < randSize; i++)
             {
                 // Runs across X forwards
                 WorldGen.TileRunner(x + i, y, 80, 8, ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
@@ -249,96 +522,31 @@ namespace OvermorrowMod
                 WorldGen.TileRunner(x + i, y - i, 42, Main.rand.Next(64, 80), ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
                 WorldGen.TileRunner(x - i, y + i, 42, Main.rand.Next(64, 80), ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
                 WorldGen.TileRunner(x - i, y - i, 42, Main.rand.Next(64, 80), ModContent.TileType<GlowBlock>(), false, Main.rand.Next(10, 15), Main.rand.Next(1, 4));
-            }
+            }*/
 
             // Generate the circle shape
             WorldUtils.Gen(point, new Shapes.Circle(WorldGen.genRand.Next(25, 30)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
 
             // Create random circles
-            for (int i = 0; i < WorldGen.genRand.Next(6, 11); i++)
+            for (int i = 0; i < WorldGen.genRand.Next(14, 19); i++)
             {
                 ShapeData circleShapeData = new ShapeData();
-                Point randPoint = new Point(x + WorldGen.genRand.Next(-10, 10) * 10, y + WorldGen.genRand.Next(-10, 10) * 10);
-                WorldUtils.Gen(randPoint, new Shapes.Circle(WorldGen.genRand.Next(8, 17)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
-                WorldUtils.Gen(new Point(point.X, point.Y + 2), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
+                int randX = x + WorldGen.genRand.Next(-10, 10) * 8;
+                int randY = y + WorldGen.genRand.Next(-10, 10) * 8;
+                Point randPoint = new Point(randX, randY); WorldUtils.Gen(randPoint, new Shapes.Circle(WorldGen.genRand.Next(4, 11)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
+                WorldUtils.Gen(new Point(randX, randY), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
             }
 
-            // This loops across the inner space of the biome to generate walls
-            // Loop across X
-            /*for (int i = 0; i < randSize; i++)
+            // Create smol circles
+            for (int i = 0; i < WorldGen.genRand.Next(14, 19); i++)
             {
-                // Loop across X forwards
-                Tile tileForwards = Framing.GetTileSafely(x + i, y);
-                if (tileForwards.wall == 0 || tileForwards.wall == WallID.Dirt)
-                {
-                    if (tileForwards.type != ModContent.TileType<GlowBlock>())
-                    {
-                        tileForwards.wall = (ushort)ModContent.WallType<GlowWall>();
-                    }
-                }
-                tileForwards.type = (ushort)ModContent.TileType<GlowBlock>();
-
-                // Loop across X backwards
-                Tile tileBackwards = Framing.GetTileSafely(x - i, y);
-                if (tileBackwards.wall == 0 || tileBackwards.wall == WallID.Dirt)
-                {
-                    if (tileBackwards.type != ModContent.TileType<GlowBlock>())
-                    {
-                        tileBackwards.wall = (ushort)ModContent.WallType<GlowWall>();
-                    }
-                }
-                tileBackwards.type = (ushort)ModContent.TileType<GlowBlock>();
-
-                // Loop across Y
-                for (int j = 0; j < 30; j++)
-                {
-                    // Loop up Y
-                    Tile tileUp = Framing.GetTileSafely(x + i, y + j);
-                    if (tileUp.wall == 0 || tileUp.wall == WallID.Dirt)
-                    {
-                        if (tileUp.type != ModContent.TileType<GlowBlock>())
-                        {
-                            tileUp.wall = (ushort)ModContent.WallType<GlowWall>();
-                        }
-                    }
-                    tileUp.type = (ushort)ModContent.TileType<GlowBlock>();
-
-                    // Loop up Y backwards
-                    Tile tileUp2 = Framing.GetTileSafely(x - i, y + j);
-                    if (tileUp2.wall == 0 || tileUp2.wall == WallID.Dirt)
-                    {
-                        if (tileUp2.type != ModContent.TileType<GlowBlock>())
-                        {
-                            tileUp2.wall = (ushort)ModContent.WallType<GlowWall>();
-                        }
-                    }
-                    tileUp2.type = (ushort)ModContent.TileType<GlowBlock>();
-
-
-                    // Loop down Y
-                    Tile tileDown = Framing.GetTileSafely(x + i, y - j);
-                    if (tileDown.wall == 0 || tileDown.wall == WallID.Dirt)
-                    {
-                        if (tileDown.type != ModContent.TileType<GlowBlock>())
-                        {
-                            tileDown.wall = (ushort)ModContent.WallType<GlowWall>();
-                        }
-                    }
-                    tileDown.type = (ushort)ModContent.TileType<GlowBlock>();
-
-
-                    // Loop down Y backwards
-                    Tile tileDown2 = Framing.GetTileSafely(x - i, y - j);
-                    if (tileDown2.wall == 0 || tileDown2.wall == WallID.Dirt)
-                    {
-                        if (tileDown2.type != ModContent.TileType<GlowBlock>())
-                        {
-                            tileDown2.wall = (ushort)ModContent.WallType<GlowWall>();
-                        }
-                    }
-                    tileDown2.type = (ushort)ModContent.TileType<GlowBlock>();
-                }
-            }*/
+                ShapeData circleShapeData = new ShapeData();
+                int randX = x + WorldGen.genRand.Next(-10, 10) * 8;
+                int randY = y + WorldGen.genRand.Next(-10, 10) * 8;
+                Point randPoint = new Point(randX, randY);
+                WorldUtils.Gen(randPoint, new Shapes.Circle(WorldGen.genRand.Next(3, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
+                WorldUtils.Gen(new Point(randX, randY), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
+            }
 
             // Dig out to the sides
             /*WorldGen.digTunnel(x, y, -0.65f, 0, WorldGen.genRand.Next(50, 80), WorldGen.genRand.Next(5, 9), false);
@@ -357,18 +565,18 @@ namespace OvermorrowMod
             WorldGen.digTunnel(x, y, 1, -1, 120, Main.rand.Next(8, 16), false);*/
 
             // Choose random points to dig down
-            /*for (int i = 0; i < WorldGen.genRand.Next(4, 8); i++)
+            for (int i = 0; i < WorldGen.genRand.Next(4, 8); i++)
             {
-                int randX = x + WorldGen.genRand.Next(-10, 10) * 15;
-                int randY = y + WorldGen.genRand.Next(-10, 10) * 15;
+                int randX = x + WorldGen.genRand.Next(-10, 10) * 8;
+                int randY = y + WorldGen.genRand.Next(-10, 10) * 8;
                 WorldGen.digTunnel(randX, randY, 0, 1, 60, Main.rand.Next(3, 6), false);
-            }*/
+            }
         }
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
             int ShiniesIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shinies"));
-            if(ShiniesIndex != -1)
+            if (ShiniesIndex != -1)
             {
                 tasks.Insert(ShiniesIndex + 1, new PassLegacy("Mana Stone Ores", ManaStoneOres));
 
@@ -380,7 +588,7 @@ namespace OvermorrowMod
                 tasks.Insert(GenPass + 1, new PassLegacy("Generating Glowing Lakes", GenerateGlowingLakes));
             }
         }
-        
+
         private void ManaStoneOres(GenerationProgress progress)
         {
             progress.Message = "Crystallizing Mana";
@@ -474,13 +682,13 @@ namespace OvermorrowMod
                     // For loop to check for nearby Glowing Lakes, The Jungle Temple, or The Dungeon with a distance of 60
                     for (int ii = 0; ii < 60; ii++)
                     {
-                        if (Main.tile[x + ii, y].type == ModContent.TileType<GlowBlock>() || Main.tile[x + ii, y].type == TileID.GreenDungeonBrick || Main.tile[x + ii, y].type == TileID.PinkDungeonBrick || 
+                        if (Main.tile[x + ii, y].type == ModContent.TileType<GlowBlock>() || Main.tile[x + ii, y].type == TileID.GreenDungeonBrick || Main.tile[x + ii, y].type == TileID.PinkDungeonBrick ||
                             Main.tile[x + ii, y].type == TileID.BlueDungeonBrick || Main.tile[x + ii, y].type == TileID.LihzahrdBrick)
                         {
                             notNear = false;
                         }
 
-                        if (Main.tile[x - ii, y].type == ModContent.TileType<GlowBlock>() || Main.tile[x - ii, y].type == TileID.GreenDungeonBrick || Main.tile[x - ii, y].type == TileID.PinkDungeonBrick || 
+                        if (Main.tile[x - ii, y].type == ModContent.TileType<GlowBlock>() || Main.tile[x - ii, y].type == TileID.GreenDungeonBrick || Main.tile[x - ii, y].type == TileID.PinkDungeonBrick ||
                             Main.tile[x - ii, y].type == TileID.BlueDungeonBrick || Main.tile[x - ii, y].type == TileID.LihzahrdBrick)
                         {
                             notNear = false;
@@ -518,7 +726,7 @@ namespace OvermorrowMod
                         }
                     }
 
-                    if(!notInvalid || !notNear)
+                    if (!notInvalid || !notNear)
                     {
                         // Reset the flags
                         notInvalid = true;
