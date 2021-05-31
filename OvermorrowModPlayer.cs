@@ -7,6 +7,7 @@ using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Boss;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
@@ -79,6 +80,9 @@ namespace OvermorrowMod
         public int TitleID;
         public bool UIToggled = false;
 
+        // Biome
+        public bool ZoneWaterCave = false;
+
         public override void ResetEffects()
         {
             ArmBracer = false;
@@ -145,6 +149,23 @@ namespace OvermorrowMod
             // Some examples would be RPG stats from a GUI, Hotkey states, and Extra Item Slots
         }
 
+        public override void UpdateBiomes()
+        {
+            ZoneWaterCave = OvermorrowWorld.floodedCaves > 50;
+        }
+
+        public override void SendCustomBiomes(BinaryWriter writer)
+        {
+            BitsByte flags = new BitsByte();
+            flags[0] = ZoneWaterCave;
+            writer.Write(flags);
+        }
+
+        public override void ReceiveCustomBiomes(BinaryReader reader)
+        {
+            BitsByte flags = reader.ReadByte();
+            ZoneWaterCave = flags[0];
+        }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
         {
