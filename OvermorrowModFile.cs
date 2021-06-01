@@ -42,13 +42,14 @@ namespace OvermorrowMod
             Mod = this;
         }
 
-        public override void UpdateMusic(ref int music)
+        public override void UpdateMusic(ref int music, ref MusicPriority priority)
         {
             if (Main.myPlayer != -1 && !Main.gameMenu)
             {
                 if (Main.player[Main.myPlayer].active && Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave)
                 {
                     music = this.GetSoundSlot(SoundType.Music, "Sounds/Music/WaterBiomeMusic");
+                    priority = MusicPriority.BiomeHigh;
                 }
             }
         }

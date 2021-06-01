@@ -366,7 +366,7 @@ namespace OvermorrowMod
                         if (Main.npc[i].boss)
                         {
                             //Main.screenPosition = new Vector2(Main.npc[i].Center.X - Main.screenWidth / 2, Main.npc[i].Center.Y - Main.screenHeight / 2);
-                            Main.screenPosition = new Vector2(MathHelper.Lerp(player.Center.X - Main.screenWidth / 2, Main.npc[i].Center.X - Main.screenWidth / 2, amount), MathHelper.Lerp(player.Center.Y - Main.screenHeight / 2, Main.npc[i].Center.Y - Main.screenHeight / 2, amount));
+                            Main.screenPosition = new Vector2(MathHelper.SmoothStep(player.Center.X - Main.screenWidth / 2, Main.npc[i].Center.X - Main.screenWidth / 2, amount), MathHelper.SmoothStep(player.Center.Y - Main.screenHeight / 2, Main.npc[i].Center.Y - Main.screenHeight / 2, amount));
                         }
                     }
                     amount += 0.005f;

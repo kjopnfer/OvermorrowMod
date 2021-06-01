@@ -654,7 +654,7 @@ namespace OvermorrowMod
 
 
             int x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
-            int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY == 2400 ? WorldGen.lavaLine - 125 : WorldGen.lavaLine - 75); // Check if world is large
+            int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY == 2400 ? WorldGen.lavaLine - 300 : WorldGen.lavaLine - 300); // Check if world is large
 
             while (true)
             {
@@ -727,7 +727,7 @@ namespace OvermorrowMod
 
                     // Get new coordinates
                     x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
-                    y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 600);
+                    y = WorldGen.genRand.Next((int)WorldGen.rockLayer, WorldGen.lavaLine - 300);
                 }
                 else
                 {
