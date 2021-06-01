@@ -22,7 +22,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.UseSound = SoundID.Item20;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 18;
+            item.damage = 22;
             item.useTurn = false;
             item.useAnimation = 28;
             item.useTime = 28;

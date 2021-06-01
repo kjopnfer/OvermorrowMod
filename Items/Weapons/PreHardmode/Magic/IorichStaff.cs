@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         {
             DisplayName.SetDefault("Iorich's Sorrow");
             Tooltip.SetDefault("Shoots a bolt infused with the energies of nature\n" +
-                "'The veil of darkness did little to hide the inferno that devourered his people'");
+                "'The veil of darkness did little to hide the inferno that devoured his people'");
             Item.staff[item.type] = true;
         }
 
