@@ -20,7 +20,7 @@ namespace OvermorrowMod.Tiles
             Main.tileSolid[Type] = false;
 
             ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Druidic Altar");
+            name.SetDefault("Resonance Altar");
             AddMapEntry(Color.ForestGreen, name);
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);

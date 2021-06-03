@@ -36,7 +36,6 @@ namespace OvermorrowMod.Projectiles.Magic
             {
                 Vector2 origin = projectile.Center;
                 float radius = 10;
-                //Get 30 locations in a circle around 'origin'
                 int numLocations = 30;
                 for (int i = 0; i < 30; i++)
                 {
