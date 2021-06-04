@@ -6,7 +6,6 @@ using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.Projectiles.Summon
 {

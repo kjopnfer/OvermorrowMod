@@ -763,7 +763,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
 
                 // default value
-                int num177 = 6; // ok i think this controls the number of afterimage frames
+                int num177 = 12; // ok i think this controls the number of afterimage frames
                 float num176 = 1f - (float)Math.Cos((npc.ai[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
                 num176 /= 3f;
                 float scaleFactor10 = 10f; // Change scale factor of the pulsing effect and how far it draws outwards
@@ -776,8 +776,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 for (int num164 = 1; num164 < num177; num164++)
                 {
                     // these assign the color of the pulsing
-                    Color color45 = color47;
-                    color45 = Color.Lerp(color45, color55, amount10);
+                    Color color45 = Color.Cyan;
+                    //color45 = Color.Lerp(Color.DarkBlue, Color.Cyan, (float)num164 / num177);
                     color45 = ((ModNPC)this).npc.GetAlpha(color45);
                     color45 *= 1f - num176; // num176 is put in here to effect the pulsing
 

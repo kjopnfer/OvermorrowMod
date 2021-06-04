@@ -28,7 +28,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.rare = ItemRarityID.Green;
             item.noMelee = true;
             item.summon = true;
-            item.shoot = ModContent.ProjectileType<MiniTreeBoss>();
+            item.buffType = ModContent.BuffType<GraniteEleBuff>();
+            item.shoot = ModContent.ProjectileType<GraniteSummon>();
             item.UseSound = SoundID.Item82;
         }
 
