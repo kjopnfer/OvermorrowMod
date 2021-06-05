@@ -18,7 +18,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         {
             item.rare = ItemRarityID.Orange;
             item.mana = 9;
-            item.UseSound = SoundID.Item8;
+            item.UseSound = SoundID.Item43;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 16;
