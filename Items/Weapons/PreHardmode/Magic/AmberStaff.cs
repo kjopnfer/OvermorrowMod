@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
@@ -7,43 +6,32 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {
-    public class RubyStaff : ModItem
+    public class AmberStaff : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Greater Ruby Staff");
+            DisplayName.SetDefault("Greater Amber Staff");
             Item.staff[item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
             item.rare = ItemRarityID.Orange;
             item.mana = 10;
-            item.UseSound = SoundID.Item43;
+            item.UseSound = SoundID.Item8;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 18;
             item.useTurn = false;
             item.useAnimation = 28;
             item.useTime = 14;
-            item.width = 64;
-            item.height = 60;
-            item.shoot = ProjectileID.RubyBolt;
+            item.width = 48;
+            item.height = 48;
+            item.shoot = ProjectileID.AmberBolt;
             item.shootSpeed = 14f;
             item.knockBack = 6f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
-        }
-
-        public override void AddRecipes()
-        {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.RubyStaff);
-            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 3);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
         }
     }
 }

@@ -15,6 +15,7 @@ namespace OvermorrowMod.UI
     {
         private VanillaItemSlotWrapper _vanillaItemSlot;
         private UIText header;
+        UIElement panel;
         private bool cool { get; set; }
         private string text = "test";
         public override void OnInitialize()
@@ -27,7 +28,7 @@ namespace OvermorrowMod.UI
             panel.HAlign = panel.VAlign = 0.5f;
             panel.SetPadding(0);*/
 
-            UIElement panel = new UIElement();
+            panel = new UIElement();
             panel.Width.Set(Main.screenWidth / 2, 0);
             panel.Height.Set(Main.screenHeight / 2, 0);
             panel.MaxWidth.Set(400, 0);
@@ -112,8 +113,6 @@ namespace OvermorrowMod.UI
             {
                 header.SetText("put crystal lol");
                 cool = false;
-                //string message = "Place an item here to Awesomeify";
-                //ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, message, new Vector2(slotX + 50, slotY), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
             }
         }
 
