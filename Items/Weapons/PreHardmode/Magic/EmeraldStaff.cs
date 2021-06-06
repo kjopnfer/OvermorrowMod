@@ -16,6 +16,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 
         public override void SetDefaults()
         {
+            item.autoReuse = true;
             item.rare = ItemRarityID.Orange;
             item.mana = 9;
             item.UseSound = SoundID.Item43;
