@@ -54,19 +54,7 @@ namespace OvermorrowMod.UI
                 newtext.HAlign = VAlign = 0.5f;
                 newtext.Top.Set(50, 0);
                 panel.Append(header);
-            }
-
-            /*UIPanel button2 = new UIPanel();
-            button2.Width.Set(100, 0);
-            button2.Height.Set(50, 0);
-            button2.HAlign = 0.75f;
-            button2.Top.Set(50, 0);
-            button2.BackgroundColor = Color.Green;
-            button2.OnClick += OnButtonClick;
-            panel.Append(button2);*/
-
-            if (cool)
-            {
+           
                 Texture2D plusButtonTexture = ModContent.GetTexture("OvermorrowMod/UI/PlusButton");
                 HoverImageButton button = new HoverImageButton(plusButtonTexture, "hi");
                 button.Top.Set(164, 0);

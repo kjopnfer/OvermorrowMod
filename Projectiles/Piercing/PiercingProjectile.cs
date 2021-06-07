@@ -85,7 +85,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             if (projectile.type == ModContent.ProjectileType<LightningPiercerProjectile>() || projectile.type == ModContent.ProjectileType<VilePiercerProjectile>()
                 || projectile.type == ModContent.ProjectileType<CrimsonPiercerProjectile>())
             {
-                SoulGain(target, 2);
+                //SoulGain(target, 2);
 
                 target.immune[projectile.owner] = 3;
             }
