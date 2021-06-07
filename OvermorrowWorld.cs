@@ -968,6 +968,25 @@ namespace OvermorrowMod
                     }
                 }
             }
+
+            // Determine random number of ores generated
+            int numOres = WorldGen.genRand.Next(60, 69);
+            int generatedOres = 0;
+            while (generatedOres < numOres)
+            {
+                // Choose random coordinate
+                int i = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int j = WorldGen.genRand.Next(0, Main.maxTilesY);
+
+                // Strength controls size
+                // Steps control interations
+                Tile tile = Framing.GetTileSafely(i, j);
+                if (tile.active() && tile.type == ModContent.TileType<GlowBlock>())
+                {
+                    WorldGen.TileRunner(i, j, WorldGen.genRand.Next(2, 3), 1, ModContent.TileType<WaterCaveOre>());
+                    generatedOres++; // Increment success
+                }
+            }
         }
 
         private void ManaStoneOres(GenerationProgress progress)
