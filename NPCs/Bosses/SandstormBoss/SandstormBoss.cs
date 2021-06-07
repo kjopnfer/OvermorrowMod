@@ -235,7 +235,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     for (int i = 0; i < 18; i++)
                     {
                         Vector2 dustPos = npc.Center + new Vector2(npc.ai[2], 0).RotatedBy(MathHelper.ToRadians(i * 20 + npc.ai[1]));
-                        Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, DustID.Sand, 0f, 0f, 0, default, 2.04f)];
+                        Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, 32, 0f, 0f, 0, default, 2.04f)];
                         dust.noGravity = true;
                     }
 
@@ -347,7 +347,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     for (int num1202 = 0; num1202 < 4; num1202++)
                     {
-                        Dust.NewDust(npc.Center - new Vector2(npc.width / 4, -35), npc.width / 3, npc.height, DustID.Sand, 0, 2.63f, default, default, 1.45f);
+                        Dust.NewDust(npc.Center - new Vector2(npc.width / 4, -35), npc.width / 3, npc.height, 32, 0, 2.63f, default, default, 1.45f);
                     }
                 }
             }
@@ -355,7 +355,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             {
                 for (int num1101 = 0; num1101 < 6; num1101++)
                 {
-                    int num1110 = Dust.NewDust(new Vector2(npc.Center.X, npc.Center.Y), npc.width, npc.height, DustID.Sand, npc.velocity.X, npc.velocity.Y, 50, default(Color), 3f);
+                    int num1110 = Dust.NewDust(new Vector2(npc.Center.X, npc.Center.Y), npc.width, npc.height, 32, npc.velocity.X, npc.velocity.Y, 50, default(Color), 3f);
                     Main.dust[num1110].position = (Main.dust[num1110].position + npc.Center) / 2f;
                     Main.dust[num1110].noGravity = true;
                     Dust dust81 = Main.dust[num1110];
@@ -470,16 +470,16 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             for (int num785 = 0; num785 < 4; num785++)
             {
-                Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 100, default(Color), 1.5f);
+                Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 32, 0f, 0f, 100, default(Color), 1.5f);
             }
 
             for (int num788 = 0; num788 < 40; num788++)
             {
-                int num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 0, default(Color), 2.5f);
+                int num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 32, 0f, 0f, 0, default(Color), 2.5f);
                 Main.dust[num797].noGravity = true;
                 Dust dust24 = Main.dust[num797];
                 dust24.velocity *= 3f;
-                num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 100, default(Color), 1.5f);
+                num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 32, 0f, 0f, 100, default(Color), 1.5f);
                 dust24 = Main.dust[num797];
                 dust24.velocity *= 2f;
                 Main.dust[num797].noGravity = true;

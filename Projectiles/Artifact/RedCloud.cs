@@ -74,7 +74,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             for (int i = 0; i < 36; i++)
             {
                 Vector2 dustPos = projectile.Center + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[0]));
-                Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, DustID.RedTorch, 0f, 0f, 0, default, 2.04f)];
+                Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, 60, 0f, 0f, 0, default, 2.04f)];
                 dust.noGravity = true;
             }
 
