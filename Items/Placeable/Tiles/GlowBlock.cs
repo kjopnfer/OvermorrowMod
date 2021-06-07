@@ -1,4 +1,3 @@
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using GlowBlockBlock = OvermorrowMod.Tiles.GlowBlock;
@@ -6,7 +5,7 @@ using GlowBlockBlock = OvermorrowMod.Tiles.GlowBlock;
 
 namespace OvermorrowMod.Items.Placeable.Tiles
 {
-	public class GlowBlock : ModItem
+    public class GlowBlock : ModItem
 	{
 		public override void SetStaticDefaults()
 		{

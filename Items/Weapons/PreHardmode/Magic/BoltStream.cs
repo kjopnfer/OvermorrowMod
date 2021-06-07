@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

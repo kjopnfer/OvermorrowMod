@@ -1,22 +1,10 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameInput;
-using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
-using Terraria.Graphics.Shaders;
-using OvermorrowMod.UI;
-using static Terraria.ModLoader.ModContent;
-using OvermorrowMod;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.WardenClass
 {

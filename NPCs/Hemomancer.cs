@@ -1,13 +1,11 @@
+using System;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Consumable;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Projectiles.Boss;
-using System;
-using System.Threading;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs

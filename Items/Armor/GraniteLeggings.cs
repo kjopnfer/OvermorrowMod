@@ -1,7 +1,6 @@
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using OvermorrowMod.Items.Materials;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Armor
 {

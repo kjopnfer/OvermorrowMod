@@ -1,15 +1,6 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.WardenClass.Accessories;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod

@@ -1,4 +1,3 @@
-using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;

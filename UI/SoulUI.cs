@@ -1,12 +1,9 @@
-using Terraria;
-using Terraria.GameContent.UI.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameInput;
+using Terraria;
+using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
 using Terraria.UI;
-using static Terraria.ModLoader.ModContent;
-using System.Drawing.Drawing2D;
 using WardenClass;
 
 namespace OvermorrowMod.UI

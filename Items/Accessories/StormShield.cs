@@ -1,7 +1,5 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Accessories.Expert;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

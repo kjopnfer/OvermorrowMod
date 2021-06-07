@@ -1,9 +1,7 @@
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using GlowWallWall = OvermorrowMod.Tiles.GlowWall;
 using OvermorrowMod.Items.Placeable.Tiles;
+using Terraria.ID;
+using Terraria.ModLoader;
+using GlowWallWall = OvermorrowMod.Tiles.GlowWall;
 
 namespace OvermorrowMod.Items.Placeable.Walls
 {

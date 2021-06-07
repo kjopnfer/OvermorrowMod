@@ -1,15 +1,10 @@
+using System;
+using System.IO;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Projectiles.Accessory;
-using OvermorrowMod.Projectiles.Boss;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;

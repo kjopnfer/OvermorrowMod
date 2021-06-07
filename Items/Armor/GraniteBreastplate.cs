@@ -1,11 +1,10 @@
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using OvermorrowMod.Items.Materials;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Armor
 {
-	[AutoloadEquip(EquipType.Body)]
+    [AutoloadEquip(EquipType.Body)]
 	public class GraniteBreastplate : ModItem
 	{
 		public override void SetStaticDefaults()

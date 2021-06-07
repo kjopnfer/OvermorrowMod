@@ -1,13 +1,12 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Placeable.Boss;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace OvermorrowMod.Tiles.Boss
 {
-	public class SandstormBossTrophy : ModTile
+    public class SandstormBossTrophy : ModTile
 	{
 		public override void SetDefaults()
 		{

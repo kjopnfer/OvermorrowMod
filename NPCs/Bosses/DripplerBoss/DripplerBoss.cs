@@ -9,7 +9,6 @@ using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.DripplerBoss

@@ -1,19 +1,16 @@
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.DataStructures;
-using Terraria.Localization;
-using System.Threading;
 using System.Collections.Generic;
-using Terraria.ModLoader.IO;
 using System.IO;
-using Terraria.World.Generation;
-using Terraria.GameContent.Generation;
+using System.Linq;
 using Microsoft.Xna.Framework;
-using OvermorrowMod.WardenClass.Accessories;
 using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Tiles;
-using System.Linq;
+using OvermorrowMod.WardenClass.Accessories;
+using Terraria;
+using Terraria.GameContent.Generation;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using Terraria.World.Generation;
 
 namespace OvermorrowMod
 {

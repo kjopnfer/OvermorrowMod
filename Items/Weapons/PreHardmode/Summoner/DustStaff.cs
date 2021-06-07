@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Summon;
 using OvermorrowMod.Projectiles.Summon;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

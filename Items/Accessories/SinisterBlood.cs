@@ -1,7 +1,5 @@
 using OvermorrowMod.Buffs.Summon;
-using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using OvermorrowMod.Projectiles.Summon;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

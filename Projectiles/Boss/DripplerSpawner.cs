@@ -1,7 +1,3 @@
-using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.NPCs.Bosses;
 using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using Terraria;
 using Terraria.ID;

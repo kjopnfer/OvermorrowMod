@@ -3,10 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs.Summon;
 using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Summon

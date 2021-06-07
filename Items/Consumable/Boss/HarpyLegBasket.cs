@@ -1,11 +1,8 @@
-using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.Items.Consumable.Boss
 {

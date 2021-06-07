@@ -1,16 +1,10 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using WardenClass;
 

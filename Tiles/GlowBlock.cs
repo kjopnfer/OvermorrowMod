@@ -1,13 +1,10 @@
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Items.Placeable;
 using OvermorrowMod.Tiles.Ambient;
+using Terraria;
 using Terraria.Graphics.Shaders;
-using Terraria.ObjectData;
-using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Tiles
 {

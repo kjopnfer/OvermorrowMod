@@ -5,7 +5,6 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.NPCs.Bosses.SandstormBoss;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

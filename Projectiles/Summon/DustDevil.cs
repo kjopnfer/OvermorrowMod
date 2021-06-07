@@ -1,8 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs.Summon;
-using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

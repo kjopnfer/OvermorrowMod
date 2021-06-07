@@ -1,17 +1,16 @@
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.GameContent.Events;
-using Microsoft.Xna.Framework.Graphics;
 using System;
-using OvermorrowMod.Projectiles.Boss;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
-using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Projectiles.Boss;
+using Terraria;
+using Terraria.GameContent.Events;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
