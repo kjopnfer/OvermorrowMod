@@ -643,6 +643,7 @@ namespace OvermorrowMod
             }
         }
 
+        int randSize = Main.rand.Next(140, 150);
         bool notInvalid = true;
         bool notNear = true;
         private void WaterCaveFinder(GenerationProgress progress)
@@ -668,49 +669,85 @@ namespace OvermorrowMod
                     notInvalid = false;
                 }
 
-                // For loop to check for nearby Glowing Lakes, The Jungle Temple, or The Dungeon with a distance of 150
-                for (int ii = 0; ii < 150; ii++)
+                int[] TileBlacklist = { 41, 43, 44, 226 };
+
+                int xCoord = x;
+                int yCoord = y;
+
+                int xAxis = xCoord;
+                int yAxis = yCoord;
+
+                // For loop to check the Jungle Temple, or The Dungeon with a distance of randSize + 10
+                for (int j = 0; j < randSize + 10; j++)
                 {
-                    if (Main.tile[x + ii, y].type == ModContent.TileType<GlowBlock>() || Main.tile[x + ii, y].type == TileID.GreenDungeonBrick || Main.tile[x + ii, y].type == TileID.PinkDungeonBrick ||
-                        Main.tile[x + ii, y].type == TileID.BlueDungeonBrick || Main.tile[x + ii, y].type == TileID.LihzahrdBrick)
+                    //int fade = 0;
+                    yAxis++;
+                    xAxis = xCoord;
+                    // Draws bottom right quadrant
+                    for (int i = 0; i < randSize - j; i++)
                     {
-                        notNear = false;
+                        xAxis++;
+                        if (Main.tile[xAxis, yAxis] != null)
+                        {
+                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                            {
+                                notNear = false;
+                            }
+                        }
                     }
 
-                    if (Main.tile[x - ii, y].type == ModContent.TileType<GlowBlock>() || Main.tile[x - ii, y].type == TileID.GreenDungeonBrick || Main.tile[x - ii, y].type == TileID.PinkDungeonBrick ||
-                        Main.tile[x - ii, y].type == TileID.BlueDungeonBrick || Main.tile[x - ii, y].type == TileID.LihzahrdBrick)
+                    // Reset the xAxis, offset by 1 to fill in the gap
+                    xAxis = xCoord + 1;
+
+                    // Draws bottom left quadrant
+                    for (int i = 0; i < randSize - j; i++)
                     {
-                        notNear = false;
+                        xAxis--;
+                        if (Main.tile[xAxis, yAxis] != null)
+                        {
+                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                            {
+                                notNear = false;
+                            }
+                        }
+                    }
+                }
+
+
+                // Reset the y axis, offset by 1 to fill in the gap
+                yAxis = yCoord + 1;
+
+                for (int j = 0; j < randSize + 10; j++)
+                {
+                    yAxis--;
+                    xAxis = xCoord;
+
+                    // Draws top right quadrant
+                    for (int i = 0; i < randSize - j; i++)
+                    {
+                        xAxis++;
+                        if (Main.tile[xAxis, yAxis] != null)
+                        {
+                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                            {
+                                notNear = false;
+                            }
+                        }
                     }
 
-                    for (int ij = 0; ij < 60; ij++)
+                    // Reset the xAxis, offset by 1 to fill in the gap
+                    xAxis = xCoord + 1;
+
+                    // Draws top left quadrant
+                    for (int i = 0; i < randSize - j; i++)
                     {
-                        // -> v
-                        if (Main.tile[x + ii, y + ij].type == ModContent.TileType<GlowBlock>() || Main.tile[x + ii, y + ij].type == TileID.GreenDungeonBrick || Main.tile[x + ii, y + ij].type == TileID.PinkDungeonBrick ||
-                        Main.tile[x + ii, y + ij].type == TileID.BlueDungeonBrick || Main.tile[x + ii, y + ij].type == TileID.LihzahrdBrick)
+                        xAxis--;
+                        if (Main.tile[xAxis, yAxis] != null)
                         {
-                            notNear = false;
-                        }
-
-                        // <- v
-                        if (Main.tile[x - ii, y + ij].type == ModContent.TileType<GlowBlock>() || Main.tile[x - ii, y + ij].type == TileID.GreenDungeonBrick || Main.tile[x - ii, y + ij].type == TileID.PinkDungeonBrick ||
-                        Main.tile[x - ii, y + ij].type == TileID.BlueDungeonBrick || Main.tile[x - ii, y + ij].type == TileID.LihzahrdBrick)
-                        {
-                            notNear = false;
-                        }
-
-                        // -> ^
-                        if (Main.tile[x + ii, y - ij].type == ModContent.TileType<GlowBlock>() || Main.tile[x + ii, y - ij].type == TileID.GreenDungeonBrick || Main.tile[x + ii, y - ij].type == TileID.PinkDungeonBrick ||
-                        Main.tile[x + ii, y - ij].type == TileID.BlueDungeonBrick || Main.tile[x + ii, y - ij].type == TileID.LihzahrdBrick)
-                        {
-                            notNear = false;
-                        }
-
-                        // <- ^
-                        if (Main.tile[x - ii, y - ij].type == ModContent.TileType<GlowBlock>() || Main.tile[x - ii, y - ij].type == TileID.GreenDungeonBrick || Main.tile[x - ii, y - ij].type == TileID.PinkDungeonBrick ||
-                        Main.tile[x - ii, y - ij].type == TileID.BlueDungeonBrick || Main.tile[x - ii, y - ij].type == TileID.LihzahrdBrick)
-                        {
-                            notNear = false;
+                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                            {
+                                notNear = false;
+                            }
                         }
                     }
                 }
@@ -748,7 +785,6 @@ namespace OvermorrowMod
             int xAxis = xCoord;
             int yAxis = yCoord;
 
-            int randSize = Main.rand.Next(140, 150);
 
             for (int j = 0; j < randSize; j++)
             {
@@ -759,22 +795,6 @@ namespace OvermorrowMod
                 for (int i = 0; i < randSize - j; i++)
                 {
                     xAxis++;
-                    /*if (i < 20)
-                    {
-                        fade = 20 - i;
-                    }
-
-                    if (i > randSize - 20)
-                    {
-                        fade = i - randSize - 20;
-                    }
-
-                    if (Main.rand.NextFloat() < fade / 20f)
-                    {
-                        yAxis++;
-                        continue;
-                    }*/
-
                     if (Main.tile[xAxis, yAxis] != null)
                     {
                         if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
@@ -965,11 +985,10 @@ namespace OvermorrowMod
                     }
                 }
             }
-
-            // Determine random number of ores generated
-            int numOres = WorldGen.genRand.Next(60, 69);
-            int generatedOres = 0;
-            while (generatedOres < numOres)
+            // Determine random number of MUD generated
+            int numMud = WorldGen.genRand.Next(99, 109);
+            int generatedMud = 0;
+            while (generatedMud < numMud)
             {
                 // Choose random coordinate
                 int i = WorldGen.genRand.Next(0, Main.maxTilesX);
@@ -980,7 +999,28 @@ namespace OvermorrowMod
                 Tile tile = Framing.GetTileSafely(i, j);
                 if (tile.active() && tile.type == ModContent.TileType<GlowBlock>())
                 {
-                    WorldGen.TileRunner(i, j, WorldGen.genRand.Next(2, 3), 1, ModContent.TileType<WaterCaveOre>());
+                    //WorldGen.OreRunner(i, j, WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(1, 3), (ushort)ModContent.TileType<WaterCaveOre>());
+                    WorldGen.TileRunner(i, j, WorldGen.genRand.Next(3, 7), WorldGen.genRand.Next(8, 18), ModContent.TileType<CaveMud>(), false, WorldGen.genRand.Next(-1, 1), WorldGen.genRand.Next(-1, 1));
+                    generatedMud++; // Increment success
+                }
+            }
+
+            // Determine random number of ores generated
+            int numOres = WorldGen.genRand.Next(69, 79);
+            int generatedOres = 0;
+            while (generatedOres < numOres)
+            {
+                // Choose random coordinate
+                int i = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int j = WorldGen.genRand.Next(0, Main.maxTilesY);
+
+                // Strength controls size
+                // Steps control interations
+                Tile tile = Framing.GetTileSafely(i, j);
+                if (tile.active() && (tile.type == ModContent.TileType<GlowBlock>() || tile.type == ModContent.TileType<WaterCaveOre>()))
+                {
+                    //WorldGen.OreRunner(i, j, WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(2, 4), (ushort)ModContent.TileType<WaterCaveOre>());
+                    WorldGen.TileRunner(i, j, WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(1, 4), ModContent.TileType<WaterCaveOre>());
                     generatedOres++; // Increment success
                 }
             }
