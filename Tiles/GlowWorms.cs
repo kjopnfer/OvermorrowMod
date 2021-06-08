@@ -49,7 +49,7 @@ namespace OvermorrowMod.Tiles
             }
 
             // Check the that tile above is either the block it can grow on or itself
-            if (type == ModContent.TileType<GlowBlock>() || type == Type)
+            if (type == ModContent.TileType<GlowBlock>() || type == ModContent.TileType<CaveMud>() || type == Type)
             {
                 return true;
             }

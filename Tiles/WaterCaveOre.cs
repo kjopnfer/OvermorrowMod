@@ -22,7 +22,7 @@ namespace OvermorrowMod.Tiles
             soundStyle = 1;
             soundType = SoundID.Tink;
             minPick = 65;
-            drop = ModContent.ItemType<CrystalMana>();
+            drop = ModContent.ItemType<WaterOre>();
             AddMapEntry(new Color(102, 255, 255), name);
         }
 
@@ -45,7 +45,7 @@ namespace OvermorrowMod.Tiles
                 zero = Vector2.Zero;
             }
             int height = tile.frameY == 36 ? 18 : 16;
-            //Main.spriteBatch.Draw(mod.GetTexture("Tiles/ManaStone_Glow"), new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero,
+            //Main.spriteBatch.Draw(mod.GetTexture("Tiles/WaterCaveOre"), new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero,
             //    new Rectangle(tile.frameX, tile.frameY, 16, height), new Color(100, 100, 100), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
 
@@ -57,8 +57,8 @@ namespace OvermorrowMod.Tiles
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 0.0f;
-            g = 0.5f;
-            b = 0.65f;
+            g = 1f;
+            b = 1f;
         }
     }
 }
