@@ -1,3 +1,4 @@
 displayName = Overmorrow
 author = Kjopnfer
 version = 0.1
+includePDB = false
