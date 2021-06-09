@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
+using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,6 +23,17 @@ namespace OvermorrowMod
         {
             bleedingDebuff = false;
             bleedingDebuff2 = false;
+        }
+
+        public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
+        {
+            Player player = spawnInfo.player;
+            if (player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave)
+            {
+                pool.Clear();
+                pool.Add(ModContent.NPCType<CaveFish>(), .25f);
+                pool.Add(ModContent.NPCType<SnapDragon>(), .25f);
+            }
         }
 
         public override void NPCLoot(NPC npc)

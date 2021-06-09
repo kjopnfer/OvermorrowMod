@@ -56,19 +56,6 @@ namespace WardenClass
             }
         }
 
-        public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
-        {
-            /*if (HemoArmor)
-            {
-                int randChance = Main.rand.Next(3);
-                if (randChance == 0)
-                {
-                    target.AddBuff(ModContent.BuffType<Bleeding>(), 240);
-                    target.AddBuff(ModContent.BuffType<Bleeding2>(), 240);
-                }
-            }*/
-        }
-
         public override void UpdateLifeRegen()
         {
             if (SoulRing)
@@ -92,6 +79,7 @@ namespace WardenClass
 
         public override void Initialize()
         {
+            soulList.Clear();
             soulResourceCurrent = 0;
             soulResourceMax = DefaultSoulResourceMax;
         }
