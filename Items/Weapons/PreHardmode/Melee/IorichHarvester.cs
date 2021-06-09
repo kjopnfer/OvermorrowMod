@@ -26,7 +26,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.width = 58;
             item.height = 48;
             item.shoot = ModContent.ProjectileType<IorichHarvesterProjectile>();
-            item.shootSpeed = 8f;
+            item.shootSpeed = 10f; //8f;
             item.knockBack = 3;
             item.melee = true;
             item.autoReuse = true;

@@ -1,12 +1,15 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
     public class GraniteSpearProjectile : ModProjectile
     {
+        private bool spawnedProjectiles = false;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Pike");
@@ -102,11 +105,28 @@ namespace OvermorrowMod.Projectiles.Melee
                 dust.velocity += projectile.velocity * 0.5f;
                 dust.velocity *= 0.5f;
             }
+
+            //spawns the circle of electricity 
+
+            if (!spawnedProjectiles)
+            {
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
+                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<GraniteSpearElectricity>(), projectile.damage / 2, 1, projectile.owner, projectile.whoAmI, 42f * i);
+                    }
+                }
+                spawnedProjectiles = true;
+                projectile.netUpdate = true;
+            }
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             Main.player[projectile.owner].AddBuff(ModContent.BuffType<GraniteSpearBuff>(), 180);
         }
+
     }
 }
