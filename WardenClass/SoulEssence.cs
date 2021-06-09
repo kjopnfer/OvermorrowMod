@@ -1,4 +1,6 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Effects;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -39,7 +41,7 @@ namespace WardenClass
                 projectile.timeLeft = 2;
             }
 
-            projectile.localAI[0] += 1f;
+            /*projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 4f)
             {
                 for (int num1163 = 0; num1163 < 5; num1163++)
@@ -49,7 +51,7 @@ namespace WardenClass
                     Dust dust81 = Main.dust[num1161];
                     dust81.velocity *= 0f;
                 }
-            }
+            }*/
 
             if (player.dead)
             {
@@ -82,6 +84,28 @@ namespace WardenClass
         public override bool? CanCutTiles()
         {
             return false;
+        }
+
+        public float TrailSize(float progress)
+        {
+            return 16f * (1f - progress);
+        }
+
+        public Color TrailColor(float progress)
+        {
+            //return Main.hslToRgb(progress, 0.75f, 0.5f) * (1f - progress);
+            //return Main.DiscoColor;
+            return Color.Lerp(Color.Cyan, Color.White, progress) * (1f - progress);
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            Texture2D texture = ModContent.GetTexture("PrimTest/Effects/Trail3");
+            int length = 32;
+            TrailHelper helper = new TrailHelper(projectile, TrailColor, TrailSize, length, "Texture", texture);
+            helper.Draw();
+
+            return base.PreDraw(spriteBatch, lightColor);
         }
     }
 }

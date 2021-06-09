@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.UI;
 using ReLogic.Graphics;
 using Terraria;
@@ -25,6 +26,7 @@ namespace OvermorrowMod
         public static ModHotKey ToggleUI;
 
         public static OvermorrowModFile Mod { get; set; }
+        public Effect Sword;
 
         public OvermorrowModFile()
         {
@@ -56,8 +58,12 @@ namespace OvermorrowMod
 
         public override void Load()
         {
+            // Keys
             SandModeKey = RegisterHotKey("Swap Sand Mode", "Q");
-            ToggleUI = RegisterHotKey("Toggle UI", "R");
+            ToggleUI = RegisterHotKey("Toggle UI", "R"); // This is for debugging
+            
+            // Effects
+            Sword = GetEffect("Effects/Trailshader");
 
             if (!Main.dedServ)
             {
