@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Tiles;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -95,7 +96,7 @@ namespace OvermorrowMod.NPCs
 
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave ? 0.38f : 0f;
+			return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == ModContent.TileType<GlowBlock>() ? 0.38f : 0f;
 		}
 
 		public override int SpawnNPC(int tileX, int tileY)
