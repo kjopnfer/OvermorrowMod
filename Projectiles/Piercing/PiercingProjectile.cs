@@ -44,6 +44,24 @@ namespace OvermorrowMod.Projectiles.Piercing
 
                 // Add the projectile to the WardenDamagePlayer list of projectiles
                 modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+                UpdatePosition(modPlayer);
+            }
+        }
+
+        private void UpdatePosition(WardenDamagePlayer player)
+        {
+            int direction = 1;
+            for(int i = 0; i < player.soulList.Count; i++)
+            {
+                if (i % 5 == 4)
+                {
+                    direction *= -1;
+                }
+
+                int radiusBuffer = (int)(20 * System.Math.Floor(i / 4f));
+                Main.projectile[player.soulList[i]].knockBack = direction;
+                Main.projectile[player.soulList[i]].ai[0] = 70 + radiusBuffer;
+                Main.projectile[player.soulList[i]].ai[1] = i * 90;    
             }
         }
 

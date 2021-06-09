@@ -9,7 +9,6 @@ namespace WardenClass
     public class SoulEssence : ModProjectile
     {
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Soul Essence");
@@ -70,7 +69,14 @@ namespace WardenClass
             projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
 
             //Increase the counter/angle in degrees by 1 point, you can change the rate here too, but the orbit may look choppy depending on the value
-            projectile.ai[1] += 4f;
+            if (projectile.knockBack == 1)
+            {
+                projectile.ai[1] += 4f;
+            }
+            else
+            {
+                projectile.ai[1] -= 4f;
+            }
         }
 
         public override bool? CanCutTiles()
