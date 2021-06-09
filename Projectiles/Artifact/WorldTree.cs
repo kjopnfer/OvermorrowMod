@@ -33,6 +33,12 @@ namespace OvermorrowMod.Projectiles.Artifact
         {
             Lighting.AddLight(projectile.Center, 0f, 0.66f, 0f);
 
+            Player player = Main.player[projectile.owner];
+            if (player.dead || !player.active)
+            {
+                return;
+            }
+
             // Get the ground beneath the projectile
             Vector2 projectilePos = new Vector2(projectile.position.X / 16, projectile.position.Y / 16);
             Tile tile = Framing.GetTileSafely((int)projectilePos.X, (int)projectilePos.Y);

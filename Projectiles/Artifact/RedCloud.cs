@@ -30,6 +30,12 @@ namespace OvermorrowMod.Projectiles.Artifact
         {
             Lighting.AddLight(projectile.Center, 1.2f, 0f, 0f);
 
+            Player player = Main.player[projectile.owner];
+            if (player.dead || !player.active)
+            {
+                return;
+            }
+
             projectile.ai[0] += 1;
             if(projectile.ai[1] < 450) // The radius
             {
