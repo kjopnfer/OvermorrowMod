@@ -43,7 +43,12 @@ namespace OvermorrowMod.Projectiles.Piercing
                 modPlayer.soulResourceCurrent++; // Increase number of resource
 
                 // Add the projectile to the WardenDamagePlayer list of projectiles
-                modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+                int soul = Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f);
+                Main.projectile[soul].active = true;
+                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, soul);
+                //modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+                modPlayer.soulList.Add(soul);
+
                 UpdatePosition(modPlayer);
             }
         }
