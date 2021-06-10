@@ -31,8 +31,17 @@ namespace OvermorrowMod
             if (player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave)
             {
                 pool.Clear();
-                pool.Add(ModContent.NPCType<CaveFish>(), .25f);
-                pool.Add(ModContent.NPCType<SnapDragon>(), .25f);
+                pool.Add(ModContent.NPCType<CaveFish>(), .10f);
+                pool.Add(ModContent.NPCType<SnapDragon>(), .15f);
+                pool.Add(ModContent.NPCType<SalamanderHunter>(), .25f);
+            }
+        }
+
+        public override void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
+        {
+            if (player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave)
+            {
+                spawnRate = 140;
             }
         }
 
