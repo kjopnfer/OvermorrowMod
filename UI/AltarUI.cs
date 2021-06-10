@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 
@@ -51,15 +52,18 @@ namespace OvermorrowMod.UI
                 newtext.HAlign = VAlign = 0.5f;
                 newtext.Top.Set(50, 0);
                 panel.Append(header);
-           
-                Texture2D plusButtonTexture = ModContent.GetTexture("OvermorrowMod/UI/PlusButton");
-                HoverImageButton button = new HoverImageButton(plusButtonTexture, "hi");
-                button.Top.Set(164, 0);
-                button.HAlign = 0.5f;
-                button.Width.Set(18, 0f);
-                button.Height.Set(18, 0f);
-                button.OnClick += OnButtonClick;
-                panel.Append(button);
+
+                if (Main.netMode != NetmodeID.Server)
+                {
+                    Texture2D plusButtonTexture = ModContent.GetTexture("OvermorrowMod/UI/PlusButton");
+                    HoverImageButton button = new HoverImageButton(plusButtonTexture, "hi");
+                    button.Top.Set(164, 0);
+                    button.HAlign = 0.5f;
+                    button.Width.Set(18, 0f);
+                    button.Height.Set(18, 0f);
+                    button.OnClick += OnButtonClick;
+                    panel.Append(button);
+                }
             }
 
             base.Append(panel);

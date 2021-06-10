@@ -61,12 +61,10 @@ namespace OvermorrowMod
             // Keys
             SandModeKey = RegisterHotKey("Swap Sand Mode", "Q");
             ToggleUI = RegisterHotKey("Toggle UI", "R"); // This is for debugging
-            
-            // Effects
-            Sword = GetEffect("Effects/Trailshader");
 
             if (!Main.dedServ)
-            {
+            {            // Effects
+                Sword = GetEffect("Effects/Trailshader");
                 AltarUI = new UserInterface();
 
                 MyInterface = new UserInterface();
