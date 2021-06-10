@@ -42,7 +42,7 @@ namespace OvermorrowMod.Projectiles.Boss
             if (++projectile.frameCounter >= 5)
             {
                 projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                //if (++projectile.frame >= Main.projFrames[projectile.type])
                 {
                     projectile.frame = 0;
                 }
@@ -58,9 +58,8 @@ namespace OvermorrowMod.Projectiles.Boss
 
             // Make projectiles gradually disappear
             if (projectile.timeLeft <= 60 && projectile.alpha < 255)
-            {
                 projectile.alpha += 5;
-            }
+            
         }
 
         public void DoProjectile_OrbitPosition(Projectile modProjectile, Vector2 position, double distance, double speed = 1.75)
