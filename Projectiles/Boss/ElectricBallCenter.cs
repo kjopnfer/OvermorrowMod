@@ -64,11 +64,7 @@ namespace OvermorrowMod.Projectiles.Boss
                 float distance = 6000f; // Search distance
                 if (!launchedProjectile)
                 {
-                    for (int k = 0; k < Main.maxPlayers; k++) // Loop through the player array
-                    {
-                        if (Main.player[k].active && !Main.player[k].dead)
-                        {
-                            Vector2 newMove = Main.player[k].Center - projectile.Center;
+                            Vector2 newMove = Main.player[Main.npc[(int)projectile.ai[1]].target].Center - projectile.Center;
                             float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
                             if (distanceTo < distance)
                             {
@@ -78,8 +74,6 @@ namespace OvermorrowMod.Projectiles.Boss
                                 projectile.velocity = (move) / launchSpeed;
                                 launchedProjectile = true;
                                 Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)projectile.position.X, (int)projectile.position.Y);
-                            }
-                        }
                     }
                 }
             }
@@ -97,7 +91,7 @@ namespace OvermorrowMod.Projectiles.Boss
                     for (int i = 0; i < 7; i++)
                     {
                         // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
-                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<ElectricBall>(), storeDamage, 1, Main.myPlayer, projectile.whoAmI, 30f * i);
+                        Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall>(), storeDamage, 1, Main.myPlayer, projectile.whoAmI, 30f * i);
                     }
                 }
                 spawnedProjectiles = true;
