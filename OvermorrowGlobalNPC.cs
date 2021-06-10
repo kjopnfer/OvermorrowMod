@@ -149,7 +149,7 @@ namespace OvermorrowMod
                                 if (Main.rand.Next(8) == 0) // 12.5% chance to gain Soul Essence on death
                                 {
                                     modPlayer.soulResourceCurrent += 1;
-                                    modPlayer.soulList.Add(Projectile.NewProjectile(npc.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f));
+                                    modPlayer.soulList.Add(Projectile.NewProjectile(npc.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, Main.myPlayer, Main.rand.Next(70, 95), 0f));
                                     CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.DarkCyan, "Soul Essence Gained", true, false);
                                 }
                             }

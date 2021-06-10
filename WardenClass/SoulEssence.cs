@@ -100,11 +100,13 @@ namespace WardenClass
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture("PrimTest/Effects/Trail3");
-            int length = 32;
-            TrailHelper helper = new TrailHelper(projectile, TrailColor, TrailSize, length, "Texture", texture);
-            helper.Draw();
-
+       //     if (Main.netMode != NetmodeID.Server)
+    ///        {
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/Effects/Trail3");
+                int length = 32;
+                TrailHelper helper = new TrailHelper(projectile, TrailColor, TrailSize, length, "Texture", texture);
+                helper.Draw();
+       //     }
             return base.PreDraw(spriteBatch, lightColor);
         }
     }
