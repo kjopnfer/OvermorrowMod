@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.RuneBuffs;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.ID;
@@ -84,6 +85,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.ChainKnife);
+            recipe.AddIngredient(ModContent.ItemType<SoulFire>());
             recipe.AddIngredient(ItemID.Bone, 125);
             recipe.AddIngredient(ItemID.Cobweb, 40);
             recipe.AddTile(TileID.Anvils);
