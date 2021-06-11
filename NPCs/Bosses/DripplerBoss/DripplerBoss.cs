@@ -42,6 +42,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.boss = true;
             npc.value = Item.buyPrice(gold: 2, silver: 50);
             npc.npcSlots = 10f;
+            npc.chaseable = false;
             //music = MusicID.Boss2;
             music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/DripplerBoss");
             bossBag = ModContent.ItemType<DripplerBag>();
@@ -104,7 +105,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 npc.velocity.Y = -2000;
             }
 
-            npc.chaseable = false;
 
             // Inflicts 'Congealed Blood' debuff that slows down player movement
 
@@ -128,7 +128,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
             // Reset counters
             int countDripplers = 0;
-            int countDriplads = 0;
             int countRotaters = 0;
 
             for (int i = 0; i < Main.maxNPCs; i++)
@@ -136,11 +135,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<LoomingDrippler>())
                 {
                     countDripplers++;
-                }
-
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<Driplad>())
-                {
-                    countDriplads++;
                 }
 
                 if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<RotatingDriplad>())
@@ -155,23 +149,31 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 spawnedRotaters = true;
             }
 
-            if (changedPhase2 && spawnedRotaters && countRotaters <= 0)
-            {
-                // Phase 3 starts when there are no Rotaters and is already in Phase 2
-                changedPhase3 = true;
-            }
-
-            if (!spawnedRotaters && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
-            {
-                // Phase 2 starts when it is not in phase 2, all dripplers are dead, and NPC life is less than 2/3rds gone
-                npc.ai[0] = 1; // Phase 2 initiator
-            }
+            // AI[0] is the phase
+            // AI[1] is the counter
 
             switch (npc.ai[0])
             {
                 case 0: // Float towards the player
                     if (npc.ai[0] == 0)
                     {
+                        // Break statements to stop movement and continue to phase initializers
+                        if (!changedPhase2 && !spawnedRotaters && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
+                        {
+                            npc.ai[0] = 1;
+                            npc.ai[1] = 0;
+                            break;
+                        }
+                        else
+                        {
+                            if (changedPhase2 && spawnedRotaters && countRotaters <= 0)
+                            {
+                                npc.ai[0] = 2;
+                                npc.ai[1] = 0;
+                                break;
+                            }
+                        }
+
                         Vector2 moveTo = player.Center;
                         var move = moveTo - npc.Center;
                         var speed = 2;
@@ -192,7 +194,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                         if (changedPhase3)
                         {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            if (Main.netMode != NetmodeID.MultiplayerClient && Main.expertMode)
                             {
                                 if (npc.ai[1] % 135 == 0)
                                 {
@@ -205,73 +207,24 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                         }
 
-                        if (npc.ai[1] == 270) // Phase changes
+                        if (npc.ai[1] == 270)
                         {
-                            if (changedPhase3) // Spawn Driplads and Dripplers until dead
+                            // No dripplers present, spawn them in
+                            if ((countDripplers <= 0 && countRotaters <= 0) || (countDripplers <= 0 && changedPhase3))
                             {
-                                if (npc.life <= npc.lifeMax * 0.33f && countDriplads <= 0) // Spawn driplads
-                                {
-                                    npc.ai[0] = 2;
-                                    npc.ai[1] = 0;
-                                }
-                                else if (countDripplers <= 0) // Spawn dripplers
-                                {
-                                    npc.ai[0] = 3;
-                                    npc.ai[1] = 0;
-                                }
-                                else // Follow player
-                                {
-                                    if (Main.rand.Next(4) == 0)
-                                    {
-                                        npc.ai[0] = 4;
-                                        npc.ai[1] = 0;
-                                    }
-                                    else
-                                    {
-                                        npc.ai[0] = 0;
-                                        npc.ai[1] = 0;
-                                    }
-                                }
+
+                                npc.ai[0] = 3;
+                                npc.ai[1] = 0;
                             }
-                            else if (changedPhase2) // Make the NPC follow until all Rotaters are dead
+                            else // Dripplers present, resume movement
                             {
-                                // Phase 2
-                                if (Main.rand.Next(6) == 0)
-                                {
-                                    npc.ai[0] = 4;
-                                    npc.ai[1] = 0;
-                                }
-                                else
-                                {
-                                    npc.ai[0] = 0;
-                                    npc.ai[1] = 0;
-                                }
-                            }
-                            else // Phase 1
-                            {
-                                if (countDripplers <= 0 && !changedPhase2) // Spawn dripplers
-                                {
-                                    npc.ai[0] = 3;
-                                    npc.ai[1] = 0;
-                                }
-                                else // Follow player
-                                {
-                                    if (Main.rand.Next(8) == 0)
-                                    {
-                                        npc.ai[0] = 4;
-                                        npc.ai[1] = 0;
-                                    }
-                                    else
-                                    {
-                                        npc.ai[0] = 0;
-                                        npc.ai[1] = 0;
-                                    }
-                                }
+                                npc.ai[0] = 0;
+                                npc.ai[1] = 0;
                             }
                         }
                     }
                     break;
-                case 1: // Phase 2 Initiator
+                case 1: // Phase 2 Initializer
                     npc.velocity = Vector2.Zero;
 
                     if (npc.ai[1] == 140)
@@ -295,7 +248,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             for (int i = 0; i < 5; i++)
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI);
+                                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, 350);
                             }
                         }
                     }
@@ -307,10 +260,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         changedPhase2 = true;
                     }
                     break;
-                case 2: // Spawn Driplads
+                case 2: // Phase 3 Initializer
+                    npc.velocity = Vector2.Zero;
+
                     if (npc.ai[0] == 2)
                     {
-                        npc.velocity = Vector2.Zero;
 
                         if (npc.ai[1] == 90)
                         {
@@ -326,22 +280,21 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
 
                             Vector2 origin = npc.Center; // Origin of the circle
-                            float radius = 750; // Distance from the circle
+                            float radius = 1050; // Distance from the circle
                             int numSpawns = 5; // Points spawned on the circle
-                            Main.PlaySound(SoundID.Item95, (int)npc.Center.X, (int)npc.Center.Y);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 for (int i = 0; i < 5; i++)
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                    // Pass in AI[1] for Driplads
-                                    Projectile.NewProjectile(position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 1, npc.whoAmI);
+                                    NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, radius);
                                 }
                             }
                         }
 
                         if (npc.ai[1] == 270)
                         {
+                            changedPhase3 = true;
                             npc.ai[0] = 0;
                             npc.ai[1] = 0;
                         }
@@ -386,46 +339,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             npc.ai[1] = 0;
                         }
                     }
-                    break;
-                case 4: // Shoot blood in all directions
-                    if(npc.ai[0] == 4)
-                    {
-                        npc.velocity = Vector2.Zero;
-
-                        if (npc.ai[1] % 180 == 0)
-                        {
-                            float numberProjectiles = 16 + (Main.expertMode ? Main.rand.Next(4, 8) : Main.rand.Next(4));
-                            float rotation = MathHelper.ToRadians(360);
-                            Vector2 delta = player.Center - npc.Center;
-                            float magnitude = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
-                            if (magnitude > 0)
-                            {
-                                delta *= 5f / magnitude;
-                            }
-                            else
-                            {
-                                delta = new Vector2(0f, 5f);
-                            }
-                            Main.PlaySound(SoundID.Item95, (int)npc.Center.X, (int)npc.Center.Y);
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                for (int i = 0; i < numberProjectiles; i++)
-                                {
-                                    Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .3f;
-                                    // * 3f increases speed
-                                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, perturbedSpeed.X * 3f, perturbedSpeed.Y * 3f, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 2f, Main.myPlayer, 0f, 0f);
-                                }
-                            }
-                        }
-
-                        if (npc.ai[1] == 530)
-                        {
-                            npc.ai[0] = 0;
-                            npc.ai[1] = 0;
-                        }
-                    }
-                    break;
+                    break;                    
             }
 
             npc.ai[1]++;

@@ -13,6 +13,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
     {
         public override string Texture => "OvermorrowMod/NPCs/Bosses/DripplerBoss/Driplad";
         private NPC parentNPC;
+        private bool initializedRadius = false;
+        private float radius;
 
         public override void SetStaticDefaults()
         {
@@ -57,6 +59,13 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 parentNPC = Main.npc[(int)npc.ai[1]];
             }
 
+            if (!initializedRadius)
+            {
+                radius = npc.ai[2];
+                npc.ai[2] = 0;
+                initializedRadius = true;
+            }
+
             // AI[0] is the orbit position timer
             // AI[1] is used for locating Parent NPC
             // AI[2] is the phase
@@ -67,7 +76,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.TargetClosest(true);
             npc.ai[3]++;
 
-            NPC_OrbitPosition(npc, parentNPC.Center, 350, 1.25f);
+            NPC_OrbitPosition(npc, parentNPC.Center, radius, radius == 1100 ? 0.5f : 1.25f);
 
             switch (npc.ai[2])
             {

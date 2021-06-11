@@ -19,7 +19,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.rare = ItemRarityID.Green;
             item.UseSound = SoundID.Item1;
             item.useStyle = ItemUseStyleID.SwingThrow;
-            item.damage = 18;
+            item.damage = 20;
             item.useTime = 30;
             item.useAnimation = 30;
             item.width = 56;

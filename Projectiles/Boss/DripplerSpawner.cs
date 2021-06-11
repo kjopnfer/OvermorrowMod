@@ -52,20 +52,6 @@ namespace OvermorrowMod.Projectiles.Boss
                     Main.npc[spawnedNPC].netUpdate = true;
                 }
             }
-            else
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    int spawnedNPC = NPC.NewNPC((int)(projectile.Center.X), (int)(projectile.Center.Y), ModContent.NPCType<Driplad>(), 0, 0, projectile.ai[1]);
-
-                    if (Main.netMode == NetmodeID.Server)
-                    {
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
-                    }
-
-                    Main.npc[spawnedNPC].netUpdate = true;
-                }
-            }
         }
     }
 }
