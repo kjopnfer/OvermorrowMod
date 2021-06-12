@@ -23,7 +23,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dripplord, the Bloody Assimilator");
-            Main.npcFrameCount[npc.type] = 6;
+            Main.npcFrameCount[npc.type] = 12;
         }
 
         public override void SetDefaults()
@@ -381,7 +381,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
                 npc.frame.Y += frameHeight;
             }
-            if (npc.frame.Y >= frameHeight * 6) // 6 is max # of frames
+            if (npc.frame.Y >= frameHeight * 12) // 6 is max # of frames
             {
                 npc.frame.Y = 0; // Reset back to default
             }
