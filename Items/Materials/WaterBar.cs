@@ -5,18 +5,18 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Materials
 {
-    public class WaterOre : ModItem
+    public class WaterBar : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lacusite Ore");
-            Tooltip.SetDefault("'Drips with water'");
+            DisplayName.SetDefault("Lacusite Bar");
+            Tooltip.SetDefault("'Has a strong affinity for water'");
         }
 
         public override void SetDefaults()
         {
-            item.width = 14;
-            item.height = 14;
+            item.width = 30;
+            item.height = 24;
             item.rare = ItemRarityID.Green;
             item.maxStack = 99;
         }
@@ -28,6 +28,15 @@ namespace OvermorrowMod.Items.Materials
         public override void PostUpdate()
         {
             Lighting.AddLight(item.Center, Color.White.ToVector3() * 0.55f * Main.essScale);
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<WaterOre>(), 3);
+            recipe.AddTile(TileID.Furnaces);
+            recipe.SetResult(this, 5);
+            recipe.AddRecipe();
         }
     }
 }
