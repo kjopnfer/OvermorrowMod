@@ -14,6 +14,7 @@ namespace WardenClass
         public bool AncientCrystal;
         public bool FrostburnRune;
         public bool ObsidianShackle;
+        public bool PoisonRune;
         public bool ReaperBook;
         public bool SoulRing;
 
