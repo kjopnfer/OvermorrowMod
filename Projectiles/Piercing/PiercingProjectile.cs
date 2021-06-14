@@ -88,6 +88,15 @@ namespace OvermorrowMod.Projectiles.Piercing
                 target.AddBuff(BuffID.CursedInferno, 240);*/
             }
 
+            if (modPlayer.PoisonRune)
+            {
+                int randChance = Main.rand.Next(3);
+                if (randChance == 0)
+                {
+                    target.AddBuff(BuffID.Poisoned, 240);
+                }
+            }
+
             // WIP code for adding buffs to NPCs to override the buff limit
             // If this works, adding stacks to buffs would be very cool
             //target.GetGlobalNPC<OvermorrowGlobalNPC>().AddNewBuff(target, ModContent.BuffType<Bleeding2>(), 240);

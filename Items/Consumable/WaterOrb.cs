@@ -12,7 +12,8 @@ namespace OvermorrowMod.Items.Consumable
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Healing Water");
-            Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(6, 9));
+            ItemID.Sets.ItemNoGravity[item.type] = true;
+            Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(6, 6));
         }
 
         public override void SetDefaults()

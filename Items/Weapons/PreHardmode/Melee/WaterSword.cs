@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
@@ -30,6 +31,15 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.melee = true;
             item.autoReuse = true;
             item.value = Item.sellPrice(gold: 1);
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<WaterBar>(), 9);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }

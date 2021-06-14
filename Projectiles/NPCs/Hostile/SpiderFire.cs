@@ -61,7 +61,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
             projectile.localAI[0]++;
             if (projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y), projectile.width, projectile.height, 67, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1f);                
+                int num1110 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y), projectile.width, projectile.height, 92, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.5f);                
             }
 
             projectile.alpha = 255 - projectile.timeLeft;

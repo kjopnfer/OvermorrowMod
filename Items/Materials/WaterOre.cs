@@ -19,7 +19,7 @@ namespace OvermorrowMod.Items.Materials
             item.width = 14;
             item.height = 14;
             item.rare = ItemRarityID.Green;
-            item.maxStack = 99;
+            item.maxStack = 999;
             item.useTurn = true;
             item.autoReuse = true;
             item.useAnimation = 15;
