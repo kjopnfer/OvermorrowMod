@@ -12,6 +12,7 @@ namespace WardenClass
     {
         public bool UIToggled = false;
         public bool AncientCrystal;
+        public bool FireRune;
         public bool FrostburnRune;
         public bool ObsidianShackle;
         public bool PoisonRune;
