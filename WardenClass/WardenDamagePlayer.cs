@@ -91,10 +91,13 @@ namespace WardenClass
             UIToggled = false;
             soulResourceMax2 = soulResourceMax;
             AncientCrystal = false;
+            FireRune = false;
+            FrostburnRune = false;
             ObsidianShackle = false;
+            PoisonRune = false;
             ReaperBook = false;
             SoulRing = false;
-
+          
             HemoArmor = false;
 
             ResetVariables();
