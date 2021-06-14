@@ -22,6 +22,9 @@ namespace OvermorrowMod
         public static bool downedDrippler;
         public static bool downedDrake;
 
+        // Boss Attacks
+        public static bool DripplerCircle;
+
         // Biomes
         public static int floodedCaves;
 

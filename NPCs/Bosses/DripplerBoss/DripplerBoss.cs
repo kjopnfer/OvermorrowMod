@@ -19,6 +19,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private bool spawnedRotaters = false; // Makes it so that it cannot skip phase 2, even if 0 rotaters
         private bool changedPhase2 = false;
         private bool changedPhase3 = false;
+        private int circleCooldown = 0;
 
         public override void SetStaticDefaults()
         {
@@ -191,6 +192,26 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             move *= speed / length;
                         }
                         npc.velocity = move;
+
+                        if (countDripplers > 0)
+                        {
+                            if (Main.rand.Next(50) == 0 && circleCooldown == 0 && !OvermorrowWorld.DripplerCircle)
+                            {
+                                OvermorrowWorld.DripplerCircle = true;
+                            }
+                            else
+                            {
+                                if (circleCooldown > 0)
+                                {
+                                    circleCooldown--;
+                                }
+                            }
+                        }
+
+                        if (OvermorrowWorld.DripplerCircle)
+                        {
+                            circleCooldown = 900;
+                        }
 
                         if (changedPhase3)
                         {

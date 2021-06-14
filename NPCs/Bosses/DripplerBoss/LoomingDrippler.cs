@@ -13,6 +13,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
     {
         private NPC parentNPC;
         private int speed;
+        private Vector2 origin;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Looming Drippler");
@@ -25,7 +26,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.height = 30;
             npc.damage = 28;
             npc.defense = 17;
-            npc.lifeMax = 110;
+            npc.lifeMax = 240;
             npc.HitSound = SoundID.NPCHit19;
             npc.knockBackResist = 0.4f;
             npc.DeathSound = SoundID.NPCDeath22;
@@ -73,9 +74,20 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 npc.ai[3]++;
             }
 
+            // AI[0] is the counter
+            // AI[1] is the parent NPC
+            // AI[2] is the phase
+            // AI[3] is the randomly assigned movespeed
+
             switch (npc.ai[2])
             {
                 case 0: // Follow player
+                    if (OvermorrowWorld.DripplerCircle)
+                    {
+                        npc.ai[2] = 2;
+                        npc.ai[0] = 0;
+                    }
+
                     Vector2 moveTo = player.Center;
                     var move = moveTo - npc.Center;
                     var speed = 10;
@@ -97,18 +109,24 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                     if (npc.ai[0] % Main.rand.Next(300, 900) == 0)
                     {
-                        npc.ai[0] = 0;
                         npc.ai[2] = 1;
+                        npc.ai[0] = 0;
                     }
                     break;
                 case 1: // Shoot at player
+                    if (OvermorrowWorld.DripplerCircle)
+                    {
+                        npc.ai[2] = 2;
+                        npc.ai[0] = 0;
+                    }
+
                     npc.velocity = Vector2.Zero;
                     if (npc.ai[0] % 30 == 0)
                     {
                         int shootSpeed = Main.rand.Next(6, 10);
-                        Vector2 position = npc.Center;
+                        Vector2 npcPosition = npc.Center;
                         Vector2 targetPosition = Main.player[npc.target].Center;
-                        Vector2 direction = targetPosition - position;
+                        Vector2 direction = targetPosition - npcPosition;
                         direction.Normalize();
 
                         if (parentNPC.life <= parentNPC.lifeMax * 0.39f)
@@ -164,12 +182,91 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.ai[2] = 0;
                     }
                     break;
-            }
+                case 2: // Rotating buffer
+                    if (npc.ai[2] == 2)
+                    {
+                        int countDripplers = 0;
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<LoomingDrippler>())
+                            {
+                                countDripplers++;
+                            }
+                        }
 
-            if (npc.ai[0] == 900)
-            {
-                npc.ai[0] = 0;
+                        moveTo = player.Center;
+                        move = moveTo - npc.Center;
+                        speed = 10;
+
+                        length = move.Length();
+                        if (length > speed)
+                        {
+                            move *= speed / length;
+                        }
+                        turnResistance = 45;
+                        move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                        length = move.Length();
+                        if (length > 10)
+                        {
+                            move *= speed / length;
+                        }
+                        npc.velocity.X = move.X;
+                        npc.velocity.Y = move.Y * .98f;
+
+
+                        origin = player.Center;
+                        
+                        if (npc.alpha != 255)
+                        {
+                            if (npc.alpha > 255)
+                            {
+                                npc.alpha = 255;
+                            }
+                            else
+                            {
+                                npc.alpha += 2;
+                            }
+                        }
+
+                        if (npc.alpha == 255)
+                        {
+                            npc.ai[2] = 3;
+                            npc.ai[0] = 0;
+                            npc.ai[3] = Main.rand.Next(0, 360);
+                        }
+                    }
+                    break;
+                case 3: // Rotate around the player
+                    NPC_OrbitPosition(npc, origin, 300, 1f);
+                    npc.ai[3]++;
+                    //npc.alpha = 255;
+
+                    if (npc.alpha != 0)
+                    {
+                        npc.alpha -= 3;
+                    }
+
+                    if (npc.ai[0] == 600)
+                    {
+                        OvermorrowWorld.DripplerCircle = false;
+                        //npc.alpha = 0;
+                        npc.ai[2] = 0;
+                        npc.ai[0] = 0;
+                        npc.ai[3] = 0;
+                    }
+                    break;
             }
+        }
+
+        public void NPC_OrbitPosition(NPC modNPC, Vector2 position, double distance, double speed = 1.75)
+        {
+            double rad;
+            double deg = speed * (double)npc.ai[3];
+            rad = deg * (Math.PI / 180);
+            npc.ai[3] += 1f;
+
+            npc.position.X = position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2;
+            npc.position.Y = position.Y - (int)(Math.Sin(rad) * distance) - npc.height / 2;
         }
 
         public override void HitEffect(int hitDirection, double damage)
@@ -213,8 +310,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            Texture2D texture = mod.GetTexture("NPCs/Bosses/DripplerBoss/LoomingDrippler_Glowmask");
-            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y - 4), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            if (npc.alpha == 0)
+            {
+                Texture2D texture = mod.GetTexture("NPCs/Bosses/DripplerBoss/LoomingDrippler_Glowmask");
+                spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y - 4), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            }
         }
 
         public override void NPCLoot()
@@ -222,7 +322,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             if (Main.npc[(int)npc.ai[1]].active && Main.npc[(int)npc.ai[1]].boss)
             {
                 NPC parentNPC = Main.npc[(int)npc.ai[1]];
-                parentNPC.life -= 100;
+                parentNPC.life -= 200;
             }
         }
     }

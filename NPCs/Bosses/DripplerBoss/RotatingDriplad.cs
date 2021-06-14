@@ -76,7 +76,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.TargetClosest(true);
             npc.ai[3]++;
 
-            NPC_OrbitPosition(npc, parentNPC.Center, radius, radius == 1100 ? 0.5f : 1.25f);
+            NPC_OrbitPosition(npc, parentNPC.Center, radius, radius == 1050 ? 0.65f : 1.25f);
 
             switch (npc.ai[2])
             {
