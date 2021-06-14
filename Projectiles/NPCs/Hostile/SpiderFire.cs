@@ -20,7 +20,8 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
             projectile.height = 8;
             projectile.friendly = false;
             projectile.hostile = true;
-            projectile.timeLeft = 300;
+            projectile.timeLeft = 600;
+            projectile.penetrate = 1;
             projectile.alpha = 255;
             projectile.tileCollide = false;
         }
@@ -33,7 +34,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
             if (projectile.ai[0] >= 120)
             {
                 Vector2 move = Vector2.Zero;
-                float distance = 400f;
+                float distance = 2000f;
                 bool target = false;
                 for (int k = 0; k < Main.maxPlayers; k++)
                 {
@@ -53,7 +54,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
                 if (target)
                 {
                     AdjustMagnitude(ref move);
-                    projectile.velocity = (10 * projectile.velocity + move) / 11f;
+                    projectile.velocity = (9 * projectile.velocity + move) / 11f;
                     AdjustMagnitude(ref projectile.velocity);
                 }
             }
