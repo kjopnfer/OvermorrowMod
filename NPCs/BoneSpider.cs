@@ -138,5 +138,10 @@ namespace OvermorrowMod.NPCs
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFire>());
             }
         }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            return spawnInfo.player.ZoneDungeon && NPC.downedQueenBee ? 0.025f : 0f;
+        }
     }
 }
