@@ -56,6 +56,19 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.buffImmune[BuffID.CursedInferno] = true;
             npc.buffImmune[BuffID.WeaponImbueCursedFlames] = true;
             npc.buffImmune[BuffID.ShadowFlame] = true;
+            npc.buffImmune[BuffID.Daybreak] = true;
+            npc.buffImmune[BuffID.Electrified] = true;
+            npc.buffImmune[BuffID.Webbed] = true;
+            npc.buffImmune[BuffID.Suffocation] = true;
+            npc.buffImmune[BuffID.Venom] = true;
+            npc.buffImmune[BuffID.WeaponImbueConfetti] = true;
+            npc.buffImmune[BuffID.WeaponImbueCursedFlames] = true;
+            npc.buffImmune[BuffID.WeaponImbueFire] = true;
+            npc.buffImmune[BuffID.WeaponImbueGold] = true;
+            npc.buffImmune[BuffID.WeaponImbueIchor] = true;
+            npc.buffImmune[BuffID.WeaponImbueNanites] = true;
+            npc.buffImmune[BuffID.WeaponImbuePoison] = true;
+            npc.buffImmune[BuffID.WeaponImbueVenom] = true;
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
@@ -308,7 +321,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 for (int i = 0; i < 5; i++)
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                    NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, radius);
+                                    NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, radius );
                                 }
                             }
                         }
