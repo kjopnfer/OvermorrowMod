@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Town
 {
+    [AutoloadHead]
     public class RuneSeller : ModNPC
     {
         public override string Texture => "OvermorrowMod/NPCs/Town/RuneSeller";
@@ -24,9 +25,9 @@ namespace OvermorrowMod.NPCs.Town
             Main.npcFrameCount[npc.type] = 26;
             NPCID.Sets.ExtraFramesCount[npc.type] = 9;
             NPCID.Sets.AttackFrameCount[npc.type] = 4;
-            NPCID.Sets.DangerDetectRange[npc.type] = 500;
-            NPCID.Sets.AttackType[npc.type] = 0;
-            NPCID.Sets.AttackTime[npc.type] = 16;
+            NPCID.Sets.DangerDetectRange[npc.type] = 1000;
+            NPCID.Sets.AttackType[npc.type] = 2;
+            NPCID.Sets.AttackTime[npc.type] = 128;
             NPCID.Sets.AttackAverageChance[npc.type] = 30;
         }
 
@@ -97,6 +98,35 @@ namespace OvermorrowMod.NPCs.Town
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = Language.GetTextValue("LegacyInterface.28");
+        }
+
+        public override void TownNPCAttackStrength(ref int damage, ref float knockback)
+        {
+            damage = 23;
+            knockback = 3f;
+        }
+
+        public override void TownNPCAttackCooldown(ref int cooldown, ref int randExtraCooldown)
+        {
+            cooldown = 5;
+            randExtraCooldown = 5;
+        }
+
+        public override void TownNPCAttackProj(ref int projType, ref int attackDelay)
+        {
+            projType = ProjectileID.RubyBolt;
+            attackDelay = 1;
+        }
+
+        public override void TownNPCAttackMagic(ref float auraLightMultiplier)
+        {
+            base.TownNPCAttackMagic(ref auraLightMultiplier);
+        }
+
+        public override void TownNPCAttackProjSpeed(ref float multiplier, ref float gravityCorrection, ref float randomOffset)
+        {
+            multiplier = 14f;
+            randomOffset = 2f;
         }
     }
 }

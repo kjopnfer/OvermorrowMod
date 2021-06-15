@@ -24,7 +24,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            modPlayer.FrostburnRune = true;
+            modPlayer.PoisonRune = true;
         }
     }
 }

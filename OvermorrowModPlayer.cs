@@ -337,7 +337,7 @@ namespace OvermorrowMod
             if (OvermorrowModFile.ToggleUI.JustPressed)
             {
                 Main.NewText("a");
-                ModContent.GetInstance<OvermorrowModFile>().ShowAltar();
+                //ModContent.GetInstance<OvermorrowModFile>().ShowAltar();
             }
 
             if (UIToggled && IsInRange(AltarCoordinates))
