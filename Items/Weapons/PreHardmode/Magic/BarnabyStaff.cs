@@ -37,10 +37,70 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.value = Item.sellPrice(gold: 6, silver: 75);
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void AddRecipes()
         {
-            // Have a random shootSpeed from 6f to 9f
-            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<AmethystStaff>());
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<TopazStaff>());
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<SapphireStaff>());
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<EmeraldStaff>());
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<AmberStaff>());
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<RubyStaff>());
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<DiamondStaff>());
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }
