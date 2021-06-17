@@ -19,8 +19,8 @@ namespace OvermorrowMod.Tiles
             Main.tileMerge[Type][TileID.Stone] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
+            soundType = 21;
             soundStyle = 1;
-            soundType = SoundID.Tink;
             minPick = 65;
             drop = ModContent.ItemType<CrystalMana>();
             AddMapEntry(new Color(51, 204, 255), name);
@@ -32,7 +32,7 @@ namespace OvermorrowMod.Tiles
             int distance = (int)Vector2.Distance(new Vector2(i * 16, j * 16), player.Center);
             if (distance < 54)
             {
-                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(3, 4));
+                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(21, 1));
             }
         }
 
