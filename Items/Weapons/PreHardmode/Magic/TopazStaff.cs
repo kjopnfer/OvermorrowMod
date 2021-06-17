@@ -1,3 +1,4 @@
+using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,6 +31,16 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.knockBack = 4.5f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.TopazStaff);
+            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 3);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }
