@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,7 +11,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Hero's Blade");
-            Tooltip.SetDefault("Grows in strength as you move forward in your journey\n'Worn from age, but with limitless potential'");
+            Tooltip.SetDefault("Grows in strength as you move forward in your journey\n" +
+                "'Worn from age, but with limitless potential'");
         }
 
         public override void SetDefaults()
@@ -27,6 +29,28 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.melee = true;
             item.autoReuse = true;
             item.value = Item.sellPrice(gold: 1);
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            if (Main.hardMode)
+            {
+                foreach (TooltipLine line in tooltips)
+                {
+                    if (line.mod == "Terraria" && line.Name == "Tooltip1")
+                    {
+                        line.text = "'The legendary blade, restored to its lethal form.'";
+                    }
+                }
+            }
+        }
+
+        public override void ModifyWeaponDamage(Player player, ref float add, ref float mult, ref float flat)
+        {
+            if (Main.hardMode)
+            {
+                flat = 40;
+            }
         }
 
         public override void HoldItem(Player player)
