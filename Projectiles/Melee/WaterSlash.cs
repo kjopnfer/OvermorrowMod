@@ -33,13 +33,9 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(180);
 
             // Make projectiles gradually disappear
-            if (projectile.timeLeft <= 60)
+            if (projectile.timeLeft <= 20)
             {
-                if(projectile.timeLeft <= 5)
-                {
-                    projectile.damage = 0;
-                }
-                projectile.alpha += 5;
+                projectile.alpha += 10;
             }
 
             // Loop through the 4 animation frames, spending 12 ticks on each.

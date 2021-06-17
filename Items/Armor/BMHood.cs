@@ -11,7 +11,7 @@ namespace OvermorrowMod.Items.Armor
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Battle Mage Mask");
-            Tooltip.SetDefault("5% increased melee and magic damage");
+            Tooltip.SetDefault("5% increased melee damage and 10% increased magic damage");
         }
 
         public override void SetDefaults()
@@ -20,7 +20,7 @@ namespace OvermorrowMod.Items.Armor
             item.height = 22;
             item.value = Item.sellPrice(gold: 1);
             item.rare = ItemRarityID.Blue;
-            item.defense = 4;
+            item.defense = 6;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -30,15 +30,16 @@ namespace OvermorrowMod.Items.Armor
 
         public override void UpdateEquip(Player player)
         {
-            player.magicDamage += 0.05f;
+            player.magicDamage += 0.1f;
             player.meleeDamage += 0.05f;
         }
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "You cannot regenerate mana\nMelee attacks restore mana proportional to the damage dealt";
+            player.setBonus = "Increases mana cost by 20%\nYou cannot regenerate mana\nMelee attacks restore mana proportional to the damage dealt";
             player.manaRegen -= 99999;
             player.manaRegenBonus -= 99999;
+            player.manaCost += 0.20f;
             player.GetModPlayer<OvermorrowModPlayer>().BMSet = true;
         }
 
