@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Armor
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Battle Mage Robes");
-            Tooltip.SetDefault("Grants immunity to knockback\n6% increased movement speed");
+            Tooltip.SetDefault("Increases maximum mana by 50");
         }
 
         public override void SetDefaults()
@@ -24,8 +24,7 @@ namespace OvermorrowMod.Items.Armor
 
         public override void UpdateEquip(Player player)
         {
-            player.noKnockback = true;
-            player.moveSpeed += .06f;
+            player.statManaMax2 += 50;
         }
     }
 }

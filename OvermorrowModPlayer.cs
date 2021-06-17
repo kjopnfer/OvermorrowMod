@@ -25,6 +25,7 @@ namespace OvermorrowMod
         public bool TreeNecklace;
 
         // Set Bonuses
+        public bool BMSet;
         public bool graniteSet;
         private int minionCounts;
 
@@ -88,6 +89,9 @@ namespace OvermorrowMod
             StormScale = false;
             StormShield = false;
             TreeNecklace = false;
+
+            BMSet = false;
+            graniteSet = false;
 
             graniteSpearBuff = false;
             mirrorBuff = false;
@@ -164,6 +168,12 @@ namespace OvermorrowMod
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
         {
+            if (BMSet && item.melee)
+            {
+                player.statMana += damage / 3;
+                player.ManaEffect(damage / 3);
+            }
+
             if (BloodyTeeth)
             {
                 int bleedChance = Main.rand.Next(4);

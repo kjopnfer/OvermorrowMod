@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Armor
 		public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Battle Mage Breastplate");
-			Tooltip.SetDefault("Increases melee damage by 5%\nIncreases your max number of minions");
+			Tooltip.SetDefault("5% increased melee critical strike chance\n5% magic critical strike chance");
 		}
 
 		public override void SetDefaults()
@@ -24,8 +24,8 @@ namespace OvermorrowMod.Items.Armor
 
 		public override void UpdateEquip(Player player)
 		{
-			player.meleeDamage += 0.05f;
-			player.maxMinions++;
+			player.meleeCrit += 5;
+			player.magicCrit += 5;
 		}
 	}
 }

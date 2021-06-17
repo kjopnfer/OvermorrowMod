@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Armor
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Battle Mage Mask");
-            Tooltip.SetDefault("5% increased melee and minion damage");
+            Tooltip.SetDefault("5% increased melee and magic damage");
         }
 
         public override void SetDefaults()
@@ -29,14 +29,16 @@ namespace OvermorrowMod.Items.Armor
 
         public override void UpdateEquip(Player player)
         {
+            player.magicDamage += 0.05f;
             player.meleeDamage += 0.05f;
-            player.minionDamage += 0.05f;
         }
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "\nIncreases your defense by 1 for each minion\nIncreases melee damage by 3% for each minion";
-            player.GetModPlayer<OvermorrowModPlayer>().graniteSet = true;
+            player.setBonus = "\nMelee attacks restore mana proportional to the damage dealt\nYou cannot regenerate mana";
+            player.manaRegen -= 99999;
+            player.manaRegenBonus -= 99999;
+            player.GetModPlayer<OvermorrowModPlayer>().BMSet = true;
         }
     }
 }
