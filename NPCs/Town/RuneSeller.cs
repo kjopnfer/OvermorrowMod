@@ -1,6 +1,7 @@
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -44,6 +45,12 @@ namespace OvermorrowMod.NPCs.Town
             npc.DeathSound = SoundID.NPCDeath1;
             npc.knockBackResist = 0.4f;
             animationType = NPCID.Guide;
+        }
+
+        public override bool CanTownNPCSpawn(int numTownNPCs, int money)
+        {
+            // EoW or BoC
+            return NPC.downedBoss2 && Main.player.Any(x => x.active);
         }
 
         public override string TownNPCName()
