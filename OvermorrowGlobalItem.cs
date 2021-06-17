@@ -13,6 +13,7 @@ namespace OvermorrowMod
             if (item.type == ItemID.ChainKnife)
             {
                 item.damage = 5;
+                item.value = Item.sellPrice(gold: 2, silver: 75);
             }
         }
 

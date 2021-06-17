@@ -26,7 +26,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.knockBack = 0f;
             item.width = 36;
             item.height = 48;
-            item.damage = 12;
+            item.damage = 9;
             item.shootSpeed = 18f;
             item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             item.rare = ItemRarityID.Orange;
@@ -94,8 +94,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.HellstoneBar, 24);
-            recipe.AddIngredient(ItemID.Chain, 12);
+            recipe.AddIngredient(ItemID.ChainKnife);
+            recipe.AddIngredient(ItemID.HellstoneBar, 14);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();

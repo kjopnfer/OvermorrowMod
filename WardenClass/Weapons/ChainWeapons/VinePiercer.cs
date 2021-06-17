@@ -85,6 +85,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.ChainKnife);
             recipe.AddIngredient(ItemID.Stinger, 18);
             recipe.AddIngredient(ItemID.JungleSpores, 6);
             recipe.AddIngredient(ItemID.Vine, 12);
