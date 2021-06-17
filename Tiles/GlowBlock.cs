@@ -30,11 +30,112 @@ namespace OvermorrowMod.Tiles
             TileObjectData.addTile(Type);*/
         }
 
+        public static bool PlaceObject(int x, int y, int type, bool mute = false, int style = 0, int alternate = 0, int random = -1, int direction = -1)
+        {
+            TileObject toBePlaced;
+            if (!TileObject.CanPlace(x, y, type, style, direction, out toBePlaced, false))
+            {
+                return false;
+            }
+            toBePlaced.random = random;
+            if (TileObject.Place(toBePlaced) && !mute)
+            {
+                WorldGen.SquareTileFrame(x, y, true);
+            }
+            return false;
+        }
+
         public override void RandomUpdate(int i, int j)
         {
             Tile tile = Framing.GetTileSafely(i, j);
-            Tile tileBelow = Framing.GetTileSafely(i, j + 1);
             Tile tileAbove = Framing.GetTileSafely(i, j - 1);
+            Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+            Tile tileLeft = Framing.GetTileSafely(i - 1, j);
+            Tile tileRight = Framing.GetTileSafely(i + 1, j);
+
+            #region Crystals
+            if (WorldGen.genRand.NextBool(2) && !tileAbove.active() && !tileAbove.lava())
+            {
+                // Above
+                GlowBlock.PlaceObject(i, j - 1, mod.TileType("SpiritCrystal"));
+                NetMessage.SendObjectPlacment(-1, i, j - 1, mod.TileType("SpiritCrystal"), 0, 0, -1, -1);
+
+                /*TileObject toBePlaced;
+                TileObject.CanPlace(i, j - 1, ModContent.TileType<BlueCrystal1>(), 0, 0, out toBePlaced);
+                if (TileObject.Place(toBePlaced)) {
+                    WorldGen.SquareTileFrame(i, j - 1, true);
+                }
+                toBePlaced.random = -1;
+                NetMessage.SendObjectPlacment(-1, i, j - 1, ModContent.TileType<BlueCrystal1>(), 0, 0, -1, -1);*/
+            }
+
+            if (WorldGen.genRand.NextBool(2) && !tileBelow.active() && !tileBelow.lava())
+            {
+                // Below
+                GlowBlock.PlaceObject(i, j + 1, mod.TileType("SpiritCrystal"));
+                NetMessage.SendObjectPlacment(-1, i, j + 1, mod.TileType("SpiritCrystal"), 0, 0, -1, -1);
+
+                /*TileObject toBePlaced;
+                TileObject.CanPlace(i, j + 1, ModContent.TileType<BlueCrystal1>(), 0, 0, out toBePlaced);
+                if (TileObject.Place(toBePlaced))
+                {
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                }
+                toBePlaced.random = -1;
+                NetMessage.SendObjectPlacment(-1, i, j + 1, ModContent.TileType<BlueCrystal1>(), 0, 0, -1, -1);*/
+                
+            }
+
+            if (WorldGen.genRand.NextBool(2) && !tileLeft.active() && !tileLeft.lava())
+            {
+                // Left
+                GlowBlock.PlaceObject(i - 1, j, mod.TileType("SpiritCrystal"));
+                NetMessage.SendObjectPlacment(-1, i - 1, j, mod.TileType("SpiritCrystal"), 0, 0, -1, -1);
+
+                /*TileObject toBePlaced;
+                TileObject.CanPlace(i - 1, j, ModContent.TileType<BlueCrystal1>(), 0, 0, out toBePlaced);
+                if (TileObject.Place(toBePlaced))
+                {
+                    WorldGen.SquareTileFrame(i - 1, j, true);
+                }
+                toBePlaced.random = -1;
+                NetMessage.SendObjectPlacment(-1, i - 1, j, ModContent.TileType<BlueCrystal1>(), 0, 0, -1, -1);*/
+            }
+
+            if (WorldGen.genRand.NextBool(2) && !tileRight.active() && !tileRight.lava())
+            {
+                // Right
+                GlowBlock.PlaceObject(i + 1, j, mod.TileType("SpiritCrystal"));
+                NetMessage.SendObjectPlacment(-1, i + 1, j, mod.TileType("SpiritCrystal"), 0, 0, -1, -1);
+
+                /*TileObject toBePlaced;
+                TileObject.CanPlace(i + 1, j, ModContent.TileType<BlueCrystal1>(), 0, 0, out toBePlaced);
+                if (TileObject.Place(toBePlaced))
+                {
+                    WorldGen.SquareTileFrame(i + 1, j, true);
+                }
+                toBePlaced.random = -1;
+                NetMessage.SendObjectPlacment(-1, i + 1, j, ModContent.TileType<BlueCrystal1>(), 0, 0, -1, -1);
+                */
+            }
+            #endregion
+
+            // Grow plants
+            if (WorldGen.genRand.NextBool(2) && !tileAbove.active() && !tileBelow.lava())
+            {
+                if (!tile.bottomSlope() && !tile.topSlope() && !tile.halfBrick())
+                {
+                    tileAbove.type = (ushort)ModContent.TileType<GlowPlants>();
+                    tileAbove.active(true);
+                    tileAbove.frameY = 0;
+                    tileAbove.frameX = (short)(WorldGen.genRand.Next(7) * 18); // 7 is the amount of plants in the sprite
+                    WorldGen.SquareTileFrame(i, j - 1, true);
+                    if (Main.netMode == NetmodeID.Server)
+                    {
+                        NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
+                    }
+                }
+            }
 
             // Grow vines
             if (WorldGen.genRand.NextBool(2) && !tileBelow.active() && !tileBelow.lava())
@@ -47,23 +148,6 @@ namespace OvermorrowMod.Tiles
                     if (Main.netMode == NetmodeID.Server)
                     {
                         NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
-                    }
-                }
-            }
-
-            // Grow plants
-            if (WorldGen.genRand.NextBool(2) && !tileAbove.active() && !tileBelow.lava())
-            {
-                if (!tile.bottomSlope() && !tile.topSlope() && !tile.halfBrick())
-                {
-                    tileAbove.type = (ushort)ModContent.TileType<GlowPlants>();
-                    tileAbove.active(true);
-                    tileAbove.frameY = 0;
-                    tileAbove.frameX = (short)(WorldGen.genRand.Next(7) * 18); // 7 is the amount of plants in the sprite
-                    WorldGen.SquareTileFrame(i, j + 1, true);
-                    if (Main.netMode == NetmodeID.Server)
-                    {
-                        NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                     }
                 }
             }

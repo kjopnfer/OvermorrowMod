@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.UI;
 using ReLogic.Graphics;
 using Terraria;
@@ -76,6 +77,11 @@ namespace OvermorrowMod
                 Souls.Activate();
 
                 Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
+
+                if (Main.hardMode)
+                {
+                    //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");
+                }
             }
         }
 

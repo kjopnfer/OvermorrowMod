@@ -1049,6 +1049,20 @@ namespace OvermorrowMod
             }
         }
 
+        private void GenerateAmbientObjects(GenerationProgress progress)
+        {
+            // Place ambient objects for the Flooded Caverns
+            for(int i = 0; i < Main.maxTilesY; i++)
+            {
+                int x = WorldGen.genRand.Next(300, Main.maxTilesX - 300);
+                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 200);
+                if (Main.tile[x, y].type == ModContent.TileType<GlowBlock>())
+                {
+
+                }
+            }
+        }
+
         private void GenerateAltar(GenerationProgress progress)
         {
             /*Point point = new Point(x, y);
