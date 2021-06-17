@@ -59,7 +59,6 @@ namespace OvermorrowMod.WardenClass.Armor
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this, 1);
             recipe.AddRecipe();
-
         }
     }
 }

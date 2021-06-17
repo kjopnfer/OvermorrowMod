@@ -1,3 +1,4 @@
+using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,6 +26,25 @@ namespace OvermorrowMod.Items.Armor
         public override void UpdateEquip(Player player)
         {
             player.statManaMax2 += 50;
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.GoldGreaves, 1);
+            recipe.AddIngredient(ItemID.ManaCrystal, 2);
+            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 5);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this, 1);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.PlatinumGreaves, 1);
+            recipe.AddIngredient(ItemID.ManaCrystal, 2);
+            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 5);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this, 1);
+            recipe.AddRecipe();
         }
     }
 }

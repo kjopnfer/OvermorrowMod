@@ -170,8 +170,8 @@ namespace OvermorrowMod
         {
             if (BMSet && item.melee)
             {
-                player.statMana += damage / 3;
-                player.ManaEffect(damage / 3);
+                player.statMana += damage / 2;
+                player.ManaEffect(damage / 2);
             }
 
             if (BloodyTeeth)

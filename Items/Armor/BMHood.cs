@@ -1,3 +1,4 @@
+using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -35,10 +36,29 @@ namespace OvermorrowMod.Items.Armor
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "\nMelee attacks restore mana proportional to the damage dealt\nYou cannot regenerate mana";
+            player.setBonus = "You cannot regenerate mana\nMelee attacks restore mana proportional to the damage dealt";
             player.manaRegen -= 99999;
             player.manaRegenBonus -= 99999;
             player.GetModPlayer<OvermorrowModPlayer>().BMSet = true;
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.GoldHelmet, 1);
+            recipe.AddIngredient(ItemID.ManaCrystal, 2);
+            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 6);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this, 1);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.PlatinumHelmet, 1);
+            recipe.AddIngredient(ItemID.ManaCrystal, 2);
+            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 6);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this, 1);
+            recipe.AddRecipe();
         }
     }
 }

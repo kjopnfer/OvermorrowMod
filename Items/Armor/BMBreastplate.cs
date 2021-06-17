@@ -1,3 +1,4 @@
+using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,6 +27,25 @@ namespace OvermorrowMod.Items.Armor
 		{
 			player.meleeCrit += 5;
 			player.magicCrit += 5;
+		}
+
+		public override void AddRecipes()
+		{
+			ModRecipe recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.GoldChainmail, 1);
+			recipe.AddIngredient(ItemID.ManaCrystal, 3);
+			recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 8);
+			recipe.AddTile(TileID.Anvils);
+			recipe.SetResult(this, 1);
+			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.PlatinumChainmail, 1);
+			recipe.AddIngredient(ItemID.ManaCrystal, 3);
+			recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 8);
+			recipe.AddTile(TileID.Anvils);
+			recipe.SetResult(this, 1);
+			recipe.AddRecipe();
 		}
 	}
 }
