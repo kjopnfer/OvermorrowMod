@@ -12,7 +12,7 @@ namespace OvermorrowMod.WardenClass.Armor
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Sullen Binder's Gaze");
-            Tooltip.SetDefault("");
+            Tooltip.SetDefault("Increases the velocity of Piercing weapons");
         }
 
         public override void SetDefaults()
@@ -20,7 +20,7 @@ namespace OvermorrowMod.WardenClass.Armor
             item.width = 22;
             item.height = 24;
             item.value = Item.sellPrice(gold: 1);
-            item.rare = ItemRarityID.Orange;
+            item.rare = ItemRarityID.Green;
             item.defense = 3;
         }
 
@@ -32,33 +32,23 @@ namespace OvermorrowMod.WardenClass.Armor
         public override void UpdateEquip(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            modPlayer.WaterHelmet = true;
         }
 
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = "Releases healing water orbs whenever you consume souls";
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            modPlayer.HemoArmor = true;
+            modPlayer.WaterArmor = true;
         }
 
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 40);
-            recipe.AddIngredient(ModContent.ItemType<BloodGem>(), 1);
-            recipe.AddIngredient(ItemID.IronHelmet, 1);
+            recipe.AddIngredient(ModContent.ItemType<WaterBar>(), 13);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this, 1);
             recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 40);
-            recipe.AddIngredient(ModContent.ItemType<BloodGem>(), 1);
-            recipe.AddIngredient(ItemID.LeadHelmet, 1);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
-
         }
     }
 }

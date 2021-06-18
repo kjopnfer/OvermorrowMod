@@ -12,6 +12,10 @@ namespace OvermorrowMod.Projectiles.Melee
         {
             DisplayName.SetDefault("Water Slash");
             Main.projFrames[projectile.type] = 4;
+
+            // Afterimage effect
+            ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
+            ProjectileID.Sets.TrailingMode[projectile.type] = 0;
         }
 
         public override void SetDefaults()
@@ -74,7 +78,6 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override void Kill(int timeLeft)
         {
-            base.Kill(timeLeft);
             Vector2 origin = projectile.Center;
             float radius = 15;
             int numLocations = 30;
@@ -88,7 +91,6 @@ namespace OvermorrowMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            base.OnHitNPC(target, damage, knockback, crit);
             Vector2 origin = projectile.Center;
             float radius = 15;
             int numLocations = 30;

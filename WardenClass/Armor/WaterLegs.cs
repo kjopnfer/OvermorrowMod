@@ -12,7 +12,7 @@ namespace OvermorrowMod.WardenClass.Armor
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Sullen Binder Greaves");
-            Tooltip.SetDefault("");
+            Tooltip.SetDefault("Increases jump height");
         }
 
         public override void SetDefaults()
@@ -20,33 +20,23 @@ namespace OvermorrowMod.WardenClass.Armor
             item.width = 22;
             item.height = 18;
             item.value = Item.sellPrice(gold: 1);
-            item.rare = ItemRarityID.Orange;
+            item.rare = ItemRarityID.Green;
             item.defense = 3;
         }
 
         public override void UpdateEquip(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            player.jumpSpeedBoost += 2f;
         }
 
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 35);
-            recipe.AddIngredient(ModContent.ItemType<BloodGem>(), 1);
-            recipe.AddIngredient(ItemID.IronGreaves, 1);
+            recipe.AddIngredient(ModContent.ItemType<WaterBar>(), 12);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this, 1);
             recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 35);
-            recipe.AddIngredient(ModContent.ItemType<BloodGem>(), 1);
-            recipe.AddIngredient(ItemID.LeadGreaves, 1);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
-
         }
     }
 }

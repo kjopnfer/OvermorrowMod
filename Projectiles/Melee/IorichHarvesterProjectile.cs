@@ -12,7 +12,8 @@ namespace OvermorrowMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Harvester of Iorich");
-            // afterimage effect
+
+            // Afterimage effect
             ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[projectile.type] = 0;
         }

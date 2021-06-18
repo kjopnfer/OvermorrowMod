@@ -20,6 +20,8 @@ namespace WardenClass
         public bool SoulRing;
 
         public bool HemoArmor;
+        public bool WaterArmor;
+        public bool WaterHelmet;
 
         public static WardenDamagePlayer ModPlayer(Player player)
         {
@@ -99,6 +101,8 @@ namespace WardenClass
             SoulRing = false;
           
             HemoArmor = false;
+            WaterArmor = false;
+            WaterHelmet = false;
 
             ResetVariables();
         }
@@ -168,6 +172,11 @@ namespace WardenClass
             int modifierFactor = 0;
 
             if (ObsidianShackle)
+            {
+                modifierFactor += 4;
+            }
+
+            if (WaterHelmet)
             {
                 modifierFactor += 6;
             }

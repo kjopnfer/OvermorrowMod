@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Misc;
 using Terraria;
 using Terraria.ModLoader;
 using WardenClass;
@@ -61,6 +63,12 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         }
                     }
                 }
+            }
+
+            if (modPlayer.WaterArmor)
+            {
+                Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-9, 9) * 10, player.Center.Y + Main.rand.Next(-9, 9) * 10);
+                Projectile.NewProjectile(randPos, Vector2.Zero, ModContent.ProjectileType<WaterOrbSpawner>(), 0, 0f);
             }
         }
     }
