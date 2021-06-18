@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.NPCs.Hostile
 {
-    public class SpiderFire : ModProjectile
+    public class BlueSpiderFire : ModProjectile
     {
         public override void SetStaticDefaults()
         {
