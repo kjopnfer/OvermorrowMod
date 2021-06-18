@@ -184,6 +184,15 @@ namespace OvermorrowMod
             }
         }
 
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+        {
+            if (BMSet && proj.melee)
+            {
+                player.statMana += damage / 5;
+                player.ManaEffect(damage / 5);
+            }
+        }
+
         public override void Hurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit)
         {
             if (BloodyHeart)

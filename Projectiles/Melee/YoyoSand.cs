@@ -25,6 +25,7 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.timeLeft = 900;
             projectile.alpha = 255;
             projectile.tileCollide = false;
+            projectile.melee = true;
         }
 
         public override void AI()

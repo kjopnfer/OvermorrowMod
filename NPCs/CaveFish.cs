@@ -17,7 +17,7 @@ namespace OvermorrowMod.NPCs
 		protected bool bounces = true;
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Monstrous Cave Fish");
+			DisplayName.SetDefault("Sullen Angler");
 			Main.npcFrameCount[npc.type] = 4;
 		}
 

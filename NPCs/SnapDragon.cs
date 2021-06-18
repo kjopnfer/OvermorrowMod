@@ -26,8 +26,8 @@ namespace OvermorrowMod.NPCs
 			npc.lifeMax = 260;
 			npc.damage = 30;
 			npc.defense = 13;
-			npc.HitSound = SoundID.NPCHit5;
-			npc.DeathSound = SoundID.NPCDeath7;
+			npc.HitSound = SoundID.NPCHit1;
+			npc.DeathSound = SoundID.NPCDeath1;
 		}
 
         public override void FindFrame(int frameHeight)

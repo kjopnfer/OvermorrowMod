@@ -27,6 +27,7 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.hostile = false;
             projectile.tileCollide = true;
             projectile.timeLeft = 60;
+            projectile.melee = true;
 
             drawOriginOffsetX = -5;
             drawOriginOffsetY = -20;
