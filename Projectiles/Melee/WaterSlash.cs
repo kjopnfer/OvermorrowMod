@@ -14,8 +14,8 @@ namespace OvermorrowMod.Projectiles.Melee
             Main.projFrames[projectile.type] = 4;
 
             // Afterimage effect
-            ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[projectile.type] = 0;
+            /*ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
+            ProjectileID.Sets.TrailingMode[projectile.type] = 0;*/
         }
 
         public override void SetDefaults()
