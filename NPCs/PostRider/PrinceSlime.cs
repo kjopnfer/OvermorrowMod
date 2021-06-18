@@ -160,7 +160,7 @@ namespace OvermorrowMod.NPCs.PostRider
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return Main.hardMode == true && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && spawnInfo.player.ZoneOverworldHeight &! spawnInfo.player.ZoneJungle &! spawnInfo.player.ZoneTowerSolar &! spawnInfo.player.ZoneTowerVortex &! spawnInfo.player.ZoneTowerNebula &! spawnInfo.player.ZoneTowerStardust &! spawnInfo.player.ZoneDesert &! spawnInfo.player.ZoneSnow &! spawnInfo.player.ZoneCrimson &! spawnInfo.player.ZoneHoly &! spawnInfo.player.ZoneCorrupt ? 0.3f : 0f;
+            return Main.hardMode == true && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && spawnInfo.player.ZoneOverworldHeight && Main.dayTime ? SpawnCondition.OverworldDaySlime.Chance * 0.3f : 0f;
         }
     }
 }
