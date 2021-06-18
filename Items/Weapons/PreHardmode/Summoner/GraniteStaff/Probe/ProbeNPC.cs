@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 
 
-namespace OvermorrowMod.Items.Weapons.Testing.Probe
+namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff.Probe
 {
 
     public class ProbeNPC : ModNPC

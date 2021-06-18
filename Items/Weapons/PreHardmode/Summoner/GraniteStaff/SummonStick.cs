@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Weapons.Testing
+namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff
 {
     public class SummonStick : ModItem
     {

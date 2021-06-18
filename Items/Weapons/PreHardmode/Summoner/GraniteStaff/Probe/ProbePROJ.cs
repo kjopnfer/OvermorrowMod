@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Buffs.Summon;
 
-
-namespace OvermorrowMod.Items.Weapons.Testing.Probe
+namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff.Probe
 {
     public class ProbePROJ : ModProjectile
     {
@@ -33,7 +33,6 @@ namespace OvermorrowMod.Items.Weapons.Testing.Probe
             projectile.light = 1.8f;
             projectile.width = 32;
             projectile.height = 32;
-            projectile.scale = 1.5f;
             projectile.minionSlots = 1f;
             projectile.minion = true;
             projectile.friendly = true;
@@ -46,24 +45,24 @@ namespace OvermorrowMod.Items.Weapons.Testing.Probe
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Probe");
-            Main.projFrames[base.projectile.type] = 4;
+            Main.projFrames[base.projectile.type] = 1;
         }
 
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
 
+            #region Active check
+            if (player.dead || !player.active)
+            {
+                player.ClearBuff(ModContent.BuffType<ProbeBuff>());
+            }
+            if (player.HasBuff(ModContent.BuffType<ProbeBuff>()))
+            {
+                projectile.timeLeft = 2;
+            }
+            #endregion
 
-            colorcooldown++;
-            if (colorcooldown == 5)
-            {
-                projectile.frame += 1;
-                colorcooldown = 0;
-            }
-            if (projectile.frame == 3)
-            {
-                projectile.frame = 0;
-            }
 
             NumProj = Main.player[projectile.owner].ownedProjectileCounts[mod.ProjectileType("ProbePROJ")];
             PosCheck++;
@@ -178,7 +177,7 @@ namespace OvermorrowMod.Items.Weapons.Testing.Probe
                 if (Main.player[projectile.owner].direction == 1)
                 {
                     projectile.position.X = Main.player[projectile.owner].Center.X - Pos - 32;
-                    projectile.position.Y = Main.player[projectile.owner].Center.Y - 16;
+                    projectile.position.Y = Main.player[projectile.owner].Center.Y - 32;
                 }
 
                 projectile.velocity.Y = 0f;

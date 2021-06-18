@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
+namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff
 {
     public class GraniteStaff : ModItem
     {
@@ -27,16 +27,17 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.rare = ItemRarityID.Green;
             item.noMelee = true;
             item.summon = true;
-            item.buffType = ModContent.BuffType<GraniteEleBuff>();
-            item.shoot = ModContent.ProjectileType<GraniteSummon>();
+            item.buffType = mod.BuffType("ProbeBuff");
+            item.shoot = mod.ProjectileType("ProbePROJ");
             item.UseSound = SoundID.Item82;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void UseStyle(Player player)
         {
-            // Here you can change where the minion is spawned. Most vanilla minions spawn at the cursor position.
-            position = Main.MouseWorld;
-            return true;
+            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
+            {
+                player.AddBuff(item.buffType, 3600, true);
+            }
         }
     }
 }
