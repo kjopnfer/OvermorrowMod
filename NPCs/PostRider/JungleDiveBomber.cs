@@ -16,7 +16,7 @@ namespace OvermorrowMod.NPCs.PostRider
         int timer = 0;
         float savedX = 0;
         float savedY = 0;
-        private const string ChainTexturePath = "Juvenation/Items/Projectiles/Gore68";
+        private const string ChainTexturePath = "OvermorrowMod/NPCs/PostRider/Gore68";
         int RandomAttPosX = Main.rand.Next(-75, 76);
         int RandomAttPosY = Main.rand.Next(-75, 76);
         Vector2 vinepos;
