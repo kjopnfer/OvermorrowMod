@@ -63,6 +63,7 @@ namespace OvermorrowMod
         public bool graniteSpearBuff;
         public bool mirrorBuff;
         public bool moonBuff;
+        public bool smolBoi;
         public bool treeBuff;
 
         // Misc
@@ -96,6 +97,7 @@ namespace OvermorrowMod
             graniteSpearBuff = false;
             mirrorBuff = false;
             moonBuff = false;
+            smolBoi = false;
             treeBuff = false;
 
             minionCounts = 0;
