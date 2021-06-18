@@ -91,7 +91,7 @@ namespace OvermorrowMod.NPCs
                         for (int i = 0; i < numSpawns; i++)
                         {
                             Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                            Projectile.NewProjectile(position, Vector2.Zero, ModContent.ProjectileType<SpiderFire>(), npc.damage, 2f, Main.myPlayer);
+                            Projectile.NewProjectile(position, Vector2.Zero, ModContent.ProjectileType<SpiderFireBlue>(), npc.damage, 2f, Main.myPlayer);
                         }
                     }
                 }
