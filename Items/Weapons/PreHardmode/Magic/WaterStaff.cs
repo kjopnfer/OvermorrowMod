@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Projectiles.Magic;
 using Terraria;
@@ -28,13 +29,17 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useTime = 32;
             item.width = 50;
             item.height = 56;
-            item.shoot = ModContent.ProjectileType<NatureBolt>();
+            item.shoot = ModContent.ProjectileType<WaterStaffProj>();
             item.shootSpeed = 7f;
             item.knockBack = 3f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
         }
-
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            Projectile.NewProjectile(position, new Vector2(speedX, speedY), type, damage, knockBack, Main.myPlayer, 0, 1);
+            return false;
+        }
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
