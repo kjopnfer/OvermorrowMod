@@ -85,14 +85,15 @@ namespace OvermorrowMod.NPCs.PostRider
                 }
                 spritecatch = 0;
                 flyspritetimer++;
-                if (flyspritetimer > 5)
+                if (flyspritetimer > 4)
                 {
+                    Main.PlaySound(SoundID.Item32, npc.position);
                     frame++;
                     flyspritetimer = 0;
                 }
                 if (frame > 5)
                 {
-                    frame = 3;
+                    frame = 2;
                 }
             }
 
