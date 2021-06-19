@@ -6,12 +6,12 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Materials
 {
-    public class EruditeOre : ModItem
+    public class EruditeOrb : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Erudite Ore");
-            Tooltip.SetDefault("'A peculiar ore enriched with knowledge, used to craft uncraftable items'");
+            DisplayName.SetDefault("Erudite Orb");
+            Tooltip.SetDefault("'You know what I like a lot more than materialistic things? Knowledge!'");
         }
 
         public override void SetDefaults()
@@ -20,13 +20,6 @@ namespace OvermorrowMod.Items.Materials
             item.height = 16;
             item.rare = ItemRarityID.White;
             item.maxStack = 999;
-            item.useTurn = true;
-            item.autoReuse = true;
-            item.useAnimation = 15;
-            item.useTime = 10;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.consumable = true;
-            item.createTile = ModContent.TileType<EruditeTile>();
         }
         public override Color? GetAlpha(Color lightColor)
         {
@@ -36,6 +29,14 @@ namespace OvermorrowMod.Items.Materials
         public override void PostUpdate()
         {
             Lighting.AddLight(item.Center, Color.Green.ToVector3() * 0.55f * Main.essScale);
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<EruditeOre>(), 12);
+            recipe.AddTile(TileID.Furnaces);
+            recipe.AddRecipe();
         }
     }
 }

@@ -19,9 +19,6 @@ namespace OvermorrowMod.Projectiles.Pets
 
         public override void SetDefaults()
         {
-            //projectile.CloneDefaults(ProjectileID.ZephyrFish);
-            //aiType = ProjectileID.ZephyrFish;
-
             projectile.width = 38;
             projectile.height = 20;
             projectile.penetrate = -1;
@@ -35,6 +32,8 @@ namespace OvermorrowMod.Projectiles.Pets
 
         public override void AI()
         {
+            Lighting.AddLight(projectile.Center, 1, 0.6f, 0.8f);
+
             Player player = Main.player[projectile.owner];
             OvermorrowModPlayer modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
             if (!player.active)
@@ -49,12 +48,6 @@ namespace OvermorrowMod.Projectiles.Pets
             if (modPlayer.atomBuff)
             {
                 projectile.timeLeft = 2;
-            }
-
-            if (Main.rand.NextBool(6))
-            {
-                int num145 = Dust.NewDust(projectile.position, projectile.width, projectile.height, 73, 0f, 0f, 200, default(Color), 0.8f);
-                Main.dust[num145].velocity *= 0.3f;
             }
 
             // Loop through the 8 animation frames, spending 3 ticks on each.
