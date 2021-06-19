@@ -316,7 +316,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if (npc.ai[1] > (changedPhase2 ? 480 : 360))
+                    if (npc.ai[1] > 480)
                     {
                         npc.ai[0] = 4;
                         npc.ai[1] = 0;

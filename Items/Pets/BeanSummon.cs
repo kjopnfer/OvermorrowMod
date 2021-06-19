@@ -11,7 +11,7 @@ namespace OvermorrowMod.Items.Pets
 		public override void SetStaticDefaults()
 		{
 			// DisplayName and Tooltip are automatically set from the .lang files, but below is how it is done normally.
-			DisplayName.SetDefault("Beanlet Caller");
+			DisplayName.SetDefault("Keepsake Chain");
 			Tooltip.SetDefault("Summons a miniature Rune Merchant to travel with you");
 		}
 

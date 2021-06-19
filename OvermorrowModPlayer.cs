@@ -61,6 +61,7 @@ namespace OvermorrowMod
         private int treeDefenseStack;
 
         // Buffs
+        public bool atomBuff;
         public bool graniteSpearBuff;
         public bool mirrorBuff;
         public bool moonBuff;
@@ -96,6 +97,7 @@ namespace OvermorrowMod
             BMSet = false;
             graniteSet = false;
 
+            atomBuff = false;
             graniteSpearBuff = false;
             mirrorBuff = false;
             moonBuff = false;
