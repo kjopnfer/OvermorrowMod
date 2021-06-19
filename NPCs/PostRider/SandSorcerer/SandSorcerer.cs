@@ -130,7 +130,7 @@ namespace OvermorrowMod.NPCs.PostRider.SandSorcerer
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return Main.hardMode == true && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && spawnInfo.player.ZoneDesert ? 0.05f : 0f;
+            return Main.hardMode == true && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && spawnInfo.player.ZoneDesert ? 0.15f : 0f;
         }
     }
 }
