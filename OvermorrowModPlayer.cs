@@ -23,6 +23,7 @@ namespace OvermorrowMod
         public bool StormScale;
         public bool StormShield;
         public bool TreeNecklace;
+        public bool Bloodmana;
 
         // Set Bonuses
         public bool BMSet;
@@ -90,6 +91,7 @@ namespace OvermorrowMod
             StormScale = false;
             StormShield = false;
             TreeNecklace = false;
+            Bloodmana = false;
 
             BMSet = false;
             graniteSet = false;
@@ -218,6 +220,34 @@ namespace OvermorrowMod
             }
         }
 
+        public override void PostUpdate()
+        {
+            if (Bloodmana)
+            {
+                if (player.statMana < player.statManaMax)
+                {
+                    int ManaDMG = player.statManaMax - player.statMana;
+
+                    if (ManaDMG > 5)
+                    {
+                        player.statLife = player.statLife + -ManaDMG / 2;
+                        CombatText.NewText(player.getRect(), Color.Red, ManaDMG / 2);
+                    }
+                    else
+                    {
+                        player.statLife = player.statLife + -ManaDMG;
+                        CombatText.NewText(player.getRect(), Color.Red, ManaDMG);
+                    }
+
+
+                    player.statMana = player.statManaMax;
+                }
+                if (player.statMana > player.statManaMax)
+                {
+                    player.statMana = player.statManaMax;
+                }
+            }
+        }
         public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
         {
             if (DripplerEye)
