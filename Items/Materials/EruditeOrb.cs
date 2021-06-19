@@ -36,6 +36,7 @@ namespace OvermorrowMod.Items.Materials
             ModRecipe recipe = new ModRecipe(mod);
             recipe.AddIngredient(ModContent.ItemType<EruditeOre>(), 12);
             recipe.AddTile(TileID.Furnaces);
+            recipe.SetResult(this, 1);
             recipe.AddRecipe();
         }
     }
