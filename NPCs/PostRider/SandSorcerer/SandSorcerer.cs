@@ -29,6 +29,7 @@ namespace OvermorrowMod.NPCs.PostRider.SandSorcerer
             npc.DeathSound = SoundID.NPCDeath54;
             npc.lavaImmune = true;
             npc.noGravity = true;
+            npc.noTileCollide = true;
             npc.buffImmune[BuffID.OnFire] = true;
             aiType = NPCID.NebulaBrain;
             npc.aiStyle = 97;//-1;
@@ -130,7 +131,7 @@ namespace OvermorrowMod.NPCs.PostRider.SandSorcerer
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return Main.hardMode == true && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && spawnInfo.player.ZoneDesert ? 0.15f : 0f;
+            return Main.hardMode == true && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && spawnInfo.player.ZoneDesert && spawnInfo.player.ZoneOverworldHeight ? 0.15f : 0f;
         }
     }
 }
