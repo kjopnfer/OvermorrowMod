@@ -1,42 +1,48 @@
-﻿using OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider;
+﻿using System;
+using OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
 {
     public class BloodSumm : ModProjectile
     {
-
+        public override bool CanDamage() => false;
+        private readonly int timer2 = 0;
+        private int timer = 0;
         private int movement = 0;
-        private int timer = 60;
-        private int timer2 = 0;
-        private int timer3 = 0;
         private int movement2 = 0;
-        private int penet = 0;
-        private int penet2 = 0;
-        private int savedDMG = 0;
+        float NPCtargetX = 0;
+        float NPCtargetY = 0;
+        int mrand = Main.rand.Next(-100, 101);
+        int mrand2 = Main.rand.Next(-100, 101);
+        int mrand3 = Main.rand.Next(-170, -39);
+
+        private bool go = false;
 
         public override void SetDefaults()
         {
             projectile.CloneDefaults(ProjectileID.Raven);
-            aiType = ProjectileID.Raven;
-            projectile.netImportant = true;
+            projectile.width = 54;
+            projectile.height = 26;
             projectile.minion = true;
-            projectile.minionSlots = 1.5f;
+            projectile.friendly = true;
+            projectile.ignoreWater = true;
+            projectile.tileCollide = false;
+            projectile.netImportant = true;
+            aiType = ProjectileID.Raven;
             projectile.penetrate = -1;
+            projectile.timeLeft = 200000;
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blood Spider");
+            DisplayName.SetDefault("Harpy");
             Main.projFrames[base.projectile.type] = 8;
         }
         public override void AI()
         {
-
-
             Player player = Main.player[projectile.owner];
 
             #region Active check
@@ -52,71 +58,135 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
 
 
 
-			if (player.channel) 
+
+            float distanceFromTarget = 500f;
+            Vector2 targetCenter = projectile.position;
+            bool foundTarget = false;
+            projectile.tileCollide = false;
+            if (!foundTarget)
             {
-			timer++;
-			if(timer == 62)
+                // This code is required either way, used for finding a target
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    NPC npc = Main.npc[i];
+                    if (npc.CanBeChasedBy())
+                    {
+                        float between = Vector2.Distance(npc.Center, Main.player[projectile.owner].Center);
+                        bool closest = Vector2.Distance(projectile.Center, targetCenter) > between;
+                        bool inRange = between < distanceFromTarget;
+
+                        if (((closest && inRange) || !foundTarget))
+                        {
+                            NPCtargetX = npc.Center.X;
+                            NPCtargetY = npc.Center.Y - 140;
+                            Vector2 Rot = npc.Center;
+                            distanceFromTarget = between;
+                            targetCenter = npc.Center;
+                            foundTarget = true;
+                        }
+                    }
+                }
+            }
+
+
+
+
+            if (foundTarget) 
 			{
-
-                Vector2 position = projectile.Center;
-                Vector2 targetPosition = Main.MouseWorld;
-                Vector2 direction = targetPosition - position;
-                direction.Normalize();
-                Vector2 newpoint2 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(1.5f));
-                float speed = 20f;
-                Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Items/Hork"), projectile.position);
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, mod.ProjectileType("RottingEgg"), projectile.damage + 5, 1f, projectile.owner, 0f);
-			    timer = 0;
+            projectile.velocity.Y = 0f;
+            movement = 1;
+			timer++;
+            movement2++;
+			if(timer == 15)
+			{
+                Projectile.NewProjectile(projectile.Center.X + 5, projectile.Center.Y, 0, 10, mod.ProjectileType("RottingEgg"), projectile.damage, 1f, projectile.owner, 0f);
 			}
-
-            if (Main.player[projectile.owner].Center.X > projectile.Center.X)
+            if (timer == 30)
             {
-                projectile.spriteDirection = -1;
-            }
-            }
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            projectile.height = 80;
-            projectile.width = 80;
-
-            projectile.minion = true;
-            projectile.minionSlots = 1.5f;
-
-            projectile.height = 37;
-
-
-
-
-            timer3++;
-            if(timer3 == 1)
-            {
-                savedDMG = projectile.damage;
+                Projectile.NewProjectile(projectile.Center.X - 5, projectile.Center.Y, 0, 10, mod.ProjectileType("RottingEgg"), projectile.damage, 1f, projectile.owner, 0f);
+                timer = 0;
             }
 
-            if(penet > 0)
-            {
-			    projectile.damage = 0;
-                penet++;
-            }
-            
-            if(projectile.damage == 0)
-            {
-                penet2++;
-            }
 
-            if(penet2 > 34)
-            {
-                penet = 0;
-                penet2 = 0;
-                projectile.damage = savedDMG;
-            }
-        }
+                if (movement2 == 50 && !go)
+                {
+                    go = true;
+                    mrand2 = Main.rand.Next(-170, -39);
+                    mrand = Main.rand.Next(40, 171);
+                    mrand3 = Main.rand.Next(-25, 50);
+                    movement2 = 0;
+                }
 
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            penet++;
-            projectile.velocity.X *= 4;
-            projectile.velocity.Y *= 4;
+                if (movement2 == 50 && go)
+                {
+                    go = false;
+                    mrand2 = Main.rand.Next(-170, -39);
+                    mrand = Main.rand.Next(40, 171);
+                    mrand3 = Main.rand.Next(-25, 50);
+                    movement2 = 0;
+                }
+
+                if(go)
+                {
+                    if (NPCtargetX + mrand > projectile.Center.X)
+                    {
+                        projectile.velocity.X += 0.9f;
+                    }
+
+                    if (NPCtargetX + mrand < projectile.Center.X)
+                    {
+                        projectile.velocity.X -= 0.9f;
+                    }
+
+                }
+
+                if (!go)
+                {
+                    if (NPCtargetX + mrand2 > projectile.Center.X)
+                    {
+                        projectile.velocity.X += 0.9f;
+                    }
+
+                    if (NPCtargetX + mrand2 < projectile.Center.X)
+                    {
+                        projectile.velocity.X -= 0.9f;
+                    }
+
+                }
+
+                if (NPCtargetY + mrand3 > projectile.Center.Y)
+                {
+                    projectile.velocity.Y += 2f;
+                }
+                if(NPCtargetY + mrand3 < projectile.Center.Y)
+                {
+                    projectile.velocity.Y -= 2f;
+                }
+
+
+                if(projectile.velocity.Y < -18f)
+                {
+                    projectile.velocity.Y = -18f;
+                }
+
+                if(projectile.velocity.Y > 18f)
+                {
+                    projectile.velocity.Y = 18f;
+                }
+
+
+                if(projectile.velocity.X < -9f)
+                {
+                    projectile.velocity.X = -9f;
+                }
+
+                if(projectile.velocity.X > 9f)
+                {
+                    projectile.velocity.X = 9f;
+                }
+
+			}
         }
     }
 }
