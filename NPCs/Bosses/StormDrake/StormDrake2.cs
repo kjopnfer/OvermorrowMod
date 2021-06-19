@@ -9,7 +9,7 @@ using System.IO;
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
     [AutoloadBossHead]
-    public class StormDrake : ModNPC
+    public class StormDrake2 : ModNPC
     {
         public override void SetStaticDefaults()
         {

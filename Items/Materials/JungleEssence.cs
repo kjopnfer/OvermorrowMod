@@ -11,7 +11,6 @@ namespace OvermorrowMod.Items.Materials
         {
             DisplayName.SetDefault("Jungle Essence");
             // ticksperframe, frameCount
-            Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(5, 4));
             ItemID.Sets.AnimatesAsSoul[item.type] = true;
             ItemID.Sets.ItemIconPulse[item.type] = false;
             ItemID.Sets.ItemNoGravity[item.type] = false;
@@ -21,8 +20,8 @@ namespace OvermorrowMod.Items.Materials
         {
             Item refItem = new Item();
             refItem.SetDefaults(ItemID.SoulofSight);
-            item.width = 38;
-            item.height = 32;
+            item.width = 48;
+            item.height = 62;
             item.maxStack = 999;
             item.value = 1000;
             item.rare = ItemRarityID.Yellow;

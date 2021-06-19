@@ -6,6 +6,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Accessories
 {
+    [AutoloadEquip(EquipType.Shield)]
     public class StormShield : ModItem
     {
         public override void SetStaticDefaults()

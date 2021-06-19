@@ -7,7 +7,7 @@ using Terraria.Enums;
 using Terraria.ModLoader;
 using Terraria.ID;
 
-namespace DMM.NPCs.Paragon
+namespace OvermorrowMod.Projectiles
 {
     public abstract class Deathray : ModProjectile
     {
