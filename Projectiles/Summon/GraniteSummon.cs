@@ -73,7 +73,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
             if (PosCheck == 5)
             {
-                Pos = PosPlay * 60;
+                Pos = PosPlay * 30;
             }
             float distanceFromTarget = 500f;
             Vector2 targetCenter = projectile.position;
