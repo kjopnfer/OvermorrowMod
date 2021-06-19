@@ -10,6 +10,10 @@ namespace OvermorrowMod.Tiles
 {
     public class GlowBlock : ModTile
     {
+
+        int Random = Main.rand.Next(1, 5);
+
+
         public override void SetDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -52,73 +56,27 @@ namespace OvermorrowMod.Tiles
             Tile tileBelow = Framing.GetTileSafely(i, j + 1);
             Tile tileLeft = Framing.GetTileSafely(i - 1, j);
             Tile tileRight = Framing.GetTileSafely(i + 1, j);
+            Random = Main.rand.Next(1, 50);
 
-            #region Crystals
-            if (WorldGen.genRand.NextBool(2) && !tileAbove.active() && !tileAbove.lava())
+            if(Random == 4)
             {
-                // Above
-                GlowBlock.PlaceObject(i, j - 1, mod.TileType("SpiritCrystal"));
-                NetMessage.SendObjectPlacment(-1, i, j - 1, mod.TileType("SpiritCrystal"), 0, 0, -1, -1);
-
-                /*TileObject toBePlaced;
-                TileObject.CanPlace(i, j - 1, ModContent.TileType<BlueCrystal1>(), 0, 0, out toBePlaced);
-                if (TileObject.Place(toBePlaced)) {
-                    WorldGen.SquareTileFrame(i, j - 1, true);
-                }
-                toBePlaced.random = -1;
-                NetMessage.SendObjectPlacment(-1, i, j - 1, ModContent.TileType<BlueCrystal1>(), 0, 0, -1, -1);*/
+                WorldGen.PlaceTile(i, j + 1, 1);
             }
 
-            if (WorldGen.genRand.NextBool(2) && !tileBelow.active() && !tileBelow.lava())
+            if (Random == 14)
             {
-                // Below
-                GlowBlock.PlaceObject(i, j + 1, mod.TileType("SpiritCrystal"));
-                NetMessage.SendObjectPlacment(-1, i, j + 1, mod.TileType("SpiritCrystal"), 0, 0, -1, -1);
-
-                /*TileObject toBePlaced;
-                TileObject.CanPlace(i, j + 1, ModContent.TileType<BlueCrystal1>(), 0, 0, out toBePlaced);
-                if (TileObject.Place(toBePlaced))
-                {
-                    WorldGen.SquareTileFrame(i, j + 1, true);
-                }
-                toBePlaced.random = -1;
-                NetMessage.SendObjectPlacment(-1, i, j + 1, ModContent.TileType<BlueCrystal1>(), 0, 0, -1, -1);*/
-                
+                WorldGen.PlaceTile(i, j - 1, 1);
             }
 
-            if (WorldGen.genRand.NextBool(2) && !tileLeft.active() && !tileLeft.lava())
+            if (Random == 20)
             {
-                // Left
-                GlowBlock.PlaceObject(i - 1, j, mod.TileType("SpiritCrystal"));
-                NetMessage.SendObjectPlacment(-1, i - 1, j, mod.TileType("SpiritCrystal"), 0, 0, -1, -1);
-
-                /*TileObject toBePlaced;
-                TileObject.CanPlace(i - 1, j, ModContent.TileType<BlueCrystal1>(), 0, 0, out toBePlaced);
-                if (TileObject.Place(toBePlaced))
-                {
-                    WorldGen.SquareTileFrame(i - 1, j, true);
-                }
-                toBePlaced.random = -1;
-                NetMessage.SendObjectPlacment(-1, i - 1, j, ModContent.TileType<BlueCrystal1>(), 0, 0, -1, -1);*/
+                WorldGen.PlaceTile(i - 1, j, 1);
             }
 
-            if (WorldGen.genRand.NextBool(2) && !tileRight.active() && !tileRight.lava())
+            if (Random == 7)
             {
-                // Right
-                GlowBlock.PlaceObject(i + 1, j, mod.TileType("SpiritCrystal"));
-                NetMessage.SendObjectPlacment(-1, i + 1, j, mod.TileType("SpiritCrystal"), 0, 0, -1, -1);
-
-                /*TileObject toBePlaced;
-                TileObject.CanPlace(i + 1, j, ModContent.TileType<BlueCrystal1>(), 0, 0, out toBePlaced);
-                if (TileObject.Place(toBePlaced))
-                {
-                    WorldGen.SquareTileFrame(i + 1, j, true);
-                }
-                toBePlaced.random = -1;
-                NetMessage.SendObjectPlacment(-1, i + 1, j, ModContent.TileType<BlueCrystal1>(), 0, 0, -1, -1);
-                */
+                WorldGen.PlaceTile(i + 1, j, 1);
             }
-            #endregion
 
             // Grow plants
             if (WorldGen.genRand.NextBool(2) && !tileAbove.active() && !tileBelow.lava())
