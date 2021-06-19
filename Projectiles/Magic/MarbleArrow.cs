@@ -38,7 +38,7 @@ namespace OvermorrowMod.Projectiles.Magic
                 for (int i = 0; i < 30; i++)
                 {
                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                    Dust dust = Terraria.Dust.NewDustPerfect(position, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
+                    Dust dust = Dust.NewDustPerfect(position, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
                 }
                 projectile.alpha = 255;
                 storeVelocity = projectile.velocity;
