@@ -1,28 +1,51 @@
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Buffs.Summon;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Buffs.Summon;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
     public class GraniteSummon : ModProjectile
     {
+
+        int colorcooldown = 0;
+        readonly int frame = 1;
+        Vector2 Rot;
+        int Random2 = Main.rand.Next(-15, 12);
+        int Random = Main.rand.Next(1, 3);
+        public override bool CanDamage() => false;
+        private readonly int timer2 = 0;
+        private int timer = 0;
+        private int PosCheck = 0;
+        private int PosPlay = 0;
+        private int Pos = 0;
+        private int movement = 0;
+        private int NumProj = 0;
+        private int movement2 = 0;
+        float NPCtargetX = 0;
+        float NPCtargetY = 0;
+        int mrand = Main.rand.Next(-100, 101);
+        int mrand2 = Main.rand.Next(-100, 101);
+        public override void SetDefaults()
+        {
+            projectile.width = 32;
+            projectile.height = 32;
+            projectile.minionSlots = 1f;
+            projectile.minion = true;
+            projectile.friendly = true;
+            projectile.ignoreWater = true;
+            projectile.tileCollide = false;
+            projectile.netImportant = true;
+            projectile.penetrate = -1;
+            projectile.timeLeft = 200000;
+        }
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Elemental");
-            Main.projFrames[projectile.type] = 4;
-        }
-
-        public override void SetDefaults()
-        {
-            projectile.width = 30;
-            projectile.height = 38;
-            projectile.tileCollide = true;
-            projectile.friendly = true;
-            projectile.minion = true;
-            projectile.minionSlots = 1f;
-            projectile.penetrate = -1;
+            Main.projFrames[base.projectile.type] = 4;
         }
 
         public override void AI()
@@ -32,58 +55,154 @@ namespace OvermorrowMod.Projectiles.Summon
             #region Active check
             if (player.dead || !player.active)
             {
-                player.ClearBuff(ModContent.BuffType<DrakeBuff>());
+                player.ClearBuff(ModContent.BuffType<GraniteEleBuff>());
             }
-            if (player.HasBuff(ModContent.BuffType<DrakeBuff>()))
+            if (player.HasBuff(ModContent.BuffType<GraniteEleBuff>()))
             {
                 projectile.timeLeft = 2;
             }
             #endregion
 
-            #region General Behavior
-            Vector2 idlePosition = player.Center;
-            idlePosition.Y -= 48f; // Go up 48 coordinates (three tiles from the center of the player)
 
-            // If your minion doesn't aimlessly move around when it's idle, you need to "put" it into the line of other summoned minions
-            // The index is projectile.minionPos
-            float minionPositionOffsetX = (10 + projectile.minionPos * 40) * -player.direction;
-            idlePosition.X += minionPositionOffsetX; // Go behind the player
-
-            // All of this code below this line is adapted from Spazmamini code (ID 388, aiStyle 66)
-
-            // Teleport to player if distance is too big
-            Vector2 vectorToIdlePosition = idlePosition - projectile.Center;
-            float distanceToIdlePosition = vectorToIdlePosition.Length();
-            if (Main.myPlayer == player.whoAmI && distanceToIdlePosition > 1000f)
+            NumProj = Main.player[projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<GraniteSummon>()];
+            PosCheck++;
+            if(PosCheck == 2)
             {
-                // Whenever you deal with non-regular events that change the behavior or position drastically, make sure to only run the code on the owner of the projectile,
-                // and then set netUpdate to true
-                projectile.position = idlePosition;
-                projectile.velocity *= 0.1f;
-                projectile.netUpdate = true;
+                PosPlay = NumProj;
             }
 
-            // If your minion is flying, you want to do this independently of any conditions
-            float overlapVelocity = 0.04f;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            if (PosCheck == 5)
             {
-                // Fix overlap with other minions
-                Projectile other = Main.projectile[i];
-                if (i != projectile.whoAmI && other.active && other.owner == projectile.owner && Math.Abs(projectile.position.X - other.position.X) + Math.Abs(projectile.position.Y - other.position.Y) < projectile.width)
-                {
-                    if (projectile.position.X < other.position.X) projectile.velocity.X -= overlapVelocity;
-                    else projectile.velocity.X += overlapVelocity;
+                Pos = PosPlay * 60;
+            }
+            float distanceFromTarget = 500f;
+            Vector2 targetCenter = projectile.position;
+            bool foundTarget = false;
 
-                    if (projectile.position.Y < other.position.Y) projectile.velocity.Y -= overlapVelocity;
-                    else projectile.velocity.Y += overlapVelocity;
+            projectile.tileCollide = false;
+            if (!foundTarget)
+            {
+                // This code is required either way, used for finding a target
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    NPC npc = Main.npc[i];
+                    if (npc.CanBeChasedBy())
+                    {
+                        float between = Vector2.Distance(npc.Center, Main.player[projectile.owner].Center);
+                        bool closest = Vector2.Distance(projectile.Center, targetCenter) > between;
+                        bool inRange = between < distanceFromTarget;
+
+                        if (((closest && inRange) || !foundTarget))
+                        {
+                            NPCtargetX = npc.Center.X;
+                            NPCtargetY = npc.Center.Y;
+                            Vector2 Rot = npc.Center;
+                            //projectile.rotation = (Rot - projectile.Center).ToRotation();
+                            distanceFromTarget = between;
+                            targetCenter = npc.Center;
+                            foundTarget = true;
+                        }
+                    }
                 }
             }
-            #endregion
 
-            #region Animation and visuals
-            projectile.rotation = projectile.velocity.X * 0.05f;
 
-            if (++projectile.frameCounter >= 8)
+            if (foundTarget && Main.player[projectile.owner].channel)
+			{
+            movement = 1;
+            movement2++;
+
+                if (movement2 == 70)
+                {
+                    mrand2 = Main.rand.Next(-170, 171);
+                    mrand = Main.rand.Next(-170, 171);
+                    movement2 = 0;
+                }
+
+                if(NPCtargetX + mrand > projectile.Center.X)
+                {
+                    projectile.velocity.X += 0.9f;
+                }
+
+                if(NPCtargetX + mrand < projectile.Center.X)
+                {
+                    projectile.velocity.X -= 0.9f;
+                }
+
+                if(NPCtargetY + mrand2 > projectile.Center.Y)
+                {
+                    projectile.velocity.Y += 2f;
+                }
+                if(NPCtargetY + mrand2 < projectile.Center.Y)
+                {
+                    projectile.velocity.Y -= 2f;
+                }
+
+
+                if(projectile.velocity.Y < -9f)
+                {
+                    projectile.velocity.Y = -9f;
+                }
+
+                if(projectile.velocity.Y > 9f)
+                {
+                    projectile.velocity.Y = 9f;
+                }
+
+
+                if(projectile.velocity.X < -9f)
+                {
+                    projectile.velocity.X = -9f;
+                }
+
+                if(projectile.velocity.X > 9f)
+                {
+                    projectile.velocity.X = 9f;
+                }
+
+			}
+            else
+            {
+                //projectile.rotation = (Main.player[projectile.owner].Center - projectile.Center).ToRotation();
+
+
+                if (Main.player[projectile.owner].direction == -1)
+                {
+                    projectile.position.X = Main.player[projectile.owner].Center.X + Pos;
+                    projectile.position.Y = Main.player[projectile.owner].Center.Y - 32;
+                }
+
+                if (Main.player[projectile.owner].direction == 1)
+                {
+                    projectile.position.X = Main.player[projectile.owner].Center.X - Pos - 32;
+                    projectile.position.Y = Main.player[projectile.owner].Center.Y - 32;
+                }
+
+                projectile.velocity.Y = 0f;
+                projectile.velocity.X = 0f;
+
+            }
+
+            if (Main.player[projectile.owner].channel && foundTarget)
+            {
+                timer++;
+                if (timer == 45 + Random2)
+                {
+                    Random2 = Main.rand.Next(-15, 12);
+                    Random = Main.rand.Next(-2, 3);
+                    Vector2 position = projectile.Center;
+                    Vector2 targetPosition = Main.MouseWorld;
+                    Vector2 direction = targetPosition - position;
+                    direction.Normalize();
+                    Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(1.5f));
+                    float speed = Random + 20f;
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<GraniteLaser>(), projectile.damage, 1f, projectile.owner, 0f);
+                    timer = 0;
+                }
+            }
+
+            // Loop through the 4 animation frames, spending 5 ticks on each.
+            if (++projectile.frameCounter >= 4)
             {
                 projectile.frameCounter = 0;
                 if (++projectile.frame >= Main.projFrames[projectile.type])
@@ -91,25 +210,33 @@ namespace OvermorrowMod.Projectiles.Summon
                     projectile.frame = 0;
                 }
             }
-            #endregion
         }
 
-        // Here you can decide if your minion breaks things like grass or pots
-        // (in this example false is returned, since having this on true might cause the queen bee larva to break and summon the boss accidently)
-        public override bool? CanCutTiles()
+        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            return false;
-        }
+            //Texture2D texture = mod.GetTexture("Projectiles/Summon/StormWhelp_Glowmask");
 
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough)
-        {
-            fallThrough = true;
-            return base.TileCollideStyle(ref width, ref height, ref fallThrough);
-        }
+            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+            int y2 = num154 * projectile.frame;
 
-        public override bool MinionContactDamage()
-        {
-            return true;
+            Texture2D texture = mod.GetTexture("Projectiles/Summon/GraniteSummon_Glow");
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
+            spriteBatch.Draw
+            (
+                texture,
+                new Vector2
+                (
+                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f - 2,
+                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f + 5
+                ),
+                drawRectangle,
+                Color.White,
+                projectile.rotation,
+                new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2),
+                projectile.scale,
+                projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                0f
+            );
         }
     }
 }

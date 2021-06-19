@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Geomancer Staff");
-            Tooltip.SetDefault("Summons Granite Elementals to dive-bomb your enemies");
+            Tooltip.SetDefault("Summons Granite Elementals, hold down the mouse to control them");
         }
 
         public override void SetDefaults()
@@ -27,9 +27,10 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff
             item.rare = ItemRarityID.Green;
             item.noMelee = true;
             item.summon = true;
-            item.buffType = mod.BuffType("ProbeBuff");
-            item.shoot = mod.ProjectileType("ProbePROJ");
+            item.buffType = ModContent.BuffType<GraniteEleBuff>();
+            item.shoot = ModContent.ProjectileType<GraniteSummon>();
             item.UseSound = SoundID.Item82;
+            item.channel = true;
         }
 
         public override void UseStyle(Player player)
