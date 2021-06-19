@@ -209,8 +209,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     {
                         if (movement == true)
                         {
-                            if (changedPhase2 == true) { RandomCeiling = 5; }
-                            else { RandomCeiling = 4; }
+                            if (changedPhase2 == true) { RandomCeiling = 4; }
+                            else { RandomCeiling = 3; }
                             while (RandomCase == LastCase)
                             {
                                 RandomCase = Main.rand.Next(1, RandomCeiling);
@@ -318,11 +318,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (npc.ai[1] > (changedPhase2 ? 480 : 360))
                     {
-                        npc.ai[0] = -1;
+                        npc.ai[0] = 4;
                         npc.ai[1] = 0;
                     }
                     break;
-                case 3: // Shoot nature blasts
+                case 4: // Shoot nature blasts
                     npc.velocity = Vector2.Zero;
 
                     if (npc.ai[1] == 120)
@@ -345,7 +345,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         npc.ai[1] = 0;
                     }
                     break;
-                case 4: // scythes
+                case 3: // scythes
                     {
                         Vector2 moveTo = player.Center;
                         moveTo.X += 50 * (npc.Center.X < moveTo.X ? -1 : 1);
