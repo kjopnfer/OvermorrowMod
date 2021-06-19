@@ -119,6 +119,15 @@ namespace OvermorrowMod.Projectiles.Summon
                     movement2 = 0;
                 }
 
+                if(NPCtargetX > projectile.Center.X)
+                {
+                    projectile.spriteDirection = -1;
+                }
+                else
+                {
+                    projectile.spriteDirection = 1;
+                }
+
                 if(NPCtargetX + mrand > projectile.Center.X)
                 {
                     projectile.velocity.X += 0.9f;
@@ -163,7 +172,7 @@ namespace OvermorrowMod.Projectiles.Summon
 			}
             else
             {
-                //projectile.rotation = (Main.player[projectile.owner].Center - projectile.Center).ToRotation();
+                projectile.spriteDirection = -Main.player[projectile.owner].direction;
 
 
                 if (Main.player[projectile.owner].direction == -1)
