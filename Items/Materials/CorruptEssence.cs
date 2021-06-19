@@ -3,13 +3,13 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.NPCs.PostRider
+namespace OvermorrowMod.Items.Materials
 {
-    public class HallowEssence : ModItem
+    public class CorruptEssence : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hallow Essence");
+            DisplayName.SetDefault("Corrupt Essence");
             // ticksperframe, frameCount
             Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(5, 4));
             ItemID.Sets.AnimatesAsSoul[item.type] = true;

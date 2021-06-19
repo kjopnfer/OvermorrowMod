@@ -1,12 +1,11 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-
-
-namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff.Probe
+namespace OvermorrowMod.Projectiles.Summon
 {
-    public class ProbeLaser : ModProjectile
+    public class GraniteLaser : ModProjectile
     {
         public override void SetDefaults()
         {
@@ -16,6 +15,11 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff.Probe
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.timeLeft = 150;
+        }
+
+        public override Color? GetAlpha(Color lightColor)
+        {
+            return Color.White;
         }
     }
 }

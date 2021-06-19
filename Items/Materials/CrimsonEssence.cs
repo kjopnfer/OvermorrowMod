@@ -3,13 +3,13 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.NPCs.PostRider
+namespace OvermorrowMod.Items.Materials
 {
-    public class JungleEssence : ModItem
+    public class CrimsonEssence : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Jungle Essence");
+            DisplayName.SetDefault("Crimson Essence");
             // ticksperframe, frameCount
             Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(5, 4));
             ItemID.Sets.AnimatesAsSoul[item.type] = true;
