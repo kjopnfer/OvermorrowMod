@@ -5,6 +5,7 @@ using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Accessories
 {
+    [AutoloadEquip(EquipType.Balloon)]
     public class AncientCrystal : ModItem
     {
         public override void SetStaticDefaults()

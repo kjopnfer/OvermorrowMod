@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Accessories
 {
+    [AutoloadEquip(EquipType.Balloon)]
     public class ShatteredOrb : ModItem
     {
         public override void SetStaticDefaults()

@@ -5,6 +5,7 @@ using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Accessories
 {
+    [AutoloadEquip(EquipType.HandsOn)]
     public class ObsidianShackle : ModItem
     {
         public override void SetStaticDefaults()
