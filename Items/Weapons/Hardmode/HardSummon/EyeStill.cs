@@ -18,6 +18,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
         private int ChargePlacement = 0;
         private int ChargePlacement2 = 0;
         private int TrailTimer = 0;
+        private int SaveTimer = 0;
         private float savedMouseX = 0;
         private float savedMouseY = 0;
         Vector2 savedMouseVec;
@@ -118,10 +119,14 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
                 direction.Normalize();
                 projectile.velocity = direction * 18;
                 chargetimer++;
+                SaveTimer++;
                 Main.PlaySound(2, projectile.position, 103);
             }
 
-
+            if(SaveTimer == 120)
+            {
+                returntoply = true;
+            }
 
             if(chargetimer > 0 && projectile.velocity.X > 0 && projectile.velocity.Y < 0)
             {
@@ -210,6 +215,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
                         returntoply = false;
                         returntimer = 0;
                         chargetimer = 0;
+                        SaveTimer = 0;
                     }
                 }
             }
