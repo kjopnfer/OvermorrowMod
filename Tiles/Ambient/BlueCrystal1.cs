@@ -12,7 +12,7 @@ namespace OvermorrowMod.Tiles.Ambient
 	{
 		public override void SetDefaults()
 		{
-			TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
+			/*TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
 			TileObjectData.newAlternate.StyleHorizontal = true;
 			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
 			TileObjectData.newAlternate.Origin = new Point16(0, 0);
@@ -46,6 +46,21 @@ namespace OvermorrowMod.Tiles.Ambient
 			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
 			TileObjectData.newAlternate.Origin = new Point16(0, 0);
 			TileObjectData.addAlternate(4);
+			TileObjectData.addTile(Type);*/
+
+			TileObjectData.newTile.CopyFrom(TileObjectData.StyleTorch);
+			TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+			TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
+			TileObjectData.newAlternate.AnchorLeft = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide | AnchorType.Tree | AnchorType.AlternateTile, TileObjectData.newTile.Height, 0);
+			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
+			TileObjectData.addAlternate(1);
+			TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
+			TileObjectData.newAlternate.AnchorRight = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide | AnchorType.Tree | AnchorType.AlternateTile, TileObjectData.newTile.Height, 0);
+			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
+			TileObjectData.addAlternate(2);
+			TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
+			TileObjectData.newAlternate.AnchorWall = true;
+			TileObjectData.addAlternate(0);
 			TileObjectData.addTile(Type);
 
 			Main.tileFrameImportant[Type] = true;

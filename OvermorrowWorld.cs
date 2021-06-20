@@ -656,7 +656,7 @@ namespace OvermorrowMod
 
 
             int x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
-            int y = WorldGen.genRand.Next((int)WorldGen.rockLayer + 200, WorldGen.lavaLine - 200); // Check if world is large
+            int y = WorldGen.genRand.Next((int)WorldGen.rockLayer + 120, WorldGen.lavaLine - 200); // Check if world is large
 
             while (true)
             {
@@ -765,7 +765,7 @@ namespace OvermorrowMod
 
                     // Get new coordinates
                     x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
-                    y = WorldGen.genRand.Next((int)WorldGen.rockLayer + 200, WorldGen.lavaLine - 200);
+                    y = WorldGen.genRand.Next((int)WorldGen.rockLayer + 120, WorldGen.lavaLine - 200);
                 }
                 else
                 {
@@ -1056,7 +1056,7 @@ namespace OvermorrowMod
                 int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
 
                 // Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
-                WorldGen.TileRunner(x, y, WorldGen.genRand.Next(3, 6), WorldGen.genRand.Next(2, 6), ModContent.TileType<EruditeTile>());
+                WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 4), WorldGen.genRand.Next(2, 6), ModContent.TileType<EruditeTile>());
                 // Alternately, we could check the tile already present in the coordinate we are interested. Wrapping WorldGen.TileRunner in the following condition would make the ore only generate in Snow.
                 // Tile tile = Framing.GetTileSafely(x, y);
                 // if (tile.active() && tile.type == TileID.SnowBlock)

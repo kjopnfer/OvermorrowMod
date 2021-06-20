@@ -57,7 +57,7 @@ namespace OvermorrowMod.Tiles.Block
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 0f;
-            g = 1f;
+            g = 0.25f;
             b = 0f;
         }
     }
