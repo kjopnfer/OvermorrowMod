@@ -40,21 +40,12 @@ namespace OvermorrowMod.Tiles.Ambient
 			TileObjectData.newAlternate.AnchorBottom = AnchorData.Empty;
 			TileObjectData.addAlternate(3);
 
-			// Allow attaching to a wall behind the sign
-			TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
-			TileObjectData.newAlternate.StyleHorizontal = true;
-			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
-			TileObjectData.newAlternate.Origin = new Point16(0, 0);
-			TileObjectData.newAlternate.AnchorWall = true;
-			TileObjectData.newAlternate.AnchorBottom = AnchorData.Empty;
-			TileObjectData.addAlternate(4);
-
 			// Allow attaching sign to the ground
 			TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
 			TileObjectData.newAlternate.StyleHorizontal = true;
 			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
 			TileObjectData.newAlternate.Origin = new Point16(0, 0);
-			TileObjectData.addAlternate(5);
+			TileObjectData.addAlternate(4);
 			TileObjectData.addTile(Type);
 
 			Main.tileFrameImportant[Type] = true;

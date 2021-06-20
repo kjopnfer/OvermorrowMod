@@ -56,26 +56,26 @@ namespace OvermorrowMod.Tiles
             Tile tileBelow = Framing.GetTileSafely(i, j + 1);
             Tile tileLeft = Framing.GetTileSafely(i - 1, j);
             Tile tileRight = Framing.GetTileSafely(i + 1, j);
-            Random = Main.rand.Next(1, 50);
+            Random = Main.rand.Next(3);
 
-            if(Random == 4)
+            if(Random == 0)
             {
-                WorldGen.PlaceTile(i, j + 1, 1);
+                WorldGen.PlaceTile(i, j + 1, ModContent.TileType<BlueCrystal1>());
             }
 
-            if (Random == 14)
+            if (Random == 0)
             {
-                WorldGen.PlaceTile(i, j - 1, 1);
+                WorldGen.PlaceTile(i, j - 1, ModContent.TileType<BlueCrystal1>());
             }
 
-            if (Random == 20)
+            if (Random == 0)
             {
-                WorldGen.PlaceTile(i - 1, j, 1);
+                WorldGen.PlaceTile(i - 1, j, ModContent.TileType<BlueCrystal1>());
             }
 
-            if (Random == 7)
+            if (Random == 0)
             {
-                WorldGen.PlaceTile(i + 1, j, 1);
+                WorldGen.PlaceTile(i + 1, j, ModContent.TileType<BlueCrystal1>());
             }
 
             // Grow plants
