@@ -96,7 +96,7 @@ namespace OvermorrowMod.NPCs
 
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == ModContent.TileType<GlowBlock>() ? 0.38f : 0f;
+			return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == ModContent.TileType<GlowBlock>() ? 0.02f : 0f;
 		}
 
 		public override int SpawnNPC(int tileX, int tileY)

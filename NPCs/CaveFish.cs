@@ -259,7 +259,7 @@ namespace OvermorrowMod.NPCs
 
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && spawnInfo.water ? 0.15f : 0f;
+			return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && spawnInfo.water ? 0.05f : 0f;
 		}
 	}
 }
