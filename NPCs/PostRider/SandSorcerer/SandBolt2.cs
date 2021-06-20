@@ -62,8 +62,8 @@ namespace OvermorrowMod.NPCs.PostRider.SandSorcerer
                 movement++;
                 if(movement == 1)
                 {
-                    mrand2 = Main.rand.Next(-75, 76);
-                    mrand = Main.rand.Next(-75, 76);
+                    mrand2 = Main.rand.Next(-60, 61);
+                    mrand = Main.rand.Next(-60, 61);
                 }
 
                 if (movement > 0 && movement < 49)

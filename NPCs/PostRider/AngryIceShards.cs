@@ -87,7 +87,7 @@ namespace OvermorrowMod.NPCs.PostRider
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return Main.hardMode == true && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && spawnInfo.player.ZoneSnow ? 0.4f : 0f;
+            return Main.hardMode == true && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && spawnInfo.player.ZoneSnow && spawnInfo.player.ZoneOverworldHeight ? 0.4f : 0f;
         }
     }
 }
