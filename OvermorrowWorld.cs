@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Tiles;
+using OvermorrowMod.Tiles.Block;
 using OvermorrowMod.WardenClass.Accessories;
 using Terraria;
 using Terraria.GameContent.Generation;
@@ -1046,6 +1047,22 @@ namespace OvermorrowMod
                 {
                     WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<ManaStone>());
                 }
+            }
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00025); k++)
+            {
+                // The inside of this for loop corresponds to one single splotch of our Ore.
+                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+
+                // Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
+                WorldGen.TileRunner(x, y, WorldGen.genRand.Next(3, 6), WorldGen.genRand.Next(2, 6), ModContent.TileType<EruditeTile>());
+                // Alternately, we could check the tile already present in the coordinate we are interested. Wrapping WorldGen.TileRunner in the following condition would make the ore only generate in Snow.
+                // Tile tile = Framing.GetTileSafely(x, y);
+                // if (tile.active() && tile.type == TileID.SnowBlock)
+                // {
+                // 	WorldGen.TileRunner(.....);
+                // }
             }
         }
 
