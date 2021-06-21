@@ -9,7 +9,7 @@ namespace OvermorrowMod.Items.Testing
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dev Gun");
+            DisplayName.SetDefault("Test Gun");
             Tooltip.SetDefault("Use this to spawn test projectiles while you do not have an item for them");
         }
         public override void SetDefaults()

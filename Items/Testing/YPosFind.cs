@@ -14,7 +14,6 @@ namespace OvermorrowMod.Items.Testing
         {
             item.width = 20;
             item.height = 20;
-            item.maxStack = 30;
             item.value = 100;
             item.rare = ItemRarityID.Blue;
             item.useStyle = ItemUseStyleID.SwingThrow;

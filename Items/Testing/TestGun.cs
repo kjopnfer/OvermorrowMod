@@ -28,7 +28,7 @@ namespace OvermorrowMod.Items.Testing
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Test Gun");
+            DisplayName.SetDefault("Dev Gun");
             Tooltip.SetDefault("A gun used for testing by devs");
         }
 
