@@ -56,26 +56,37 @@ namespace OvermorrowMod.Tiles
             Tile tileBelow = Framing.GetTileSafely(i, j + 1);
             Tile tileLeft = Framing.GetTileSafely(i - 1, j);
             Tile tileRight = Framing.GetTileSafely(i + 1, j);
-            Random = Main.rand.Next(3);
+            Random = Main.rand.Next(1, 10);
 
-            if(Random == 0)
+            if (!tileBelow.active())
             {
-                WorldGen.PlaceTile(i, j + 1, ModContent.TileType<BlueCrystal1>());
+                if(Random == 4)
+                {
+                WorldGen.PlaceTile(i, j + 1, ModContent.TileType<BlueCrystalDown>());
+                }
             }
 
-            if (Random == 0)
+            if (!tileLeft.active())
             {
-                WorldGen.PlaceTile(i, j - 1, ModContent.TileType<BlueCrystal1>());
+                if (Random == 8)
+                {
+                    WorldGen.PlaceTile(i, j - 1, ModContent.TileType<BlueCrystalLeft>());
+                }
             }
 
-            if (Random == 0)
+            if (!tileAbove.active())
             {
-                WorldGen.PlaceTile(i - 1, j, ModContent.TileType<BlueCrystal1>());
+                if (Random == 6)
+                {
+                    WorldGen.PlaceTile(i - 1, j, ModContent.TileType<BlueCrystalUp>());
+                }
             }
-
-            if (Random == 0)
+            if (!tileRight.active())
             {
-                WorldGen.PlaceTile(i + 1, j, ModContent.TileType<BlueCrystal1>());
+                if (Random == 3)
+                {
+                    WorldGen.PlaceTile(i + 1, j, ModContent.TileType<BlueCrystalRight>());
+                }
             }
 
             // Grow plants
