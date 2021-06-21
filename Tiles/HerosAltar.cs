@@ -20,6 +20,7 @@ namespace OvermorrowMod.Tiles
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
 			TileObjectData.newTile.LavaDeath = false;
 			TileObjectData.newTile.WaterDeath = false;
+			TileObjectData.newTile.CoordinateHeights = new int[] { 16, 18 };
 			TileObjectData.addTile(Type);
 			ModTranslation name = CreateMapEntryName();
 			name.SetDefault("Hero's Altar");
