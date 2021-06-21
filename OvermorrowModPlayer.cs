@@ -19,6 +19,7 @@ namespace OvermorrowMod
         public bool BloodyHeart;
         public bool BloodyTeeth;
         public bool DripplerEye;
+        public bool EruditeDamage;
         public bool ShatteredOrb;
         public bool StormScale;
         public bool StormShield;
@@ -88,6 +89,7 @@ namespace OvermorrowMod
             BloodyHeart = false;
             BloodyTeeth = false;
             DripplerEye = false;
+            EruditeDamage = false;
             ShatteredOrb = false;
             StormScale = false;
             StormShield = false;

@@ -17,6 +17,14 @@ namespace OvermorrowMod
             }
         }
 
+        public override void ModifyWeaponDamage(Item item, Player player, ref float add, ref float mult, ref float flat)
+        {
+            if (player.GetModPlayer<OvermorrowModPlayer>().EruditeDamage)
+            {
+                flat = 2;
+            }
+        }
+
         public override bool Shoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             if (item.type == ItemID.ChainKnife)
