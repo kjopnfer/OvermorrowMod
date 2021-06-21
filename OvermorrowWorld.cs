@@ -654,9 +654,10 @@ namespace OvermorrowMod
         {
             progress.Message = "Flooding the Jungle";
 
+            // small world size is 4200x1200 , medium multiplies every axis by 1.5 , and large multiplies every axis by 2.0
 
             int x = WorldGen.genRand.Next(600, Main.maxTilesX - 500);
-            int y = WorldGen.genRand.Next((int)WorldGen.rockLayer + 120, WorldGen.lavaLine - 200); // Check if world is large
+            int y = WorldGen.genRand.Next((int)WorldGen.rockLayer + 100, (Main.maxTilesY == 2400) ? WorldGen.lavaLine - 300 : WorldGen.lavaLine - 150);
 
             while (true)
             {
