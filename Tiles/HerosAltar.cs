@@ -23,6 +23,7 @@ namespace OvermorrowMod.Tiles
 			TileObjectData.newTile.CoordinateHeights = new int[] { 16, 18 };
 			TileObjectData.addTile(Type);
 			ModTranslation name = CreateMapEntryName();
+			minPick = 45;
 			name.SetDefault("Hero's Altar");
 			AddMapEntry(new Color(253, 221, 3), name);
 		}
