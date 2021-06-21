@@ -11,7 +11,7 @@ namespace OvermorrowMod.Items.Armor.Marble
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Marble Chestplate");
-            Tooltip.SetDefault("3% ranged Damage");
+            Tooltip.SetDefault("3% ranged damage \n2% increased magic damage");
         }
 
         public override void SetDefaults()
@@ -25,6 +25,7 @@ namespace OvermorrowMod.Items.Armor.Marble
 
         public override void UpdateEquip(Player player)
         {
+            player.magicDamage += 0.02f;
             player.rangedDamage += 0.03f;
         }
     }

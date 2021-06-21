@@ -11,7 +11,7 @@ namespace OvermorrowMod.Items.Armor.Marble
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Marble Leggings");
-            Tooltip.SetDefault("3% ranged Damage");
+            Tooltip.SetDefault("3% ranged damage \n15% decreased mana usage");
         }
 
         public override void SetDefaults()
@@ -27,6 +27,7 @@ namespace OvermorrowMod.Items.Armor.Marble
         {
             player.moveSpeed += 0.05f;
             player.rangedDamage += 0.03f;
+            player.manaCost -= 0.15f;
         }
     }
 }
