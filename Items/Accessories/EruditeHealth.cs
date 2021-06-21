@@ -1,4 +1,5 @@
 using OvermorrowMod.Buffs.Summon;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
@@ -30,7 +31,11 @@ namespace OvermorrowMod.Items.Accessories
 
         public override void AddRecipes()
         {
-            base.AddRecipes();
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 1);
+            recipe.AddTile(TileID.Furnaces);
+            recipe.SetResult(this, 1);
+            recipe.AddRecipe();
         }
     }
 }
