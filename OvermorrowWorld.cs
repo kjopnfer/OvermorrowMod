@@ -1065,6 +1065,43 @@ namespace OvermorrowMod
                 // 	WorldGen.TileRunner(.....);
                 // }
             }
+
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0014); k++)
+            {
+                // The inside of this for loop corresponds to one single splotch of our Ore.
+                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX / 6);
+                int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+
+                // Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
+                WorldGen.PlaceTile(x, y, ModContent.TileType<HerosAltar>());
+                // Alternately, we could check the tile already present in the coordinate we are interested. Wrapping WorldGen.TileRunner in the following condition would make the ore only generate in Snow.
+                // Tile tile = Framing.GetTileSafely(x, y);
+                // if (tile.active() && tile.type == TileID.SnowBlock)
+                // {
+                // 	WorldGen.TileRunner(.....);
+                // }
+            }
+
+
+
+
+
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00004); k++)
+            {
+                // The inside of this for loop corresponds to one single splotch of our Ore.
+                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+
+                // Strength controls size
+                // Steps control interations
+                Tile tile = Framing.GetTileSafely(x, y);
+                if (tile.active() && tile.type == TileID.Stone)
+                {
+                    WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<FakeiteGold>());
+                }
+            }
         }
 
         private void GenerateAmbientObjects(GenerationProgress progress)
