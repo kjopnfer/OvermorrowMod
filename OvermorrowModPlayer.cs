@@ -30,6 +30,8 @@ namespace OvermorrowMod
         public bool BMSet;
         public bool graniteSet;
         private int minionCounts;
+        public bool MarbleTrail;
+        int TrailTimer = 0;
 
         // Shield Variables
         public int DashType;
@@ -98,6 +100,7 @@ namespace OvermorrowMod
 
             BMSet = false;
             graniteSet = false;
+            MarbleTrail = false;
 
             atomBuff = false;
             graniteSpearBuff = false;
@@ -249,6 +252,15 @@ namespace OvermorrowMod
                 if (player.statMana > player.statManaMax)
                 {
                     player.statMana = player.statManaMax;
+                }
+            }
+            if (MarbleTrail)
+            {
+                TrailTimer++;
+                if (TrailTimer > 3 && player.velocity.X > 0 || TrailTimer > 3 && player.velocity.X < 0 || TrailTimer > 3 && player.velocity.Y < 0 || TrailTimer > 3 && player.velocity.Y > 0)
+                {
+                    Projectile.NewProjectile(player.Center.X, player.Center.Y, player.velocity.X, player.velocity.Y, mod.ProjectileType("PlayerMoveWave"), 15, 0f, Main.myPlayer);
+                    TrailTimer = 0;
                 }
             }
         }
