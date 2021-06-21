@@ -58,7 +58,7 @@ namespace OvermorrowMod.Tiles
         {
             r = 0.0f;
             g = 0.0f;
-            b = 0.25f;
+            b = 0.02f;
         }
     }
 }
