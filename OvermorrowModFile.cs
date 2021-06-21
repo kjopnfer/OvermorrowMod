@@ -91,66 +91,66 @@ namespace OvermorrowMod
             ModRecipe recipe = new ModRecipe(this);
             recipe.AddIngredient(ItemID.Chain, 6);
             recipe.AddRecipeGroup("IronBar", 1);
-            recipe.SetResult(ItemID.ChainKnife);
             recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(ItemID.ChainKnife);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(this);
             recipe.AddIngredient(ItemID.Silk, 6);
             recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 3);
-            recipe.SetResult(ItemID.HermesBoots);
             recipe.AddTile(TileID.Loom);
+            recipe.SetResult(ItemID.HermesBoots);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(this);
             recipe.AddIngredient(ItemID.HermesBoots);
             recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 3);
-            recipe.SetResult(ItemID.WaterWalkingBoots);
             recipe.AddTile(TileID.Loom);
+            recipe.SetResult(ItemID.WaterWalkingBoots);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(this);
             recipe.AddIngredient(ItemID.Bottle);
             recipe.AddIngredient(ItemID.Cloud, 10);
             recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 3);
-            recipe.SetResult(ItemID.CloudinaBottle);
             recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(ItemID.CloudinaBottle);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(this);
             recipe.AddIngredient(ItemID.GoldBar, 10);
             recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 2);
-            recipe.SetResult(ItemID.LuckyHorseshoe);
             recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(ItemID.LuckyHorseshoe);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(this);
             recipe.AddIngredient(ItemID.PlatinumBar, 10);
-            recipe.AddRecipeGroup(ModContent.ItemType<EruditeOrb>(), 2);
-            recipe.SetResult(ItemID.LuckyHorseshoe);
+            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 2);
             recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(ItemID.LuckyHorseshoe);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(this);
             recipe.AddRecipeGroup("IronBar", 8);
             recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 2);
-            recipe.SetResult(ItemID.ClimbingClaws);
             recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(ItemID.ClimbingClaws);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(this);
             recipe.AddRecipeGroup("IronBar", 8);
             recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 3);
-            recipe.SetResult(ItemID.ShoeSpikes);
             recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(ItemID.ShoeSpikes);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(this);
             recipe.AddIngredient(ItemID.Coral, 6);
             recipe.AddIngredient(ItemID.Starfish, 4);
             recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 2);
-            recipe.SetResult(ItemID.JellyfishNecklace);
             recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(ItemID.JellyfishNecklace);
             recipe.AddRecipe();
         }
 

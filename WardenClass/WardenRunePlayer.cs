@@ -110,7 +110,7 @@ namespace OvermorrowMod.WardenClass
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
                     break;
                 case 5: // Sanguine Impaler
-                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
+                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonRuneCircle");
                     break;
                 case 6: // Vile Piercer
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/VileRuneCircle");
