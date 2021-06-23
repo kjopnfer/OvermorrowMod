@@ -56,7 +56,7 @@ namespace OvermorrowMod.Tiles
             Tile tileBelow = Framing.GetTileSafely(i, j + 1);
             Tile tileLeft = Framing.GetTileSafely(i - 1, j);
             Tile tileRight = Framing.GetTileSafely(i + 1, j);
-            Random = Main.rand.Next(1, 10);
+            Random = Main.rand.Next(1, 100);
 
             if (!tileBelow.active())
             {
