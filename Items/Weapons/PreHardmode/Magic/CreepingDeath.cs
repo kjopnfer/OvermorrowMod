@@ -10,17 +10,17 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Creeping Death Staff");
-            Tooltip.SetDefault("Shoots a blood ring arround you. When enemies are hit by it fires iron bolts");
+            Tooltip.SetDefault("Shoots a blood ring around you.\nEnemies hit allow you to fires iron bolts");
         }
 
         public override void SetDefaults()
         {
             item.rare = ItemRarityID.Orange;
-            item.mana = 3;
+            item.mana = 6;
             item.UseSound = SoundID.Item43;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 15;
+            item.damage = 19;
             item.useTurn = false;
             item.useAnimation = 35;
             item.useTime = 35;

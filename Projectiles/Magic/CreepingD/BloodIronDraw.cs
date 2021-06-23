@@ -29,18 +29,21 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
         }
         public override void AI()
         {
-            timer++;
+            projectile.ai[0]++;
             projectile.alpha = projectile.alpha + 15;
-            if(timer == 1)
+
+            if (projectile.ai[0] == 1)
             {
                 projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
             else
             {
+                projectile.alpha = 255;
                 projectile.velocity.Y = 0;
                 projectile.velocity.X = 0;
             }
-            if(timer == 2)
+
+            if (projectile.ai[0] == 2)
             {
                 projectile.alpha = 0;
             }

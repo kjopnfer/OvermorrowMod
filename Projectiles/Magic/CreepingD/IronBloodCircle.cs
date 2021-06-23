@@ -7,6 +7,10 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
 {
     public class IronBloodCircle : ModProjectile
     {
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Iron Blood Circle");
+        }
 
         public override void SetDefaults()
         {
@@ -28,13 +32,9 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
             projectile.rotation = projectile.rotation + 1;
             projectile.alpha = projectile.alpha + 5;
         }
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Cone");
-        }
+
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Vector2 value1 = new Vector2(0f, 0f);
             Projectile.NewProjectile(target.Center.X, target.Center.Y, -projectile.velocity.X, -projectile.velocity.Y, mod.ProjectileType("BloodIronReal"), projectile.damage, 1f, projectile.owner, 0f);
         }
     }
