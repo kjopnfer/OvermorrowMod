@@ -30,7 +30,13 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
         public override void AI()
         {
             projectile.ai[0]++;
-            projectile.alpha = projectile.alpha + 15;
+
+            Dust dust;
+            // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
+            Vector2 position = projectile.Center;
+            dust = Terraria.Dust.NewDustPerfect(position, 183, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
+            dust.noGravity = true;
+
 
             if (projectile.ai[0] == 1)
             {
@@ -41,11 +47,6 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
                 projectile.alpha = 255;
                 projectile.velocity.Y = 0;
                 projectile.velocity.X = 0;
-            }
-
-            if (projectile.ai[0] == 2)
-            {
-                projectile.alpha = 0;
             }
         }
     }
