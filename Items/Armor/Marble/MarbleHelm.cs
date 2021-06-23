@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Armor.Marble
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Marble Helmet");
-            Tooltip.SetDefault("3% increased ranged damage");
+            Tooltip.SetDefault("3% increased ranged damage \n5% increased magic damage");
         }
 
         public override void SetDefaults()
@@ -26,6 +26,7 @@ namespace OvermorrowMod.Items.Armor.Marble
 
         public override void UpdateEquip(Player player)
         {
+            player.magicDamage += 0.05f;
             player.rangedDamage += 0.03f;
         }
 
@@ -35,8 +36,9 @@ namespace OvermorrowMod.Items.Armor.Marble
         }
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Moving leaves a damaging trail, 2% increased ranged damage";
+            player.setBonus = "Moving leaves a damaging trail \n2% increased ranged damage \n3% increased magic damage";
             player.rangedDamage += 0.02f;
+            player.magicDamage += 0.03f;
             player.GetModPlayer<OvermorrowModPlayer>().MarbleTrail = true;
         }
     }
