@@ -9,7 +9,7 @@ namespace OvermorrowMod.Items.Accessories.Expert
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloody Heart");
-            Tooltip.SetDefault("Increases max health by 10\nReleases bouncing blood projectiles when damaged");
+            Tooltip.SetDefault("Increases max health by 50\nReleases bouncing blood projectiles and a blood clot when damaged\nWhen blood clots are killed they drop hearts");
         }
 
         public override void SetDefaults()
@@ -25,7 +25,7 @@ namespace OvermorrowMod.Items.Accessories.Expert
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<OvermorrowModPlayer>().BloodyHeart = true;
-            player.statLifeMax2 += 10;
+            player.statLifeMax2 += 50;
         }
     }
 }
