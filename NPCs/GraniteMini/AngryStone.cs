@@ -12,16 +12,19 @@ namespace OvermorrowMod.NPCs.GraniteMini
     {
         readonly bool expert = Main.expertMode;
         private int timer = 0;
+        int spritetimer = 0;
+        int frame = 1;
+
         public override void SetDefaults()
         {
             npc.width = 32;
             npc.height = 26;
-            npc.noTileCollide = false;
-            npc.noGravity = false;
+            npc.noTileCollide = true;
+            npc.noGravity = true;
             npc.aiStyle = 0;
-            npc.damage = 10;
-            npc.defense = 9;
-            npc.lifeMax = 50;
+            npc.damage = 15;
+            npc.defense = 4;
+            npc.lifeMax = 600;
             npc.HitSound = SoundID.NPCHit4;
             npc.value = 12f;
             animationType = NPCID.Zombie;
@@ -44,13 +47,32 @@ namespace OvermorrowMod.NPCs.GraniteMini
                     Projectile.NewProjectile(pos.X, pos.Y, 0f, 0f, ProjectileType<GraniteRay>(), damage, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
                 }
             }
+
+            spritetimer++;
+            if (spritetimer > 6)
+            {
+                frame++;
+                spritetimer = 0;
+            }
+            if (frame > 7)
+            {
+                frame = 0;
+            }
         }
 
+        public override void FindFrame(int frameHeight)
+        {
+            npc.frame.Y = frameHeight * frame;
+            if (Main.player[npc.target].position.X > npc.position.X)
+            {
+                npc.spriteDirection = -1;
+            }
+        }
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Mini Boss");
-            Main.npcFrameCount[npc.type] = 3;
+            Main.npcFrameCount[npc.type] = 8;
         }
     }
 }
