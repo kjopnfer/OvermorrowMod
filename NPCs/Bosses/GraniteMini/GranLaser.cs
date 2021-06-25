@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.NPCs.GraniteMini
+namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 {
     public class GranLaser : ModProjectile
     {

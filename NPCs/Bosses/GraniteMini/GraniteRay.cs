@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 using System;
 using Terraria.ID;
 
-namespace OvermorrowMod.NPCs.GraniteMini
+namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 {
     public class GraniteRay : ModProjectile
     {
@@ -24,7 +24,7 @@ namespace OvermorrowMod.NPCs.GraniteMini
         private int TPtimer = 0;
         private int otherTPtimer = 0;
         float speed = 0f;
-        private const string ChainTexturePath = "OvermorrowMod/NPCs/GraniteMini/GraniteChain";
+        private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/GraniteMini/GraniteChain";
         Vector2 LaserPos;
         Vector2 TargetPos;
 

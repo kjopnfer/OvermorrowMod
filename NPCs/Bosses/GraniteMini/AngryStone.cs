@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 
-namespace OvermorrowMod.NPCs.GraniteMini
+namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 {
     public class AngryStone : ModNPC
     {
@@ -14,7 +14,11 @@ namespace OvermorrowMod.NPCs.GraniteMini
         private int timer = 0;
         int spritetimer = 0;
         int frame = 1;
-
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Granite Mini Boss");
+            Main.npcFrameCount[npc.type] = 8;
+        }
         public override void SetDefaults()
         {
             npc.width = 102;
@@ -68,12 +72,6 @@ namespace OvermorrowMod.NPCs.GraniteMini
             {
                 npc.spriteDirection = -1;
             }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Granite Mini Boss");
-            Main.npcFrameCount[npc.type] = 8;
         }
     }
 }
