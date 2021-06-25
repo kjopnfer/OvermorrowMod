@@ -216,6 +216,7 @@ namespace OvermorrowMod
                         Projectile.NewProjectile(player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, player.whoAmI);
                     }
                 }
+                NPC.NewNPC((int)player.position.X, (int)player.position.Y, mod.NPCType("BloodHeal"));
             }
         }
 
