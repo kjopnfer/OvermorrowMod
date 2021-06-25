@@ -86,6 +86,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     {
                         npc.ai[2] = 2;
                         npc.ai[0] = 0;
+                        break;
                     }
 
                     Vector2 moveTo = player.Center;
@@ -109,7 +110,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                     if (npc.ai[0] % Main.rand.Next(300, 900) == 0)
                     {
-                        npc.ai[2] = 1;
+                        npc.ai[2] = 2;
                         npc.ai[0] = 0;
                     }
                     break;
@@ -118,6 +119,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     {
                         npc.ai[2] = 2;
                         npc.ai[0] = 0;
+                        break;
                     }
 
                     npc.velocity = Vector2.Zero;
@@ -182,7 +184,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.ai[2] = 0;
                     }
                     break;
-                case 2: // Rotating buffer
+                case 2: // Teleportation buffer
                     if (npc.ai[2] == 2)
                     {
                         int countDripplers = 0;
@@ -194,29 +196,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                         }
 
-                        moveTo = player.Center;
-                        move = moveTo - npc.Center;
-                        speed = 10;
-
-                        length = move.Length();
-                        if (length > speed)
-                        {
-                            move *= speed / length;
-                        }
-                        turnResistance = 45;
-                        move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
-                        length = move.Length();
-                        if (length > 10)
-                        {
-                            move *= speed / length;
-                        }
-                        npc.velocity.X = move.X;
-                        npc.velocity.Y = move.Y * .98f;
-
-
-                        origin = player.Center;
+                        npc.velocity = Vector2.Zero;
                         
-                        if (npc.alpha != 255)
+                        if (npc.alpha < 255)
                         {
                             if (npc.alpha > 255)
                             {
@@ -224,36 +206,80 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                             else
                             {
-                                npc.alpha += 2;
+                                npc.alpha += 3;
                             }
                         }
 
                         if (npc.alpha == 255)
                         {
-                            npc.ai[2] = 3;
-                            npc.ai[0] = 0;
-                            npc.ai[3] = Main.rand.Next(0, 360);
+                            if (OvermorrowWorld.DripplerCircle)
+                            {
+                                npc.ai[2] = 3;
+                                npc.ai[0] = 0;
+                                npc.ai[3] = Main.rand.Next(0, 360); // rotation counter
+                                origin = player.Center;
+                            }
+                            else
+                            {
+                                npc.ai[2] = 4;
+                                npc.ai[0] = 0;
+                            }
                         }
                     }
                     break;
                 case 3: // Rotate around the player
                     NPC_OrbitPosition(npc, origin, 300, 1f);
-                    npc.ai[3]++;
-                    //npc.alpha = 255;
 
+                    if (npc.alpha > 0)
+                    {
+                        npc.alpha -= 3;
+                    }
+
+                    if (npc.ai[0] >= 395)
+                    {
+                        npc.alpha += 3;
+                    }
+
+                    if (npc.ai[0] == 480)
+                    {
+                        OvermorrowWorld.DripplerCircle = false;
+                        npc.alpha = 0;
+                        npc.ai[2] = 2; // switch
+                        npc.ai[0] = 0;
+                        npc.ai[3] = 0;
+                    }
+                    break;
+                case 4: // Teleport to a random position
+                    if (npc.ai[0] == 1)
+                    {
+                        Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-10, 10) * 100, player.Center.Y + Main.rand.Next(-10, 10) * 100);
+                        npc.position = randPos;
+                        npc.netUpdate = true;
+                    }
+
+                    npc.velocity = Vector2.Zero;
                     if (npc.alpha != 0)
                     {
                         npc.alpha -= 3;
                     }
 
-                    if (npc.ai[0] == 600)
+                    if (npc.alpha == 0)
                     {
-                        OvermorrowWorld.DripplerCircle = false;
-                        //npc.alpha = 0;
-                        npc.ai[2] = 0;
+                        int shootSpeed = Main.rand.Next(6, 10);
+                        Vector2 npcPosition = npc.Center;
+                        Vector2 targetPosition = Main.player[npc.target].Center;
+                        Vector2 direction = targetPosition - npcPosition;
+                        direction.Normalize();
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                        }
+
+                        npc.ai[2] = 2;
                         npc.ai[0] = 0;
-                        npc.ai[3] = 0;
                     }
+
                     break;
             }
         }

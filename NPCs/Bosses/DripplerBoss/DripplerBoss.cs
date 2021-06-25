@@ -223,7 +223,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                         if (OvermorrowWorld.DripplerCircle)
                         {
-                            circleCooldown = 900;
+                            circleCooldown = 1200;
                         }
 
                         if (changedPhase3)
