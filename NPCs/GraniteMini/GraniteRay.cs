@@ -106,7 +106,7 @@ namespace OvermorrowMod.NPCs.GraniteMini
 
 
             float between = Vector2.Distance(npc.Center, projectile.Center);
-            if(between > 565f)
+            if(between > 365f)
             {
                 TPtimer++;
                 if(TPtimer == 55)
