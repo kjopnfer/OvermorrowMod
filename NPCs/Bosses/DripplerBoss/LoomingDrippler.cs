@@ -13,6 +13,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
     {
         private NPC parentNPC;
         private int speed;
+        private int randIncrementer;
+        private bool secondTeleport;
         private Vector2 origin;
         public override void SetStaticDefaults()
         {
@@ -252,7 +254,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 4: // Teleport to a random position
                     if (npc.ai[0] == 1)
                     {
-                        Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-10, 10) * 100, player.Center.Y + Main.rand.Next(-10, 10) * 100);
+                        randIncrementer = Main.rand.Next(2, 4);
+                        Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-6, 6) * 100, player.Center.Y + Main.rand.Next(-6, 6) * 100);
                         npc.position = randPos;
                         npc.netUpdate = true;
                     }
@@ -260,7 +263,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     npc.velocity = Vector2.Zero;
                     if (npc.alpha != 0)
                     {
-                        npc.alpha -= 3;
+                        npc.alpha -= randIncrementer;
                     }
 
                     if (npc.alpha == 0)
@@ -276,8 +279,18 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                         }
 
-                        npc.ai[2] = 2;
-                        npc.ai[0] = 0;
+                        if (!secondTeleport)
+                        {
+                            secondTeleport = true;
+                            npc.ai[2] = 2;
+                            npc.ai[0] = 0;
+                        }
+                        else
+                        {
+                            secondTeleport = false;
+                            npc.ai[2] = 0;
+                            npc.ai[0] = 0;
+                        }
                     }
 
                     break;

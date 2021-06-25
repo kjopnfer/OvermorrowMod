@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
@@ -474,6 +475,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemID.SharkToothNecklace);
                 }
+
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<CancerInABottle>(), Main.rand.Next(6, 10));
 
                 if (Main.rand.Next(10) == 0) // Trophy Dropchance
                 {
