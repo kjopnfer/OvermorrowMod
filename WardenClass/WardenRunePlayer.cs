@@ -98,16 +98,16 @@ namespace OvermorrowMod.WardenClass
             switch (modPlayer.RuneID)
             {
                 case 1: // Blaze Binder
-                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
+                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/HellRuneCircle");
                     break;
                 case 2: // Bone Spike
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DungeonRuneCircle2");
                     break;
                 case 3: // Lightning Cutter
-                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
+                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/SkyRuneCircle");
                     break;
                 case 4: // Mycelium Chains
-                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
+                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/MushroomRuneCircle");
                     break;
                 case 5: // Sanguine Impaler
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonRuneCircle");
@@ -116,7 +116,7 @@ namespace OvermorrowMod.WardenClass
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CorruptionRuneCircle");
                     break;
                 case 7: // Thorns of the Jungle
-                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
+                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/JungleRuneCircle");
                     break;
                 default:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
