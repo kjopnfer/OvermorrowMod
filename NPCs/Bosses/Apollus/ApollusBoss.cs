@@ -71,7 +71,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     {
                         if(player.dead || !player.active) { break; }
                         npc.TargetClosest();
-                        npc.Teleport(new Vector2(player.Center.X, player.Center.Y - 200f)); //  new Vector2((float)Main.rand.Next((int)player.Center.X - 150, (int)player.Center.Y + 150), (float)Main.rand.Next((int)player.Center.X + 150, (int)player.Center.Y - 150))
+                        npc.Teleport(MethodHelper.GetRandomVector((int)player.Center.X + 150, (int)player.Center.Y + 150, (int)player.Center.X - 150, (int)player.Center.Y - 150)); //  new Vector2((float)Main.rand.Next((int)player.Center.X - 150, (int)player.Center.Y + 150), (float)Main.rand.Next((int)player.Center.X + 150, (int)player.Center.Y - 150))
                         npc.ai[0] = Main.rand.Next(0, 2);
                     }
                     break;

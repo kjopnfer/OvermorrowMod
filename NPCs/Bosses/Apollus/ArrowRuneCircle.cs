@@ -29,7 +29,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         public int timer = 0;
         public override void AI()
         {
-            if (++timer % 15 == 0)
+            if (++timer % 25 == 0)
             {
                 for (int i = 0; i < 5; i++)
                 {

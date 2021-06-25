@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
-    public class SplittingBloodHemomancer : ModProjectile
+    public class SplittingBlood_Hemomancer : ModProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
 
