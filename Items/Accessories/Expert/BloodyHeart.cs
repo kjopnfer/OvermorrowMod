@@ -9,7 +9,7 @@ namespace OvermorrowMod.Items.Accessories.Expert
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloody Heart");
-            Tooltip.SetDefault("Increases max health by 50\nReleases bouncing blood projectiles and a blood clot when damaged\nWhen blood clots are killed they drop hearts");
+            Tooltip.SetDefault("Increases max health by 50\nReleases bouncing blood projectiles and a Blood Clot when damaged\nBlood Clots drop hearts when killed");
         }
 
         public override void SetDefaults()

@@ -9,8 +9,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Creeping Death Staff");
-            Tooltip.SetDefault("Shoots a blood ring around you.\nEnemies hit allow you to fires iron bolts");
+            DisplayName.SetDefault("Harvester of Sorrow");
+            Tooltip.SetDefault("Shoots a blood ring around you.\nEnemies hit allow you to fires iron bolts\n'Language of the mad'");
         }
 
         public override void SetDefaults()

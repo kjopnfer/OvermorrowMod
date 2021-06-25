@@ -1,5 +1,6 @@
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Accessories.Expert;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
@@ -64,6 +65,8 @@ namespace OvermorrowMod.Items.BossBags
             {
                 player.QuickSpawnItem(ModContent.ItemType<DripplerTrophy>());
             }
+
+            player.QuickSpawnItem(ModContent.ItemType<CancerInABottle>(), Main.rand.Next(6, 10));
 
             int necklaceChance = Main.rand.Next(5);
             if (necklaceChance == 0)
