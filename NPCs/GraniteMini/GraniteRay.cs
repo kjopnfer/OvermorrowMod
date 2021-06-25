@@ -9,6 +9,8 @@ namespace OvermorrowMod.NPCs.GraniteMini
 {
     public class GraniteRay : ModProjectile
     {
+        public override bool CanDamage() => false;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Ray");
@@ -20,7 +22,10 @@ namespace OvermorrowMod.NPCs.GraniteMini
         private int attacktimer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
+        private int otherTPtimer = 0;
+        float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/GraniteMini/GraniteChain";
+        Vector2 LaserPos;
         Vector2 TargetPos;
 
         public override void SetDefaults()
@@ -30,7 +35,6 @@ namespace OvermorrowMod.NPCs.GraniteMini
             projectile.timeLeft = 2;
             projectile.penetrate = -1;
             projectile.hostile = true;
-            projectile.magic = true;
             projectile.tileCollide = false;
             projectile.ignoreWater = true;
         }
@@ -40,8 +44,7 @@ namespace OvermorrowMod.NPCs.GraniteMini
             NPC npc = Main.npc[(int)projectile.ai[0]];
             endPoint = npc.Center;
             timer++;
-
-            if(timer == 1)
+            if (timer == 1)
             {
                 Vector2 TargetPos = Main.player[projectile.owner].Center; 
                 projectile.position = endPoint;
@@ -51,24 +54,68 @@ namespace OvermorrowMod.NPCs.GraniteMini
                 projectile.timeLeft = 2;
             }
 
+            float betweenPLY = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
+            if (betweenPLY > 300)
+            {
+                speed = 1f;
+                if(projectile.velocity.X > 7)
+                {
+                    projectile.velocity.X = 7;
+                }
+                if (projectile.velocity.X < -7)
+                {
+                    projectile.velocity.X = -7;
+                }
+
+                if (projectile.velocity.Y > 7)
+                {
+                    projectile.velocity.Y = 7;
+                }
+                if (projectile.velocity.Y < -7)
+                {
+                    projectile.velocity.Y = -7;
+                }
+            }
+            else
+            {
+                speed = 0.55f;
+                if (projectile.velocity.X > 5)
+                {
+                    projectile.velocity.X = 5;
+                }
+                if (projectile.velocity.X < -5)
+                {
+                    projectile.velocity.X = -5;
+                }
+
+                if (projectile.velocity.Y > 5)
+                {
+                    projectile.velocity.Y = 5;
+                }
+                if (projectile.velocity.Y < -5)
+                {
+                    projectile.velocity.Y = -5;
+                }
+            }
+
             if (timer > 1 && !teleporting)
             {
                 projectile.rotation = (npc.Center - projectile.Center).ToRotation();
                 if (Main.player[projectile.owner].Center.X > projectile.position.X)
                 {
-                    projectile.position.X += 0.7f;
+                    projectile.velocity.X += speed;
                 }
                 if (Main.player[projectile.owner].Center.X < projectile.position.X)
                 {
-                    projectile.position.X -= 0.7f;
+                    projectile.velocity.X -= speed;
                 }
                 if (Main.player[projectile.owner].Center.Y > projectile.position.Y)
                 {
-                    projectile.position.Y += 0.7f;
+                    projectile.velocity.Y += speed;
                 }
                 if (Main.player[projectile.owner].Center.Y < projectile.position.Y)
                 {
-                    projectile.position.Y -= 0.7f;
+                    projectile.velocity.Y -= speed;
                 }
             }
 
@@ -76,7 +123,7 @@ namespace OvermorrowMod.NPCs.GraniteMini
             if (!teleporting)
             {
                 attacktimer++;
-                if(attacktimer > 75 && projshot == 0)
+                if(attacktimer > 87 && projshot == 0)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Main.player[projectile.owner].Center;
@@ -89,7 +136,7 @@ namespace OvermorrowMod.NPCs.GraniteMini
                     attacktimer = 0;
                     projshot = 1;
                 }
-                if (attacktimer > 75 && projshot == 1)
+                if (attacktimer > 87 && projshot == 1)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Main.player[projectile.owner].Center;
@@ -106,23 +153,25 @@ namespace OvermorrowMod.NPCs.GraniteMini
 
 
             float between = Vector2.Distance(npc.Center, projectile.Center);
-            if(between > 365f)
+            if(between > 565f || otherTPtimer > 650)
             {
                 TPtimer++;
                 if(TPtimer == 55)
                 {
+
                     Vector2 value1 = new Vector2(0f, 0f);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 5, value1.Y + 5, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 5, value1.Y + 5, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 5, value1.Y - 5, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 5, value1.Y - 5, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
 
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 5, value1.Y, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 5, value1.Y, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y + 5, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y - 5, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 6, value1.Y, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 6, value1.Y, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y + 6, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y - 6, mod.ProjectileType("GraniteBolt"), npc.damage + 15, 1f, projectile.owner, 0f);
 
                     npc.Center = projectile.Center;
+                    otherTPtimer = 0;
                 }
                 Main.PlaySound(SoundID.Item8, projectile.Center);
                 int Random1 = Main.rand.Next(-70, 70);
@@ -130,7 +179,8 @@ namespace OvermorrowMod.NPCs.GraniteMini
 
                 float XDustposition = projectile.Center.X + Random1 - 16;
                 float YDustposition = projectile.Center.Y + Random2 - 16;
-
+                projectile.velocity.X = 0f;
+                projectile.velocity.Y = 0f;
                 Vector2 VDustposition = new Vector2(XDustposition, YDustposition);
                 Vector2 Dusttarget = projectile.Center;
                 Vector2 Dustdirection = Dusttarget - VDustposition;
@@ -149,6 +199,7 @@ namespace OvermorrowMod.NPCs.GraniteMini
             {
                 teleporting = false;
                 TPtimer = 0;
+                otherTPtimer++;
             }
 
         }
@@ -166,15 +217,18 @@ namespace OvermorrowMod.NPCs.GraniteMini
             Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
             projectile.alpha = 0;
             projectile.velocity = Vector2.Zero;
+            var drawPosition = projectile.Center;
 
             Vector2 unit = endPoint - projectile.Center; // changing all endpoints it just how you change it, dont change other stuff it wont go well
             float length = unit.Length();
             unit.Normalize();
-            for (float k = 0; k <= length; k += 20f)
+            for (float k = 0; k <= length; k += 5f)
             {
                 Vector2 drawPos = projectile.Center + unit * k - Main.screenPosition;
-                Color alpha = Color.Blue * ((255 - projectile.alpha) / 255f);
-                spriteBatch.Draw(chainTexture, drawPos, null, alpha, projectile.rotation, new Vector2(2, 2), 1f, SpriteEffects.None, 0f);
+                Color alpha = Color.LightBlue * ((255 - projectile.alpha) / 255f);
+                Color color = Lighting.GetColor((int)drawPosition.X / 16, (int)(drawPosition.Y / 16f));
+
+                spriteBatch.Draw(chainTexture, drawPos, null, color, projectile.rotation, new Vector2(6, 6), 1f, SpriteEffects.None, 0f);
             }
             return true;
         }

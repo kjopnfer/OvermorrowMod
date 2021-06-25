@@ -17,11 +17,12 @@ namespace OvermorrowMod.NPCs.GraniteMini
 
         public override void SetDefaults()
         {
-            npc.width = 32;
-            npc.height = 26;
+            npc.width = 102;
+            npc.height = 102;
             npc.noTileCollide = true;
             npc.noGravity = true;
             npc.aiStyle = 0;
+            npc.knockBackResist = 0f;
             npc.damage = 15;
             npc.defense = 4;
             npc.lifeMax = 600;
@@ -49,7 +50,7 @@ namespace OvermorrowMod.NPCs.GraniteMini
             }
 
             spritetimer++;
-            if (spritetimer > 6)
+            if (spritetimer > 4)
             {
                 frame++;
                 spritetimer = 0;
