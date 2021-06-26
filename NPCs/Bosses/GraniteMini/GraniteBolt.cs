@@ -6,7 +6,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 {
     public class GraniteBolt : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.SapphireBolt;
         public override void SetDefaults()
         {
             projectile.CloneDefaults(ProjectileID.SapphireBolt);
@@ -16,5 +15,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             projectile.hostile = true;
             projectile.timeLeft = 120;
         }
+        public override string Texture => "Terraria/Projectile_" + ProjectileID.SapphireBolt;
     }
 }
