@@ -14,7 +14,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private NPC parentNPC;
         private int speed;
         private int randIncrementer;
-        private bool secondTeleport;
+        private bool secondTeleport = false;
         private Vector2 origin;
         public override void SetStaticDefaults()
         {
@@ -110,7 +110,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     npc.velocity.X = move.X;
                     npc.velocity.Y = move.Y * .98f;
 
-                    if (npc.ai[0] % Main.rand.Next(300, 900) == 0)
+                    if (npc.ai[0] % 200 == 0)
                     {
                         npc.ai[2] = 2;
                         npc.ai[0] = 0;
@@ -212,7 +212,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                         }
 
-                        if (npc.alpha == 255)
+                        if (npc.alpha >= 255)
                         {
                             if (OvermorrowWorld.DripplerCircle)
                             {
@@ -237,6 +237,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.alpha -= 3;
                     }
 
+                    if (npc.ai[0] > 85)
+                    {
+                        npc.ai[3] += 1f;
+                    }
+
                     if (npc.ai[0] >= 395)
                     {
                         npc.alpha += 3;
@@ -254,19 +259,19 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 4: // Teleport to a random position
                     if (npc.ai[0] == 1)
                     {
-                        randIncrementer = Main.rand.Next(2, 4);
+                        randIncrementer = Main.rand.Next(2, 5);
                         Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-6, 6) * 100, player.Center.Y + Main.rand.Next(-6, 6) * 100);
                         npc.position = randPos;
                         npc.netUpdate = true;
                     }
 
                     npc.velocity = Vector2.Zero;
-                    if (npc.alpha != 0)
+                    if (npc.alpha > 0)
                     {
                         npc.alpha -= randIncrementer;
                     }
 
-                    if (npc.alpha == 0)
+                    if (npc.alpha <= 0)
                     {
                         int shootSpeed = Main.rand.Next(6, 10);
                         Vector2 npcPosition = npc.Center;

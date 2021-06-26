@@ -211,7 +211,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         {
                             if (Main.rand.Next(50) == 0 && circleCooldown == 0 && !OvermorrowWorld.DripplerCircle)
                             {
-                                OvermorrowWorld.DripplerCircle = true;
+                                //OvermorrowWorld.DripplerCircle = true;
                             }
                             else
                             {
@@ -224,7 +224,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                         if (OvermorrowWorld.DripplerCircle)
                         {
-                            circleCooldown = 1200;
+                            circleCooldown = 2400;
                         }
 
                         if (changedPhase3)
