@@ -9,7 +9,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 {
     public class GraniteRay : ModProjectile
     {
-        public override bool CanDamage() => false;
 
         public override void SetStaticDefaults()
         {
@@ -42,7 +41,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         public override void AI()
         {
             NPC npc = Main.npc[(int)projectile.ai[0]];
-            endPoint = npc.Center;
+            endPoint = npc.Center + new Vector2(- 5, -25);
             timer++;
             if (timer == 1)
             {
@@ -100,7 +99,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
             if (timer > 1 && !teleporting)
             {
-                projectile.rotation = (npc.Center - projectile.Center).ToRotation();
+                projectile.rotation = (endPoint - projectile.Center).ToRotation();
                 if (Main.player[projectile.owner].Center.X > projectile.position.X)
                 {
                     projectile.velocity.X += speed;
@@ -123,20 +122,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             if (!teleporting)
             {
                 attacktimer++;
-                if(attacktimer > 87 && projshot == 0)
-                {
-                    Vector2 position = projectile.Center;
-                    Vector2 targetPosition = Main.player[projectile.owner].Center;
-                    Vector2 direction = targetPosition - position;
-                    direction.Normalize();
-                    float speed = 6f;
-                    int type = mod.ProjectileType("GranLaser");
-                    int damage = npc.damage + 5;
-                    Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
-                    attacktimer = 0;
-                    projshot = 1;
-                }
-                if (attacktimer > 87 && projshot == 1)
+                if (attacktimer > 90 && npc.life > npc.lifeMax / 2)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Main.player[projectile.owner].Center;
@@ -147,7 +133,22 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     int damage = npc.damage;
                     Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
                     attacktimer = 0;
-                    projshot = 0;
+                }
+                else if (attacktimer > 90)
+                {
+                    Vector2 position = projectile.Center;
+                    Vector2 targetPosition = Main.player[projectile.owner].Center;
+                    Vector2 direction = targetPosition - position;
+                    direction.Normalize();
+                    Vector2 newpoint1 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(3));
+                    Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(-3));
+                    float speed = 7f;
+                    int type = mod.ProjectileType("GranLaser");
+                    int damage = npc.damage;
+                    Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(position, newpoint1 * speed, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(position, newpoint2 * speed, type, damage, 0f, Main.myPlayer);
+                    attacktimer = 0;
                 }
             }
 

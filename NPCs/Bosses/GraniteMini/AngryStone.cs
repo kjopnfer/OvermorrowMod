@@ -14,11 +14,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         private int timer = 0;
         int spritetimer = 0;
         int frame = 1;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Granite Mini Boss");
-            Main.npcFrameCount[npc.type] = 8;
-        }
+
         public override void SetDefaults()
         {
             npc.width = 102;
@@ -29,7 +25,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.knockBackResist = 0f;
             npc.damage = 15;
             npc.defense = 4;
-            npc.lifeMax = 600;
+            npc.lifeMax = 2000;
             npc.HitSound = SoundID.NPCHit4;
             npc.value = 12f;
             animationType = NPCID.Zombie;
@@ -68,10 +64,16 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         public override void FindFrame(int frameHeight)
         {
             npc.frame.Y = frameHeight * frame;
-            if (Main.player[npc.target].position.X > npc.position.X)
+            if (Main.player[npc.target].Center.X < npc.Center.X)
             {
                 npc.spriteDirection = -1;
             }
+        }
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Gra-Knight");
+            Main.npcFrameCount[npc.type] = 8;
         }
     }
 }
