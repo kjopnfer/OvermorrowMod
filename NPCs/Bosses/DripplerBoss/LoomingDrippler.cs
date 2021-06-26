@@ -12,9 +12,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
     public class LoomingDrippler : ModNPC
     {
         private NPC parentNPC;
-        private int speed;
+        private int moveSpeed;
         private int randIncrementer;
         private bool secondTeleport = false;
+        private int randSwitch = 300;
         private Vector2 origin;
         public override void SetStaticDefaults()
         {
@@ -72,7 +73,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
             if (npc.ai[3] == 0)
             {
-                speed = Main.rand.Next(14, 21);
+                moveSpeed = Main.rand.Next(7, 14);
                 npc.ai[3]++;
             }
 
@@ -93,24 +94,24 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                     Vector2 moveTo = player.Center;
                     var move = moveTo - npc.Center;
-                    var speed = 10;
+                    //var speed = 10;
 
                     float length = move.Length();
-                    if (length > speed)
+                    if (length > moveSpeed)
                     {
-                        move *= speed / length;
+                        move *= moveSpeed / length;
                     }
                     var turnResistance = 45;
                     move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
                     length = move.Length();
                     if (length > 10)
                     {
-                        move *= speed / length;
+                        move *= moveSpeed / length;
                     }
                     npc.velocity.X = move.X;
                     npc.velocity.Y = move.Y * .98f;
 
-                    if (npc.ai[0] % 200 == 0)
+                    if (npc.ai[0] % randSwitch == 0)
                     {
                         npc.ai[2] = 2;
                         npc.ai[0] = 0;
@@ -237,11 +238,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.alpha -= 3;
                     }
 
-                    if (npc.ai[0] > 85)
-                    {
-                        npc.ai[3] += 1f;
-                    }
-
                     if (npc.ai[0] >= 395)
                     {
                         npc.alpha += 3;
@@ -293,6 +289,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         else
                         {
                             secondTeleport = false;
+                            randSwitch = Main.rand.Next(300, 700);
                             npc.ai[2] = 0;
                             npc.ai[0] = 0;
                         }
@@ -307,7 +304,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             double rad;
             double deg = speed * (double)npc.ai[3];
             rad = deg * (Math.PI / 180);
-            npc.ai[3] += 1f;
+            npc.ai[3] += 2f;
 
             npc.position.X = position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2;
             npc.position.Y = position.Y - (int)(Math.Sin(rad) * distance) - npc.height / 2;
