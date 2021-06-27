@@ -16,6 +16,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private int randIncrementer;
         private bool secondTeleport = false;
         private int randSwitch = 300;
+        private int storedDamage;
         private Vector2 origin;
         public override void SetStaticDefaults()
         {
@@ -84,10 +85,44 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
             switch (npc.ai[2])
             {
+                case -1: // Hide NPC
+                    if (OvermorrowWorld.DripladShoot)
+                    {
+                        if (npc.alpha < 255)
+                        {
+                            npc.alpha += 3;
+                        }
+
+                        npc.velocity = Vector2.Zero;
+                        npc.damage = 0;
+                    }
+                    else
+                    {
+                        if (npc.alpha > 0)
+                        {
+                            npc.alpha -= 3;
+                        }
+
+                        if (npc.alpha <= 0)
+                        {
+                            npc.damage = storedDamage;
+                            npc.ai[2] = 0;
+                            npc.ai[0] = 0;
+                        }
+                    }
+                    break;
                 case 0: // Follow player
                     if (OvermorrowWorld.DripplerCircle)
                     {
                         npc.ai[2] = 2;
+                        npc.ai[0] = 0;
+                        break;
+                    }
+
+                    if (OvermorrowWorld.DripladShoot)
+                    {
+                        storedDamage = npc.damage;
+                        npc.ai[2] = -1;
                         npc.ai[0] = 0;
                         break;
                     }
@@ -253,6 +288,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     }
                     break;
                 case 4: // Teleport to a random position
+                    if (OvermorrowWorld.DripladShoot)
+                    {
+                        storedDamage = npc.damage;
+                        npc.ai[2] = -1;
+                        npc.ai[0] = 0;
+                        break;
+                    }
+
                     if (npc.ai[0] == 1)
                     {
                         randIncrementer = Main.rand.Next(2, 5);
@@ -297,7 +340,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             npc.ai[0] = 0;
                         }
                     }
-
                     break;
             }
         }

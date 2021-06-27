@@ -57,6 +57,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             else
             {
                 parentNPC = Main.npc[(int)npc.ai[1]];
+                npc.timeLeft = 20;
             }
 
             if (!initializedRadius)
@@ -81,9 +82,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             switch (npc.ai[2])
             {
                 case 0: // Do nothing
-                    if (OvermorrowWorld.DripladShoot)
+                    if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3)
                     {
                         npc.ai[2] = 2;
+                        npc.ai[3] = 0;
+                    }
+                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2)
+                    {
+                        npc.ai[2] = 1;
                         npc.ai[3] = 0;
                     }
 
@@ -93,31 +99,20 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.ai[3] = 0;
                     }*/
                     break;
-                case 1: // Shoot projectile
-                    if (npc.ai[0] % 60 == 0)
+                case 1: // Shoot outwards
+                    if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 5 == 0)
                     {
-                        float numberProjectiles = 6 + Main.rand.Next(4);
-                        float rotation = MathHelper.ToRadians(360);
-                        Vector2 delta = player.Center - npc.Center;
-                        float magnitude = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
-                        if (magnitude > 0)
-                        {
-                            delta *= 5f / magnitude;
-                        }
-                        else
-                        {
-                            delta = new Vector2(0f, 5f);
-                        }
-                        Main.PlaySound(SoundID.Item95, (int)npc.Center.X, (int)npc.Center.Y);
+                        int shootSpeed = 7;
+                        Vector2 npcPosition = npc.Center;
+                        Vector2 targetPosition = NPC_CalculateOuter(npc, parentNPC.Center, radius + 200);
+                        Vector2 direction = targetPosition - npcPosition;
+                        direction.Normalize();
+
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            for (int i = 0; i < numberProjectiles; i++)
-                            {
-                                Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .3f;
-                                // * 3f increases speed
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, perturbedSpeed.X * 3f, perturbedSpeed.Y * 3f, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 2f, Main.myPlayer, 0f, 0f);
-                            }
+                            Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                         }
+                        Main.NewText("shoot");
                     }
 
                     if (npc.ai[3] == 120)
@@ -127,9 +122,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     }
                     break;
                 case 2: // Shoot towards center
-                    if (30 < npc.ai[3] && npc.ai[3] < 90)
+                    if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 5 == 0)
                     {
-                        int shootSpeed = Main.rand.Next(6, 10);
+                        int shootSpeed = 7;
                         Vector2 npcPosition = npc.Center;
                         Vector2 targetPosition = parentNPC.Center;
                         Vector2 direction = targetPosition - npcPosition;
@@ -137,14 +132,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.rand.Next(2) == 0)
-                            {
-                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
-                            }
+                            Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                         }
                     }
 
-                    if(npc.ai[3] == 90)
+                    if (npc.ai[3] == 90)
                     {
                         npc.ai[2] = 0;
                         npc.ai[3] = 0;
@@ -172,6 +164,16 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
             npc.position.X = position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2;
             npc.position.Y = position.Y - (int)(Math.Sin(rad) * distance) - npc.height / 2;
+        }
+
+        // Get the outer circle
+        public Vector2 NPC_CalculateOuter(NPC modNPC, Vector2 position, double distance, double speed = 1.75)
+        {
+            double rad;
+            double deg = speed * npc.ai[0];
+            rad = deg * (Math.PI / 180);
+
+            return new Vector2(position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2, position.Y - (int)(Math.Cos(rad) * distance) - npc.height / 2);
         }
 
         public override void HitEffect(int hitDirection, double damage)
