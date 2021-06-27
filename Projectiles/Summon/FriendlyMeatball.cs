@@ -33,12 +33,17 @@ namespace OvermorrowMod.Projectiles.Summon
         float NPCtargetY = 0;
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
+
+        private int CenterXPly = 5;
+
+
         public override void SetDefaults()
         {
-            projectile.width = 30;
-            projectile.height = 38;
+            projectile.width = 32;
+            projectile.height = 40;
             projectile.light = 2f;
             projectile.minion = true;
+            projectile.minionSlots = 0.5f;
             projectile.friendly = true;
             projectile.ignoreWater = true;
             projectile.tileCollide = false;
@@ -53,10 +58,21 @@ namespace OvermorrowMod.Projectiles.Summon
 
         public override void AI()
         {
+            Player player = Main.player[projectile.owner];
+
+            #region Active check
+            if (player.dead || !player.active)
+            {
+                player.ClearBuff(ModContent.BuffType<MeatBallBuff>());
+            }
+            if (player.HasBuff(ModContent.BuffType<MeatBallBuff>()))
+            {
+                projectile.timeLeft = 2;
+            }
+            #endregion
 
 
-
-            float distanceFromTarget = 500f;
+            float distanceFromTarget = 300f;
             Vector2 targetCenter = projectile.position;
             bool foundTarget = false;
 
@@ -113,8 +129,8 @@ namespace OvermorrowMod.Projectiles.Summon
                 else
                 {
                     
-                projectile.position.X = 100 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2;
-                projectile.position.Y = 100 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                projectile.position.X = 75 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = 75 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
 
 
                 projectile.ai[1] += 2.5f;
@@ -136,8 +152,8 @@ namespace OvermorrowMod.Projectiles.Summon
                 else
                 {
 
-                projectile.position.X = -100 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2;
-                projectile.position.Y = -100 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                projectile.position.X = -75 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = -75 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
 
 
                 projectile.ai[1] += 2.5f;
@@ -164,8 +180,8 @@ namespace OvermorrowMod.Projectiles.Summon
                 else
                 {
 
-                projectile.position.X = -100 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2;
-                projectile.position.Y = 100 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                projectile.position.X = -75 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = 75 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
 
 
                 projectile.ai[1] += 2.5f;
@@ -192,28 +208,187 @@ namespace OvermorrowMod.Projectiles.Summon
                 else
                 {
 
-                projectile.position.X = 100 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2;
-                projectile.position.Y = -100 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                projectile.position.X = 75 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = -75 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
 
                 projectile.ai[1] += 2.5f;
                 }
 
             }
 
+
+
+            if(PosPlay == 4 && PosCheck == 2)
+            {
+                projectile.ai[1] = 120;
+            }
+
+            if(PosPlay == 4 && PosCheck > 2)
+            {
+                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double rad = deg * (Math.PI / -180); //Convert degrees to radians
+                if(NumProj > HasChecked + 1)
+                {
+                    HasChecked += 1;
+                    projectile.ai[1] = 120;
+                    deg = 0;
+                    rad = 0;
+                }
+                else
+                {
+
+                projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+
+                projectile.ai[1] += 0.7f;
+                }
+            }
+
+            if(PosPlay == 5 && PosCheck == 2)
+            {
+                projectile.ai[1] = 240;
+            }
+
+            if(PosPlay == 5 && PosCheck > 2)
+            {
+                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double rad = deg * (Math.PI / -180); //Convert degrees to radians
+                if(NumProj > HasChecked + 1)
+                {
+                    HasChecked += 1;
+                    projectile.ai[1] = 240;
+                    deg = 0;
+                    rad = 0;
+                }
+                else
+                {
+
+                projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+
+                projectile.ai[1] += 0.7f;
+                }
+            }
+
+
+            if(PosPlay == 6 && PosCheck == 2)
+            {
+                projectile.ai[1] = 360;
+            }
+
+            if(PosPlay == 6 && PosCheck > 2)
+            {
+                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double rad = deg * (Math.PI / -180); //Convert degrees to radians
+                if(NumProj > HasChecked + 1)
+                {
+                    HasChecked += 1;
+                    projectile.ai[1] = 360;
+                    deg = 0;
+                    rad = 0;
+                }
+                else
+                {
+
+                projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+
+                projectile.ai[1] += 0.7f;
+                }
+
+            }
+
+            if(PosPlay == 7 && PosCheck == 2)
+            {
+                projectile.ai[1] = 60;
+            }
+
+            if(PosPlay == 7 && PosCheck > 2)
+            {
+                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double rad = deg * (Math.PI / -180); //Convert degrees to radians
+                if(NumProj > HasChecked + 1)
+                {
+                    HasChecked += 1;
+                    projectile.ai[1] = 60;
+                    deg = 0;
+                    rad = 0;
+                }
+                else
+                {
+
+                projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+
+                projectile.ai[1] += 0.7f;
+                }
+
+            }
+
+
+
+            if(PosPlay == 8 && PosCheck == 2)
+            {
+                projectile.ai[1] = 180;
+            }
+            if(PosPlay == 8 && PosCheck > 2)
+            {
+                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double rad = deg * (Math.PI / -180); //Convert degrees to radians
+                if(NumProj > HasChecked + 1)
+                {
+                    HasChecked += 1;
+                    projectile.ai[1] = 180;
+                    deg = 0;
+                    rad = 0;
+                }
+                else
+                {
+
+                projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+
+                projectile.ai[1] += 0.7f;
+                }
+
+            }
+
+            if(PosPlay == 9 && PosCheck == 2)
+            {
+                projectile.ai[1] = 300;
+            }
+            if(PosPlay == 9 && PosCheck > 2)
+            {
+                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double rad = deg * (Math.PI / -180); //Convert degrees to radians
+                if(NumProj > HasChecked + 1)
+                {
+                    HasChecked += 1;
+                    projectile.ai[1] = 300;
+                    deg = 0;
+                    rad = 0;
+                }
+                else
+                {
+
+                projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
+                projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+
+                projectile.ai[1] += 0.7f;
+                }
+
+            }
+
+            if(PosPlay == 10 && PosCheck > 2)
+            {
+                projectile.Kill();
+            }
             if (foundTarget)
             {
                 timer++;
-                if (timer == 45 + Random2)
+                if (timer == 210)
                 {
-                    Random2 = Main.rand.Next(-15, 12);
-                    Random = Main.rand.Next(-2, 3);
-                    Vector2 position = projectile.Center;
-                    Vector2 targetPosition = Main.MouseWorld;
-                    Vector2 direction = targetPosition - position;
-                    direction.Normalize();
-                    Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(1.5f));
-                    float speed = Random + 20f;
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<GraniteLaser>(), projectile.damage, 1f, projectile.owner, 0f);
+                    NPC.NewNPC((int)projectile.position.X, (int)projectile.position.Y, mod.NPCType("BloodSeeker"));
                     timer = 0;
                 }
             }
