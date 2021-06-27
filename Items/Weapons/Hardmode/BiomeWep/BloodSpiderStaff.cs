@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Blood Spider Staff");
-            Tooltip.SetDefault("Summons a Blood Crawler to fight for you \nWhile holding down the fire button it shoots at your mouse \nProjctiles from this heal you \nTakes up 1.5 summon slots \nUse this with the Summon Stick");
+            Tooltip.SetDefault("Summons a Blood Cloud to fight for you");
         }
         public override void SetDefaults()
         {

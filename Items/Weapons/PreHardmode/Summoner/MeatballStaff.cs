@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Meatball Staff");
-            Tooltip.SetDefault("Summons Meatballs");
+            Tooltip.SetDefault("Summons Meatballs \nOnly takes half a minion slot");
         }
 
         public override void SetDefaults()
