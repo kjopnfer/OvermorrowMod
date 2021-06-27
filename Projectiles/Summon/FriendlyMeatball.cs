@@ -36,12 +36,15 @@ namespace OvermorrowMod.Projectiles.Summon
 
         private int CenterXPly = 5;
 
-
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Friendly Meatball");
+            Main.projFrames[base.projectile.type] = 13;
+        }
         public override void SetDefaults()
         {
             projectile.width = 32;
             projectile.height = 40;
-            projectile.light = 2f;
             projectile.minion = true;
             projectile.minionSlots = 0.5f;
             projectile.friendly = true;
@@ -51,10 +54,7 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.penetrate = -1;
             projectile.timeLeft = 200000;
         }
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Friendly Meatball");
-        }
+        
 
         public override void AI()
         {
@@ -393,9 +393,15 @@ namespace OvermorrowMod.Projectiles.Summon
                 }
             }
 
-
-
-            // Loop through the 4 animation frames, spending 5 ticks on each.
+            // Loop through the 13 animation frames, spending 5 ticks on each.
+            if (++projectile.frameCounter >= 4)
+            {
+                projectile.frameCounter = 0;
+                if (++projectile.frame >= Main.projFrames[projectile.type])
+                {
+                    projectile.frame = 0;
+                }
+            }
         }
     }
 }

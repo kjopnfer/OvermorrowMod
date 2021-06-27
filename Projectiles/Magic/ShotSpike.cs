@@ -23,7 +23,6 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.timeLeft = 100;
             projectile.penetrate = -1;
             projectile.hostile = false;
-            projectile.light = 5f;
             projectile.friendly = true;
             projectile.magic = true;
             projectile.tileCollide = false;

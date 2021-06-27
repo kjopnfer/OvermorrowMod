@@ -43,7 +43,6 @@ namespace OvermorrowMod.Projectiles.Magic
         {
             projectile.width = 24;
             projectile.height = 18;
-            projectile.light = 2f;
             projectile.friendly = true;
             projectile.ignoreWater = true;
             projectile.tileCollide = false;
