@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Tiles;
+using OvermorrowMod.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Tiles.Block;
 using OvermorrowMod.WardenClass.Accessories;
 using Terraria;
@@ -220,415 +221,6 @@ namespace OvermorrowMod
 
         private void TestMethod(int x, int y)
         {
-            Point point = new Point(x, y);
-
-            // small world size is 4200x1200 , medium multiplies every axis by 1.5 , and large multiplies every axis by 2.0
-            int xCoord = x;
-            int yCoord = y;
-
-            int xAxis = xCoord;
-            int yAxis = yCoord;
-
-            int randSize = Main.rand.Next(140, 150);
-
-            for (int j = 0; j < randSize; j++)
-            {
-                //int fade = 0;
-                yAxis++;
-                xAxis = xCoord;
-                // Draws bottom right quadrant
-                for (int i = 0; i < randSize - j; i++)
-                {
-                    xAxis++;
-                    /*if (i < 20)
-                    {
-                        fade = 20 - i;
-                    }
-
-                    if (i > randSize - 20)
-                    {
-                        fade = i - randSize - 20;
-                    }
-
-                    if (Main.rand.NextFloat() < fade / 20f)
-                    {
-                        yAxis++;
-                        continue;
-                    }*/
-
-                    if (Main.tile[xAxis, yAxis] != null)
-                    {
-                        WorldGen.KillTile(xAxis, yAxis);
-                        WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
-
-                        Tile wall = Framing.GetTileSafely(xAxis, yAxis);
-                        wall.wall = (ushort)ModContent.WallType<GlowWall>();
-
-                        int maxLength = randSize - j;
-                        if (i >= maxLength - 10)
-                        {
-                            if (Main.rand.Next(3) == 0)
-                            {
-                                Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                            }
-                        }
-                        else
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        int[] TileArray = { 0 };
-                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
-                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
-                        if (TileArray.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        if (TileArray2.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        if (TileArray3.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-                    }
-                }
-
-                // Reset the xAxis, offset by 1 to fill in the gap
-                xAxis = xCoord + 1;
-
-                // Draws bottom left quadrant
-                for (int i = 0; i < randSize - j; i++)
-                {
-                    xAxis--;
-                    if (Main.tile[xAxis, yAxis] != null)
-                    {
-                        WorldGen.KillTile(xAxis, yAxis);
-                        WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
-
-                        Tile wall = Framing.GetTileSafely(xAxis, yAxis);
-                        wall.wall = (ushort)ModContent.WallType<GlowWall>();
-
-                        int maxLength = randSize - j;
-                        if (i >= maxLength - 10)
-                        {
-                            if (Main.rand.Next(3) == 0)
-                            {
-                                Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                            }
-                        }
-                        else
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        int[] TileArray = { 0 };
-                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
-                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
-                        if (TileArray.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        if (TileArray2.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        if (TileArray3.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-                    }
-                }
-            }
-
-
-            // Reset the y axis, offset by 1 to fill in the gap
-            yAxis = yCoord + 1;
-
-            for (int j = 0; j < randSize; j++)
-            {
-                yAxis--;
-                xAxis = xCoord;
-
-                // Draws top right quadrant
-                for (int i = 0; i < randSize - j; i++)
-                {
-                    xAxis++;
-                    if (Main.tile[xAxis, yAxis] != null)
-                    {
-                        WorldGen.KillTile(xAxis, yAxis);
-                        WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
-
-                        Tile wall = Framing.GetTileSafely(xAxis, yAxis);
-                        wall.wall = (ushort)ModContent.WallType<GlowWall>();
-
-                        int maxLength = randSize - j;
-                        if (i >= maxLength - 10)
-                        {
-                            if (Main.rand.Next(3) == 0)
-                            {
-                                Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                            }
-                        }
-                        else
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        int[] TileArray = { 0 };
-                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
-                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
-                        if (TileArray.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        if (TileArray2.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        if (TileArray3.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-                    }
-                }
-
-                // Reset the xAxis, offset by 1 to fill in the gap
-                xAxis = xCoord + 1;
-
-                // Draws top left quadrant
-                for (int i = 0; i < randSize - j; i++)
-                {
-                    xAxis--;
-                    if (Main.tile[xAxis, yAxis] != null)
-                    {
-                        WorldGen.KillTile(xAxis, yAxis);
-                        WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
-
-                        Tile wall = Framing.GetTileSafely(xAxis, yAxis);
-                        wall.wall = (ushort)ModContent.WallType<GlowWall>();
-
-                        int maxLength = randSize - j;
-                        if (i >= maxLength - 10)
-                        {
-                            if (Main.rand.Next(3) == 0)
-                            {
-                                Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                            }
-                        }
-                        else
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        int[] TileArray = { 0 };
-                        int[] TileArray2 = { 2, 23, 109, 199 }; // Grass ID
-                        int[] TileArray3 = { 1, 25, 117, 203 }; // Stone ID
-                        if (TileArray.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        if (TileArray2.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-
-                        if (TileArray3.Contains(Main.tile[xAxis, yAxis].type))
-                        {
-                            Main.tile[xAxis, yAxis].type = (ushort)ModContent.TileType<GlowBlock>();
-                        }
-                    }
-                }
-            }
-
-            // Generate the circle shape
-            WorldUtils.Gen(point, new Shapes.Circle(WorldGen.genRand.Next(25, 30)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-
-            // Create random circles
-            for (int i = 0; i < WorldGen.genRand.Next(14, 19); i++)
-            {
-                ShapeData circleShapeData = new ShapeData();
-                int randX = x + WorldGen.genRand.Next(-10, 10) * 8;
-                int randY = y + WorldGen.genRand.Next(-10, 10) * 8;
-                Point randPoint = new Point(randX, randY); WorldUtils.Gen(randPoint, new Shapes.Circle(WorldGen.genRand.Next(4, 11)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
-                WorldUtils.Gen(new Point(randX, randY), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
-            }
-
-            // Create smol circles
-            for (int i = 0; i < WorldGen.genRand.Next(14, 19); i++)
-            {
-                ShapeData circleShapeData = new ShapeData();
-                int randX = x + WorldGen.genRand.Next(-10, 10) * 8;
-                int randY = y + WorldGen.genRand.Next(-10, 10) * 8;
-                Point randPoint = new Point(randX, randY);
-                WorldUtils.Gen(randPoint, new Shapes.Circle(WorldGen.genRand.Next(3, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
-                WorldUtils.Gen(new Point(randX, randY), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
-            }
-
-            // Dig out to the sides
-            WorldGen.digTunnel(x, y, -0.65f, 0, WorldGen.genRand.Next(70, 80), WorldGen.genRand.Next(2, 5), false);
-            WorldGen.digTunnel(x, y, 0, 0.5f, WorldGen.genRand.Next(70, 80), WorldGen.genRand.Next(2, 5), false);
-            WorldGen.digTunnel(x, y, 0, -0.5f, WorldGen.genRand.Next(70, 90), WorldGen.genRand.Next(2, 5), false);
-            WorldGen.digTunnel(x, y, -0.65f, 0.5f, WorldGen.genRand.Next(70, 90), WorldGen.genRand.Next(2, 5), false);
-            WorldGen.digTunnel(x, y, 0.5f, -0.65f, WorldGen.genRand.Next(70, 90), WorldGen.genRand.Next(2, 5), false);
-            WorldGen.digTunnel(x, y, 0.5f, 0, WorldGen.genRand.Next(70, 90), WorldGen.genRand.Next(2, 5), false);
-            WorldGen.digTunnel(x, y, 0.5f, 0.5f, WorldGen.genRand.Next(70, 90), WorldGen.genRand.Next(2, 5), false);
-            WorldGen.digTunnel(x, y, 0, 0.5f, WorldGen.genRand.Next(70, 90), WorldGen.genRand.Next(3, 6), false);
-
-
-            // Um, additional tunnels I guess
-            WorldGen.digTunnel(x, y, 1, 0, 120, Main.rand.Next(2, 5), true);
-            WorldGen.digTunnel(x, y, 0, 1, 120, Main.rand.Next(2, 5), true);
-            WorldGen.digTunnel(x, y, 0, -1, 120, Main.rand.Next(2, 5), true);
-            WorldGen.digTunnel(x, y, -1, 1, 120, Main.rand.Next(2, 5), true);
-            WorldGen.digTunnel(x, y, -1, -1, 120, Main.rand.Next(2, 5), true);
-            WorldGen.digTunnel(x, y, 1, 1, 120, Main.rand.Next(2, 5), true);
-            WorldGen.digTunnel(x, y, 1, -1, 120, Main.rand.Next(2, 5), true);
-
-            // Poke holes
-            for (int j = 0; j < randSize; j++)
-            {
-                yAxis++;
-                xAxis = xCoord;
-                // Draws bottom right quadrant
-                for (int i = 0; i < randSize - j; i++)
-                {
-                    xAxis++;
-
-                    if (Main.tile[xAxis, yAxis] != null)
-                    {
-                        if (j > randSize - 20)
-                        {
-                            if (WorldGen.genRand.Next(2100) == 0)
-                            {
-                                WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-                            }
-                        }
-                        else
-                        {
-                            if (WorldGen.genRand.Next(2800) == 0)
-                            {
-                                WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-                            }
-                        }
-
-                        if (WorldGen.genRand.Next(3000) == 0)
-                        {
-                            WorldGen.digTunnel(xAxis, yAxis, WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.Next(30, 40), Main.rand.Next(2, 6), Main.rand.Next(2) == 0 ? true : false);
-                        }
-                    }
-                }
-
-                // Reset the xAxis, offset by 1 to fill in the gap
-                xAxis = xCoord + 1;
-
-                // Draws bottom left quadrant
-                for (int i = 0; i < randSize - j; i++)
-                {
-                    xAxis--;
-                    if (Main.tile[xAxis, yAxis] != null)
-                    {
-                        if (j > randSize - 20)
-                        {
-                            if (WorldGen.genRand.Next(2100) == 0)
-                            {
-                                WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-                            }
-                        }
-                        else
-                        {
-                            if (WorldGen.genRand.Next(2800) == 0)
-                            {
-                                WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-                            }
-                        }
-
-                        if (WorldGen.genRand.Next(3000) == 0)
-                        {
-                            WorldGen.digTunnel(xAxis, yAxis, WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.Next(30, 40), Main.rand.Next(2, 6), Main.rand.Next(2) == 0 ? true : false);
-                        }
-                    }
-                }
-            }
-
-
-            // Reset the y axis, offset by 1 to fill in the gap
-            yAxis = yCoord + 1;
-
-            for (int j = 0; j < randSize; j++)
-            {
-                yAxis--;
-                xAxis = xCoord;
-
-                // Draws top right quadrant
-                for (int i = 0; i < randSize - j; i++)
-                {
-                    xAxis++;
-                    if (Main.tile[xAxis, yAxis] != null)
-                    {
-                        if (j > randSize - 20)
-                        {
-                            if (WorldGen.genRand.Next(2100) == 0)
-                            {
-                                WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-                            }
-                        }
-                        else
-                        {
-                            if (WorldGen.genRand.Next(2800) == 0)
-                            {
-                                WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-                            }
-                        }
-
-                        if (WorldGen.genRand.Next(3000) == 0)
-                        {
-                            WorldGen.digTunnel(xAxis, yAxis, WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.Next(30, 40), Main.rand.Next(2, 6), Main.rand.Next(2) == 0 ? true : false);
-                        }
-                    }
-                }
-
-                // Reset the xAxis, offset by 1 to fill in the gap
-                xAxis = xCoord + 1;
-
-                // Draws top left quadrant
-                for (int i = 0; i < randSize - j; i++)
-                {
-                    xAxis--;
-                    if (Main.tile[xAxis, yAxis] != null)
-                    {
-                        if (j > randSize - 20)
-                        {
-                            if (WorldGen.genRand.Next(2100) == 0)
-                            {
-                                WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-                            }
-                        }
-                        else
-                        {
-                            if (WorldGen.genRand.Next(2800) == 0)
-                            {
-                                WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
-                            }
-                        }
-
-                        if (WorldGen.genRand.Next(3000) == 0)
-                        {
-                            WorldGen.digTunnel(xAxis, yAxis, WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.Next(30, 40), Main.rand.Next(2, 6), Main.rand.Next(2) == 0 ? true : false);
-                        }
-                    }
-
-
-                }
-            }
         }
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
@@ -637,7 +229,7 @@ namespace OvermorrowMod
             if (ShiniesIndex != -1)
             {
                 tasks.Insert(ShiniesIndex + 1, new PassLegacy("Mana Stone Ores", ManaStoneOres));
-
+                tasks.Insert(ShiniesIndex + 2, new PassLegacy("Ambient Objects", GenerateAmbientObjects));
             }
 
             int WetJungle = tasks.FindIndex(genpass => genpass.Name.Equals("Wet Jungle"));
@@ -1033,7 +625,7 @@ namespace OvermorrowMod
 
         private void ManaStoneOres(GenerationProgress progress)
         {
-            progress.Message = "Crystallizing Mana";
+            progress.Message = "Generating Modded Ores";
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-05); k++)
             {
                 // The inside of this for loop corresponds to one single splotch of our Ore.
@@ -1049,6 +641,8 @@ namespace OvermorrowMod
                     WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<ManaStone>());
                 }
             }
+
+            // Erudite Generation
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00025); k++)
             {
                 // The inside of this for loop corresponds to one single splotch of our Ore.
@@ -1075,16 +669,7 @@ namespace OvermorrowMod
 
                 // Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
                 WorldGen.PlaceTile(x, y, ModContent.TileType<HerosAltar>());
-                // Alternately, we could check the tile already present in the coordinate we are interested. Wrapping WorldGen.TileRunner in the following condition would make the ore only generate in Snow.
-                // Tile tile = Framing.GetTileSafely(x, y);
-                // if (tile.active() && tile.type == TileID.SnowBlock)
-                // {
-                // 	WorldGen.TileRunner(.....);
-                // }
             }
-
-
-
 
 
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00004); k++)
@@ -1107,17 +692,18 @@ namespace OvermorrowMod
         private void GenerateAmbientObjects(GenerationProgress progress)
         {
             // Place ambient objects for the Flooded Caverns
-            for(int i = 0; i < Main.maxTilesY; i++)
+            for(int i = 0; i < Main.maxTilesY * 10; i++)
             {
+                int[] rockFormations = { ModContent.TileType<Rock1>(), ModContent.TileType<Rock2>(), ModContent.TileType<Rock3>(), ModContent.TileType<Rock4>(), ModContent.TileType<Stalagmite1>(), ModContent.TileType<Stalagmite2>(), ModContent.TileType<Stalagmite3>(), ModContent.TileType<Stalagmite4>(), ModContent.TileType<Stalagmite5>() };
                 int x = WorldGen.genRand.Next(300, Main.maxTilesX - 300);
                 int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 200);
+                int type = rockFormations[Main.rand.Next(9)];
                 if (Main.tile[x, y].type == ModContent.TileType<GlowBlock>())
                 {
-
+                    WorldGen.PlaceObject(x, y, (ushort)type);
+                    NetMessage.SendObjectPlacment(-1, x, y, (ushort)type, 0, 0, -1, -1);
                 }
             }
-
-
         }
 
         private void GenerateAltar(GenerationProgress progress)

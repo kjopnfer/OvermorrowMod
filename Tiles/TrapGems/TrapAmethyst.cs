@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Tiles;
 
 namespace OvermorrowMod.Tiles.TrapGems
 {
@@ -24,7 +23,7 @@ namespace OvermorrowMod.Tiles.TrapGems
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Amethyst");
             AddMapEntry(new Color(0, 0, 0), name);
-            dustType = 9;
+            //dustType = 9;
             soundType = SoundID.Tink;
             soundStyle = 1;
             mineResist = 2f;
@@ -41,11 +40,11 @@ namespace OvermorrowMod.Tiles.TrapGems
                 }
             }
 
-            int style = 0;
+            /*int style = 0;
             if (style == 0) // It can be useful to share a single tile with multiple styles. This code will let you drop the appropriate bar if you had multiple.
             {
                 Projectile.NewProjectile(i * 16, j * 16, 0, 0, mod.ProjectileType("FakeGold"), 60, 0f, Main.myPlayer);
-            }
+            }*/
             return base.Drop(i, j);
         }
     }
