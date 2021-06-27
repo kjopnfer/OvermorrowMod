@@ -17,7 +17,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 
             item.width = 32;
             item.height = 32;
-            item.damage = 14;
+            item.damage = 22;
             item.magic = true;
             item.mana = 4;
             item.UseSound = SoundID.Item43;
