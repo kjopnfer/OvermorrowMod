@@ -34,7 +34,16 @@ namespace OvermorrowMod.Tiles
         }
 		public override bool Drop(int i, int j)
 		{
-			Tile t = Main.tile[i, j];
+            for (int x = 0; x < Main.maxPlayers; x++)
+            {
+                float distance = Vector2.Distance(new Vector2(i * 16, j * 16), Main.player[i].Center);
+                if (distance <= 350)
+                {
+                    Main.player[i].AddBuff(BuffID.Obstructed, 240);
+                }
+            }
+
+            Tile t = Main.tile[i, j];
 			int style = 0;
 			if (style == 0) // It can be useful to share a single tile with multiple styles. This code will let you drop the appropriate bar if you had multiple.
 			{

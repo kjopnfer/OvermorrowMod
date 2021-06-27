@@ -277,7 +277,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                            if (Main.rand.Next(2) == 0)
+                            {
+                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                            }
                         }
 
                         if (!secondTeleport)

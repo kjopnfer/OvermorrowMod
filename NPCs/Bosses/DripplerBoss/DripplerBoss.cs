@@ -86,6 +86,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
             }
 
+            // Reinitialize variables if the previous checks didn't get them
+            if (npc.ai[2] == 0)
+            {
+                OvermorrowWorld.dripPhase2 = false;
+                OvermorrowWorld.dripPhase3 = false;
+                npc.ai[2]++;
+            }
+
             Player player = Main.player[npc.target];
 
             // Check that it is a Blood Moon & that it is night time
@@ -99,6 +107,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     npc.timeLeft = 20;
                     return;
                 }
+
+                OvermorrowWorld.dripPhase2 = false;
+                OvermorrowWorld.dripPhase3 = false;
             }
 
             // Handles Despawning
@@ -207,11 +218,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
                         npc.velocity = move;
 
-                        if (countDripplers > 0)
+                        if (countDripplers > 0 && !changedPhase3)
                         {
-                            if (Main.rand.Next(50) == 0 && circleCooldown == 0 && !OvermorrowWorld.DripplerCircle)
+                            if (Main.rand.Next(100) == 0 && circleCooldown == 0 && !OvermorrowWorld.DripplerCircle)
                             {
-                                //OvermorrowWorld.DripplerCircle = true;
+                                OvermorrowWorld.DripplerCircle = true;
                             }
                             else
                             {
@@ -225,6 +236,12 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         if (OvermorrowWorld.DripplerCircle)
                         {
                             circleCooldown = 2400;
+                        }
+
+                        if (countRotaters > 0 && changedPhase3 && Main.rand.Next(100) == 0)
+                        {
+                            npc.ai[0] = 4;
+                            npc.ai[1] = 0;
                         }
 
                         if (changedPhase3)
@@ -293,6 +310,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.ai[0] = 0;
                         npc.ai[1] = 0;
                         changedPhase2 = true;
+                        OvermorrowWorld.dripPhase2 = true;
                     }
                     break;
                 case 2: // Phase 3 Initializer
@@ -330,6 +348,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         if (npc.ai[1] == 270)
                         {
                             changedPhase3 = true;
+                            OvermorrowWorld.dripPhase3 = true;
                             npc.ai[0] = 0;
                             npc.ai[1] = 0;
                         }
@@ -374,7 +393,19 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             npc.ai[1] = 0;
                         }
                     }
-                    break;                    
+                    break;
+                case 4: // Driplad actions
+                    npc.velocity = Vector2.Zero;
+
+                    OvermorrowWorld.DripladShoot = true;
+
+                    if (npc.ai[1] == 90)
+                    {
+                        OvermorrowWorld.DripladShoot = false;
+                        npc.ai[0] = 0;
+                        npc.ai[1] = 0;
+                    }
+                    break;
             }
 
             npc.ai[1]++;
@@ -431,6 +462,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         public override void NPCLoot()
         {
             OvermorrowWorld.downedDrippler = true;
+            OvermorrowWorld.dripPhase2 = false;
+            OvermorrowWorld.dripPhase3 = false;
 
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
