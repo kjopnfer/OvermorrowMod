@@ -21,6 +21,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private bool changedPhase2 = false;
         private bool changedPhase3 = false;
         private int circleCooldown = 0;
+        private int dripladCooldown = 0;
 
         public override void SetStaticDefaults()
         {
@@ -91,6 +92,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
                 OvermorrowWorld.dripPhase2 = false;
                 OvermorrowWorld.dripPhase3 = false;
+                OvermorrowWorld.DripladShoot = false;
                 npc.ai[2]++;
             }
 
@@ -110,6 +112,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                 OvermorrowWorld.dripPhase2 = false;
                 OvermorrowWorld.dripPhase3 = false;
+                OvermorrowWorld.DripladShoot = false;
             }
 
             // Handles Despawning
@@ -238,10 +241,19 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             circleCooldown = 2400;
                         }
 
-                        if (countRotaters > 0 && changedPhase3 && Main.rand.Next(100) == 0)
+                        if (OvermorrowWorld.DripladShoot)
+                        {
+                            dripladCooldown = 1600;
+                        }
+
+                        if (countRotaters > 0 && changedPhase2 && Main.rand.Next(100) == 0 && dripladCooldown == 0)
                         {
                             npc.ai[0] = 4;
                             npc.ai[1] = 0;
+                        }
+                        else
+                        {
+                            dripladCooldown--;
                         }
 
                         if (changedPhase3)
@@ -340,7 +352,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 for (int i = 0; i < 5; i++)
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                    NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, radius );
+                                    NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, radius);
                                 }
                             }
                         }
@@ -399,7 +411,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
                     OvermorrowWorld.DripladShoot = true;
 
-                    if (npc.ai[1] == 90)
+                    if (npc.ai[1] == 300)
                     {
                         OvermorrowWorld.DripladShoot = false;
                         npc.ai[0] = 0;
@@ -464,6 +476,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             OvermorrowWorld.downedDrippler = true;
             OvermorrowWorld.dripPhase2 = false;
             OvermorrowWorld.dripPhase3 = false;
+            OvermorrowWorld.DripladShoot = false;
 
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
