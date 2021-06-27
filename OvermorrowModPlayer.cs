@@ -6,6 +6,7 @@ using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.GameInput;
+using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -238,13 +239,17 @@ namespace OvermorrowMod
 
                     if (ManaDMG > 5)
                     {
-                        player.statLife = player.statLife + -ManaDMG / 2;
+                        player.statLife = player.statLife - ManaDMG / 2;
+			player.ManaEffect(ManaDMG);
                         CombatText.NewText(player.getRect(), Color.Red, ManaDMG / 2);
+			if (player.statLife <= 0) player.KillMe(PlayerDeathReason.ByCustomReason(player.name + "'s life was converted into mana."), ManaDMG, 0);
                     }
                     else
                     {
-                        player.statLife = player.statLife + -ManaDMG;
+                        player.statLife = player.statLife - ManaDMG;
+			player.ManaEffect(ManaDMG);
                         CombatText.NewText(player.getRect(), Color.Red, ManaDMG);
+			if (player.statLife <= 0) player.KillMe(PlayerDeathReason.ByCustomReason(player.name + "'s life was converted into mana."), ManaDMG, 0);
                     }
 
 
