@@ -44,39 +44,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     Projectile.NewProjectile(projectile.Center, new Vector2(0f, -6f).RotatedBy(j * MathHelper.ToRadians(360f) / projectiles), ModContent.ProjectileType<HomingArrow>(), 2, 10f, Main.myPlayer);
                 }
             }
-            /*
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 0, value1.Y = 10, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 0, value1.Y = -10, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 0, value1.Y = 20, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 0, value1.Y = -20, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 0, value1.Y = 30, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 0, value1.Y = -30, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 10, value1.Y = 0, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -10, value1.Y = 0, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 20, value1.Y = 0, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -20, value1.Y = 0, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 30, value1.Y = 0, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -30, value1.Y = 0, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 5, value1.Y = 5, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -5, value1.Y = -5, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 10, value1.Y = 10, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -10, value1.Y = -10, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 15, value1.Y = 15, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -15, value1.Y = -15, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -5, value1.Y = 5, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 5, value1.Y = -5, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -10, value1.Y = 10, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 10, value1.Y = -10, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = -15, value1.Y = 15, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X = 15, value1.Y = -15, ModContent.ProjectileType<HomingArrow>(), projectile.damage, 1f, projectile.owner, 0f);
-            Vector2 target = Main.MouseWorld;
-            projectile.velocity.Y = target.Y * 0.85f;
-            projectile.velocity.X = target.X * 0.85f;
-            projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
-            */
         }
     }
 }

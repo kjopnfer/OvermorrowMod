@@ -6,6 +6,7 @@ using Terraria.ID;
 using Terraria.IO;
 using Terraria.Enums;
 using Microsoft.Xna.Framework;
+using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.NPCs.Bosses.Apollus
 {
@@ -39,62 +40,73 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             {
                 case 0:
                     {
-                        int projam1 = MethodHelper.GetProjAmount(ModContent.ProjectileType<ArrowRuneCircle>());
+                        int projam1 = MethodHelper.GetProjAmount(ProjectileType<ArrowRuneCircle>());
                         if (projam1 == 0)
                         {
-                            Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ModContent.ProjectileType<ArrowRuneCircle>(), 10, 0f);
+                            Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), 10, 0f);
                         }
                         npc.TargetClosest();
                         if(++npc.ai[1] == 360)
                         {
                             npc.ai[1] = 0;
-                            goto case 2;
+                            npc.ai[2] = 1;
+                            goto case 3;
                         }
                     }
                     break;
                 case 1:
                     {
-                        int projam2 = MethodHelper.GetProjAmount(ModContent.ProjectileType<ArrowRunner>());
-                        if(projam2 == 0)
+                        if (++npc.ai[1] % 30 == 0)
                         {
-                            Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ArrowRunner>(), 10, 1f);
+                            int projectiles = 3;
+                            int random = Main.rand.Next(5);
+                            for (int j = 0; j < projectiles; j++)
+                            {
+                                Projectile.NewProjectile(npc.Center, new Vector2(0f, 8.5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + (npc.ai[2] * 30) + random), ProjectileType<ApollusArrow>(), 2, 10f, Main.myPlayer);
+                            }
+                            npc.ai[2] += 1;
                         }
+
                         npc.TargetClosest();
-                        if (++npc.ai[1] == 360)
+                        if (npc.ai[1] == 420)
                         {
                             npc.ai[1] = 0;
-                            goto case 2;
+                            npc.ai[2] = 1;
+                            goto case 3;
                         }
+
                     }
                     break;
                 case 2:
                     {
+                        if (++npc.ai[1] % 45 == 0)
+                        {
+                            int projectiles = 6;
+                            for (int j = 0; j < projectiles; j++)
+                            {
+                                Projectile.NewProjectile(npc.Center, new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + (npc.ai[2] * 15)), ProjectileType<HomingArrow>(), 2, 10f, Main.myPlayer);
+                            }
+                            npc.ai[2] += 1;
+                        }
+                        npc.TargetClosest();
+
+                        if (npc.ai[1] == 180)
+                        {
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 1;
+                            goto case 3;
+                        }
+                    }
+                    break;
+                case 3:
+                    {
                         if(player.dead || !player.active) { break; }
                         npc.TargetClosest();
                         npc.Teleport(MethodHelper.GetRandomVector((int)player.Center.X + 150, (int)player.Center.Y + 150, (int)player.Center.X - 150, (int)player.Center.Y - 150)); //  new Vector2((float)Main.rand.Next((int)player.Center.X - 150, (int)player.Center.Y + 150), (float)Main.rand.Next((int)player.Center.X + 150, (int)player.Center.Y - 150))
-                        npc.ai[0] = Main.rand.Next(0, 2);
+                        npc.ai[0] = Main.rand.Next(0, 3);
                     }
                     break;
             }
         }
     }
 }
-/*
- 
-                case 2:
-                    {
-                        Main.NewText("entered case 2");
-                        int projam3 = MethodHelper.GetProjAmount(ModContent.ProjectileType<LightSpear>());
-                        Vector2 pos = new Vector2(npc.Center.X - 150f, npc.Center.Y);
-                        if(projam3 == 0)
-                        {
-                            Projectile.NewProjectile(pos, new Vector2(15f, 15f), ModContent.ProjectileType<LightSpear>(), 50, 0f);
-                        }
-                        if (++npc.ai[1] == 240)
-                        {
-                            npc.ai[1] = 0;
-                            goto case 3;
-                        }
-                    }
-                    break;
-*/
