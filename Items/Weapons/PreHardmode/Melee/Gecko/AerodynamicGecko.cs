@@ -18,7 +18,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee.Gecko
 			item.useAnimation = 40;
 			item.useTime = 40;
 			item.knockBack = 4f;
-			item.damage = 9;
+			item.damage = 6;
 			item.shoot = mod.ProjectileType("GeckoT");
 			item.shootSpeed = 15.1f;
 			item.UseSound = SoundID.Item1;
