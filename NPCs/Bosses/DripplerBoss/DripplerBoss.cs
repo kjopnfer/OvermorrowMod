@@ -253,7 +253,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
                         else
                         {
-                            dripladCooldown--;
+                            if (dripladCooldown > 0)
+                            {
+                                dripladCooldown--;
+                            }
                         }
 
                         if (changedPhase3)
