@@ -125,7 +125,7 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Main.player[projectile.owner].AddBuff(ModContent.BuffType<GraniteSpearBuff>(), 180);
+            Main.player[projectile.owner].AddBuff(ModContent.BuffType<GraniteSpearBuff>(), 720);
         }
 
     }
