@@ -10,16 +10,16 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Spike Staff");
-            Tooltip.SetDefault("Creates spikes in a circle arround you when use is held down\nYou can only have 9 spikes at a time \nWhen use is released the spikes fire out");
+            Tooltip.SetDefault("Creates spikes in a circle arround you when use is held down\nYou can only have 9 spikes at a time \nWhen use is released the spikes fire out \nDamage increases by the item damage for each spike");
         }
         public override void SetDefaults()
         {
 
             item.width = 32;
             item.height = 32;
-            item.damage = 40;
+            item.damage = 6;
             item.magic = true;
-            item.mana = 4;
+            item.mana = 6;
             item.UseSound = SoundID.Item43;
             item.noMelee = true;
             item.useTime = 33;
