@@ -16,11 +16,6 @@ namespace OvermorrowMod
                 item.damage = 5;
                 item.value = Item.sellPrice(gold: 2, silver: 75);
             }
-            if(item.type == ItemID.Acorn && Main.rand.Next(0, 1000) == 0)
-            {
-                Player player = Main.player[Main.myPlayer];
-                Item.NewItem(new Rectangle((int)player.Center.X, (int)player.Center.Y, player.width, player.height), ModContent.ItemType<DeezNuts>());
-            }
         }
         public override void ModifyWeaponDamage(Item item, Player player, ref float add, ref float mult, ref float flat)
         {
