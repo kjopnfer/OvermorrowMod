@@ -100,11 +100,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     }*/
                     break;
                 case 1: // Shoot outwards
-                    if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 5 == 0)
+                    if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 10 == 0)
                     {
                         int shootSpeed = 7;
                         Vector2 npcPosition = npc.Center;
-                        Vector2 targetPosition = NPC_CalculateOuter(npc, parentNPC.Center, radius + 200);
+                        Vector2 targetPosition = NPC_CalculateOuter(npc, parentNPC.Center, radius + 400);
                         Vector2 direction = targetPosition - npcPosition;
                         direction.Normalize();
 
@@ -173,7 +173,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             double deg = speed * npc.ai[0];
             rad = deg * (Math.PI / 180);
 
-            return new Vector2(position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2, position.Y - (int)(Math.Cos(rad) * distance) - npc.height / 2);
+            return new Vector2(position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2, position.Y - (int)(Math.Sin(rad) * distance) - npc.height / 2);
         }
 
         public override void HitEffect(int hitDirection, double damage)
