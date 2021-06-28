@@ -16,7 +16,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardRanged
             projectile.tileCollide = true;
             projectile.width = 20;
             projectile.height = 24;
-            projectile.penetrate = -1;
+            projectile.penetrate = 1;
             projectile.aiStyle = 34;
             projectile.timeLeft = 120; //The amount of time the projectile is alive for
         }
