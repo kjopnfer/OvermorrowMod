@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Geomancer Staff");
-            Tooltip.SetDefault("Summons Granite Elementals, hold down the mouse while enemies are arround to control them");
+            Tooltip.SetDefault("Summons Granite Elementals, hold down the mouse with this item while enemies are arround to control them");
         }
 
         public override void SetDefaults()
