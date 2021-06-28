@@ -37,7 +37,6 @@ namespace OvermorrowMod.Projectiles.Summon
         {
             DisplayName.SetDefault("Blood Seeker");
         }
-        private const string ChainTexturePath = "Juvenation/Items/Projectiles/Probe/ProbeBone";
         public override void SetDefaults()
         {
             npc.width = 20;
@@ -84,7 +83,7 @@ namespace OvermorrowMod.Projectiles.Summon
                 npc.spriteDirection = -1;
             }
 
-            float distanceFromTarget = 600f;
+            float distanceFromTarget = 130f;
             Vector2 targetCenter = npc.position;
             bool foundTarget = false;
             if (!foundTarget)
@@ -114,7 +113,6 @@ namespace OvermorrowMod.Projectiles.Summon
                             distanceFromTarget = between;
                             targetCenter = tar.Center;
                             foundTarget = true;
-                            npc.rotation = (Rot - npc.Center).ToRotation();
                         }
                     }
                 }
@@ -125,6 +123,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
             if (foundTarget)
             {
+                npc.rotation = npc.velocity.X * 0.03f;
                 movement = 1;
                 movement2++;
             
@@ -181,8 +180,14 @@ namespace OvermorrowMod.Projectiles.Summon
             }
             else
             {
+                npc.rotation = 0;
                 npc.velocity.Y -= 0.9f;
             }
+        }
+        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            Texture2D texture = mod.GetTexture("Projectiles/Summon/BloodSeeker_Glow");
+            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
     }
 }
