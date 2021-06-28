@@ -23,7 +23,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee.Gecko
 			item.shootSpeed = 15.1f;
 			item.UseSound = SoundID.Item1;
 			item.melee = true;
-			item.crit = 9;
+			item.crit = 2;
 			item.channel = true;
 		}
 
