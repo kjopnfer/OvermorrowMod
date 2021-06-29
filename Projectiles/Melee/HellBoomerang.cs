@@ -84,6 +84,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 float BetweenComeBack = Vector2.Distance(SavedMove, projectile.Center);
                 if(BetweenComeBack < 42)
                 {
+                    Main.PlaySound(13, projectile.position);
                     ComingBack = true;
                 }
             }
@@ -135,7 +136,7 @@ namespace OvermorrowMod.Projectiles.Melee
             {
                 Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
                 Vector2 eee = projectile.Center;
-                Main.PlaySound(SoundID.Item64, (int)eee.X, (int)eee.Y);
+                Main.PlaySound(13, projectile.position);
                 {
                     ComingBack = true;
                 }

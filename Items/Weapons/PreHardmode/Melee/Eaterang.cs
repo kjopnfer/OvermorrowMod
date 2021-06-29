@@ -30,7 +30,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Eaterang");
-            Tooltip.SetDefault("Boomerang that does double damage when coming back");
+            Tooltip.SetDefault("Boomerang that does triple damage when coming back");
         }
 
         public override void AddRecipes()

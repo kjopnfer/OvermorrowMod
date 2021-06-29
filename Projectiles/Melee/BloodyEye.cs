@@ -106,6 +106,8 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
+            Vector2 eeee = projectile.Center;
+            Main.PlaySound(SoundID.Item54, (int)eeee.X, (int)eeee.Y);
             ComingBack = true;
         }
     }

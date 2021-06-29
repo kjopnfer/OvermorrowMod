@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
-    public class EaterBoomerang : ModProjectile
+    public class Bonerang : ModProjectile
     {
         private int SavedDMG = 0;
         private int timer = 0;
@@ -17,16 +17,15 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Eater Boomerang");
-            Main.projFrames[projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[projectile.type] = 6;
+            DisplayName.SetDefault("Bonerang");
+            ProjectileID.Sets.TrailCacheLength[projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[projectile.type] = 0;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 42;
-            projectile.height = 42;
+            projectile.width = 34;
+            projectile.height = 34;
             projectile.timeLeft = 100;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -45,24 +44,26 @@ namespace OvermorrowMod.Projectiles.Melee
 
 			projectile.rotation += 0.36f; 
 
-            if(projectile.timeLeft < 65)
+            if(projectile.timeLeft < 80)
             {
                 projectile.timeLeft = 10;
                 ComingBack = true;
             }
 
-            if(projectile.timeLeft > 98)
-            {
-                projectile.tileCollide = false;
-            }
-            else if(!ComingBack)
-            {
-                projectile.tileCollide = true;
-            }
+
 
             if(ComingBack)
             {
-                flametimer++;
+                if(flametimer == 1)
+                {
+                    flametimer++;
+                    int DMG = projectile.damage / 2 - 3;
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 7, -7, ModContent.ProjectileType<BoneProj>(), DMG, 3f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 7, 7, ModContent.ProjectileType<BoneProj>(), DMG, 3f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, -7, 7, ModContent.ProjectileType<BoneProj>(), DMG, 3f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, -7, -7, ModContent.ProjectileType<BoneProj>(), DMG, 3f, projectile.owner, 0f);
+
+                }
                 float BetweenKill = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
                 projectile.tileCollide = false;
                 Vector2 position = projectile.Center;
@@ -70,9 +71,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 projectile.velocity = direction * 18;
-                projectile.damage = SavedDMG * 3;
-                projectile.frame = 1;
-                if(BetweenKill < 42)
+                if(BetweenKill < 22)
                 {
 				    projectile.Kill();    
                 }
@@ -83,9 +82,10 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
+            flametimer++;
             Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
             Vector2 eee = projectile.Center;
-            Main.PlaySound(SoundID.Item64, (int)eee.X, (int)eee.Y);
+            Main.PlaySound(3, projectile.position, 2);
             {
                 ComingBack = true;
             }
@@ -95,41 +95,23 @@ namespace OvermorrowMod.Projectiles.Melee
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
 
-            Texture2D texture1 = mod.GetTexture("Projectiles/Melee/EaterBoomerangDraw1");
-            Texture2D texture2 = mod.GetTexture("Projectiles/Melee/EaterBoomerangDraw2");
+            Texture2D texture = mod.GetTexture("Projectiles/Melee/Bonerang");
 
-            if(!ComingBack)
-            {
                 Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
                 for (int k = 0; k < projectile.oldPos.Length; k++)
                 {
                     Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin;
                     Color color = projectile.GetAlpha(Color.White) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
-                    spriteBatch.Draw(texture1, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
                 }
-            }
-            else
-            {
-                Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
-                for (int k = 0; k < projectile.oldPos.Length; k++)
-                {
-                    Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin;
-                    Color color = projectile.GetAlpha(Color.White) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
-                    spriteBatch.Draw(texture2, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
-                }
-            }
             return true;
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Vector2 eeee = projectile.Center;
-            Main.PlaySound(SoundID.Item64, (int)eeee.X, (int)eeee.Y);
+            Main.PlaySound(3, projectile.position, 2);
             ComingBack = true;
-            if(ComingBack)
-            {
-                target.AddBuff(39, flametimer * 5 - 7);
-            }
+            flametimer++;
         }
     }
 }
