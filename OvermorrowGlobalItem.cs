@@ -25,6 +25,14 @@ namespace OvermorrowMod
             }
         }
 
+        public override void AddRecipes()
+        {
+            ModRecipe Mirror = new ModRecipe(mod);
+            Mirror.AddIngredient(2350, 7);
+            Mirror.SetResult(ItemID.MagicMirror);
+            Mirror.AddRecipe();
+        }
+        
         public override bool Shoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             if (item.type == ItemID.ChainKnife)
