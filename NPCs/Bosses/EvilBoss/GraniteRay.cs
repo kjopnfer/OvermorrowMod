@@ -175,13 +175,71 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             if (RandomAtt == 1)
             {
                 CircleAttTimer++;
-                CircleLaserTimer++;
+                if(CircleAttTimer > 99)
+                {
+                    CircleLaserTimer++;
+                }
+
                 if(CircleLaserTimer == 10)
                 {
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<LightningTest>(), 75, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                     CircleLaserTimer = 0;
                 }
-                if(CircleAttTimer == 300)  
+
+
+
+
+                if(CircleAttTimer < 99)
+                {
+
+                int Random1 = Main.rand.Next(-370, 370);
+                int Random2 = Main.rand.Next(-370, 370);
+
+                float XDustposition = projectile.Center.X + Random1 - 16;
+                float YDustposition = projectile.Center.Y + Random2 - 16;
+                projectile.velocity.X = 0f;
+                projectile.velocity.Y = 0f;
+                Vector2 VDustposition = new Vector2(XDustposition, YDustposition);
+                Vector2 Dusttarget = projectile.Center;
+                Vector2 Dustdirection = Dusttarget - VDustposition;
+                Dustdirection.Normalize();
+
+                    Color granitedustc = Color.Red;
+                    {
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 8, 0.0f, 0.0f, 10, granitedustc, 4f);
+                        Main.dust[dust].noGravity = true;
+                        Vector2 velocity = Dustdirection * 2;
+                        Main.dust[dust].velocity = Dustdirection * 2;
+                    }
+                }
+
+                float OutsideRing = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
+                if(OutsideRing > 370f && CircleAttTimer > 99)
+                {
+                Vector2 position = projectile.Center;
+                Vector2 targetPosition = Main.player[projectile.owner].Center;
+                Vector2 direction = targetPosition - position;
+                direction.Normalize();
+                float speed = 10f;
+                int type = 290;
+                int damage = 75;
+                Projectile.NewProjectile(position, direction * speed, type, damage, 1f, projectile.owner, 0f);
+                }
+
+                if(CircleAttTimer == 1)
+                {
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<AmethystLW1>(), 1, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                }
+                
+                if(CircleAttTimer == 100)
+                {
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay1>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay2>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay3>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay4>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                }
+
+                if(CircleAttTimer == 400)  
                 {
                     RandomAtt = Main.rand.Next(0, 2);
                     CircleAttTimer = 0;
