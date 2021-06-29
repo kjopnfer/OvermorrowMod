@@ -1,15 +1,12 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.Apollus
 {
     public class ApollusArrow : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.BoneArrow;
+        public override string Texture => "OvermorrowMod/Projectiles/Magic/MarbleArrow";
 
         private Vector2 storeVelocity;
         private float storeRotation = 25;
@@ -20,8 +17,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         }
         public override void SetDefaults()
         {
-            projectile.width = 32;
-            projectile.height = 32;
+            projectile.width = 12;
+            projectile.height = 12;
             projectile.friendly = false;
             projectile.tileCollide = false;
             projectile.penetrate = 30;
@@ -33,6 +30,9 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         public override void AI()
         {
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+
+            Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
+            Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
 
             if (projectile.ai[1] == 0)
             {

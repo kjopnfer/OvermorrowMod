@@ -14,7 +14,15 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             projectile.tileCollide = false;
             projectile.friendly = false;
             projectile.hostile = true;
-            projectile.timeLeft = 150;
+            projectile.timeLeft = 160;
+        }
+        public override void AI()
+        {
+            if (++projectile.ai[1] % 2 == 0)
+            {
+                Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(11, 177, 214), 1f);
+            }
+            Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
         }
     }
 }

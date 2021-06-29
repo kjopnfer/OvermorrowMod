@@ -1,17 +1,13 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Projectiles.Boss;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 {
     public class GraniteMinibossMinion : ModNPC
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Summon/GraniteSummon";
-
         private int moveSpeed;
 
         public override void SetStaticDefaults()
@@ -26,7 +22,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.height = 38;
             npc.damage = 25;
             npc.defense = 15;
-            npc.lifeMax = 150;
+            npc.lifeMax = 60;
             npc.HitSound = SoundID.NPCHit19;
             npc.knockBackResist = 0.4f;
             npc.DeathSound = SoundID.NPCDeath22;
@@ -36,33 +32,72 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
         public override void AI()
         {
-            npc.TargetClosest(true);
-
-            if (npc.ai[3] == 0)
-            {
-                moveSpeed = Main.rand.Next(7, 14);
-                npc.ai[3]++;
-            }
-
             Player player = Main.player[npc.target];
 
-            Vector2 moveTo = player.Center;
-            var move = moveTo - npc.Center;
+            if (npc.lifeMax > 60 || npc.life > 60)
+            {
+                npc.lifeMax = 60;
+                npc.life = 60;
+            }
 
-            float length = move.Length();
-            if (length > moveSpeed)
+            switch (npc.ai[0])
             {
-                move *= moveSpeed / length;
+                case 0:
+                    {
+                        if (!AliveCheck(player)) { break; }
+
+                        if (npc.ai[3] == 0)
+                        {
+                            moveSpeed = Main.rand.Next(10, 15);
+                            npc.ai[3]++;
+                        }
+
+                        Vector2 moveTo = player.Center;
+                        var move = moveTo - npc.Center;
+
+                        float length = move.Length();
+                        if (length > moveSpeed)
+                        {
+                            move *= moveSpeed / length;
+                        }
+                        var turnResistance = 45;
+                        move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                        length = move.Length();
+                        if (length > 10)
+                        {
+                            move *= moveSpeed / length;
+                        }
+                        npc.velocity.X = move.X;
+                        npc.velocity.Y = move.Y * .98f;
+
+                        if (++npc.ai[1] > 600 + Main.rand.Next(100))
+                        {
+                            npc.ai[1] = 0;
+                            npc.ai[0] = 1;
+                        }
+                    }
+                    break;
+                case 1:
+                    {
+                        if (!AliveCheck(player)) { break; }
+
+                        npc.velocity = Vector2.Zero;
+
+                        if (++npc.ai[1] % 60 == 0)
+                        {
+                            Projectile.NewProjectile(npc.Center, npc.DirectionTo(player.Center) * 7.5f, ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                            npc.ai[2]++;
+                        }
+
+                        if (npc.ai[2] == 3)
+                        {
+                            npc.ai[2] = 0;
+                            npc.ai[1] = 0;
+                            npc.ai[0] = 0;
+                        }
+                    }
+                    break;
             }
-            var turnResistance = 45;
-            move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
-            length = move.Length();
-            if (length > 10)
-            {
-                move *= moveSpeed / length;
-            }
-            npc.velocity.X = move.X;
-            npc.velocity.Y = move.Y * .98f;
         }
 
         public override void FindFrame(int frameHeight)
@@ -79,6 +114,28 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             if (npc.frame.Y >= num * Main.npcFrameCount[npc.type])
             {
                 npc.frame.Y = 0;
+            }
+        }
+
+        private bool AliveCheck(Player player)
+        {
+            if (!player.active || player.dead)
+            {
+                npc.TargetClosest();
+                player = Main.player[npc.target];
+                if (!player.active || player.dead)
+                {
+                    if (npc.timeLeft > 25)
+                    {
+                        npc.timeLeft = 25;
+                        npc.velocity = Vector2.UnitY * -7;
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
     }

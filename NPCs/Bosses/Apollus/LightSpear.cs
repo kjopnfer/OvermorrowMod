@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.IO;
-using Terraria.Enums;
-using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.NPCs.Bosses.Apollus
 {

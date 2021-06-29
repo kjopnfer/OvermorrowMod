@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -15,12 +14,15 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         Vector2 teleportposition = Vector2.Zero;
         bool changedPhase2 = false;
 
-        int Direction = 0;
+        int Direction = -1;
         bool direction = false;
 
         int RandomCase = 0;
         int LastCase = 0;
         bool movement = true;
+
+        bool dashing = false;
+        int spritedirectionstore = 0;
 
         public override void SetDefaults()
         {
@@ -29,12 +31,11 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.noTileCollide = true;
             npc.noGravity = true;
             npc.aiStyle = -1;
-            //npc.aiStyle = 0;
             npc.knockBackResist = 0f;
             npc.damage = 15;
             npc.defense = 4;
             npc.lifeMax = 2000;
-            //npc.HitSound = SoundID.NPCHit4;
+            npc.HitSound = SoundID.NPCHit4;
             npc.value = 12f;
             //animationType = NPCID.Zombie;
         }
@@ -50,7 +51,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             {
                 changedPhase2 = true;
             }
-            //npc.TargetClosest(true);
             switch (npc.ai[0])
             {
                 case -2: // slow movement
@@ -111,16 +111,48 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     {
                         if (!AliveCheck(player)) { break; }
 
+                        if (npc.ai[1] > 5 && npc.ai[1] < 30)
+                        {
+                            if (++npc.ai[2] % 5 == 0)
+                            {
+                                Vector2 origin = npc.Center;
+                                float radius = 45;
+                                int numLocations = 30;
+                                for (int i = 0; i < 30; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                    Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    Main.dust[dust].noGravity = true;
+                                }
+                            }
+                        }
+
                         if (npc.ai[1] == 30)
                         {
-                            npc.rotation = npc.DirectionTo(player.Center).ToRotation();
+                            if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
+                            {
+                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180 - 90)).ToRotation();
+                                npc.spriteDirection = -1;
+                            }
+                            else
+                            {
+                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(90)).ToRotation();
+                            }
+                            spritedirectionstore = npc.spriteDirection;
+                            dashing = true;
+                        }
+
+                        if (dashing == true)
+                        {
+                            spritedirectionstore = npc.spriteDirection;
                         }
 
                         if (npc.ai[1] > 30 && npc.ai[1] < 90 && npc.ai[1] % 10 == 0 && changedPhase2 == true)
                         {
                             for (int i = -1; i < 1; i++)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center, new Vector2(/*0*/ 5 + (10 * i), 0 /*5 + (10 * i)).RotatedBy(npc.rotation)*/).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
                             }
                         }
 
@@ -136,6 +168,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             npc.ai[1] = 0;
                             attackcounter++;
+                            dashing = false;
                         }
                         if (attackcounter == (changedPhase2 ? 7 : 5))
                         {
@@ -144,6 +177,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             attackcounter = 0;
                             npc.velocity = Vector2.Zero;
                             npc.rotation = 0;
+                            dashing = false;
                         }
                     }
 
@@ -155,26 +189,32 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         if (npc.ai[1] == 15)
                         {
                             teleportposition = player.Center + Main.rand.NextVector2Circular(333, 333);
+
+                            while (Main.tile[(int)teleportposition.X / 16, (int)teleportposition.Y / 16].active())
+                            {
+                                teleportposition = player.Center + Main.rand.NextVector2Circular(333, 333);
+                            }
                         }
+
                         if (npc.ai[1] > 30)
                         {
                             if (++npc.ai[2] % 5 == 0)
                             {
                                 Vector2 origin = teleportposition;
-                                float radius = 15;
+                                float radius = 20;
                                 int numLocations = 30;
                                 for (int i = 0; i < 30; i++)
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 1);
+                                    Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                     Main.dust[dust].noGravity = true;
                                 }
                             }
                         }
                         if (++npc.ai[1] > 90)
                         {
-                            npc.Teleport(teleportposition, 206);
+                            npc.Teleport(teleportposition + new Vector2(-51, -51), 206);
                             int projectiles = 4 + (attackcounter * (changedPhase2 ? 3 : 2));
                             for (int j = 0; j < projectiles; j++)
                             {
@@ -205,7 +245,27 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             npc.ai[2]++;
                         }
 
-                        npc.position = new Vector2(player.Center.X + -600 * Direction, player.Center.Y + -33);
+                        if (npc.ai[1] > 5 && npc.ai[1] < 40)
+                        {
+                            if (++npc.ai[2] % 5 == 0)
+                            {
+                                Vector2 origin = new Vector2(player.Center.X + (-600 * Direction), player.Center.Y);
+                                float radius = 15;
+                                int numLocations = 30;
+                                for (int i = 0; i < 30; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    Main.dust[dust].noGravity = true;
+                                }
+                            }
+                        }
+
+                        if (npc.ai[1] > 40)
+                        {
+                            npc.position = new Vector2(player.Center.X + (-600 * Direction) - 51, player.Center.Y -51);
+                        }
 
                         if (++npc.ai[1] % (changedPhase2 ? 45 : 60) == 0)
                         {
@@ -240,7 +300,27 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             npc.ai[2]++;
                         }
 
-                        npc.position = new Vector2(player.Center.X + -300 * Direction, player.Center.Y + -33);
+                        if (npc.ai[1] > 5 && npc.ai[1] < 90)
+                        {
+                            if (++npc.ai[2] % 5 == 0)
+                            {
+                                Vector2 origin = new Vector2(player.Center.X + -300 * Direction, player.Center.Y);
+                                float radius = 15;
+                                int numLocations = 30;
+                                for (int i = 0; i < 30; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    Main.dust[dust].noGravity = true;
+                                }
+                            }
+                        }
+
+                        if (npc.ai[1] > 90)
+                        {
+                            npc.position = new Vector2(player.Center.X + -300 * Direction - 51, player.Center.Y -51);
+                        }
 
                         if (++npc.ai[1] % 120 == 0 && npc.ai[1] < 360)
                         {
@@ -302,7 +382,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         public override void FindFrame(int frameHeight)
         {
             npc.frame.Y = frameHeight * frame;
-            if (Main.player[npc.target].Center.X < npc.Center.X)
+            if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
             {
                 npc.spriteDirection = -1;
             }
