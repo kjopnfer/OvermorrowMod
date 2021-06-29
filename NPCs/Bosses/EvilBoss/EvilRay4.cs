@@ -10,7 +10,8 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
     {
         
         private int timer = 0;
-        private int rot = 600;
+        private int rot = 700;
+        Color alpha = Color.Purple;
 
         public override void SetStaticDefaults()
         {
@@ -38,9 +39,11 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             {
                 projectile.rotation = MathHelper.ToRadians(90f);
             }
+
             if(timer == 150)
             {
-                rot = -600;
+                alpha = Color.Red;
+                rot = -700;
             }
         }
 
@@ -51,8 +54,8 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         {
             float point = 0f;
             Vector2 endPoint;
-            endPoint.X = -370 * (float)Math.Cos(projectile.rotation) + projectile.Center.X;
-            endPoint.Y = -370 * (float)Math.Sin(projectile.rotation) + projectile.Center.Y;
+            endPoint.X = -405 * (float)Math.Cos(projectile.rotation) + projectile.Center.X;
+            endPoint.Y = -405 * (float)Math.Sin(projectile.rotation) + projectile.Center.Y;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
         }
 
@@ -67,8 +70,8 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             projectile.velocity = Vector2.Zero;
             Vector2 endPoint;
-            endPoint.X = -370 * (float)Math.Cos(projectile.rotation) + projectile.Center.X; // 5000 is basically the length
-            endPoint.Y = -370 * (float)Math.Sin(projectile.rotation) + projectile.Center.Y;
+            endPoint.X = -405 * (float)Math.Cos(projectile.rotation) + projectile.Center.X; // 5000 is basically the length
+            endPoint.Y = -405 * (float)Math.Sin(projectile.rotation) + projectile.Center.Y;
 
             Vector2 unit = endPoint - projectile.Center; // changing all endpoints it just how you change it, dont change other stuff it wont go well
             float length = unit.Length();
@@ -76,8 +79,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             for (float k = 0; k <= length; k += 10f)
             {
                 Vector2 drawPos = projectile.Center + unit * k - Main.screenPosition;
-                Color alpha = Color.Purple * ((255 - projectile.alpha) / 255f);
-                spriteBatch.Draw(Main.projectileTexture[projectile.type], drawPos, null, alpha, projectile.rotation, new Vector2(2.5f, 2.5f), 1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(Main.projectileTexture[projectile.type], drawPos, null, alpha, projectile.rotation, new Vector2(5f, 5f), 1f, SpriteEffects.None, 0f);
             }
 
             return false;
