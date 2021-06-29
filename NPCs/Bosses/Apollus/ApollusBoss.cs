@@ -33,6 +33,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         Vector2 teleportposition = Vector2.Zero;
         int spritetimer = 0;
         int frame = 1;
+        int proj;
 
         public override void AI()
         {
@@ -46,7 +47,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
                         if (++npc.ai[1] == 1)
                         {
-                            Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), 10, 0f);
+                            proj = Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), 10, 0f);
                         }
 
                         if (npc.ai[1] == 360)
@@ -130,6 +131,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                                 }
                             }
                         }
+
                         if (npc.ai[1] > 90)
                         {
                             npc.Teleport(teleportposition + new Vector2(-61, -61), 236);
@@ -191,6 +193,12 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             {
                 npc.spriteDirection = -1;
             }
+        }
+
+        public override bool CheckDead()
+        {
+            ((ArrowRuneCircle)Main.projectile[proj].modProjectile).kill = true;
+            return true;
         }
     }
 }

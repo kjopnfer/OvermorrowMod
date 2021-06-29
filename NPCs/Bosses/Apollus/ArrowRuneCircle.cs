@@ -22,6 +22,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.penetrate = -1;
         }
         public int timer = 0;
+        public bool kill = false;
         public override void AI()
         {
             if (++timer % 45 == 0)
@@ -30,6 +31,10 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 {
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), 2, 10f, Main.myPlayer);
                 }
+            }
+            if (kill == true)
+            {
+                projectile.Kill();
             }
         }
     }
