@@ -81,7 +81,6 @@ namespace OvermorrowMod.Projectiles.Magic
                 Dust dust = Dust.NewDustPerfect(position, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
             }
 
-
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
             Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
 

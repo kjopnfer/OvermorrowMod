@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,6 +19,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.width = 32;
             projectile.height = 32;
             projectile.friendly = false;
+            projectile.hostile = true;
             projectile.tileCollide = false;
             projectile.penetrate = 30;
             projectile.timeLeft = 240;

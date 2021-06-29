@@ -72,7 +72,7 @@ namespace OvermorrowMod.Projectiles.Summon
             #endregion
 
 
-            float distanceFromTarget = 300f;
+            float distanceFromTarget = 100f;
             Vector2 targetCenter = projectile.position;
             bool foundTarget = false;
 
@@ -116,7 +116,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
             if(PosPlay == 0 && PosCheck > 2)
             {
-
+                projectile.minionSlots = 0f;
                 double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / 180); //Convert degrees to radians
                 if(NumProj > HasChecked + 1)

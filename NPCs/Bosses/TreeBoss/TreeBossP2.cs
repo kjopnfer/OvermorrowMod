@@ -202,7 +202,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 changedPhase2 = true;
             }
 
-
             switch (npc.ai[0])
             {
                 case -1: // case switching
@@ -373,8 +372,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 for (int i = 0; i < 4; i++)
                                 {
                                     float ProjectileSpawnX = npc.Center.X + 150 + (333 * i);
-                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopLeft.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer);
-                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomLeft.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer);
+                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopLeft.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomLeft.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
                                 }
                             }
                             else
@@ -382,8 +381,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 for (int i = 0; i < 4; i++)
                                 {
                                     float ProjectileSpawnX = npc.Center.X - 150 - (333 * i);
-                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopRight.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer);
-                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomRight.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer);
+                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopRight.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomRight.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
                                 }
                             }
                         }

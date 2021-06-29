@@ -12,8 +12,8 @@ namespace OvermorrowMod.NPCs
 
         public override void SetDefaults()
         {
-            npc.width = 20;
-            npc.height = 56;
+            npc.width = 32;
+            npc.height = 32;
             npc.aiStyle = 0;
             npc.noGravity = false;
             npc.damage = 0;
@@ -26,7 +26,7 @@ namespace OvermorrowMod.NPCs
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Blood Clot");
-            Main.npcFrameCount[npc.type] = 3;
+            Main.npcFrameCount[npc.type] = 1;
         }
         public override void AI()
         {

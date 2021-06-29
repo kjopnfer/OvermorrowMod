@@ -24,7 +24,11 @@ namespace OvermorrowMod.Projectiles.Magic
         private int PosTimer = 0;
         private int Pos = 0;
         private int movement = 0;
-        
+
+
+        private int OrignalDamage = 0;
+
+
         private int HasChecked = 0;
 
         private int NumProj = 0;
@@ -72,12 +76,12 @@ namespace OvermorrowMod.Projectiles.Magic
             if(PosCheck == 1)
             {
                 PosPlay = NumProj;
+                OrignalDamage = projectile.damage;
             }
             if(PosCheck == 2)
             {
                 HasChecked = PosPlay;
             }
-
 
 
             if(PosCheck == 2)
@@ -87,7 +91,7 @@ namespace OvermorrowMod.Projectiles.Magic
 
             if(PosCheck > 2)
             {
-
+                projectile.damage = OrignalDamage * NumProj;
                 double deg = (double)CircleArr; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / 180); //Convert degrees to radian
                     
