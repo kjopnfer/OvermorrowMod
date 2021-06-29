@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 using System;
 using Terraria.ID;
 
-namespace OvermorrowMod.NPCs.Bosses.GraniteMini
+namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 {
     public class GraniteRay : ModProjectile
     {
@@ -18,14 +18,22 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         Vector2 endPoint;
         private int projshot = 0;
         private int timer = 0;
-        private int attacktimer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
+        int RandomAtt = Main.rand.Next(1, 2);
         private int otherTPtimer = 0;
         float speed = 0f;
-        private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/GraniteMini/GraniteChain";
+        private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
         Vector2 LaserPos;
         Vector2 TargetPos;
+
+
+        private int LaserTimer = 0;
+        private int attacktimer = 0;
+
+
+        private int CircleAttTimer = 0;
+        private int CircleLaserTimer = 0;
 
         public override void SetDefaults()
         {
@@ -43,6 +51,8 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             NPC npc = Main.npc[(int)projectile.ai[0]];
             endPoint = npc.Center + new Vector2(- 5, -25);
             timer++;
+
+
             if (timer == 1)
             {
                 Vector2 TargetPos = Main.player[projectile.owner].Center; 
@@ -119,22 +129,23 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             }
 
 
-            if (!teleporting)
+            if (RandomAtt == 0)
             {
+                LaserTimer++;
                 attacktimer++;
-                if (attacktimer > 90 && npc.life > npc.lifeMax / 2)
+                if (attacktimer > 49 && npc.life > npc.lifeMax / 2)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Main.player[projectile.owner].Center;
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
-                    float speed = 6f;
+                    float speed = 8f;
                     int type = mod.ProjectileType("GranLaser");
                     int damage = npc.damage;
                     Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
                     attacktimer = 0;
                 }
-                else if (attacktimer > 90)
+                else if (attacktimer > 49)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Main.player[projectile.owner].Center;
@@ -142,7 +153,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     direction.Normalize();
                     Vector2 newpoint1 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(3));
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(-3));
-                    float speed = 7f;
+                    float speed = 7.5f;
                     int type = mod.ProjectileType("GranLaser");
                     int damage = npc.damage;
                     Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
@@ -150,11 +161,41 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     Projectile.NewProjectile(position, newpoint2 * speed, type, damage, 0f, Main.myPlayer);
                     attacktimer = 0;
                 }
+                if(LaserTimer == 300)  
+                {
+                    RandomAtt = Main.rand.Next(0, 2);
+                    attacktimer = 0;
+                    LaserTimer = 0;
+                }
             }
 
 
+
+
+            if (RandomAtt == 1)
+            {
+                CircleAttTimer++;
+                CircleLaserTimer++;
+                if(CircleLaserTimer == 10)
+                {
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<LightningTest>(), 75, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    CircleLaserTimer = 0;
+                }
+                if(CircleAttTimer == 300)  
+                {
+                    RandomAtt = Main.rand.Next(0, 2);
+                    CircleAttTimer = 0;
+                    CircleLaserTimer = 0;
+                }
+            }
+
+
+
+
+
+
             float between = Vector2.Distance(npc.Center, projectile.Center);
-            if(between > 565f || otherTPtimer > 650)
+            if(between > 600f)
             {
                 TPtimer++;
                 if(TPtimer == 55)
