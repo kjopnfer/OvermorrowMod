@@ -112,7 +112,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         {
                             Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                         }
-                        Main.NewText("shoot");
                     }
 
                     if (npc.ai[3] == 120)

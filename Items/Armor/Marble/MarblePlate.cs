@@ -10,8 +10,8 @@ namespace OvermorrowMod.Items.Armor.Marble
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Marble Chestplate");
-            Tooltip.SetDefault("3% ranged damage \n2% increased magic damage");
+            DisplayName.SetDefault("Lacquered Champion's Chestplate");
+            Tooltip.SetDefault("3% ranged damage\n2% increased magic damage");
         }
 
         public override void SetDefaults()

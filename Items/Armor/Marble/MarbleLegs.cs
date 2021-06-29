@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Armor.Marble
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Marble Leggings");
+            DisplayName.SetDefault("Lacquered Champion's Leggings");
             Tooltip.SetDefault("3% ranged damage \n15% decreased mana usage");
         }
 

@@ -11,7 +11,7 @@ namespace OvermorrowMod.Items.Armor.Marble
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Marble Helmet");
+            DisplayName.SetDefault("Lacquered Champion's Helmet");
             Tooltip.SetDefault("3% increased ranged damage \n5% increased magic damage");
         }
 
