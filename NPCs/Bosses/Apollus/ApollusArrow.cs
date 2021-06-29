@@ -10,6 +10,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
         private Vector2 storeVelocity;
         private float storeRotation = 25;
+        float wait;
+        bool gofast = false;
 
         public override void SetStaticDefaults()
         {
@@ -27,8 +29,18 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.extraUpdates = 1;
             projectile.ignoreWater = true;
         }
+
         public override void AI()
         {
+            if (projectile.ai[0] == -1)
+            {
+                if (projectile.ai[1] != 0)
+                {
+                    gofast = true;
+                    wait = projectile.ai[1];
+                    projectile.ai[1] = 0;
+                }
+            }
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
@@ -71,9 +83,10 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 projectile.ai[0]++;
                 projectile.rotation = storeRotation;
 
-                if(projectile.ai[0] > 90)
+                if (projectile.ai[0] > 90 + (wait * -2))
                 {
-                    projectile.velocity = new Vector2(MathHelper.Lerp(0, storeVelocity.X * 2, 0.4f), MathHelper.Lerp(0, storeVelocity.Y * 2, 0.4f));
+                    projectile.velocity = new Vector2(MathHelper.Lerp(0, storeVelocity.X * 2, (gofast ? 1.5f : 0.4f)), MathHelper.Lerp(0, storeVelocity.Y * 2, (gofast ? 1.5f : 0.4f)));
+                    projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
                 }
             }
         }

@@ -46,6 +46,11 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     {
                         if (!AliveCheck(player)) { break; }
 
+                        /*if (!AliveCheck(player))
+                        {
+                            npc.velocity = Vector2.UnitY * -15;
+                        }*/
+                        
                         if (npc.ai[3] == 0)
                         {
                             moveSpeed = Main.rand.Next(10, 15);
@@ -70,7 +75,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         npc.velocity.X = move.X;
                         npc.velocity.Y = move.Y * .98f;
 
-                        if (++npc.ai[1] > 600 + Main.rand.Next(100))
+                        if (++npc.ai[1] > 600 + Main.rand.Next(100) && npc.ai[2] == 1)
                         {
                             npc.ai[1] = 0;
                             npc.ai[0] = 1;
@@ -89,7 +94,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             npc.ai[2]++;
                         }
 
-                        if (npc.ai[2] == 3)
+                        if (npc.ai[2] == /*3*/ 1)
                         {
                             npc.ai[2] = 0;
                             npc.ai[1] = 0;
@@ -97,6 +102,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                     }
                     break;
+                    
             }
         }
 

@@ -13,12 +13,14 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         int attackcounter = 0;
         Vector2 teleportposition = Vector2.Zero;
         bool changedPhase2 = false;
+        bool changedPhase3 = false;
 
         int Direction = -1;
         bool direction = false;
 
         int RandomCase = 0;
         int LastCase = 0;
+        int RandomCeiling;
         bool movement = true;
 
         bool dashing = false;
@@ -50,6 +52,10 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             if (npc.life <= npc.lifeMax * 0.5f)
             {
                 changedPhase2 = true;
+            }
+            if (npc.life <= npc.lifeMax * 0.25f)
+            {
+                changedPhase3 = true;
             }
             switch (npc.ai[0])
             {
@@ -88,13 +94,30 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case -1: // case switching
                     {
-                        if (!AliveCheck(player)) { break; }
+                        /*if (!AliveCheck(player)) { break; }
 
                         if (movement == true)
                         {
                             while (RandomCase == LastCase)
                             {
                                 RandomCase = Main.rand.Next(4);
+                            }
+                            LastCase = RandomCase;
+                            movement = false;
+                            npc.ai[0] = RandomCase;
+                        }
+                        else
+                        {
+                            movement = true;
+                            npc.ai[0] = -2;
+                        }*/
+                        if (movement == true)
+                        {
+                            if (changedPhase2 == true) { RandomCeiling = 4; }
+                            else { RandomCeiling = 2; }
+                            while (RandomCase == LastCase)
+                            {
+                                RandomCase = Main.rand.Next(RandomCeiling);
                             }
                             LastCase = RandomCase;
                             movement = false;
@@ -132,12 +155,12 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
                             {
-                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180 - 90)).ToRotation();
-                                npc.spriteDirection = -1;
+                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180 /*- 90*/)).ToRotation();
+                                npc.spriteDirection = /*-1*/ 1;
                             }
                             else
                             {
-                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(90)).ToRotation();
+                                npc.rotation = npc.DirectionTo(player.Center)./*RotatedBy(MathHelper.ToRadians(90)).*/ToRotation();
                             }
                             spritedirectionstore = npc.spriteDirection;
                             dashing = true;
@@ -152,7 +175,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             for (int i = -1; i < 1; i++)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(/*0*/ 5 + (10 * i), 0 /*5 + (10 * i)).RotatedBy(npc.rotation)*/).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center, new Vector2(0 /*5 + (10 * i)*/, /*0*/ 5 + (10 * i)/*).RotatedBy(npc.rotation)*/).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
                             }
                         }
 
@@ -182,7 +205,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     }
 
                     break;
-                case 1: // telebombs
+                case 3: // telebombs
                     {
                         if (!AliveCheck(player)) { break; }
 
@@ -271,7 +294,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             Vector2 direction = player.Center - npc.Center;
                             direction.Normalize();
-                            int projectiles = changedPhase2 ? Main.rand.Next(9, 16) : Main.rand.Next(6, 12);
+                            int projectiles = /*changedPhase2 ? Main.rand.Next(9, 16) :*/ Main.rand.Next(6, 12);
                             for (int i = projectiles * -1 / 2; i < projectiles / 2; i++)
                             {
                                 Projectile.NewProjectile(npc.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
@@ -289,7 +312,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                     }
                     break;
-                case 3: //minions
+                case 1: //minions
                     {
                         if (!AliveCheck(player)) { break; }
 
@@ -326,7 +349,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             for (int i = -1; i < 1; i++)
                             {
-                                NPC.NewNPC((int)(npc.Center.X + 150 + (300 * i)), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>());
+                                NPC.NewNPC((int)(npc.Center.X + 150 + (300 * i)), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
                             }
                         }
 

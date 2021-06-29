@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -20,18 +21,88 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.friendly = false;
             projectile.timeLeft = 600;
             projectile.penetrate = -1;
+            projectile.scale = 1f;
         }
-        public int timer = 0;
         public bool kill = false;
+        float rotationcounter;
+        int directionalstore;
         public override void AI()
         {
-            if (++timer % 45 == 0)
+            if(projectile.damage == 15)
             {
-                for (int i = 0; i < 5; i++)
-                {
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), 2, 10f, Main.myPlayer);
-                }
+                projectile.ai[0] = 2;
             }
+            switch (projectile.ai[0])
+            {
+                case 0:
+                    {
+                        if (projectile.ai[1] == 0)
+                        {
+                            projectile.scale = 0.01f;
+                        }
+                        if (projectile.ai[1] > 2 && projectile.ai[1] < 45)
+                        {
+                            projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
+                            rotationcounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                            projectile.rotation += rotationcounter;
+                        }
+                        if (projectile.ai[1] == 45)
+                        {
+                            projectile.ai[0] = 1;
+                        }
+                    }
+                    break;
+                case 1:
+                    {
+                        projectile.rotation += rotationcounter;
+                        if (projectile.ai[1] % 45 == 0)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), 12, 10f, Main.myPlayer);
+                            }
+                        }
+                    }
+                    break;
+                case 2:
+                    {
+                        Player projectileowner = Main.player[projectile.owner];
+                        projectile.position = projectileowner.Center + new Vector2(-35 + (566 * directionalstore), -35);
+                        if (projectile.ai[1] == 0)
+                        {
+                            projectile.scale = 0.01f;
+                            directionalstore = (int)projectile.knockBack;
+                            projectile.knockBack = 10;
+                            projectile.damage = 12;
+                        }
+                        if (projectile.ai[1] > 2 && projectile.ai[1] < 45)
+                        {
+                            projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
+                            rotationcounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                            projectile.rotation += rotationcounter;
+                        }
+                        if (projectile.ai[1] == 45)
+                        {
+                            projectile.ai[0] = 3;
+                        }
+                    }
+                    break;
+                case 3:
+                    {
+                        Player projectileowner = Main.player[projectile.owner];
+                        projectile.position = projectileowner.Center + new Vector2(-35 + (566 * directionalstore), -35);
+                        projectile.rotation += rotationcounter;
+                        if (projectile.ai[1] % 45 == 0)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Projectile.NewProjectile(projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalstore, Main.rand.Next(-3, 3) * directionalstore), ProjectileType<ApollusArrowNormal>(), 12, 2, Main.myPlayer);
+                            }
+                        }
+                    }
+                    break;
+            }
+            projectile.ai[1]++;
             if (kill == true)
             {
                 projectile.Kill();
