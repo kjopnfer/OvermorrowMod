@@ -15,6 +15,7 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.timeLeft = 150;
+            projectile.penetrate = 1;
         }
 
         public override Color? GetAlpha(Color lightColor)
