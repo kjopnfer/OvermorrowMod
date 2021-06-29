@@ -29,7 +29,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Flame Spikes");
+            DisplayName.SetDefault("Flame Chakram");
             Tooltip.SetDefault("Boomerang that homes in and shoots a laser at foes");
         }
 
