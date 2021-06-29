@@ -29,12 +29,18 @@ namespace OvermorrowMod.Projectiles.Summon
         float NPCtargetY = 0;
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Granite Elemental");
+            Main.projFrames[base.projectile.type] = 4;
+        }
+
         public override void SetDefaults()
         {
             projectile.width = 30;
             projectile.height = 38;
             projectile.minionSlots = 1f;
-            projectile.light = 2f;
             projectile.minion = true;
             projectile.friendly = true;
             projectile.ignoreWater = true;
@@ -43,12 +49,7 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.penetrate = -1;
             projectile.timeLeft = 200000;
         }
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Granite Elemental");
-            Main.projFrames[base.projectile.type] = 4;
-        }
-
+        
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
@@ -220,6 +221,32 @@ namespace OvermorrowMod.Projectiles.Summon
                     projectile.frame = 0;
                 }
             }
+        }
+        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            //Texture2D texture = mod.GetTexture("Projectiles/Summon/StormWhelp_Glowmask");
+
+            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+            int y2 = num154 * projectile.frame;
+
+            Texture2D texture = mod.GetTexture("Projectiles/Summon/GraniteSummon_Glow");
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
+            spriteBatch.Draw
+            (
+                texture,
+                new Vector2
+                (
+                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
+                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f
+                ),
+                drawRectangle,
+                Color.White,
+                projectile.rotation,
+                new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2),
+                projectile.scale,
+                projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                0f
+            );
         }
     }
 }
