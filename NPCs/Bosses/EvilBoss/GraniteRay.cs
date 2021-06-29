@@ -20,7 +20,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int timer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
-        int RandomAtt = Main.rand.Next(1, 2);
+        int RandomAtt = Main.rand.Next(0, 1);
         private int otherTPtimer = 0;
         float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
@@ -133,35 +133,52 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             {
                 LaserTimer++;
                 attacktimer++;
-                if (attacktimer > 49 && npc.life > npc.lifeMax / 2)
+                if (attacktimer > 50 && attacktimer < 75)
                 {
-                    Vector2 position = projectile.Center;
+                    Vector2 position = npc.Center;
                     Vector2 targetPosition = Main.player[projectile.owner].Center;
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
-                    float speed = 8f;
-                    int type = mod.ProjectileType("GranLaser");
-                    int damage = npc.damage;
-                    Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
-                    attacktimer = 0;
+                    float speed = 3f;
+                    npc.velocity.X = direction.X * speed;
+                    npc.velocity.Y = direction.Y * speed;
                 }
-                else if (attacktimer > 49)
+                int numberProjectiles = 3;
+                for (int i = 0; i < numberProjectiles; i++)
                 {
-                    Vector2 position = projectile.Center;
-                    Vector2 targetPosition = Main.player[projectile.owner].Center;
-                    Vector2 direction = targetPosition - position;
-                    direction.Normalize();
-                    Vector2 newpoint1 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(3));
-                    Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(-3));
-                    float speed = 7.5f;
-                    int type = mod.ProjectileType("GranLaser");
-                    int damage = npc.damage;
-                    Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(position, newpoint1 * speed, type, damage, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(position, newpoint2 * speed, type, damage, 0f, Main.myPlayer);
-                    attacktimer = 0;
+                    if(attacktimer > 55 && attacktimer < 60)
+                    {
+                        int randomX = Main.rand.Next(-3, 4);
+                        int randomY = Main.rand.Next(-3, 4);
+                        Vector2 position = npc.Center;
+                        Vector2 targetPosition = Main.player[npc.target].Center;
+                        Vector2 direction = targetPosition - position;
+                        direction.Normalize();
+                        float speed = 3f;
+                        int damagebull = npc.damage;
+                        Vector2 newpoint1 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(90));
+                        Vector2 newpoint2 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(180));
+                        Vector2 newpoint3 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(270));
+                        Projectile.NewProjectile(npc.Center.X, npc.Center.Y, direction.X + randomX, direction.Y + randomY * speed, mod.ProjectileType("CrystalBulletNormal"), damagebull, 0f, Main.myPlayer);
+
+
+                        Main.PlaySound(SoundID.Item36, npc.position);
+                    }
                 }
-                if(LaserTimer == 300)  
+
+                if (attacktimer > 75 && attacktimer < 90)
+                {
+                    npc.velocity.X = npc.velocity.X / 2;
+                    npc.velocity.Y = npc.velocity.Y / 2;
+                }
+
+                if (attacktimer == 90)
+                {
+                    npc.velocity.X = 0;
+                    npc.velocity.Y = 0;
+                }
+
+                if(attacktimer == 100)  
                 {
                     RandomAtt = Main.rand.Next(0, 2);
                     attacktimer = 0;
@@ -180,7 +197,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     CircleLaserTimer++;
                 }
 
-                if(CircleLaserTimer == 10)
+                if(CircleLaserTimer == 10 && CircleAttTimer < 400)
                 {
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<LightningTest>(), 75, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                     CircleLaserTimer = 0;
@@ -192,21 +209,28 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 if(CircleAttTimer < 99)
                 {
 
-                int Random1 = Main.rand.Next(-370, 370);
-                int Random2 = Main.rand.Next(-370, 370);
+                    int Random1 = Main.rand.Next(-370, 370);
+                    int Random2 = Main.rand.Next(-370, 370);
 
-                float XDustposition = projectile.Center.X + Random1 - 16;
-                float YDustposition = projectile.Center.Y + Random2 - 16;
-                projectile.velocity.X = 0f;
-                projectile.velocity.Y = 0f;
-                Vector2 VDustposition = new Vector2(XDustposition, YDustposition);
-                Vector2 Dusttarget = projectile.Center;
-                Vector2 Dustdirection = Dusttarget - VDustposition;
-                Dustdirection.Normalize();
+                    float XDustposition = projectile.Center.X + Random1 - 16;
+                    float YDustposition = projectile.Center.Y + Random2 - 16;
+                    projectile.velocity.X = 0f;
+                    projectile.velocity.Y = 0f;
+                    Vector2 VDustposition = new Vector2(XDustposition, YDustposition);
+                    Vector2 Dusttarget = projectile.Center;
+                    Vector2 Dustdirection = Dusttarget - VDustposition;
+                    Dustdirection.Normalize();
 
-                    Color granitedustc = Color.Red;
+                    Color granitedustc1 = Color.Purple;
+                    Color granitedustc2 = Color.Red;
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 8, 0.0f, 0.0f, 10, granitedustc, 4f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 8, 0.0f, 0.0f, 10, granitedustc1, 4f);
+                        Main.dust[dust].noGravity = true;
+                        Vector2 velocity = Dustdirection * -2;
+                        Main.dust[dust].velocity = Dustdirection * -2;
+                    }
+                    {
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 8, 0.0f, 0.0f, 10, granitedustc2, 4f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * 2;
                         Main.dust[dust].velocity = Dustdirection * 2;
@@ -214,16 +238,16 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 }
 
                 float OutsideRing = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
-                if(OutsideRing > 370f && CircleAttTimer > 99)
+                if(OutsideRing > 405f && CircleAttTimer > 99 && CircleAttTimer < 400)
                 {
-                Vector2 position = projectile.Center;
-                Vector2 targetPosition = Main.player[projectile.owner].Center;
-                Vector2 direction = targetPosition - position;
-                direction.Normalize();
-                float speed = 10f;
-                int type = 290;
-                int damage = 75;
-                Projectile.NewProjectile(position, direction * speed, type, damage, 1f, projectile.owner, 0f);
+                    Vector2 position = projectile.Center;
+                    Vector2 targetPosition = Main.player[projectile.owner].Center;
+                    Vector2 direction = targetPosition - position;
+                    direction.Normalize();
+                    float speed = 10f;
+                    int type = mod.ProjectileType("Xbolt");
+                    int damage = 75;
+                    Projectile.NewProjectile(position, direction * speed, type, damage, 1f, projectile.owner, 0f);
                 }
 
                 if(CircleAttTimer == 1)
@@ -239,7 +263,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay4>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                 }
 
-                if(CircleAttTimer == 400)  
+                if(CircleAttTimer == 500)  
                 {
                     RandomAtt = Main.rand.Next(0, 2);
                     CircleAttTimer = 0;
