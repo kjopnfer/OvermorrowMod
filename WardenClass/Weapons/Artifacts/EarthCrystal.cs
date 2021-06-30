@@ -19,8 +19,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 
         public override void SafeSetDefaults()
         {
-            item.width = 28;
-            item.height = 44;
+            item.width = 22;
+            item.height = 40;
             item.rare = ItemRarityID.Orange;
             item.useAnimation = 30;
             item.useTime = 30;
