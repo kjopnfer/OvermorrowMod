@@ -43,7 +43,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.knockBackResist = 0f;
             npc.damage = 15;
             npc.defense = 4;
-            npc.lifeMax = 2000;
+            npc.lifeMax = 2800;
             npc.HitSound = SoundID.NPCHit4;
             npc.value = Item.buyPrice(gold: 5);
             //animationType = NPCID.Zombie;
@@ -66,46 +66,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             }
             switch (npc.ai[0])
             {
-                /*case -3:
-                    {
-                        if (!AliveCheck(player)) { break; }
-
-                        if (npc.ai[2] == 0)
-                        {
-                            //direction = Main.rand.NextBool();
-                            //Direction = direction ? -1 : 1;
-                            Direction = -1;
-                            npc.ai[2]++;
-                        }
-
-                        if (npc.ai[1] > 5 && npc.ai[1] < 40)
-                        {
-                            if (++npc.ai[2] % 5 == 0)
-                            {
-                                Vector2 origin = new Vector2(player.Center.X + (-600 * Direction), player.Center.Y);
-                                float radius = 15;
-                                int numLocations = 30;
-                                for (int i = 0; i < 30; i++)
-                                {
-                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
-                                    Main.dust[dust].noGravity = true;
-                                }
-                            }
-                        }
-
-                        if (npc.ai[1] > 40)
-                        {
-                            npc.position = new Vector2(player.Center.X + (-600 * Direction) - 51, player.Center.Y - 51);
-                        }
-
-                        if (++npc.ai[1] == 40)
-                        {
-                            Projectile.NewProjectile(npc.Center + (Vector2.UnitY * npc.width), Vector2.UnitY, ProjectileType<GraniteLaserEnd>(), (int)(npc.damage / 2), 1f, Main.myPlayer, 0f, npc.whoAmI);
-                        }
-                    }
-                    break;*/
                 case -2: // slow movement
                     {
                         if (!AliveCheck(player)) { break; }
@@ -129,7 +89,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         npc.velocity.X = move.X;
                         npc.velocity.Y = move.Y * .98f;
 
-                        if (++npc.ai[1] > (changedPhase2 ? 90 : 120))
+                        if (++npc.ai[1] > (changedPhase2 ? 150 : 180))
                         {
                             npc.ai[0] = -1;
                             npc.ai[1] = 0;
