@@ -22,7 +22,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
             projectile.hostile = true;
             projectile.tileCollide = false;
             projectile.penetrate = 2;
-            projectile.timeLeft = 60;
+            projectile.timeLeft = 85;
             projectile.extraUpdates = 1;
         }
         public override void AI()

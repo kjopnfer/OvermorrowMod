@@ -23,7 +23,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             npc.damage = 30;
             npc.aiStyle = 0;
             npc.noTileCollide = true;
-            npc.defense = 10;
+            npc.defense = 5;
             npc.lifeMax = 200;
             npc.alpha = 40;
             npc.alpha = 20;
@@ -89,22 +89,22 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 npc.velocity += direction / speed;
                 spiderexp = 0;
             }
-
-            if(npc.velocity.X > 12)
+            
+            if(npc.velocity.X > 7)
             {
-                npc.velocity.X = 12;
+                npc.velocity.X = 7;
             }
-            if(npc.velocity.X < -12)
+            if(npc.velocity.X < -7)
             {
-                npc.velocity.X = -12;
+                npc.velocity.X = -7;
             }
-            if(npc.velocity.Y > 12)
+            if(npc.velocity.Y > 7)
             {
-                npc.velocity.Y = 12;
+                npc.velocity.Y = 7;
             }
-            if(npc.velocity.Y < -12)
+            if(npc.velocity.Y < -7)
             {
-                npc.velocity.Y = -12;
+                npc.velocity.Y = -7;
             }
         }
 

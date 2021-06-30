@@ -19,7 +19,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
             projectile.hostile = true;
             projectile.tileCollide = false;
             projectile.penetrate = 1;
-            projectile.timeLeft = 60;
+            projectile.timeLeft = 100;
             projectile.extraUpdates = 1;
         }
         public override void AI()
@@ -28,12 +28,11 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
             projectile.rotation += 0.5f;
             if(timer == 20)
             {
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, -3, 414, 1, 1f, projectile.owner, 0f);
                 timer = 0;
             }
 
                 float OutsideRing = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
-                if(OutsideRing < 90f && timer == 10)
+                if(OutsideRing < 80f && timer == 10)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Main.player[projectile.owner].Center;
@@ -41,7 +40,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
                     direction.Normalize();
                     float speed = 0.7f;
                     int type = mod.ProjectileType("Xbolt");
-                    int damage = 75;
+                    int damage = 11;
                     Projectile.NewProjectile(position, direction * speed, type, damage, 1f, projectile.owner, 0f);
                     timer = 0;
                 }

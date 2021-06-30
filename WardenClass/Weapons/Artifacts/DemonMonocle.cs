@@ -13,14 +13,13 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         {
             DisplayName.SetDefault("Demonic Monocle");
             Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to summon 6 Demon Eyes\n" +
-                "Demon eyes will home in on nearby enemies\n" +
-                "'Why do Demons wear monocles? I don't know either'");
+                "Demon eyes will home in on nearby enemies");
         }
 
         public override void SafeSetDefaults()
         {
-            item.width = 32;
-            item.height = 30;
+            item.width = 26;
+            item.height = 46;
             item.rare = ItemRarityID.Green;
             item.useAnimation = 30;
             item.useTime = 30;

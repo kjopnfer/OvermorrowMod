@@ -22,8 +22,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.width = 28;
             item.height = 44;
             item.rare = ItemRarityID.Green;
-            item.useAnimation = 30;
-            item.useTime = 30;
+            item.useAnimation = 32;
+            item.useTime = 32;
             item.useStyle = ItemUseStyleID.HoldingUp;
             item.noMelee = true;
             item.UseSound = SoundID.Item103;
