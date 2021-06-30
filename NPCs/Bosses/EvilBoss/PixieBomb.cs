@@ -13,6 +13,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         readonly bool expert = Main.expertMode;
         int frame = 1;
         int spiderspritetimer = 0;
+
         public override void SetDefaults()
         {
             NPCID.Sets.TrailCacheLength[npc.type] = 17;
@@ -84,11 +85,16 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             if(Charge > 170)
             {
+                int RandomAdd = Main.rand.Next(-1, 2);
+                int RandomTarget2 = Main.rand.Next(-75, 76);
+                int RandomTarget1 = Main.rand.Next(-75, 76);
                 Vector2 position = npc.Center;
-                Vector2 targetPosition = Main.player[npc.target].Center;
+                float targetPosition1 = Main.player[npc.target].Center.X + RandomTarget2;
+                float targetPosition2 = Main.player[npc.target].Center.Y + RandomTarget1;
+                Vector2 targetPosition = new Vector2(targetPosition1, targetPosition2);
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
-                float speed = 2.6f;
+                float speed = 2.6f + RandomAdd * 0.1f;
                 npc.velocity += direction / speed;
                 spiderexp = 0;
             }

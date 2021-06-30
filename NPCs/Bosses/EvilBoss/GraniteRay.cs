@@ -20,7 +20,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int timer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
-        int RandomAtt = Main.rand.Next(2, 3);
+        int RandomAtt = Main.rand.Next(3, 4);
         private int otherTPtimer = 0;
         float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
@@ -35,6 +35,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
         private int LaserTimer = 0;
         private int attacktimer = 0;
+
+
+        private int PixieTimer = 0;
 
 
         private int CircleAttTimer = 0;
@@ -207,7 +210,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(attacktimer == 100)  
                 {
-                    RandomAtt = Main.rand.Next(0, 3);
+                    RandomAtt = Main.rand.Next(0, 4);
                     attacktimer = 0;
                     LaserTimer = 0;
                 }
@@ -292,7 +295,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(CircleAttTimer == 600)  
                 {
-                    RandomAtt = Main.rand.Next(0, 3);
+                    RandomAtt = Main.rand.Next(0, 4);
                     CircleAttTimer = 0;
                     CircleLaserTimer = 0;
                 }
@@ -334,11 +337,76 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 {
                     UnholyTimer = 0;
                     UnholyAttTimer = 0;
-                    RandomAtt = Main.rand.Next(0, 3);
+                    RandomAtt = Main.rand.Next(0, 4);
                     projectile.ranged = false;
                 }
             }
 
+
+
+
+
+            if (RandomAtt == 3)
+            {
+                PixieTimer++;
+
+                if(PixieTimer < 50)
+                {
+                    int Random1 = Main.rand.Next(-70, 0);
+                    int Random2 = Main.rand.Next(0, 70);
+                    int Random3 = Main.rand.Next(-70, 70);
+
+                    float XDustposition1 = projectile.Center.X + Random1 - 16;
+                    float XDustposition2 = projectile.Center.X + Random2 - 16;
+                    float YDustposition = projectile.Center.Y + Random3 - 16;
+                    projectile.velocity.X = 0f;
+                    projectile.velocity.Y = 0f;
+
+                    Vector2 VDustposition = new Vector2(XDustposition1, YDustposition);
+                    Vector2 Dusttarget = projectile.Center;
+                    Vector2 Dustdirection = Dusttarget - VDustposition;
+
+                    Vector2 VDustposition2 = new Vector2(XDustposition2, YDustposition);
+                    Vector2 Dusttarget2 = projectile.Center;
+                    Vector2 Dustdirection2 = Dusttarget2 - VDustposition;
+
+                    Dustdirection.Normalize();
+                    Dustdirection2.Normalize();
+
+                    Color Corp = Color.Purple;
+                    Color Crim = Color.Red;
+                    {
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 16, 0.0f, 0.0f, 10, Crim, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Vector2 velocity = Dustdirection * 3f;
+                        Main.dust[dust].velocity = Dustdirection * 3f;
+                    }
+                    {
+                        int dust = Dust.NewDust(VDustposition2, projectile.width, projectile.height, 16, 0.0f, 0.0f, 10, Corp, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Vector2 velocity = Dustdirection2 * -3f;
+                        Main.dust[dust].velocity = Dustdirection2 * -3f;
+                    }
+                }
+
+
+                if(PixieTimer == 50)
+                {
+                    NPC.NewNPC((int)projectile.Center.X + 350, (int)projectile.Center.Y + 75, mod.NPCType("PixieBomb"));
+                    NPC.NewNPC((int)projectile.Center.X + 350, (int)projectile.Center.Y - 75, mod.NPCType("PixieBomb"));
+
+                    NPC.NewNPC((int)projectile.Center.X - 350, (int)projectile.Center.Y + 75, mod.NPCType("CreeperPixie"));
+                    NPC.NewNPC((int)projectile.Center.X - 350, (int)projectile.Center.Y - 75, mod.NPCType("CreeperPixie"));
+                }
+
+
+
+                if(PixieTimer == 450)
+                {
+                    PixieTimer = 0;
+                    RandomAtt = Main.rand.Next(0, 4);
+                }
+            }
 
             float between = Vector2.Distance(npc.Center, projectile.Center);
             if(between > 600f)

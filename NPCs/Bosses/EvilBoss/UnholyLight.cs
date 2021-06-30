@@ -40,7 +40,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             timer++;
             if(!HasActivedGo)
             {
-                projectile.timeLeft = 75;
+                projectile.timeLeft = 100;
                 if (timer == 1)
                 {
                     length++;

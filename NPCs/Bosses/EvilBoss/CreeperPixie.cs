@@ -71,6 +71,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     npc.velocity.Y = 0;
                     Vector2 perturbedSpeed1 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(Rot));
                     Projectile.NewProjectile(position, perturbedSpeed1 * speed1, mod.ProjectileType("CreeperProj"), damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(position, -perturbedSpeed1 * speed1, mod.ProjectileType("CreeperProj"), damage, 0f, Main.myPlayer);
                     Main.PlaySound(SoundID.Item12, npc.position);
                     Rot += 10;
                     spiderexp = 0;
@@ -79,11 +80,12 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             if(Charge > 170)
             {
+                int RandomAdd = Main.rand.Next(-1, 2);
                 Vector2 position = npc.Center;
                 Vector2 targetPosition = Main.player[npc.target].Center;
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
-                float speed = 3.3f;
+                float speed = 3.3f + RandomAdd * 0.1f;
                 npc.velocity += direction / speed;
                 spiderexp = 0;
             }
