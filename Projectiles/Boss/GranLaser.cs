@@ -4,15 +4,14 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.NPCs.Bosses.GraniteMini
+namespace OvermorrowMod.Projectiles.Boss
 {
     public class GranLaser : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Magic/GraniteSpike";
         public override void SetDefaults()
         {
-            projectile.CloneDefaults(ProjectileID.EyeBeam);
-            aiType = ProjectileID.EyeBeam;
+            projectile.width = 10;
+            projectile.height = 10;
             projectile.tileCollide = false;
             projectile.friendly = false;
             projectile.hostile = true;
@@ -20,6 +19,8 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         }
         public override void AI()
         {
+            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+
             if (++projectile.ai[1] % 2 == 0)
             {
                 float num116 = 16f;

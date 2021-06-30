@@ -124,5 +124,10 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             }
             projectile.ai[1]++;
         }
+
+        public override Color? GetAlpha(Color lightColor)
+        {
+            return Color.White;
+        }
     }
 }

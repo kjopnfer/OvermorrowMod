@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Projectiles.Summon;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,6 +27,11 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
         bool dashing = false;
         int spritedirectionstore = 0;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Gra-Knight");
+            Main.npcFrameCount[npc.type] = 8;
+        }
 
         public override void SetDefaults()
         {
@@ -435,7 +441,13 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 return true;
             }
         }
-        
+
+        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            Texture2D texture = mod.GetTexture("NPCs/Bosses/GraniteMini/AngryStone_Glow");
+            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X - 1, npc.Center.Y - Main.screenPosition.Y), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+        }
+
         public override void FindFrame(int frameHeight)
         {
             npc.frame.Y = frameHeight * frame;
@@ -447,12 +459,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             {
                 npc.spriteDirection = spritedirectionstore;
             }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Gra-Knight");
-            Main.npcFrameCount[npc.type] = 8;
         }
     }
 }

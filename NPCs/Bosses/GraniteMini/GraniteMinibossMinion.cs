@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -110,6 +112,12 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 npc.active = false;
                 npc.life = 0;
             }
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            Texture2D texture = mod.GetTexture("NPCs/Bosses/GraniteMini/GraniteMinibossMinion_Glow");
+            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X + 2, npc.Center.Y - Main.screenPosition.Y - 10), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public override void FindFrame(int frameHeight)
