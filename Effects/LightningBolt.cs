@@ -18,7 +18,7 @@ namespace OvermorrowMod.Effects
         Vector2[] positions;
         public virtual void CustomDrawPerPixel(Vector2 vec, SpriteBatch sprite) { }
         public virtual void CustomDraw(Vector2[] positions, SpriteBatch spriteBatch) { }
-        public override string Texture => "Effects/Pixel";
+        public override string Texture => "OvermorrowMod/Effects/Pixel";
         public void DrawLine(Vector2 start, Vector2 end, Color color, SpriteBatch spriteBatch, float scale)
         {
             Vector2 unit = end - start;
