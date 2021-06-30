@@ -14,6 +14,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             projectile.height = 14;
             projectile.friendly = false;
             projectile.hostile = true;
+            projectile.tileCollide = false;
             projectile.penetrate = 1;
             projectile.timeLeft = 63;
         }
@@ -24,11 +25,12 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
-            target.velocity.X = 6;
+            target.velocity.Y = 6;
         }
 
         public override void AI()
         {
+            projectile.damage = 25;
             projectile.knockBack = 0;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
@@ -40,7 +42,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             direction.Normalize();
             float speed = 11.7f;
             int type = mod.ProjectileType("CrystalBulletRang");
-            int damage = projectile.damage - 7;
+            int damage = projectile.damage - 3;
             Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
         }
     }

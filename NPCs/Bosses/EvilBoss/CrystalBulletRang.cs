@@ -14,6 +14,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             projectile.height = 16;
             projectile.friendly = false;
             projectile.hostile = true;
+            projectile.tileCollide = false;
             projectile.penetrate = 1;
             projectile.timeLeft = 63;
             projectile.extraUpdates = 1;

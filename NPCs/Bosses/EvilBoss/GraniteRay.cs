@@ -20,12 +20,17 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int timer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
-        int RandomAtt = Main.rand.Next(0, 1);
+        int RandomAtt = Main.rand.Next(2, 3);
         private int otherTPtimer = 0;
         float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
         Vector2 LaserPos;
         Vector2 TargetPos;
+
+
+        private int UnholyTimer = 0;
+        private int UnholyAttTimer = 0;
+        int RandomAttackTime = Main.rand.Next(0, 21);
 
 
         private int LaserTimer = 0;
@@ -133,6 +138,33 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             {
                 LaserTimer++;
                 attacktimer++;
+
+
+
+
+
+                if(attacktimer < 51)
+                {
+                    int Random1 = Main.rand.Next(-70, 70);
+                    int Random2 = Main.rand.Next(-70, 70);
+
+                    float XDustposition = projectile.Center.X + Random1 - 16;
+                    float YDustposition = projectile.Center.Y + Random2 - 16;
+                    projectile.velocity.X = 0f;
+                    projectile.velocity.Y = 0f;
+                    Vector2 VDustposition = new Vector2(XDustposition, YDustposition);
+                    Vector2 Dusttarget = projectile.Center;
+                    Vector2 Dustdirection = Dusttarget - VDustposition;
+                    Dustdirection.Normalize();
+
+                    Color granitedustc = Color.White;
+                    {
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 185, 0.0f, 0.0f, 10, granitedustc, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Vector2 velocity = Dustdirection * 3f;
+                        Main.dust[dust].velocity = Dustdirection * 3f;
+                    }
+                }
                 if (attacktimer > 50 && attacktimer < 75)
                 {
                     Vector2 position = npc.Center;
@@ -154,14 +186,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         Vector2 direction = targetPosition - position;
                         direction.Normalize();
-                        float speed = 3f;
+                        float speed = 1.5f;
                         int damagebull = npc.damage;
-                        Vector2 newpoint1 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(90));
-                        Vector2 newpoint2 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(180));
-                        Vector2 newpoint3 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(270));
-                        Projectile.NewProjectile(npc.Center.X, npc.Center.Y, direction.X + randomX, direction.Y + randomY * speed, mod.ProjectileType("CrystalBulletNormal"), damagebull, 0f, Main.myPlayer);
-
-
+                        Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, direction.X + randomX, direction.Y + randomY * speed, mod.ProjectileType("CrystalBulletNormal"), damagebull, 0f, Main.myPlayer);
                         Main.PlaySound(SoundID.Item36, npc.position);
                     }
                 }
@@ -180,7 +207,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(attacktimer == 100)  
                 {
-                    RandomAtt = Main.rand.Next(0, 2);
+                    RandomAtt = Main.rand.Next(0, 3);
                     attacktimer = 0;
                     LaserTimer = 0;
                 }
@@ -192,12 +219,12 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             if (RandomAtt == 1)
             {
                 CircleAttTimer++;
-                if(CircleAttTimer > 99)
+                if(CircleAttTimer > 199)
                 {
                     CircleLaserTimer++;
                 }
 
-                if(CircleLaserTimer == 10 && CircleAttTimer < 400)
+                if(CircleLaserTimer == 10 && CircleAttTimer < 500)
                 {
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<LightningTest>(), 75, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                     CircleLaserTimer = 0;
@@ -206,7 +233,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
 
 
-                if(CircleAttTimer < 99)
+                if(CircleAttTimer < 199)
                 {
 
                     int Random1 = Main.rand.Next(-370, 370);
@@ -224,13 +251,13 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Color granitedustc1 = Color.Purple;
                     Color granitedustc2 = Color.Red;
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 8, 0.0f, 0.0f, 10, granitedustc1, 4f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 51, 0.0f, 0.0f, 10, granitedustc1, 4f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * -2;
                         Main.dust[dust].velocity = Dustdirection * -2;
                     }
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 8, 0.0f, 0.0f, 10, granitedustc2, 4f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 43, 0.0f, 0.0f, 10, granitedustc2, 4f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * 2;
                         Main.dust[dust].velocity = Dustdirection * 2;
@@ -238,7 +265,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 }
 
                 float OutsideRing = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
-                if(OutsideRing > 405f && CircleAttTimer > 99 && CircleAttTimer < 400)
+                if(OutsideRing > 405f && CircleAttTimer > 199 && CircleAttTimer < 500)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Main.player[projectile.owner].Center;
@@ -255,7 +282,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<AmethystLW1>(), 1, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                 }
                 
-                if(CircleAttTimer == 100)
+                if(CircleAttTimer == 200)
                 {
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay1>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay2>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
@@ -263,9 +290,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay4>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                 }
 
-                if(CircleAttTimer == 500)  
+                if(CircleAttTimer == 600)  
                 {
-                    RandomAtt = Main.rand.Next(0, 2);
+                    RandomAtt = Main.rand.Next(0, 3);
                     CircleAttTimer = 0;
                     CircleLaserTimer = 0;
                 }
@@ -273,7 +300,35 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
 
 
+            if (RandomAtt == 2)
+            {
+                UnholyTimer++;
+                UnholyAttTimer++;
+                if(UnholyTimer == 1)
+                {
+                    RandomAttackTime = Main.rand.Next(0, 21);
+                }
 
+                if(UnholyAttTimer == 10 && UnholyTimer < 541)
+                {
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<UnholyLight>(), projectile.damage + 15, 1f, projectile.owner, 0f);
+                    UnholyAttTimer = 0;
+                }
+
+                if(UnholyTimer > 540)
+                {
+                    projectile.ranged = true;
+                }
+
+
+                if(UnholyTimer > 590)
+                {
+                    UnholyTimer = 0;
+                    UnholyAttTimer = 0;
+                    RandomAtt = Main.rand.Next(0, 3);
+                    projectile.ranged = false;
+                }
+            }
 
 
             float between = Vector2.Distance(npc.Center, projectile.Center);

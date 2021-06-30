@@ -11,11 +11,11 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
     {
         private int KeepAliveTime2 = 1; 
         private int KeepAliveTime = 1;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.MagnetSphereBolt;
+        public override string Texture => "Terraria/Projectile_" + ProjectileID.HeatRay;
         public override void SetDefaults()
         {
-            projectile.CloneDefaults(ProjectileID.MagnetSphereBolt);
-            aiType = ProjectileID.MagnetSphereBolt;
+            projectile.CloneDefaults(ProjectileID.HeatRay);
+            aiType = ProjectileID.HeatRay;
             projectile.tileCollide = false;
             projectile.friendly = false;
             projectile.hostile = true;
