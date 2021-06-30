@@ -12,11 +12,12 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int timer = 0;
         private int lefttimer = 0;
         bool HasActivedGo = false;
-
+        bool HasActivedSprite = false;
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Un-Holy Light");
+            Main.projFrames[base.projectile.type] = 2;
         }
 
         public override void SetDefaults()
@@ -61,6 +62,18 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             {
                 HasActivedGo = true;
             }
+
+
+            if(parentProjectile.melee)
+            {
+                HasActivedSprite = true;
+            }
+
+            if(HasActivedSprite)
+            {
+                projectile.frame = 1;
+            }
+
 
             if(HasActivedGo)
             {

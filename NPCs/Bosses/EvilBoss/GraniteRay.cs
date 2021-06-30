@@ -315,6 +315,15 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     UnholyAttTimer = 0;
                 }
 
+                if(UnholyTimer > 490 && UnholyTimer < 541)
+                {
+                    projectile.melee = true;
+                }
+                else
+                {
+                    projectile.melee = false;
+                }
+
                 if(UnholyTimer > 540)
                 {
                     projectile.ranged = true;
