@@ -186,6 +186,12 @@ namespace OvermorrowMod
                     nameColor = Color.LimeGreen;
                     titleColor = Color.Green;
                     break;
+                case 5:
+                    BossName = "Gra-knight and Apollus";
+                    BossTitle = "The Super Stoner Bros"; /*The Super Biome Brothers*/
+                    nameColor = new Color(230, 228, 216);
+                    titleColor = new Color(64, 80, 89);
+                    break;
                 default:
                     BossName = "snoop dogg";
                     BossTitle = "high king";
@@ -201,7 +207,7 @@ namespace OvermorrowMod
 			/*float alpha = 255;
 			float alpha2 = 255;*/
 
-			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
+            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
 			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
 		}
 

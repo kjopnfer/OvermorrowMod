@@ -26,7 +26,8 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.damage = 25;
             npc.defense = 15;
             npc.lifeMax = 60;
-            npc.HitSound = SoundID.NPCHit19;
+            //npc.HitSound = SoundID.NPCHit19;
+            npc.HitSound = SoundID.NPCHit4;
             npc.knockBackResist = 0.4f;
             npc.DeathSound = SoundID.NPCDeath22;
             npc.noGravity = true;

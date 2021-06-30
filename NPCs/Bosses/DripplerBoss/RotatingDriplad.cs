@@ -104,13 +104,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     {
                         int shootSpeed = 7;
                         Vector2 npcPosition = npc.Center;
-                        Vector2 targetPosition = NPC_CalculateOuter(npc, parentNPC.Center, radius + 400);
-                        Vector2 direction = targetPosition - npcPosition;
-                        direction.Normalize();
+                        //Vector2 targetPosition = NPC_CalculateOuter(npc, parentNPC.Center, radius + 400);
+                        //Vector2 direction = targetPosition - npcPosition;
+                        Vector2 ShootNormalizedVelocity = parentNPC.DirectionTo(npc.Center);
+                        //direction.Normalize();
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                            Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/ /*npc.DirectionTo(targetPosition) * shootSpeed*/ ShootNormalizedVelocity * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                         }
                     }
 

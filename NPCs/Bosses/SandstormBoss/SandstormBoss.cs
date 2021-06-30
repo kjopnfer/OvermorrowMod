@@ -24,6 +24,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         bool movingup = true;
         bool leftofplayer = true;
         bool halflife = false;
+        bool fourthlife = false;
+        bool circleactive = false;
+        Vector2 playercentersnapshot;
 
         public override void SetStaticDefaults()
         {
@@ -61,16 +64,15 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
-            //npc.ai[0] = 4;
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
 
             npc.spriteDirection = npc.direction;
 
-            if(npc.life <= npc.lifeMax * 0.5f)
-            {
-                halflife = true;
-            }
+            if(npc.life <= npc.lifeMax * 0.5f) { halflife = true; }
+            if (npc.life <= npc.lifeMax * 0.25f) { fourthlife = true; }
+            if (npc.ai[0] == 1 && fourthlife) { circleactive = true; }
+            else { circleactive = false; }
 
             // Handles Despawning
             if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
@@ -133,7 +135,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 npc.ai[1]++;
             }
 
-            if (npc.ai[0] == 2 || npc.ai[0] == 3)
+            if (npc.ai[0] == 2 || npc.ai[0] == 3 || circleactive == true)
             {
                 npc.dontTakeDamage = true;
             }
@@ -202,27 +204,53 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         npc.ai[2] = 900;
                         break;
                     }
-
-                    npc.velocity = Vector2.Zero;
-
-                    if (npc.ai[1] % 60 == 0)
+                    if (fourthlife == false)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            for (int i = 0; i < Main.rand.Next(3, 6); i++)
-                            {
-                                npc.netUpdate = true;
-                                Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-11, -6), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
-                            }
+                        npc.velocity = Vector2.Zero;
 
-                            if(npc.life <= npc.lifeMax * 0.5f)
+                        if (npc.ai[1] % 60 == 0)
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 for (int i = 0; i < Main.rand.Next(3, 6); i++)
                                 {
                                     npc.netUpdate = true;
-                                    Projectile.NewProjectile(new Vector2(player.Center.X - Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(6, 11), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-11, -6), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                                }
+
+                                if (npc.life <= npc.lifeMax * 0.5f)
+                                {
+                                    for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                                    {
+                                        npc.netUpdate = true;
+                                        Projectile.NewProjectile(new Vector2(player.Center.X - Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(6, 11), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                                    }
                                 }
                             }
+                        }
+                    }
+                    else
+                    {
+                        if (npc.ai[1] == 1)
+                        {
+                            npc.hide = true;
+                            npc.width = 68;
+                            npc.height = 56;
+                            //playercentersnapshot = player.Center;
+                        }
+
+                        if (npc.ai[2]++ > 0 && npc.ai[1] > 2)
+                        {
+                            npc.position = /*playercentersnapshot*/ player.Center + new Vector2(-475, 0).RotatedBy(MathHelper.ToRadians(4 * npc.ai[3]));
+                            npc.position.X -= npc.width / 2;
+                            npc.position.Y -= npc.height / 2;
+                            npc.ai[3]++;
+                            npc.ai[2] = 0;
+                        }
+
+                        if (npc.ai[1] % /*30*/15 == 0)
+                        {
+                            Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(/*playercentersnapshot*/player.Center) * 7.5f, ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0, Main.myPlayer, 0, npc.ai[3]);
                         }
                     }
 
@@ -232,7 +260,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             doDustAttack = true;
                         }
-
+                        npc.hide = false;
+                        npc.width = 136;
+                        npc.height = 112;
                         npc.ai[0] = 0f;
                         npc.ai[1] = 0;
                     }
@@ -302,7 +332,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             if (npc.ai[2] == 1)
                             {
-                                npc.Teleport(player.Center + Vector2.UnitX * -700, 32);
+                                npc.Teleport(player.Center + new Vector2(-700, (npc.height / 2) - 90), 32);
                                 npc.velocity = Vector2.Zero;
                             }
                             if (npc.ai[2] % 30 == 0)
@@ -328,7 +358,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             if (npc.ai[2] == 1)
                             {
-                                npc.Teleport(player.Center + Vector2.UnitX * 700, 32);
+                                npc.Teleport(player.Center + new Vector2(700, (npc.height / 2) - 90), 32);
                                 npc.velocity = Vector2.Zero;
                             }
                             if (npc.ai[2] % 30 == 0)
@@ -473,7 +503,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     break;*/
             }
 
-            if (npc.ai[0] != 2 && npc.ai[0] != 3)
+            if (npc.ai[0] != 2 && npc.ai[0] != 3 && circleactive != true)
             {
                 if (Main.rand.NextFloat() < 0.5526316f)
                 {
@@ -513,7 +543,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            if (npc.ai[0] != 2 && npc.ai[0] != 3)
+            if (npc.ai[0] != 2 && npc.ai[0] != 3 && circleactive != true)
             {
                 Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
                 Texture2D texture2D16 = mod.GetTexture("NPCs/Bosses/SandstormBoss/SandstormBoss");
@@ -556,7 +586,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 }
             }
 
-            if (npc.ai[0] == 2 || npc.ai[0] == 3)
+            if (npc.ai[0] == 2 || npc.ai[0] == 3 || circleactive == true)
             {
                 return false;
             }

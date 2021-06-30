@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Projectiles.Boss;
@@ -15,18 +16,21 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         int attackcounter = 0;
         Vector2 teleportposition = Vector2.Zero;
         bool changedPhase2 = false;
+        bool changedPhase2Indicator = false;
         bool changedPhase3 = false;
 
         int Direction = -1;
         bool direction = false;
 
         int RandomCase = 0;
-        int LastCase = 0;
+        int LastCase = 1;
         int RandomCeiling;
         bool movement = true;
 
         bool dashing = false;
         int spritedirectionstore = 0;
+
+        bool dead = false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Gra-Knight");
@@ -43,7 +47,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.knockBackResist = 0f;
             npc.damage = 15;
             npc.defense = 4;
-            npc.lifeMax = 2000;
+            npc.lifeMax = 2800;
             npc.HitSound = SoundID.NPCHit4;
             npc.value = Item.buyPrice(gold: 5);
             //animationType = NPCID.Zombie;
@@ -56,6 +60,83 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         public override void AI()
         {
             Player player = Main.player[npc.target];
+
+            if (npc.ai[3] > 0f && dead == true)
+            {
+                npc.velocity = Vector2.Zero;
+                npc.rotation = 0;
+
+                if (npc.ai[2] > 0)
+                {
+                    npc.ai[2]--;
+
+                    /*if (npc.ai[2] == 480)
+                    {
+                        BossText("I deem thee fit to inherit their powers.");
+                    }
+
+                    if (npc.ai[2] == 300)
+                    {
+                        BossText("Thou Dryad shalt guide thee.");
+                    }
+
+                    if (npc.ai[2] == 120)
+                    {
+                        BossText("Fare thee well.");
+                    }*/
+                }
+                else
+                {
+                    npc.dontTakeDamage = true;
+                    npc.ai[3]++; // Death timer
+                    npc.velocity.X *= 0.95f;
+
+                    if (npc.velocity.Y < 0.5f)
+                    {
+                        npc.velocity.Y = npc.velocity.Y + 0.01f;
+                    }
+
+                    if (npc.velocity.X > 0.5f)
+                    {
+                        npc.velocity.Y = npc.velocity.Y - 0.01f;
+                    }
+
+                    if (npc.ai[3] > 120f)
+                    {
+                        npc.Opacity = 1f - (npc.ai[3] - 120f) / 60f;
+                    }
+
+                    if (Main.rand.NextBool(5) && npc.ai[3] < 120f)
+                    {
+                        // This dust spawn adapted from the Pillar death code in vanilla.
+                        for (int dustNumber = 0; dustNumber < 6; dustNumber++)
+                        {
+                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, 206, 0f, 0f, 0, default(Color), 1f)];
+                            dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
+                            dust.velocity.X = 0f;
+                            dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;
+                            dust.noGravity = true;
+                            dust.fadeIn = 1f;
+                            dust.scale = 1f + Main.rand.NextFloat() + (float)dustNumber * 0.3f;
+                        }
+                    }
+
+                    if (npc.ai[3] % 30f == 1f)
+                    {
+                        //Main.PlaySound(4, npc.Center, 22);
+                        Main.PlaySound(SoundID.Item25, npc.Center); // every half second while dying, play a sound
+                    }
+
+                    if (npc.ai[3] >= 180f)
+                    {
+                        npc.life = 0;
+                        npc.HitEffect(0, 0);
+                        npc.checkDead(); // This will trigger ModNPC.CheckDead the second time, causing the real death.
+                    }
+                }
+                return;
+            }
+
             if (npc.life <= npc.lifeMax * 0.5f)
             {
                 changedPhase2 = true;
@@ -66,46 +147,72 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             }
             switch (npc.ai[0])
             {
-                /*case -3:
+                case -4: // half hp roar
                     {
                         if (!AliveCheck(player)) { break; }
 
-                        if (npc.ai[2] == 0)
+                        npc.immortal = true;
+                        npc.dontTakeDamage = true;
+                        if (npc.ai[1] == 45)
                         {
-                            //direction = Main.rand.NextBool();
-                            //Direction = direction ? -1 : 1;
-                            Direction = -1;
-                            npc.ai[2]++;
+                            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
                         }
 
-                        if (npc.ai[1] > 5 && npc.ai[1] < 40)
+                        for (int i = 0; i < Main.maxPlayers; i++)
                         {
-                            if (++npc.ai[2] % 5 == 0)
+                            float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                            if (distance <= 600)
                             {
-                                Vector2 origin = new Vector2(player.Center.X + (-600 * Direction), player.Center.Y);
-                                float radius = 15;
-                                int numLocations = 30;
-                                for (int i = 0; i < 30; i++)
-                                {
-                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
-                                    Main.dust[dust].noGravity = true;
-                                }
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
                             }
                         }
 
-                        if (npc.ai[1] > 40)
+                        if (++npc.ai[1] > 240)
                         {
-                            npc.position = new Vector2(player.Center.X + (-600 * Direction) - 51, player.Center.Y - 51);
-                        }
-
-                        if (++npc.ai[1] == 40)
-                        {
-                            Projectile.NewProjectile(npc.Center + (Vector2.UnitY * npc.width), Vector2.UnitY, ProjectileType<GraniteLaserEnd>(), (int)(npc.damage / 2), 1f, Main.myPlayer, 0f, npc.whoAmI);
+                            npc.dontTakeDamage = false;
+                            npc.immortal = false;
+                            changedPhase2Indicator = true;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 1;
+                            npc.ai[0] = -1;
+                            npc.ai[3] = 0;
                         }
                     }
-                    break;*/
+                    break;
+                case -3: // spawn sequence
+                    {
+                        {
+                            if (!AliveCheck(player)) { break; }
+
+                            if(npc.ai[1] == 1)
+                            {
+                                //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
+                                //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = false;
+                            }
+
+                            npc.velocity = Vector2.UnitY * 1.2f;
+                            npc.dontTakeDamage = true;
+
+                            if (++npc.ai[1] > 380)
+                            {
+                                npc.ai[0] = 1;
+                                npc.ai[1] = 0;
+                                npc.dontTakeDamage = false;
+                                player.GetModPlayer<OvermorrowModPlayer>().ShowText = false;
+                                npc.velocity = Vector2.Zero;
+                                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
+                                for (int i = 0; i < Main.maxPlayers; i++)
+                                {
+                                    float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                                    if (distance <= 600)
+                                    {
+                                        Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
                 case -2: // slow movement
                     {
                         if (!AliveCheck(player)) { break; }
@@ -129,13 +236,30 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         npc.velocity.X = move.X;
                         npc.velocity.Y = move.Y * .98f;
 
-                        if (++npc.ai[1] > (changedPhase2 ? 90 : 120))
+                        if (++npc.ai[1] > (changedPhase2 ? 150 : 180))
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            attackcounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            if (changedPhase2 == true && changedPhase2Indicator == false)
+                            {
+                                npc.ai[0] = -4;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
+                            else
+                            {
+                                npc.ai[0] = -1;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
                         }
                     }
                     break;
@@ -220,12 +344,28 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                         if (attackcounter == (changedPhase2 ? 7 : 5))
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            attackcounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
-                            dashing = false;
+                            if (changedPhase2 == true && changedPhase2Indicator == false)
+                            {
+                                npc.ai[0] = -4;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
+                            else
+                            {
+                                npc.ai[0] = -1;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
                         }
                     }
 
@@ -273,12 +413,28 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                         if (attackcounter == 4)
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
-                            attackcounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            teleportposition = Vector2.Zero;
+                            if (changedPhase2 == true && changedPhase2Indicator == false)
+                            {
+                                npc.ai[0] = -4;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
+                            else
+                            {
+                                npc.ai[0] = -1;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
                         }
                     }
                     break;
@@ -328,12 +484,28 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                         if (attackcounter == 8)
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
-                            attackcounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            teleportposition = Vector2.Zero;
+                            if (changedPhase2 == true && changedPhase2Indicator == false)
+                            {
+                                npc.ai[0] = -4;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
+                            else
+                            {
+                                npc.ai[0] = -1;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
                         }
                     }
                     break;
@@ -395,12 +567,28 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
                         if (npc.ai[1] == 420)
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
-                            attackcounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            teleportposition = Vector2.Zero;
+                            if (changedPhase2 == true && changedPhase2Indicator == false)
+                            {
+                                npc.ai[0] = -4;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
+                            else
+                            {
+                                npc.ai[0] = -1;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                attackcounter = 0;
+                                npc.velocity = Vector2.Zero;
+                                npc.rotation = 0;
+                                dashing = false;
+                                teleportposition = Vector2.Zero;
+                            }
                         }
                         break;
                     }
@@ -459,6 +647,22 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             {
                 npc.spriteDirection = spritedirectionstore;
             }
+        }
+
+        public override bool CheckDead()
+        {
+            if (npc.ai[3] == 0f)
+            {
+                npc.ai[2] = 0; //OvermorrowWorld.downedTree ? 0 : 540;
+                dead = true;
+                npc.ai[3] = 1f;
+                npc.damage = 0;
+                npc.life = npc.lifeMax;
+                npc.dontTakeDamage = true;
+                npc.netUpdate = true;
+                return false;
+            }
+            return true;
         }
     }
 }
