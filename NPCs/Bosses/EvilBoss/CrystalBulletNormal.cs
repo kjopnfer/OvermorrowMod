@@ -44,6 +44,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             int type = mod.ProjectileType("CrystalBulletRang");
             int damage = projectile.damage - 3;
             Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
+            Main.PlaySound(SoundID.Item27, projectile.Center);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
         Vector2 LaserPos;
         Vector2 TargetPos;
-
+        private int eggcooldown = 0;
 
         private int UnholyTimer = 0;
         private int UnholyAttTimer = 0;
@@ -135,6 +135,17 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     projectile.velocity.Y -= speed;
                 }
             }
+
+                eggcooldown--;
+                if(eggcooldown > 1 && RandomAtt == 3)
+                {
+                    RandomAtt = 1;
+                    eggcooldown = -10;
+                }
+
+
+
+
 
 
             if (RandomAtt == 0)
@@ -392,17 +403,14 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(PixieTimer == 50)
                 {
-                    NPC.NewNPC((int)projectile.Center.X + 350, (int)projectile.Center.Y + 75, mod.NPCType("PixieBomb"));
                     NPC.NewNPC((int)projectile.Center.X + 350, (int)projectile.Center.Y - 75, mod.NPCType("PixieBomb"));
 
-                    NPC.NewNPC((int)projectile.Center.X - 350, (int)projectile.Center.Y + 75, mod.NPCType("CreeperPixie"));
                     NPC.NewNPC((int)projectile.Center.X - 350, (int)projectile.Center.Y - 75, mod.NPCType("CreeperPixie"));
                 }
 
-
-
                 if(PixieTimer == 450)
                 {
+                    eggcooldown = 10;
                     PixieTimer = 0;
                     RandomAtt = Main.rand.Next(0, 4);
                 }

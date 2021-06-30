@@ -85,7 +85,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             if(Charge > 170)
             {
-                int RandomAdd = Main.rand.Next(-1, 2);
+                int RandomAdd = Main.rand.Next(-1, 4);
                 int RandomTarget2 = Main.rand.Next(-75, 76);
                 int RandomTarget1 = Main.rand.Next(-75, 76);
                 Vector2 position = npc.Center;
