@@ -300,6 +300,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     {
                         randIncrementer = Main.rand.Next(2, 5);
                         Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-6, 6) * 100, player.Center.Y + Main.rand.Next(-6, 6) * 100);
+                        while (Main.tile[(int)randPos.X / 16, (int)randPos.Y / 16].active())
+                        {
+                            randPos = new Vector2(player.Center.X + Main.rand.Next(-6, 6) * 100, player.Center.Y + Main.rand.Next(-6, 6) * 100);
+                        }
                         npc.position = randPos;
                         npc.netUpdate = true;
                     }
