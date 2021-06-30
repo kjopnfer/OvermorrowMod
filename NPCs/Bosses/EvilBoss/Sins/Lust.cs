@@ -7,13 +7,13 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
 {
-    public class Sloth : ModProjectile
+    public class Lust : ModProjectile
     {
 
         public override void SetDefaults()
         {
-            projectile.width = 30;
-            projectile.height = 30;
+            projectile.width = 32;
+            projectile.height = 32;
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.tileCollide = false;
@@ -30,14 +30,13 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
-            target.AddBuff(32, MethodHelper.SecondsToTicks(5));
-
+            Projectile.NewProjectile(target.Center.X, target.Center.Y, -projectile.velocity.X, -projectile.velocity.Y, mod.ProjectileType("BloodHealNPC"), 2, 1f, projectile.owner, 0f);
         }
 
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sin of Sloth");
+            DisplayName.SetDefault("Sin of Lust");
         }
     }
 }

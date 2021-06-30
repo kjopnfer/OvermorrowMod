@@ -12,13 +12,13 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
 
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 16;
+            projectile.width = 24;
+            projectile.height = 24;
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.tileCollide = false;
             projectile.penetrate = 1;
-            projectile.timeLeft = 60;
+            projectile.timeLeft = 100;
             projectile.extraUpdates = 1;
         }
         public override void AI()

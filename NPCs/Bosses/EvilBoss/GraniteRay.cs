@@ -20,7 +20,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int timer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
-        int RandomAtt = Main.rand.Next(3, 4);
+        int RandomAtt = Main.rand.Next(4, 5);
         private int otherTPtimer = 0;
         float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
@@ -42,6 +42,12 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
         private int CircleAttTimer = 0;
         private int CircleLaserTimer = 0;
+
+
+        private int SinTimer = 0;
+        private int SinTimerTimer = 0;
+
+
 
         public override void SetDefaults()
         {
@@ -221,7 +227,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(attacktimer == 100)  
                 {
-                    RandomAtt = Main.rand.Next(0, 4);
+                    RandomAtt = Main.rand.Next(0, 5);
                     attacktimer = 0;
                     LaserTimer = 0;
                 }
@@ -306,7 +312,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(CircleAttTimer == 600)  
                 {
-                    RandomAtt = Main.rand.Next(0, 4);
+                    RandomAtt = Main.rand.Next(0, 5);
                     CircleAttTimer = 0;
                     CircleLaserTimer = 0;
                 }
@@ -348,7 +354,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 {
                     UnholyTimer = 0;
                     UnholyAttTimer = 0;
-                    RandomAtt = Main.rand.Next(0, 4);
+                    RandomAtt = Main.rand.Next(0, 5);
                     projectile.ranged = false;
                 }
             }
@@ -408,13 +414,71 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     NPC.NewNPC((int)projectile.Center.X - 350, (int)projectile.Center.Y - 75, mod.NPCType("CreeperPixie"));
                 }
 
-                if(PixieTimer == 450)
+                if(PixieTimer == 555)
                 {
-                    eggcooldown = 10;
+                    eggcooldown = 700;
                     PixieTimer = 0;
-                    RandomAtt = Main.rand.Next(0, 4);
+                    RandomAtt = Main.rand.Next(0, 5);
                 }
             }
+
+
+
+
+            if (RandomAtt == 4)
+            {
+                SinTimer++;
+                if(SinTimer < 50)
+                {
+                    int Random1 = Main.rand.Next(-50, 50);
+                    int Random2 = Main.rand.Next(-50, 50);
+
+                    float XDustposition = projectile.Center.X + Random1 - 16;
+                    float YDustposition = projectile.Center.Y + Random2 - 16;
+                    Vector2 VDustposition = new Vector2(XDustposition, YDustposition);
+                    Vector2 Dusttarget = projectile.Center;
+                    Vector2 Dustdirection = Dusttarget - VDustposition;
+                    Dustdirection.Normalize();
+
+                    {
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 14, 0.0f, 0.0f, 10, new Color(), 3f);
+                        Main.dust[dust].noGravity = true;
+                        Vector2 velocity = Dustdirection * 2.5f;
+                        Main.dust[dust].velocity = Dustdirection * 2.5f;
+                    }
+                }
+                if(SinTimer == 50)
+                {
+                    Vector2 position = projectile.Center;
+                    Vector2 targetPosition = Main.player[projectile.owner].Center;
+                    Vector2 direction = targetPosition - position;
+                    direction.Normalize();
+                    float speed = 3f;
+                    int dmg = 30;
+                    Vector2 perturbedSpeed1 = new Vector2(direction.X, direction.Y);
+                    Vector2 perturbedSpeed2 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(45f));
+                    Vector2 perturbedSpeed3 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(90f));
+                    Vector2 perturbedSpeed4 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(135f));
+                    Vector2 perturbedSpeed5 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(-45f));
+                    Vector2 perturbedSpeed6 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(-90f));
+                    Vector2 perturbedSpeed7 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(-135f));
+
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, perturbedSpeed1.X * speed ,perturbedSpeed1.Y * speed, mod.ProjectileType("Pride"), dmg, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed2 * speed, mod.ProjectileType("Sloth"), dmg, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed3 * speed, mod.ProjectileType("Wrath"), dmg, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed4 * speed, mod.ProjectileType("Greed"), dmg, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed5 * speed, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed6 * speed, mod.ProjectileType("Lust"), dmg, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed7 * speed, mod.ProjectileType("Gluttony"), dmg, 1f, projectile.owner, 0f);
+                }
+
+                if(SinTimer == 100)
+                {
+                    SinTimer = 0;
+                    RandomAtt = Main.rand.Next(0, 5);
+                }
+            }
+
 
             float between = Vector2.Distance(npc.Center, projectile.Center);
             if(between > 600f)
