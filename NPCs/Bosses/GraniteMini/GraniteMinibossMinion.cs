@@ -9,6 +9,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
     public class GraniteMinibossMinion : ModNPC
     {
         private int moveSpeed;
+        public bool kill = false;
 
         public override void SetStaticDefaults()
         {
@@ -103,6 +104,11 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     }
                     break;
                     
+            }
+            if (kill == true)
+            {
+                npc.active = false;
+                npc.life = 0;
             }
         }
 

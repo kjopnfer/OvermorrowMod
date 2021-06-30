@@ -23,12 +23,32 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.penetrate = -1;
             projectile.scale = 1f;
         }
-        public bool kill = false;
+        //public bool kill = false;
         float rotationcounter;
         int directionalstore;
+        int whoamistore;
+
         public override void AI()
         {
-            if(projectile.damage == 15)
+            if (projectile.ai[0] == -10)
+            {
+                projectile.ai[0] = 0;
+                whoamistore = (int)projectile.ai[1];
+                projectile.ai[1] = 0;
+            }
+            if (projectile.ai[0] == -20)
+            {
+                projectile.ai[0] = 2;
+                whoamistore = (int)projectile.ai[1];
+                projectile.ai[1] = 0;
+            }
+            NPC owner = Main.npc[whoamistore];
+            if (!owner.active)
+            {
+                projectile.Kill();
+                return;
+            }
+            if (projectile.damage == 15)
             {
                 projectile.ai[0] = 2;
             }
@@ -103,10 +123,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     break;
             }
             projectile.ai[1]++;
-            if (kill == true)
-            {
-                projectile.Kill();
-            }
         }
     }
 }

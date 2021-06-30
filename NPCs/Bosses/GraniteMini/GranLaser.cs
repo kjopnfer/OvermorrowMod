@@ -8,6 +8,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 {
     public class GranLaser : ModProjectile
     {
+        public override string Texture => "OvermorrowMod/Projectiles/Magic/GraniteSpike";
         public override void SetDefaults()
         {
             projectile.CloneDefaults(ProjectileID.EyeBeam);
@@ -24,7 +25,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 float num116 = 16f;
                 for (int num117 = 0; (float)num117 < 16; num117++)
                 {
-                    Vector2 spinningpoint7 = Vector2.UnitX * -45f;
+                    Vector2 spinningpoint7 = new Vector2(-20, -2);
                     spinningpoint7 += -Vector2.UnitY.RotatedBy((float)num117 * ((float)Math.PI * 2f / num116)) * new Vector2(1f, 4f);
                     spinningpoint7 = spinningpoint7.RotatedBy(projectile.velocity.ToRotation());
                     Vector2 position = projectile.Center;

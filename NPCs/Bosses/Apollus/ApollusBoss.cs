@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -24,6 +25,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             npc.boss = true;
             npc.noGravity = true;
             npc.noTileCollide = true;
+            npc.HitSound = SoundID.NPCHit4;
         }
 
         public int maxRuneCircle = 3;
@@ -63,7 +65,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
                         if (++npc.ai[1] == 1)
                         {
-                            proj = Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), 10, 0f);
+                            proj = Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), 10, 0f, Main.myPlayer, -10, npc.whoAmI);
                         }
 
                         if (npc.ai[1] == 360)
@@ -108,17 +110,55 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                             playercentersnapshot = player.Center;
                         }
 
-                        if (npc.ai[2]++ > 0 && npc.ai[3] != 360/ 30 && npc.ai[1] > 1)
+                        if (npc.ai[2]++ > 0 && npc.ai[3] != 390/ 30 && npc.ai[1] > 1)
                         {
                             npc.position = playercentersnapshot + new Vector2(-550, 0).RotatedBy(MathHelper.ToRadians(30 * npc.ai[3]));
                             npc.position.X -= npc.width / 2;
                             npc.position.Y -= npc.height / 2;
-                            Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(playercentersnapshot) * 5f, ProjectileType<ApollusArrowTwo>(), 15, 12, Main.myPlayer, 0, npc.ai[3]);
+                            if (npc.ai[3] <= 360 / 30)
+                            {
+                                Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(playercentersnapshot) * 5f, ProjectileType<ApollusArrowTwo>(), 15, 12, Main.myPlayer, 0, npc.ai[3]);
+                            }
+                            Vector2 origin = npc.Center;
+                            float radius = 20;
+                            int numLocations = 30;
+                            for (int k = 0; k < 2; k++)
+                            {
+                                for (int i = 0; i < 30; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                    Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                    int dust = Dust.NewDust(position, 2, 2, 236, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    Main.dust[dust].noGravity = true;
+                                }
+                            }
                             npc.ai[3]++;
                             npc.ai[2] = 0;
                         }
 
-                        if (npc.ai[3] == 360 / 30 && npc.ai[1] == 240)
+                        /*if(npc.ai[2]++ > 0 && npc.ai[3] != 390 / 30 && npc.ai[1] > 1)
+                        {
+                            npc.position = playercentersnapshot + new Vector2(-550, 0).RotatedBy(MathHelper.ToRadians(30 * npc.ai[3]));
+                            npc.position.X -= npc.width / 2;
+                            npc.position.Y -= npc.height / 2;
+                            Vector2 origin = npc.Center;
+                            float radius = 20;
+                            int numLocations = 30;
+                            for (int k = 0; k < 2; k++)
+                            {
+                                for (int i = 0; i < 30; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                    Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                    int dust = Dust.NewDust(position, 2, 2, 236, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    Main.dust[dust].noGravity = true;
+                                }
+                            }
+                            npc.ai[3]++;
+                            npc.ai[2] = 0;
+                        }*/
+
+                        if (npc.ai[3] == 390 / 30 && npc.ai[1] == 240)
                         {
                             npc.ai[1] = 0;
                             npc.ai[2] = 1;
@@ -133,9 +173,9 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
                         if (++npc.ai[1] == 1)
                         {
-                            direction = Main.rand.NextBool();
-                            projalt = Projectile.NewProjectile(npc.Center + (Vector2.UnitX * - 50 * (direction ? -1 : 1)), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), 15, direction ? -1 : 1, Main.myPlayer, 2, 0);
+                            projalt = Projectile.NewProjectile(npc.Center + (Vector2.UnitX * - 50 * (direction ? -1 : 1)), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), 15, direction ? -1 : 1, Main.myPlayer, -20, npc.whoAmI);
                         }
+
                         if (npc.ai[1] > 1 && npc.ai[1] < 360)
                         {
                             npc.position = player.Center + new Vector2(-61 + (-600 * (direction ? 1 : -1)), -61);
@@ -143,7 +183,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
                         if (npc.ai[1] == 360)
                         {
-                            ((ArrowRuneCircle)Main.projectile[projalt].modProjectile).kill = true;
+                            Main.projectile[projalt].Kill();
                             npc.ai[1] = 0;
                             npc.ai[2] = 1;
                             npc.ai[3] = 0;
@@ -155,14 +195,28 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     {
                         if (!AliveCheck(player)) { break; }
 
-                        if (++npc.ai[1] == 15)
+                        npc.ai[1]++;
+
+                        if (changedPhase2 == true) { RandomCeiling = 4; }
+                        else { RandomCeiling = 2; }
+                        while (RandomCase == LastCase)
+                        {
+                            RandomCase = Main.rand.Next(RandomCeiling);
+                        }
+                        if (RandomCase == 3 && npc.ai[1] == 15)
+                        {
+                            direction = Main.rand.NextBool();
+                            teleportposition = player.Center + new Vector2(-61 + (-600 * (direction ? 1 : -1)), -61);
+                        }
+                        else if (RandomCase != 3 && npc.ai[1] == 15)
                         {
                             teleportposition = player.Center + Main.rand.NextVector2Circular(333, 333);
-                            while(Main.tile[(int)teleportposition.X / 16, (int)teleportposition.Y / 16].active())
+                            while (Main.tile[(int)teleportposition.X / 16, (int)teleportposition.Y / 16].active())
                             {
                                 teleportposition = player.Center + Main.rand.NextVector2Circular(333, 333);
                             }
                         }
+
                         if (npc.ai[1] > 30)
                         {
                             if (++npc.ai[2] % 5 == 0)
@@ -186,13 +240,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                         if (npc.ai[1] > 100)
                         {
-
-                            if (changedPhase2 == true) { RandomCeiling = 4; }
-                            else { RandomCeiling = 2; }
-                            while (RandomCase == LastCase)
-                            {
-                                RandomCase = Main.rand.Next(RandomCeiling);
-                            }
                             LastCase = RandomCase;
                             npc.ai[1] = 0;
                             npc.ai[2] = 1;
@@ -246,13 +293,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             {
                 npc.spriteDirection = -1;
             }
-        }
-
-        public override bool CheckDead()
-        {
-            ((ArrowRuneCircle)Main.projectile[proj].modProjectile).kill = true;
-            ((ArrowRuneCircle)Main.projectile[projalt].modProjectile).kill = true;
-            return true;
         }
     }
 }
