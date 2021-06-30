@@ -23,8 +23,8 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             npc.damage = 30;
             npc.aiStyle = 0;
             npc.noTileCollide = true;
-            npc.defense = 5;
-            npc.lifeMax = 200;
+            npc.defense = 3;
+            npc.lifeMax = 175;
             npc.alpha = 40;
             npc.alpha = 20;
             npc.noGravity = true;
@@ -99,22 +99,24 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 spiderexp = 0;
             }
 
-            if(npc.velocity.X > 7)
+
+            if(npc.velocity.X > 8)
             {
-                npc.velocity.X = 7;
+                npc.velocity.X = 8;
             }
-            if(npc.velocity.X < -7)
+            if(npc.velocity.X < -8)
             {
-                npc.velocity.X = -7;
+                npc.velocity.X = -8;
             }
-            if(npc.velocity.Y > 7)
+            if(npc.velocity.Y > 8)
             {
-                npc.velocity.Y = 7;
+                npc.velocity.Y = 8;
             }
-            if(npc.velocity.Y < -7)
+            if(npc.velocity.Y < -8)
             {
-                npc.velocity.Y = -7;
+                npc.velocity.Y = -8;
             }
+
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)

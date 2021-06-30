@@ -467,7 +467,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Projectile.NewProjectile(projectile.Center, perturbedSpeed2 * speed, mod.ProjectileType("Sloth"), dmg, 1f, projectile.owner, 0f);
                     Projectile.NewProjectile(projectile.Center, perturbedSpeed3 * speed, mod.ProjectileType("Wrath"), dmg, 1f, projectile.owner, 0f);
                     Projectile.NewProjectile(projectile.Center, perturbedSpeed4 * speed, mod.ProjectileType("Greed"), dmg, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center, perturbedSpeed5 * speed, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed5 * speed * 2, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                     Projectile.NewProjectile(projectile.Center, perturbedSpeed6 * speed, mod.ProjectileType("Lust"), dmg, 1f, projectile.owner, 0f);
                     Projectile.NewProjectile(projectile.Center, perturbedSpeed7 * speed, mod.ProjectileType("Gluttony"), dmg, 1f, projectile.owner, 0f);
                 }

@@ -89,22 +89,22 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 npc.velocity += direction / speed;
                 spiderexp = 0;
             }
-
-            if(npc.velocity.X > 8)
+            
+            if(npc.velocity.X > 7)
             {
-                npc.velocity.X = 8;
+                npc.velocity.X = 7;
             }
-            if(npc.velocity.X < -8)
+            if(npc.velocity.X < -7)
             {
-                npc.velocity.X = -8;
+                npc.velocity.X = -7;
             }
-            if(npc.velocity.Y > 8)
+            if(npc.velocity.Y > 7)
             {
-                npc.velocity.Y = 8;
+                npc.velocity.Y = 7;
             }
-            if(npc.velocity.Y < -8)
+            if(npc.velocity.Y < -7)
             {
-                npc.velocity.Y = -8;
+                npc.velocity.Y = -7;
             }
         }
 
