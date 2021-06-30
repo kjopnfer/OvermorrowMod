@@ -128,7 +128,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                     Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 236, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    int dust = Dust.NewDust(position, 2, 2, 57, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                     Main.dust[dust].noGravity = true;
                                 }
                             }
@@ -228,7 +228,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                     Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 236, dustvelocity.X, dustvelocity.Y, 0, default, 1);
+                                    int dust = Dust.NewDust(position, 2, 2, 57, dustvelocity.X, dustvelocity.Y, 0, default, 1);
                                     Main.dust[dust].noGravity = true;
                                 }
                             }
