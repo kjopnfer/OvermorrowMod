@@ -1,5 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Items.Armor.Marble;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -468,6 +471,39 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 return false;
             }
             return true;
+        }
+
+        public override void NPCLoot()
+        {
+            if (Main.expertMode)
+            {
+                npc.DropBossBags();
+            }
+            int choice = Main.rand.Next(3);
+            if (choice == 0) // Armor
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleHelm>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarblePlate>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleLegs>());
+            }
+            else if (choice == 1) // Ranger
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleBow>());
+            }
+            else if (choice == 2) // Mage
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleBook>());
+            }
+
+            /*if (Main.rand.Next(10) == 0) // Trophy Dropchance
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripplerTrophy>());
+            }*/
+        }
+
+        public override void BossLoot(ref string name, ref int potionType)
+        {
+            potionType = ItemID.LesserHealingPotion;
         }
     }
 }

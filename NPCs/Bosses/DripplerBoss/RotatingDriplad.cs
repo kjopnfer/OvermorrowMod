@@ -15,6 +15,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private NPC parentNPC;
         private bool initializedRadius = false;
         private float radius;
+        Vector2 ShootTarget;
+        public bool Randomshotistrue = false;
 
         public override void SetStaticDefaults()
         {
@@ -87,9 +89,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.ai[2] = 2;
                         npc.ai[3] = 0;
                     }
-                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2)
+                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && Randomshotistrue == false)
                     {
                         npc.ai[2] = 1;
+                        npc.ai[3] = 0;
+                    }
+                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && Randomshotistrue == true)
+                    {
+                        npc.ai[2] = 3;
                         npc.ai[3] = 0;
                     }
 
@@ -102,20 +109,15 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 1: // Shoot outwards
                     if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 10 == 0)
                     {
-                        int shootSpeed = 7;
-                        Vector2 npcPosition = npc.Center;
-                        //Vector2 targetPosition = NPC_CalculateOuter(npc, parentNPC.Center, radius + 400);
-                        //Vector2 direction = targetPosition - npcPosition;
                         Vector2 ShootNormalizedVelocity = parentNPC.DirectionTo(npc.Center);
-                        //direction.Normalize();
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/ /*npc.DirectionTo(targetPosition) * shootSpeed*/ ShootNormalizedVelocity * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                            Projectile.NewProjectile(npc.Center, ShootNormalizedVelocity * 7, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                         }
                     }
 
-                    if (npc.ai[3] == 120)
+                    if (npc.ai[3] > 120)
                     {
                         npc.ai[2] = 0;
                         npc.ai[3] = 0;
@@ -136,12 +138,29 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
                     }
 
-                    if (npc.ai[3] == 90)
+                    if (npc.ai[3] > 90)
                     {
                         npc.ai[2] = 0;
                         npc.ai[3] = 0;
                     }
+                    break;
+                case 3: //shoot  scatter shots at player
+                    {
+                        if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 10 == 0)
+                        { 
+                            ShootTarget = player.Center + Main.rand.NextVector2Circular(50, 50);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(npc.Center, npc.DirectionTo(ShootTarget) * 7, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                            }
+                        }
 
+                        if (npc.ai[3] > 120)
+                        {
+                            npc.ai[2] = 0;
+                            npc.ai[3] = 0;
+                        }
+                    }
                     break;
 
             }

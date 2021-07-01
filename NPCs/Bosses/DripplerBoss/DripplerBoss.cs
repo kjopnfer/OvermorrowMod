@@ -22,6 +22,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private bool changedPhase3 = false;
         private int circleCooldown = 0;
         private int dripladCooldown = 0;
+        bool LocalPhaseTwo = false;
+        bool randomrotatorshootistrue = false;
 
         public override void SetStaticDefaults()
         {
@@ -46,7 +48,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.value = Item.buyPrice(gold: 2, silver: 50);
             npc.npcSlots = 10f;
             npc.chaseable = false;
-            //music = MusicID.Boss2;
             music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/DripplerBoss");
             bossBag = ModContent.ItemType<DripplerBag>();
 
@@ -187,7 +188,13 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     if (npc.ai[0] == 0)
                     {
                         // Break statements to stop movement and continue to phase initializers
-                        if (!changedPhase2 && !spawnedRotaters && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
+                        if (!LocalPhaseTwo && !spawnedRotaters && !randomrotatorshootistrue && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
+                        {
+                            npc.ai[0] = 1;
+                            npc.ai[1] = 0;
+                            break;
+                        }
+                        if (!LocalPhaseTwo && !randomrotatorshootistrue && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.56f)
                         {
                             npc.ai[0] = 1;
                             npc.ai[1] = 0;
@@ -195,7 +202,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
                         else
                         {
-                            if (changedPhase2 && spawnedRotaters && countRotaters <= 0)
+                            if (LocalPhaseTwo && spawnedRotaters && countRotaters <= 0 && randomrotatorshootistrue)
                             {
                                 npc.ai[0] = 2;
                                 npc.ai[1] = 0;
@@ -279,7 +286,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             // No dripplers present, spawn them in
                             if ((countDripplers <= 0 && countRotaters <= 0) || (countDripplers <= 0 && changedPhase3))
                             {
-
                                 npc.ai[0] = 3;
                                 npc.ai[1] = 0;
                             }
@@ -293,6 +299,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     break;
                 case 1: // Phase 2 Initializer
                     npc.velocity = Vector2.Zero;
+
+                    if (npc.ai[1] == 139 && spawnedRotaters == true)
+                    {
+                        randomrotatorshootistrue = true;
+                    }
 
                     if (npc.ai[1] == 140)
                     {
@@ -315,17 +326,22 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             for (int i = 0; i < 5; i++)
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, 350);
+                                int thisnpc = NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, 350);
+                                ((RotatingDriplad)Main.npc[thisnpc].modNPC).Randomshotistrue = randomrotatorshootistrue;
                             }
                         }
                     }
-
+                    
                     if (npc.ai[1] == 300)
                     {
                         npc.ai[0] = 0;
                         npc.ai[1] = 0;
                         changedPhase2 = true;
                         OvermorrowWorld.dripPhase2 = true;
+                        if (randomrotatorshootistrue)
+                        {
+                            LocalPhaseTwo = true;
+                        }
                     }
                     break;
                 case 2: // Phase 3 Initializer

@@ -1,6 +1,9 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Armor;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
@@ -50,6 +53,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.lifeMax = 2800;
             npc.HitSound = SoundID.NPCHit4;
             npc.value = Item.buyPrice(gold: 5);
+            npc.boss = true;
             //animationType = NPCID.Zombie;
         }
         public override void OnHitPlayer(Player target, int damage, bool crit)
@@ -663,6 +667,39 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 return false;
             }
             return true;
+        }
+
+        public override void NPCLoot()
+        {
+            if (Main.expertMode)
+            {
+                npc.DropBossBags();
+            }
+            int choice = Main.rand.Next(3);
+            if (choice == 0) // Armor
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteHelmet>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteBreastplate>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteLeggings>());
+            }
+            else if (choice == 1) // Melee
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteSpear>());
+            }
+            else if (choice == 2) // Mage
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteBook>());
+            }
+
+            /*if (Main.rand.Next(10) == 0) // Trophy Dropchance
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripplerTrophy>());
+            }*/
+        }
+
+        public override void BossLoot(ref string name, ref int potionType)
+        {
+            potionType = ItemID.LesserHealingPotion;
         }
     }
 }
