@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
-    public class BloodyBall : ModProjectile
+    public class BloodyBallGravity : ModProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
 
@@ -24,8 +24,8 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.timeLeft = 540;
             projectile.alpha = 255;
             projectile.tileCollide = false;
-            //aiType = 0;
-            //projectile.aiStyle = 0;
+            aiType = ProjectileID.BoneArrow;
+            projectile.aiStyle = 1;
         }
 
         public override void AI()

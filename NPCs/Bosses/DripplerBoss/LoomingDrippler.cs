@@ -76,7 +76,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
             if (npc.ai[3] == 0)
             {
-                moveSpeed = Main.rand.Next(7, 14);
+                //moveSpeed = Main.rand.Next(/*7*/ 5, /*14*/ /*11*/ 9);
+                moveSpeed = Main.rand.Next(5, 7);
                 npc.ai[3]++;
             }
 
@@ -166,10 +167,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     if (npc.ai[0] % 30 == 0)
                     {
                         int shootSpeed = Main.rand.Next(6, 10);
-                        Vector2 npcPosition = npc.Center;
-                        Vector2 targetPosition = Main.player[npc.target].Center;
-                        Vector2 direction = targetPosition - npcPosition;
-                        direction.Normalize();
+                        //Vector2 npcPosition = npc.Center;
+                        //Vector2 targetPosition = Main.player[npc.target].Center;
+                        //Vector2 direction = targetPosition - npcPosition;
+                        //direction.Normalize();
 
                         if (parentNPC.life <= parentNPC.lifeMax * 0.39f)
                         {
@@ -205,7 +206,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 Main.PlaySound(SoundID.Item17, (int)npc.Center.X, (int)npc.Center.Y);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                                    Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/ npc.DirectionTo(Main.player[npc.target].Center) * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                                 }
                             }
                         }
@@ -213,7 +214,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 4, 3f, Main.myPlayer, 0, 0);
+                                Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/ npc.DirectionTo(Main.player[npc.target].Center) * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 4, 3f, Main.myPlayer, 0, 0);
                             }
                         }
                     }
@@ -322,16 +323,16 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     if (npc.alpha <= 0 && OvermorrowWorld.loomingdripplerdeadcount <= 6)
                     {
                         int shootSpeed = Main.rand.Next(6, 10);
-                        Vector2 npcPosition = npc.Center;
-                        Vector2 targetPosition = Main.player[npc.target].Center;
-                        Vector2 direction = targetPosition - npcPosition;
-                        direction.Normalize();
+                        //Vector2 npcPosition = npc.Center;
+                        //Vector2 targetPosition = Main.player[npc.target].Center;
+                        //Vector2 direction = targetPosition - npcPosition;
+                        //direction.Normalize();
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             if (Main.rand.Next(2) == 0)
                             {
-                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                                Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/npc.DirectionTo(Main.player[npc.target].Center) * shootSpeed, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
                             }
                         }
 
@@ -364,7 +365,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 int dust = Dust.NewDust(position, 2, 2, 12, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                 Main.dust[dust].noGravity = true;
                             }
-                            npc.velocity = 10 * npc.DirectionTo(new Vector2(Main.rand.NextFloat(targetPosition.X - 25, targetPosition.X + 25), Main.rand.NextFloat(targetPosition.Y - 25, targetPosition.Y + 25)));
+                            npc.velocity = /*10*/ 7.5f * npc.DirectionTo(new Vector2(Main.rand.NextFloat(targetPosition.X - 25, targetPosition.X + 25), Main.rand.NextFloat(targetPosition.Y - 25, targetPosition.Y + 25)));
                         }
                         else if (attackcounter > 60 && attackcounter < 120)
                         {

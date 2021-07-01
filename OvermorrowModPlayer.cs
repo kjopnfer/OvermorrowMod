@@ -15,6 +15,9 @@ namespace OvermorrowMod
 {
     public class OvermorrowModPlayer : ModPlayer
     {
+        //sadness
+        Vector2 screenpositionstore;
+
         // Accessories
         public bool ArmBracer;
         public bool BloodyHeart;
@@ -427,57 +430,76 @@ namespace OvermorrowMod
             {
                 if (canFocus)
                 {
+                    //Vector2 screenpositionstore = Vector2.Zero;
+
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
                         if (Main.npc[i].boss)
                         {
+
                             //Main.screenPosition = new Vector2(Main.npc[i].Center.X - Main.screenWidth / 2, Main.npc[i].Center.Y - Main.screenHeight / 2);
-                            Main.screenPosition = new Vector2(MathHelper.SmoothStep(player.Center.X - Main.screenWidth / 2, Main.npc[i].Center.X - Main.screenWidth / 2, amount), MathHelper.SmoothStep(player.Center.Y - Main.screenHeight / 2, Main.npc[i].Center.Y - Main.screenHeight / 2, amount));
+                            if (!Main.gamePaused)
+                            {
+                                screenpositionstore = new Vector2(MathHelper.SmoothStep(player.Center.X - Main.screenWidth / 2, Main.npc[i].Center.X - Main.screenWidth / 2, amount), MathHelper.SmoothStep(player.Center.Y - Main.screenHeight / 2, Main.npc[i].Center.Y - Main.screenHeight / 2, amount));
+                            }
+                            Main.screenPosition = screenpositionstore;
                         }
                     }
                     amount += 0.005f;
-                    if(amount >= 1)
+                    if (amount >= 1)
                     {
                         canFocus = false;
                         amount = 0;
                     }
-
+                    
                 }
                 else
-                { 
+                {
+                    //Vector2 screenpositionstore = Vector2.Zero;
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
                         if (Main.npc[i].boss)
                         {
                             //Main.screenPosition = new Vector2(Main.npc[i].Center.X - Main.screenWidth / 2, Main.npc[i].Center.Y - Main.screenHeight / 2);
-                            Main.screenPosition = new Vector2(MathHelper.Lerp(Main.npc[i].Center.X - Main.screenWidth / 2, player.Center.X - Main.screenWidth / 2, amount), MathHelper.Lerp(Main.npc[i].Center.Y - Main.screenHeight / 2, player.Center.Y - Main.screenHeight / 2, amount));
+                            if (!Main.gamePaused)
+                            {
+                                screenpositionstore = new Vector2(MathHelper.Lerp(Main.npc[i].Center.X - Main.screenWidth / 2, player.Center.X - Main.screenWidth / 2, amount), MathHelper.Lerp(Main.npc[i].Center.Y - Main.screenHeight / 2, player.Center.Y - Main.screenHeight / 2, amount));
+                            }
+                            Main.screenPosition = screenpositionstore;
+                            /*if (Main.gamePaused)
+                            {
+                                Main.screenPosition = screenpositionstore;
+                                Main.NewText(screenpositionstore);
+                            }*/
                         }
-                    }
 
-                    amount += 0.05f;
+                        amount += 0.05f;
 
-                    if(amount >= 1)
-                    {
-                        amount = 0;
-                        FocusBoss = false;
-                        canFocus = true;
-                        ShowText = false;
+                        if (amount >= 1)
+                        {
+                            amount = 0;
+                            FocusBoss = false;
+                            canFocus = true;
+                            ShowText = false;
+                        }
+                        
                     }
                 }
-
             }
-
-            if (BossRoar)
+            if (!Main.gamePaused)
             {
-                if (shakeTimer <= 60)
+                if (BossRoar)
                 {
-                    Main.screenPosition += new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10));
-                    shakeTimer++;
-                }
-                else
-                {
-                    shakeTimer = 0;
-                    BossRoar = false;
+                    if (shakeTimer <= 60)
+                    {
+                        Main.screenPosition += new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10));
+                        shakeTimer++;
+                    }
+                    else
+                    {
+                        shakeTimer = 0;
+                        BossRoar = false;
+                    }
                 }
             }
         }

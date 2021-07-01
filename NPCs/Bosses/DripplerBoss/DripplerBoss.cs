@@ -22,9 +22,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private bool changedPhase3 = false;
         private int circleCooldown = 0;
         private int dripladCooldown = 0;
-        bool LocalPhaseTwo = false;
-        bool randomrotatorshootistrue = false;
-        private float bosslifescale;
+        //bool LocalPhaseTwo = false;
+        //bool randomrotatorshootistrue = false;
+        //private float bosslifescale;
+        int lastchoice;
+        int choice;
 
         public override void SetStaticDefaults()
         {
@@ -78,7 +80,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
-            bosslifescale = bossLifeScale;
+            //bosslifescale = bossLifeScale;
             npc.defense = 50;
         }
 
@@ -189,27 +191,36 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 0: // Float towards the player
                     if (npc.ai[0] == 0)
                     {
-                        // Break statements to stop movement and continue to phase initializers
-                        if (!LocalPhaseTwo && !spawnedRotaters && !randomrotatorshootistrue && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
+                        /*if (OvermorrowWorld.dripPhase2 && !OvermorrowWorld.dripPhase3)
                         {
-                            npc.ai[0] = 1;
-                            npc.ai[1] = 0;
-                            break;
-                        }
-                        if (!LocalPhaseTwo && !randomrotatorshootistrue && countDripplers <= 0 && npc.life <= (Main.expertMode ? 7200 : 6500 * 0.56f)/*npc.lifeMax * (Main.expertMode ? 0.56f : 0.56 / bosslifescale)*/)
-                        {
-                            npc.ai[0] = 1;
-                            npc.ai[1] = 0;
-                            break;
-                        }
-                        else
-                        {
-                            if (LocalPhaseTwo && spawnedRotaters && countRotaters <= 0 && randomrotatorshootistrue)
+                            if (++npc.ai[3] >= 300)
                             {
-                                npc.ai[0] = 2;
-                                npc.ai[1] = 0;
-                                break;
+                                int choice = Main.rand.Next(3);
+                                OvermorrowWorld.RotatingDripladAttackCounter = choice;
+                                //OvermorrowWorld.RotatingDripladAttackCounter = 0;
+                                Main.NewText(OvermorrowWorld.RotatingDripladAttackCounter);
+                                npc.ai[3] = 0;
                             }
+                        }*/
+                        
+                        // Break statements to stop movement and continue to phase initializers
+                        if (/*!LocalPhaseTwo*/ !OvermorrowWorld.dripPhase2 && !spawnedRotaters && /*!randomrotatorshootistrue &&*/ countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
+                        {
+                            npc.ai[0] = 1;
+                            npc.ai[1] = 0;
+                            break;
+                        }
+                        /*if (!LocalPhaseTwo && !randomrotatorshootistrue && countDripplers <= 0 && npc.life <= (Main.expertMode ? 7200 : 6500 * 0.56f)/*npc.lifeMax * (Main.expertMode ? 0.56f : 0.56 / bosslifescale)*/ /*)
+                        {
+                            npc.ai[0] = 1;
+                            npc.ai[1] = 0;
+                            break;
+                        }*/
+                        else if (/*LocalPhaseTwo*/ OvermorrowWorld.dripPhase2 && spawnedRotaters && countRotaters <= 0 /*&& randomrotatorshootistrue*/)
+                        {
+                            npc.ai[0] = 2;
+                            npc.ai[1] = 0;
+                            break;
                         }
 
                         Vector2 moveTo = player.Center;
@@ -302,10 +313,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 1: // Phase 2 Initializer
                     npc.velocity = Vector2.Zero;
 
-                    if (npc.ai[1] == 139 && spawnedRotaters == true)
+                    /*if (npc.ai[1] == 139 && spawnedRotaters == true)
                     {
                         randomrotatorshootistrue = true;
-                    }
+                    }*/
 
                     if (npc.ai[1] == 140)
                     {
@@ -319,17 +330,18 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
                             }
                         }
-
+                        /*
                         Vector2 origin = npc.Center; // Origin of the circle
                         float radius = 450; // Distance from the circle
                         int numSpawns = 5; // Points spawned on the circle
+                        */
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             for (int i = 0; i < 5; i++)
                             {
-                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                int thisnpc = NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, 350);
-                                ((RotatingDriplad)Main.npc[thisnpc].modNPC).Randomshotistrue = randomrotatorshootistrue;
+                                //Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
+                                /*int thisnpc =*/ NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, 350);
+                                //((RotatingDriplad)Main.npc[thisnpc].modNPC).Randomshotistrue = randomrotatorshootistrue;
                             }
                         }
                     }
@@ -340,10 +352,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.ai[1] = 0;
                         changedPhase2 = true;
                         OvermorrowWorld.dripPhase2 = true;
-                        if (randomrotatorshootistrue)
+                        /*if (randomrotatorshootistrue)
                         {
                             LocalPhaseTwo = true;
-                        }
+                        }*/
                     }
                     break;
                 case 2: // Phase 3 Initializer
@@ -433,11 +445,21 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 4: // Driplad actions
                     npc.velocity = Vector2.Zero;
 
-                    OvermorrowWorld.DripladShoot = true;
+                    if (npc.ai[1] == 1)
+                    {
+                        OvermorrowWorld.DripladShoot = true;
+                        while (choice == lastchoice)
+                        {
+                            choice = Main.rand.Next(3);
+                        }
+                        OvermorrowWorld.RotatingDripladAttackCounter = choice;
+                        lastchoice = choice;
+                    }
 
-                    if (npc.ai[1] == 300)
+                    if (npc.ai[1] == /*300*/ 450)
                     {
                         OvermorrowWorld.DripladShoot = false;
+                        OvermorrowWorld.RotatingDripladAttackCounter = 0;
                         npc.ai[0] = 0;
                         npc.ai[1] = 0;
                     }
