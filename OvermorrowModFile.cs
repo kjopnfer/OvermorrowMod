@@ -76,6 +76,7 @@ namespace OvermorrowMod
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "Shockwave");
 
                 Particle.Load();
+                TestDetours.Load();
 
                 AltarUI = new UserInterface();
 
@@ -308,6 +309,7 @@ namespace OvermorrowMod
             Sword = null;
             Shockwave = null;
             Particle.Unload();
+            TestDetours.Unload();
 
             Souls = null;
             Altar = null;
