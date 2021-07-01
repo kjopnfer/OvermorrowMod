@@ -20,7 +20,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int timer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
-        int RandomAtt = Main.rand.Next(5, 6);
+        int RandomAtt = Main.rand.Next(0, 1);
         private int otherTPtimer = 0;
         float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
@@ -242,8 +242,8 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 {
                     if(attacktimer > 55 && attacktimer < 60)
                     {
-                        int randomX = Main.rand.Next(-3, 4);
-                        int randomY = Main.rand.Next(-3, 4);
+                        int randomX = Main.rand.Next(-1, 2);
+                        int randomY = Main.rand.Next(-1, 2);
                         Vector2 position = npc.Center;
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         Vector2 direction = targetPosition - position;
