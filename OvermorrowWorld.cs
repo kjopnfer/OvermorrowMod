@@ -29,6 +29,7 @@ namespace OvermorrowMod
         public static bool DripladShoot;
         public static bool dripPhase2;
         public static bool dripPhase3;
+        public static int loomingdripplerdeadcount = 0;
 
         // Biomes
         public static int floodedCaves;

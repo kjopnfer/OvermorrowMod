@@ -24,6 +24,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private int dripladCooldown = 0;
         bool LocalPhaseTwo = false;
         bool randomrotatorshootistrue = false;
+        private float bosslifescale;
 
         public override void SetStaticDefaults()
         {
@@ -77,6 +78,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
+            bosslifescale = bossLifeScale;
             npc.defense = 50;
         }
 
@@ -194,7 +196,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             npc.ai[1] = 0;
                             break;
                         }
-                        if (!LocalPhaseTwo && !randomrotatorshootistrue && countDripplers <= 0 && npc.life <= npc.lifeMax * 0.56f)
+                        if (!LocalPhaseTwo && !randomrotatorshootistrue && countDripplers <= 0 && npc.life <= (Main.expertMode ? 7200 : 6500 * 0.56f)/*npc.lifeMax * (Main.expertMode ? 0.56f : 0.56 / bosslifescale)*/)
                         {
                             npc.ai[0] = 1;
                             npc.ai[1] = 0;
@@ -389,7 +391,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     if (npc.ai[0] == 3)
                     {
                         npc.velocity = Vector2.Zero;
-
+                        if (npc.ai[1] == 89)
+                        {
+                            OvermorrowWorld.loomingdripplerdeadcount = 0;
+                        }
                         if (npc.ai[1] == 90)
                         {
                             // Wall of Flesh scream sound
@@ -496,6 +501,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             OvermorrowWorld.dripPhase2 = false;
             OvermorrowWorld.dripPhase3 = false;
             OvermorrowWorld.DripladShoot = false;
+            OvermorrowWorld.loomingdripplerdeadcount = 0;
 
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);

@@ -144,7 +144,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.ai[3] = 0;
                     }
                     break;
-                case 3: //shoot  scatter shots at player
+                case 3: //shoot scatter shots at player
                     {
                         if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 10 == 0)
                         { 

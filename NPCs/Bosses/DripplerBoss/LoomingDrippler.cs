@@ -18,7 +18,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private int randSwitch = 300;
         private int storedDamage;
         private Vector2 origin;
-        bool dashiftrue = false;
         int attackcounter;
         public override void SetStaticDefaults()
         {
@@ -38,6 +37,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.DeathSound = SoundID.NPCDeath22;
             npc.noGravity = true;
             npc.noTileCollide = true;
+            npc.aiStyle = -1;
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
@@ -308,9 +308,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
                         npc.position = randPos;
                         npc.netUpdate = true;
-                        dashiftrue = Main.rand.NextBool();
+                        //dashiftrue = Main.rand.NextBool();
                     }
-                    if (dashiftrue == false)
+                    if (OvermorrowWorld.loomingdripplerdeadcount <= 6)
                     {
                         npc.velocity = Vector2.Zero;
                     }
@@ -319,7 +319,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.alpha -= randIncrementer;
                     }
 
-                    if (npc.alpha <= 0 && dashiftrue == false)
+                    if (npc.alpha <= 0 && OvermorrowWorld.loomingdripplerdeadcount <= 6)
                     {
                         int shootSpeed = Main.rand.Next(6, 10);
                         Vector2 npcPosition = npc.Center;
@@ -349,7 +349,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             npc.ai[0] = 0;
                         }
                     }
-                    else if (npc.alpha <= 0 && dashiftrue == true)
+                    else if (npc.alpha <= 0 && OvermorrowWorld.loomingdripplerdeadcount > 6)
                     {
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         if (++attackcounter == 30)
@@ -361,7 +361,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                 Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                int dust = Dust.NewDust(position, 2, 2, 12, dustvelocity.X, dustvelocity.Y, 0, default, 1);
+                                int dust = Dust.NewDust(position, 2, 2, 12, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                 Main.dust[dust].noGravity = true;
                             }
                             npc.velocity = 10 * npc.DirectionTo(new Vector2(Main.rand.NextFloat(targetPosition.X - 25, targetPosition.X + 25), Main.rand.NextFloat(targetPosition.Y - 25, targetPosition.Y + 25)));
@@ -457,6 +457,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void NPCLoot()
         {
+            OvermorrowWorld.loomingdripplerdeadcount += 1;
             if (Main.npc[(int)npc.ai[1]].active && Main.npc[(int)npc.ai[1]].boss)
             {
                 NPC parentNPC = Main.npc[(int)npc.ai[1]];
