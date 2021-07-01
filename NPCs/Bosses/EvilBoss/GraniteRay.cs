@@ -20,7 +20,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int timer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
-        int RandomAtt = Main.rand.Next(4, 5);
+        int RandomAtt = Main.rand.Next(5, 6);
         private int otherTPtimer = 0;
         float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
@@ -47,6 +47,16 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int SinTimer = 0;
         private int SinTimerTimer = 0;
 
+        private int BloodBallTimer = 0;
+        private int BloodAttTimer = 0;
+
+
+        private int Stopper0 = 0;
+        private int Stopper1 = 0;
+        private int Stopper2 = 0;
+        private int Stopper3 = 0;
+        private int Stopper4 = 0;
+        private int Stopper5 = 0;
 
 
         public override void SetDefaults()
@@ -142,17 +152,49 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 }
             }
 
-                eggcooldown--;
-                if(eggcooldown > 1 && RandomAtt == 3)
-                {
-                    RandomAtt = 1;
-                    eggcooldown = -10;
-                }
 
 
+            Stopper0--;
+            if (Stopper0 > 1 && RandomAtt == 0)
+            {
+                RandomAtt = Main.rand.Next(0, 6);
+                Stopper0 = -10;
+            }
 
+            Stopper1--;
+            if (Stopper1 > 1 && RandomAtt == 1)
+            {
+                RandomAtt = Main.rand.Next(0, 6);
+                Stopper1 = -10;
+            }
 
+            Stopper2--;
+            if (Stopper2 > 1 && RandomAtt == 2)
+            {
+                RandomAtt = Main.rand.Next(0, 6);
+                Stopper2 = -10;
+            }
 
+            Stopper3--;
+            if (Stopper3 > 1 && RandomAtt == 3)
+            {
+                RandomAtt = Main.rand.Next(0, 6);
+                Stopper3 = -10;
+            }
+
+            Stopper4--;
+            if (Stopper4 > 1 && RandomAtt == 4)
+            {
+                RandomAtt = Main.rand.Next(0, 6);
+                Stopper4 = -10;
+            }
+
+            Stopper5--;
+            if (Stopper5 > 1 && RandomAtt == 5)
+            {
+                RandomAtt = Main.rand.Next(0, 6);
+                Stopper5 = -10;
+            }
 
             if (RandomAtt == 0)
             {
@@ -227,7 +269,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(attacktimer == 100)  
                 {
-                    RandomAtt = Main.rand.Next(0, 5);
+                    RandomAtt = Main.rand.Next(0, 6);
                     attacktimer = 0;
                     LaserTimer = 0;
                 }
@@ -312,9 +354,10 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(CircleAttTimer == 600)  
                 {
-                    RandomAtt = Main.rand.Next(0, 5);
+                    RandomAtt = Main.rand.Next(0, 6);
                     CircleAttTimer = 0;
                     CircleLaserTimer = 0;
+                    Stopper1 = 50;
                 }
             }
 
@@ -354,8 +397,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 {
                     UnholyTimer = 0;
                     UnholyAttTimer = 0;
-                    RandomAtt = Main.rand.Next(0, 5);
+                    RandomAtt = Main.rand.Next(0, 6);
                     projectile.ranged = false;
+                    Stopper2 = 50;
                 }
             }
 
@@ -416,9 +460,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(PixieTimer == 555)
                 {
-                    eggcooldown = 700;
+                    Stopper3 = 700;
                     PixieTimer = 0;
-                    RandomAtt = Main.rand.Next(0, 5);
+                    RandomAtt = Main.rand.Next(0, 6);
                 }
             }
 
@@ -457,27 +501,78 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     int dmg = 30;
                     Vector2 perturbedSpeed1 = new Vector2(direction.X, direction.Y);
                     Vector2 perturbedSpeed2 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(45f));
-                    Vector2 perturbedSpeed3 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(90f));
-                    Vector2 perturbedSpeed4 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(135f));
-                    Vector2 perturbedSpeed5 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(-45f));
-                    Vector2 perturbedSpeed6 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(-90f));
-                    Vector2 perturbedSpeed7 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(-135f));
+                    Vector2 perturbedSpeed3 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(22.5f));
+                    Vector2 perturbedSpeed5 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(-22.5f));
+                    Vector2 perturbedSpeed6 = new Vector2(perturbedSpeed1.X, perturbedSpeed1.Y).RotatedBy(MathHelper.ToRadians(-45f));
 
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, perturbedSpeed1.X * speed ,perturbedSpeed1.Y * speed, mod.ProjectileType("Pride"), dmg, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center, perturbedSpeed2 * speed, mod.ProjectileType("Sloth"), dmg, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center, perturbedSpeed3 * speed, mod.ProjectileType("Wrath"), dmg, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center, perturbedSpeed4 * speed, mod.ProjectileType("Greed"), dmg, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center, perturbedSpeed5 * speed * 2, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
-                    Projectile.NewProjectile(projectile.Center, perturbedSpeed6 * speed, mod.ProjectileType("Lust"), dmg, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center, perturbedSpeed7 * speed, mod.ProjectileType("Gluttony"), dmg, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center, direction * speed * 2.5f, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed2 * speed * 2.5f, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed3 * speed * 2.5f, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed5 * speed * 2.5f, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center, perturbedSpeed6 * speed * 2.5f, mod.ProjectileType("Envy"), dmg, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                 }
 
                 if(SinTimer == 100)
                 {
                     SinTimer = 0;
+                    RandomAtt = Main.rand.Next(0, 6);
+                }
+            }
+
+
+            if (RandomAtt == 5)
+            {
+                BloodBallTimer++;
+                BloodAttTimer++;
+
+                if (BloodBallTimer > 1)
+                {
+                    int Random1 = Main.rand.Next(-50, 50);
+                    int Random2 = Main.rand.Next(-50, 50);
+
+                    float XDustposition = projectile.Center.X + Random1 - 16;
+                    float YDustposition = projectile.Center.Y + Random2 - 16;
+                    Vector2 VDustposition = new Vector2(XDustposition, YDustposition);
+                    Vector2 Dusttarget = projectile.Center;
+                    Vector2 Dustdirection = Dusttarget - VDustposition;
+                    Dustdirection.Normalize();
+                    Color Crim = Color.Red;
+
+                    {
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 14, 0.0f, 0.0f, 10, Crim, 3f);
+                        Main.dust[dust].noGravity = true;
+                        Vector2 velocity = Dustdirection * 2.5f;
+                        Main.dust[dust].velocity = Dustdirection * 2.5f;
+                    }
+                }
+
+                    if (BloodAttTimer == 90)
+                {
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<BloodBall>(), projectile.damage + 15, 1f, projectile.owner, 0f);
+                }
+                if (BloodAttTimer == 180)
+                {
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<BloodBall2>(), projectile.damage + 15, 1f, projectile.owner, 0f);
+                    BloodAttTimer = 0;
+                }
+
+                if (BloodBallTimer > 160)
+                {
+                    projectile.velocity.X = 0f;
+                    projectile.velocity.Y = 0f;
+                }
+
+
+                if (BloodBallTimer > 540)
+                {
+                    Stopper5 = 100;
+                    BloodBallTimer = 0;
+                    BloodAttTimer = 0;
                     RandomAtt = Main.rand.Next(0, 5);
                 }
             }
+
+
 
 
             float between = Vector2.Distance(npc.Center, projectile.Center);

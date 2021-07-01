@@ -9,7 +9,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 {
     public class ShadowPixie : ModProjectile
     {
-        private int KeepAliveTime2 = 1; 
+        private int KeepAliveTime2 = 1;
         private int KeepAliveTime = 1;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.ShadowFlame;
         public override void SetDefaults()
@@ -18,6 +18,10 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             aiType = ProjectileID.ShadowFlame;
             projectile.friendly = false;
             projectile.hostile = true;
+        }
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Shadow Tentacle");
         }
     }
 }

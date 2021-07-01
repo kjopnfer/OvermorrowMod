@@ -31,8 +31,8 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
             projectile.hostile = true;
             projectile.friendly = false;
             projectile.melee = true;
-            projectile.tileCollide = true;
             projectile.ignoreWater = true;
+            projectile.tileCollide = false;
         }
         public override void AI()
         {
@@ -47,14 +47,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
                 ComingBack = true;
             }
 
-            if(projectile.timeLeft > 98)
-            {
-                projectile.tileCollide = false;
-            }
-            else if(!ComingBack)
-            {
-                projectile.tileCollide = true;
-            }
 
             if(ComingBack)
             {
@@ -74,18 +66,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
         }
 
 
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
-            Vector2 eee = projectile.Center;
-            Main.PlaySound(SoundID.Item54, (int)eee.X, (int)eee.Y);
-            {
-                ComingBack = true;
-            }
-            return false;
-        }
-
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
 
@@ -99,13 +79,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
                     spriteBatch.Draw(texture, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
                 }
             return true;
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            Vector2 eeee = projectile.Center;
-            Main.PlaySound(SoundID.Item54, (int)eeee.X, (int)eeee.Y);
-            ComingBack = true;
         }
     }
 }
