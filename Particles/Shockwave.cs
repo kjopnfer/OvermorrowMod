@@ -39,7 +39,7 @@ namespace OvermorrowMod.Particles
         {
             spriteBatch.End();
 			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-            var shader = GameShaders.Misc["TestMod: Shockwave"];
+            var shader = GameShaders.Misc["OvermorrowMod: Shockwave"];
             shader.UseColor(particle.color);
             shader.UseSecondaryColor(particle.color);
             shader.Apply();

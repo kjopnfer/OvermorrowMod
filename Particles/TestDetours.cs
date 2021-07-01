@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Particles;
 using Terraria;
 
-namespace OvermorrowMod.Items.Testing
+namespace OvermorrowMod.Particles
 {
     public static class TestDetours
     {
