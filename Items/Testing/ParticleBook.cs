@@ -10,6 +10,13 @@ namespace OvermorrowMod.Items.Testing
     {
         public override string Texture => "Terraria/Item_" + ItemID.Book;
         public int currentType;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Particle Book");
+            Tooltip.SetDefault("Right Click to change particle type");
+        }
+
         public override void SetDefaults()
         {
             item.autoReuse = true;

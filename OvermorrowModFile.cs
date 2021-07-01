@@ -73,7 +73,7 @@ namespace OvermorrowMod
                 Shockwave = GetEffect("Effects/Shockwave1");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
-                GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "Shockwave");
+                GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 Particle.Load();
                 TestDetours.Load();
