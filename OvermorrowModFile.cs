@@ -4,9 +4,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Particles;
 using OvermorrowMod.UI;
 using ReLogic.Graphics;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -29,6 +31,7 @@ namespace OvermorrowMod
 
         public static OvermorrowModFile Mod { get; set; }
         public Effect Sword;
+        public Effect Shockwave;
 
         public OvermorrowModFile()
         {
@@ -67,6 +70,13 @@ namespace OvermorrowMod
             if (!Main.dedServ)
             {            // Effects
                 Sword = GetEffect("Effects/Trailshader");
+                Shockwave = GetEffect("Effects/Shockwave1");
+
+                Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
+                GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "Shockwave");
+
+                Particle.Load();
+
                 AltarUI = new UserInterface();
 
                 MyInterface = new UserInterface();
@@ -295,10 +305,22 @@ namespace OvermorrowMod
             Mod = null;
             PlayerGlowmasks.Unload();
 
+            Sword = null;
+            Shockwave = null;
+            Particle.Unload();
+
             Souls = null;
             Altar = null;
             SandModeKey = null;
             ToggleUI = null;
+        }
+
+        public override void PostUpdateEverything()
+        {
+            if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
+            {
+                Particle.UpdateParticles();
+            }
         }
     }
 }
