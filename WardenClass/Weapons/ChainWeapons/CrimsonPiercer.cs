@@ -26,8 +26,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.knockBack = 0f;
             item.width = 36;
             item.height = 46;
-            item.damage = 3;
-            item.shootSpeed = 14f;
+            item.damage = 7;
+            item.shootSpeed = 15f;
             item.shoot = mod.ProjectileType("CrimsonPiercerProjectile");
             item.rare = ItemRarityID.Blue;
             item.UseSound = SoundID.Item71;
