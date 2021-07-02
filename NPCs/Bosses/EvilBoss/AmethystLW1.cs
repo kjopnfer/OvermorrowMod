@@ -11,12 +11,14 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Evil Ray");
+            Main.projFrames[base.projectile.type] = 4;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 94;
-            projectile.height = 94;
+            projectile.width = 38;
+            projectile.height = 38;
+            projectile.scale = 2;
             projectile.timeLeft = 199;
             projectile.penetrate = -1;
             projectile.hostile = true;
@@ -29,8 +31,25 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         {
             Projectile parentProjectile = Main.projectile[(int)projectile.ai[0]];
             projectile.Center = parentProjectile.Center;
-            projectile.position.X = parentProjectile.Center.X - 47;
-            projectile.position.Y = parentProjectile.Center.Y - 47;
+            projectile.position.X = parentProjectile.Center.X - 20;
+            projectile.position.Y = parentProjectile.Center.Y;
+
+
+
+            if(projectile.timeLeft == 75)
+            {
+                projectile.frame = 1;
+            }
+
+            if(projectile.timeLeft == 50)
+            {
+                projectile.frame = 2;
+            }
+
+            if(projectile.timeLeft == 25)
+            {
+                projectile.frame = 3;
+            }
         }
     }
 }

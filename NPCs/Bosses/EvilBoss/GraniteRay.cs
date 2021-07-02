@@ -66,8 +66,10 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         float CircleArr3 = 0f;
         float CircleArr4 = 0f;
         float CircleArr5 = 0f;
-
-
+        float CircleSpeed = 0f;
+        float StopPosX = 0f;
+        float StopPosY = 0f;
+        
         public override void SetDefaults()
         {
             projectile.width = 32;
@@ -410,7 +412,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 {
                     UnholyTimer = 0;
                     UnholyAttTimer = 0;
-                    RandomAtt = Main.rand.Next(0, 6);
+                    RandomAtt = Main.rand.Next(3, 4);
                     projectile.ranged = false;
                     Stopper2 = 50;
                 }
@@ -464,44 +466,97 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     }
                 }
 
+
                 float RotDistance = Vector2.Distance(npc.Center, projectile.Center);
                 float RotDistance2 = Vector2.Distance(projectile.Center, npc.Center);
 
                 if(PixieTimer < 52)
                 {
                     CircleArr = (npc.Center - projectile.Center).ToRotation();
+                    
+                }
+
+                if(PixieTimer == 50)
+                {
+                    StopPosX = Vector2.Distance(projectile.Center, npc.Center);
+                    StopPosY = Vector2.Distance(projectile.Center, npc.Center);
+                    if(Main.player[projectile.owner].Center.X > projectile.Center.X)
+                    {
+                        CircleSpeed = -150;
+                    }
+                    else
+                    {
+                        CircleSpeed = 150;
+                    }
                 }
 
                 if(PixieTimer > 50 && PixieTimer < 100)
                 {
+                    Vector2 StopPos = new Vector2(StopPosX, StopPosY);
+                    float StopPosDistance = Vector2.Distance(npc.Center, StopPos);
                     npc.position.X = RotDistance2 * (float)Math.Cos(CircleArr) + projectile.Center.X - projectile.width / 2;
                     npc.position.Y = RotDistance2 * (float)Math.Sin(CircleArr) + projectile.Center.Y - projectile.height / 2;
-                    CircleArr += (float)((2 * Math.PI) / (Math.PI * 2 * 220 / 10)); // 200 is the speed, god only knows what dividing by 10 does
+                    CircleArr += (float)((2 * Math.PI) / (Math.PI * 2 * CircleSpeed / 10)); // 200 is the speed, god only knows what dividing by 10 does
+                    if(StopPosDistance < 30)
+                    {
+                        PixieTimer = 100;
+                    }
                     
                 }
+
+
+
+
+
 
                 if(PixieTimer < 102)
                 {
                     CircleArr2 = (projectile.Center - npc.Center).ToRotation();
                 }
 
+                if(PixieTimer == 100)
+                {
+                    if(Main.player[projectile.owner].Center.X > projectile.Center.X)
+                    {
+                        CircleSpeed = 150;
+                    }
+                    else
+                    {
+                        CircleSpeed = -150;
+                    }
+                }
+
                 if(PixieTimer > 100 && PixieTimer < 150)
                 {
                     projectile.position.X = RotDistance2 * (float)Math.Cos(CircleArr2) + npc.Center.X - npc.width / 2;
                     projectile.position.Y = RotDistance2 * (float)Math.Sin(CircleArr2) + npc.Center.Y - npc.height / 2;
-                    CircleArr2 -= (float)((2 * Math.PI) / (Math.PI * 2 * 220 / 10)); // 200 is the speed, god only knows what dividing by 10 does
+                    CircleArr2 += (float)((2 * Math.PI) / (Math.PI * 2 * CircleSpeed / 10)); // 200 is the speed, god only knows what dividing by 10 does
                 }
+
+
 
                 if(PixieTimer < 152)
                 {
                     CircleArr3 = (npc.Center - projectile.Center).ToRotation();
                 }
 
+                if(PixieTimer == 150)
+                {
+                    if(Main.player[projectile.owner].Center.X > projectile.Center.X)
+                    {
+                        CircleSpeed = -150;
+                    }
+                    else
+                    {
+                        CircleSpeed = 150;
+                    }
+                }
+
                 if(PixieTimer > 150 && PixieTimer < 200)
                 {
                     npc.position.X = RotDistance2 * (float)Math.Cos(CircleArr3) + projectile.Center.X - projectile.width / 2;
                     npc.position.Y = RotDistance2 * (float)Math.Sin(CircleArr3) + projectile.Center.Y - projectile.height / 2;
-                    CircleArr3 += (float)((2 * Math.PI) / (Math.PI * 2 * 220 / 10)); // 200 is the speed, god only knows what dividing by 10 does
+                    CircleArr3 += (float)((2 * Math.PI) / (Math.PI * 2 * CircleSpeed / 10)); // 200 is the speed, god only knows what dividing by 10 does
                 }
 
 
