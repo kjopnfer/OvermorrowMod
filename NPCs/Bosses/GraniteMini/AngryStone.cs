@@ -647,7 +647,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         public override void FindFrame(int frameHeight)
         {
             npc.frame.Y = frameHeight * frame;
-            if (Main.player[npc.target].Center.X < npc.Center.X /*&& dashing == false*//*)
+            if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
             {
                 npc.spriteDirection = -1;
             }
