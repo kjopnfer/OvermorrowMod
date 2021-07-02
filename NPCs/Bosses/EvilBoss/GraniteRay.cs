@@ -412,7 +412,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 {
                     UnholyTimer = 0;
                     UnholyAttTimer = 0;
-                    RandomAtt = Main.rand.Next(3, 4);
+                    RandomAtt = Main.rand.Next(0, 6);
                     projectile.ranged = false;
                     Stopper2 = 50;
                 }
