@@ -125,10 +125,18 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                     }
 
-                    if (npc.ai[3] % 30f == 1f)
+                    if (npc.ai[3] == 90/*% 30f == 1f*/)
                     {
                         //Main.PlaySound(4, npc.Center, 22);
-                        Main.PlaySound(SoundID.Item25, npc.Center); // every half second while dying, play a sound
+                        Main.PlaySound(/*SoundID.Item25*/ /*SoundID.ForceRoar*/ /*SoundID.NPCKilled*/new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), npc.Center); // every half second while dying, play a sound
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                            if (distance <= 600)
+                            {
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                            }
+                        }
                     }
 
                     if (npc.ai[3] >= 180f)
@@ -173,6 +181,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
                         if (++npc.ai[1] > 240)
                         {
+                            dashing = false;
                             npc.dontTakeDamage = false;
                             npc.immortal = false;
                             changedPhase2Indicator = true;
@@ -188,13 +197,8 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             if (!AliveCheck(player)) { break; }
 
-                            if(npc.ai[1] == 1)
-                            {
-                                //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
-                                //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = false;
-                            }
-
-                            npc.velocity = Vector2.UnitY * 1.2f;
+                            //npc.velocity = Vector2.UnitY * 1.2f;
+                            npc.velocity = Vector2.UnitY * 0.7f;
                             npc.dontTakeDamage = true;
 
                             if (++npc.ai[1] > 380)
@@ -213,6 +217,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                                         Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
                                     }
                                 }
+                                dashing = false;
                             }
                         }
                     }
@@ -597,8 +602,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         break;
                     }
             }
-            
-            npc.spriteDirection = npc.direction;
+            //npc.spriteDirection = npc.direction;
 
             spritetimer++;
             if (spritetimer > 4)
@@ -643,7 +647,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         public override void FindFrame(int frameHeight)
         {
             npc.frame.Y = frameHeight * frame;
-            if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
+            if (Main.player[npc.target].Center.X < npc.Center.X /*&& dashing == false*//*)
             {
                 npc.spriteDirection = -1;
             }

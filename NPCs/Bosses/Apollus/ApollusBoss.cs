@@ -114,10 +114,18 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                     }
 
-                    if (npc.ai[3] % 30f == 1f)
+                    if (npc.ai[3] == 90 /*% 30f == 1f*/)
                     {
                         //Main.PlaySound(4, npc.Center, 22);
-                        Main.PlaySound(SoundID.Item25, npc.Center); // every half second while dying, play a sound
+                        Main.PlaySound(/*SoundID.Item25*/ /*SoundID.ForceRoar*/ /*SoundID.NPCKilled*/new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), npc.Center); // every half second while dying, play a sound
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                            if (distance <= 600)
+                            {
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                            }
+                        }
                     }
 
                     if (npc.ai[3] >= 180f)
@@ -175,13 +183,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     {
                         if (!AliveCheck(player)) { break; }
 
-                        if (npc.ai[1] == 1)
-                        {
-                            //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
-                            //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = false;
-                        }
-
-                        npc.velocity = Vector2.UnitY * 1.2f;
+                        //npc.velocity = Vector2.UnitY * 1.2f;
+                        npc.velocity = Vector2.UnitY * 0.7f;
                         npc.dontTakeDamage = true;
 
                         if (++npc.ai[1] > 380)
