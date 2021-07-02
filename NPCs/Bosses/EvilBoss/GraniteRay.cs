@@ -20,7 +20,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int timer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
-        int RandomAtt = Main.rand.Next(0, 1);
+        int RandomAtt = Main.rand.Next(2, 3);
         private int otherTPtimer = 0;
         float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
@@ -350,8 +350,12 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay2>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay3>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay4>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
-                }
 
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay5>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay6>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay7>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<EvilRay8>(), 50, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                }
                 if(CircleAttTimer == 600)  
                 {
                     RandomAtt = Main.rand.Next(0, 6);
@@ -372,13 +376,13 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     RandomAttackTime = Main.rand.Next(0, 21);
                 }
 
-                if(UnholyAttTimer == 10 && UnholyTimer < 541)
+                if(UnholyAttTimer == 5 && UnholyTimer < 271)
                 {
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<UnholyLight>(), projectile.damage + 15, 1f, projectile.owner, 0f);
                     UnholyAttTimer = 0;
                 }
 
-                if(UnholyTimer > 490 && UnholyTimer < 541)
+                if(UnholyTimer > 245 && UnholyTimer < 271)
                 {
                     projectile.melee = true;
                 }
@@ -387,13 +391,13 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     projectile.melee = false;
                 }
 
-                if(UnholyTimer > 540)
+                if(UnholyTimer > 270)
                 {
                     projectile.ranged = true;
                 }
 
 
-                if(UnholyTimer > 590)
+                if(UnholyTimer > 300)
                 {
                     UnholyTimer = 0;
                     UnholyAttTimer = 0;
@@ -453,9 +457,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 if(PixieTimer == 50)
                 {
-                    NPC.NewNPC((int)projectile.Center.X + 350, (int)projectile.Center.Y - 75, mod.NPCType("PixieBomb"));
+                    NPC.NewNPC((int)projectile.Center.X + 350, (int)projectile.Center.Y - 100, mod.NPCType("PixieBomb"));
 
-                    NPC.NewNPC((int)projectile.Center.X - 350, (int)projectile.Center.Y - 75, mod.NPCType("CreeperPixie"));
+                    NPC.NewNPC((int)projectile.Center.X - 350, (int)projectile.Center.Y - 100, mod.NPCType("CreeperPixie"));
                 }
 
                 if(PixieTimer == 555)
@@ -546,17 +550,17 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     }
                 }
 
-                    if (BloodAttTimer == 90)
+                    if (BloodAttTimer == 45)
                 {
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<BloodBall>(), projectile.damage + 15, 1f, projectile.owner, 0f);
                 }
-                if (BloodAttTimer == 180)
+                if (BloodAttTimer == 90)
                 {
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<BloodBall2>(), projectile.damage + 15, 1f, projectile.owner, 0f);
                     BloodAttTimer = 0;
                 }
 
-                if (BloodBallTimer > 160)
+                if (BloodBallTimer > 45)
                 {
                     projectile.velocity.X = 0f;
                     projectile.velocity.Y = 0f;

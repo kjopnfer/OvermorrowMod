@@ -59,8 +59,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             if(spiderexp > 3)
             {
-                if(Charge < 200)
-                {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = npc.Center + new Vector2(0, -40);
                     Vector2 direction = targetPosition - position;
@@ -75,20 +73,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Main.PlaySound(SoundID.Item12, npc.position);
                     Rot += 10;
                     spiderexp = 0;
-                }
+                
             }
 
-            if(Charge > 170)
-            {
-                int RandomAdd = Main.rand.Next(-1, 2);
-                Vector2 position = npc.Center;
-                Vector2 targetPosition = Main.player[npc.target].Center;
-                Vector2 direction = targetPosition - position;
-                direction.Normalize();
-                float speed = 3.3f + RandomAdd * 0.1f;
-                npc.velocity += direction / speed;
-                spiderexp = 0;
-            }
             
             if(npc.velocity.X > 7)
             {

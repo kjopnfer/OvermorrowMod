@@ -55,7 +55,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 //Vector2 endPoint;
                 projectile.position.X = length * (float)Math.Cos(projectile.rotation) + parentProjectile.Center.X - 20;
                 projectile.position.Y = length * (float)Math.Sin(projectile.rotation) + parentProjectile.Center.Y - 20;
-                projectile.rotation += (float)((2 * Math.PI) / (Math.PI * 2 * 100 / 10)); // 200 is the speed, god only knows what dividing by 10 does
+                projectile.rotation += (float)((2 * Math.PI) / (Math.PI * 2 * 50 / 10)); // 200 is the speed, god only knows what dividing by 10 does
             }
 
             if(parentProjectile.ranged)

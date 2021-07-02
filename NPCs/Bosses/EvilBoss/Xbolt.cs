@@ -13,5 +13,10 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             projectile.hostile = true;
         }
         public override string Texture => "Terraria/Projectile_" + ProjectileID.HeatRay;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Get inside the big dust cloud next time, idiot.");
+        }
     }
 }
