@@ -38,8 +38,8 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            projectile.width = 38;
-            projectile.height = 26;
+            projectile.width = 24;
+            projectile.height = 10;
             projectile.timeLeft = 500;
             projectile.penetrate = 1;
             projectile.hostile = false;
@@ -60,7 +60,6 @@ namespace OvermorrowMod.Projectiles.Melee
             if(!ComingBack)
             {
                 projectile.rotation = projectile.velocity.ToRotation();
-                projectile.velocity.Y += 0.07f;
             }
             if (!foundTarget)
             {
