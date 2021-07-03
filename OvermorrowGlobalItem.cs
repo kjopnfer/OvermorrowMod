@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Piercing;
+using OvermorrowMod.Projectiles.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,6 +17,15 @@ namespace OvermorrowMod
                 item.damage = 5;
                 item.value = Item.sellPrice(gold: 2, silver: 75);
             }
+
+            if (item.type == ItemID.Acorn)
+            {
+                item.ammo = item.type;
+                item.shoot = ModContent.ProjectileType<AcornProj>();
+            }
+
+
+            
         }
         public override void ModifyWeaponDamage(Item item, Player player, ref float add, ref float mult, ref float flat)
         {
