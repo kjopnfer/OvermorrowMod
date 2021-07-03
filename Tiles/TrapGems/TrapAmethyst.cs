@@ -21,31 +21,23 @@ namespace OvermorrowMod.Tiles.TrapGems
 
 
             ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Amethyst");
-            AddMapEntry(new Color(0, 0, 0), name);
+            name.SetDefault("Fake Diamond");
+            AddMapEntry(new Color(200, 30, 0), name);
             //dustType = 9;
-            soundType = SoundID.Tink;
             soundStyle = 1;
             mineResist = 2f;
             minPick = 1;
         }
-        public override bool Drop(int i, int j)
-        {
-            for (int x = 0; x < Main.maxPlayers; x++)
-            {
-                float distance = Vector2.Distance(new Vector2(i * 16, j * 16), Main.player[i].Center);
-                if (distance <= 350)
-                {
-                    Main.player[i].AddBuff(BuffID.Obstructed, 240);
-                }
-            }
-
-            /*int style = 0;
-            if (style == 0) // It can be useful to share a single tile with multiple styles. This code will let you drop the appropriate bar if you had multiple.
-            {
-                Projectile.NewProjectile(i * 16, j * 16, 0, 0, mod.ProjectileType("FakeGold"), 60, 0f, Main.myPlayer);
-            }*/
-            return base.Drop(i, j);
+		public override bool Drop(int i, int j)
+		{
+			Tile t = Main.tile[i, j];
+			int style = 0;
+			if (style == 0) // It can be useful to share a single tile with multiple styles. This code will let you drop the appropriate bar if you had multiple.
+			{
+				Item.NewItem(i * 16, j * 16, 16, 16, 3);
+                NPC.NewNPC(i * 16, j * 16, mod.NPCType("AngryStone"));
+		    }
+		    return base.Drop(i, j);
         }
-    }
+	}
 }
