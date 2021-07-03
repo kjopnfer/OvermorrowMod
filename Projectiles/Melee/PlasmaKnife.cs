@@ -33,7 +33,8 @@ namespace OvermorrowMod.Projectiles.Melee
         bool inRange;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hell Boomerang");
+            DisplayName.SetDefault("Meteor");
+            Main.projFrames[base.projectile.type] = 4;
         }
 
         public override void SetDefaults()
@@ -42,6 +43,7 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.height = 10;
             projectile.timeLeft = 500;
             projectile.penetrate = 1;
+            projectile.light = 0.5f;
             projectile.hostile = false;
             projectile.friendly = true;
             projectile.melee = true;
@@ -122,6 +124,17 @@ namespace OvermorrowMod.Projectiles.Melee
                 direction.Normalize();
                 projectile.velocity = direction * 10f;
             }
+
+
+            if (++projectile.frameCounter >= 4)
+            {
+                projectile.frameCounter = 0;
+                if (++projectile.frame >= Main.projFrames[projectile.type])
+                {
+                    projectile.frame = 0;
+                }
+            }
+
         }
     }
 }
