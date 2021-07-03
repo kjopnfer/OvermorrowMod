@@ -29,8 +29,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.width = 68;
             npc.height = 110;
             npc.damage = 25;
-            npc.defense = 20;
-            npc.lifeMax = 500; //250;
+            npc.defense = 0;
+            npc.lifeMax = 100; //250;
             npc.HitSound = SoundID.NPCHit19;
             npc.knockBackResist = 0f;
             npc.DeathSound = SoundID.NPCDeath22;

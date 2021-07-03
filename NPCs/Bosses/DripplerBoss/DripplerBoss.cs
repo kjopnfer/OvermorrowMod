@@ -41,7 +41,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.aiStyle = -1;
             npc.damage = 21;
             npc.defense = 35;
-            npc.lifeMax = 6500;
+            npc.lifeMax = 5000;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.DD2_BetsyDeath;
             npc.knockBackResist = 0f;
