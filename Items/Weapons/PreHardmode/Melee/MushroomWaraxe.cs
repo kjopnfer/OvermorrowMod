@@ -44,7 +44,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 		{
             if (Main.rand.Next(5) == 3)
             {
-			    target.AddBuff(ModContent.BuffType<FungalInfection>(), 600);
+			    target.AddBuff(ModContent.BuffType<FungalInfection>(), 200);
             }
 		}
 
