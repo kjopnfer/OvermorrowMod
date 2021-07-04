@@ -2,7 +2,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using OvermorrowMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Summon;
 
@@ -33,7 +32,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.shoot = ModContent.ProjectileType<MushroomSumm>();
             item.shootSpeed = 0f;
         }
-
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(183, 35);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+        }
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             // Here you can change where the minion is spawned. Most vanilla minions spawn at the cursor position.
