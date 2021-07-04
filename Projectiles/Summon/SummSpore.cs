@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -79,7 +80,14 @@ namespace OvermorrowMod.Projectiles.Summon
 
 
 
-
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            if (Main.rand.Next(5) == 3)
+            {
+                target.AddBuff(ModContent.BuffType<FungalInfection>(), 300);
+            }
+        }
+  
 
 
 
