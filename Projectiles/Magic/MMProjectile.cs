@@ -136,8 +136,8 @@ namespace OvermorrowMod.Projectiles.Magic
         }
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-			TrailHelper th = new TrailHelper(projectile, TrailColor, TrailSize);
-			th.Draw();
+			/*TrailHelper th = new TrailHelper(projectile, TrailColor, TrailSize);
+			th.Draw();*/
 			return true;
         }
     }

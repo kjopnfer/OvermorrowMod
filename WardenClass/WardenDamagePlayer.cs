@@ -4,6 +4,7 @@ using OvermorrowMod;
 using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
+using Utils = Terraria.Utils;
 
 namespace WardenClass
 {

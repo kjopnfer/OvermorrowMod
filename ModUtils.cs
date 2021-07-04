@@ -9,7 +9,7 @@ using OvermorrowMod.Effects;
 
 namespace OvermorrowMod
 {
-    public static class Utils
+    public static class ModUtils
     {
         public static void Draw(this Rectangle rect, bool collides = false)
         {

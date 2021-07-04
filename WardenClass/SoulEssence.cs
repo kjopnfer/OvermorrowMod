@@ -34,9 +34,9 @@ namespace WardenClass
             Player player = Main.player[projectile.owner];
 
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            
+
             // Make sure the projectile does not naturally expire while active
-            if(modPlayer.soulList.Count > 0)
+            if (modPlayer.soulList.Count > 0)
             {
                 projectile.timeLeft = 2;
             }
@@ -86,27 +86,26 @@ namespace WardenClass
             return false;
         }
 
-        public float TrailSize(float progress)
-        {
-            return 16f * (1f - progress);
-        }
-
-        public Color TrailColor(float progress)
-        {
-            //return Main.hslToRgb(progress, 0.75f, 0.5f) * (1f - progress);
-            //return Main.DiscoColor;
-            return Color.Lerp(Color.Cyan, Color.White, progress) * (1f - progress);
-        }
-
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-       //     if (Main.netMode != NetmodeID.Server)
-    ///        {
-                Texture2D texture = ModContent.GetTexture("OvermorrowMod/Effects/Trail3");
-                int length = 32;
-                TrailHelper helper = new TrailHelper(projectile, TrailColor, TrailSize, length, "Texture", texture);
-                helper.Draw();
-       //     }
+
+            Texture2D projTexture = ModContent.GetTexture("OvermorrowMod/Effects/Trail3");
+            int length = 32;
+            TrailHelper helper = new TrailHelper(projectile.oldPos, new TrailConfig
+            {
+                color = delegate (float progress)
+                {
+                    return Color.Lerp(Color.Cyan, Color.White, progress) * (1f - progress);
+                },
+                size = delegate (float progress)
+                {
+                    return 16f * (1f - progress);
+                },
+                Length = length,
+                texture = projTexture,
+                TAlpha = true
+            });
+            helper.Draw();
             return base.PreDraw(spriteBatch, lightColor);
         }
     }

@@ -67,7 +67,7 @@ namespace OvermorrowMod.Projectiles.Magic
                 projectile.ai[0]++;
                 for (int i = 0; i < 3; i++)
                 {
-                    int direction ;
+                    int direction;
                     if (i == 0 || i == 2)
                     {
                         direction = 2;
@@ -76,13 +76,13 @@ namespace OvermorrowMod.Projectiles.Magic
                     {
                         direction = 3;
                     }
-                 owned.Add(Main.projectile[Projectile.NewProjectile(projectile.Center, Microsoft.Xna.Framework.Vector2.Zero, projectile.type, projectile.damage, i, projectile.owner, projectile.whoAmI, direction)]);
+                    owned.Add(Main.projectile[Projectile.NewProjectile(projectile.Center, Microsoft.Xna.Framework.Vector2.Zero, projectile.type, projectile.damage, i, projectile.owner, projectile.whoAmI, direction)]);
                 }
             }
             foreach (Projectile proj in owned)
                 proj.ai[0] = projectile.whoAmI;
         }
-           public float TrailSize(float progress)
+        public float TrailSize(float progress)
         {
             return 32f * (1f - progress);
         }
@@ -101,15 +101,13 @@ namespace OvermorrowMod.Projectiles.Magic
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            //     if (Main.netMode != NetmodeID.Server)
-            ///        {
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Effects/Trail2");
+
+            /*Texture2D texture = ModContent.GetTexture("OvermorrowMod/Effects/Trail2");
             int length = 16;
             TrailHelper helper = new TrailHelper(projectile, TrailColor, TrailSize, length, "Texture", texture);
-            helper.Draw();
-            //     }
+            helper.Draw();*/
             return base.PreDraw(spriteBatch, lightColor);
         }
-        
+
     }
 }
