@@ -76,12 +76,8 @@ namespace OvermorrowMod.Projectiles.Summon
                         bool closest = Vector2.Distance(projectile.Center, targetCenter) > between;
                         bool inRange = between < distanceFromTarget;
 
-                        if (((closest && inRange) || !foundTarget))
+                        if ((closest && inRange) || !foundTarget)
                         {
-                            NPCtargetX = npc.Center.X;
-                            NPCtargetY = npc.Center.Y;
-                            Vector2 Rot = npc.Center;
-                            //projectile.rotation = (Rot - projectile.Center).ToRotation();
                             distanceFromTarget = between;
                             targetCenter = npc.Center;
                             foundTarget = true;
@@ -154,14 +150,14 @@ namespace OvermorrowMod.Projectiles.Summon
                     eyetimer = 0;
                 }
             }
+
+
         }
-        
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough)
         {
             fallThrough = false;
             return base.TileCollideStyle(ref width, ref height, ref fallThrough);
         }
-
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             {
