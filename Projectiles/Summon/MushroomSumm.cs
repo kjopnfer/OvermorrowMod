@@ -66,7 +66,6 @@ namespace OvermorrowMod.Projectiles.Summon
 
             if (!foundTarget)
             {
-                timer = 0;
                 // This code is required either way, used for finding a target
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
@@ -90,6 +89,7 @@ namespace OvermorrowMod.Projectiles.Summon
                         else
                         {
                             foundTarget = false;
+                            timer = 0;
                         }
                     }
                 }
