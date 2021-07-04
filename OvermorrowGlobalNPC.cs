@@ -248,7 +248,7 @@ namespace OvermorrowMod
             if(FungiInfection)
             {
                 FungiTime++;
-                if(FungiTime == 20)
+                if(FungiTime == 25)
                 {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = Main.player[npc.target].Center;
