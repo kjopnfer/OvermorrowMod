@@ -4,6 +4,7 @@ using OvermorrowMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
@@ -12,6 +13,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Mushroom Waraxe");
+            Tooltip.SetDefault("Has a one in five chance to inflict fungal infection");
         }
 
         public override void SetDefaults()
@@ -37,6 +39,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             recipe.SetResult(this);
             recipe.AddRecipe();
         }
+
+		public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit) 
+		{
+            if (Main.rand.Next(5) == 3)
+            {
+			    target.AddBuff(ModContent.BuffType<FungalInfection>(), 600);
+            }
+		}
 
 		public override void MeleeEffects(Player player, Rectangle hitbox) 
         {

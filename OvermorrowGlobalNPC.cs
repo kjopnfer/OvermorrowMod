@@ -18,11 +18,14 @@ namespace OvermorrowMod
 
         public bool bleedingDebuff;
         public bool bleedingDebuff2;
+        public bool FungiInfection;
+        public int FungiTime;
 
         public override void ResetEffects(NPC npc)
         {
             bleedingDebuff = false;
             bleedingDebuff2 = false;
+            FungiInfection = false;
         }
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
@@ -186,7 +189,11 @@ namespace OvermorrowMod
                     owner.GetModPlayer<OvermorrowModPlayer>().sandCount++;
                 }
             }
+
+
         }
+
+
 
         public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
         {
@@ -226,10 +233,38 @@ namespace OvermorrowMod
                     // The damage visual value
                 }
 
+
+
+
+
+
+
                 damage = 1;
             }
         }
 
+        public override void AI(NPC npc)
+        {
+            if(FungiInfection)
+            {
+                FungiTime++;
+                if(FungiTime == 20)
+                {
+                    Vector2 position = npc.Center;
+                    Vector2 targetPosition = Main.player[npc.target].Center;
+                    Vector2 direction = targetPosition - position;
+                    direction.Normalize();
+                    float speed = 0f;
+                    Vector2 perturbedSpeed = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
+                    Projectile.NewProjectile(npc.Center.X + Main.rand.Next(-75, 76) - npc.width / 2, npc.Center.Y + Main.rand.Next(-75, 76) - npc.height / 2, perturbedSpeed.X * speed, perturbedSpeed.Y * speed, 590, npc.defense + 5, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
+                    FungiTime = 0;
+                }
+            }
+            else
+            {
+                FungiTime = 0;
+            }
+        }
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
             if (bleedingDebuff || bleedingDebuff2)
@@ -242,6 +277,16 @@ namespace OvermorrowMod
                     Main.dust[dust].velocity.Y -= 0.5f;
                 }
             }
+                if(FungiInfection)
+                {
+                    if (Main.rand.Next(8) < 3)
+                    {
+                        int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width, npc.height, 41, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
+                        //Main.dust[dust].noGravity = true;
+                        Main.dust[dust].velocity *= 1.8f;
+                        Main.dust[dust].velocity.Y -= 0.5f;
+                    }
+                }
         }
 
         // New method to apply buffs to NPCs, this is WIP
