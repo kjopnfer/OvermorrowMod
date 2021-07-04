@@ -32,6 +32,7 @@ namespace OvermorrowMod
         public static OvermorrowModFile Mod { get; set; }
         public Effect Sword;
         public Effect Shockwave;
+        public Effect VertexShader;
 
         public OvermorrowModFile()
         {
@@ -71,6 +72,7 @@ namespace OvermorrowMod
             {            // Effects
                 Sword = GetEffect("Effects/Trailshader");
                 Shockwave = GetEffect("Effects/Shockwave1");
+                VertexShader = GetEffect("Effects/VShader");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");

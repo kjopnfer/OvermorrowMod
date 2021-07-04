@@ -34,18 +34,14 @@ namespace OvermorrowMod.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.End();
-			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-            
-            // TODO: Needs the actual shader
+            spriteBatch.Reload(BlendState.AlphaBlend, SpriteSortMode.Immediate);
             var shader = GameShaders.Misc["OvermorrowMod: Shockwave"];
             shader.UseColor(particle.color);
             shader.UseSecondaryColor(particle.color);
             shader.Apply();
             Texture2D texture = Particle.ParticleTextures[particle.type];
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), particle.color * particle.alpha, particle.rotation, texture.Size() / 2, particle.scale, SpriteEffects.None, 0);
-            spriteBatch.End();
-			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+			spriteBatch.Reload(BlendState.AlphaBlend, SpriteSortMode.Deferred);
         }
     }
 }

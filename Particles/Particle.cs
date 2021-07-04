@@ -12,15 +12,14 @@ namespace OvermorrowMod.Particles
         public CustomParticle cParticle;
         public int type;
         public int id;
-        public int frame;
         public Vector2 position;
         public Vector2 velocity;
         public float alpha;
         public float scale;
         public float rotation;
-        public float frameCounter;
         public Color color = Color.White;
         public int activeTime;
+        public Vector2[] oldPos = new Vector2[10];
         public float[] customData;
         public void Kill() => Particle.RemoveAtIndex(id);
         protected Vector2 DirectionTo(Vector2 pos) => Vector2.Normalize(pos - position);
@@ -30,12 +29,13 @@ namespace OvermorrowMod.Particles
         public static Particle[] particles;
         public static Dictionary<Type, int> ParticleTypes;
         public static Dictionary<int, Texture2D> ParticleTextures;
-        public static int[] ParticleFrameCount;
+        public static Dictionary<int, string> ParticleNames;
         public static void Load()
         {
             particles = new Particle[MaxParticleCount];
             ParticleTypes = new Dictionary<Type, int>();
             ParticleTextures = new Dictionary<int, Texture2D>();
+            ParticleNames = new Dictionary<int, string>();
 			CustomParticle.CustomParticles = new Dictionary<int, CustomParticle>();
             OvermorrowModFile mod = OvermorrowModFile.Mod;
             foreach (Type type in mod.Code.GetTypes())
@@ -47,14 +47,10 @@ namespace OvermorrowMod.Particles
                     CustomParticle particle = (CustomParticle)Activator.CreateInstance(type);
                     particle.mod = mod;
                     CustomParticle.CustomParticles.Add(id, particle);
-                    Texture2D texture = particle.Texture == null ? mod.GetTexture("Particles/" + type.Name) : mod.GetTexture(particle.Texture);
+                    Texture2D texture = particle.Texture == null ? ModContent.GetTexture(type.FullName.Replace('.', '/')) : mod.GetTexture(particle.Texture);
                     ParticleTextures.Add(id, texture);
+                    ParticleNames.Add(id, type.Name);
                 }
-            }
-            ParticleFrameCount = new int[ParticleTypes.Count];
-            for (int i = 0; i < ParticleFrameCount.Length; i++)
-            {
-                ParticleFrameCount[i] = 1;
             }
         }
         public static void Unload()
@@ -62,20 +58,19 @@ namespace OvermorrowMod.Particles
             particles = null;
             ParticleTypes = null;
             ParticleTextures = null;
+            ParticleNames = null;
             CustomParticle.CustomParticles = null;
-            ParticleFrameCount = null;
         }
         public static void UpdateParticles()
         {
             foreach(Particle particle in particles)
             {
                 if (particle == null) continue;
-                CustomParticle particle1 = CustomParticle.GetCParticle(particle.type);
-                particle1.particle = particle;
-                particle1.Update();
                 particle.activeTime++;
 				if (particle.cParticle.ShouldUpdatePosition())
 				    particle.position += particle.velocity;
+                particle.cParticle.particle = particle;
+                particle.cParticle.Update();
             }
         }
         public static void DrawParticles(SpriteBatch spriteBatch)
@@ -83,9 +78,19 @@ namespace OvermorrowMod.Particles
             foreach(Particle particle in particles)
             {
                 if (particle == null) continue;
-                CustomParticle particle1 = CustomParticle.GetCParticle(particle.type);
-                particle1.particle = particle;
-                particle1.Draw(spriteBatch);
+                particle.cParticle.particle = particle;
+                try
+                {
+                    particle.cParticle.Draw(spriteBatch);
+                }
+                catch(Exception e)
+                {
+                    OvermorrowModFile.Mod.Logger.Error(e.Message);
+                    OvermorrowModFile.Mod.Logger.Error(e.StackTrace);
+                    Main.NewText($"Error while drawing particles, error caused by particle of type: {ParticleNames[particle.type]}.", Color.Red);
+                    Main.NewText("Read client.log for the full error message.", Color.Red);
+                    particle.Kill();
+                }
             }
         }
         public static Texture2D GetTexture(int type) => ParticleTextures[type];
@@ -125,10 +130,10 @@ namespace OvermorrowMod.Particles
             particle.customData = new float[4] {data1, data2, data3, data4};
             particle.id = NextIndex;
             
-            CustomParticle particle1 = CustomParticle.GetCParticle(particle.type);
-            particle1.particle = particle;
+            CustomParticle particle1 = (CustomParticle)Activator.CreateInstance(CustomParticle.GetCParticle(particle.type).GetType());
             particle.cParticle = particle1;
-            particle1.OnSpawn();
+            particle.cParticle.particle = particle;
+            particle.cParticle.OnSpawn();
 
             particles[NextIndex] = particle;
             if (NextIndex + 1 < particles.Length && particles[NextIndex + 1] == null)
