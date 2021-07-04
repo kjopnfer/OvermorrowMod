@@ -11,6 +11,20 @@ namespace OvermorrowMod
 
         private bool spawnedBlood = false;
 
+
+
+
+
+        public override void SetDefaults(Projectile projectile)
+        {
+            if(projectile.type == 590)
+            {
+                projectile.timeLeft = 100;
+            }
+        }
+
+
+
         public override void Kill(Projectile projectile, int timeLeft)
         {
             Player player = Main.player[projectile.owner];
