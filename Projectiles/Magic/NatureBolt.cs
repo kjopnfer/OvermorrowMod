@@ -82,7 +82,7 @@ namespace OvermorrowMod.Projectiles.Magic
             {
                 for (int i = 0; i < projectiles; i++)
                 {
-                    Projectile.NewProjectile(projectile.Center + Utils.RotatedBy(new Vector2(40f, 0f), MathHelper.ToRadians(i * 45)), Vector2.Zero, ModContent.ProjectileType<NatureDust>(), projectile.damage / 2, 2, Main.myPlayer);
+                    Projectile.NewProjectile(projectile.Center + Terraria.Utils.RotatedBy(new Vector2(40f, 0f), MathHelper.ToRadians(i * 45)), Vector2.Zero, ModContent.ProjectileType<NatureDust>(), projectile.damage / 2, 2, Main.myPlayer);
                     //Dust.NewDustPerfect(projectile.Center + Utils.RotatedBy(new Vector2(80f, 0f), MathHelper.ToRadians(i * 20)), 107, Vector2.Zero, 0, default, 1);
                 }
             }

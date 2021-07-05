@@ -603,7 +603,8 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         break;
                     }
             }
-            //npc.spriteDirection = npc.direction;
+            npc.spriteDirection = npc.direction;
+            npc.spriteDirection = 1;
 
             spritetimer++;
             if (spritetimer > 4)

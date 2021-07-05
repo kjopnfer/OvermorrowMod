@@ -22,6 +22,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private bool changedPhase3 = false;
         private int circleCooldown = 0;
         private int dripladCooldown = 0;
+        private bool attackindicator = false;
         //bool LocalPhaseTwo = false;
         //bool randomrotatorshootistrue = false;
         //private float bosslifescale;
@@ -509,6 +510,24 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
                 npc.frame.Y = 0; // Reset back to default
             }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            if (attackindicator == true)
+            { 
+                Texture2D texture = Main.npcTexture[npc.type];
+                Vector2 origin = npc.frame.Size() / 2;
+                int amount = 5;
+                float scaleAmount = 1f;
+                for (int i = 0; i < amount; i++)
+                {
+                    float progress = (float)i / (float)amount;
+                    float scale = 1f + progress * scaleAmount;
+                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, Color.White * (1f - progress), npc.rotation, origin, scale * npc.scale, SpriteEffects.None, 0f);
+                }
+            }
+            return true;
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)

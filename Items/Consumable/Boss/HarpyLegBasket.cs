@@ -31,7 +31,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override bool CanUseItem(Player player)
         {
             // Make sure that the boss doesn't already exist and player is in correct zone
-            return !NPC.AnyNPCs(ModContent.NPCType<StormDrake>()) && player.ZoneSkyHeight;
+            return !NPC.AnyNPCs(ModContent.NPCType</*StormDrake*/StormDrake2>()) && player.ZoneSkyHeight;
         }
 
         public override bool UseItem(Player player)
@@ -42,7 +42,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
                 player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
                 player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
 
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<StormDrake>());
+                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType</*StormDrake*/StormDrake2>());
                 Main.PlaySound(SoundID.Roar, player.position, 0);
                 return true;
             }
