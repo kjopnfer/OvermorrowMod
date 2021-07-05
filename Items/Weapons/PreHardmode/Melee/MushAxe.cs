@@ -92,8 +92,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             {
                 Timerset++;
                 item.shoot = mod.ProjectileType("MushAxeBack");
-                item.useTime = 33;
-                item.useAnimation = 33;
+                item.useTime = 50;
+                item.useAnimation = 50;
                 item.shootSpeed = 3f + SwingRange;
                 item.UseSound = SoundID.Item19;
                 item.useStyle = ItemUseStyleID.SwingThrow;
