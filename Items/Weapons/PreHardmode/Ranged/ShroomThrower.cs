@@ -13,7 +13,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Mushroom Flamethrower");
-            Tooltip.SetDefault("Uses glowing mushrooms as ammo \nHas a chance to inflict fungal infection");
+            Tooltip.SetDefault("Uses gel as ammo \nHas a chance to inflict fungal infection");
         }
         public override void SetDefaults()
         {
@@ -31,6 +31,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.knockBack = 0.1f;
             item.shoot = ModContent.ProjectileType<ShroomFlame>();
             item.useAmmo = 183;
+            item.useAmmo = ItemID.Gel;
             item.shootSpeed = 15f;
         }
         public override void AddRecipes()
