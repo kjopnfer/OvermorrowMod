@@ -24,7 +24,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.ranged = true;
             item.noMelee = true;
             item.useTime = 10;
-            item.useAnimation = 30;
+            item.useAnimation = 10;
             item.UseSound = SoundID.Item34;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.autoReuse = true;
