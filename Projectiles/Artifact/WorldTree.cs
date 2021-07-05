@@ -14,6 +14,7 @@ namespace OvermorrowMod.Projectiles.Artifact
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("World Tree");
+            Main.projFrames[projectile.type] = 12;
         }
 
         public override void SetDefaults()
@@ -26,7 +27,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             projectile.timeLeft = 18000; // 5 minutes
 
             drawOffsetX = -55;
-            drawOriginOffsetY = -168;
+            drawOriginOffsetY = -188;
         }
 
         public override void AI()
@@ -78,25 +79,38 @@ namespace OvermorrowMod.Projectiles.Artifact
                     }
                 }
             }
+
+            if (++projectile.frameCounter >= 4)
+            {
+                projectile.frameCounter = 0;
+                if (++projectile.frame >= Main.projFrames[projectile.type])
+                {
+                    projectile.frame = 0;
+                }
+            }
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D texture = mod.GetTexture("Projectiles/Artifact/WorldTree_Glowmask");
+            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+            int y2 = num154 * projectile.frame;
+
+            Texture2D texture = mod.GetTexture("Projectiles/Artifact/WorldTree_Glow");
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
             spriteBatch.Draw
             (
                 texture,
                 new Vector2
                 (
-                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f + 5f,
-                    projectile.position.Y - Main.screenPosition.Y + projectile.height - texture.Height * 0.5f - 32f
+                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f + 6,
+                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f - 32
                 ),
-                new Rectangle(0, 0, texture.Width, texture.Height),
+                drawRectangle,
                 Color.White,
                 projectile.rotation,
-                texture.Size() * 0.5f,
+                new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2),
                 projectile.scale,
-                SpriteEffects.None,
+                projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
                 0f
             );
         }
