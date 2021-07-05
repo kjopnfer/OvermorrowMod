@@ -83,22 +83,22 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
 
                 case 0: // Do nothing
-                    if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3)
+                    if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3 && npc.ai[3] > 800) //% /*1800*/ /*900*/ 800 == 0)
                     {
                         npc.ai[2] = 2;
                         npc.ai[3] = 0;
                     }
-                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 0/*Randomshotistrue == false*/)
+                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 0/*Randomshotistrue == false*/ && npc.ai[3] > 400/*% /*600*/ /*480*/ /*400 == 0*/ && !OvermorrowWorld.dripPhase3)
                     {
                         npc.ai[2] = 1;
                         npc.ai[3] = 0;
                     }
-                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 1/*&& Randomshotistrue == true*/)
+                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 1/*&& Randomshotistrue == true*/ && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3)
                     {
                         npc.ai[2] = 3;
                         npc.ai[3] = 0;
                     }
-                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 2/*&& Randomshotistrue == true*/)
+                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 2/*&& Randomshotistrue == true*/ && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3)
                     {
                         npc.ai[2] = 4;
                         npc.ai[3] = 0;
@@ -111,7 +111,8 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     }*/
                     break;
                 case 1: // Shoot outwards
-                    if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 10 == 0)
+
+                    if (/*30 <*/ 0 < npc.ai[3] && npc.ai[3] < 480/*90*/ && npc.ai[3] % 10 == 0)
                     {
                         //Vector2 ShootNormalizedVelocity = parentNPC.DirectionTo(npc.Center);
 
@@ -121,36 +122,40 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         }
                     }
 
-                    if (npc.ai[3] > 120)
+                    if (npc.ai[3] > /*120*/ 480)
                     {
                         npc.ai[2] = 0;
-                        npc.ai[3] = 0;
+                        npc.ai[3] = 1;
                     }
                     break;
                 case 2: // Shoot towards center
-                    if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 5 == 0)
-                    {
-                        //int shootSpeed = 7;
-                        //Vector2 npcPosition = npc.Center;
-                        //Vector2 targetPosition = parentNPC.Center;
-                        //Vector2 direction = targetPosition - npcPosition;
-                        //direction.Normalize();
 
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                    //if ((0 < npc.ai[3] && npc.ai[3] < 60) || (120 < npc.ai[3] && npc.ai[3] < 180) || (240 < npc.ai[3] && npc.ai[3] < 300) || (360 < npc.ai[3] && npc.ai[3] < 420))
+                    //{
+                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 5 == 0 && ((0 < npc.ai[3] && npc.ai[3] < 60) || (120 < npc.ai[3] && npc.ai[3] < 180) || (240 < npc.ai[3] && npc.ai[3] < 300) || (360 < npc.ai[3] && npc.ai[3] < 420)))
                         {
-                            Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/ parentNPC.DirectionFrom(npc.Center) * 7, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
-                        }
-                    }
+                            //int shootSpeed = 7;
+                            //Vector2 npcPosition = npc.Center;
+                            //Vector2 targetPosition = parentNPC.Center;
+                            //Vector2 direction = targetPosition - npcPosition;
+                            //direction.Normalize();
 
-                    if (npc.ai[3] > 90)
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/ parentNPC.DirectionFrom(npc.Center) * 7, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
+                            }
+                        }
+                    //}
+
+                    if (npc.ai[3] > 480)
                     {
                         npc.ai[2] = 0;
-                        npc.ai[3] = 0;
+                        npc.ai[3] = 1;
                     }
                     break;
                 case 3: //shoot scatter shots at player
                     {
-                        if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 10 == 0)
+                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 10 == 0)
                         { 
                             ShootTarget = player.Center + Main.rand.NextVector2Circular(50, 50);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -159,16 +164,16 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                         }
 
-                        if (npc.ai[3] > 120)
+                        if (npc.ai[3] > 480)
                         {
                             npc.ai[2] = 0;
-                            npc.ai[3] = 0;
+                            npc.ai[3] = 1;
                         }
                     }
                     break;
                 case 4: // volley
                     {
-                        if (30 < npc.ai[3] && npc.ai[3] < 90 && npc.ai[3] % 10 == 0)
+                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 10 == 0)
                         {
                             ShootTarget = new Vector2((((npc.Center.X - player.Center.X) * 0.75f) * -1) + npc.Center.X, npc.Center.Y - 150);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -177,10 +182,10 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                         }
 
-                        if (npc.ai[3] > 120)
+                        if (npc.ai[3] > /*120*/ 480)
                         {
                             npc.ai[2] = 0;
-                            npc.ai[3] = 0;
+                            npc.ai[3] = 1;
                         }
                     }
                     break;
