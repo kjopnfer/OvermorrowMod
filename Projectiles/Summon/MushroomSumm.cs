@@ -18,7 +18,6 @@ namespace OvermorrowMod.Projectiles.Summon
         int Random = Main.rand.Next(1, 3);
         public override bool CanDamage() => false;
         private readonly int timer2 = 0;
-        bool foundTarget;
         private int eyetimer = 0;
         private int timer = 0;
         private int PosCheck = 0;
@@ -62,7 +61,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
             float distanceFromTarget = 300f;
             Vector2 targetCenter = projectile.position;
-            //bool foundTarget = false;
+            bool foundTarget = false;
 
             if (!foundTarget)
             {
@@ -81,11 +80,6 @@ namespace OvermorrowMod.Projectiles.Summon
                             distanceFromTarget = between;
                             targetCenter = npc.Center;
                             foundTarget = true;
-                        }
-                        else
-                        {
-                            foundTarget = false;
-                            timer = 0;
                         }
                     }
                 }
