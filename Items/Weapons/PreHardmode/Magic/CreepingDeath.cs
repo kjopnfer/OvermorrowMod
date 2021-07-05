@@ -11,6 +11,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         {
             DisplayName.SetDefault("Harvester of Sorrow");
             Tooltip.SetDefault("Shoots a blood ring around you.\nEnemies hit allow you to fires iron bolts\n'Language of the mad'");
+            Item.staff[item.type] = true;
         }
 
         public override void SetDefaults()
