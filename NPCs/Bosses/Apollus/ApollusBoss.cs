@@ -12,16 +12,15 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 {
     public class ApollusBoss : ModNPC
     {
-        public override string Texture => "OvermorrowMod/NPCs/Bosses/Apollus/Apollus";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Apollus");
-            Main.npcFrameCount[npc.type] = 5;
+            Main.npcFrameCount[npc.type] = 10;
         }
         public override void SetDefaults()
         {
-            npc.width = 123;
-            npc.height = 123;
+            npc.width = 122;
+            npc.height = 126;
             npc.defense = 12;
             npc.lifeMax = 2800;
             npc.knockBackResist = 0f;
