@@ -31,15 +31,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.value = Item.sellPrice(gold: 1);
         }
 
-        public override void AddRecipes()
-        {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(183, 35);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
-        }
-
 		public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit) 
 		{
             if (Main.rand.Next(5) == 3)
