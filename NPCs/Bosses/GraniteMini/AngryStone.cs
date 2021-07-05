@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Armor;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
@@ -679,7 +680,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             {
                 npc.DropBossBags();
             }
-            int choice = Main.rand.Next(3);
+            int choice = Main.rand.Next(4);
             if (choice == 0) // Armor
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteHelmet>());
@@ -693,6 +694,9 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             else if (choice == 2) // Mage
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteBook>());
+            }else if (choice == 3) // Summoner
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteStaff>());
             }
 
             /*if (Main.rand.Next(10) == 0) // Trophy Dropchance
