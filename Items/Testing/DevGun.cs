@@ -25,8 +25,9 @@ namespace OvermorrowMod.Items.Testing
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.autoReuse = true;
             item.knockBack = 0;
-            item.shoot = mod.ProjectileType("GraniteLaser");
-            item.shootSpeed = 11f;
+            item.shoot = mod.ProjectileType("JunglePiercer");
+            item.shootSpeed = 6f;
+            item.channel = true;
         }
     }
 }
