@@ -83,7 +83,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
 
                 case 0: // Do nothing
-                    if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3 && npc.ai[3] > 800) //% /*1800*/ /*900*/ 800 == 0)
+                    if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3 && npc.ai[3] > 1600) //% /*1800*/ /*900*/ 800 == 0)
                     {
                         ((DripplerBoss)Main.npc[(int)npc.ai[1]].modNPC).turnonattackindicator = true;
                         npc.ai[2] = 2;
@@ -127,7 +127,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     if (npc.ai[3] > /*120*/ 480)
                     {
                         npc.ai[2] = 0;
-                        npc.ai[3] = 1;
+                        npc.ai[3] = 0;
                     }
                     break;
                 case 2: // Shoot towards center
@@ -152,7 +152,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     if (npc.ai[3] > 480)
                     {
                         npc.ai[2] = 0;
-                        npc.ai[3] = 1;
+                        npc.ai[3] = 0;
                     }
                     break;
                 case 3: //shoot scatter shots at player
@@ -169,13 +169,13 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         if (npc.ai[3] > 480)
                         {
                             npc.ai[2] = 0;
-                            npc.ai[3] = 1;
+                            npc.ai[3] = 0;
                         }
                     }
                     break;
                 case 4: // volley
                     {
-                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 10 == 0)
+                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % /*10*/ 30 == 0)
                         {
                             ShootTarget = new Vector2((((npc.Center.X - player.Center.X) * 0.75f) * -1) + npc.Center.X, npc.Center.Y - 150);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -187,7 +187,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         if (npc.ai[3] > /*120*/ 480)
                         {
                             npc.ai[2] = 0;
-                            npc.ai[3] = 1;
+                            npc.ai[3] = 0;
                         }
                     }
                     break;
@@ -276,7 +276,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             if (Main.npc[(int)npc.ai[1]].active && Main.npc[(int)npc.ai[1]].boss)
             {
                 NPC parentNPC = Main.npc[(int)npc.ai[1]];
-                parentNPC.life -= 400;//200;
+                if (Main.expertMode)
+                {
+                    parentNPC.life -= 400;//200;
+                }
+                else
+                {
+                    parentNPC.life -= 80;
+                }
             }
         }
     }

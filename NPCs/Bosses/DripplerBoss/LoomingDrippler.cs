@@ -366,7 +366,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 int dust = Dust.NewDust(position, 2, 2, 12, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                 Main.dust[dust].noGravity = true;
                             }
-                            npc.velocity = /*10*/ 7.5f * npc.DirectionTo(new Vector2(Main.rand.NextFloat(targetPosition.X - 25, targetPosition.X + 25), Main.rand.NextFloat(targetPosition.Y - 25, targetPosition.Y + 25)));
+                            npc.velocity = /*10*/ /*7.5f*/ 10f * npc.DirectionTo(new Vector2(Main.rand.NextFloat(targetPosition.X - 25, targetPosition.X + 25), Main.rand.NextFloat(targetPosition.Y - 25, targetPosition.Y + 25)));
                         }
                         else if (attackcounter > 60 && attackcounter < 120)
                         {
