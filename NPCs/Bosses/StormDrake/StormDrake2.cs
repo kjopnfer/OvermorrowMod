@@ -58,7 +58,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.width = 296;
             npc.height = 232;
             npc.aiStyle = -1;
-            npc.damage = 37;
+            npc.damage = 37;//55;//37;
             npc.defense = 14;
             npc.lifeMax = 7600;
             npc.HitSound = SoundID.NPCHit1;
@@ -90,6 +90,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
             npc.defense = 19;
+            //npc.damage = (int)(npc.damage * 0.7f * bossLifeScale);
+            //npc.damage = (int)(npc.damage * 0.6f);
+            npc.damage = (int)(npc.damage * 0.25f);
         }
         public override void AI()
         {
@@ -204,7 +207,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             int projectiles = 12;
                             for (int j = 0; j < projectiles; j++)
                             {
-                                Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy(j * MathHelper.TwoPi / projectiles), new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ModContent.ProjectileType<LaserWarning2>(), 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy(j * MathHelper.TwoPi / projectiles), new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ModContent.ProjectileType<LaserWarning2>(), npc.damage, 10f, Main.myPlayer);
                             }
                         }
                         else if (npc.ai[1] == 600)
@@ -212,7 +215,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             int projectiles = 24;//12;
                             for (int j = 0; j < projectiles; j++)
                             {
-                                Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy((j * MathHelper.TwoPi / projectiles) + MathHelper.ToRadians(25)), new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + 45), ModContent.ProjectileType<LaserWarning2>(), 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy((j * MathHelper.TwoPi / projectiles) + MathHelper.ToRadians(25)), new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + 45), ModContent.ProjectileType<LaserWarning2>(), npc.damage, 10f, Main.myPlayer);
                             }
                         }
                         else if (npc.ai[1] == 700)
@@ -348,7 +351,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                         if (npc.ai[1]++ == /*1*/ 180 || npc.ai[1] == /*400*/ 580)
                         {
-                            int myprojectile = Projectile.NewProjectile(/*npc.Center - Vector2.UnitX * 160f * npc.direction + Vector2.UnitY * 40f*/ /*npc.position - new Vector2((-165 * 2) * npc.spriteDirection, ((-74 / 2) - 20) * npc.spriteDirection)*/ npc.Center + new Vector2(/*165 140 118*/ 170 * npc.spriteDirection, -45 /*6 10 20*/), npc.DirectionTo(player.Center) * 6f/*7.5f*/, ModContent.ProjectileType<ElectricBallRadialLightning>(), npc.damage, 2, Main.myPlayer);
+                            Projectile.NewProjectile(/*npc.Center - Vector2.UnitX * 160f * npc.direction + Vector2.UnitY * 40f*/ /*npc.position - new Vector2((-165 * 2) * npc.spriteDirection, ((-74 / 2) - 20) * npc.spriteDirection)*/ npc.Center + new Vector2(/*165 140 118*/ 170 * npc.spriteDirection, -45 /*6 10 20*/), npc.DirectionTo(player.Center) * 6f/*7.5f*/, ModContent.ProjectileType<ElectricBallRadialLightning>(), npc.damage, 2, Main.myPlayer);
                         }
                         if (npc.ai[1] > 1 && npc.ai[1] < 600 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
                         {

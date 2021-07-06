@@ -42,7 +42,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
-            npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
+            //npc.lifeMax = (int)(npc.lifeMax * 2/*bossLifeScale*/);
+            //npc.lifeMax = (int)(npc.lifeMax * 0.6f * bossLifeScale);
+            npc.lifeMax = (int)(npc.lifeMax * 0.5f * bossLifeScale);
             npc.defense = 0;
             npc.knockBackResist = 0f;
         }

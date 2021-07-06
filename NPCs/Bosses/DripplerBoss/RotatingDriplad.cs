@@ -40,7 +40,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
-            npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
+            //npc.lifeMax = (int)(npc.lifeMax * 2/*bossLifeScale*/);
+            //npc.lifeMax = (int)(npc.lifeMax * 0.6f * bossLifeScale);
+            npc.lifeMax = (int)(npc.lifeMax * 0.5f * bossLifeScale);
         }
 
         public override void AI()
@@ -78,7 +80,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             Player player = Main.player[npc.target];
             npc.TargetClosest(true);
 
-            NPC_OrbitPosition(npc, parentNPC.Center, radius, radius == /*1050*/525 ? 0.65f : 1.25f);
+            NPC_OrbitPosition(npc, parentNPC.Center, radius, radius == /*1050*/525 ? /*0.65*/ /*0.33f*/ /*0.65f*/ 0.325f : /*1.25f*/ /*0.75f*/ /*0.5f*/ /*0.75f*/ 1.25f);
             switch (npc.ai[2])
             {
 
@@ -205,7 +207,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
             if (OvermorrowWorld.dripPhase3)
             {
-                npc.ai[0] += 0.45f;
+                npc.ai[0] += 0.225f;//0.25f;//0.45f;
             }
             else
             {
