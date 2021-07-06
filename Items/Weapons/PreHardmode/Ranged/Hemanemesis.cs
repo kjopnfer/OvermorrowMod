@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hemanemesis");
+            DisplayName.SetDefault("Hematemesis");
             Tooltip.SetDefault("When using musket balls or silver bullets, enemies explode on death");
         }
         public override void SetDefaults()
