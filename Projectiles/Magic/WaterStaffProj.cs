@@ -11,20 +11,19 @@ namespace OvermorrowMod.Projectiles.Magic
 {
     class WaterStaffProj : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_1";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lacusite Bolt");
+            Main.projFrames[projectile.type] = 7;
         }
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
+            projectile.width = 28;
+            projectile.height = 20;
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.penetrate = -1;
-            projectile.timeLeft = 600;
-            projectile.alpha = 255;
+            projectile.timeLeft = 200;
             projectile.tileCollide = true;
             projectile.magic = true;
         }
@@ -42,9 +41,12 @@ namespace OvermorrowMod.Projectiles.Magic
             knockback = 0;
         }
         int direction = 1;
+
         List<Projectile> owned = new List<Projectile>();
         public override void AI()
         {
+            projectile.rotation = projectile.velocity.ToRotation();
+
             if (projectile.ai[1] != 1)
             {
                 Projectile owner = Main.projectile[(int)projectile.ai[0]];
@@ -58,11 +60,13 @@ namespace OvermorrowMod.Projectiles.Magic
                 projectile.position.X = owner.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
                 projectile.position.Y = owner.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
             }
+
             if (projectile.ai[1] == 3)
             {
                 direction = -1;
             }
-            if (projectile.ai[0] == 0)
+
+            /*if (projectile.ai[0] == 0)
             {
                 projectile.ai[0]++;
                 for (int i = 0; i < 3; i++)
@@ -80,34 +84,55 @@ namespace OvermorrowMod.Projectiles.Magic
                 }
             }
             foreach (Projectile proj in owned)
-                proj.ai[0] = projectile.whoAmI;
+                proj.ai[0] = projectile.whoAmI;*/
+
+            if (++projectile.frameCounter >= 4)
+            {
+                projectile.frameCounter = 0;
+                if (++projectile.frame >= Main.projFrames[projectile.type])
+                {
+                    projectile.frame = 0;
+                }
+            }
         }
-        public float TrailSize(float progress)
-        {
-            return 32f * (1f - progress);
-        }
+
         public override void Kill(int timeLeft)
         {
-            foreach (Projectile proj in owned)
-                proj.Kill();
+            Vector2 origin = projectile.Center;
+            float radius = 15;
+            int numLocations = 30;
+            for (int i = 0; i < 30; i++)
+            {
+                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                Vector2 dustvelocity = new Vector2(0f, -2.5f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                int dust = Dust.NewDust(position, 2, 2, 33, dustvelocity.X, dustvelocity.Y, 0, default, 1);
+                Main.dust[dust].noGravity = false;
+            }
         }
 
-        public Color TrailColor(float progress)
+        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            //return Main.hslToRgb(progress, 0.75f, 0.5f) * (1f - progress);
-            //return Main.DiscoColor;
-            return Color.Lerp(Color.Cyan, Color.Blue, progress) * (1f - progress);
+            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+            int y2 = num154 * projectile.frame;
+
+            Texture2D texture = mod.GetTexture("Projectiles/Magic/WaterStaffProj_Glow");
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
+            spriteBatch.Draw
+            (
+                texture,
+                new Vector2
+                (
+                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
+                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f
+                ),
+                drawRectangle,
+                Color.White,
+                projectile.rotation,
+                new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2),
+                projectile.scale,
+                projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                0f
+            );
         }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-
-            /*Texture2D texture = ModContent.GetTexture("OvermorrowMod/Effects/Trail2");
-            int length = 16;
-            TrailHelper helper = new TrailHelper(projectile, TrailColor, TrailSize, length, "Texture", texture);
-            helper.Draw();*/
-            return base.PreDraw(spriteBatch, lightColor);
-        }
-
     }
 }

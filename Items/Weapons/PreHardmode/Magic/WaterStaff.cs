@@ -25,20 +25,22 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 16;
             item.useTurn = false;
-            item.useAnimation = 32;
-            item.useTime = 32;
+            item.useAnimation = 16;
+            item.useTime = 16;
             item.width = 50;
             item.height = 56;
             item.shoot = ModContent.ProjectileType<WaterStaffProj>();
-            item.shootSpeed = 7f;
+            item.shootSpeed = 9f;
             item.knockBack = 3f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
         }
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            Projectile.NewProjectile(position, new Vector2(speedX, speedY), type, damage, knockBack, Main.myPlayer, 0, 1);
-            return false;
+            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(30));
+            speedX = perturbedSpeed.X;
+            speedY = perturbedSpeed.Y;
+            return true;
         }
         public override void AddRecipes()
         {
