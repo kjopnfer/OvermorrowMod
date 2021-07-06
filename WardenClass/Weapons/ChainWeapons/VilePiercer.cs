@@ -14,7 +14,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Vile Guillotine");
             Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                "[c/800080:Right Click] to cause all attacks to launch 3 chains that deal increased damage\nConsumes 1 Soul Essence");
+                "[c/800080:Right Click] to cause attacks to launch a worm to devour your enemies\nConsumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()
@@ -59,28 +59,24 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             }
             else
             {
+                item.useStyle = ItemUseStyleID.HoldingOut;
+                item.useTurn = true;
                 if (player.GetModPlayer<WardenRunePlayer>().RuneID == 6 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
                 {
-                    item.useTime = 25;
-                    item.useAnimation = 25;
-                    item.damage = 9;
-                    item.shootSpeed = 7.5f;
-                    item.autoReuse = false;
-                    item.useStyle = ItemUseStyleID.HoldingOut;
-                    item.shoot = ModContent.ProjectileType<WormHead>();
+                    item.useAnimation = 28;
+                    item.useTime = 28;
                     item.UseSound = mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Items/Hork");
+                    item.damage = 13;
                 }
                 else
                 {
-                    item.useStyle = ItemUseStyleID.SwingThrow;
-                    item.useTurn = true;
                     item.useAnimation = 14;
                     item.useTime = 14;
-                    item.damage = 3;
-                    item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
-                    item.shoot = mod.ProjectileType("VilePiercerProjectile");
                     item.UseSound = SoundID.Item71;
+                    item.damage = 3;
                 }
+                item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                item.shoot = mod.ProjectileType("VilePiercerProjectile");
             }
 
             return base.CanUseItem(player);
@@ -99,6 +95,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                     Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockBack, player.whoAmI);
                 }
                 return false;*/
+                damage = 12;
                 type = ModContent.ProjectileType<WormHead>();
             }
 

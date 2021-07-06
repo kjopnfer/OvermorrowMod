@@ -89,7 +89,7 @@ namespace WardenClass
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
 
-            Texture2D projTexture = ModContent.GetTexture("OvermorrowMod/Effects/Trail3");
+            /*Texture2D projTexture = ModContent.GetTexture("OvermorrowMod/Effects/Trail3");
             int length = 32;
             TrailHelper helper = new TrailHelper(projectile.oldPos, new TrailConfig
             {
@@ -105,7 +105,15 @@ namespace WardenClass
                 texture = projTexture,
                 TAlpha = true
             });
-            helper.Draw();
+            helper.Draw();*/
+            PrimitivePacket packet = new PrimitivePacket();
+            packet.type = PrimitiveType.TriangleList;
+            packet.pass = "Basic";
+            packet.Add(projectile.Center - Vector2.UnitX * 100f, Color.Red, Vector2.Zero);
+            packet.Add(projectile.Center + Vector2.UnitX * 100f, Color.Red, Vector2.Zero);
+            packet.Add(projectile.Center - Vector2.UnitY * 100f, Color.Red, Vector2.Zero);
+            packet.Send();
+
             return base.PreDraw(spriteBatch, lightColor);
         }
     }

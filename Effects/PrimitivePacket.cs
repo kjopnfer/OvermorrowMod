@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using System;
-using OvermorrowMod.Effects;
 
 namespace OvermorrowMod.Effects
 {
@@ -35,25 +34,19 @@ namespace OvermorrowMod.Effects
                 this.config = config;
             }
         }
-
-        public Vector3 ToVector3(Vector2 input)
-        {
-            return new Vector3(input.X, input.Y, 0);
-        }
-
         public void Add(Vector2 pos, Color color, Vector2 TexCoord, Vector2 offset = default)
         {
             pos += -Main.screenPosition + offset;
-            draws.Add(new VertexPositionColorTexture(ToVector3(pos), color, TexCoord));
+            draws.Add(new VertexPositionColorTexture(pos.ToVector3(), color, TexCoord));
         }
         public void Add(Vector3 pos, Color color, Vector2 TexCoord, Vector2 offset = default)
         {
-            pos -= ToVector3(Main.screenPosition) + ToVector3(offset);
+            pos -= Main.screenPosition.ToVector3() + offset.ToVector3();
             draws.Add(new VertexPositionColorTexture(pos, color, TexCoord));
         }
         public void Add(VertexPositionColorTexture pos)
         {
-            pos.Position -= ToVector3(Main.screenPosition);
+            pos.Position -= Main.screenPosition.ToVector3();
             draws.Add(pos);
         }
         public void AddAsStrip(Vector2 pos, Color color, float prog, float rot, float size)
@@ -219,8 +212,6 @@ namespace OvermorrowMod.Effects
             else
             {
                 Main.graphics.GraphicsDevice.Textures[0] = texture;
-                effect.Parameters["Pixelate"].SetValue(config.Pixelate);
-                effect.Parameters["PixelMult"].SetValue(config.PixelateMult);
                 effect.Parameters["TAlpha"].SetValue(config.TAlpha);
                 effect.Parameters["TClone"].SetValue(config.TClone);
                 effect.Parameters["wvp"].SetValue(WVP);

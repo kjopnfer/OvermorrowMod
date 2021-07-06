@@ -8,9 +8,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm
 {
     public class WormHead : ModProjectile
     {
-
-
-        private bool didhit = false;
+        private bool didHit = false;
         private int timer = 0;
         private int SaveVeloX = 0;
         private int SaveVeloY = 0;
@@ -27,16 +25,16 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.ranged = true;
-            projectile.penetrate = 5;
+            projectile.penetrate = -1;
             projectile.timeLeft = 400;
             projectile.ignoreWater = true;
-            projectile.tileCollide = false;
+            projectile.tileCollide = true;
             projectile.extraUpdates = 1;
 
         }
         public override void AI()
         {
-            if(!didhit)
+            if(!didHit)
             {
             Player player = Main.player[projectile.owner];
             projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
@@ -93,7 +91,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm
             if(timer == 3)
             {
             Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("WormBody"), projectile.damage - 10, 1f, projectile.owner, 0f);
+            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("WormBody"), projectile.damage / 2, 1f, projectile.owner, 0f);
             timer = 0;
             }
         }
@@ -110,7 +108,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            didhit = true;
+            didHit = true;
+            projectile.tileCollide = false;
         }
     }
 }
