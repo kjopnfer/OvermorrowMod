@@ -26,7 +26,7 @@ namespace OvermorrowMod
 
         // Boss Attacks
         public static bool DripplerCircle;
-        public static bool DripladShoot;
+        public static bool DripladShoot = false;
         public static bool dripPhase2;
         public static bool dripPhase3;
         public static int loomingdripplerdeadcount;

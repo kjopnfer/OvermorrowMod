@@ -91,7 +91,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             if (turnonattackindicator)
             {
                 attackindicator = true;
-                if (npc.ai[3]++ > 180 /*240*/)
+                if (npc.ai[3]++ > /*180*/ 480 /*240*/)
                 {
                     attackindicator = false;
                     turnonattackindicator = false;
@@ -274,23 +274,34 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             circleCooldown = 2400;
                         }
 
-                        if (OvermorrowWorld.DripladShoot)
-                        {
-                            dripladCooldown = 1600;
-                        }
-
-                        if (countRotaters > 0 && changedPhase2 && Main.rand.Next(100) == 0 && dripladCooldown == 0)
+                        if (countRotaters > 0 && changedPhase2 /*&& Main.rand.Next(100) == 0*/ && dripladCooldown <= 0)
                         {
                             npc.ai[0] = 4;
                             npc.ai[1] = 0;
                         }
-                        else
+
+                        if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3 && npc.ai[0] == 4)
+                        {
+                            dripladCooldown = 1600;
+                            OvermorrowWorld.DripladShoot = false;
+                        }
+                        else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && npc.ai[0] == 4)
+                        {
+                            dripladCooldown = 400;
+                            OvermorrowWorld.DripladShoot = false;
+                        }
+                        else if (dripladCooldown > 0)
+                        {
+                            dripladCooldown--;
+                            OvermorrowWorld.DripladShoot = false;
+                        }
+                        /*else
                         {
                             if (dripladCooldown > 0)
                             {
                                 dripladCooldown--;
                             }
-                        }
+                        }*/
 
                         if (changedPhase3)
                         {
@@ -365,6 +376,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         npc.ai[1] = 0;
                         changedPhase2 = true;
                         OvermorrowWorld.dripPhase2 = true;
+                        dripladCooldown = 400;
                         /*if (randomrotatorshootistrue)
                         {
                             LocalPhaseTwo = true;
@@ -407,6 +419,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         {
                             changedPhase3 = true;
                             OvermorrowWorld.dripPhase3 = true;
+                            dripladCooldown = 1600;
                             npc.ai[0] = 0;
                             npc.ai[1] = 0;
                         }
@@ -457,10 +470,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     break;
                 case 4: // Driplad actions
                     npc.velocity = Vector2.Zero;
+                    OvermorrowWorld.DripladShoot = true;
 
                     if (npc.ai[1] == 1)
                     {
-                        OvermorrowWorld.DripladShoot = true;
+                        //OvermorrowWorld.DripladShoot = true;
                         while (choice == lastchoice)
                         {
                             choice = Main.rand.Next(3);
@@ -469,9 +483,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         lastchoice = choice;
                     }
 
-                    if (npc.ai[1] == /*300*/ 450)
+                    if (npc.ai[1] == /*300*/ 480)
                     {
-                        OvermorrowWorld.DripladShoot = false;
+                        //OvermorrowWorld.DripladShoot = false;
                         OvermorrowWorld.RotatingDripladAttackCounter = 0;
                         npc.ai[0] = 0;
                         npc.ai[1] = 0;
