@@ -27,8 +27,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useTurn = false;
             item.useAnimation = 28;
             item.useTime = 28;
-            item.width = 28;
-            item.height = 30;
+            item.width = 30;
+            item.height = 36;
             item.shoot = ModContent.ProjectileType<MarbleArrow>();
             item.shootSpeed = 20f;
             item.knockBack = 3f;
