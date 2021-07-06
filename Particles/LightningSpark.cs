@@ -61,7 +61,8 @@ namespace OvermorrowMod.Particles
         public void Draw(SpriteBatch spriteBatch)
         {
             // draw lightnings, draw alpha circle, draw extra small electric particles
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            //Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            Texture2D texture = ModContent.GetTexture("Textures/TowerMark");
             for (int i = 0; i < previousSegments.Count - 1; i++)
             {
                 var seg1 = previousSegments[i];
@@ -80,7 +81,7 @@ namespace OvermorrowMod.Particles
     }
     public class LightningSpark : CustomParticle
     {
-        public override string Texture => "TestMod/Textures/Empty";
+        public override string Texture => "Textures/Empty";
         public List<Lightning2> lightnings = new List<Lightning2>();
         public override void OnSpawn()
         {
