@@ -91,7 +91,6 @@ namespace OvermorrowMod
                 Souls.Activate();
 
                 Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
-                Main.itemTexture[ItemID.Boomstick] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Ranged/CoconutBuster");
                 if (Main.hardMode)
                 {
                     //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");
