@@ -85,11 +85,13 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 0: // Do nothing
                     if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3 && npc.ai[3] > 800) //% /*1800*/ /*900*/ 800 == 0)
                     {
+                        ((DripplerBoss)Main.npc[(int)npc.ai[1]].modNPC).turnonattackindicator = true;
                         npc.ai[2] = 2;
                         npc.ai[3] = 0;
                     }
                     else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 0/*Randomshotistrue == false*/ && npc.ai[3] > 400/*% /*600*/ /*480*/ /*400 == 0*/ && !OvermorrowWorld.dripPhase3)
                     {
+                        ((DripplerBoss)Main.npc[(int)npc.ai[1]].modNPC).turnonattackindicator = true;
                         npc.ai[2] = 1;
                         npc.ai[3] = 0;
                     }

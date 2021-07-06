@@ -256,6 +256,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             if (OvermorrowWorld.DripplerCircle)
                             {
                                 npc.ai[2] = 3;
+                                ((DripplerBoss)Main.npc[(int)npc.ai[1]].modNPC).turnonattackindicator = true;
                                 npc.ai[0] = 0;
                                 npc.ai[3] = Main.rand.Next(0, 360); // rotation counter
                                 origin = player.Center;

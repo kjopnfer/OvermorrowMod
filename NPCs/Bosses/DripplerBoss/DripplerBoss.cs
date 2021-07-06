@@ -23,6 +23,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private int circleCooldown = 0;
         private int dripladCooldown = 0;
         private bool attackindicator = false;
+        public bool turnonattackindicator = false;
         //bool LocalPhaseTwo = false;
         //bool randomrotatorshootistrue = false;
         //private float bosslifescale;
@@ -87,6 +88,17 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void AI()
         {
+            if (turnonattackindicator)
+            {
+                attackindicator = true;
+                if (npc.ai[3]++ > 180 /*240*/)
+                {
+                    attackindicator = false;
+                    turnonattackindicator = false;
+                    npc.ai[3] = 0;
+                }
+            }
+
             if (npc.life <= 0)
             {
                 npc.NPCLoot();
