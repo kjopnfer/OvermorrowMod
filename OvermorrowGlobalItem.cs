@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Piercing;
 using OvermorrowMod.Projectiles.Ranged;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,6 +17,12 @@ namespace OvermorrowMod
             {
                 item.damage = 5;
                 item.value = Item.sellPrice(gold: 2, silver: 75);
+            }
+
+            if(item.type == 2504 && Main.rand.Next(0, 100) == 10)
+            {
+                Player player = Main.player[Main.myPlayer];
+                Item.NewItem(new Rectangle((int)player.Center.X, (int)player.Center.Y, player.width, player.height), ModContent.ItemType<CoconutBuster>());
             }
 
             if (item.type == ItemID.Acorn)
