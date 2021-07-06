@@ -3,6 +3,7 @@ using OvermorrowMod.NPCs.Bosses.StormDrake;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.Items.Consumable.Boss
 {
@@ -38,12 +39,13 @@ namespace OvermorrowMod.Items.Consumable.Boss
         {
             if (player.ZoneSkyHeight)
             {
-                player.GetModPlayer<OvermorrowModPlayer>().TitleID = 2;
-                player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
-                player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                //player.GetModPlayer<OvermorrowModPlayer>().TitleID = 2;
+                //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
+                //player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
 
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType</*StormDrake*/StormDrake2>());
-                Main.PlaySound(SoundID.Roar, player.position, 0);
+                //NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType</*StormDrake*/StormDrake2>());
+                //Main.PlaySound(SoundID.Roar, player.position, 0);
+                Projectile.NewProjectile(player.Center + Vector2.UnitY * - 75, Vector2.UnitY, ModContent.ProjectileType<StormDrakeAnim>(), 0, 0, Main.myPlayer, 0, 900);
                 return true;
             }
             return false;
