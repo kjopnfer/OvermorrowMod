@@ -12,7 +12,7 @@ namespace OvermorrowMod.NPCs
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Blood Clot");
-            Main.npcFrameCount[npc.type] = 7;
+            Main.npcFrameCount[npc.type] = 9;
         }
 
         public override void SetDefaults()
