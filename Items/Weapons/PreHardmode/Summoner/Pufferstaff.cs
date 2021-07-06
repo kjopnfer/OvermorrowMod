@@ -38,7 +38,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             // Ensures no more than one spear can be thrown out, use this when using autoReuse
             return player.ownedProjectileCounts[item.shoot] < 1;
         }
-        
+        public override void AddRecipes()
+        {
+            ModRecipe recipe1 = new ModRecipe(mod);
+            recipe1.AddIngredient(275, 8);
+            recipe1.AddTile(TileID.Anvils);
+            recipe1.SetResult(this);
+            recipe1.AddRecipe();
+        }
         public override void UseStyle(Player player)
         {
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
