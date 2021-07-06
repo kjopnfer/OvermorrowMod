@@ -58,13 +58,22 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             else
             {
                 item.autoReuse = true;
-                item.useStyle = ItemUseStyleID.SwingThrow;
+                item.useStyle = ItemUseStyleID.HoldingOut;
                 item.useTurn = true;
-                item.useAnimation = 14;
-                item.useTime = 14;
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == 1 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
+                {
+                    item.useAnimation = 35;
+                    item.useTime = 35;
+                    item.UseSound = SoundID.Item45;
+                }
+                else
+                {
+                    item.useAnimation = 14;
+                    item.useTime = 14;
+                    item.UseSound = SoundID.Item71;
+                }
                 item.damage = 9;
                 item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
-                item.UseSound = SoundID.Item71;
                 item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             }
 
@@ -75,13 +84,18 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == 1 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
-                float numberProjectiles = 3; // This defines how many projectiles to shot
-                float rotation = MathHelper.ToRadians(15);
-                position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
-                for (int i = 0; i < numberProjectiles; i++)
+                for (int i = 0; i < 200; i++)
                 {
-                    Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))); // This defines the projectile roatation and speed. .4f == projectile speed
-                    Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockBack, player.whoAmI);
+
+                    NPC nPC = Main.npc[i];
+                    if (Vector2.Distance(Main.MouseWorld, nPC.Center) < 15)
+                    {
+                        if (nPC.friendly == false && nPC.life > 0)
+                        {
+                            Projectile.NewProjectile(nPC.Center.X, nPC.Center.Y - 165, 0, 0, mod.ProjectileType("HellFireDown"), item.damage, 3, player.whoAmI);
+                            Main.PlaySound(SoundID.Item45, Main.MouseWorld);
+                        }
+                    }
                 }
                 return false;
             }
