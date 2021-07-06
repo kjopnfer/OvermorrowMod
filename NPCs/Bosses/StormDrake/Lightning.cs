@@ -25,42 +25,42 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
     }
     public abstract class Lightning : ModProjectile
     {
-        //public delegate float Size(float progress);
-        //public static (List<LightningSegment>, List<float>) CreateLightning(Vector2 from, Vector2 to, Size size, float lengthDiv = 8, float Sway = 80f)
-        //{
-        //    if (lengthDiv < 1) lengthDiv = 1;
-        //    List<LightningSegment> segments = new List<LightningSegment>();
-        //    Vector2 direction = from - to;
-        //    Vector2 dir = direction.SafeNormalize(-Vector2.UnitY).RotatedBy(Math.PI / 2);
+        public delegate float Size(float progress);
+        public static (List<LightningSegment>, List<float>) CreateLightning(Vector2 from, Vector2 to, Size size, float lengthDiv = 8, float Sway = 80f)
+        {
+            if (lengthDiv < 1) lengthDiv = 1;
+            List<LightningSegment> segments = new List<LightningSegment>();
+            Vector2 direction = from - to;
+            Vector2 dir = direction.SafeNormalize(-Vector2.UnitY).RotatedBy(Math.PI / 2);
 
-        //    List<float> lengths = new List<float>();
-        //    lengths.Add(0f);
-        //    for (int i = 0; i < direction.Length() / lengthDiv; i++)
-        //    {
-        //        lengths.Add(Main.rand.NextFloat());
-        //    }
-        //    lengths.Add(1f);
-        //    lengths.Sort();
+            List<float> lengths = new List<float>();
+            lengths.Add(0f);
+            for (int i = 0; i < direction.Length() / lengthDiv; i++)
+            {
+                lengths.Add(Main.rand.NextFloat());
+            }
+            lengths.Add(1f);
+            lengths.Sort();
 
-        //    float jaggedness = 1 / Sway;
-        //    float prevPlacement = 0f;
-        //    segments.Add(new LightningSegment(from, size(0f), 0f, 1));
-        //    for (int i = 1; i < lengths.Count; i++)
-        //    {
-        //        float len = lengths[i];
+            float jaggedness = 1 / Sway;
+            float prevPlacement = 0f;
+            segments.Add(new LightningSegment(from, size(0f), 0f, 1));
+            for (int i = 1; i < lengths.Count; i++)
+            {
+                float len = lengths[i];
 
-        //        float scale = (direction.Length() * jaggedness) * (len - lengths[i - 1]);
-        //        float envelope = MathHelper.Clamp((float)Math.Sin(len * Math.PI) * 10, 0, 1);
+                float scale = (direction.Length() * jaggedness) * (len - lengths[i - 1]);
+                float envelope = MathHelper.Clamp((float)Math.Sin(len * Math.PI) * 10, 0, 1);
 
-        //        float displace = Main.rand.NextFloat(-Sway, Sway);
-        //        displace -= (displace - prevPlacement) * (1 - scale);
-        //        displace *= envelope;
-        //        Vector2 position = from + len * direction + displace * dir;
-        //        segments.Add(new LightningSegment(position, size(len)));
-        //        prevPlacement = displace;
-        //    }
-        //    return (segments, lengths);
-        //}
+                float displace = Main.rand.NextFloat(-Sway, Sway);
+                displace -= (displace - prevPlacement) * (1 - scale);
+                displace *= envelope;
+                Vector2 position = from + len * direction + displace * dir;
+                segments.Add(new LightningSegment(position, size(len)));
+                prevPlacement = displace;
+            }
+            return (segments, lengths);
+        }
         public static List<LightningSegment> CreateLightning(Vector2 from, Vector2 to, float thickness, float Sway = 80f, float lengthDivider = 8f, bool sine = false)
         {
             var positions = new List<LightningSegment>();
@@ -99,7 +99,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
             return positions;
         }
-        /*public static List<LightningSegment> CreateLightning(Vector2 from, Vector2 to, float thickness, bool sine)
+        
+        public static List<LightningSegment> CreateLightning(Vector2 from, Vector2 to, float thickness, bool sine)
         {
             var positions = new List<LightningSegment>();
             Vector2 direction = to - from;
@@ -138,7 +139,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
 
             return positions;
-        }*/
+        }
         //public override string Texture => "Overmorrow/Textures/Empty";
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulHostile;
         public List<LightningSegment> Positions = new List<LightningSegment>();
