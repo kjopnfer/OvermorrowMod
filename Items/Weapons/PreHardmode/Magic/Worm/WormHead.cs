@@ -28,7 +28,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm
             projectile.penetrate = -1;
             projectile.timeLeft = 400;
             projectile.ignoreWater = true;
-            projectile.tileCollide = true;
+            projectile.tileCollide = false;
             projectile.extraUpdates = 1;
 
         }
