@@ -157,7 +157,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     break;
                 case 3: //shoot scatter shots at player
                     {
-                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 10 == 0)
+                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % /*10*/ 25 == 0)
                         { 
                             ShootTarget = player.Center + Main.rand.NextVector2Circular(50, 50);
                             if (Main.netMode != NetmodeID.MultiplayerClient)

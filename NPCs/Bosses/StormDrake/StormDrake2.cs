@@ -1,3 +1,9 @@
+//So either way I need to make storm drake dashes faster,
+//make storm drake suck in dust before lightning attacks,
+//not use wall of flesh scream (use what instead idk, sadge),
+//use smoothstep to accelerate dashes,
+//do I make lightning rain down on phase 2? no don't
+
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -93,8 +99,51 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             {
                 twothirdshealth = true;
             }
+            if (phase2switched && !dashing)
+            {
+                if (npc.direction == 1) // Facing right
+                {
+                    for (int num1202 = 0; num1202 < 6; num1202++)
+                    {
+                        Vector2 vector304 = npc.position - new Vector2(-165, 74).RotatedBy(MathHelper.ToRadians(npc.rotation));
+                        vector304 -= npc.velocity * ((float)num1202 * 0.25f);
+                        //Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
+                        Dust.NewDustDirect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 1, 1, 206, 0, 0, 0, default, 1.5f);
+                    }
+                }
+                else // Facing left
+                {
+                    for (int num1202 = 0; num1202 < 6; num1202++)
+                    {
+                        Vector2 vector304 = npc.position + new Vector2(-165, -74).RotatedBy(MathHelper.ToRadians(npc.rotation));
+                        vector304 -= npc.velocity * ((float)num1202 * 0.25f);
+                        //Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
+                        Dust.NewDustDirect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 1, 1, 206, 0, 0, 0, default, 1.5f);
+                    }
+                }
+            }
+
             switch (npc.ai[0])
             {
+                case -3:
+                    {
+                        if (!AliveCheck(player)) { break; }
+
+                        npc.dontTakeDamage = true;
+
+                        if (npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75 && npc.ai[1] > 330)
+                        {
+                            npc.Move(player.Center + new Vector2(250 * (npc.spriteDirection * -1), -250), 4, 2);
+                        }
+                        if (npc.ai[1]++ > 600)
+                        {
+                            npc.dontTakeDamage = false;
+                            npc.ai[1] = 0;
+                            npc.ai[0] = -1;
+                            npc.velocity = Vector2.Zero;
+                        }
+                    }
+                    break;
                 case -2:
                     {
                         if (!AliveCheck(player)) { break; }
@@ -139,7 +188,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         else if (npc.ai[1] == 280)
                         {
                             //canPulse = false;
-                            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
+                            //Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
+                            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
@@ -174,6 +224,27 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             npc.immortal = false;
                             npc.dontTakeDamage = false;
                         }
+                        if (canPulse)
+                        {
+                            if (npc.direction == 1) // Facing right
+                            {
+                                for (int num1202 = 0; num1202 < 6; num1202++)
+                                {
+                                    Vector2 vector304 = npc.position - new Vector2(-165, 74);
+                                    vector304 -= npc.velocity * ((float)num1202 * 0.25f);
+                                    Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
+                                }
+                            }
+                            else // Facing left
+                            {
+                                for (int num1202 = 0; num1202 < 6; num1202++)
+                                {
+                                    Vector2 vector304 = npc.position + new Vector2(-165, -74);
+                                    vector304 -= npc.velocity * ((float)num1202 * 0.25f);
+                                    Dust.NewDustPerfect(vector304 + new Vector2((npc.width / 2), (npc.height / 2)), 206, null, 0, default, 1.5f);
+                                }
+                            }
+                        }
                     }
                     break;
                 case -1:
@@ -197,6 +268,17 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 3://0: // lightning breath
                     {
                         if (!AliveCheck(player)) { break; }
+
+                        if (npc.ai[1] > 0 && npc.ai[1] <= 180 )//&& npc.ai[1] % 2 == 0)
+                        {
+                            Vector2 spawnpos = npc.Center + new Vector2((/*180*/ 180 + Main.rand.NextFloat(/*-10, 10*/ /*-25, 25*/ /*0, 50*/ /*50*/ /*75*/ 75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(/*-10, 10*/ /*-25, 25*/ /*-50, 50*/ /*-75, 75*/ -60, 60));
+                            Vector2 direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnpos;
+                            direction.Normalize();
+                            int mydust = Dust.NewDust(spawnpos, 0, 0, 229, 0f, 0f, 100);
+                            Main.dust[mydust].noLight = true;
+                            Main.dust[mydust].noGravity = true;
+                            Main.dust[mydust].velocity = direction * Main.rand.NextFloat(/*1.5f, 4f*/ /*4, 6*/    /*10, 12*/   12, 14);
+                        }
 
                         if (npc.ai[1]++ == 1)
                         {
@@ -253,7 +335,18 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     {
                         if (!AliveCheck(player)) { break; }
 
-                        if (npc.ai[1]++ == 1 || npc.ai[1] == 400)
+                        if (((npc.ai[1] > 0 && npc.ai[1] <= 180) || (npc.ai[1] > 440 && npc.ai[1] <= 580)) )//&& npc.ai[1] % 2 == 0)
+                        {
+                            Vector2 spawnpos = npc.Center + new Vector2((/*180*/ 180 + Main.rand.NextFloat(/*-10, 10*/ /*-25, 25*/ /*0, 50*/ /*50*/ /*75*/ 75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(/*-10, 10*/ /*-25, 25*/ /*-50, 50*/ /*-75, 75*/ -60, 60));
+                            Vector2 direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnpos;
+                            direction.Normalize();
+                            int mydust = Dust.NewDust(spawnpos, 0, 0, 229, 0f, 0f, 100);
+                            Main.dust[mydust].noLight = true;
+                            Main.dust[mydust].noGravity = true;
+                            Main.dust[mydust].velocity = direction * Main.rand.NextFloat(/*1.5f, 4f*/ /*4, 6*/    /*10, 12*/   12, 14);
+                        }
+
+                        if (npc.ai[1]++ == /*1*/ 180 || npc.ai[1] == /*400*/ 580)
                         {
                             int myprojectile = Projectile.NewProjectile(/*npc.Center - Vector2.UnitX * 160f * npc.direction + Vector2.UnitY * 40f*/ /*npc.position - new Vector2((-165 * 2) * npc.spriteDirection, ((-74 / 2) - 20) * npc.spriteDirection)*/ npc.Center + new Vector2(/*165 140 118*/ 170 * npc.spriteDirection, -45 /*6 10 20*/), npc.DirectionTo(player.Center) * 6f/*7.5f*/, ModContent.ProjectileType<ElectricBallRadialLightning>(), npc.damage, 2, Main.myPlayer);
                         }
@@ -261,7 +354,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 5, 2);
                         }
-                        if (npc.ai[1] > 720)
+                        if (npc.ai[1] > /*720*/ 900)
                         {
                             if (twothirdshealth == true && phase2switched == false)
                             {
@@ -283,9 +376,16 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     {
                         if (!AliveCheck(player)) { break; }
 
-                        if (npc.ai[1]++ % /*100*/ 50 == 0)
+                        if (twothirdshealth)
                         {
-                            int myprojectile = Projectile.NewProjectile(npc.Center + new Vector2(160 * npc.spriteDirection, -40), npc.DirectionTo(player.Center) * /*5f*/ 7.5f, ModContent.ProjectileType<LightningBreath>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
+                            npc.ai[0] = -1;//3;
+                            npc.ai[1] = 0;
+                            npc.velocity = Vector2.Zero;
+                        }
+
+                        if (npc.ai[1]++ % /*100*/ 50 == 0 && !twothirdshealth)
+                        {
+                            Projectile.NewProjectile(npc.Center + new Vector2(160 * npc.spriteDirection, -40), npc.DirectionTo(player.Center) * /*5f*/ 7.5f, ModContent.ProjectileType<LightningBreath>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
                         }
                         if (npc.ai[1] > 1 && npc.ai[1] < 300 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
                         {
@@ -347,7 +447,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                         if (npc.ai[1] == 120)
                         {
-                            npc.velocity = /*(twothirdshealth ? 15 :*/ 10/*)*/ * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
+                            npc.velocity = /*(twothirdshealth ? 15 :*/ /*10*//*)*/ 15f * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
                         }
                         else if (npc.ai[1] > 180 && npc.ai[1] < /*300*/ 330)
                         {
@@ -402,7 +502,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         else if (npc.ai[1] == 200)
                         {
-                            npc.velocity = (Vector2.UnitX * 12 /*10*/ /*8*/) * npc.spriteDirection;
+                            npc.velocity = (Vector2.UnitX * /*12*/ 15f /*10*/ /*8*/) * npc.spriteDirection;
                             spritedirectionstore = npc.spriteDirection;
                             dashing = true;
                             createAfterimage = true;
@@ -452,7 +552,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         if (npc.ai[1] > 1 && npc.ai[1] < 600 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
                         {
-                            npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 5, 2);
+                            npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), /*5*/ 10, 2);
                         }
                         if (npc.ai[1] >= 600)
                         {
@@ -471,13 +571,25 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                     }
                     break;
-                case 6:
+                case 6: // electric shots
                     {
                         if (!AliveCheck(player)) { break; }
+
+                        if (npc.ai[2]++ > 15 && npc.ai[2] <= 50 )//&& npc.ai[1] % 2 == 0)
+                        {
+                            Vector2 spawnpos = npc.Center + new Vector2((/*180*/ 180 + Main.rand.NextFloat(/*-10, 10*/ /*-25, 25*/ /*0, 50*/ /*50*/ /*75*/ 75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(/*-10, 10*/ /*-25, 25*/ /*-50, 50*/ /*-75, 75*/ -60, 60));
+                            Vector2 direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnpos;
+                            direction.Normalize();
+                            int mydust = Dust.NewDust(spawnpos, 0, 0, 229, 0f, 0f, 100);
+                            Main.dust[mydust].noLight = true;
+                            Main.dust[mydust].noGravity = true;
+                            Main.dust[mydust].velocity = direction * Main.rand.NextFloat(/*1.5f, 4f*/ /*4, 6*/    /*10, 12*/   12, 14);
+                        }
 
                         if (npc.ai[1]++ % /*100*/ 50 == 0)
                         {
                             Projectile.NewProjectile(npc.Center + new Vector2(160 * npc.spriteDirection, -40), npc.DirectionTo(player.Center) * /*5f*/ 7.5f, ModContent.ProjectileType<LaserWarning2>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
+                            npc.ai[2] = 0;
                         }
                         if (npc.ai[1] > 1 && npc.ai[1] < 300 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
                         {
@@ -495,6 +607,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             {
                                 npc.ai[0] = -1;//3;
                                 npc.ai[1] = 0;
+                                npc.ai[2] = 0;
                                 npc.velocity = Vector2.Zero;
                             }
                         }
