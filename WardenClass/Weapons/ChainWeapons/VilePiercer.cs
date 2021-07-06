@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.RuneBuffs;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -58,14 +59,28 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             }
             else
             {
-                item.useStyle = ItemUseStyleID.SwingThrow;
-                item.useTurn = true;
-                item.useAnimation = 14;
-                item.useTime = 14;
-                item.damage = 3;
-                item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
-                item.shoot = mod.ProjectileType("VilePiercerProjectile");
-                item.UseSound = SoundID.Item71;
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == 6 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
+                {
+                    item.useTime = 25;
+                    item.useAnimation = 25;
+                    item.damage = 9;
+                    item.shootSpeed = 7.5f;
+                    item.autoReuse = false;
+                    item.useStyle = ItemUseStyleID.HoldingOut;
+                    item.shoot = ModContent.ProjectileType<WormHead>();
+                    item.UseSound = mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Items/Hork");
+                }
+                else
+                {
+                    item.useStyle = ItemUseStyleID.SwingThrow;
+                    item.useTurn = true;
+                    item.useAnimation = 14;
+                    item.useTime = 14;
+                    item.damage = 3;
+                    item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                    item.shoot = mod.ProjectileType("VilePiercerProjectile");
+                    item.UseSound = SoundID.Item71;
+                }
             }
 
             return base.CanUseItem(player);
@@ -75,7 +90,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == 6 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
-                float numberProjectiles = 3; // This defines how many projectiles to shot
+                /*float numberProjectiles = 3; // This defines how many projectiles to shot
                 float rotation = MathHelper.ToRadians(15);
                 position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
                 for (int i = 0; i < numberProjectiles; i++)
@@ -83,7 +98,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                     Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .8f; // This defines the projectile roatation and speed. .8f == 80% of projectile speed
                     Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockBack, player.whoAmI);
                 }
-                return false;
+                return false;*/
+                type = ModContent.ProjectileType<WormHead>();
             }
 
             return true;
