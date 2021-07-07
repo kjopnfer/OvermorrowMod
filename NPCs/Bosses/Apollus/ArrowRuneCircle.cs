@@ -7,15 +7,14 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 {
     public class ArrowRuneCircle : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/WardenClass/RuneCircles/temp2";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Rune Circle");
         }
         public override void SetDefaults()
         {
-            projectile.width = 70;
-            projectile.height = 70;
+            projectile.width = 62;
+            projectile.height = 62;
             projectile.tileCollide = false;
             projectile.hostile = true;
             projectile.friendly = false;
