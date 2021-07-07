@@ -8,12 +8,10 @@ namespace OvermorrowMod.Projectiles.Boss
     public class BloodyBallGravity : ModProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloody Ball");
         }
-
         public override void SetDefaults()
         {
             projectile.width = 16;
@@ -22,16 +20,15 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.hostile = true;
             projectile.penetrate = -1;
             projectile.timeLeft = 540;
-            projectile.alpha = 255;
             projectile.tileCollide = false;
-            aiType = ProjectileID.BoneArrow;
+            aiType = ProjectileID.PainterPaintball;
+            projectile.alpha = 255;
             projectile.aiStyle = 1;
         }
-
         public override void AI()
         {
+            //projectile.alpha = 255;
             Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
-
             projectile.ai[0]++;
             Color Bloodc = Color.Red;
             projectile.localAI[0] += 1f;
@@ -42,6 +39,10 @@ namespace OvermorrowMod.Projectiles.Boss
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
                 dust81.velocity *= 0.5f;
+            }
+            while (projectile.velocity.X > 0.5f)
+            {
+                projectile.velocity.X = 0.5f;;
             }
         }
     }

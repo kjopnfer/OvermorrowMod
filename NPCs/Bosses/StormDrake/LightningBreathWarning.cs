@@ -29,12 +29,12 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             //}
             //else
             //{
-                float length = (TRay.Cast(projectile.Center, projectile.velocity, /*1000f*/ 2500f) - projectile.Center).Length();
-                LaserLength = length;
-                projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.5f;//0.25f;
-                NPC projectileowner = Main.npc[(int)projectile.ai[1]];
-                projectile.position = projectileowner.Center + new Vector2(175 * direction, -49);
-                projectile.velocity = Vector2.UnitX * direction;
+            float length = (TRay.Cast(projectile.Center, projectile.velocity, /*1000f*/ 2500f) - projectile.Center).Length();
+            LaserLength = length;
+            projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.25f;//0.5f;//0.25f;
+            NPC projectileowner = Main.npc[(int)projectile.ai[1]];
+            projectile.position = projectileowner.Center + new Vector2(/*175*/ /*180*/ 187 * direction, /*-49*/ /*-52*/ -50);
+            projectile.velocity = Vector2.UnitX * direction;
             //}
         }
         public override void Kill(int timeLeft)

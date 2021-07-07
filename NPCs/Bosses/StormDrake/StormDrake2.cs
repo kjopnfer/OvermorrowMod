@@ -46,6 +46,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         private int RandomCase;
         private int LastCase;
         private int SecondToLastCase;
+        private Vector2 PlayerCenterStore;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Storm Drake");
@@ -353,7 +354,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             Projectile.NewProjectile(/*npc.Center - Vector2.UnitX * 160f * npc.direction + Vector2.UnitY * 40f*/ /*npc.position - new Vector2((-165 * 2) * npc.spriteDirection, ((-74 / 2) - 20) * npc.spriteDirection)*/ npc.Center + new Vector2(/*165 140 118*/ 170 * npc.spriteDirection, -45 /*6 10 20*/), npc.DirectionTo(player.Center) * 6f/*7.5f*/, ModContent.ProjectileType<ElectricBallRadialLightning>(), npc.damage, 2, Main.myPlayer);
                         }
-                        if (npc.ai[1] > 1 && npc.ai[1] < 600 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
+                        if (npc.ai[1] > 1 && npc.ai[1] < /*600*/ 900 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
                         {
                             npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 5, 2);
                         }
@@ -431,39 +432,53 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), targetFloat), 10, 2);
                             }
                         }
-
-                        if (++npc.ai[1] == 180)
+                        if (++npc.ai[1] == /*180*/ /*240*/ 180)
                         {
                             if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
                             {
-                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180 /*- 90*/)).ToRotation();
+                                PlayerCenterStore = player.Center;
+                                npc.rotation = npc.DirectionTo(/*player.Center*/ PlayerCenterStore).RotatedBy(MathHelper.ToRadians(180 /*- 90*/)).ToRotation();
                                 npc.spriteDirection = -1;
                             }
                             else
                             {
-                                npc.rotation = npc.DirectionTo(player.Center)./*RotatedBy(MathHelper.ToRadians(90)).*/ToRotation();
+                                PlayerCenterStore = player.Center;
+                                npc.rotation = npc.DirectionTo(/*player.Center*/ PlayerCenterStore)./*RotatedBy(MathHelper.ToRadians(90)).*/ToRotation();
                             }
+                            npc.velocity = Vector2.Zero;
                             spritedirectionstore = npc.spriteDirection;
                             dashing = true;
                             //createAfterimage = true;
                         }
-
-                        if (npc.ai[1] == 180)
+                        // not only is the multi rotational dashes broken with afterimage, but pulse too
+                        //if (npc.ai[1] > 180 && npc.ai[1] < /*240*/ /*180*/ 240)
+                        //{
+                        //    //npc.velocity = Vector2.Zero;
+                        //    if (npc.ai[1] > 180 && npc.ai[1] < 230)
+                        //    {
+                        //        canPulse = true;
+                        //    }
+                        //    else
+                        //    {
+                        //        canPulse = false;
+                        //    }
+                        //}
+                        if (npc.ai[1] == /*180*/ 240)
                         {
-                            npc.velocity = /*(twothirdshealth ? 15 :*/ /*10*//*)*/ /*15f*/ 25 * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
+                            npc.velocity = /*(twothirdshealth ? 15 :*/ /*10*//*)*/ /*15f*/ 25 * npc.DirectionTo(PlayerCenterStore/*new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25))*/);
                         }
-                        else if (npc.ai[1] > 240 && npc.ai[1] < /*300*/ 390)
+                        else if (npc.ai[1] > /*240*/ 300 && npc.ai[1] < /*300*/ /*390*/ 420)
                         {
                             npc.velocity = Vector2.SmoothStep(npc.velocity, Vector2.Zero, /*0.025f*/ /*0.25f*/ /*0.01f*/ /*0.5f*/ /*0.4f*/ /*0.3f*/ /*0.28f*/ /*0.085f*/ /*0.07f*/ 0.065f);
                         }
-                        else if (npc.ai[1] > 390 && npc.ai[2] <= /*5*/ 5)
+                        else if (npc.ai[1] > /*390*/ 420 && npc.ai[2] <= /*5*/ 5)
                         {
                             npc.ai[1] = 0;
                             npc.ai[2]++;
                             dashing = false;
                             //createAfterimage = false;
                         }
-                        else if (npc.ai[1] > 390 && npc.ai[2] > /*5*/ /*4*/ 5)
+                        else if (npc.ai[1] > /*390*/ 420 && npc.ai[2] > /*5*/ /*4*/ 5)
                         {
                             if (twothirdshealth == true && phase2switched == false)
                             {
@@ -485,7 +500,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 npc.velocity = Vector2.Zero;
                                 npc.rotation = 0;
                             }
-
                         }
                     }
                     break;
@@ -503,18 +517,30 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             //npc.Move(player.Center + new Vector2(450 * npc.spriteDirection, 0), 10, 2);
                             npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 10, 2);
                         }
-                        else if (npc.ai[1] == 200)
+                        else if (npc.ai[1] > 200 && npc.ai[1] < 260)
+                        {
+                            npc.velocity = Vector2.Zero;
+                            if (npc.ai[1] > 200 && npc.ai[1] < 250)
+                            {
+                                canPulse = true;
+                            }
+                            else
+                            {
+                                canPulse = false;
+                            }
+                        }
+                        else if (npc.ai[1] == /*200*/ 260)
                         {
                             npc.velocity = (Vector2.UnitX * /*12*/ /*15f*/ 25f /*10*/ /*8*/) * npc.spriteDirection;
                             spritedirectionstore = npc.spriteDirection;
                             dashing = true;
                             createAfterimage = true;
                         }
-                        else if (npc.ai[1] > 210 && npc.ai[1] < 370)
+                        else if (npc.ai[1] > /*210*/ 270 && npc.ai[1] < /*370*/ 430)
                         {
                             npc.velocity = Vector2.SmoothStep(npc.velocity, Vector2.Zero, /*0.025f*/ /*0.25f*/ /*0.01f*/ /*0.5f*/ /*0.4f*/ /*0.3f*/ /*0.28f*/ /*0.085f*/ /*0.07f*/ 0.065f);
                         }
-                        else if (npc.ai[1] > 370 && npc.ai[2] <= 2)
+                        else if (npc.ai[1] > /*370*/ 430 && npc.ai[2] <= 2)
                         {
                             npc.ai[1] = 0;
                             npc.ai[2]++;
@@ -522,7 +548,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             npc.velocity = Vector2.Zero;
                             createAfterimage = false;
                         }
-                        else if (npc.ai[1] > 370 && npc.ai[2] > /*5*/ /*3*/ 2)
+                        else if (npc.ai[1] > /*370*/ 430 && npc.ai[2] > /*5*/ /*3*/ 2)
                         {
                             if (twothirdshealth == true && phase2switched == false)
                             {
