@@ -15,7 +15,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Stingvine");
             Tooltip.SetDefault("Attacks have a chance to poison\n[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause all attacks to release toxic gas on hit\nConsumes 1 Soul Essence");
+                            "[c/800080:Right Click] to cause attacks to summon vines to ensnare enemies" +
+                            "\nHold down attack while the rune is active to rotate the vines\nConsumes 3 Soul Essences");
         }
 
         public override void SafeSetDefaults()
@@ -43,7 +44,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == 0)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >=   0 && player.GetModPlayer<WardenRunePlayer>().RuneID == 0)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -53,18 +54,31 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.shoot = ProjectileID.None;
                 item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
 
-                ConsumeSouls(1, player);
+                ConsumeSouls(3, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
                 player.AddBuff(ModContent.BuffType<VineRune>(), 600);
             }
             else
             {
-                item.useStyle = ItemUseStyleID.SwingThrow;
-                item.useTurn = true;
+                item.useStyle = ItemUseStyleID.HoldingOut;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                item.damage = 5;
-                item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == 7 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate) 
+                {
+                    item.damage = 14;
+                    item.useTurn = false;
+                    item.shootSpeed = 6f;
+                    item.autoReuse = true;
+                    item.channel = true;
+                }
+                else
+                {
+                    item.damage = 5;
+                    item.useTurn = true;
+                    item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                    item.autoReuse = false;
+                    item.channel = false;
+                }
                 item.shoot = mod.ProjectileType("VinePiercerProjectile");
                 item.UseSound = new LegacySoundStyle(SoundID.Grass, 0); // Grass
 
@@ -77,7 +91,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == 7 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
-                type = ModContent.ProjectileType<VinePiercerProjectileAlt>();
+                type = ModContent.ProjectileType<JunglePiercer>();
             }
             return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }

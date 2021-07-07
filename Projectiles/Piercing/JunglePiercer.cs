@@ -13,13 +13,14 @@ namespace OvermorrowMod.Projectiles.Piercing
         private int timer = 0;
         private bool target = false;
         private const string ChainTexturePath = "OvermorrowMod/Projectiles/Piercing/VinePiercerChain";
+        public override string Texture => "OvermorrowMod/Projectiles/Piercing/VinePiercerProjectile";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Atama Blade");
+            DisplayName.SetDefault("Stingvine");
             ProjectileID.Sets.Homing[projectile.type] = true;
         }
 
-           Vector2 vineplace;
+        Vector2 vineplace;
 
         public override void SetDefaults()
         {
@@ -28,9 +29,8 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.height = 22;
             projectile.friendly = true;
             projectile.tileCollide = false;
-            projectile.penetrate = 1;
+            projectile.penetrate = 4;
             projectile.timeLeft = 240;
-            projectile.light = 0.75f;
             projectile.extraUpdates = 1;
             projectile.ignoreWater = true;
         }
@@ -38,27 +38,24 @@ namespace OvermorrowMod.Projectiles.Piercing
 
         public override void AI()
         {
-
-
+            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
 
             float between = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
-                if(between > 350)
-                {
+            if (between > 350)
+            {
 
-                    Vector2 position = projectile.Center;
-                    Vector2 targetPosition = Main.player[projectile.owner].Center;
-                    Vector2 direction = targetPosition - position;
-                    direction.Normalize();
-                    projectile.velocity = direction * 4.6f;
-                }
-
-
+                Vector2 position = projectile.Center;
+                Vector2 targetPosition = Main.player[projectile.owner].Center;
+                Vector2 direction = targetPosition - position;
+                direction.Normalize();
+                projectile.velocity = direction * 4.6f;
+            }
 
             Player player = Main.player[projectile.owner];
 
-            projectile.rotation = (player.Center - projectile.Center).ToRotation();
+            //projectile.rotation = (player.Center - projectile.Center).ToRotation();
 
-			if (Main.player[projectile.owner].channel) 
+            if (Main.player[projectile.owner].channel)
             {
                 if (Main.MouseWorld.X < projectile.position.X)
                 {
@@ -122,10 +119,6 @@ namespace OvermorrowMod.Projectiles.Piercing
 
             return true;
         }
-
-
-
-
 
         private void AdjustMagnitude(ref Vector2 vector)
         {

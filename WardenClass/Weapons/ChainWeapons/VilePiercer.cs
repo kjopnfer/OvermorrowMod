@@ -14,7 +14,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Vile Guillotine");
             Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                "[c/800080:Right Click] to cause attacks to launch a worm to devour your enemies\nConsumes 1 Soul Essence");
+                "[c/800080:Right Click] to cause attacks to launch a worm to devour your enemies\nConsumes 2 Soul Essences");
         }
 
         public override void SafeSetDefaults()
@@ -42,7 +42,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == 0)
+            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 2 && player.GetModPlayer<WardenRunePlayer>().RuneID == 0)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -53,7 +53,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.shoot = ProjectileID.None;
                 item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
 
-                ConsumeSouls(1, player);
+                ConsumeSouls(2, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
                 player.AddBuff(ModContent.BuffType<VileRune>(), 600);
             }
@@ -66,7 +66,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                     item.useAnimation = 28;
                     item.useTime = 28;
                     item.UseSound = mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Items/Hork");
-                    item.damage = 13;
+                    item.damage = 12;
                 }
                 else
                 {
