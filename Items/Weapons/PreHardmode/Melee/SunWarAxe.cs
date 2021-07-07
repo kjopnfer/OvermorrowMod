@@ -18,7 +18,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         {
             item.noMelee = true;
             item.melee = true;
-            item.damage = 22;
+            item.damage = 27;
             item.useTime = 33;
             item.useAnimation = 33;
             item.useStyle = ItemUseStyleID.SwingThrow;
@@ -28,21 +28,22 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.crit = 2;
             item.UseSound = SoundID.Item71;
             item.autoReuse = true;
-            item.shoot = mod.ProjectileType("MushAxeProj");
+            item.shoot = mod.ProjectileType("SunWarAxeProj");
             item.shootSpeed = 0.001f;
             item.value = Item.sellPrice(0, 1, 0, 0);
         }
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mushroom Waraxe");
+            DisplayName.SetDefault("Sunplate Waraxe");
             Tooltip.SetDefault("Swing an axe arround you \nCharge up range with your left click, then right Click to throw the axe \nHas a chance to inflict fungal infection");
         }
 
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(183, 35);
+            recipe.AddIngredient(117, 14);
+            recipe.AddIngredient(75, 3);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
@@ -58,9 +59,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override bool CanUseItem(Player player)
         {
 
-            if(SwingRange > 5) 
+            if(SwingRange > 10) 
             {
-                SwingRange = 5;
+                SwingRange = 10;
             }
 
 
@@ -80,7 +81,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             }
             if (player.altFunctionUse != 2)//Sets what happens on right click(special ability)
             {
-                SwingRange = SwingRange + 0.7f;
+                SwingRange = SwingRange + 1.5f;
                 item.shoot = mod.ProjectileType("SunWarAxeProj");
                 item.useTime = 33;
                 item.useAnimation = 33;
@@ -91,10 +92,10 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             else
             {
                 Timerset++;
-                item.shoot = mod.ProjectileType("MushAxeBack");
+                item.shoot = mod.ProjectileType("SunWarAxeBack");
                 item.useTime = 50;
                 item.useAnimation = 50;
-                item.shootSpeed = 3f + SwingRange;
+                item.shootSpeed = 5f + SwingRange;
                 item.UseSound = SoundID.Item19;
                 item.useStyle = ItemUseStyleID.SwingThrow;
             }

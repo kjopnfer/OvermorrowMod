@@ -18,7 +18,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         {
             item.noMelee = true;
             item.melee = true;
-            item.damage = 22;
+            item.damage = 20;
             item.useTime = 40;
             item.useAnimation = 40;
             item.useStyle = ItemUseStyleID.SwingThrow;
