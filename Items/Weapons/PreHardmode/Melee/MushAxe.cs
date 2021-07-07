@@ -36,7 +36,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Mushroom Waraxe");
-            Tooltip.SetDefault("Swing an axe arround you \nCharge up range with your left click, then right Click to throw the axe \nHas a chance to inflict fungal infection");
+            Tooltip.SetDefault("Swing an axe arround you \nCharge up range with your left click, then right Click to throw the axe");
         }
 
         public override void AddRecipes()
@@ -58,9 +58,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override bool CanUseItem(Player player)
         {
 
-            if(SwingRange > 5) 
+            if(SwingRange > 6) 
             {
-                SwingRange = 5;
+                SwingRange = 6;
             }
 
 
