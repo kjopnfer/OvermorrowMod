@@ -36,7 +36,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         int RandomCase = 0;
         int LastCase = 0;
         int RandomCeiling;
-        Vector2 teleportposition = Vector2.Zero;
+        Vector2 teleportPosition = Vector2.Zero;
         int spritetimer = 0;
         int frame = 1;
         int proj;
@@ -61,21 +61,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 if (npc.ai[2] > 0)
                 {
                     npc.ai[2]--;
-
-                    /*if (npc.ai[2] == 480)
-                    {
-                        BossText("I deem thee fit to inherit their powers.");
-                    }
-
-                    if (npc.ai[2] == 300)
-                    {
-                        BossText("Thou Dryad shalt guide thee.");
-                    }
-
-                    if (npc.ai[2] == 120)
-                    {
-                        BossText("Fare thee well.");
-                    }*/
                 }
                 else
                 {
@@ -370,14 +355,14 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         if (RandomCase == 3 && npc.ai[1] == 15)
                         {
                             direction = Main.rand.NextBool();
-                            teleportposition = player.Center + new Vector2(/*-61 + (*/-600 * (direction ? 1 : -1)/*)*/, 0 /*-61*/);
+                            teleportPosition = player.Center + new Vector2(/*-61 + (*/-600 * (direction ? 1 : -1)/*)*/, 0 /*-61*/);
                         }
                         else if (RandomCase != 3 && npc.ai[1] == 15)
                         {
-                            teleportposition = player.Center + Main.rand.NextVector2Circular(333, 333);
-                            while (Main.tile[(int)teleportposition.X / 16, (int)teleportposition.Y / 16].active())
+                            teleportPosition = player.Center + Main.rand.NextVector2Circular(333, 333);
+                            while (Main.tile[(int)teleportPosition.X / 16, (int)teleportPosition.Y / 16].active())
                             {
-                                teleportposition = player.Center + Main.rand.NextVector2Circular(333, 333);
+                                teleportPosition = player.Center + Main.rand.NextVector2Circular(333, 333);
                             }
                         }
 
@@ -385,7 +370,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         {
                             if (++npc.ai[2] % 5 == 0)
                             {
-                                Vector2 origin = teleportposition;
+                                Vector2 origin = teleportPosition;
                                 float radius = 20;
                                 int numLocations = 30;
                                 for (int i = 0; i < 30; i++)
@@ -400,7 +385,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
                         if (npc.ai[1] > 90)
                         {
-                            npc.Teleport(teleportposition + new Vector2(-61, -61), 57);
+                            npc.Teleport(teleportPosition + new Vector2(-61, -61), 57);
                         }
                         if (npc.ai[1] > 100)
                         {

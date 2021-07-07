@@ -21,8 +21,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         private Vector2 rotationCenter;
         private int enrageTimer;
         private bool enraged;
-        bool movingup = true;
-        bool leftofplayer = true;
+        bool movingUp = true;
+        bool leftOfPlayer = true;
         bool halflife = false;
         bool fourthlife = false;
         bool circleactive = false;
@@ -325,10 +325,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     {
                         if (npc.ai[2] == -100)
                         {
-                            leftofplayer = Main.rand.NextBool();
+                            leftOfPlayer = Main.rand.NextBool();
                             npc.ai[2] = 0;
                         }
-                        if (leftofplayer == true)
+                        if (leftOfPlayer == true)
                         {
                             if (npc.ai[2] == 1)
                             {
@@ -337,21 +337,21 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             }
                             if (npc.ai[2] % 30 == 0)
                             {
-                                if (movingup == true)
+                                if (movingUp == true)
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(10, 13), Main.rand.Next(-13, -10));
-                                    movingup = false;
+                                    movingUp = false;
                                 }
                                 else
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(10, 13), Main.rand.Next(10, 13));
-                                    movingup = true;
+                                    movingUp = true;
                                 }
                             }
                             if (npc.ai[2] == 150)
                             {
                                 npc.ai[2] = 0;
-                                leftofplayer = false;
+                                leftOfPlayer = false;
                             }
                         }
                         else
@@ -363,21 +363,21 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             }
                             if (npc.ai[2] % 30 == 0)
                             {
-                                if (movingup == true)
+                                if (movingUp == true)
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(-13, -10), Main.rand.Next(-13, -10));
-                                    movingup = false;
+                                    movingUp = false;
                                 }
                                 else
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(-13, -10), Main.rand.Next(10, 13));
-                                    movingup = true;
+                                    movingUp = true;
                                 }
                             }
                             if (npc.ai[2] == 150)
                             {
                                 npc.ai[2] = 0;
-                                leftofplayer = true;
+                                leftOfPlayer = true;
                             }
                         }
                         npc.ai[2] += 1f;
@@ -447,7 +447,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     break;
                 /*case 4:
                     {
-                        if (leftofplayer == true)
+                        if (leftOfPlayer == true)
                         {
                             if (npc.ai[1] == 1)
                             {
@@ -456,21 +456,21 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             }
                             if (npc.ai[1] % 30 == 0)
                             {
-                                if (movingup == true)
+                                if (movingUp == true)
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(10, 13), Main.rand.Next(-13, -10));
-                                    movingup = false;
+                                    movingUp = false;
                                 }
                                 else
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(10, 13), Main.rand.Next(10, 13));
-                                    movingup = true;
+                                    movingUp = true;
                                 }
                             }
                             if (npc.ai[1] == 150)
                             {
                                 npc.ai[1] = 0;
-                                leftofplayer = false;
+                                leftOfPlayer = false;
                             }
                         }
                         else
@@ -482,21 +482,21 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             }
                             if (npc.ai[1] % 30 == 0)
                             {
-                                if (movingup == true)
+                                if (movingUp == true)
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(-13, -10), Main.rand.Next(-13, -10));
-                                    movingup = false;
+                                    movingUp = false;
                                 }
                                 else
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(-13, -10), Main.rand.Next(10, 13));
-                                    movingup = true;
+                                    movingUp = true;
                                 }
                             }
                             if (npc.ai[1] == 150)
                             {
                                 npc.ai[1] = 0;
-                                leftofplayer = true;
+                                leftOfPlayer = true;
                             }
                         }
                     }
