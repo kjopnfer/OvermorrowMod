@@ -23,7 +23,7 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.penetrate = -1;
-            projectile.timeLeft = 200;
+            projectile.timeLeft = 45;
             projectile.tileCollide = true;
             projectile.magic = true;
         }
@@ -46,45 +46,6 @@ namespace OvermorrowMod.Projectiles.Magic
         public override void AI()
         {
             projectile.rotation = projectile.velocity.ToRotation();
-
-            if (projectile.ai[1] != 1)
-            {
-                Projectile owner = Main.projectile[(int)projectile.ai[0]];
-                double deg = projectile.ai[1]++ * 2 * direction; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
-                double rad = deg * (Math.PI / 180); //Convert degrees to radians
-                double dist = 10 * projectile.knockBack; //Distance away from the player
-
-                /*Position the player projectiled on where the player is, the Sin/Cos of the angle times the /
-                /distance for the desired distance away from the player minus the projectile's width   /
-                /and height divided by two so the center of the projectile is at the right place.     */
-                projectile.position.X = owner.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
-                projectile.position.Y = owner.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
-            }
-
-            if (projectile.ai[1] == 3)
-            {
-                direction = -1;
-            }
-
-            /*if (projectile.ai[0] == 0)
-            {
-                projectile.ai[0]++;
-                for (int i = 0; i < 3; i++)
-                {
-                    int direction;
-                    if (i == 0 || i == 2)
-                    {
-                        direction = 2;
-                    }
-                    else
-                    {
-                        direction = 3;
-                    }
-                    owned.Add(Main.projectile[Projectile.NewProjectile(projectile.Center, Microsoft.Xna.Framework.Vector2.Zero, projectile.type, projectile.damage, i, projectile.owner, projectile.whoAmI, direction)]);
-                }
-            }
-            foreach (Projectile proj in owned)
-                proj.ai[0] = projectile.whoAmI;*/
 
             if (++projectile.frameCounter >= 4)
             {

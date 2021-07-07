@@ -30,7 +30,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.width = 50;
             item.height = 56;
             item.shoot = ModContent.ProjectileType<WaterStaffProj>();
-            item.shootSpeed = 9f;
+            item.shootSpeed = 8f;
             item.knockBack = 3f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
