@@ -5,7 +5,7 @@ using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
-    public class MushAxe : ModItem
+    public class CrimWarAxe : ModItem
     {
 
 
@@ -18,7 +18,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         {
             item.noMelee = true;
             item.melee = true;
-            item.damage = 22;
+            item.damage = 30;
             item.useTime = 40;
             item.useAnimation = 40;
             item.useStyle = ItemUseStyleID.SwingThrow;
@@ -28,25 +28,35 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.crit = 2;
             item.UseSound = SoundID.Item71;
             item.autoReuse = true;
-            item.shoot = mod.ProjectileType("MushAxeProj");
+            item.shoot = mod.ProjectileType("BloodWaraxe");
             item.shootSpeed = 0.001f;
             item.value = Item.sellPrice(0, 1, 0, 0);
         }
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mushroom Waraxe");
-            Tooltip.SetDefault("Swing an axe arround you \nCharge up range with your left click, then right Click to throw the axe \nHas a chance to inflict fungal infection");
+            DisplayName.SetDefault("Crimson Waraxe");
+            Tooltip.SetDefault("Swing an axe arround you \nCharge up range with your left click, then right Click to throw the axe");
         }
+
 
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(183, 35);
+            recipe.AddIngredient(799, 1);
+            recipe.AddIngredient(1329, 10);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
+
+            ModRecipe recipe2 = new ModRecipe(mod);
+            recipe2.AddIngredient(1257, 11);
+            recipe2.AddIngredient(1329, 10);
+            recipe2.AddTile(TileID.Anvils);
+            recipe2.SetResult(this);
+            recipe2.AddRecipe();
         }
+
 
         public override bool AltFunctionUse(Player player)//You use this to allow the item to be right clicked
         {
@@ -58,9 +68,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override bool CanUseItem(Player player)
         {
 
-            if(SwingRange > 5) 
+            if(SwingRange > 9) 
             {
-                SwingRange = 5;
+                SwingRange = 9;
             }
 
 
@@ -80,8 +90,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             }
             if (player.altFunctionUse != 2)//Sets what happens on right click(special ability)
             {
-                SwingRange = SwingRange + 0.7f;
-                item.shoot = mod.ProjectileType("MushAxeProj");
+                SwingRange = SwingRange + 0.5f;
+                item.shoot = mod.ProjectileType("BloodWaraxe");
                 item.useTime = 40;
                 item.useAnimation = 40;
                 item.shootSpeed = 0f;
@@ -91,7 +101,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             else
             {
                 Timerset++;
-                item.shoot = mod.ProjectileType("MushAxeBack");
+                item.shoot = mod.ProjectileType("BloodWaraxeBack");
                 item.useTime = 50;
                 item.useAnimation = 50;
                 item.shootSpeed = 3f + SwingRange;
