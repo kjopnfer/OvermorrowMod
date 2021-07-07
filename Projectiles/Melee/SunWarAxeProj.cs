@@ -14,6 +14,7 @@ namespace OvermorrowMod.Projectiles.Melee
         int okay1 = 0;
         int okay2 = 0;
         float CircleArr = 0;
+        int StarTimer = 0;
 
         public override void SetDefaults()
         {
@@ -31,6 +32,7 @@ namespace OvermorrowMod.Projectiles.Melee
         // This AI code is adapted from the aiStyle 15. We need to re-implement this to customize the behavior of our flail
         public override void AI()
         {
+
             projectile.width = 36;
             projectile.height = 36;
             projectile.rotation = CircleArr + MathHelper.ToRadians(45f);
