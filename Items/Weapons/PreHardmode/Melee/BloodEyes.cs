@@ -4,13 +4,13 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Projectiles.Melee;
 
-namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
+namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class BloodEyes : ModItem
     {
         public override void SetDefaults()
         {
-            item.ranged = true;
+            item.melee = true;
             item.noMelee = true;
             item.damage = 14;
             item.useTime = 26;

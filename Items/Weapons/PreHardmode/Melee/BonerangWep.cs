@@ -4,13 +4,13 @@ using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 using OvermorrowMod.Projectiles.Melee;
 
-namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
+namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class BonerangWep : ModItem
     {
         public override void SetDefaults()
         {
-            item.ranged = true;
+            item.melee = true;
             item.noMelee = true;
             item.damage = 30;
             item.useTime = 20;
