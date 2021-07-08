@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Magic.HellFire
+namespace OvermorrowMod.Projectiles.Piercing.HellFire
 {
     public class HellFireRight : ModProjectile
     {
