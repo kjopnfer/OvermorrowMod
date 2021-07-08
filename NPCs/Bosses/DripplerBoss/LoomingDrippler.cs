@@ -18,7 +18,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private int randSwitch = 300;
         private int storedDamage;
         private Vector2 origin;
-        int attackcounter;
+        int attackCounter;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Looming Drippler");
@@ -356,7 +356,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     else if (npc.alpha <= 0 && OvermorrowWorld.loomingdripplerdeadcount > 6)
                     {
                         Vector2 targetPosition = Main.player[npc.target].Center;
-                        if (++attackcounter == 30)
+                        if (++attackCounter == 30)
                         {
                             Vector2 origin = npc.Center;
                             float radius = 45;
@@ -370,19 +370,19 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                             npc.velocity = /*10*/ /*7.5f*/ 10f * npc.DirectionTo(new Vector2(Main.rand.NextFloat(targetPosition.X - 25, targetPosition.X + 25), Main.rand.NextFloat(targetPosition.Y - 25, targetPosition.Y + 25)));
                         }
-                        else if (attackcounter > 60 && attackcounter < 120)
+                        else if (attackCounter > 60 && attackCounter < 120)
                         {
                             npc.velocity = new Vector2(MathHelper.Lerp(npc.velocity.X, 0, 0.025f), MathHelper.Lerp(npc.velocity.Y, 0, 0.025f));
                         }
 
-                        if (attackcounter > 120)
+                        if (attackCounter > 120)
                         {
                             if (!secondTeleport)
                             {
                                 secondTeleport = true;
                                 npc.ai[2] = 2;
                                 npc.ai[0] = 0;
-                                attackcounter = 0;
+                                attackCounter = 0;
                                 npc.velocity = Vector2.Zero;
                             }
                             else
@@ -391,7 +391,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                                 randSwitch = Main.rand.Next(300, 700);
                                 npc.ai[2] = 0;
                                 npc.ai[0] = 0;
-                                attackcounter = 0;
+                                attackCounter = 0;
                                 npc.velocity = Vector2.Zero;
                             }
                         }

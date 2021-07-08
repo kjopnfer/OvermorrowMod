@@ -60,12 +60,24 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             }
             else
             {
-                item.useStyle = ItemUseStyleID.SwingThrow;
+                item.useStyle = ItemUseStyleID.HoldingOut;
                 item.useTurn = true;
-                item.useAnimation = 14;
-                item.useTime = 14;
+                
                 item.damage = 8;
-                item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == 2 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
+                {
+                    item.useAnimation = 26;
+                    item.useTime = 26;
+                    item.shootSpeed = 11f;
+                    item.autoReuse = true;
+                }
+                else
+                {
+                    item.useAnimation = 14;
+                    item.useTime = 14;
+                    item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                    item.autoReuse = false;
+                }
                 item.shoot = mod.ProjectileType("BonePiercerProjectile");
                 item.UseSound = SoundID.Item1;
             }
@@ -77,7 +89,19 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == 2 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
-                type = ModContent.ProjectileType<BonePiercerProjectileAlt>();
+                type = ModContent.ProjectileType<Skulls>();
+                for (int i = 0; i < Main.rand.Next(2, 3); i++)
+                {
+                    Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-7, 7) * 10, player.Center.Y + Main.rand.Next(-7, 7) * 10);
+                    if (!Main.tile[(int)randPos.X / 16, (int)randPos.Y / 16].active())
+                    {
+                        Projectile.NewProjectile(randPos, new Vector2(speedX, speedY), type, damage, knockBack, player.whoAmI, 0f, Main.rand.NextBool() ? -1 : 1);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
             }
             return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }

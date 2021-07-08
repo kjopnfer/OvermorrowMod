@@ -68,8 +68,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             ModRecipe recipe = new ModRecipe(mod);
             recipe.AddIngredient(ItemID.CrimtaneBar, 12);
             recipe.AddIngredient(ItemID.TissueSample, 10);
-            recipe.AddIngredient(ItemID.Chain, 12);
-            recipe.AddIngredient(ItemID.Lens, 6);
             recipe.AddTile(TileID.DemonAltar);
             recipe.SetResult(this);
             recipe.AddRecipe();

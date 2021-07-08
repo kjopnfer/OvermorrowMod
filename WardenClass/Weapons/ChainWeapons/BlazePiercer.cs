@@ -87,12 +87,12 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 for (int i = 0; i < 200; i++)
                 {
 
-                    NPC nPC = Main.npc[i];
-                    if (Vector2.Distance(Main.MouseWorld, nPC.Center) < 40)
+                    NPC npc = Main.npc[i];
+                    if (Vector2.Distance(Main.MouseWorld, npc.Center) < 65)
                     {
-                        if (nPC.friendly == false && nPC.life > 0)
+                        if (npc.friendly == false && npc.life > 0)
                         {
-                            Projectile.NewProjectile(nPC.Center.X, nPC.Center.Y - 165, 0, 0, mod.ProjectileType("HellFireDown"), item.damage, 3, player.whoAmI);
+                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 165, 0, 0, mod.ProjectileType("HellFireDown"), item.damage, 3, player.whoAmI);
                             Main.PlaySound(SoundID.Item45, Main.MouseWorld);
                         }
                     }
