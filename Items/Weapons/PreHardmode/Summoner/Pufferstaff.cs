@@ -19,7 +19,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.rare = ItemRarityID.Green;
             item.width = 32;
             item.height = 32;
-            item.damage = 12;
+            item.damage = 7;
             item.UseSound = SoundID.Item82;
             item.summon = true;
             item.noMelee = true;

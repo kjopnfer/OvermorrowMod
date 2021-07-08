@@ -81,7 +81,7 @@ namespace OvermorrowMod.Projectiles.Summon
             if (Main.player[projectile.owner].channel)
             {
                 timer++;
-                if(timer == 11)
+                if(timer == 10)
                 {
                     int Random = Main.rand.Next(-15, 16);
                     Vector2 position = projectile.Center;
