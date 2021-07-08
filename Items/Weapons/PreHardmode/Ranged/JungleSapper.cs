@@ -12,8 +12,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Jungle Saper");
-            Tooltip.SetDefault("Uses gel as ammo \nHas a chance to inflict fungal infection");
+            DisplayName.SetDefault("Sap Spurter");
+            Tooltip.SetDefault("Uses gel as ammo");
         }
         public override void SetDefaults()
         {

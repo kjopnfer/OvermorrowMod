@@ -65,5 +65,15 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             }
             return true;
         }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.MagicMirror);
+            recipe.AddIngredient(ItemID.CrimtaneBar, 12);
+            recipe.AddTile(TileID.DemonAltar);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+        }
     }
 }

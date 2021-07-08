@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mushroom Flamethrower");
+            DisplayName.SetDefault("Shroomthrower");
             Tooltip.SetDefault("Uses gel as ammo \nHas a chance to inflict fungal infection");
         }
         public override void SetDefaults()
@@ -37,7 +37,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(183, 25);
+            recipe.AddIngredient(183, 35);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();

@@ -37,7 +37,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.RubyStaff);
+            recipe.AddIngredient(ItemID.DiamondStaff);
             recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 7);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
