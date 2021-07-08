@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -29,7 +30,7 @@ namespace OvermorrowMod.Projectiles.Summon
         {
             projectile.width = 38;
             projectile.height = 24;
-            projectile.minionSlots = 0.33f;
+            projectile.minionSlots = 1f;
             projectile.minion = true;
             projectile.friendly = true;
             projectile.ignoreWater = true;
@@ -37,11 +38,14 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.netImportant = true;
             projectile.penetrate = -1;
             projectile.timeLeft = 200000;
+            projectile.light = 0.8f;
         }
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Meteor");
             Main.projFrames[base.projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[projectile.type] = 5;
+            ProjectileID.Sets.TrailingMode[projectile.type] = 0;
         }
         public override void AI()
         {
@@ -90,7 +94,7 @@ namespace OvermorrowMod.Projectiles.Summon
                             if(between2 < 38f && struck < 1)
                             {
                             	npc.StrikeNPC(projectile.damage, 0, 0);
-                                struck = 10;
+                                struck = 35;
                             }
                         }
                     }
@@ -206,6 +210,21 @@ namespace OvermorrowMod.Projectiles.Summon
                     projectile.frame = 0;
                 }
             }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+
+            Texture2D texture = mod.GetTexture("Projectiles/Summon/EyeDraw");
+
+                Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
+                for (int k = 0; k < projectile.oldPos.Length; k++)
+                {
+                    Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin;
+                    Color color = projectile.GetAlpha(Color.White) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
+                    spriteBatch.Draw(texture, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
+                }
+            return true;
         }
     }
 }
