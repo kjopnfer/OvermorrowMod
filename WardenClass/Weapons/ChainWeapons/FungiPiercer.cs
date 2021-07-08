@@ -14,7 +14,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Fungal Vine");
-            Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
+            Tooltip.SetDefault("Attacks have a chance to inflict Fungal Infection\n[c/00FF00:{ Imbuement }]\n" +
                 "[c/800080:Right Click] to cause all attacks to launch a fungi bulb that spawns spores\nConsumes 1 Soul Essence" +
                 "\n'Not toxic, but can still kill you'");
         }

@@ -1,3 +1,4 @@
+using OvermorrowMod.Items.Pets;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System.Collections.Generic;
@@ -77,6 +78,9 @@ namespace OvermorrowMod.NPCs.Town
         public override void SetupShop(Chest shop, ref int nextSlot)
         {
             shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
+            nextSlot++;
+
+            shop.item[nextSlot].SetDefaults(ModContent.ItemType<BeanSummon>());
             nextSlot++;
 
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<FrostburnRune>());

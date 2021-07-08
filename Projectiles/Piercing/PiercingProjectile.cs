@@ -160,6 +160,11 @@ namespace OvermorrowMod.Projectiles.Piercing
             if (projectile.type == ModContent.ProjectileType<FungiPiercerProjectile>())
             {
                 SoulGain(target, 5);
+
+                if (Main.rand.Next(0, 5) == 0) // 20% chance
+                {
+                    target.AddBuff(ModContent.BuffType<FungalInfection>(), 400);
+                }
                 target.immune[projectile.owner] = 3;
             }
         }

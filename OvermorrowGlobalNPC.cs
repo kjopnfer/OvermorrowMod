@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.NPCs;
@@ -79,12 +80,12 @@ namespace OvermorrowMod
 
             if (npc.type == NPCID.EaterofSouls)
             {
-                if (Main.rand.Next(75) == 3) 
+                if (Main.rand.Next(75) == 3)
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EatersBlade>());
                 }
             }
-            
+
             if (npc.type == NPCID.FungiBulb)
             {
                 int dropChance = Main.rand.Next(2);
@@ -133,7 +134,7 @@ namespace OvermorrowMod
                             if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook)
                             {
                                 if (Main.rand.Next(8) == 0) // 12.5% chance to gain Soul Essence on death
-                                { 
+                                {
                                     if (!XPPacket.Write(1, npc.target))
                                     {
                                         player.GetModPlayer<WardenDamagePlayer>().AddSoul(1);
@@ -199,6 +200,13 @@ namespace OvermorrowMod
                 }
             }
 
+            if (projectile.magic && owner.GetModPlayer<OvermorrowModPlayer>().MarbleTrail)
+            {
+                if (Main.rand.Next(20) == 0)
+                {
+                    owner.AddBuff(ModContent.BuffType<WindBuff>(), 600);
+                }
+            }
 
         }
 
@@ -254,10 +262,10 @@ namespace OvermorrowMod
 
         public override void AI(NPC npc)
         {
-            if(FungiInfection)
+            if (FungiInfection)
             {
                 FungiTime++;
-                if(FungiTime == 25)
+                if (FungiTime == 25)
                 {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = Main.player[npc.target].Center;
@@ -286,16 +294,16 @@ namespace OvermorrowMod
                     Main.dust[dust].velocity.Y -= 0.5f;
                 }
             }
-                if(FungiInfection)
+            if (FungiInfection)
+            {
+                if (Main.rand.Next(8) < 3)
                 {
-                    if (Main.rand.Next(8) < 3)
-                    {
-                        int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width, npc.height, 41, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
-                        //Main.dust[dust].noGravity = true;
-                        Main.dust[dust].velocity *= 1.8f;
-                        Main.dust[dust].velocity.Y -= 0.5f;
-                    }
+                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width, npc.height, 41, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
+                    //Main.dust[dust].noGravity = true;
+                    Main.dust[dust].velocity *= 1.8f;
+                    Main.dust[dust].velocity.Y -= 0.5f;
                 }
+            }
         }
 
         // New method to apply buffs to NPCs, this is WIP
@@ -376,7 +384,7 @@ namespace OvermorrowMod
                 }
 
                 // If the looping int is still valid, remove the buff passed by the buff check
-                if(num3 == -1)
+                if (num3 == -1)
                 {
                     npc.DelBuff(num2);
                 }

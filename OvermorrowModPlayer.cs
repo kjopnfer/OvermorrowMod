@@ -75,6 +75,7 @@ namespace OvermorrowMod
         public bool moonBuff;
         public bool smolBoi;
         public bool treeBuff;
+        public bool windBuff;
 
         // Misc
         public Vector2 AltarCoordinates;
@@ -113,6 +114,7 @@ namespace OvermorrowMod
             moonBuff = false;
             smolBoi = false;
             treeBuff = false;
+            windBuff = false;
             MouseLampPlay = false;
             
             minionCounts = 0;
@@ -261,15 +263,6 @@ namespace OvermorrowMod
                     player.statMana = player.statManaMax;
                 }
             }
-            if (MarbleTrail)
-            {
-                TrailTimer++;
-                if (TrailTimer > 3 && player.velocity.X > 0 || TrailTimer > 3 && player.velocity.X < 0 || TrailTimer > 3 && player.velocity.Y < 0 || TrailTimer > 3 && player.velocity.Y > 0)
-                {
-                    Projectile.NewProjectile(player.Center.X, player.Center.Y, player.velocity.X, player.velocity.Y, mod.ProjectileType("PlayerMoveWave"), 15, 0f, Main.myPlayer);
-                    TrailTimer = 0;
-                }
-            }
         }
         public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
         {
@@ -332,6 +325,20 @@ namespace OvermorrowMod
             if (moonBuff)
             {
                 player.allDamage += .25f;
+            }
+
+            if (windBuff)
+            {
+                if (player.HeldItem.ranged)
+                {
+                    player.moveSpeed += 0.85f;
+                    TrailTimer++;
+                    if (TrailTimer > 3 && player.velocity.X > 0 || TrailTimer > 3 && player.velocity.X < 0 || TrailTimer > 3 && player.velocity.Y < 0 || TrailTimer > 3 && player.velocity.Y > 0)
+                    {
+                        Projectile.NewProjectile(player.Center.X, player.Center.Y, player.velocity.X, player.velocity.Y, mod.ProjectileType("PlayerMoveWave"), 15, 0f, Main.myPlayer);
+                        TrailTimer = 0;
+                    }
+                }
             }
         }
 
