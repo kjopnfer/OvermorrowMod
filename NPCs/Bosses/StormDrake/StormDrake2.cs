@@ -389,7 +389,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                         if (npc.ai[1]++ % /*100*/ 50 == 0 && !twothirdshealth)
                         {
-                            Projectile.NewProjectile(npc.Center + new Vector2(160 * npc.spriteDirection, -40), npc.DirectionTo(player.Center) * /*5f*/ 7.5f, ModContent.ProjectileType<LightningBreath>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
+                            Projectile.NewProjectile(npc.Center + new Vector2(160 * npc.spriteDirection, -40), npc.DirectionTo(player.Center) * /*5f*/(7.5f + Main.rand.NextFloat(2.5f)), ModContent.ProjectileType<LightningBreath>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
                         }
                         if (npc.ai[1] > 1 && npc.ai[1] < 300 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
                         {

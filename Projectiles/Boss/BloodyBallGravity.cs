@@ -27,7 +27,6 @@ namespace OvermorrowMod.Projectiles.Boss
         }
         public override void AI()
         {
-            //projectile.alpha = 255;
             Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
             projectile.ai[0]++;
             Color Bloodc = Color.Red;
@@ -39,10 +38,6 @@ namespace OvermorrowMod.Projectiles.Boss
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
                 dust81.velocity *= 0.5f;
-            }
-            while (projectile.velocity.X > 0.5f)
-            {
-                projectile.velocity.X = 0.5f;;
             }
         }
     }
