@@ -4,7 +4,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using System;
 
-namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm
+namespace OvermorrowMod.Projectiles.Piercing
 {
     public class WormHead : ModProjectile
     {
@@ -91,7 +91,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm
             if(timer == 3)
             {
             Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("WormBody"), projectile.damage / 2, 1f, projectile.owner, 0f);
+            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, ModContent.ProjectileType<WormBody>(), projectile.damage / 2, 1f, projectile.owner, 0f);
             timer = 0;
             }
         }

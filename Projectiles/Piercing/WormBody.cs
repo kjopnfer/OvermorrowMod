@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm
+namespace OvermorrowMod.Projectiles.Piercing
 {
     public class WormBody : ModProjectile
     {

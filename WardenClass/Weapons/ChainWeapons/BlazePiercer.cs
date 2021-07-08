@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.RuneBuffs;
+using OvermorrowMod.Projectiles.Piercing.HellFire;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -92,7 +93,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                     {
                         if (npc.friendly == false && npc.life > 0)
                         {
-                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 165, 0, 0, mod.ProjectileType("HellFireDown"), item.damage, 3, player.whoAmI);
+                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 165, 0, 0, ModContent.ProjectileType<HellFireDown>(), item.damage, 3, player.whoAmI);
                             Main.PlaySound(SoundID.Item45, Main.MouseWorld);
                         }
                     }

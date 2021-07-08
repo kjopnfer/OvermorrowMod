@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.RuneBuffs;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic.Worm;
+using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
