@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.WardenClass.Accessories;
@@ -76,7 +77,7 @@ namespace OvermorrowMod
                 }
             }
 
-            if (npc.type == 6)
+            if (npc.type == NPCID.EaterofSouls)
             {
                 if (Main.rand.Next(75) == 3) 
                 {
