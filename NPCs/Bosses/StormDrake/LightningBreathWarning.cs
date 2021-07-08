@@ -33,7 +33,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             LaserLength = length;
             projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.25f;//0.5f;//0.25f;
             NPC projectileowner = Main.npc[(int)projectile.ai[1]];
-            projectile.position = projectileowner.Center + new Vector2(/*175*/ /*180*/ 187 * direction, /*-49*/ /*-52*/ -50);
+            projectile.position = projectileowner.Center + new Vector2(/*175*/ /*180*/ 187 * direction, /*-49*/ /*-52*/ /*-50*/ -51);
             projectile.velocity = Vector2.UnitX * direction;
             //}
         }

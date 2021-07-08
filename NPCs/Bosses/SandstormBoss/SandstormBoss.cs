@@ -289,7 +289,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 case 2: // Turn into dust cloud
                     npc.hide = true;
 
-                    if (npc.ai[2] == (Main.expertMode ? 50 : 66))
+                    if (npc.ai[2] == (Main.expertMode ? 50 : 66) && npc.ai[1] <= 600)
+                    {
+                        npc.velocity = Vector2.Zero;
+                    }
+                    else if (npc.ai[2] == 50)
                     {
                         npc.velocity = Vector2.Zero;
                     }
