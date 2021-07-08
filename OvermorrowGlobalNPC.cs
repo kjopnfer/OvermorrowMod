@@ -76,6 +76,14 @@ namespace OvermorrowMod
                 }
             }
 
+            if (npc.type == 6)
+            {
+                if (Main.rand.Next(75) == 3) 
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EatersBlade>());
+                }
+            }
+            
             if (npc.type == NPCID.FungiBulb)
             {
                 int dropChance = Main.rand.Next(2);
