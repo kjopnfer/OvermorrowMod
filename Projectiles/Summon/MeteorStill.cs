@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
-    public class PufferFish : ModProjectile
+    public class MeteorStill : ModProjectile
     {
         int righttimer = 0;
         int lefttimer = 0;
@@ -32,17 +32,21 @@ namespace OvermorrowMod.Projectiles.Summon
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
 
+        private int ShowTime = 0;
+
+
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("PufferFish");
-            Main.projFrames[base.projectile.type] = 4;
+            Main.projFrames[base.projectile.type] = 2;
         }
 
         public override void SetDefaults()
         {
             projectile.sentry = true;
-            projectile.width = 44;
-            projectile.height = 48;
+            projectile.width = 26;
+            projectile.height = 26;
             projectile.minion = true;
             projectile.friendly = true;
             projectile.ignoreWater = true;
@@ -54,34 +58,38 @@ namespace OvermorrowMod.Projectiles.Summon
         
         public override void AI()
         {
+
             Player player = Main.player[projectile.owner];
             player.UpdateMaxTurrets();
             #region Active check
             if (player.dead || !player.active)
             {
-                player.ClearBuff(ModContent.BuffType<PufferBuff>());
+                player.ClearBuff(ModContent.BuffType<MeteorBuff>());
             }
-            if (player.HasBuff(ModContent.BuffType<PufferBuff>()))
+            if (player.HasBuff(ModContent.BuffType<MeteorBuff>()))
             {
                 projectile.timeLeft = 2;
             }
             #endregion
 
+
+
+            ShowTime++;
+            if(ShowTime == 1)
+            {
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<MeteorRangeShow>(), 0, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+            }
+
             PosCheck++;
 
-            projectile.position.X = Main.player[projectile.owner].Center.X - 22;
+            projectile.position.X = Main.player[projectile.owner].Center.X - 13;
             projectile.position.Y = Main.player[projectile.owner].Center.Y - 100;
             projectile.rotation = (projectile.Center - Main.MouseWorld).ToRotation();
-
-
-                projectile.rotation = (Main.MouseWorld - projectile.Center).ToRotation();
-            
-                projectile.spriteDirection = -1;
 
             if (Main.player[projectile.owner].channel)
             {
                 timer++;
-                if(timer == 10)
+                if(timer == 20)
                 {
                     int Random = Main.rand.Next(-15, 16);
                     Vector2 position = projectile.Center;
@@ -89,45 +97,26 @@ namespace OvermorrowMod.Projectiles.Summon
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(7f));
-                    float speed = 15.5f + (Random * 0.10f);
-                    Main.PlaySound(2, projectile.position, 85);
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<PuffBubble>(), projectile.damage, 1f, projectile.owner, 0f);
+                    float speed = 0;
+                    Main.PlaySound(2, projectile.position, 20);
+                    if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                    {
+                        Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<MeteorBall>(), projectile.damage, 1f, projectile.owner, 0f);
+                    }
+                    else
+                    {
+                        Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<MeteorBall2>(), projectile.damage, 1f, projectile.owner, 0f);
+                    }
                     timer = 0;
                 }
             }
 
-            if(Main.MouseWorld.X > projectile.Center.X)
+            if (++projectile.frameCounter >= 4)
             {
-                righttimer = 0;
-                lefttimer++;
-                if(lefttimer == 1)
-                {
-                    projectile.frame = 2;
-                }
-                if (++projectile.frameCounter >= 4)
-                {
-                    projectile.frameCounter = 0;
-                    if (++projectile.frame > 1)
-                    {
-                        projectile.frame = 0;
-                    }
-                }
-            }
-            else
-            {
-                lefttimer = 0;
-                righttimer++;
-                if(righttimer == 1)
+                projectile.frameCounter = 0;
+                if (++projectile.frame >= Main.projFrames[projectile.type])
                 {
                     projectile.frame = 0;
-                }
-                if (++projectile.frameCounter >= 4)
-                {
-                    projectile.frameCounter = 0;
-                    if (++projectile.frame > 3)
-                    {
-                        projectile.frame = 2;
-                    }
                 }
             }
         }

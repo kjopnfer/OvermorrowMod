@@ -7,19 +7,19 @@ using OvermorrowMod.Projectiles.Summon;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
 {
-    public class Pufferstaff : ModItem
+    public class MeteorStaff : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pufferfish Staff");
-            Tooltip.SetDefault("Summons a Pufferfish Still to fight for you \nTo make it fire use the summon stick \nTakes a sentry slot \nDespawn other stills before using");
+            DisplayName.SetDefault("Meteor Staff");
+            Tooltip.SetDefault("Summons a Meteor Still to fight for you \nTo make it fire use the summon stick \nTakes a sentry slot \nThe circle shows the range \nDespawn other stills before using");
         }
         public override void SetDefaults()
         {
             item.rare = ItemRarityID.Green;
             item.width = 32;
             item.height = 32;
-            item.damage = 8;
+            item.damage = 25;
             item.UseSound = SoundID.Item82;
             item.summon = true;
             item.noMelee = true;
@@ -28,9 +28,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.useAnimation = 40;
             item.useStyle = ItemUseStyleID.SwingThrow;
             item.autoReuse = false;
-            item.buffType = ModContent.BuffType<PufferBuff>();
+            item.buffType = ModContent.BuffType<MeteorBuff>();
             item.knockBack = 0;
-            item.shoot = ModContent.ProjectileType<PufferFish>();
+            item.shoot = ModContent.ProjectileType<MeteorStill>();
             item.shootSpeed = 0f;
         }
         public override bool CanUseItem(Player player)
@@ -41,7 +41,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(275, 8);
+            recipe1.AddIngredient(117, 17);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();
