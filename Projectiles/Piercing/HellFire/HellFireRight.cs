@@ -9,7 +9,7 @@ namespace OvermorrowMod.Projectiles.Magic.HellFire
 {
     public class HellFireRight : ModProjectile
     {
-        private const string ChainTexturePath = "OvermorrowMod/Projectiles/Magic/HellFire/HellFireDraw";
+        private const string ChainTexturePath = "OvermorrowMod/Projectiles/Piercing/HellFire/HellFireDraw";
 
         public override void SetStaticDefaults()
         {
