@@ -8,8 +8,8 @@ namespace OvermorrowMod.Projectiles.Pets
 	{
 		public override void SetStaticDefaults()
 		{
-			// DisplayName.SetDefault("Paper Airplane"); // Automatic from .lang files
-			Main.projFrames[projectile.type] = 5;
+			DisplayName.SetDefault("Smolboi"); 
+			Main.projFrames[projectile.type] = 3;
 			Main.projPet[projectile.type] = true;
 		}
 

@@ -22,7 +22,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             projectile.tileCollide = false;
             projectile.friendly = true;
             projectile.penetrate = -1;
-            projectile.timeLeft = 18000; // 5 minutes
+            projectile.timeLeft = 5400; // 1.5 minutes
         }
 
 
