@@ -36,7 +36,8 @@ namespace OvermorrowMod.Items.Armor.Marble
         }
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Moving leaves a damaging trail \n2% increased ranged damage \n3% increased magic damage";
+            player.setBonus = "2% increased ranged damage \n3% increased magic damage" +
+                "\nMagic projectiles have a chance to grant 'Apollo's Favor'\nWhile active, all held Ranged weapons provide a speed boost and leaves a wind trail";
             player.rangedDamage += 0.02f;
             player.magicDamage += 0.03f;
             player.GetModPlayer<OvermorrowModPlayer>().MarbleTrail = true;

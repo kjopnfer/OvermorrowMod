@@ -42,6 +42,10 @@ namespace OvermorrowMod.Projectiles.Magic
 
         private bool charge = false;
 
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Spikes");
+        }
 
         public override void SetDefaults()
         {
@@ -54,10 +58,7 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.penetrate = -1;
             projectile.timeLeft = 2;
         }
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Friendly Meatball");
-        }
+        
 
         public override void AI()
         {

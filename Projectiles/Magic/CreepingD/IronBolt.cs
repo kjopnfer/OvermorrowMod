@@ -15,6 +15,8 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
         {
             projectile.friendly = true;
             projectile.hostile = false;
+            projectile.magic = true;
+            projectile.alpha = 255;
             projectile.timeLeft = 150;
             projectile.width = 14;
             projectile.height = 14;

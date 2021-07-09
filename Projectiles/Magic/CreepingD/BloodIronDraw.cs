@@ -21,7 +21,6 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
             projectile.penetrate = -1;
             projectile.timeLeft = 17;
             projectile.alpha = 255;
-            projectile.light = 1.4f;
             projectile.ignoreWater = true;
             projectile.tileCollide = false;
             projectile.extraUpdates = 1;
@@ -29,6 +28,8 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
         }
         public override void AI()
         {
+            Lighting.AddLight(projectile.Center, 0.65f, 0f, 0f);
+
             projectile.ai[0]++;
 
             Dust dust;
