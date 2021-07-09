@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Tiles;
 using OvermorrowMod.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Tiles.Block;
+using OvermorrowMod.Tiles.TrapOre;
 using OvermorrowMod.WardenClass.Accessories;
 using Terraria;
 using Terraria.GameContent.Generation;
@@ -666,6 +667,32 @@ namespace OvermorrowMod
                 // Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
                 WorldGen.PlaceTile(x, y, ModContent.TileType<HerosAltar>());
             }
+
+            // Fake Ores
+            int[] ValidTiles = { TileID.Stone, TileID.IceBlock, TileID.SnowBlock, TileID.Mud };
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-05); k++)
+            {
+                // The inside of this for loop corresponds to one single splotch of our Ore.
+                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 200); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+
+                // Strength controls size
+                // Steps control interations
+                Tile tile = Framing.GetTileSafely(x, y);
+                if (tile.active() && ValidTiles.Contains(tile.type))
+                {
+                    if (WorldGen.GoldTierOre == TileID.Gold)
+                    {
+                        WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<FakeiteGold>());
+                    }
+                    else
+                    {
+                        WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<FakeitePlatinum>());
+                    }
+                }
+            }
+            
         }
 
         private void GenerateAmbientObjects(GenerationProgress progress)

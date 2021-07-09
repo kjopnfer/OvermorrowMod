@@ -1,11 +1,12 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Tiles;
 
-namespace OvermorrowMod.Tiles.TrapGems
+namespace OvermorrowMod.Tiles.TrapOre
 {
-    public class TrapAmethyst : ModTile
+    public class FakeiteGold : ModTile
     {
         public override void SetDefaults()
         {
@@ -20,22 +21,23 @@ namespace OvermorrowMod.Tiles.TrapGems
             Main.tileBlockLight[Type] = true;
 
 
+
             ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Fake Diamond");
-            AddMapEntry(new Color(200, 30, 0), name);
-            //dustType = 9;
+            name.SetDefault("\"Gold\"");
+            AddMapEntry(new Color(100, 0, 0), name);
+            dustType = 9;
+            soundType = SoundID.Tink;
             soundStyle = 1;
             mineResist = 2f;
             minPick = 1;
         }
 		public override bool Drop(int i, int j)
 		{
-			Tile t = Main.tile[i, j];
+            Tile t = Main.tile[i, j];
 			int style = 0;
 			if (style == 0) // It can be useful to share a single tile with multiple styles. This code will let you drop the appropriate bar if you had multiple.
 			{
-				Item.NewItem(i * 16, j * 16, 16, 16, 3);
-                NPC.NewNPC(i * 16, j * 16, mod.NPCType("AngryStone"));
+                Projectile.NewProjectile(i * 16, j * 16, 0, 0, mod.ProjectileType("FakeGold"), 0, 0f, Main.myPlayer);
 		    }
 		    return base.Drop(i, j);
         }
