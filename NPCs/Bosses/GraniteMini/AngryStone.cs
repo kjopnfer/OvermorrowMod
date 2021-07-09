@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Armor;
@@ -55,7 +55,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.HitSound = SoundID.NPCHit4;
             npc.value = Item.buyPrice(gold: 5);
             npc.boss = true;
-            //animationType = NPCID.Zombie;
         }
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
@@ -74,21 +73,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 if (npc.ai[2] > 0)
                 {
                     npc.ai[2]--;
-
-                    /*if (npc.ai[2] == 480)
-                    {
-                        BossText("I deem thee fit to inherit their powers.");
-                    }
-
-                    if (npc.ai[2] == 300)
-                    {
-                        BossText("Thou Dryad shalt guide thee.");
-                    }
-
-                    if (npc.ai[2] == 120)
-                    {
-                        BossText("Fare thee well.");
-                    }*/
                 }
                 else
                 {
@@ -126,10 +110,9 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                     }
 
-                    if (npc.ai[3] == 90/*% 30f == 1f*/)
+                    if (npc.ai[3] == 90)
                     {
-                        //Main.PlaySound(4, npc.Center, 22);
-                        Main.PlaySound(/*SoundID.Item25*/ /*SoundID.ForceRoar*/ /*SoundID.NPCKilled*/new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), npc.Center); // every half second while dying, play a sound
+                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), npc.Center); // every half second while dying, play a sound
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
@@ -162,7 +145,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             {
                 case -4: // half hp roar
                     {
-                        if (!AliveCheck(player)) { break; }
+                        if (!PlayerAlive(player)) { break; }
 
                         npc.immortal = true;
                         npc.dontTakeDamage = true;
@@ -196,9 +179,8 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 case -3: // spawn sequence
                     {
                         {
-                            if (!AliveCheck(player)) { break; }
+                            if (!PlayerAlive(player)) { break; }
 
-                            //npc.velocity = Vector2.UnitY * 1.2f;
                             npc.velocity = Vector2.UnitY * 0.7f;
                             npc.dontTakeDamage = true;
 
@@ -225,7 +207,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case -2: // slow movement
                     {
-                        if (!AliveCheck(player)) { break; }
+                        if (!PlayerAlive(player)) { break; }
 
                         Vector2 moveTo = player.Center;
                         var move = moveTo - npc.Center;
@@ -296,7 +278,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case 0: //Dash
                     {
-                        if (!AliveCheck(player)) { break; }
+                        if (!PlayerAlive(player)) { break; }
 
                         if (npc.ai[1] > 5 && npc.ai[1] < 30)
                         {
@@ -319,12 +301,12 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
                             {
-                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180 /*- 90*/)).ToRotation();
+                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180)).ToRotation();
                                 npc.spriteDirection = -1;
                             }
                             else
                             {
-                                npc.rotation = npc.DirectionTo(player.Center)./*RotatedBy(MathHelper.ToRadians(90)).*/ToRotation();
+                                npc.rotation = npc.DirectionTo(player.Center).ToRotation();
                             }
                             spriteDirectionStore = npc.spriteDirection;
                             dashing = true;
@@ -334,7 +316,10 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             for (int i = -1; i < 1; i++)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(0 /*5 + (10 * i)*/, /*0*/ 5 + (10 * i)/*).RotatedBy(npc.rotation)*/).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(npc.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                }
                             }
                         }
 
@@ -382,7 +367,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case 3: // telebombs
                     {
-                        if (!AliveCheck(player)) { break; }
+                        if (!PlayerAlive(player)) { break; }
 
                         if (npc.ai[1] == 15)
                         {
@@ -416,7 +401,10 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             int projectiles = 4 + (attackCounter * (changedPhase2 ? 3 : 2));
                             for (int j = 0; j < projectiles; j++)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(npc.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                }
                             }
                             attackCounter++;
                             npc.ai[1] = 0;
@@ -450,7 +438,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case 2: // throwing lasers in patterns
                     {
-                        if (!AliveCheck(player)) { break; }
+                        if (!PlayerAlive(player)) { break; }
 
                         if (npc.ai[2] == 0)
                         {
@@ -485,10 +473,13 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             Vector2 direction = player.Center - npc.Center;
                             direction.Normalize();
-                            int projectiles = /*changedPhase2 ? Main.rand.Next(9, 16) :*/ Main.rand.Next(6, 12);
+                            int projectiles = Main.rand.Next(6, 12);
                             for (int i = projectiles * -1 / 2; i < projectiles / 2; i++)
                             {
-                                Projectile.NewProjectile(npc.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(npc.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                }
                             }
                             attackCounter++;
                         }
@@ -521,7 +512,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case 1: //minions
                     {
-                        if (!AliveCheck(player)) { break; }
+                        if (!PlayerAlive(player)) { break; }
 
                         if (npc.ai[2] == 0)
                         {
@@ -556,7 +547,10 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             for (int i = -1; i < 1; i++)
                             {
-                                NPC.NewNPC((int)(npc.Center.X + 150 + (300 * i)), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    NPC.NewNPC((int)(npc.Center.X + 150 + (300 * i)), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
+                                }
                             }
                             int count = 0;
                             for (int k = 0; k < 200; k++)
@@ -618,12 +612,12 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             }
         }
 
-        private bool AliveCheck(Player player)
+        bool PlayerAlive(Player player)
         {
             if (!player.active || player.dead)
             {
-                npc.TargetClosest();
                 player = Main.player[npc.target];
+                npc.TargetClosest();
                 if (!player.active || player.dead)
                 {
                     if (npc.timeLeft > 25)
@@ -663,7 +657,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         {
             if (npc.ai[3] == 0f)
             {
-                npc.ai[2] = 0; //OvermorrowWorld.downedTree ? 0 : 540;
+                npc.ai[2] = 0;
                 dead = true;
                 npc.ai[3] = 1f;
                 npc.damage = 0;

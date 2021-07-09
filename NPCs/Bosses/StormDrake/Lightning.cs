@@ -1,7 +1,6 @@
 using System;
 using Terraria;
 using Terraria.ID;
-//using TestMod.Primitives;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
@@ -140,7 +139,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
             return positions;
         }
-        //public override string Texture => "Overmorrow/Textures/Empty";
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulHostile;
         public List<LightningSegment> Positions = new List<LightningSegment>();
         public float Length;
@@ -204,6 +202,10 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
     public class TestLightning : Lightning
     {
         public float maxTime = 30;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Lightning Bolt");
+        }
         public override void SafeSetDefaults()
         {
             projectile.width = 10;
@@ -228,6 +230,10 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
     {
         public int direction = 1;
         public float maxTime = 360;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Electric breath");
+        }
         public override void SafeSetDefaults()
         {
             projectile.width = 10;
@@ -254,12 +260,17 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
     public class TestLightning3 : Lightning
     {
         public float maxTime = 300;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Lightning Spark");
+        }
         public override void SafeSetDefaults()
         {
+            projectile.damage = 25;
             projectile.width = 5;
             projectile.hostile = true;
             projectile.timeLeft = (int)maxTime;
-            Length = 3f;//2f;//1f;
+            Length = 3f;
             Sine = true;
         }
         public override void AI()
@@ -277,6 +288,10 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
     public class TestLightning4 : Lightning
     {
         public float maxTime = 600;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Lightning Bolt");
+        }
         public override void SafeSetDefaults()
         {
             projectile.width = 10;
@@ -287,9 +302,35 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override void AI()
         {
-            //Length = TRay.CastLength(projectile.Center, projectile.velocity, 1000f);
             Length = 2500;
             Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, /*320*/ 640, /*16*/ 8, true);
+            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            float mult = (float)Math.Sin(progress * Math.PI);
+            for (int i = 0; i < Positions.Count; i++)
+            {
+                Positions[i].Size = Positions[i].DefSize * mult;
+            }
+        }
+    }
+    public class StormBolt2 : Lightning
+    {
+        public float maxTime = 15;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Storm Bolt");
+        }
+        public override void SafeSetDefaults()
+        {
+            projectile.width = 10;
+            projectile.friendly = true;
+            projectile.timeLeft = (int)maxTime;
+            Length = 1f;
+            Sine = true;
+        }
+        public override void AI()
+        {
+            Length = TRay.CastLength(projectile.Center, projectile.velocity, 2000f);
+            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)

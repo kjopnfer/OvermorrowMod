@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Projectiles.Ranged;
 using Terraria;
 using Terraria.ID;
@@ -27,7 +28,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.useTime = 50;
             item.width = 40;
             item.height = 66;
-            item.shoot = ModContent.ProjectileType<StormBolt>();
+            //item.shoot = ModContent.ProjectileType<StormBolt>();
+            item.shoot = ModContent.ProjectileType<StormBolt2>();
             item.shootSpeed = 30f;
             item.knockBack = 10f;
             item.ranged = true;
@@ -39,7 +41,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         {
             if (type == ProjectileID.WoodenArrowFriendly) 
             {
-                type = ModContent.ProjectileType<StormBolt>(); 
+                type = ModContent.ProjectileType<StormBolt2>(); 
             }
             return true;
         }
