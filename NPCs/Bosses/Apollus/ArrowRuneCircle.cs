@@ -23,7 +23,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.penetrate = -1;
             projectile.scale = 1f;
         }
-        //public bool kill = false;
         float rotationcounter;
         int directionalstore;
         int whoamistore;
@@ -89,8 +88,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     break;
                 case 2:
                     {
-                        Player projectileowner = Main.player[projectile.owner];
-                        projectile.position = projectileowner.Center + new Vector2(-35 + (566 * directionalstore), -35);
+                        NPC projectileowner = Main.npc[whoamistore];
+                        projectile.position = projectileowner.Center + new Vector2(/*-35*/ -70 * directionalstore, 0);
                         if (projectile.ai[1] == 0)
                         {
                             projectile.scale = 0.01f;
