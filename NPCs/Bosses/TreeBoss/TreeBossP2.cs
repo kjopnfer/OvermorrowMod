@@ -287,7 +287,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             {
                                 Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
                             }
-                            //Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureWave>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
                         }
 
                         if (npc.ai[1] > 600)
@@ -371,18 +370,24 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             {
                                 for (int i = 0; i < 4; i++)
                                 {
-                                    float ProjectileSpawnX = npc.Center.X + 150 + (333 * i);
-                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopLeft.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomLeft.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        float ProjectileSpawnX = npc.Center.X + 150 + (333 * i);
+                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopLeft.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomLeft.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    }
                                 }
                             }
                             else
                             {
                                 for (int i = 0; i < 4; i++)
                                 {
-                                    float ProjectileSpawnX = npc.Center.X - 150 - (333 * i);
-                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopRight.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomRight.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        float ProjectileSpawnX = npc.Center.X - 150 - (333 * i);
+                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopRight.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomRight.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    }
                                 }
                             }
                         }

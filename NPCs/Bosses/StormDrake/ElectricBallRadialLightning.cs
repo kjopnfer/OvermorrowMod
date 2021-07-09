@@ -8,7 +8,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
     public class ElectricBallRadialLightning : ModProjectile
     {
-        //int wait;
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
         public override void SetStaticDefaults()
         {
@@ -59,14 +58,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             {
                                 projectile.velocity = Vector2.Zero;
                             }
-                            //if (projectile.velocity.X < 2)//1.5)//0.8)//0.5)//0.25)//0.1)//0.025)
-                            //{
-                            //    projectile.velocity.X = 0;
-                            //}
-                            //if (projectile.velocity.Y < 2)//1.5)//0.8)//0.5)//0.25)//0.1)//0.025)
-                            //{
-                            //    projectile.velocity.Y = 0;
-                            //}
                         }
                         if (projectile.velocity == Vector2.Zero)
                         {
@@ -79,17 +70,13 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     {
                         if (projectile.ai[1] % /*5*/ 4 == 0 && projectile.ai[1] <= 144/*180*/)
                         {
-                            //if (/*projectile.ai[1] != 4 && projectile.ai[1] != 8*/ /*wait != 0*/)
-                            //{
-                            int proj = Projectile.NewProjectile(projectile.Center, new Vector2(0.01f, 0.01f).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<LaserWarning>(), projectile.damage, projectile.knockBack, projectile.owner);
-                            ((LaserWarning)Main.projectile[proj].modProjectile).killearly = true;
-                            ((LaserWarning)Main.projectile[proj].modProjectile).waittime = 100; 
-                            /*(int)projectile.ai[1] * -1*/
-                            //((LaserWarning)Main.projectile[proj].modProjectile).waittime = (wait * 4) * -1/*(int)projectile.ai[1] * -1*/;
-                            //}
-                            //wait++;
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int proj = Projectile.NewProjectile(projectile.Center, new Vector2(0.01f, 0.01f).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<LaserWarning>(), projectile.damage, projectile.knockBack, projectile.owner);
+                                ((LaserWarning)Main.projectile[proj].modProjectile).killearly = true;
+                                ((LaserWarning)Main.projectile[proj].modProjectile).waittime = 100;
+                            }
                         }
-                        //Main.NewText(projectile.ai[1]);
 
                         if (projectile.ai[1] > /*180*/ 144 && projectile.timeLeft > 90)
                         {

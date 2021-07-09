@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -78,7 +79,10 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         {
                             for (int i = 0; i < 5; i++)
                             {
-                                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), 12, 10f, Main.myPlayer);
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), 12, 10f, Main.myPlayer);
+                                }
                             }
                         }
                     }
@@ -115,7 +119,10 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         {
                             for (int i = 0; i < 5; i++)
                             {
-                                Projectile.NewProjectile(projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalstore, Main.rand.Next(-3, 3) * directionalstore), ProjectileType<ApollusArrowNormal>(), 12, 2, Main.myPlayer);
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalstore, Main.rand.Next(-3, 3) * directionalstore), ProjectileType<ApollusArrowNormal>(), 12, 2, Main.myPlayer);
+                                }
                             }
                         }
                     }

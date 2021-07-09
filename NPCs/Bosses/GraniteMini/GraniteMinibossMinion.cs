@@ -26,7 +26,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.damage = 25;
             npc.defense = 15;
             npc.lifeMax = 60;
-            //npc.HitSound = SoundID.NPCHit19;
             npc.HitSound = SoundID.NPCHit4;
             npc.knockBackResist = 0.4f;
             npc.DeathSound = SoundID.NPCDeath22;
@@ -48,12 +47,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             {
                 case 0:
                     {
-                        if (!AliveCheck(player)) { break; }
-
-                        /*if (!AliveCheck(player))
-                        {
-                            npc.velocity = Vector2.UnitY * -15;
-                        }*/
+                        if (!PlayerAlive(player)) { break; }
                         
                         if (npc.ai[3] == 0)
                         {
@@ -88,17 +82,20 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case 1:
                     {
-                        if (!AliveCheck(player)) { break; }
+                        if (!PlayerAlive(player)) { break; }
 
                         npc.velocity = Vector2.Zero;
 
                         if (++npc.ai[1] % 60 == 0)
                         {
-                            Projectile.NewProjectile(npc.Center, npc.DirectionTo(player.Center) * 7.5f, ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(npc.Center, npc.DirectionTo(player.Center) * 7.5f, ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                            }
                             npc.ai[2]++;
                         }
 
-                        if (npc.ai[2] == /*3*/ 1)
+                        if (npc.ai[2] == 1)
                         {
                             npc.ai[2] = 0;
                             npc.ai[1] = 0;
@@ -138,12 +135,12 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             }
         }
 
-        private bool AliveCheck(Player player)
+        bool PlayerAlive(Player player)
         {
             if (!player.active || player.dead)
             {
-                npc.TargetClosest();
                 player = Main.player[npc.target];
+                npc.TargetClosest();
                 if (!player.active || player.dead)
                 {
                     if (npc.timeLeft > 25)

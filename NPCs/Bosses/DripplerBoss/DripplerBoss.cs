@@ -24,9 +24,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         private int dripladCooldown = 0;
         private bool attackindicator = false;
         public bool turnonattackindicator = false;
-        //bool LocalPhaseTwo = false;
-        //bool randomrotatorshootistrue = false;
-        //private float bosslifescale;
         int lastchoice;
         int choice;
 
@@ -81,10 +78,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
-            //npc.lifeMax = (int)(npc.lifeMax * 2 /*bossLifeScale*/);
-            //npc.lifeMax = (int)(npc.lifeMax * 0.6f * bossLifeScale);
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
-            //bosslifescale = bossLifeScale;
             npc.defense = 50;
         }
 
@@ -205,19 +199,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
                 case 0: // Float towards the player
                     if (npc.ai[0] == 0)
-                    {
-                        /*if (OvermorrowWorld.dripPhase2 && !OvermorrowWorld.dripPhase3)
-                        {
-                            if (++npc.ai[3] >= 300)
-                            {
-                                int choice = Main.rand.Next(3);
-                                OvermorrowWorld.RotatingDripladAttackCounter = choice;
-                                //OvermorrowWorld.RotatingDripladAttackCounter = 0;
-                                Main.NewText(OvermorrowWorld.RotatingDripladAttackCounter);
-                                npc.ai[3] = 0;
-                            }
-                        }*/
-                        
+                    {                    
                         // Break statements to stop movement and continue to phase initializers
                         if (/*!LocalPhaseTwo*/ !OvermorrowWorld.dripPhase2 && !spawnedRotaters && /*!randomrotatorshootistrue &&*/ countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
                         {
@@ -225,12 +207,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             npc.ai[1] = 0;
                             break;
                         }
-                        /*if (!LocalPhaseTwo && !randomrotatorshootistrue && countDripplers <= 0 && npc.life <= (Main.expertMode ? 7200 : 6500 * 0.56f)/*npc.lifeMax * (Main.expertMode ? 0.56f : 0.56 / bosslifescale)*/ /*)
-                        {
-                            npc.ai[0] = 1;
-                            npc.ai[1] = 0;
-                            break;
-                        }*/
                         else if (/*LocalPhaseTwo*/ OvermorrowWorld.dripPhase2 && spawnedRotaters && countRotaters <= 0 /*&& randomrotatorshootistrue*/)
                         {
                             npc.ai[0] = 2;
@@ -297,13 +273,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             dripladCooldown--;
                             OvermorrowWorld.DripladShoot = false;
                         }
-                        /*else
-                        {
-                            if (dripladCooldown > 0)
-                            {
-                                dripladCooldown--;
-                            }
-                        }*/
 
                         if (changedPhase3)
                         {
@@ -339,11 +308,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 case 1: // Phase 2 Initializer
                     npc.velocity = Vector2.Zero;
 
-                    /*if (npc.ai[1] == 139 && spawnedRotaters == true)
-                    {
-                        randomrotatorshootistrue = true;
-                    }*/
-
                     if (npc.ai[1] == 140)
                     {
                         // Wall of Flesh scream sound
@@ -365,9 +329,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         {
                             for (int i = 0; i < 5; i++)
                             {
-                                //Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                /*int thisnpc =*/ NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, 350);
-                                //((RotatingDriplad)Main.npc[thisnpc].modNPC).Randomshotistrue = randomrotatorshootistrue;
+                                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, npc.whoAmI, 350);
                             }
                         }
                     }
@@ -379,10 +341,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         changedPhase2 = true;
                         OvermorrowWorld.dripPhase2 = true;
                         dripladCooldown = 400;
-                        /*if (randomrotatorshootistrue)
-                        {
-                            LocalPhaseTwo = true;
-                        }*/
                     }
                     break;
                 case 2: // Phase 3 Initializer

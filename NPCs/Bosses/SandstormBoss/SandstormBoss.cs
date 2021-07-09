@@ -250,7 +250,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                         if (npc.ai[1] % /*30*/15 == 0)
                         {
-                            Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(/*playercentersnapshot*/player.Center) * 7.5f, ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0, Main.myPlayer, 0, npc.ai[3]);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(/*playercentersnapshot*/player.Center) * 7.5f, ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0, Main.myPlayer, 0, npc.ai[3]);
+                            }
                         }
                     }
 
@@ -449,62 +452,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         npc.ai[1] = 0;
                     }
                     break;
-                /*case 4:
-                    {
-                        if (leftOfPlayer == true)
-                        {
-                            if (npc.ai[1] == 1)
-                            {
-                                npc.Teleport(player.Center + Vector2.UnitX * -700);
-                                npc.velocity = Vector2.Zero;
-                            }
-                            if (npc.ai[1] % 30 == 0)
-                            {
-                                if (movingUp == true)
-                                {
-                                    npc.velocity = new Vector2(Main.rand.Next(10, 13), Main.rand.Next(-13, -10));
-                                    movingUp = false;
-                                }
-                                else
-                                {
-                                    npc.velocity = new Vector2(Main.rand.Next(10, 13), Main.rand.Next(10, 13));
-                                    movingUp = true;
-                                }
-                            }
-                            if (npc.ai[1] == 150)
-                            {
-                                npc.ai[1] = 0;
-                                leftOfPlayer = false;
-                            }
-                        }
-                        else
-                        {
-                            if (npc.ai[1] == 1)
-                            {
-                                npc.Teleport(player.Center + Vector2.UnitX * 700);
-                                npc.velocity = Vector2.Zero;
-                            }
-                            if (npc.ai[1] % 30 == 0)
-                            {
-                                if (movingUp == true)
-                                {
-                                    npc.velocity = new Vector2(Main.rand.Next(-13, -10), Main.rand.Next(-13, -10));
-                                    movingUp = false;
-                                }
-                                else
-                                {
-                                    npc.velocity = new Vector2(Main.rand.Next(-13, -10), Main.rand.Next(10, 13));
-                                    movingUp = true;
-                                }
-                            }
-                            if (npc.ai[1] == 150)
-                            {
-                                npc.ai[1] = 0;
-                                leftOfPlayer = true;
-                            }
-                        }
-                    }
-                    break;*/
             }
 
             if (npc.ai[0] != 2 && npc.ai[0] != 3 && circleactive != true)
