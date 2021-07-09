@@ -51,7 +51,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         
                         if (npc.ai[3] == 0)
                         {
-                            moveSpeed = Main.rand.Next(10, 15);
+                            moveSpeed = Main.rand.Next(5, 10);
                             npc.ai[3]++;
                         }
 

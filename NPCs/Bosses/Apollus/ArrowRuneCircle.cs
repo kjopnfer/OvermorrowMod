@@ -77,7 +77,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         projectile.rotation += rotationcounter;
                         if (projectile.ai[1] % 45 == 0)
                         {
-                            for (int i = 0; i < 5; i++)
+                            for (int i = 0; i < Main.rand.Next(2, 5); i++)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {

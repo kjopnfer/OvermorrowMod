@@ -21,6 +21,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         {
             projectile.width = 12;
             projectile.height = 12;
+            projectile.hostile = true;
             projectile.friendly = false;
             projectile.tileCollide = false;
             projectile.penetrate = 30;

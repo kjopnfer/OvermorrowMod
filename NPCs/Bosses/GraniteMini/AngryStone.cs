@@ -21,7 +21,6 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         Vector2 teleportPosition = Vector2.Zero;
         bool changedPhase2 = false;
         bool changedPhase2Indicator = false;
-        bool changedPhase3 = false;
 
         int Direction = -1;
         bool direction = false;
@@ -64,6 +63,11 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         public override void AI()
         {
             Player player = Main.player[npc.target];
+
+            // AI [0] = Case Value
+            // AI [1] = Timer
+            // AI [2] = 
+            // AI [3] = 
 
             if (npc.ai[3] > 0f && dead == true)
             {
@@ -137,10 +141,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             {
                 changedPhase2 = true;
             }
-            if (npc.life <= npc.lifeMax * 0.25f)
-            {
-                changedPhase3 = true;
-            }
+            
             switch (npc.ai[0])
             {
                 case -4: // half hp roar
@@ -278,6 +279,13 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case 0: //Dash
                     {
+                        if (changedPhase2 && !changedPhase2Indicator)
+                        {
+                            npc.ai[0] = -4;
+                            npc.ai[1] = 0;
+                            break;
+                        }
+
                         if (!PlayerAlive(player)) { break; }
 
                         if (npc.ai[1] > 5 && npc.ai[1] < 30)
@@ -325,7 +333,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
                         if (++npc.ai[1] == 30)
                         {
-                            npc.velocity = (changedPhase2 ? 15 : 10) * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
+                            npc.velocity = (changedPhase2 ? 12 : 8) * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
                         }
                         else if (npc.ai[1] > 60 && npc.ai[1] < 120)
                         {
@@ -512,6 +520,13 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                     break;
                 case 1: //minions
                     {
+                        if (changedPhase2 && !changedPhase2Indicator)
+                        {
+                            npc.ai[0] = -4;
+                            npc.ai[1] = 0;
+                            break;
+                        }
+
                         if (!PlayerAlive(player)) { break; }
 
                         if (npc.ai[2] == 0)
@@ -642,7 +657,17 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frame.Y = frameHeight * frame;
+            npc.frameCounter++;
+
+            if (npc.frameCounter % 6f == 5f)
+            {
+                npc.frame.Y += frameHeight;
+            }
+            if (npc.frame.Y >= frameHeight * 8) // 8 is max # of frames
+            {
+                npc.frame.Y = 0; // Reset back to default
+            }
+
             if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
             {
                 npc.spriteDirection = -1;

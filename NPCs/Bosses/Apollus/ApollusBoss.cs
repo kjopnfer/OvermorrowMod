@@ -10,6 +10,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.NPCs.Bosses.Apollus
 {
+    [AutoloadBossHead]
     public class ApollusBoss : ModNPC
     {
         public override void SetStaticDefaults()
@@ -37,7 +38,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         int LastCase = 0;
         int RandomCeiling;
         Vector2 teleportPosition = Vector2.Zero;
-        int spritetimer = 0;
+        int spriteTimer = 0;
         int frame = 1;
         int proj;
         int projalt;
@@ -45,7 +46,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         bool direction = true;
         bool changedPhase2 = false;
         bool changedPhase2Indicator = false;
-        bool changedPhase3 = false;
         Vector2 playercentersnapshot;
         Vector2 spawnpos;
         bool dead = false;
@@ -53,6 +53,11 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         public override void AI()
         {
             Player player = Main.player[npc.target];
+
+            // AI [0] = Case Value
+            // AI [1] = 
+            // AI [2] = 
+            // AI [3] = Timer
 
             if (npc.ai[3] > 0f && dead == true)
             {
@@ -126,10 +131,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             {
                 changedPhase2 = true;
             }
-            if (npc.life <= npc.lifeMax * 0.25f)
-            {
-                changedPhase3 = true;
-            }
+
             switch (npc.ai[0])
             {
                 case -2: // yell and change phase
@@ -144,7 +146,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
-                            if (distance <= 600)
+                            if (distance <= 1200)
                             {
                                 Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
                             }
@@ -188,15 +190,22 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                     }
                     break;
-                case 0:
+                case 0: // spawn rune circle
                     {
+                        if (changedPhase2 && !changedPhase2Indicator)
+                        {
+                            npc.ai[0] = -2;
+                            npc.ai[3] = 0;
+                            break;
+                        }
+
                         if (!PlayerAlive(player)) { break; }
 
                         if (++npc.ai[1] == 1)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                proj = Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), 10, 0f, Main.myPlayer, -10, npc.whoAmI);
+                                proj = Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), 0, 0f, Main.myPlayer, -10, npc.whoAmI);
                             }
                         }
 
@@ -219,8 +228,15 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                     }
                     break;
-                case 1:
+                case 1: // fire arrows in all directions
                     {
+                        if (changedPhase2 && !changedPhase2Indicator)
+                        {
+                            npc.ai[0] = -2;
+                            npc.ai[3] = 0;
+                            break;
+                        }
+
                         if (!PlayerAlive(player)) { break; }
 
                         if (++npc.ai[1] % 30 == 0)
@@ -313,15 +329,16 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                     }
                     break;
-                case 3:
+                case 3: // hold rune circle
                     {
+
                         if (!PlayerAlive(player)) { break; }
 
                         if (++npc.ai[1] == 1)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                projalt = Projectile.NewProjectile(npc.Center + (Vector2.UnitX * -50 * (direction ? -1 : 1)), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), 15, direction ? -1 : 1, Main.myPlayer, -20, npc.whoAmI);
+                                projalt = Projectile.NewProjectile(npc.Center + (Vector2.UnitX * -50 * (direction ? -1 : 1)), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), 0, direction ? -1 : 1, Main.myPlayer, -20, npc.whoAmI);
                             }
                         }
 
@@ -410,17 +427,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             }
 
             npc.spriteDirection = npc.direction;
-
-            spritetimer++;
-            if (spritetimer > 8)
-            {
-                frame++;
-                spritetimer = 0;
-            }
-            if (frame > 3)
-            {
-                frame = 0;
-            }
         }
 
         bool PlayerAlive(Player player)
@@ -447,7 +453,19 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frame.Y = frameHeight * frame;
+            npc.frameCounter++;
+
+            if (npc.frameCounter % 6f == 5f)
+            {
+                npc.frame.Y += frameHeight;
+            }
+            if (npc.frame.Y >= frameHeight * 10) // 10 is max # of frames
+            {
+                npc.frame.Y = 0; // Reset back to default
+            }
+
+            // npc.frame.Y = frameHeight * frame;
+
             if (Main.player[npc.target].Center.X < npc.Center.X)
             {
                 npc.spriteDirection = -1;
