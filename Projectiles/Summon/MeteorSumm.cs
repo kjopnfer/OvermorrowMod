@@ -51,6 +51,12 @@ namespace OvermorrowMod.Projectiles.Summon
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
+            Vector2 idlePosition = player.Center;
+            float speed = 15f;
+            float inertia = 20f;
+            Vector2 vectorToIdlePosition = idlePosition - projectile.Center;
+            float distanceToIdlePosition = vectorToIdlePosition.Length();
+
 
             #region Active check
             if (player.dead || !player.active)
@@ -195,31 +201,34 @@ namespace OvermorrowMod.Projectiles.Summon
 			}
             else
             {
-                projectile.rotation = (projectile.Center - Main.player[projectile.owner].Center).ToRotation();
-
-                if (Main.player[projectile.owner].direction == -1)
+                projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(180f);
+                // Minion doesn't have a target: return to player and idle
+                if (distanceToIdlePosition > 100f)
                 {
-                    projectile.position.X = Main.player[projectile.owner].Center.X + Pos;
-                    projectile.position.Y = Main.player[projectile.owner].Center.Y - 20;
+                    // Speed up the minion if it's away from the player
+                    speed = 20f;
+                    inertia = 60f;
                 }
-
-                if (Main.player[projectile.owner].direction == 1)
+                else
                 {
-                    projectile.position.X = Main.player[projectile.owner].Center.X - Pos - 32;
-                    projectile.position.Y = Main.player[projectile.owner].Center.Y - 20;
+                    // Slow down the minion if closer to the player
+                    speed = 10f;
+                    inertia = 80f;
                 }
-
-                projectile.velocity.Y = 0f;
-                projectile.velocity.X = 0f;
-
-            }
-
-            if (++projectile.frameCounter >= 8)
-            {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                if (distanceToIdlePosition > 20f)
                 {
-                    projectile.frame = 0;
+                    // The immediate range around the player (when it passively floats about)
+
+                    // This is a simple movement formula using the two parameters and its desired direction to create a "homing" movement
+                    vectorToIdlePosition.Normalize();
+                    vectorToIdlePosition *= speed;
+                    projectile.velocity = (projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
+                }
+                else if (projectile.velocity == Vector2.Zero)
+                {
+                    // If there is a case where it's not moving at all, give it a little "poke"
+                    projectile.velocity.X = -0.15f;
+                    projectile.velocity.Y = -0.15f;
                 }
             }
         }
