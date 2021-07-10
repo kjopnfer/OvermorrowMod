@@ -6,18 +6,18 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Materials
 {
-    public class EruditeOre : ModItem
+    public class FakeGem : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Erudite Ore");
-            Tooltip.SetDefault("Used to craft uncraftable items\n'A peculiar ore enriched with knowledge'");
+            DisplayName.SetDefault("Cursed Ore");
+            Tooltip.SetDefault("Used to craft cursed items\n'Mimicking common ores, they are the bane of the unwary'");
         }
 
         public override void SetDefaults()
         {
-            item.width = 16;
-            item.height = 16;
+            item.width = 24;
+            item.height = 28;
             item.rare = ItemRarityID.Blue;
             item.maxStack = 999;
             item.useTurn = true;
@@ -26,16 +26,11 @@ namespace OvermorrowMod.Items.Materials
             item.useTime = 10;
             item.useStyle = ItemUseStyleID.SwingThrow;
             item.consumable = true;
-            item.createTile = ModContent.TileType<EruditeTile>();
         }
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return Color.White;
-        }
-
+        
         public override void PostUpdate()
         {
-            Lighting.AddLight(item.Center, 0f, 0.5f, 0f);
+            Lighting.AddLight(item.Center, 1f, 0f, 0f);
         }
     }
 }

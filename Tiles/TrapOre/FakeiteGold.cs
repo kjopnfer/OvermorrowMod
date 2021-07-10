@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Tiles;
+using OvermorrowMod.Items.Materials;
 
 namespace OvermorrowMod.Tiles.TrapOre
 {
@@ -24,6 +25,7 @@ namespace OvermorrowMod.Tiles.TrapOre
 
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("\"Gold\"");
+            drop = ModContent.ItemType<FakeGem>();
             AddMapEntry(new Color(100, 0, 0), name);
             dustType = 9;
             soundType = SoundID.Tink;

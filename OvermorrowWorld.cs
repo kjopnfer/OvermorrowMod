@@ -669,7 +669,7 @@ namespace OvermorrowMod
             }
 
             // Fake Ores
-            int[] ValidTiles = { TileID.Stone, TileID.IceBlock, TileID.SnowBlock, TileID.Mud };
+            int[] ValidTiles = { TileID.Stone, TileID.IceBlock, TileID.SnowBlock, TileID.Mud, TileID.HardenedSand };
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-05); k++)
             {
                 // The inside of this for loop corresponds to one single splotch of our Ore.
