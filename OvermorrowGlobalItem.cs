@@ -37,6 +37,10 @@ namespace OvermorrowMod
                 item.shoot = ModContent.ProjectileType<ShroomFlame>();
             }
             
+            if (item.type == 42)
+            {
+                item.ammo = item.type;
+            }    
         }
         public override void ModifyWeaponDamage(Item item, Player player, ref float add, ref float mult, ref float flat)
         {
