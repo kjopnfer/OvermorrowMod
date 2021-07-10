@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Projectiles.Summon;
+using OvermorrowMod.Buffs.Summon;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
 {
@@ -28,6 +29,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.rare = ItemRarityID.Blue;
             item.autoReuse = true;
             item.knockBack = 0;
+            item.buffType = ModContent.BuffType<DemEyeBuff>();
             item.shoot = ModContent.ProjectileType<MeteorSumm>();
             item.shootSpeed = 11f;
         }
@@ -39,6 +41,16 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             recipe1.SetResult(this);
             recipe1.AddRecipe();
         }
+
+
+        public override void UseStyle(Player player)
+        {
+            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
+            {
+                player.AddBuff(item.buffType, 3600, true);
+            }
+        }
+
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             // This is needed so the buff that keeps your minion alive and allows you to despawn it properly applies
