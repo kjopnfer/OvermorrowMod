@@ -86,10 +86,10 @@ namespace OvermorrowMod.Effects
                 buffer.SetData(positions.ToArray());
                 Main.graphics.GraphicsDevice.SetVertexBuffer(buffer);
                 Main.graphics.GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, positions.Count / 3);*/
-                PrimitivePacket packet = new PrimitivePacket(config);
-                packet.type = PrimitiveType.TriangleList;
-                packet.pass = "Basic";
-                packet.Set(positions);
+                PrimitivePacket packet = new PrimitivePacket();
+                packet.Type = PrimitiveType.TriangleList;
+                packet.Pass = "Texturized";
+                //packet.Set(positions);
                 packet.Send();
             }
         }

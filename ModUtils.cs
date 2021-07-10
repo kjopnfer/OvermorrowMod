@@ -14,8 +14,8 @@ namespace OvermorrowMod
         public static void Draw(this Rectangle rect, bool collides = false)
         {
             PrimitivePacket packet = new PrimitivePacket();
-            packet.type = PrimitiveType.TriangleList;
-            packet.pass = "Basic";
+            packet.Type = PrimitiveType.TriangleList;
+            packet.Pass = "Basic";
             Vector2 pos1 = rect.TopLeft();
             Vector2 pos2 = rect.BottomLeft();
             Vector2 pos3 = rect.TopRight();

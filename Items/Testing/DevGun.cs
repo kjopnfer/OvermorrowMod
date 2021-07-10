@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,8 +26,9 @@ namespace OvermorrowMod.Items.Testing
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.autoReuse = true;
             item.knockBack = 0;
-            item.shoot = mod.ProjectileType("GraniteLaser");
+            item.shoot = ModContent.ProjectileType<Shiro>();
             item.shootSpeed = 11f;
+            item.channel = true;
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Particles;
@@ -33,6 +34,9 @@ namespace OvermorrowMod
         public Effect Sword;
         public Effect Shockwave;
         public Effect VertexShader;
+        public Effect TrailShader;
+
+        public TrailManager TrailManager;
 
         public OvermorrowModFile()
         {
@@ -73,12 +77,16 @@ namespace OvermorrowMod
                 Sword = GetEffect("Effects/Trailshader");
                 Shockwave = GetEffect("Effects/Shockwave1");
                 VertexShader = GetEffect("Effects/VShader");
+                TrailShader = GetEffect("Effects/Trail");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 Particle.Load();
                 TestDetours.Load();
+
+                TrailManager = new TrailManager();
+                ModDetours.Load();
 
                 AltarUI = new UserInterface();
 
@@ -309,8 +317,13 @@ namespace OvermorrowMod
 
             Sword = null;
             Shockwave = null;
+            VertexShader = null;
+            TrailShader = null;
+
             Particle.Unload();
             TestDetours.Unload();
+            ModDetours.Unload();
+
 
             Souls = null;
             Altar = null;
@@ -323,6 +336,7 @@ namespace OvermorrowMod
             if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
             {
                 Particle.UpdateParticles();
+                TrailManager.UpdateTrails();
             }
         }
     }

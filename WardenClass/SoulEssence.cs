@@ -106,13 +106,16 @@ namespace WardenClass
                 TAlpha = true
             });
             helper.Draw();*/
-            PrimitivePacket packet = new PrimitivePacket();
-            packet.type = PrimitiveType.TriangleList;
-            packet.pass = "Basic";
-            packet.Add(projectile.Center - Vector2.UnitX * 100f, Color.Red, Vector2.Zero);
-            packet.Add(projectile.Center + Vector2.UnitX * 100f, Color.Red, Vector2.Zero);
-            packet.Add(projectile.Center - Vector2.UnitY * 100f, Color.Red, Vector2.Zero);
-            packet.Send();
+
+            /*PrimitivePacket packet = new PrimitivePacket();
+            float size = 100f;
+            packet.Pass = "Basic";
+            packet.Type = PrimitiveType.TriangleStrip;
+            for (int i = 0; i < 4; i++)
+            {
+                packet.Add(projectile.Center + Vector2.One.RotatedBy(Math.PI / 2 * i) * size, Color.Red, Vector2.Zero);
+            }
+            packet.Send();*/
 
             return base.PreDraw(spriteBatch, lightColor);
         }
