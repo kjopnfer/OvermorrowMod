@@ -14,7 +14,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Holy Light");
+            DisplayName.SetDefault("Shroomfire");
         }
 
         public override void SetDefaults()
