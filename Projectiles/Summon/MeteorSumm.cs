@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Buffs.Summon;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -50,6 +51,17 @@ namespace OvermorrowMod.Projectiles.Summon
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
+
+            #region Active check
+            if (player.dead || !player.active)
+            {
+                player.ClearBuff(ModContent.BuffType<DemEyeBuff>());
+            }
+            if (player.HasBuff(ModContent.BuffType<DemEyeBuff>()))
+            {
+                projectile.timeLeft = 2;
+            }
+            #endregion
 
             NumProj = Main.player[projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<MeteorSumm>()];
             PosCheck++;
