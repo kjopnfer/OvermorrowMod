@@ -122,21 +122,21 @@ namespace OvermorrowMod.Projectiles.Summon
 
                 if(NPCtargetX + mrand > projectile.Center.X)
                 {
-                    projectile.velocity.X += 0.7f;
+                    projectile.velocity.X += 1.1f;
                 }
 
                 if(NPCtargetX + mrand < projectile.Center.X)
                 {
-                    projectile.velocity.X -= 0.7f;
+                    projectile.velocity.X -= 1.1f;
                 }
 
                 if(NPCtargetY - 50 - NPCtargetHeight > projectile.Center.Y)
                 {
-                    projectile.velocity.Y += 0.7f;
+                    projectile.velocity.Y += 1.1f;
                 }
                 if(NPCtargetY - 50 - NPCtargetHeight < projectile.Center.Y)
                 {
-                    projectile.velocity.Y -= 0.7f;
+                    projectile.velocity.Y -= 1.1f;
                 }
             }
             if(dive)
