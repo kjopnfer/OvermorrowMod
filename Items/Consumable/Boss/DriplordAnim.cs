@@ -14,25 +14,37 @@ namespace OvermorrowMod.Items.Consumable.Boss
     public class DriplordAnim : ModProjectile
     {
         //public bool dripsdead = false;
+        public float scale = 1;
         public int dripsdead = 0;
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => "OvermorrowMod/NPCs/Bosses/DripplerBoss/DripplerBoss";//"OvermorrowMod/Projectiles/Boss/ElectricBall";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Summoning Circles");
+            Main.projFrames[projectile.type] = 12;
         }
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
+            //projectile.width = 12;
+            //projectile.height = 12;
+            projectile.width = 320;
+            projectile.height = 482;
             projectile.tileCollide = false;
             projectile.hostile = false;
             projectile.friendly = true;
             projectile.timeLeft = 1800;
             projectile.penetrate = -1;
-            projectile.alpha = 255;
+            projectile.scale = 1;
+            //projectile.alpha = 255;
         }
         public override void AI()
         {
+            projectile.scale = scale;
+
+            if (projectile.ai[0] == 0)
+            {
+                scale = 0.01f;
+                projectile.scale = 0.01f;
+            }
             if (projectile.ai[0]++ % /*7*/ 4 == 0 && projectile.ai[1] < 33)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -44,7 +56,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
             }
             if (dripsdead == 33)
             {
-                Vector2 origin = new Vector2((int)projectile.position.X, (int)projectile.position.Y - 125);
+                Vector2 origin = new Vector2((int)projectile.Center.X, (int)projectile.Center.Y - /*50*/ projectile.height / 4);
                 float radius = 333;//250;
                 int numLocations = 200;
                 for (int i = 0; i < 200; i++)
@@ -70,7 +82,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
                         NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Dripplord, the Bloody Assimilator has awoken!"), new Color(175, 75, 255));
                     }
 
-                    NPC.NewNPC((int)projectile.Center.X, (int)projectile.Center.Y, ModContent.NPCType<DripplerBoss>(), 0, 0f, 0f, 0f, 0f, 255);
+                    NPC.NewNPC((int)projectile.Center.X, (int)projectile.Center.Y + 205, ModContent.NPCType<DripplerBoss>(), 0, 0f, 0f, 0f, 0f, 255);
                     Main.PlaySound(SoundID.Roar, player.position, 0);
                     projectile.Kill();
                 }

@@ -35,6 +35,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
             if (projectile.Distance(owner.Center) < 25)
             {
                 ((DriplordAnim)Main.projectile[(int)projectile.ai[1]].modProjectile).dripsdead += 1; //true;
+                ((DriplordAnim)Main.projectile[(int)projectile.ai[1]].modProjectile).scale += 0.03f; //true;
                 projectile.Kill();
             }
         }
