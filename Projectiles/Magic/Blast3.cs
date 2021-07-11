@@ -35,7 +35,16 @@ namespace OvermorrowMod.Projectiles.Magic
             if(timer == 1)
             {
                 projectile.damage *= 5;
-                projectile.velocity *= 3f;
+                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                {
+                    projectile.velocity.X = 17;
+                    projectile.velocity.Y = 0;
+                }
+                else
+                {
+                    projectile.velocity.X = -17;
+                    projectile.velocity.Y = 0;
+                }
             }
             projectile.rotation = projectile.velocity.ToRotation();
             if (++projectile.frameCounter >= 4)
