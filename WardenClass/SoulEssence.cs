@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects;
+using OvermorrowMod.Effects.Prim;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -8,8 +9,12 @@ using Terraria.ModLoader;
 
 namespace WardenClass
 {
-    public class SoulEssence : ModProjectile
+    public class SoulEssence : ModProjectile, ITrailEntity
     {
+        public Type TrailType()
+        {
+            return typeof(SoulTrail);
+        }
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {

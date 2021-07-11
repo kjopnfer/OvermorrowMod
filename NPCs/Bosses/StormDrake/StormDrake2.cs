@@ -449,18 +449,18 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             //createAfterimage = true;
                         }
                         // not only is the multi rotational dashes broken with afterimage, but pulse too
-                        //if (npc.ai[1] > 180 && npc.ai[1] < /*240*/ /*180*/ 240)
-                        //{
-                        //    //npc.velocity = Vector2.Zero;
-                        //    if (npc.ai[1] > 180 && npc.ai[1] < 230)
-                        //    {
-                        //        canPulse = true;
-                        //    }
-                        //    else
-                        //    {
-                        //        canPulse = false;
-                        //    }
-                        //}
+                        if (npc.ai[1] > 180 && npc.ai[1] < /*240*/ /*180*/ 240)
+                        {
+                            //npc.velocity = Vector2.Zero;
+                            if (npc.ai[1] > 180 && npc.ai[1] < 230)
+                            {
+                                canPulse = true;
+                            }
+                            else
+                            {
+                                canPulse = false;
+                            }
+                        }
                         if (npc.ai[1] == /*180*/ 240)
                         {
                             npc.velocity =25 * npc.DirectionTo(PlayerCenterStore);
@@ -728,51 +728,51 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
             Texture2D texture2D16 = mod.GetTexture("NPCs/Bosses/StormDrake/StormDrake2");
 
-            // this controls the passive pulsing effect
-            if (canPulse)
-            {
-                // this gets the npc's frame
-                Vector2 vector47 = drawOrigin;
-                Color color55 = Color.White; // This is just white lol
-                float amount10 = 0f; // I think this controls amount of color
-                int num178 = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
-                int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
+            //// this controls the passive pulsing effect
+            //if (canPulse)
+            //{
+            //    // this gets the npc's frame
+            //    Vector2 vector47 = drawOrigin;
+            //    Color color55 = Color.White; // This is just white lol
+            //    float amount10 = 0f; // I think this controls amount of color
+            //    int num178 = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
+            //    int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
 
 
-                // default value
-                int num177 = 12; // ok i think this controls the number of afterimage frames
-                float num176 = 1f - (float)Math.Cos((npc.ai[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
-                num176 /= 3f;
-                float scaleFactor10 = 10f; // Change scale factor of the pulsing effect and how far it draws outwards
+            //    // default value
+            //    int num177 = 12; // ok i think this controls the number of afterimage frames
+            //    float num176 = 1f - (float)Math.Cos((npc.ai[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
+            //    num176 /= 3f;
+            //    float scaleFactor10 = 10f; // Change scale factor of the pulsing effect and how far it draws outwards
 
-                Color color47 = Color.Lerp(Color.White, Color.Blue, 0.5f);
-                color55 = Color.Cyan;
-                amount10 = 1f;
+            //    Color color47 = Color.Lerp(Color.White, Color.Blue, 0.5f);
+            //    color55 = Color.Cyan;
+            //    amount10 = 1f;
 
-                // ok this is the pulsing effect drawing
-                for (int num164 = 1; num164 < num177; num164++)
-                {
-                    // these assign the color of the pulsing
-                    Color color45 = Color.Cyan;
-                    //color45 = Color.Lerp(Color.DarkBlue, Color.Cyan, (float)num164 / num177);
-                    color45 = ((ModNPC)this).npc.GetAlpha(color45);
-                    color45 *= 1f - num176; // num176 is put in here to effect the pulsing
+            //    // ok this is the pulsing effect drawing
+            //    for (int num164 = 1; num164 < num177; num164++)
+            //    {
+            //        // these assign the color of the pulsing
+            //        Color color45 = Color.Cyan;
+            //        //color45 = Color.Lerp(Color.DarkBlue, Color.Cyan, (float)num164 / num177);
+            //        color45 = ((ModNPC)this).npc.GetAlpha(color45);
+            //        color45 *= 1f - num176; // num176 is put in here to effect the pulsing
 
-                    // num176 is used here too
-                    Vector2 vector45 = ((Entity)((ModNPC)this).npc).Center + Terraria.Utils.ToRotationVector2((float)num164 / (float)num177 * ((float)Math.PI * 2f) + ((ModNPC)this).npc.rotation) * scaleFactor10 * num176 - Main.screenPosition;
-                    vector45 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[((ModNPC)this).npc.type]) * ((ModNPC)this).npc.scale / 2f;
-                    vector45 += vector47 * ((ModNPC)this).npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
+            //        // num176 is used here too
+            //        Vector2 vector45 = ((Entity)((ModNPC)this).npc).Center + Terraria.Utils.ToRotationVector2((float)num164 / (float)num177 * ((float)Math.PI * 2f) + ((ModNPC)this).npc.rotation) * scaleFactor10 * num176 - Main.screenPosition;
+            //        vector45 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[((ModNPC)this).npc.type]) * ((ModNPC)this).npc.scale / 2f;
+            //        vector45 += vector47 * ((ModNPC)this).npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
 
-                    // the actual drawing of the pulsing effect
-                    spriteBatch.Draw(texture2D16, vector45 - new Vector2(0, 290 / 2), ((ModNPC)this).npc.frame, color45, ((ModNPC)this).npc.rotation, vector47, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
-                }
-            }
-            //Texture2D texture = Main.npcTexture[npc.type];
-            /*Texture2D texture = mod.GetTexture("NPCs/StormDrake/StormDrake2");
-            Texture2D texture2 = mod.GetTexture("NPCs/StormDrake/StormDrake_Glowmask");
+            //        // the actual drawing of the pulsing effect
+            //        spriteBatch.Draw(texture2D16, vector45 - new Vector2(0, 290 / 2), ((ModNPC)this).npc.frame, color45, ((ModNPC)this).npc.rotation, vector47, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            //    }
+            //}
+            Texture2D texture = Main.npcTexture[npc.type];
+            //Texture2D texture2 = mod.GetTexture("Overmorrow/NPCs/StormDrake/StormDrake_Glowmask");
+            Texture2D texture2 = mod.GetTexture("Overmorrow/NPCs/StormDrake/StormDrake_Glowmask");
             SpriteEffects effects = npc.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Vector2 origin = npc.Center;//npc.frame.Size() / 2;
-            spriteBatch.Reload(BlendState.Additive);
+            Vector2 origin = npc.frame.Size() / 2;
+            /*spriteBatch.Reload(BlendState.Additive);
             if ((npc.aiAction == 0 && npc.ai[0] > 300))
             {
                 for (int i = 0; i < NPCID.Sets.TrailCacheLength[npc.type]; i++)
@@ -795,9 +795,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             spriteBatch.Reload(BlendState.AlphaBlend);
             spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, npc.GetAlpha(drawColor), npc.rotation, origin, npc.scale, effects, 0f);
             spriteBatch.Reload(BlendState.AlphaBlend);
-            spriteBatch.Draw(texture2, npc.Center, npc.frame, Color.White, npc.rotation, origin, npc.scale, effects, 0.01f);
-            return false;*/
-            /*if (phaseAnimation)
+            spriteBatch.Draw(texture2, npc.Center, npc.frame, Color.White, npc.rotation, origin, npc.scale, effects, 0.01f);*/
+            //return false;
+            if (canPulse)//(phaseAnimation)
             {
                 // this gets the npc's frame
                 Vector2 vector472 = drawOrigin;
@@ -834,7 +834,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     // the actual drawing of the pulsing effect
                     spriteBatch.Draw(texture2D16, vector452 - new Vector2(0, 290 / 2), ((ModNPC)this).npc.frame, color452, ((ModNPC)this).npc.rotation, vector472, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
-            }*/
+            }
             return true;
         }
         public override void NPCLoot()

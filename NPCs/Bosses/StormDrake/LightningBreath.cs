@@ -1,6 +1,10 @@
 using Terraria;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Effects.Prim;
+using System;
+using Terraria.ID;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
