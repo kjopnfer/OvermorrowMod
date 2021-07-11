@@ -23,7 +23,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         {
 			projectile.width = 18;
             projectile.height = 18;
-            projectile.timeLeft = 10000;
+            projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -124,7 +124,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         {
 			projectile.width = 18;
             projectile.height = 18;
-            projectile.timeLeft = 10000;
+            projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -178,7 +178,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         {
 			projectile.width = 18;
             projectile.height = 18;
-            projectile.timeLeft = 1000;
+            projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -230,7 +230,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         {
 			projectile.width = 18;
             projectile.height = 18;
-            projectile.timeLeft = 1000;
+            projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -282,7 +282,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         {
 			projectile.width = 18;
             projectile.height = 18;
-            projectile.timeLeft = 1000;
+            projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
