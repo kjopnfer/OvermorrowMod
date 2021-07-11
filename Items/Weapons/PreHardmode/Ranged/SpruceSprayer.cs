@@ -19,8 +19,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.rare = ItemRarityID.Blue;
             item.damage = 7;
             item.ranged = true;
-            item.width = 58;
-            item.height = 36;
+            item.width = 70;
+            item.height = 46;
             item.useTime = 7;
             item.useAnimation = 14;
             item.useStyle = ItemUseStyleID.HoldingOut;
