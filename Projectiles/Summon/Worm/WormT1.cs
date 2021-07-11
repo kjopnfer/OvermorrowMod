@@ -243,6 +243,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+            
+            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            {
+                projectile.Kill();
+            }
 
             timer++;
             if(timer == 1)
