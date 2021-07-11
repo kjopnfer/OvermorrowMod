@@ -48,7 +48,12 @@ namespace OvermorrowMod.Projectiles.Summon
         public override void AI()
         {
 
-            Projectile parentProjectile = Main.projectile[(int)projectile.ai[0]];
+            for (int i = 0; i < 200; i++)
+            {
+
+            Projectile parentProjectile = Main.projectile[i];
+            if (parentProjectile.active && parentProjectile.type == mod.ProjectileType("MeteorStill"))
+            {
                 timer++;
                 if (timer == 1)
                 {
@@ -79,6 +84,8 @@ namespace OvermorrowMod.Projectiles.Summon
                 {
                     projectile.frame = 0;
                 }
+            }
+            }
             }
         }
     }
