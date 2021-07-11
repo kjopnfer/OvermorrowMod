@@ -315,9 +315,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
-                            if (distance <= 600)
+                            if (distance <= 1200)
                             {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
                             }
                         }
                         /*
@@ -356,9 +356,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
-                                if (distance <= 600)
+                                if (distance <= 1200)
                                 {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
                                 }
                             }
 
@@ -401,9 +401,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
-                                if (distance <= 600)
+                                if (distance <= 1200)
                                 {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().BossRoar = true;
+                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
                                 }
                             }
 

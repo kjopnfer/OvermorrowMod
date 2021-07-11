@@ -79,6 +79,7 @@ namespace OvermorrowMod
 
         // Misc
         public Vector2 AltarCoordinates;
+        public int ScreenShake;
         public bool BossRoar;
         public int shakeTimer = 0;
         public bool FocusBoss;
@@ -118,7 +119,7 @@ namespace OvermorrowMod
             treeBuff = false;
             windBuff = false;
             MouseLampPlay = false;
-            
+
             minionCounts = 0;
 
             bool dashAccessoryEquipped = false;
@@ -375,7 +376,7 @@ namespace OvermorrowMod
 
         public override void PostUpdateEquips()
         {
-            if(player.mount.Active || player.mount.Cart)
+            if (player.mount.Active || player.mount.Cart)
             {
                 player.dashDelay = 10;
                 DashType = 0;
@@ -417,7 +418,7 @@ namespace OvermorrowMod
         {
             if (OvermorrowModFile.SandModeKey.JustPressed && ArmBracer)
             {
-                if(sandMode == 0) // Defense
+                if (sandMode == 0) // Defense
                 {
                     sandMode = 1;
                     Main.NewText("Swapped to Attack Mode", Color.Yellow);
@@ -472,7 +473,7 @@ namespace OvermorrowMod
                         canFocus = false;
                         amount = 0;
                     }
-                    
+
                 }
                 else
                 {
@@ -503,24 +504,16 @@ namespace OvermorrowMod
                             canFocus = true;
                             ShowText = false;
                         }
-                        
+
                     }
                 }
             }
             if (!Main.gamePaused)
             {
-                if (BossRoar)
+                if (ScreenShake > 0)
                 {
-                    if (shakeTimer <= 60)
-                    {
-                        Main.screenPosition += new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10));
-                        shakeTimer++;
-                    }
-                    else
-                    {
-                        shakeTimer = 0;
-                        BossRoar = false;
-                    }
+                    Main.screenPosition += new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10));
+                    ScreenShake--;
                 }
             }
         }
