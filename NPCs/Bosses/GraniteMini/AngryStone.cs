@@ -30,7 +30,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         int RandomCeiling;
         bool movement = true;
 
-        bool dashing = false;
+        bool npcDashing = false;
         int spriteDirectionStore = 0;
 
         bool dead = false;
@@ -62,7 +62,21 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
         public override void AI()
         {
+            // reset boolean
+            OvermorrowWorld.downedKnight = false;
+
             Player player = Main.player[npc.target];
+
+            // Reset counters
+            int countMinions = 0;
+
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<GraniteMinibossMinion>())
+                {
+                    countMinions++;
+                }
+            }
 
             // AI [0] = Case Value
             // AI [1] = Timer
@@ -137,24 +151,73 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 return;
             }
 
-            if (npc.life <= npc.lifeMax * 0.5f)
+           
+
+            if (npc.life <= npc.lifeMax * 0.5f || OvermorrowWorld.downedLady)
             {
                 changedPhase2 = true;
             }
-            
+
             switch (npc.ai[0])
             {
                 case -4: // half hp roar
-                    {
-                        if (!PlayerAlive(player)) { break; }
+                    if (!PlayerAlive(player)) { break; }
 
-                        npc.immortal = true;
-                        npc.dontTakeDamage = true;
-                        if (npc.ai[1] == 45)
+                    npc.immortal = true;
+                    npc.dontTakeDamage = true;
+                    if (npc.ai[1] == 45)
+                    {
+                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
+                    }
+
+                    for (int i = 0; i < Main.maxPlayers; i++)
+                    {
+                        float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                        if (distance <= 600)
                         {
-                            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
+                            Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                        }
+                    }
+
+                    if (++npc.ai[1] > 240)
+                    {
+                        npcDashing = false;
+                        npc.dontTakeDamage = false;
+                        npc.immortal = false;
+                        changedPhase2Indicator = true;
+                        npc.ai[1] = 0;
+                        npc.ai[2] = 1;
+                        npc.ai[0] = -1;
+                        npc.ai[3] = 0;
+                    }
+                    break;
+                case -3: // spawn sequence
+                    if (!PlayerAlive(player)) { break; }
+
+                    // reset boolean
+                    OvermorrowWorld.downedKnight = false;
+
+                    npc.velocity = Vector2.UnitY * 0.7f;
+                    npc.dontTakeDamage = true;
+
+                    if (++npc.ai[1] > 380)
+                    {
+                        // check if no minions
+                        if (countMinions <= 0)
+                        {
+                            npc.ai[0] = 1;
+                            npc.ai[1] = 0;
+                        }
+                        else
+                        {
+                            npc.ai[0] = 0;
+                            npc.ai[1] = 0;
                         }
 
+                        npc.dontTakeDamage = false;
+                        player.GetModPlayer<OvermorrowModPlayer>().ShowText = false;
+                        npc.velocity = Vector2.Zero;
+                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
@@ -163,98 +226,58 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                                 Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                             }
                         }
+                        npcDashing = false;
+                    }
+                    break;
+                case -2: // slow movement towards player
 
-                        if (++npc.ai[1] > 240)
+                    if (!PlayerAlive(player)) { break; }
+
+                    Vector2 moveTo = player.Center;
+                    var move = moveTo - npc.Center;
+                    var speed = 5;
+
+                    float length = move.Length();
+                    if (length > speed)
+                    {
+                        move *= speed / length;
+                    }
+                    var turnResistance = 45;
+                    move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                    length = move.Length();
+                    if (length > 10)
+                    {
+                        move *= speed / length;
+                    }
+                    npc.velocity.X = move.X;
+                    npc.velocity.Y = move.Y * .98f;
+
+                    if (++npc.ai[1] > (changedPhase2 ? 150 : 180))
+                    {
+                        if (changedPhase2 == true && changedPhase2Indicator == false)
                         {
-                            dashing = false;
-                            npc.dontTakeDamage = false;
-                            npc.immortal = false;
-                            changedPhase2Indicator = true;
+                            npc.ai[0] = -4;
                             npc.ai[1] = 0;
-                            npc.ai[2] = 1;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
+                        }
+                        else
+                        {
                             npc.ai[0] = -1;
-                            npc.ai[3] = 0;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
                         }
                     }
-                    break;
-                case -3: // spawn sequence
-                    {
-                        {
-                            if (!PlayerAlive(player)) { break; }
 
-                            npc.velocity = Vector2.UnitY * 0.7f;
-                            npc.dontTakeDamage = true;
-
-                            if (++npc.ai[1] > 380)
-                            {
-                                npc.ai[0] = 1;
-                                npc.ai[1] = 0;
-                                npc.dontTakeDamage = false;
-                                player.GetModPlayer<OvermorrowModPlayer>().ShowText = false;
-                                npc.velocity = Vector2.Zero;
-                                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
-                                for (int i = 0; i < Main.maxPlayers; i++)
-                                {
-                                    float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
-                                    if (distance <= 600)
-                                    {
-                                        Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
-                                    }
-                                }
-                                dashing = false;
-                            }
-                        }
-                    }
-                    break;
-                case -2: // slow movement
-                    {
-                        if (!PlayerAlive(player)) { break; }
-
-                        Vector2 moveTo = player.Center;
-                        var move = moveTo - npc.Center;
-                        var speed = 5;
-
-                        float length = move.Length();
-                        if (length > speed)
-                        {
-                            move *= speed / length;
-                        }
-                        var turnResistance = 45;
-                        move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
-                        length = move.Length();
-                        if (length > 10)
-                        {
-                            move *= speed / length;
-                        }
-                        npc.velocity.X = move.X;
-                        npc.velocity.Y = move.Y * .98f;
-
-                        if (++npc.ai[1] > (changedPhase2 ? 150 : 180))
-                        {
-                            if (changedPhase2 == true && changedPhase2Indicator == false)
-                            {
-                                npc.ai[0] = -4;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
-                            }
-                            else
-                            {
-                                npc.ai[0] = -1;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
-                            }
-                        }
-                    }
                     break;
                 case -1: // case switching
                     {
@@ -277,340 +300,332 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                     }
                     break;
-                case 0: //Dash
+                case 0: // dash towards player
+                    if (changedPhase2 && !changedPhase2Indicator)
                     {
-                        if (changedPhase2 && !changedPhase2Indicator)
-                        {
-                            npc.ai[0] = -4;
-                            npc.ai[1] = 0;
-                            break;
-                        }
+                        npc.ai[0] = -4;
+                        npc.ai[1] = 0;
+                        break;
+                    }
 
-                        if (!PlayerAlive(player)) { break; }
+                    if (!PlayerAlive(player)) { break; }
 
-                        if (npc.ai[1] > 5 && npc.ai[1] < 30)
+                    if (npc.ai[1] > 5 && npc.ai[1] < 30)
+                    {
+                        if (++npc.ai[2] % 5 == 0)
                         {
-                            if (++npc.ai[2] % 5 == 0)
+                            Vector2 origin = npc.Center;
+                            float radius = 45;
+                            int numLocations = 30;
+                            for (int i = 0; i < 30; i++)
                             {
-                                Vector2 origin = npc.Center;
-                                float radius = 45;
-                                int numLocations = 30;
-                                for (int i = 0; i < 30; i++)
-                                {
-                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                    Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
-                                    Main.dust[dust].noGravity = true;
-                                }
-                            }
-                        }
-
-                        if (npc.ai[1] == 30)
-                        {
-                            if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
-                            {
-                                npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180)).ToRotation();
-                                npc.spriteDirection = -1;
-                            }
-                            else
-                            {
-                                npc.rotation = npc.DirectionTo(player.Center).ToRotation();
-                            }
-                            spriteDirectionStore = npc.spriteDirection;
-                            dashing = true;
-                        }
-
-                        if (npc.ai[1] > 30 && npc.ai[1] < 90 && npc.ai[1] % 10 == 0 && changedPhase2 == true)
-                        {
-                            for (int i = -1; i < 1; i++)
-                            {
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    Projectile.NewProjectile(npc.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
-                                }
-                            }
-                        }
-
-                        if (++npc.ai[1] == 30)
-                        {
-                            npc.velocity = (changedPhase2 ? 12 : 8) * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
-                        }
-                        else if (npc.ai[1] > 60 && npc.ai[1] < 120)
-                        {
-                            npc.velocity = new Vector2(MathHelper.Lerp(npc.velocity.X, 0, changedPhase2 ? 0.05f : 0.025f), MathHelper.Lerp(npc.velocity.Y, 0, changedPhase2 ? 0.05f : 0.025f));
-                        }
-                        else if (npc.ai[1] > 120)
-                        {
-                            npc.ai[1] = 0;
-                            attackCounter++;
-                            dashing = false;
-                        }
-                        if (attackCounter == (changedPhase2 ? 7 : 5))
-                        {
-                            if (changedPhase2 == true && changedPhase2Indicator == false)
-                            {
-                                npc.ai[0] = -4;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
-                            }
-                            else
-                            {
-                                npc.ai[0] = -1;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
+                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                Main.dust[dust].noGravity = true;
                             }
                         }
                     }
 
+                    if (npc.ai[1] == 30)
+                    {
+                        if (Main.player[npc.target].Center.X < npc.Center.X && npcDashing == false)
+                        {
+                            npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180)).ToRotation();
+                            npc.spriteDirection = -1;
+                        }
+                        else
+                        {
+                            npc.rotation = npc.DirectionTo(player.Center).ToRotation();
+                        }
+                        spriteDirectionStore = npc.spriteDirection;
+                        npcDashing = true;
+                    }
+
+                    if (npc.ai[1] > 30 && npc.ai[1] < 90 && npc.ai[1] % 10 == 0 && changedPhase2 == true)
+                    {
+                        for (int i = -1; i < 1; i++)
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(npc.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                            }
+                        }
+                    }
+
+                    if (++npc.ai[1] == 30)
+                    {
+                        npc.velocity = (changedPhase2 ? 12 : 8) * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
+                    }
+                    else if (npc.ai[1] > 60 && npc.ai[1] < 120)
+                    {
+                        npc.velocity = new Vector2(MathHelper.Lerp(npc.velocity.X, 0, changedPhase2 ? 0.05f : 0.025f), MathHelper.Lerp(npc.velocity.Y, 0, changedPhase2 ? 0.05f : 0.025f));
+                    }
+                    else if (npc.ai[1] > 120)
+                    {
+                        npc.ai[1] = 0;
+                        attackCounter++;
+                        npcDashing = false;
+                    }
+                    if (attackCounter == (changedPhase2 ? 7 : 5))
+                    {
+                        if (changedPhase2 == true && changedPhase2Indicator == false)
+                        {
+                            npc.ai[0] = -4;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
+                        }
+                        else
+                        {
+                            npc.ai[0] = -1;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
+                        }
+                    }
                     break;
                 case 3: // telebombs
-                    {
-                        if (!PlayerAlive(player)) { break; }
+                    if (!PlayerAlive(player)) { break; }
 
-                        if (npc.ai[1] == 15)
+                    if (npc.ai[1] == 15)
+                    {
+                        teleportPosition = player.Center + Main.rand.NextVector2Circular(333, 333);
+
+                        while (Main.tile[(int)teleportPosition.X / 16, (int)teleportPosition.Y / 16].active())
                         {
                             teleportPosition = player.Center + Main.rand.NextVector2Circular(333, 333);
+                        }
+                    }
 
-                            while (Main.tile[(int)teleportPosition.X / 16, (int)teleportPosition.Y / 16].active())
+                    if (npc.ai[1] > 30)
+                    {
+                        if (++npc.ai[2] % 5 == 0)
+                        {
+                            Vector2 origin = teleportPosition;
+                            float radius = 20;
+                            int numLocations = 30;
+                            for (int i = 0; i < 30; i++)
                             {
-                                teleportPosition = player.Center + Main.rand.NextVector2Circular(333, 333);
+                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                Main.dust[dust].noGravity = true;
                             }
                         }
-
-                        if (npc.ai[1] > 30)
+                    }
+                    if (++npc.ai[1] > 90)
+                    {
+                        npc.Teleport(teleportPosition + new Vector2(-51, -51), 206);
+                        int projectiles = 4 + (attackCounter * (changedPhase2 ? 3 : 2));
+                        for (int j = 0; j < projectiles; j++)
                         {
-                            if (++npc.ai[2] % 5 == 0)
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 origin = teleportPosition;
-                                float radius = 20;
-                                int numLocations = 30;
-                                for (int i = 0; i < 30; i++)
-                                {
-                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                    Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
-                                    Main.dust[dust].noGravity = true;
-                                }
+                                Projectile.NewProjectile(npc.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
                             }
                         }
-                        if (++npc.ai[1] > 90)
+                        attackCounter++;
+                        npc.ai[1] = 0;
+                    }
+                    if (attackCounter == 4)
+                    {
+                        if (changedPhase2 == true && changedPhase2Indicator == false)
                         {
-                            npc.Teleport(teleportPosition + new Vector2(-51, -51), 206);
-                            int projectiles = 4 + (attackCounter * (changedPhase2 ? 3 : 2));
-                            for (int j = 0; j < projectiles; j++)
-                            {
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    Projectile.NewProjectile(npc.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
-                                }
-                            }
-                            attackCounter++;
+                            npc.ai[0] = -4;
                             npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
                         }
-                        if (attackCounter == 4)
+                        else
                         {
-                            if (changedPhase2 == true && changedPhase2Indicator == false)
-                            {
-                                npc.ai[0] = -4;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
-                            }
-                            else
-                            {
-                                npc.ai[0] = -1;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
-                            }
+                            npc.ai[0] = -1;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
                         }
                     }
                     break;
                 case 2: // throwing lasers in patterns
+                    if (!PlayerAlive(player)) { break; }
+
+                    if (npc.ai[2] == 0)
                     {
-                        if (!PlayerAlive(player)) { break; }
+                        direction = Main.rand.NextBool();
+                        Direction = direction ? -1 : 1;
+                        npc.ai[2]++;
+                    }
 
-                        if (npc.ai[2] == 0)
+                    if (npc.ai[1] > 5 && npc.ai[1] < 40)
+                    {
+                        if (++npc.ai[2] % 5 == 0)
                         {
-                            direction = Main.rand.NextBool();
-                            Direction = direction ? -1 : 1;
-                            npc.ai[2]++;
-                        }
-
-                        if (npc.ai[1] > 5 && npc.ai[1] < 40)
-                        {
-                            if (++npc.ai[2] % 5 == 0)
+                            Vector2 origin = new Vector2(player.Center.X + (-600 * Direction), player.Center.Y);
+                            float radius = 15;
+                            int numLocations = 30;
+                            for (int i = 0; i < 30; i++)
                             {
-                                Vector2 origin = new Vector2(player.Center.X + (-600 * Direction), player.Center.Y);
-                                float radius = 15;
-                                int numLocations = 30;
-                                for (int i = 0; i < 30; i++)
-                                {
-                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
-                                    Main.dust[dust].noGravity = true;
-                                }
-                            }
-                        }
-
-                        if (npc.ai[1] > 40)
-                        {
-                            npc.position = new Vector2(player.Center.X + (-600 * Direction) - 51, player.Center.Y -51);
-                        }
-
-                        if (++npc.ai[1] % (changedPhase2 ? 45 : 60) == 0)
-                        {
-                            Vector2 direction = player.Center - npc.Center;
-                            direction.Normalize();
-                            int projectiles = Main.rand.Next(6, 12);
-                            for (int i = projectiles * -1 / 2; i < projectiles / 2; i++)
-                            {
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    Projectile.NewProjectile(npc.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
-                                }
-                            }
-                            attackCounter++;
-                        }
-                        if (attackCounter == 8)
-                        {
-                            if (changedPhase2 == true && changedPhase2Indicator == false)
-                            {
-                                npc.ai[0] = -4;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
-                            }
-                            else
-                            {
-                                npc.ai[0] = -1;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
+                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                Main.dust[dust].noGravity = true;
                             }
                         }
                     }
-                    break;
-                case 1: //minions
+
+                    if (npc.ai[1] > 40)
                     {
-                        if (changedPhase2 && !changedPhase2Indicator)
+                        npc.position = new Vector2(player.Center.X + (-600 * Direction) - 51, player.Center.Y - 51);
+                    }
+
+                    if (++npc.ai[1] % (changedPhase2 ? 45 : 60) == 0)
+                    {
+                        Vector2 direction = player.Center - npc.Center;
+                        direction.Normalize();
+                        int projectiles = Main.rand.Next(6, 12);
+                        for (int i = projectiles * -1 / 2; i < projectiles / 2; i++)
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(npc.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                            }
+                        }
+                        attackCounter++;
+                    }
+                    if (attackCounter == 8)
+                    {
+                        if (changedPhase2 == true && changedPhase2Indicator == false)
                         {
                             npc.ai[0] = -4;
                             npc.ai[1] = 0;
-                            break;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
                         }
-
-                        if (!PlayerAlive(player)) { break; }
-
-                        if (npc.ai[2] == 0)
+                        else
                         {
-                            direction = Main.rand.NextBool();
-                            Direction = direction ? -1 : 1;
-                            npc.ai[2]++;
+                            npc.ai[0] = -1;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
                         }
-
-                        if (npc.ai[1] > 5 && npc.ai[1] < 90)
-                        {
-                            if (++npc.ai[2] % 5 == 0)
-                            {
-                                Vector2 origin = new Vector2(player.Center.X + -300 * Direction, player.Center.Y);
-                                float radius = 15;
-                                int numLocations = 30;
-                                for (int i = 0; i < 30; i++)
-                                {
-                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
-                                    Main.dust[dust].noGravity = true;
-                                }
-                            }
-                        }
-
-                        if (npc.ai[1] > 90)
-                        {
-                            npc.position = new Vector2(player.Center.X + -300 * Direction - 51, player.Center.Y -51);
-                        }
-
-                        if (++npc.ai[1] % 120 == 0 && npc.ai[1] < 360)
-                        {
-                            for (int i = -1; i < 1; i++)
-                            {
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    NPC.NewNPC((int)(npc.Center.X + 150 + (300 * i)), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
-                                }
-                            }
-                            int count = 0;
-                            for (int k = 0; k < 200; k++)
-                            {
-                                if (Main.npc[k].active && Main.npc[k].type == mod.NPCType("GraniteMinibossMinion"))
-                                {
-                                    if (count < 4)
-                                    {
-                                        count++;
-                                    }
-                                    else
-                                    {
-                                        ((GraniteMinibossMinion)Main.npc[k].modNPC).kill = true;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (npc.ai[1] == 420)
-                        {
-                            if (changedPhase2 == true && changedPhase2Indicator == false)
-                            {
-                                npc.ai[0] = -4;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
-                            }
-                            else
-                            {
-                                npc.ai[0] = -1;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                                attackCounter = 0;
-                                npc.velocity = Vector2.Zero;
-                                npc.rotation = 0;
-                                dashing = false;
-                                teleportPosition = Vector2.Zero;
-                            }
-                        }
+                    }
+                    break;
+                case 1: // minions
+                    if (changedPhase2 && !changedPhase2Indicator)
+                    {
+                        npc.ai[0] = -4;
+                        npc.ai[1] = 0;
                         break;
                     }
+
+                    if (!PlayerAlive(player)) { break; }
+
+                    if (npc.ai[2] == 0)
+                    {
+                        direction = Main.rand.NextBool();
+                        Direction = direction ? -1 : 1;
+                        npc.ai[2]++;
+                    }
+
+                    if (npc.ai[1] > 5 && npc.ai[1] < 90)
+                    {
+                        if (++npc.ai[2] % 5 == 0)
+                        {
+                            Vector2 origin = new Vector2(player.Center.X + -300 * Direction, player.Center.Y);
+                            float radius = 15;
+                            int numLocations = 30;
+                            for (int i = 0; i < 30; i++)
+                            {
+                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                Main.dust[dust].noGravity = true;
+                            }
+                        }
+                    }
+
+                    if (npc.ai[1] > 90)
+                    {
+                        npc.position = new Vector2(player.Center.X + -300 * Direction - 51, player.Center.Y - 51);
+                    }
+
+                    if (++npc.ai[1] % 120 == 0 && npc.ai[1] < 360)
+                    {
+                        for (int i = -1; i < 1; i++)
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                NPC.NewNPC((int)(npc.Center.X + 150 + (300 * i)), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
+                            }
+                        }
+                        int count = 0;
+                        for (int k = 0; k < 200; k++)
+                        {
+                            if (Main.npc[k].active && Main.npc[k].type == mod.NPCType("GraniteMinibossMinion"))
+                            {
+                                if (count < 4)
+                                {
+                                    count++;
+                                }
+                                else
+                                {
+                                    ((GraniteMinibossMinion)Main.npc[k].modNPC).kill = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (npc.ai[1] == 420)
+                    {
+                        if (changedPhase2 == true && changedPhase2Indicator == false)
+                        {
+                            npc.ai[0] = -4;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
+                        }
+                        else
+                        {
+                            npc.ai[0] = -1;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                            attackCounter = 0;
+                            npc.velocity = Vector2.Zero;
+                            npc.rotation = 0;
+                            npcDashing = false;
+                            teleportPosition = Vector2.Zero;
+                        }
+                    }
+                    break;
+
             }
             npc.spriteDirection = npc.direction;
             npc.spriteDirection = 1;
@@ -668,11 +683,11 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 npc.frame.Y = 0; // Reset back to default
             }
 
-            if (Main.player[npc.target].Center.X < npc.Center.X && dashing == false)
+            if (Main.player[npc.target].Center.X < npc.Center.X && npcDashing == false)
             {
                 npc.spriteDirection = -1;
             }
-            while (dashing == true && npc.spriteDirection != spriteDirectionStore)
+            while (npcDashing == true && npc.spriteDirection != spriteDirectionStore)
             {
                 npc.spriteDirection = spriteDirectionStore;
             }
@@ -696,6 +711,8 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
         public override void NPCLoot()
         {
+            OvermorrowWorld.downedKnight = true;
+
             if (Main.expertMode)
             {
                 npc.DropBossBags();
@@ -714,7 +731,8 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             else if (choice == 2) // Mage
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteBook>());
-            }else if (choice == 3) // Summoner
+            }
+            else if (choice == 3) // Summoner
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteStaff>());
             }

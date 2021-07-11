@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Consumable;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.Projectiles.NPCs.Hostile;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

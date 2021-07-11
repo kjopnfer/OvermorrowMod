@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +9,10 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 {
     public class ArrowRuneCircle : ModProjectile
     {
+        float rotationCounter;
+        int directionalStore;
+        int whoAmiStore;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Rune Circle");
@@ -23,48 +28,52 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.penetrate = -1;
             projectile.scale = 1f;
         }
-        float rotationcounter;
-        int directionalstore;
-        int whoamistore;
-
+      
         public override void AI()
         {
             if (projectile.ai[0] == -10)
             {
                 projectile.ai[0] = 0;
-                whoamistore = (int)projectile.ai[1];
+                whoAmiStore = (int)projectile.ai[1];
                 projectile.ai[1] = 0;
             }
+
             if (projectile.ai[0] == -20)
             {
                 projectile.ai[0] = 2;
-                whoamistore = (int)projectile.ai[1];
+                whoAmiStore = (int)projectile.ai[1];
                 projectile.ai[1] = 0;
             }
-            NPC owner = Main.npc[whoamistore];
+
+            NPC owner = Main.npc[whoAmiStore];
+
             if (!owner.active)
             {
                 projectile.Kill();
                 return;
             }
+
             if (projectile.damage == 15)
             {
                 projectile.ai[0] = 2;
             }
+
             switch (projectile.ai[0])
             {
-                case 0:
+                case 0: // spawn animation
                     {
                         if (projectile.ai[1] == 0)
                         {
                             projectile.scale = 0.01f;
                         }
+
                         if (projectile.ai[1] > 2 && projectile.ai[1] < 45)
                         {
                             projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
-                            rotationcounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
-                            projectile.rotation += rotationcounter;
+                            rotationCounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                            projectile.rotation += rotationCounter;
                         }
+
                         if (projectile.ai[1] == 45)
                         {
                             projectile.ai[0] = 1;
@@ -73,36 +82,70 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     break;
                 case 1: // shoot upwards
                     {
-                        projectile.rotation += rotationcounter;
-                        if (projectile.ai[1] % 45 == 0)
+                        projectile.rotation += rotationCounter;
+                        if (OvermorrowWorld.downedKnight)
                         {
-                            for (int i = 0; i < Main.rand.Next(2, 5); i++)
+                            if (projectile.ai[1] % 25 == 0)
                             {
+                                int shootSpeed = Main.rand.Next(6, 8);
+
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), 12, 10f, Main.myPlayer);
+                                    float distance = 2000f;
+                                    for (int k = 0; k < Main.maxPlayers; k++)
+                                    {
+                                        if (Main.player[k].active && !Main.player[k].dead)
+                                        {
+                                            Vector2 newMove = Main.player[k].Center - projectile.Center;
+                                            float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
+                                            if (distanceTo < distance)
+                                            {
+                                                if (Main.player[k].active && !Main.player[k].dead)
+                                                {
+                                                    Projectile.NewProjectile(projectile.Center, projectile.DirectionTo(Main.player[k].Center) * shootSpeed, ModContent.ProjectileType<ApollusArrowNormal>(), 13, 3f, Main.myPlayer, 0, 0);
+                                                }
+                                                distance = distanceTo;
+                                            }
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (projectile.ai[1] % 45 == 0)
+                            {
+                                for (int i = 0; i < Main.rand.Next(2, 5); i++)
+                                {
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), 12, 10f, Main.myPlayer);
+                                    }
                                 }
                             }
                         }
                     }
                     break;
-                case 2:
+                case 2: // spawn animation
                     {
-                        NPC projectileowner = Main.npc[whoamistore];
-                        projectile.position = projectileowner.Center + new Vector2(/*-35*/ -70 * directionalstore, 0);
+                        NPC projectileOwner = Main.npc[whoAmiStore];
+                        projectile.position = projectileOwner.Center + new Vector2(/*-35*/ -70 * directionalStore, 0);
                         if (projectile.ai[1] == 0)
                         {
                             projectile.scale = 0.01f;
-                            directionalstore = (int)projectile.knockBack;
+                            directionalStore = (int)projectile.knockBack;
                             projectile.knockBack = 10;
                             projectile.damage = 12;
                         }
+
                         if (projectile.ai[1] > 2 && projectile.ai[1] < 45)
                         {
                             projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
-                            rotationcounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
-                            projectile.rotation += rotationcounter;
+                            rotationCounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                            projectile.rotation += rotationCounter;
                         }
+
                         if (projectile.ai[1] == 45)
                         {
                             projectile.ai[0] = 3;
@@ -111,16 +154,16 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     break;
                 case 3: // shoot to the sides
                     {
-                        Player projectileowner = Main.player[projectile.owner];
-                        projectile.position = projectileowner.Center + new Vector2(-35 + (566 * directionalstore), -35);
-                        projectile.rotation += rotationcounter;
+                        Player projectileOwner = Main.player[projectile.owner];
+                        projectile.position = projectileOwner.Center + new Vector2(-35 + (566 * directionalStore), -35);
+                        projectile.rotation += rotationCounter;
                         if (projectile.ai[1] % 45 == 0)
                         {
                             for (int i = 0; i < 5; i++)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalstore, Main.rand.Next(-3, 3) * directionalstore), ProjectileType<ApollusArrowNormal>(), 12, 2, Main.myPlayer);
+                                    Projectile.NewProjectile(projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalStore, Main.rand.Next(-3, 3) * directionalStore), ProjectileType<ApollusArrowNormal>(), 12, 2, Main.myPlayer);
                                 }
                             }
                         }

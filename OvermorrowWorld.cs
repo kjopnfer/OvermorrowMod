@@ -24,6 +24,8 @@ namespace OvermorrowMod
         public static bool downedTree;
         public static bool downedDrippler;
         public static bool downedDrake;
+        public static bool downedLady;
+        public static bool downedKnight;
 
         // Boss Attacks
         public static bool DripplerCircle;

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Armor.Marble;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Projectiles.NPCs.Hostile;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,6 +14,25 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
     [AutoloadBossHead]
     public class ApollusBoss : ModNPC
     {
+        public int maxRuneCircle = 3;
+        public int timer = 0;
+        int randomCase = 0;
+        int LastCase = 0;
+        int randomCeiling;
+        Vector2 teleportPosition = Vector2.Zero;
+        int spriteTimer = 0;
+        int frame = 1;
+        int proj;
+        int projalt;
+        //bool direction;
+        bool direction = true;
+        bool changedPhase2 = false;
+        bool changedPhase2Indicator = false;
+        bool spawnedShields = false;
+        Vector2 playerCenterSnapShot;
+        Vector2 spawnpos;
+        bool dead = false;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Apollus");
@@ -32,26 +52,12 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             npc.HitSound = SoundID.NPCHit4;
         }
 
-        public int maxRuneCircle = 3;
-        public int timer = 0;
-        int RandomCase = 0;
-        int LastCase = 0;
-        int RandomCeiling;
-        Vector2 teleportPosition = Vector2.Zero;
-        int spriteTimer = 0;
-        int frame = 1;
-        int proj;
-        int projalt;
-        //bool direction;
-        bool direction = true;
-        bool changedPhase2 = false;
-        bool changedPhase2Indicator = false;
-        Vector2 playercentersnapshot;
-        Vector2 spawnpos;
-        bool dead = false;
+        
 
         public override void AI()
         {
+            OvermorrowWorld.downedLady = false;
+
             Player player = Main.player[npc.target];
 
             // AI [0] = Case Value
@@ -59,7 +65,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             // AI [2] = 
             // AI [3] = Timer
 
-            if (npc.ai[3] > 0f && dead == true)
+            if (npc.ai[3] > 0f && dead == true) // death animation
             {
                 npc.velocity = Vector2.Zero;
 
@@ -111,7 +117,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                             if (distance <= 600)
                             {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
                             }
                         }
                     }
@@ -126,8 +132,21 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 return;
             }
 
-            bool expertMode = Main.expertMode;
-            if (npc.life <= npc.lifeMax * 0.5f)
+            // spawn shields
+            if (!spawnedShields && OvermorrowWorld.downedKnight)
+            {
+                float radius = 100;
+                int numLocations = 3;
+                for (int i = 0; i < numLocations; i++)
+                {
+                    Vector2 position = npc.Center + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                    Projectile.NewProjectile(position, Vector2.Zero, ModContent.ProjectileType<HostileReflectile>(), 0, 0f, Main.myPlayer, npc.whoAmI, 120 * i);
+                }
+                spawnedShields = true;
+            }
+
+            // reset boolean
+            if (npc.life <= npc.lifeMax * 0.5f || OvermorrowWorld.downedKnight)
             {
                 changedPhase2 = true;
             }
@@ -157,6 +176,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                             npc.immortal = false;
                             npc.dontTakeDamage = false;
                             changedPhase2Indicator = true;
+
                             npc.ai[1] = 0;
                             npc.ai[2] = 1;
                             npc.ai[0] = 4;
@@ -167,6 +187,9 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 case -1: // spawn sequence
                     {
                         if (!PlayerAlive(player)) { break; }
+
+                        // reset boolean
+                        OvermorrowWorld.downedLady = false;
 
                         npc.velocity = Vector2.UnitY * 0.7f;
                         npc.dontTakeDamage = true;
@@ -272,25 +295,25 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                     }
                     break;
-                case 2:
+                case 2: // arrow circle
                     {
                         if (!PlayerAlive(player)) { break; }
 
                         if (npc.ai[1]++ == 0)
                         {
-                            playercentersnapshot = player.Center;
+                            playerCenterSnapShot = player.Center;
                         }
 
                         if (npc.ai[2]++ > 0 && npc.ai[3] != 390 / 30 && npc.ai[1] > 1)
                         {
-                            npc.position = playercentersnapshot + new Vector2(-550, 0).RotatedBy(MathHelper.ToRadians(30 * npc.ai[3]));
+                            npc.position = playerCenterSnapShot + new Vector2(-550, 0).RotatedBy(MathHelper.ToRadians(30 * npc.ai[3]));
                             npc.position.X -= npc.width / 2;
                             npc.position.Y -= npc.height / 2;
                             if (npc.ai[3] <= 360 / 30)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(playercentersnapshot) * 5f, ProjectileType<ApollusArrowTwo>(), 15, 12, Main.myPlayer, 0, npc.ai[3]);
+                                    Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(playerCenterSnapShot) * 5f, ProjectileType<ApollusArrowTwo>(), 15, 12, Main.myPlayer, 0, npc.ai[3]);
                                 }
                             }
                             Vector2 origin = npc.Center;
@@ -367,24 +390,24 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                     }
                     break;
-                case 4:
+                case 4: // teleport
                     {
                         if (!PlayerAlive(player)) { break; }
 
                         npc.ai[1]++;
 
-                        if (changedPhase2 == true) { RandomCeiling = 4; }
-                        else { RandomCeiling = 2; }
-                        while (RandomCase == LastCase)
+                        if (changedPhase2 == true) { randomCeiling = 4; }
+                        else { randomCeiling = 2; }
+                        while (randomCase == LastCase)
                         {
-                            RandomCase = Main.rand.Next(RandomCeiling);
+                            randomCase = Main.rand.Next(randomCeiling);
                         }
-                        if (RandomCase == 3 && npc.ai[1] == 15)
+                        if (randomCase == 3 && npc.ai[1] == 15)
                         {
                             direction = Main.rand.NextBool();
                             teleportPosition = player.Center + new Vector2(-600 * (direction ? 1 : -1), 0);
                         }
-                        else if (RandomCase != 3 && npc.ai[1] == 15)
+                        else if (randomCase != 3 && npc.ai[1] == 15)
                         {
                             teleportPosition = player.Center + Main.rand.NextVector2Circular(333, 333);
                             while (Main.tile[(int)teleportPosition.X / 16, (int)teleportPosition.Y / 16].active())
@@ -416,11 +439,11 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                         if (npc.ai[1] > 100)
                         {
-                            LastCase = RandomCase;
+                            LastCase = randomCase;
                             npc.ai[1] = 0;
                             npc.ai[2] = 1;
                             npc.ai[3] = 0;
-                            npc.ai[0] = RandomCase;
+                            npc.ai[0] = randomCase;
                         }
                     }
                     break;
@@ -490,6 +513,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
         public override void NPCLoot()
         {
+            OvermorrowWorld.downedLady = true;
+
             if (Main.expertMode)
             {
                 npc.DropBossBags();

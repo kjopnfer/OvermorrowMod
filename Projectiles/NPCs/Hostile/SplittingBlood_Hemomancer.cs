@@ -1,11 +1,12 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Boss
+namespace OvermorrowMod.Projectiles.NPCs.Hostile
 {
-    public class SplittingBloodHemomancer : ModProjectile
+    public class SplittingBlood_Hemomancer : ModProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
 
