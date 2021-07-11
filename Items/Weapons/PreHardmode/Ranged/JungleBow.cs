@@ -15,7 +15,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         }
         public override void SetDefaults()
         {
-            item.damage = 14;
+            item.damage = 12;
             item.ranged = true;
             item.width = 40;
             item.height = 25;

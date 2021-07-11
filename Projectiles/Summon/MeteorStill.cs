@@ -59,6 +59,21 @@ namespace OvermorrowMod.Projectiles.Summon
         public override void AI()
         {
 
+
+
+                                Vector2 origin = projectile.Center + new Vector2(-7f, -7f);
+                                float radius = 210;
+                                int numLocations = 30;
+                                for (int i = 0; i < 30; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                    Vector2 dustvelocity = new Vector2(0f, -5f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                    int dust = Dust.NewDust(position, 2, 2, 174, dustvelocity.X, dustvelocity.Y, 0, default, 1.1f);
+                                    Main.dust[dust].noGravity = true;
+                                }
+
+
+
             Player player = Main.player[projectile.owner];
             player.UpdateMaxTurrets();
             #region Active check
@@ -73,13 +88,6 @@ namespace OvermorrowMod.Projectiles.Summon
             #endregion
 
 
-
-            ShowTime++;
-            if(ShowTime == 1)
-            {
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<MeteorRangeShow>(), 0, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
-            }
-
             PosCheck++;
 
             projectile.position.X = Main.player[projectile.owner].Center.X - 13;
@@ -89,7 +97,7 @@ namespace OvermorrowMod.Projectiles.Summon
             if (Main.player[projectile.owner].channel)
             {
                 timer++;
-                if(timer == 20)
+                if(timer == 17)
                 {
                     int Random = Main.rand.Next(-15, 16);
                     Vector2 position = projectile.Center;
