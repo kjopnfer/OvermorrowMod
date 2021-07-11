@@ -16,14 +16,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Green;
+            item.rare = ItemRarityID.Blue;
             item.width = 32;
             item.height = 32;
             item.damage = 16;
             item.ranged = true;
             item.noMelee = true;
-            item.useTime = 18;
-            item.useAnimation = 18;
+            item.useTime = 26;
+            item.useAnimation = 26;
             item.UseSound = SoundID.Item17;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.scale = 0.8f;

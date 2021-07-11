@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
-using OvermorrowMod.Projectiles.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Tempest Greatbow");
-            Tooltip.SetDefault("Transforms wooden arrows into super high velocity arrows\n'Sometimes misses at point blank range, no idea why'");
+            Tooltip.SetDefault("Transforms wooden arrows into Stormbolts\n'And then along came Zeus'");
         }
 
         public override void SetDefaults()

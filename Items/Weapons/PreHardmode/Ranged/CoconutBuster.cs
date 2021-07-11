@@ -17,18 +17,18 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         }
         public override void SetDefaults()
         {
+            item.rare = ItemRarityID.Blue;
             item.damage = 13;
             item.ranged = true;
             item.width = 40;
             item.height = 25;
-            item.useTime = 15;
-            item.useAnimation = 45;
+            item.useTime = 20;
+            item.useAnimation = 70;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.noMelee = true;
-            item.knockBack = 4;
+            item.knockBack = 0.2f;
             item.value = 10000;
             item.scale = 0.8f;
-            item.rare = ItemRarityID.Green;
             item.UseSound = SoundID.Item17;
             item.shoot = ProjectileType<Coconut>();
             item.autoReuse = false;
