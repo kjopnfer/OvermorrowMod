@@ -767,11 +767,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             //        spriteBatch.Draw(texture2D16, vector45 - new Vector2(0, 290 / 2), ((ModNPC)this).npc.frame, color45, ((ModNPC)this).npc.rotation, vector47, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
             //    }
             //}
-            Texture2D texture = Main.npcTexture[npc.type];
+            //Texture2D texture = Main.npcTexture[npc.type];
+            ////Texture2D texture2 = mod.GetTexture("Overmorrow/NPCs/StormDrake/StormDrake_Glowmask");
             //Texture2D texture2 = mod.GetTexture("Overmorrow/NPCs/StormDrake/StormDrake_Glowmask");
-            Texture2D texture2 = mod.GetTexture("Overmorrow/NPCs/StormDrake/StormDrake_Glowmask");
-            SpriteEffects effects = npc.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Vector2 origin = npc.frame.Size() / 2;
+            //SpriteEffects effects = npc.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            //Vector2 origin = npc.frame.Size() / 2;
             /*spriteBatch.Reload(BlendState.Additive);
             if ((npc.aiAction == 0 && npc.ai[0] > 300))
             {
