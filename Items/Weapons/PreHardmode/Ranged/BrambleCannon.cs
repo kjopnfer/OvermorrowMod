@@ -26,7 +26,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.knockBack = 0.1f;
             item.UseSound = SoundID.Item17;
             item.shoot = ProjectileID.Seed;
-            item.shootSpeed = 5f;
+            item.shootSpeed = 7f;
             item.value = Item.sellPrice(0, 0, 15, 0);
         }
 

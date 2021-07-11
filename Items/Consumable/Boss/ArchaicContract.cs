@@ -34,7 +34,16 @@ namespace OvermorrowMod.Items.Consumable.Boss
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<ApollusBoss>()) && !NPC.AnyNPCs(ModContent.NPCType<AngryStone>());
+            Vector2 playerPos = new Vector2(player.position.X / 16, player.position.Y / 16);
+            Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+            if (tile.wall == WallID.GraniteUnsafe || tile.wall == WallID.MarbleUnsafe)
+            {
+                return !NPC.AnyNPCs(ModContent.NPCType<ApollusBoss>()) && !NPC.AnyNPCs(ModContent.NPCType<AngryStone>());
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public override bool UseItem(Player player)

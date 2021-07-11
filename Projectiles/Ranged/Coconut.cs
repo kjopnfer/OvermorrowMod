@@ -24,15 +24,8 @@ namespace OvermorrowMod.Projectiles.Ranged
         }
 		public override void AI() 
 		{
-			projectile.scale -= 0.015f;
-			projectile.velocity.Y += 0.23f;
+			projectile.velocity.Y += 0.13f;
 
-			if (projectile.scale <= 0f)
-			{
-				projectile.velocity *= 5f;
-				projectile.oldVelocity = projectile.velocity;
-				projectile.Kill();
-			}
 			if (projectile.ai[0] > 3f)
 			{				
 				projectile.ai[0] += projectile.ai[1];

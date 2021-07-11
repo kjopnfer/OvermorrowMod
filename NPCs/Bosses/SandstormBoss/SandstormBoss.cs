@@ -41,7 +41,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.aiStyle = -1;
             npc.damage = 24;
             npc.defense = 12;
-            npc.lifeMax = 5200;
+            npc.lifeMax = 4100;
             npc.HitSound = SoundID.NPCHit23;
             npc.DeathSound = SoundID.NPCDeath39;
             npc.knockBackResist = 0f;

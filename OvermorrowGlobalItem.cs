@@ -19,11 +19,11 @@ namespace OvermorrowMod
                 item.value = Item.sellPrice(gold: 2, silver: 75);
             }
 
-            if (item.type == ItemID.Acorn)
+            /*if (item.type == ItemID.Acorn)
             {
                 item.ammo = item.type;
                 item.shoot = ModContent.ProjectileType<AcornProj>();
-            }
+            }*/
 
             if (item.type == 183)
             {

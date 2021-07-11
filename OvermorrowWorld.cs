@@ -36,6 +36,10 @@ namespace OvermorrowMod
         // Biomes
         public static int floodedCaves;
 
+        // These are here because we can't have nice things
+        public static int marbleBiome;
+        public static int graniteBiome;
+
         private bool placedBook = false;
 
         public override void Initialize()
@@ -49,6 +53,8 @@ namespace OvermorrowMod
         public override void TileCountsAvailable(int[] tileCounts)
         {
             floodedCaves = tileCounts[ModContent.TileType<GlowBlock>()];
+            marbleBiome = tileCounts[TileID.MarbleBlock];
+            graniteBiome = tileCounts[TileID.GraniteBlock];
         }
 
         public override TagCompound Save()

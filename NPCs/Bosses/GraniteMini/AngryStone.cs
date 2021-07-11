@@ -50,7 +50,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.knockBackResist = 0f;
             npc.damage = 15;
             npc.defense = 4;
-            npc.lifeMax = 2800;
+            npc.lifeMax = 4000;
             npc.HitSound = SoundID.NPCHit4;
             npc.value = Item.buyPrice(gold: 5);
             npc.boss = true;

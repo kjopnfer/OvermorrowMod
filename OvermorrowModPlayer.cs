@@ -90,6 +90,8 @@ namespace OvermorrowMod
 
         // Biome
         public bool ZoneWaterCave = false;
+        public bool ZoneMarble = false;
+        public bool ZoneGranite = false;
 
         public override void ResetEffects()
         {
@@ -170,12 +172,22 @@ namespace OvermorrowMod
         public override void UpdateBiomes()
         {
             ZoneWaterCave = OvermorrowWorld.floodedCaves > 50;
+            ZoneMarble = OvermorrowWorld.marbleBiome > 10;
+            ZoneGranite = OvermorrowWorld.graniteBiome > 10;
+        }
+
+        public override void CopyCustomBiomesTo(Player other)
+        {
+            OvermorrowModPlayer modOther = other.GetModPlayer<OvermorrowModPlayer>();
+            modOther.ZoneWaterCave = ZoneWaterCave;
         }
 
         public override void SendCustomBiomes(BinaryWriter writer)
         {
             BitsByte flags = new BitsByte();
             flags[0] = ZoneWaterCave;
+            flags[1] = ZoneMarble;
+            flags[2] = ZoneGranite;
             writer.Write(flags);
         }
 
@@ -183,6 +195,8 @@ namespace OvermorrowMod
         {
             BitsByte flags = reader.ReadByte();
             ZoneWaterCave = flags[0];
+            ZoneMarble = flags[1];
+            ZoneGranite = flags[2];
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)

@@ -23,7 +23,7 @@ namespace OvermorrowMod.NPCs
 			npc.height = 64;
 			aiType = NPCID.ManEater;
 			npc.aiStyle = 13;
-			npc.lifeMax = 260;
+			npc.lifeMax = 140;
 			npc.damage = 30;
 			npc.defense = 13;
 			npc.HitSound = SoundID.NPCHit1;

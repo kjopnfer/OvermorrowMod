@@ -23,7 +23,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             npc.width = 122;
             npc.height = 126;
             npc.defense = 12;
-            npc.lifeMax = 2800;
+            npc.lifeMax = 1250;
             npc.knockBackResist = 0f;
             npc.value = Item.buyPrice(gold: 5);
             npc.boss = true;

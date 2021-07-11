@@ -25,7 +25,7 @@ namespace OvermorrowMod.NPCs
 		{
 			npc.width = 74;
 			npc.height = 42;
-			npc.lifeMax = 150;
+			npc.lifeMax = 100;
 			npc.damage = 26;
 			npc.defense = 13;
 			npc.noGravity = true;
