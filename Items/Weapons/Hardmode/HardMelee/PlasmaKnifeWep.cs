@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,4 +31,4 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardMelee
             item.shootSpeed = 16f;
         }
     }
-}
+}*/

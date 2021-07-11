@@ -62,13 +62,13 @@ namespace OvermorrowMod
                 }
             }
 
-            if (npc.type == NPCID.SkeletonArcher || npc.type == NPCID.ChaosElemental || npc.type == NPCID.GiantBat || npc.type == NPCID.Clinger || npc.type == NPCID.FloatyGross || npc.type == NPCID.EnchantedSword || npc.type == NPCID.CursedHammer || npc.type == NPCID.CrimsonAxe || npc.type == NPCID.ArmoredSkeleton)
+            /*if (npc.type == NPCID.SkeletonArcher || npc.type == NPCID.ChaosElemental || npc.type == NPCID.GiantBat || npc.type == NPCID.Clinger || npc.type == NPCID.FloatyGross || npc.type == NPCID.EnchantedSword || npc.type == NPCID.CursedHammer || npc.type == NPCID.CrimsonAxe || npc.type == NPCID.ArmoredSkeleton)
             {
                 if (Main.rand.NextBool(50))
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Items.Weapons.Hardmode.HardRanged.Katyusha>());
                 }
-            }
+            }*/
 
             if (npc.type == NPCID.CaveBat)
             {

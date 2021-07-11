@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -47,4 +47,4 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardMagic
             return new Vector2(-2, 0);
         }
     }
-}
+}*/

@@ -1,4 +1,4 @@
-
+/*
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
@@ -66,4 +66,4 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardMagic.GemTomes
             recipe.AddRecipe();
         }
     }
-}
+}*/

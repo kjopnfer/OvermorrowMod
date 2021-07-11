@@ -1,4 +1,4 @@
-
+/*
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -42,3 +42,4 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardMagic.GemTomes
         }
     }
 }
+*/
