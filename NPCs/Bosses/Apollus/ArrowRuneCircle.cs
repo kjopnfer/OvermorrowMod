@@ -71,7 +71,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                     }
                     break;
-                case 1:
+                case 1: // shoot upwards
                     {
                         projectile.rotation += rotationcounter;
                         if (projectile.ai[1] % 45 == 0)
@@ -109,7 +109,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         }
                     }
                     break;
-                case 3:
+                case 3: // shoot to the sides
                     {
                         Player projectileowner = Main.player[projectile.owner];
                         projectile.position = projectileowner.Center + new Vector2(-35 + (566 * directionalstore), -35);
