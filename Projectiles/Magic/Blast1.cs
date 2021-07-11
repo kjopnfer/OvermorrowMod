@@ -8,7 +8,7 @@ namespace OvermorrowMod.Projectiles.Magic
 {
     public class Blast1 : ModProjectile
     {
-
+        private int timer = 0;
         public override void SetDefaults()
         {
             projectile.width = 24;
@@ -25,6 +25,23 @@ namespace OvermorrowMod.Projectiles.Magic
         public override void AI()
         {
             projectile.rotation = projectile.velocity.ToRotation();
+            timer++;
+            if(timer == 1)
+            {
+                projectile.position.X -= 5;
+                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                {
+                    projectile.velocity.X = 10;
+                    projectile.velocity.Y = 0;
+                }
+                else
+                {
+                    projectile.velocity.X = -10;
+                    projectile.velocity.Y = 0;
+                }
+            }
+
+
         }
     }
 }
