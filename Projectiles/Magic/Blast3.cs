@@ -22,7 +22,7 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.width = 36;
             projectile.height = 34;
             projectile.timeLeft = 250;
-            projectile.penetrate = 2;
+            projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
             projectile.magic = true;
