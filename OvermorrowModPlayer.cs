@@ -60,6 +60,7 @@ namespace OvermorrowMod
 
         // Accessory Counters
         public int dripplerStack;
+        public int shieldCounter;
         public int sandCount;
         public int sandMode = 0;
         public bool launchSand = false;

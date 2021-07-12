@@ -7,12 +7,12 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Accessories.Expert
 {
-    public class SpiderExpert : ModItem
+    public class GraniteShield : ModItem
     {
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Shield");
-            Tooltip.SetDefault("The Shield reflects projectile");
+            Tooltip.SetDefault("The Shield reflects projectiles");
         }
         public override void SetDefaults()
         {

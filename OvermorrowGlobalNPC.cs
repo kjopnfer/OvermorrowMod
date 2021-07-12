@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
 using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;

@@ -61,7 +61,6 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
                         incomingProjectile.velocity *= -1;
                         incomingProjectile.friendly = false;
                         incomingProjectile.hostile = true;
-                        Main.NewText("hitbox intersect");
                     }
                 }
             }

@@ -11,12 +11,13 @@ namespace OvermorrowMod.Projectiles.Accessory
 {
     public class BlackHole : ModProjectile
     {
-        private int length = 1;
-        private int timer = 0;
-        Vector2 Rot;
-        private float CircleArr = 1;
+        private int maxDeflectNum;
+        private int maxStored;
+        private int storedDamage = 0;
+        private int disabledCounter = 0;
+        private bool disabledReflect = false;
         public override bool CanDamage() => false;
-        
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Shield");
@@ -24,8 +25,8 @@ namespace OvermorrowMod.Projectiles.Accessory
 
         public override void SetDefaults()
         {
-            projectile.width = 28;
-            projectile.height = 70;
+            projectile.width = 55;
+            projectile.height = 55;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -35,53 +36,75 @@ namespace OvermorrowMod.Projectiles.Accessory
         }
         public override void AI()
         {
-
-
-
             if (Main.player[projectile.owner].HasBuff(ModContent.BuffType<SpiderWebBuff>()))
             {
                 projectile.timeLeft = 2;
             }
 
-                projectile.spriteDirection = Main.player[projectile.owner].direction;
 
-                if (Main.player[projectile.owner].direction == 1)
+            // Determines the maximum damage stored within the shield before it breaks
+            if (Main.hardMode)
+            {
+                maxStored = 80;
+            }
+            else
+            {
+                maxStored = 40;
+            }
+
+            if (storedDamage >= maxStored)
+            {
+                Main.PlaySound(SoundID.DD2_ExplosiveTrapExplode);
+                disabledReflect = true;
+                disabledCounter = 255;
+                projectile.alpha = 255;
+                storedDamage = 0;
+            }
+
+            if (disabledCounter > 0)
+            {
+                projectile.alpha--;
+                disabledCounter--;
+            }
+            else
+            {
+                if (disabledReflect)
                 {
-                    projectile.position.X = Main.player[projectile.owner].Center.X - projectile.width / 2 + 30;
-                    projectile.position.Y = Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Main.PlaySound(SoundID.Item70);
+                    disabledReflect = false;
                 }
-                if (Main.player[projectile.owner].direction == -1)
+            }
+
+
+            //Factors for calculations
+            double rad = (Main.player[projectile.owner].Center - Main.MouseWorld).ToRotation(); // rotation
+            double dist = 65; // distance from the owner
+
+            projectile.position.X = Main.player[projectile.owner].Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
+            projectile.position.Y = Main.player[projectile.owner].Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
+
+            projectile.rotation = (float)rad;
+
+            if (disabledCounter == 0)
+            {
+                for (int i = 0; i < Main.maxProjectiles; i++)
                 {
-                    projectile.position.X = Main.player[projectile.owner].Center.X - projectile.width / 2 - 30;
-                    projectile.position.Y = Main.player[projectile.owner].Center.Y - projectile.height / 2;
-                }
-
-
-            float distanceFromTarget = 500f;
-            Vector2 targetCenter = projectile.Center;
-            bool foundTarget = false;
-            projectile.velocity.X = 0;
-            projectile.velocity.Y = 0;
-                // This code is required either way, used for finding a target
-                for (int i = 0; i < Main.maxNPCs; i++)
-                {
-                    Projectile suck = Main.projectile[i];
-
-
-
-
-                        float between2 = Vector2.Distance(suck.Center, projectile.Center);
-
-
-
-                        if(suck.Center.Y > projectile.position.Y && suck.Center.Y < projectile.position.Y + projectile.height && suck.Center.X > projectile.position.X && suck.Center.X < projectile.position.X + projectile.width && !suck.friendly)
+                    Projectile incomingProjectile = Main.projectile[i];
+                    if (incomingProjectile.active && incomingProjectile.hostile)
+                    {
+                        if (projectile.Hitbox.Intersects(incomingProjectile.Hitbox))
                         {
-                            suck.velocity = suck.velocity * -1f;
-                            suck.friendly = true;
-                            suck.hostile = false;
-                            suck.damage *= 2;
+                            incomingProjectile.velocity *= -1;
+                            incomingProjectile.friendly = true;
+                            incomingProjectile.hostile = false;
+
+                            storedDamage += incomingProjectile.damage;
+
+                            incomingProjectile.damage *= 2;
                         }
+                    }
                 }
+            }
         }
     }
 }
