@@ -39,7 +39,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.width = 136;
             npc.height = 112;
             npc.aiStyle = -1;
-            npc.damage = 24;
+            npc.damage = 21;
             npc.defense = 12;
             npc.lifeMax = 4100;
             npc.HitSound = SoundID.NPCHit23;
@@ -319,7 +319,14 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             }
                             else
                             {
-                                npc.ai[2] = 80; // charging delay
+                                if (Main.expertMode)
+                                {
+                                    npc.ai[2] = 80; // charging delay
+                                }
+                                else
+                                {
+                                    npc.ai[2] = 100;
+                                }
                             }
                         }
                         npc.ai[2] -= 1f;
