@@ -361,7 +361,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                projalt = Projectile.NewProjectile(npc.Center + (Vector2.UnitX * -50 * (direction ? -1 : 1)), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), 0, direction ? -1 : 1, Main.myPlayer, -20, npc.whoAmI);
+                                projalt = Projectile.NewProjectile(npc.Center + npc.Center + new Vector2(-35 + (566 * npc.spriteDirection), -35), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), 0, direction ? -1 : 1, Main.myPlayer, -20, npc.whoAmI);
                             }
                         }
 

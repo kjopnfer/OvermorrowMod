@@ -2,6 +2,7 @@ using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Projectiles.Magic.Gems;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {
@@ -22,11 +23,12 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 15;
             item.useTurn = false;
-            item.useAnimation = 26;
-            item.useTime = 13;
+            item.useAnimation = 19;
+            item.useTime = 19;
             item.width = 48;
             item.height = 48;
-            item.shoot = ProjectileID.SapphireBolt;
+            item.autoReuse = true;
+            item.shoot = ModContent.ProjectileType<SapphireProj>();
             item.shootSpeed = 10.5f;
             item.knockBack = 4.5f;
             item.magic = true;
