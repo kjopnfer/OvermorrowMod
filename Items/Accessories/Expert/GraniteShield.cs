@@ -16,8 +16,8 @@ namespace OvermorrowMod.Items.Accessories.Expert
         }
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 28;
+            item.width = 30;
+            item.height = 34;
             item.value = 10000;
             item.rare = ItemRarityID.Expert;
             item.accessory = true;
@@ -26,11 +26,11 @@ namespace OvermorrowMod.Items.Accessories.Expert
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.AddBuff(ModContent.BuffType<SpiderWebBuff>(), 2);
-            if ((int)player.ownedProjectileCounts[ModContent.ProjectileType<BlackHole>()] >= 1)
+            if ((int)player.ownedProjectileCounts[ModContent.ProjectileType<Projectiles.Accessory.GraniteShield>()] >= 1)
             {
                 return;
             }
-            Projectile.NewProjectile(player.position.X, player.position.Y, 0f, 0f, ModContent.ProjectileType<BlackHole>(), 20, 1.25f, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(player.position.X, player.position.Y, 0f, 0f, ModContent.ProjectileType<Projectiles.Accessory.GraniteShield>(), 20, 1.25f, player.whoAmI, 0f, 0f);
         }
     }
 }

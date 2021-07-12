@@ -5,11 +5,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Buffs.Summon;
 using OvermorrowMod.Projectiles.Accessory;
-
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Accessory
 {
-    public class BlackHole : ModProjectile
+    public class GraniteShield : ModProjectile
     {
         private int maxDeflectNum;
         private int maxStored;
@@ -41,14 +41,20 @@ namespace OvermorrowMod.Projectiles.Accessory
                 projectile.timeLeft = 2;
             }
 
-
             // Determines the maximum damage stored within the shield before it breaks
-            if (Main.hardMode)
+            if (NPC.downedPlantBoss) 
             {
+                maxDeflectNum = 60;
+                maxStored = 120;
+            }
+            else if (Main.hardMode)
+            {
+                maxDeflectNum = 45;
                 maxStored = 80;
             }
             else
             {
+                maxDeflectNum = 30;
                 maxStored = 40;
             }
 
@@ -90,7 +96,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                 for (int i = 0; i < Main.maxProjectiles; i++)
                 {
                     Projectile incomingProjectile = Main.projectile[i];
-                    if (incomingProjectile.active && incomingProjectile.hostile)
+                    if (incomingProjectile.active && incomingProjectile.hostile && incomingProjectile.damage < maxDeflectNum)
                     {
                         if (projectile.Hitbox.Intersects(incomingProjectile.Hitbox))
                         {
