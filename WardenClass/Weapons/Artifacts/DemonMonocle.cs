@@ -12,8 +12,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Baleful Spine");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to summon 6 Demon Eyes\n" +
-                "Demon eyes will home in on nearby enemies");
+            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to summon 6 Crimeras\n" +
+                "Crimeras will home in on nearby enemies");
         }
 
         public override void SafeSetDefaults()
