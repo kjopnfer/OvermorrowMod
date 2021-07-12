@@ -1,7 +1,9 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Projectiles.Magic.Gems;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {
@@ -23,11 +25,11 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 20;
             item.useTurn = false;
-            item.useAnimation = 28;
+            item.useAnimation = 14;
             item.useTime = 14;
             item.width = 48;
             item.height = 48;
-            item.shoot = ProjectileID.DiamondBolt;
+            item.shoot = ModContent.ProjectileType<DiamondProj>();
             item.shootSpeed = 14f;
             item.knockBack = 6f;
             item.magic = true;

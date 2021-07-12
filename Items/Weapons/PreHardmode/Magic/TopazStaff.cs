@@ -2,6 +2,7 @@ using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Projectiles.Magic.Gems;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {
@@ -22,11 +23,11 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 14;
             item.useTurn = false;
-            item.useAnimation = 28;
-            item.useTime = 14;
+            item.useAnimation = 22;
+            item.useTime = 22;
             item.width = 48;
             item.height = 48;
-            item.shoot = ProjectileID.TopazBolt;
+            item.shoot = ModContent.ProjectileType<TopazProj>();
             item.shootSpeed = 9.5f;
             item.knockBack = 4.5f;
             item.magic = true;

@@ -23,7 +23,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.height = 32;
             item.damage = 17;
             item.magic = true;
-            item.mana = 5;
+            item.mana = 2;
             item.noMelee = true;
             item.useTime = 12;
             item.useAnimation = 12;

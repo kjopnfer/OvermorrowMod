@@ -1,7 +1,9 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Projectiles.Magic.Gems;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {
@@ -23,15 +25,29 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 16;
             item.useTurn = false;
-            item.useAnimation = 22;
-            item.useTime = 11;
+            item.useAnimation = 30;
+            item.useTime = 30;
             item.width = 48;
             item.height = 48;
-            item.shoot = ProjectileID.EmeraldBolt;
-            item.shootSpeed = 12f;
+            item.shoot = ModContent.ProjectileType<EmeraldProj>();
+            item.shootSpeed = 7f;
             item.knockBack = 5f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+
+            int numberProjectiles = 1;
+            for (int i = 0; i < numberProjectiles; i++)
+            {
+                Vector2 perturbedSpeed1 = new Vector2(speedX, speedY).RotatedBy(MathHelper.ToRadians(21f));
+                Vector2 perturbedSpeed2 = new Vector2(speedX, speedY).RotatedBy(MathHelper.ToRadians(-21f));
+                Projectile.NewProjectile(position.X, position.Y, perturbedSpeed1.X, perturbedSpeed1.Y, ModContent.ProjectileType<EmeraldProj>(), item.damage, 3, player.whoAmI);
+                Projectile.NewProjectile(position.X, position.Y, perturbedSpeed2.X, perturbedSpeed2.Y, ModContent.ProjectileType<EmeraldProj>(), item.damage, 3, player.whoAmI);
+            }
+            return true;
         }
 
         public override void AddRecipes()
