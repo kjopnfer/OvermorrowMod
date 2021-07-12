@@ -11,17 +11,21 @@ namespace OvermorrowMod.Projectiles.Magic
     {
         public override void SetDefaults()
         {
-            projectile.CloneDefaults(ProjectileID.EyeBeam);
-            aiType = ProjectileID.EyeBeam;
-            projectile.tileCollide = false;
+            projectile.width = 20;
+            projectile.height = 28;
+            projectile.tileCollide = true;
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.timeLeft = 150;
             projectile.penetrate = 1;
         }
-
+        public override void AI()
+        {
+            projectile.rotation += 0.25f; 
+        }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
+        
             int Hie = (int)Math.Round(target.width / 1.5f);
             int Wid = (int)Math.Round(target.height / 1.5f);
 			if(target.GetGlobalNPC<OvermorrowGlobalNPC>().split < 1)
