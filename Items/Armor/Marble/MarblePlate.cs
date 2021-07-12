@@ -20,7 +20,7 @@ namespace OvermorrowMod.Items.Armor.Marble
             item.height = 20;
             item.value = Item.sellPrice(0, 2, 50, 0);
             item.rare = ItemRarityID.Blue;
-            item.defense = 5;
+            item.defense = 7;
         }
 
         public override void UpdateEquip(Player player)

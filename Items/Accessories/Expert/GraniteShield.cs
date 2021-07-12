@@ -12,7 +12,8 @@ namespace OvermorrowMod.Items.Accessories.Expert
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Shield");
-            Tooltip.SetDefault("The Shield reflects projectiles");
+            Tooltip.SetDefault("Conjures a Granite Shield to protect you\nThe shield reflects projectiles below a damage threshold\n" +
+                "The shield breaks after taking enough damage\nDamage capacity upgrades throughout the game");
         }
         public override void SetDefaults()
         {
