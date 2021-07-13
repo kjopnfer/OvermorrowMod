@@ -11,7 +11,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Soulstone Ring");
-            Tooltip.SetDefault("Increases Soul Essence gain chance by 3%\nIncreases life regeneration\n" +
+            Tooltip.SetDefault("Increases Soul Meter gain by 2%\nIncreases life regeneration\n" +
                 "Regeneration rate scales with number of held Soul Essences");
         }
 
@@ -28,7 +28,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             modPlayer.SoulRing = true;
-            modPlayer.soulGainBonus += 3;
+            modPlayer.soulGainBonus += 2;
         }
 
         public override void AddRecipes()

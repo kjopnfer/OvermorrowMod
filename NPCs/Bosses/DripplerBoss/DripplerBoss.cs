@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Items.Accessories;
+using OvermorrowMod.Items.Armor.Masks;
 using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
@@ -572,6 +573,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 if (necklaceChance == 0)
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemID.SharkToothNecklace);
+                }
+
+                if (Main.rand.Next(7) == 0)
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripMask>());
                 }
 
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<CancerInABottle>(), Main.rand.Next(6, 10));

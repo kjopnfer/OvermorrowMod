@@ -150,10 +150,8 @@ namespace OvermorrowMod
                             {
                                 if (Main.rand.Next(8) == 0) // 12.5% chance to gain Soul Essence on death
                                 {
-                                    if (!XPPacket.Write(1, npc.target))
-                                    {
-                                        player.GetModPlayer<WardenDamagePlayer>().AddSoul(1);
-                                    }
+                                    modPlayer.soulPercentage += 10;
+                                    CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.DarkCyan, "+ 10% Soul Essences", true, false);
                                 }
                             }
 
@@ -180,15 +178,15 @@ namespace OvermorrowMod
                             var modPlayer = WardenDamagePlayer.ModPlayer(player);
                             var modPlayer2 = player.GetModPlayer<OvermorrowModPlayer>();
 
-                            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook) // Warden Reaper Book
+                            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook)
                             {
                                 if (Main.rand.Next(8) == 0) // 12.5% chance to gain Soul Essence on death
                                 {
-                                    modPlayer.soulResourceCurrent += 1;
-                                    modPlayer.soulList.Add(Projectile.NewProjectile(npc.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, Main.myPlayer, Main.rand.Next(70, 95), 0f));
+                                    modPlayer.soulPercentage += 10;
                                     CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.DarkCyan, "Soul Essence Gained", true, false);
                                 }
                             }
+
 
                             if (modPlayer2.DripplerEye)
                             {

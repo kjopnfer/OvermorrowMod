@@ -10,7 +10,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Book of the Reaper");
-            Tooltip.SetDefault("Enemies you kill have a 12.5% chance to drop a Soul Essence on death" +
+            Tooltip.SetDefault("Enemies you kill have a 12.5% chance to fill the Soul Meter by 10%" +
                 "\n'Hey look! This has my name in it!'");
         }
 
