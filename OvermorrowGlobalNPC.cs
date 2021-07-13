@@ -13,6 +13,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using WardenClass;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod
 {
