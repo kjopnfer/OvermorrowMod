@@ -49,7 +49,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 projectile.localAI[0] = 1f;
             }
             Vector2 move = Vector2.Zero;
-            float distance = 180f;
+            float distance = 500f;
             bool target = false;
             for (int k = 0; k < 200; k++)
             {
