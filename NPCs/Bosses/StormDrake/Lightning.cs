@@ -244,7 +244,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 1000f);
+            Length = TRay.CastLength(projectile.Center, projectile.velocity, /*1000f*/ 750f);
             Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, 240, 4f/*, true/*, Sine*/);
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);

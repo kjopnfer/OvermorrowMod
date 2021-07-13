@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.SandstormBoss;
 using Terraria;
 using Terraria.ID;
@@ -37,12 +38,13 @@ namespace OvermorrowMod.Items.Consumable.Boss
         {
             if (player.ZoneDesert)
             {
-                player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
-                player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
-                player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                Projectile.NewProjectile(player.Center + Vector2.UnitY * -5, Vector2.Zero, ModContent.ProjectileType<DharuudAnim>(), 0, 0, Main.myPlayer, 0, 0);
+                //player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
+                //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
+                //player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
 
-                NPC.NewNPC((int)player.position.X, (int)(player.position.Y + 650f), ModContent.NPCType<SandstormBoss>(), 0, 0f, 0f, 0f, 0f, 255);
-                Main.PlaySound(SoundID.Roar, player.position, 0);
+                //NPC.NewNPC((int)player.position.X, (int)(player.position.Y + 650f), ModContent.NPCType<SandstormBoss>(), 0, 0f, 0f, 0f, 0f, 255);
+                //Main.PlaySound(SoundID.Roar, player.position, 0);
                 return true;
             }
             return false;
