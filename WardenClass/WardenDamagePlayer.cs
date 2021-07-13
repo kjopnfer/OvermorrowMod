@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using OvermorrowMod;
+using OvermorrowMod.WardenClass;
 using Terraria;
 using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Utils = Terraria.Utils;
 
@@ -23,6 +25,8 @@ namespace WardenClass
         public bool HemoArmor;
         public bool WaterArmor;
         public bool WaterHelmet;
+
+        public int soulPercentage = 0;
 
         public static WardenDamagePlayer ModPlayer(Player player)
         {
@@ -111,20 +115,21 @@ namespace WardenClass
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            if (UIToggled)
+            /*if (UIToggled)
             {
                 ModContent.GetInstance<OvermorrowModFile>().ShowMyUI();
             }
             else
             {
                 ModContent.GetInstance<OvermorrowModFile>().HideMyUI();
-            }
+            }*/
         }
 
         public override void UpdateDead()
         {
             ResetVariables();
             soulResourceCurrent = 0;
+            soulPercentage = 0;
         }
 
         // Reset variables to prevent infinite scaling
@@ -139,13 +144,24 @@ namespace WardenClass
             soulGainBonus = 0;
         }
 
-        /*public override void PostUpdateMiscEffects()
+        public override void PostUpdateMiscEffects()
         {
             UpdateResource();
-        }*/
+        }
 
         private void UpdateResource()
         {
+            //Main.NewText(soulPercentage);
+            if (soulPercentage >= 100)
+            {
+                soulPercentage = 0;
+                AddSoul(1);
+            }
+
+            var chargePlayer = player.GetModPlayer<WardenSoulMeter>();
+            chargePlayer.chargeProgress = player.GetModPlayer<WardenDamagePlayer>().soulPercentage;
+
+
             // Limit exampleResourceCurrent from going over the limit imposed by exampleResourceMax.
             soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
         }
@@ -164,8 +180,36 @@ namespace WardenClass
                 return;
             }
 
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+
+            int soul = Projectile.NewProjectile(player.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
+            Main.projectile[soul].active = true;
+            NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, soul);
+            //modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+            modPlayer.soulList.Add(soul);
+
             soulResourceCurrent += soulEssence;
-            CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y + 50, player.width, player.height), Color.DarkCyan, "Soul Essence Gained", true, false);
+            Color color = new Color(146, 227, 220);
+            CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y + 50, player.width, player.height), color, "Soul Essence Gained", true, false);
+
+            UpdatePosition(modPlayer);
+        }
+
+        private void UpdatePosition(WardenDamagePlayer player)
+        {
+            int direction = 1;
+            for (int i = 0; i < player.soulList.Count; i++)
+            {
+                if (i % 5 == 4)
+                {
+                    direction *= -1;
+                }
+
+                int radiusBuffer = (int)(20 * System.Math.Floor(i / 4f));
+                Main.projectile[player.soulList[i]].knockBack = direction;
+                Main.projectile[player.soulList[i]].ai[0] = 70 + radiusBuffer;
+                Main.projectile[player.soulList[i]].ai[1] = i * 90;
+            }
         }
 
         public float modifyShootSpeed()

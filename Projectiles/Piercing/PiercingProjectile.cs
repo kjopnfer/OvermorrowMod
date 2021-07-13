@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.NPCs.Bosses.DripplerBoss;
+using OvermorrowMod.WardenClass;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -37,36 +38,9 @@ namespace OvermorrowMod.Projectiles.Piercing
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            int randChance = Main.rand.Next(0, 100);
-            if ((randChance < defaultCeiling + modPlayer.soulGainBonus) && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2) /* && target.type != NPCID.TargetDummy*/ && target.type != ModContent.NPCType<DripplerBoss>())
+            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)
             {
-                modPlayer.soulResourceCurrent++; // Increase number of resource
-
-                // Add the projectile to the WardenDamagePlayer list of projectiles
-                int soul = Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f);
-                Main.projectile[soul].active = true;
-                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, soul);
-                //modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
-                modPlayer.soulList.Add(soul);
-
-                UpdatePosition(modPlayer);
-            }
-        }
-
-        private void UpdatePosition(WardenDamagePlayer player)
-        {
-            int direction = 1;
-            for(int i = 0; i < player.soulList.Count; i++)
-            {
-                if (i % 5 == 4)
-                {
-                    direction *= -1;
-                }
-
-                int radiusBuffer = (int)(20 * System.Math.Floor(i / 4f));
-                Main.projectile[player.soulList[i]].knockBack = direction;
-                Main.projectile[player.soulList[i]].ai[0] = 70 + radiusBuffer;
-                Main.projectile[player.soulList[i]].ai[1] = i * 90;    
+                modPlayer.soulPercentage += Main.rand.Next(2, 4);
             }
         }
 

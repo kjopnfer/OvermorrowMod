@@ -13,6 +13,7 @@ namespace OvermorrowMod.WardenClass
         public bool ActiveRune;
 
         public int RuneID;
+        // TODO: Make these enums you idiot
         /*  RUNE IDS
          * 0 = None
          * 1 = BlazeRune
