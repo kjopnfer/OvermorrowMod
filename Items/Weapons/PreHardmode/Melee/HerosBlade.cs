@@ -5,6 +5,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Projectiles.Melee;
+using OvermorrowMod.Projectiles.Boss;
+
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
@@ -14,9 +16,17 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         bool eyebuff = false;
         bool evilbuff = false;
         bool skelebuff = false;
+        bool slimebuff = false;
+        bool beebuff = false;
+        bool sandbuff = false;
+        bool drakebuff = false;
+        bool dripbuff = false;
+        bool treebuff = false;
 
 
-
+        int treeshoot = 0;
+        int scaletime = 0;
+        int dashproj = 8;
         int dashreuse = 0;
         int saveddamage = 0;    
         int savedusetime = 0;
@@ -36,10 +46,10 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.damage = 20;
             item.useTime = 25;
             item.useAnimation = 25;
-            item.shoot = ProjectileID.MoonlordTurretLaser;
             item.width = 56;
             item.height = 56;
-            item.knockBack = 2f;
+            item.shoot = ProjectileID.MoonlordTurretLaser;
+            item.knockBack = 1f;
             item.melee = true;
             item.autoReuse = true;
             item.value = Item.sellPrice(gold: 1);
@@ -48,6 +58,12 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 
         public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
         {
+
+            if(NPC.downedQueenBee)
+            {
+                target.AddBuff(20, 200);
+            }
+
             if(NPC.downedBoss3)
             {
                 target.GetGlobalNPC<OvermorrowGlobalNPC>().Homingdie = true;
@@ -111,12 +127,41 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
                 player.velocity = direction * 15;
                 dashreuse = 120;
             }
+
+
+            if(OvermorrowWorld.downedTree)
+            {
+                treeshoot++;
+                if(treeshoot > 9)
+                {
+                    Vector2 PLAYposition = player.Center;
+                    Vector2 ShootPosition = Main.MouseWorld;
+                    Vector2 Tardirection = ShootPosition - PLAYposition;
+                    Tardirection.Normalize();
+                    int proj = Projectile.NewProjectile(player.Center + new Vector2(0, -40), Tardirection * 18.4f, ModContent.ProjectileType<NatureWave>(), item.damage - 9, 3, player.whoAmI);
+                    Main.projectile[proj].friendly = true;
+                    Main.projectile[proj].hostile = false;
+                    Main.projectile[proj].width = 70;
+                    Main.projectile[proj].height = 76;
+                    Main.projectile[proj].penetrate = 1;
+                    Main.projectile[proj].timeLeft = 160;
+                    treeshoot = 0;
+                }
+            }
+
+
             return true;
         }
 
         public override void HoldItem(Player player)
         {
-            
+
+            scaletime++;
+            if(scaletime == 1)
+            {
+                item.scale = 0.85f;
+            }
+
             if(NPC.downedBoss1 && !eyebuff)
             {
                 item.damage += 2;
@@ -131,16 +176,64 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 
             if(NPC.downedBoss3 && !skelebuff)
             {
-                item.damage += 4;
+                item.damage += 3;
                 skelebuff = true;
             }   
 
+            if(NPC.downedSlimeKing && !slimebuff)
+            {
+                item.damage += 1;
+                slimebuff = true;
+                player.moveSpeed += 0.07f;
+            }  
+
+            if(NPC.downedQueenBee && !beebuff)
+            {
+                item.damage += 1;
+                beebuff = true;
+            }  
+
+            if(OvermorrowWorld.downedDarude && !sandbuff)
+            {
+                item.damage += 2;
+                sandbuff = true;
+            }  
+
+            if(OvermorrowWorld.downedDrake && !drakebuff)
+            {
+                item.damage += 3;
+                drakebuff = true;
+            }   
+
+            if(OvermorrowWorld.downedDrippler && !dripbuff)
+            {
+                item.scale += 0.2f;
+                item.damage += 3;
+                dripbuff = true;
+            }   
+
+
+            if(OvermorrowWorld.downedTree && !treebuff)
+            {
+                item.damage += 1;
+                treebuff = true;
+            }  
 
             if(NPC.downedBoss2)
             {
                 player.AddBuff(14, 2, true);
                 player.AddBuff(105, 2, true);
             }
+
+            if(OvermorrowWorld.downedDarude) 
+            {
+                player.buffImmune[BuffID.OnFire] = true;
+                player.buffImmune[194] = true;
+            }
+
+
+
+
 
             dashreuse--;
             if(dashreuse == -1 && NPC.downedBoss1)
@@ -169,9 +262,19 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
                 item.useAnimation = 63;
 			    player.eocDash = 60;
 			    player.armorEffectDrawShadowEOCShield = true;
+                if(OvermorrowWorld.downedDrake)
+                {
+                    dashproj++;
+                    if(dashproj > 9)
+                    {
+                        Projectile.NewProjectile(player.Center.X, player.Center.Y, 0, 0, ModContent.ProjectileType<StarAxe>(), item.damage / 2 - 7, 3, player.whoAmI);
+                        dashproj = 0;
+                    }
+                }
             }
             else
             {
+                dashproj = 8;
                 player.eocDash = 0;
 			    player.armorEffectDrawShadowEOCShield = false;
             }
