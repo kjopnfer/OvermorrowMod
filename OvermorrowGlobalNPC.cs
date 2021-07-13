@@ -20,6 +20,7 @@ namespace OvermorrowMod
     {
         public override bool InstancePerEntity => true;
 
+        public bool Homingdie;
         public bool bleedingDebuff;
         public bool bleedingDebuff2;
         public bool FungiInfection;
@@ -91,6 +92,10 @@ namespace OvermorrowMod
             }
 
 
+            if (Homingdie)
+            {
+                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, ModContent.ProjectileType<HeroHoming>(), 20, 2, Main.player[npc.target].whoAmI);
+            }
 
 
             if (npc.type == NPCID.EaterofSouls)
