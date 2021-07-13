@@ -27,6 +27,12 @@ namespace OvermorrowMod.Projectiles.Boss
         }
         public override void AI()
         {
+            if (projectile.ai[1] == 10)
+            {
+                projectile.friendly = true;
+                projectile.hostile = false;
+            }
+
             Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
             projectile.ai[0]++;
             Color Bloodc = Color.Red;
