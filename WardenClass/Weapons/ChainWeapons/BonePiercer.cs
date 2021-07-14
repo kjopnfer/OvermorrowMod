@@ -44,7 +44,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == 0)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -64,7 +64,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 
                 item.damage = 8;
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == 2 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
                 {
                     item.useAnimation = 26;
                     item.useTime = 26;
@@ -87,7 +87,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
+            if (player.GetModPlayer<WardenRunePlayer>().RuneID == 2 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
                 type = ModContent.ProjectileType<Skulls>();
                 for (int i = 0; i < Main.rand.Next(2, 3); i++)

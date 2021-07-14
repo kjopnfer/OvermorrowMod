@@ -9,7 +9,7 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 		public override void SetDefaults()
 		{
 			DisplayName.SetDefault("Imbuement: Thorns of the Jungle");
-			Description.SetDefault("Your attacks launch vines to ensnare your enemy!");
+			Description.SetDefault("Your attacks launch three chains instead of one!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;
@@ -17,7 +17,7 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 
 		public override void Update(Player player, ref int buffIndex)
 		{
-			player.GetModPlayer<WardenRunePlayer>().RuneID = WardenRunePlayer.Runes.JungleRune;
+			player.GetModPlayer<WardenRunePlayer>().RuneID = 7;
 			player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
 		}
 	}

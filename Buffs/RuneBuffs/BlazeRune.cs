@@ -9,7 +9,7 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 		public override void SetDefaults()
 		{
 			DisplayName.SetDefault("Imbuement: Blaze Binder");
-			Description.SetDefault("Your attacks summon fires from the depths of hell!");
+			Description.SetDefault("Your attacks launch three chains instead of one!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;
@@ -17,7 +17,7 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 
 		public override void Update(Player player, ref int buffIndex)
 		{
-			player.GetModPlayer<WardenRunePlayer>().RuneID = WardenRunePlayer.Runes.HellRune;
+			player.GetModPlayer<WardenRunePlayer>().RuneID = 1;
 			player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
 		}
 	}

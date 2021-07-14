@@ -42,7 +42,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             //npc.height = 338;
 
             npc.aiStyle = -1;
-            npc.damage = 20;
+            npc.damage = 26;
             npc.defense = 14;
             npc.lifeMax = 3300;
             npc.HitSound = SoundID.NPCHit1;

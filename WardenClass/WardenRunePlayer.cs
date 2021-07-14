@@ -12,20 +12,20 @@ namespace OvermorrowMod.WardenClass
     {
         public bool ActiveRune;
 
-        public enum Runes
-        {
-            None = 0,
-            HellRune = 1,
-            BoneRune = 2,
-            SkyRune = 3,
-            MushroomRune = 4,
-            CrimsonRune = 5,
-            CorruptionRune = 6,
-            JungleRune = 7
-        }
-
-        public Runes RuneID;
+        public int RuneID;
+        // TODO: Make these enums you idiot
+        /*  RUNE IDS
+         * 0 = None
+         * 1 = BlazeRune
+         * 2 = BoneRune
+         * 3 = LightningRune
+         * 4 = MushroomRune
+         * 5 = SanguineRune
+         * 6 = VileRune
+         * 7 = VineRune
+         */
        
+
         public override void ResetEffects()
         {
             ActiveRune = false;
@@ -98,25 +98,25 @@ namespace OvermorrowMod.WardenClass
             // Symbol Texture
             switch (modPlayer.RuneID)
             {
-                case Runes.HellRune:
+                case 1: // Blaze Binder
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/HellRuneCircle");
                     break;
-                case Runes.BoneRune:
+                case 2: // Bone Spike
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DungeonRuneCircle2");
                     break;
-                case Runes.SkyRune:
+                case 3: // Lightning Cutter
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/SkyRuneCircle");
                     break;
-                case Runes.MushroomRune:
+                case 4: // Mycelium Chains
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/MushroomRuneCircle");
                     break;
-                case Runes.CrimsonRune:
+                case 5: // Sanguine Impaler
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonRuneCircle");
                     break;
-                case Runes.CorruptionRune:
+                case 6: // Vile Piercer
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CorruptionRuneCircle");
                     break;
-                case Runes.JungleRune:
+                case 7: // Thorns of the Jungle
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/JungleRuneCircle");
                     break;
                 default:
@@ -124,9 +124,11 @@ namespace OvermorrowMod.WardenClass
                     break;
             }
             
+            //int num24 = (int)(((float)(drawPlayer.miscCounter / 300.0)).ToRotationVector2().Y * 4.0);
             Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2)) + new Vector2((-drawPlayer.direction), 0);
 
             // Replaced drawPlayer.miscCounter with modPlayer.symbolCounter, there might be syncing issues idk
+
             double deg = (modPlayer.rotateCounter * 0.8) * MathHelper.Lerp(1, 4, (float)(!modPlayer.runeDeactivate ? modPlayer.runeCounter / 300.0 : 1));
             float rad = (float)(deg * (Math.PI / 180));
 

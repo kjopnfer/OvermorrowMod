@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using OvermorrowMod.WardenClass;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,18 +11,6 @@ namespace OvermorrowMod.Projectiles.Piercing
 {
     public abstract class PiercingProjectile : ModProjectile
     {
-        // Use these to modify immunity frames, debuffs and other shit
-        private Dictionary<string, int> ChainType = new Dictionary<string, int>()
-        {
-            { "Sky", ModContent.ProjectileType<LightningPiercerProjectile>() },
-            { "Corruption", ModContent.ProjectileType<VilePiercerProjectile>() },
-            { "Crimson", ModContent.ProjectileType<CrimsonPiercerProjectile>() },
-            { "Bone", ModContent.ProjectileType<BonePiercerProjectile>() },
-            { "Hell", ModContent.ProjectileType<BlazePiercerProjectile>() },
-            { "Jungle", ModContent.ProjectileType<VinePiercerProjectile>() },
-            { "Mushroom", ModContent.ProjectileType<FungiPiercerProjectile>() }
-        };
-
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             // Makes dust projectiled on tile
@@ -43,7 +30,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             damage += target.defense / 2;
         }
 
-        // Calculate how much you gain per hit
         protected void SoulGain(NPC target, int defaultCeiling)
         {
             // Get the projectile owner
@@ -54,16 +40,13 @@ namespace OvermorrowMod.Projectiles.Piercing
 
             if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)
             {
-                // Gain souls between the default and the default + bonus
-                modPlayer.soulPercentage += Main.rand.Next(defaultCeiling, defaultCeiling + modPlayer.soulGainBonus);
+                modPlayer.soulPercentage += Main.rand.Next(2, 4);
             }
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(Main.player[projectile.owner]);
-
-            // Accessories
             if (modPlayer.FrostburnRune)
             {
                 int randChance = Main.rand.Next(3);
@@ -71,6 +54,12 @@ namespace OvermorrowMod.Projectiles.Piercing
                 {
                     target.AddBuff(BuffID.Frostburn, 240);
                 }
+
+                /*target.AddBuff(BuffID.Frostburn, 240);
+                target.AddBuff(BuffID.OnFire, 240);
+                target.AddBuff(BuffID.ShadowFlame, 240);
+                target.AddBuff(BuffID.Poisoned, 240);
+                target.AddBuff(BuffID.CursedInferno, 240);*/
             }
 
             if (modPlayer.PoisonRune)
@@ -96,7 +85,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             //target.GetGlobalNPC<OvermorrowGlobalNPC>().AddNewBuff(target, ModContent.BuffType<Bleeding2>(), 240);
 
 
-            // Armor
             if (modPlayer.HemoArmor)
             {
                 int randChance = Main.rand.Next(3);
@@ -106,18 +94,19 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
             }
 
-            // Held item sends back the Soul Gain Rate back to the modPlayer
-            // Retrieve the values from the modPlayer as the gain rate
-            SoulGain(target, modPlayer.heldGainPercentage);
-
-            if (projectile.type == ChainType["Sky"] || projectile.type == ChainType["Corruption"] || projectile.type == ChainType["Crimson"])
+            if (projectile.type == ModContent.ProjectileType<LightningPiercerProjectile>() || projectile.type == ModContent.ProjectileType<VilePiercerProjectile>()
+                || projectile.type == ModContent.ProjectileType<CrimsonPiercerProjectile>())
             {
-                target.immune[projectile.owner] = 4;
+                SoulGain(target, 2);
+
+                target.immune[projectile.owner] = 3;
             }
 
-            if (projectile.type == ChainType["Bone"] || projectile.type == ChainType["Hell"])
+            if (projectile.type == ModContent.ProjectileType<BonePiercerProjectile>() || projectile.type == ModContent.ProjectileType<BlazePiercerProjectile>())
             {
-                if (projectile.type == ChainType["Hell"])
+                SoulGain(target, 3);
+
+                if (projectile.type == ModContent.ProjectileType<BlazePiercerProjectile>())
                 {
                     if (!projectile.wet) // Check if projectile is not in water
                     {
@@ -128,26 +117,52 @@ namespace OvermorrowMod.Projectiles.Piercing
                     }
                 }
 
-                target.immune[projectile.owner] = 4;
+                target.immune[projectile.owner] = 3;
             }
 
-            if (projectile.type == ChainType["Jungle"])
+            if (projectile.type == ModContent.ProjectileType<VinePiercerProjectile>())
             {
+                SoulGain(target, 4); // 1 in 5 chance
+
                 if (Main.rand.Next(0, 5) == 0) // 20% chance
                 {
                     target.AddBuff(BuffID.Poisoned, 240); // Poison Debuff
                 }
-                target.immune[projectile.owner] = 4;
+                target.immune[projectile.owner] = 3;
             }
 
-            if (projectile.type == ChainType["Mushroom"])
+            if (projectile.type == ModContent.ProjectileType<FungiPiercerProjectile>())
             {
+                SoulGain(target, 5);
+
                 if (Main.rand.Next(0, 5) == 0) // 20% chance
                 {
                     target.AddBuff(ModContent.BuffType<FungalInfection>(), 400);
                 }
-                target.immune[projectile.owner] = 4;
+                target.immune[projectile.owner] = 3;
             }
         }
+
+        /*public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            // Get the projectile owner
+            Player player = Main.player[projectile.owner];
+
+            // Get the class info from the player
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+
+            if (Main.rand.Next(0, 5) == 0 && (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax))
+            {
+                modPlayer.soulResourceCurrent++; // Increase number of resource
+
+                // Add the projectile to the WardenDamagePlayer list of projectiles
+                modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+                //Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f); 
+                // Kill projectiles by index when consumed and decrease resource
+                // Remove the projectile from the array
+                
+            }
+            target.immune[projectile.owner] = 3;
+        }*/
     }
 }
