@@ -126,6 +126,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
                 direction.Normalize();
                 player.velocity = direction * 15;
                 dashreuse = 120;
+                player.itemAnimation = 1;
             }
 
 
