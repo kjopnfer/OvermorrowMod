@@ -27,7 +27,6 @@ namespace WardenClass
         public bool WaterHelmet;
 
         public int soulPercentage = 0;
-        public int heldGainPercentage = 0;
 
         public static WardenDamagePlayer ModPlayer(Player player)
         {
@@ -152,7 +151,7 @@ namespace WardenClass
 
         private void UpdateResource()
         {
-            Main.NewText(soulPercentage);
+            //Main.NewText(soulPercentage);
             if (soulPercentage >= 100)
             {
                 soulPercentage = 0;

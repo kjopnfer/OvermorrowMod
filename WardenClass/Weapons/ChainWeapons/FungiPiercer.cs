@@ -44,7 +44,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.MushroomRune)
+            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == 0)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -75,7 +75,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.MushroomRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
+            if (player.GetModPlayer<WardenRunePlayer>().RuneID == 4 && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
                 type = ModContent.ProjectileType<FungiPiercerProjectileAlt>();
             }

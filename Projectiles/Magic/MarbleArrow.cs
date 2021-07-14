@@ -48,7 +48,7 @@ namespace OvermorrowMod.Projectiles.Magic
             if (projectile.ai[0] == 60)
             {
                 projectile.velocity = storeVelocity;
-                float distance = 250f; // Search distance
+                float distance = 600f; // Search distance
 
                 if (!target)
                 {
