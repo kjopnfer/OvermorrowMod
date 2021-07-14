@@ -646,7 +646,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
-
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -659,8 +658,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             Projectile projectile2 = Main.projectile[(int)projectile.ai[0]];
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT19"))
             {
-                // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
+                // set rotation to the parent segment
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
