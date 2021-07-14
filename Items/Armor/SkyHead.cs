@@ -2,12 +2,17 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using OvermorrowMod.Projectiles.Summon.Worm;
 
 namespace OvermorrowMod.Items.Armor
 {
     [AutoloadEquip(EquipType.Head)]
     public class SkyHead : ModItem
     {
+
+
+        private int TailCheck = 0;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Sunplate Helmet");
@@ -38,6 +43,15 @@ namespace OvermorrowMod.Items.Armor
             player.moveSpeed += 0.1f;
             player.setBonus = "10% increased movement speed";
             player.GetModPlayer<OvermorrowModPlayer>().SkyArmor = true;
+            TailCheck++;
+            if(TailCheck == 15)
+            {
+                TailCheck = 0;
+                if(player.ownedProjectileCounts[ModContent.ProjectileType<WormT10>()] < 1)
+                {
+                    Projectile.NewProjectile(player.Center.X, player.Center.Y, 0, 0, mod.ProjectileType("WormT10"), 15, 0f, Main.myPlayer, 0, Main.myPlayer);
+                }
+            }
         }
 
         public override void AddRecipes()

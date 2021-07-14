@@ -23,7 +23,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         {
 			projectile.width = 24;
             projectile.height = 24;
-            projectile.timeLeft = 2000;
+            projectile.timeLeft = 200;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -38,6 +38,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT11"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
+
+
 
 
             Player player = Main.player[projectile.owner];
@@ -55,6 +62,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
     
     public class WormT11 : ModProjectile
     {
+
         private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
@@ -81,6 +89,10 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
 
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
@@ -145,6 +157,12 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
+
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -204,6 +222,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -266,6 +289,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -330,6 +358,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -392,6 +425,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -456,6 +494,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -519,6 +562,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -579,9 +627,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
@@ -646,6 +698,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
+
+            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            {
+                projectile.timeLeft = 10;
+            }
             if(projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
