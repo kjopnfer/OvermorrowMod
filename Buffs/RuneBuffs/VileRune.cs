@@ -9,7 +9,7 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 		public override void SetDefaults()
 		{
 			DisplayName.SetDefault("Imbuement: Vile Piercer");
-			Description.SetDefault("Your attacks launch three chains instead of one!");
+			Description.SetDefault("Your attacks launch homing worms to devour your enemy!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;
@@ -17,7 +17,7 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 
 		public override void Update(Player player, ref int buffIndex)
 		{
-			player.GetModPlayer<WardenRunePlayer>().RuneID = 6;
+			player.GetModPlayer<WardenRunePlayer>().RuneID = WardenRunePlayer.Runes.CorruptionRune;
 			player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
 		}
 	}
