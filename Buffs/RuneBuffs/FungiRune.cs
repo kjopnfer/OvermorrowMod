@@ -17,7 +17,7 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 
 		public override void Update(Player player, ref int buffIndex)
 		{
-			player.GetModPlayer<WardenRunePlayer>().RuneID = 4;
+			player.GetModPlayer<WardenRunePlayer>().RuneID = WardenRunePlayer.Runes.MushroomRune;
 			player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
 		}
 	}

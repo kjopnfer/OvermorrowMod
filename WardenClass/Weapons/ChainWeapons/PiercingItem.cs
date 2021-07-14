@@ -19,6 +19,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             modPlayer.UIToggled = true;
+            modPlayer.heldGainPercentage = soulGainChance;
         }
 
         public virtual void SafeSetDefaults()
@@ -70,7 +71,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 string damageWord = splitText.Last();
                 // Change the tooltip text
                 tt.text = damageValue + " piercing " + damageWord;
-                tooltips.Add(new TooltipLine(mod, "Soul Gain Probability", $"Soul Gain Chance: {soulGainChance} [+{modPlayer.soulGainBonus}]%"));
+                tooltips.Add(new TooltipLine(mod, "Soul Gain Probability", $"Soul Gain Rate: {soulGainChance} [+{modPlayer.soulGainBonus}]%"));
             }
         }
 
