@@ -19,11 +19,11 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         {
             item.autoReuse = true;
             item.rare = ItemRarityID.Green;
-            item.mana = 12; //11;
+            item.mana = 14;
             item.UseSound = SoundID.Item9;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 18;
+            item.damage = 16;
             item.useTurn = false;
             item.useAnimation = 28;
             item.useTime = 28;
