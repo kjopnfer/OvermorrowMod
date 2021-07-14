@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Projectiles.Melee;
 using OvermorrowMod.Projectiles.Boss;
-
+using OvermorrowMod.Projectiles;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
@@ -52,6 +52,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.knockBack = 1f;
             item.melee = true;
             item.autoReuse = true;
+            item.channel = true;
             item.value = Item.sellPrice(gold: 1);
         }
 
@@ -119,7 +120,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         {
             if(NPC.downedBoss1 && player.altFunctionUse == 2 && dashreuse < 0)
             {
-
                 Vector2 PLYposition = player.Center;
                 Vector2 targetPosition = Main.MouseWorld;
                 Vector2 direction = targetPosition - PLYposition;
@@ -148,7 +148,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
                     treeshoot = 0;
                 }
             }
-
 
             return true;
         }
@@ -243,7 +242,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
  
             if(dashreuse == 59)
             {
-                item.damage = saveddamage;
                 item.useTime = savedusetime;
                 item.useAnimation = savedusetimeani;
             }
@@ -257,7 +255,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             {
                 player.immuneTime = 20;
                 player.immune = true;
-                item.damage = saveddamage * 2;
+                item.crit = 200;
                 item.useTime = 63;
                 item.useAnimation = 63;
 			    player.eocDash = 60;
@@ -274,6 +272,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             }
             else
             {
+                item.crit = 1;
                 dashproj = 8;
                 player.eocDash = 0;
 			    player.armorEffectDrawShadowEOCShield = false;
