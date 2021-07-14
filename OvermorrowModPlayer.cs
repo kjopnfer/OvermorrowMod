@@ -36,6 +36,8 @@ namespace OvermorrowMod
         private int minionCounts;
         public bool MarbleTrail;
         int TrailTimer = 0;
+        public bool SkyArmor;
+
 
         // Shield Variables
         public int DashType;
@@ -111,6 +113,7 @@ namespace OvermorrowMod
             BMSet = false;
             graniteSet = false;
             MarbleTrail = false;
+            SkyArmor = false;
 
             atomBuff = false;
             graniteSpearBuff = false;

@@ -37,6 +37,7 @@ namespace OvermorrowMod.Items.Armor
         {
             player.moveSpeed += 0.1f;
             player.setBonus = "10% increased movement speed";
+            player.GetModPlayer<OvermorrowModPlayer>().SkyArmor = true;
         }
 
         public override void AddRecipes()
