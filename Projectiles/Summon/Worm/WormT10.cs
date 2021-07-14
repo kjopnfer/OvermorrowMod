@@ -21,8 +21,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -48,7 +48,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            target.immune[projectile.owner] = 0;
             didHit = true;
             projectile.tileCollide = false;
         }
@@ -66,8 +65,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -78,12 +77,21 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         }
 
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
+
         public override void AI()
         {
+
+
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
+
+
 
             timer++;
             if(timer == 1)
@@ -96,7 +104,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT10"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -123,8 +131,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -134,14 +142,17 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
 
         public override void AI()
         {
-
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
             timer++;
             if(timer == 1)
             {
@@ -152,7 +163,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT11"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -178,8 +189,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -189,14 +200,18 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
+
 
         public override void AI()
         {
-            
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
             if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
@@ -211,7 +226,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT12"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -238,8 +253,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -249,14 +264,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
-
         public override void AI()
         {
-            
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
             if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
@@ -271,7 +288,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT13"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -298,8 +315,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -309,14 +326,18 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
+
 
         public override void AI()
         {
-            
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
             if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
@@ -331,7 +352,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT14"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -358,8 +379,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -369,13 +390,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
-
         public override void AI()
         {
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
             projectile.timeLeft = 2000;
             if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
@@ -391,7 +415,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT15"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -418,8 +442,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -429,14 +453,17 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
 
         public override void AI()
         {
-            
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
             if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
@@ -451,7 +478,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT16"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -478,8 +505,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -489,14 +516,17 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
 
         public override void AI()
         {
-            
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
             if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
@@ -511,7 +541,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT17"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -530,7 +560,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
     {
         private int length = 1;
         private int timer = 0;
-        public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
+        public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WhyT";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Holy Light");
@@ -538,8 +568,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -549,14 +579,17 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
 
         public override void AI()
         {
-            
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
             if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
@@ -571,7 +604,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT18"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
@@ -590,7 +623,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
     {
         private int length = 1;
         private int timer = 0;
-        public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/DevourerT";
+        public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WhyT2";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Holy Light");
@@ -598,8 +631,8 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 26;
-            projectile.height = 26;
+			projectile.width = 24;
+            projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -609,18 +642,25 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.ignoreWater = true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 0;
-        }
+
 
         public override void AI()
         {
+
+            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            {
+                projectile.spriteDirection = 1;
+            }
+            else
+            {
+                projectile.spriteDirection = -1;
+            }
+
             Projectile projectile2 = Main.projectile[(int)projectile.ai[0]];
             if (projectile2.active && projectile2.type == mod.ProjectileType("WormT19"))
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
                     // direction from parent to me
                     Vector2 dir = projectile2.DirectionTo(projectile.Center);
