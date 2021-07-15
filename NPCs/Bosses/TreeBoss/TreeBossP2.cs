@@ -197,8 +197,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // Spawn nature waves in all directions
             // Move toward player slowly
 
-            npc.ai[0] = 3;
-
             if (npc.life <= npc.lifeMax * 0.5f)
             {
                 changedPhase2 = true;

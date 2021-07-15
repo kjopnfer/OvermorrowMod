@@ -1,15 +1,22 @@
 using System;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Effects.Prim;
+using OvermorrowMod.Effects.Prim.Trails;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
-    public class ElectricBall : ModProjectile
+    public class ElectricBall : ModProjectile, ITrailEntity
     {
         Projectile parentProjectile;
         private int speedUpCounter = 0;
+
+        public Type TrailType()
+        {
+            return typeof(LightningTrail);
+        }
 
         public override void SetStaticDefaults()
         {

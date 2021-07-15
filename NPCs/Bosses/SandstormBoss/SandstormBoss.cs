@@ -27,6 +27,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         bool fourthlife = false;
         bool circleactive = false;
         Vector2 playercentersnapshot;
+        private int storedDamage;
         private bool clockwise;
 
         public override void SetStaticDefaults()
@@ -192,6 +193,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         }
                         else
                         {
+                            storedDamage = npc.damage;
                             npc.ai[0] = 1f;
                             npc.ai[1] = 0;
                         }
@@ -205,6 +207,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         npc.ai[2] = 900;
                         break;
                     }
+
+                    npc.damage = 0;
+
                     if (fourthlife == false)
                     {
                         npc.velocity = Vector2.Zero;
@@ -216,7 +221,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                                 for (int i = 0; i < (halflife ? Main.rand.Next(1, 3) : Main.rand.Next(3, 5)); i++)
                                 {
                                     npc.netUpdate = true;
-                                    Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-11, -6), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-11, -6), 0), ModContent.ProjectileType<SandBall>(), 21 / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
                                 }
 
                                 if (npc.life <= npc.lifeMax * 0.5f)
@@ -224,7 +229,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                                     for (int i = 0; i < (halflife ? Main.rand.Next(1, 3) : Main.rand.Next(3, 5)); i++)
                                     {
                                         npc.netUpdate = true;
-                                        Projectile.NewProjectile(new Vector2(player.Center.X - Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(6, 11), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
+                                        Projectile.NewProjectile(new Vector2(player.Center.X - Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(6, 11), 0), ModContent.ProjectileType<SandBall>(), 21 / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
                                     }
                                 }
                             }
@@ -252,7 +257,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0, Main.myPlayer, 0, npc.ai[3]);
+                                Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<SandBall>(), 21 / (Main.expertMode ? 4 : 2), 0, Main.myPlayer, 0, npc.ai[3]);
                             }
                         }
                     }
@@ -263,6 +268,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             doDustAttack = true;
                         }
+
+                        npc.damage = storedDamage;
                         npc.hide = false;
                         npc.width = 136;
                         npc.height = 112;
@@ -448,7 +455,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             for (int i = 0; i < 2; i++)
                             {
-                                Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(Math.PI) * 6, ModContent.ProjectileType<SandBall2>(), npc.damage / 4, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(Math.PI) * 6, ModContent.ProjectileType<SandBall2>(), 21 / 4, 0f, Main.myPlayer);
                             }
                         }
                     }

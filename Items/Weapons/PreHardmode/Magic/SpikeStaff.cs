@@ -9,17 +9,19 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Spike Staff");
-            Tooltip.SetDefault("Creates spikes in a circle arround you when use is held down\nYou can only have 9 spikes at a time \nWhen use is released the spikes fire out \nDamage increases by the item damage for each spike");
+            DisplayName.SetDefault("Stalagmite Staff");
+            Tooltip.SetDefault("Holding down shoot creates spikes in a circle around you\nWhen released the spikes fire outwards\nYou can only have 9 spikes at a time\nDamage increases by the item damage for each spike");
+            Item.staff[item.type] = true;
         }
         public override void SetDefaults()
         {
 
-            item.width = 32;
-            item.height = 32;
+            item.width = 54;
+            item.height = 54;
             item.damage = 6;
             item.magic = true;
             item.mana = 6;
+            item.rare = ItemRarityID.Green;
             item.UseSound = SoundID.Item43;
             item.noMelee = true;
             item.useTime = 33;
@@ -40,6 +42,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             recipe.SetResult(this);
             recipe.AddRecipe();
         }
+
         public override Vector2? HoldoutOffset()
         {
             return new Vector2(-3, 0);

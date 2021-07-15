@@ -25,8 +25,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useTurn = false;
             item.useAnimation = 14;
             item.useTime = 14;
-            item.width = 28;
-            item.height = 30;
+            item.width = 30;
+            item.height = 36;
             item.shoot = ProjectileID.MoonlordTurretLaser;
             item.shootSpeed = 2f;
             item.knockBack = 3f;
@@ -36,7 +36,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(183, 35);
+            recipe.AddIngredient(ItemID.GlowingMushroom, 35);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();

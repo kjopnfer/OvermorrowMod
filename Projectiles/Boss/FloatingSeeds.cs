@@ -6,7 +6,7 @@ namespace OvermorrowMod.Projectiles.Boss
 {
     public class FloatingSeeds : ModProjectile
     {
-        //public override string Texture => "Terraria/Item_" + ItemID.Seedling; // TODO: Get actual texture
+        private int storeDamage;
         private bool canDescend = false;
         private bool goLeft = true;
 
@@ -30,11 +30,13 @@ namespace OvermorrowMod.Projectiles.Boss
         {
             if(projectile.ai[0] == 0)
             {
+                storeDamage = projectile.damage;
                 projectile.spriteDirection = Main.rand.NextBool(2) ? -1 : 1;
             }
             projectile.ai[0]++;
             if (!canDescend)
             {
+                projectile.damage = 0;
                 projectile.rotation += 1f;
                 // Be affected by the shoot initial velocity
                 if(projectile.ai[0] % 180 == 0) // After 3 seconds, set velocity to zero
@@ -56,6 +58,8 @@ namespace OvermorrowMod.Projectiles.Boss
             }
             else
             {
+                projectile.damage = storeDamage;
+
                 // Start descending
                 projectile.velocity.Y = 4.5f;
                 projectile.rotation = 0.0f;

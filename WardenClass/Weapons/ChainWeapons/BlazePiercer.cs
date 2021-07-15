@@ -63,17 +63,18 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.HellRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
                 {
+                    item.damage = 17;
                     item.useAnimation = 35;
                     item.useTime = 35;
                     item.UseSound = SoundID.Item45;
                 }
                 else
                 {
+                    item.damage = 9;
                     item.useAnimation = 14;
                     item.useTime = 14;
                     item.UseSound = SoundID.Item71;
                 }
-                item.damage = 9;
                 item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             }

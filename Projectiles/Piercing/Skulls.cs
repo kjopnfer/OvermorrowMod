@@ -1,18 +1,26 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Effects.Prim;
+using OvermorrowMod.Effects.Prim.Trails;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
-    public class Skulls : ModProjectile
+    public class Skulls : ModProjectile, ITrailEntity
     {
         private float storeDirection;
         private float trigCounter = 0;
         private float period = 30;
         private float amplitude = 10;
         private float previousR = 0;
+
+        public Type TrailType()
+        {
+            return typeof(SkullTrail);
+        }
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Skull");

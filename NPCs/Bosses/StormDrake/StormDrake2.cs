@@ -83,7 +83,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override void AI()
         {
-            npc.ai[0] = 5;
+            npc.ai[0] = 2;
             Player player = Main.player[npc.target];
 
             if (npc.lifeMax * 2 / 3 >= npc.life && twothirdshealth != true)

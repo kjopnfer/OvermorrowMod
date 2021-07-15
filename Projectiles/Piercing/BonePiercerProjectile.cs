@@ -1,12 +1,19 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Effects.Prim;
+using OvermorrowMod.Effects.Prim.Trails;
 using Terraria;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
-    public class BonePiercerProjectile : PiercingProjectile
+    public class BonePiercerProjectile : PiercingProjectile, ITrailEntity
     {
+        public Type TrailType()
+        {
+            return typeof(SkullTrail);
+        }
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bone Spike");

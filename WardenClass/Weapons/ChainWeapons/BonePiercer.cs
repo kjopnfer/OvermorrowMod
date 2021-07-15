@@ -56,16 +56,16 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
                 ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
-                player.AddBuff(ModContent.BuffType<BoneRune>(), 600);
+                player.AddBuff(ModContent.BuffType<BoneRune>(), 300);
             }
             else
             {
                 item.useStyle = ItemUseStyleID.HoldingOut;
                 item.useTurn = true;
                 
-                item.damage = 8;
                 if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
                 {
+                    item.damage = 15;
                     item.useAnimation = 26;
                     item.useTime = 26;
                     item.shootSpeed = 11f;
@@ -73,6 +73,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 }
                 else
                 {
+                    item.damage = 8;
                     item.useAnimation = 14;
                     item.useTime = 14;
                     item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
