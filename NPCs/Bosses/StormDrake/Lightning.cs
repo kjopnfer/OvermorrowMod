@@ -192,7 +192,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Vector2 pos = Vector2.Lerp(seg1.Position, seg2.Position, progress);
                     float alpha = MathHelper.Lerp(seg1.Alpha, seg2.Alpha, progress);
                     float scale = MathHelper.Lerp(seg1.Size, seg2.Size, progress) / texture.Width;
-                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(Color.White, Color.LightBlue, alpha) * alpha , 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(Color.LightBlue, Color.Cyan, alpha) * alpha , 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale, SpriteEffects.None, 0f);
                 }
             }
             return false;

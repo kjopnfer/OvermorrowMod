@@ -46,7 +46,7 @@ namespace WardenClass
                 projectile.timeLeft = 2;
             }
 
-            projectile.localAI[0] += 1f;
+            /*projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 4f)
             {
                 for (int num1163 = 0; num1163 < 5; num1163++)
@@ -56,7 +56,7 @@ namespace WardenClass
                     Dust dust81 = Main.dust[num1161];
                     dust81.velocity *= 0f;
                 }
-            }
+            }*/
 
             if (player.dead)
             {

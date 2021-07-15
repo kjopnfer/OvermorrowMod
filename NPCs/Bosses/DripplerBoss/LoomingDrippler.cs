@@ -32,7 +32,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.height = 30;
             npc.damage = 28;
             npc.defense = 0;
-            npc.lifeMax = 75; //50;
+            npc.lifeMax = 200;
             npc.HitSound = SoundID.NPCHit19;
             npc.knockBackResist = 0.4f;
             npc.DeathSound = SoundID.NPCDeath22;
@@ -465,11 +465,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                     NPC parentNPC = Main.npc[(int)npc.ai[1]];
                     if (Main.expertMode)
                     {
-                        parentNPC.life -= 200; //100;
+                        parentNPC.life -= 400;
                     }
                     else
                     {
-                        parentNPC.life -= 100; //50;
+                        parentNPC.life -= 200;
                     }
                 }
             }
