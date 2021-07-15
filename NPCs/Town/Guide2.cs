@@ -24,6 +24,9 @@ namespace OvermorrowMod.NPCs.Town
         int bulltimer;
         int arrowtimer;
 
+
+
+        int disctimer;
         bool leafatt = false;
 
         public override void SetStaticDefaults()
@@ -459,60 +462,18 @@ namespace OvermorrowMod.NPCs.Town
                 case 4: // Shoot nature blasts
                     if (npc.ai[0] == 4)
                     {   
-                        if(npc.ai[1] < 90)
-                        {
-                            npc.velocity = Vector2.Zero;
-                        }
-
-                        if (npc.ai[1] == 30)
+                        
+                        if (npc.ai[1] == 3)
                         {
                             Vector2 position = npc.Center;
                             Vector2 targetPosition = Main.player[npc.target].Center;
                             Vector2 direction = targetPosition - position;
                             direction.Normalize();
-                            float speed = 7f;
-                            int type = 82;
-                            int proj = Projectile.NewProjectile(position, direction * speed, 503, npc.damage, 0f, Main.myPlayer);      
-                            Main.projectile[proj].friendly = false;
-                            Main.projectile[proj].hostile = true;
-                        }
-
-                        if (npc.ai[1] == 60)
-                        {
-                            Vector2 position = npc.Center;
-                            Vector2 targetPosition = Main.player[npc.target].Center;
-                            Vector2 direction = targetPosition - position;
-                            direction.Normalize();
-                            float speed = 7f;
-                            int type = 82;
-                            int proj = Projectile.NewProjectile(position, direction * speed, 503, npc.damage, 0f, Main.myPlayer);      
-                            Main.projectile[proj].friendly = false;
-                            Main.projectile[proj].hostile = true;
+                            npc.velocity = direction * 15f;
                         }
 
 
-                        if (npc.ai[1] == 90)
-                        {
-                            Vector2 position = npc.Center;
-                            Vector2 targetPosition = Main.player[npc.target].Center;
-                            Vector2 direction = targetPosition - position;
-                            direction.Normalize();
-                            float speed = 10f;
-                            int type = 82;
-                            int proj = Projectile.NewProjectile(position, direction * speed, 348, npc.damage, 0f, Main.myPlayer);      
-                            Main.projectile[proj].friendly = false;
-                            Main.projectile[proj].hostile = true;
-                            npc.velocity = direction * 7f;
-                        }
-
-
-                        if (npc.ai[1] > 150)
-                        {
-                            npc.velocity = npc.velocity * 0.5f;
-                        }
-
-
-                        if (npc.ai[1] > 160)
+                        if (npc.ai[1] > 30)
                         {
                             npc.ai[0] =  -1;
                             npc.ai[1] = 0;
@@ -521,52 +482,31 @@ namespace OvermorrowMod.NPCs.Town
                     break;
                 case 3: // scythes
                     {
-                        Vector2 moveTo = player.Center;
-                        moveTo.X += 50 * (npc.Center.X < moveTo.X ? -1 : 1);
-                        var move = moveTo - npc.Center;
-                        var speed = 1;
+                        
+                        Vector2 GuidePosition = npc.Center;
+                        Vector2 PlayerPosition = Main.player[npc.target].Center;
+                        Vector2 GuideDirection = PlayerPosition - GuidePosition;
+                        GuideDirection.Normalize();
+                        npc.velocity = GuideDirection * 5f;
 
-                        float length = move.Length();
-                        if (length > speed)
+
+
+                        disctimer++;
+                        if(disctimer > 14)
                         {
-                            move *= speed / length;
+                            disctimer = 0;
                         }
-                        var turnResistance = 45;
-                        move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
-                        length = move.Length();
-                        if (length > 10)
+
+                        if(disctimer == 13 && Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<LightDisc2>()] < 5)
                         {
-                            move *= speed / length;
+                            Vector2 position = npc.Center;
+                            Vector2 targetPosition = Main.player[npc.target].Center;
+                            Vector2 direction = targetPosition - position;
+                            direction.Normalize();
+                            float Projspeed = 15f;
+                            Projectile.NewProjectile(position, direction * Projspeed, ModContent.ProjectileType<LightDisc2>(), npc.damage, 0f, Main.myPlayer);  
                         }
-                        npc.velocity.X = move.X;
-                        npc.velocity.Y = move.Y * .98f;
-                        if (npc.ai[1] == 180)
-                        {
-                            if (npc.spriteDirection == 1)
-                            {
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        float ProjectileSpawnX = npc.Center.X + 150 + (333 * i);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopLeft.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomLeft.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        float ProjectileSpawnX = npc.Center.X - 150 - (333 * i);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopRight.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomRight.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    }
-                                }
-                            }
-                        }
+
                         if (npc.ai[1] > 540)
                         {
                             npc.ai[0] = 0;
