@@ -614,7 +614,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Main.dust[mydust].velocity = npc.velocity + (direction * Main.rand.NextFloat(12, 14));
                         }
 
-                        if (npc.ai[1]++ % 50 == 0)
+                        if (npc.ai[1]++ % (50 - (25 - ((npc.life / npc.lifeMax) * 25))) == 0)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
