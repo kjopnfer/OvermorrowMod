@@ -26,27 +26,9 @@ namespace OvermorrowMod.Items.Consumable.Boss
             projectile.timeLeft = 1800;
             projectile.penetrate = -1;
             projectile.alpha = 255;
-            //projectile.ai[1] = 900;
         }
         public override void AI()
         {
-            //Player projectileowner = Main.player[projectile.owner];
-            //projectileowner.GetModPlayer<OvermorrowModPlayer>().TitleID = 5;
-            //projectileowner.GetModPlayer<OvermorrowModPlayer>().FocusBoss = false;
-            //projectileowner.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
-
-            //if (Main.netMode != NetmodeID.MultiplayerClient)
-            //{
-            //    if (Main.netMode == NetmodeID.SinglePlayer)
-            //    {
-            //        Main.NewText(/*"Gra-knight and Apollus have awoken!"*//*"The Super Biome Bros have awoken!"*/"The Super Stoner Bros have awoken!", 175, 75, 255);
-            //    }
-            //    else if (Main.netMode == NetmodeID.Server)
-            //    {
-            //        NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The Super Stoner Bros have awoken!"), new Color(175, 75, 255));
-            //    }
-            //}
-
             switch (projectile.knockBack)
             {
                 case 0:
@@ -71,11 +53,11 @@ namespace OvermorrowMod.Items.Consumable.Boss
                             {
                                 if (Main.netMode == NetmodeID.SinglePlayer)
                                 {
-                                    Main.NewText(/*"Gra-knight and Apollus have awoken!"*//*"The Super Biome Bros have awoken!"*/"The Super Stoner Bros have awoken!", 175, 75, 255);
+                                    Main.NewText(/*"Gra-knight and Apollus have awoken!"*//*"The Super Biome Bros have awoken!"*//*"The Super Stoner Bros have awoken!"*/ "The Super Stoner Buds have awoken!", 175, 75, 255);
                                 }
                                 else if (Main.netMode == NetmodeID.Server)
                                 {
-                                    NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The Super Stoner Bros have awoken!"), new Color(175, 75, 255));
+                                    NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The Super Stoner Buds have awoken!"), new Color(175, 75, 255));
                                 }
                             }
                             projectile.Kill();

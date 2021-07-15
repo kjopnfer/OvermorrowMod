@@ -48,7 +48,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.noGravity = true;
             npc.aiStyle = -1;
             npc.knockBackResist = 0f;
-            npc.damage = 15;
+            npc.damage = 45;//15;
             npc.defense = 4;
             npc.lifeMax = 4000;
             npc.HitSound = SoundID.NPCHit4;
@@ -72,7 +72,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<GraniteMinibossMinion>())
+                if (Main.npc[i].active && Main.npc[i].type == NPCType<GraniteMinibossMinion>())
                 {
                     countMinions++;
                 }
@@ -342,13 +342,13 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         npcDashing = true;
                     }
 
-                    if (npc.ai[1] > 30 && npc.ai[1] < 90 && npc.ai[1] % 10 == 0 && changedPhase2 == true)
+                    if (npc.ai[1] > 30 && npc.ai[1] < /*90*/ 60 && npc.ai[1] % /*10*/ 11 == 0 && changedPhase2 == true)
                     {
                         for (int i = -1; i < 1; i++)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), npc.damage / 3, 5f, Main.myPlayer);
                             }
                         }
                     }
@@ -430,7 +430,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), npc.damage / 2, 10f, Main.myPlayer);
                             }
                         }
                         attackCounter++;
@@ -503,7 +503,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), npc.damage / 2, 10f, Main.myPlayer);
                             }
                         }
                         attackCounter++;
@@ -551,19 +551,33 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         npc.ai[2]++;
                     }
 
-                    if (npc.ai[1] > 5 && npc.ai[1] < 90)
+                    if (npc.ai[1] > 5 && npc.ai[1] < 240) //90)
                     {
                         if (++npc.ai[2] % 5 == 0)
                         {
-                            Vector2 origin = new Vector2(player.Center.X + -300 * Direction, player.Center.Y);
-                            float radius = 15;
-                            int numLocations = 30;
-                            for (int i = 0; i < 30; i++)
+                            Vector2 origin1 = new Vector2(player.Center.X + 300 * Direction, player.Center.Y);
+                            float radius1 = 7.5f; //15;
+                            int numLocations1 = 25; //30;
+                            for (int i = 0; i < 25; i++)
                             {
-                                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                Vector2 position = origin1 + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations1 * i)) * radius1;
+                                Vector2 dustvelocity = new Vector2(0f, /*10*/ 7.5f).RotatedBy(MathHelper.ToRadians(360f / numLocations1 * i));
+                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f); //2);
                                 Main.dust[dust].noGravity = true;
+                            }
+
+                            if (npc.ai[1] > 5 && npc.ai[1] < 90)
+                            { 
+                                Vector2 origin = new Vector2(player.Center.X + -300 * Direction, player.Center.Y);
+                                float radius = 15;
+                                int numLocations = 30;
+                                for (int i = 0; i < 30; i++)
+                                {
+                                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    Main.dust[dust].noGravity = true;
+                                }
                             }
                         }
                     }
@@ -579,7 +593,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                NPC.NewNPC((int)(npc.Center.X + 150 + (300 * i)), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
+                                NPC.NewNPC((int)((player.Center.X + 300 * Direction - 51) + (/*150*/ 75 + (/*300*/ 150 * i))), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
                             }
                         }
                         int count = 0;

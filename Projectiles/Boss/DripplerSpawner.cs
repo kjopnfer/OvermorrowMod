@@ -8,12 +8,10 @@ namespace OvermorrowMod.Projectiles.Boss
     public class DripplerSpawner : ModProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Drippler Spawner");
         }
-
         public override void SetDefaults()
         {
             projectile.width = 16;
@@ -25,7 +23,6 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.alpha = 255;
             projectile.tileCollide = false;
         }
-
         public override void AI()
         {
             projectile.localAI[0] += 1f;
@@ -35,7 +32,6 @@ namespace OvermorrowMod.Projectiles.Boss
                 Main.dust[dust].noGravity = true;
             }
         }
-
         public override void Kill(int timeLeft)
         {
             if (projectile.ai[0] == 0)
@@ -48,7 +44,6 @@ namespace OvermorrowMod.Projectiles.Boss
                     {
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
                     }
-
                     Main.npc[spawnedNPC].netUpdate = true;
                 }
             }

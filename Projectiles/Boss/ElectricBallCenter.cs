@@ -33,7 +33,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void AI()
         {
-            if(projectile.ai[0] == 0) // Make this projectile deal no damage
+            if (projectile.ai[0] == 0) // Make this projectile deal no damage
             {
                 storeDamage = projectile.damage;
                 projectile.damage = 0;
@@ -64,16 +64,16 @@ namespace OvermorrowMod.Projectiles.Boss
                 float distance = 6000f; // Search distance
                 if (!launchedProjectile)
                 {
-                            Vector2 newMove = Main.player[Main.npc[(int)projectile.ai[1]].target].Center - projectile.Center;
-                            float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
-                            if (distanceTo < distance)
-                            {
-                                move = newMove;
-                                distance = distanceTo;
-                                float launchSpeed = Main.expertMode ? 75f : 100f;
-                                projectile.velocity = (move) / launchSpeed;
-                                launchedProjectile = true;
-                                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)projectile.position.X, (int)projectile.position.Y);
+                    Vector2 newMove = Main.player[Main.npc[(int)projectile.ai[1]].target].Center - projectile.Center;
+                    float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
+                    if (distanceTo < distance)
+                    {
+                        move = newMove;
+                        distance = distanceTo;
+                        float launchSpeed = Main.expertMode ? 75f : 100f;
+                        projectile.velocity = (move) / launchSpeed;
+                        launchedProjectile = true;
+                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)projectile.position.X, (int)projectile.position.Y);
                     }
                 }
             }

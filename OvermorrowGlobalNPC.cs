@@ -95,7 +95,7 @@ namespace OvermorrowMod
 
             if (Homingdie)
             {
-                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, ModContent.ProjectileType<HeroHoming>(), 20, 2, Main.player[npc.target].whoAmI);
+                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, ModContent.ProjectileType<HeroHoming>(), npc.damage * 3, 2, Main.player[npc.target].whoAmI);
             }
 
 
