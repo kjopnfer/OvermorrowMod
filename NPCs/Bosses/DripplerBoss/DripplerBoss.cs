@@ -528,9 +528,12 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         {
             for (int k = 0; k < 200; k++)
             {
-                if (Main.npc[k].active && (Main.npc[k].type == mod.NPCType("LoomingDrippler") || Main.npc[k].type == mod.NPCType("RotatingDriplad")))
+                if (Main.npc[k].active && Main.npc[k].type == mod.NPCType("LoomingDrippler"))
                 {
                     ((LoomingDrippler)Main.npc[k].modNPC).run = true;
+                }
+                if (Main.npc[k].active && Main.npc[k].type == mod.NPCType("RotatingDriplad"))
+                {
                     ((RotatingDriplad)Main.npc[k].modNPC).run = true;
                 }
             }
