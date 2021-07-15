@@ -23,7 +23,7 @@ namespace OvermorrowMod.Projectiles.Boss
         {
             if (++projectile.ai[1] == 1)
             {
-                Particle.CreateParticle(4, projectile.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+                Particle.CreateParticle(Particle.ParticleType<LightningSpark>(), projectile.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
             }
             Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
         }
