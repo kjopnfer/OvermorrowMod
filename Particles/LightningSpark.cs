@@ -62,7 +62,7 @@ namespace OvermorrowMod.Particles
         {
             // draw lightnings, draw alpha circle, draw extra small electric particles
             //Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
-            Texture2D texture = ModContent.GetTexture("Textures/TowerMark");
+            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
             for (int i = 0; i < previousSegments.Count - 1; i++)
             {
                 var seg1 = previousSegments[i];
