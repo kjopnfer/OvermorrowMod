@@ -2,6 +2,7 @@ using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Projectiles.Magic.Gems;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {
@@ -21,13 +22,13 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.UseSound = SoundID.Item43;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 18;
+            item.damage = 14;
             item.useTurn = false;
             item.useAnimation = 28;
-            item.useTime = 14;
+            item.useTime = 28;
             item.width = 64;
             item.height = 60;
-            item.shoot = ProjectileID.RubyBolt;
+            item.shoot = ModContent.ProjectileType<RubyProj>();
             item.shootSpeed = 14f;
             item.knockBack = 6f;
             item.magic = true;

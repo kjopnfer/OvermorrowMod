@@ -33,6 +33,7 @@ namespace OvermorrowMod.Items.Testing
             if (player.altFunctionUse == 2)
             {
                 currentType = (currentType + 1) % Particle.ParticleTypes.Count;
+                Main.NewText(currentType);
             }
             else
             {

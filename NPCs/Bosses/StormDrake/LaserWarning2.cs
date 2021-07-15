@@ -23,6 +23,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override void Kill(int timeLeft)
         {
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
+                if (distance <= 1600)
+                {
+                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 20;
+                }
+            }
             Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<TestLightning>(), projectile.damage, projectile.knockBack, projectile.owner);
         }
     }
