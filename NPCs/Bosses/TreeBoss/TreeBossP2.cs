@@ -212,7 +212,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     {
                         if (movement == true)
                         {
-                            if (changedPhase2 == true) { RandomCeiling = 5; }
+                            if (changedPhase2 == true) { RandomCeiling = 4; }
                             else { RandomCeiling = 3; }
                             while (RandomCase == LastCase)
                             {
@@ -324,11 +324,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     if (npc.ai[1] > 660)
                     {
                         StopHeal = 7500;
-                        npc.ai[0] = 5;
+                        npc.ai[0] = 4;
                         npc.ai[1] = 0;
                     }
                     break;
-                case 4: // Shoot nature blasts
+                /*case 4: // Shoot nature blasts
                     npc.velocity = Vector2.Zero;
                     if (npc.ai[0] == 4)
                     {
@@ -411,9 +411,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             npc.ai[0] = -1;
                             npc.ai[1] = 0;
                         }
-                    }
+                    }*/
                     break;
-                case 5: // Shoot nature blasts
+                case 4: // Shoot nature blasts
                     npc.velocity = Vector2.Zero;
 
                     if (npc.ai[1] == 120)
