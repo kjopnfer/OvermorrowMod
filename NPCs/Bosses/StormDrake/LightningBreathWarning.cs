@@ -14,12 +14,12 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
         {
-        float length = (TRay.Cast(projectile.Center, projectile.velocity, /*2500f*/ 750f) - projectile.Center).Length();
-        LaserLength = length;
-        projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.25f;
-        NPC projectileowner = Main.npc[(int)projectile.ai[1]];
-        projectile.position = projectileowner.Center + new Vector2(187 * direction, -51);
-        projectile.velocity = Vector2.UnitX * direction;
+            float length = (TRay.Cast(projectile.Center, projectile.velocity, /*2500f*/ 750f) - projectile.Center).Length();
+            LaserLength = length;
+            projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.1f;//25f;
+            NPC projectileowner = Main.npc[(int)projectile.ai[1]];
+            projectile.position = projectileowner.Center + new Vector2(187 * direction, -51);
+            projectile.velocity = Vector2.UnitX * direction;
         }
     }
 }

@@ -8,6 +8,7 @@ using System;
 using Terraria.Localization;
 using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.Particles;
+using Terraria.Graphics.Shaders;
 
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
@@ -35,7 +36,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         private int LastCase;
         private int SecondToLastCase;
         private Vector2 PlayerCenterStore;
-        private int relativeX = -15;//-7;
+        private int relativeX = -15;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Storm Drake");
@@ -461,27 +462,26 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
-                                if (distance <= 1600)//1000)
+                                if (distance <= 1600)
                                 {
                                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
                                 }
                             }
                             Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
-                            //Particle.CreateParticle(, npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
                             npc.velocity = (25 * 4) * npc.DirectionTo(PlayerCenterStore);
                         }
                         else if (npc.ai[1] >  /*300*/ /*250*/ 310 && npc.ai[1] < /*340*/ 400 /*420*/)
                         {
                             npc.velocity = Vector2.SmoothStep(npc.velocity, Vector2.Zero, 0.065f * 3/*.5f /*4.5f /*4*/);
                         }
-                        else if (npc.ai[1] > /*420*/ /*340*/ 400 && npc.ai[2] <= 5)
+                        else if (npc.ai[1] > /*420*/ /*340*/ 400 && npc.ai[2] <= 1)//2)//5)
                         {
                             npc.ai[1] = 0;
                             npc.ai[2]++;
                             dashing = false;
                             //createAfterimage = false;
                         }
-                        else if (npc.ai[1] > /*420*/ /*340*/ 400 && npc.ai[2] > 5)
+                        else if (npc.ai[1] > /*420*/ /*340*/ 400 && npc.ai[2] > 1)//2)//5)
                         {
                             npc.ai[0] = -1;
                             npc.ai[1] = 0;
@@ -523,6 +523,16 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         else if (npc.ai[1] == 260)
                         {
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                                if (distance <= 1600)
+                                {
+                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
+                                }
+                            }
+                            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
+
                             npc.velocity = (Vector2.UnitX * (25f * 4)) * npc.spriteDirection;
                             spritedirectionstore = npc.spriteDirection;
                             dashing = true;
@@ -530,19 +540,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         else if (npc.ai[1] > 270 && npc.ai[1] < 360)//430)
                         {
-                            for (int i = 0; i < Main.maxPlayers; i++)
-                            {
-                                float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
-                                if (distance <= 1600)//1000)
-                                {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
-                                }
-                            }
-                            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
-                            //Particle.CreateParticle(, npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
                             npc.velocity = Vector2.SmoothStep(npc.velocity, Vector2.Zero, 0.065f * 3/*.8f /*4*/);
                         }
-                        else if (npc.ai[1] > /*430*/ 360 && npc.ai[2] <= 2)
+                        else if (npc.ai[1] > /*430*/ 360 && npc.ai[2] <= 1)//2)//1)//2)
                         {
                             npc.ai[1] = 0;
                             npc.ai[2]++;
@@ -550,7 +550,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             npc.velocity = Vector2.Zero;
                             createAfterimage = false;
                         }
-                        else if (npc.ai[1] > /*430*/ 360 && npc.ai[2] > 2)
+                        else if (npc.ai[1] > /*430*/ 360 && npc.ai[2] > 1)//2)//1)//2)
                         {
                             npc.ai[0] = -1;
                             npc.ai[1] = 0;
@@ -585,7 +585,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.ai[2]++;
                         }
-                        if (npc.ai[2] >= 240)
+                        if (npc.ai[2] >= 100)
                         {
                             canPulse = false;
                             PlayerCenterStore = Vector2.Zero;
