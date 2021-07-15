@@ -92,6 +92,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Main.projectile[i].Kill();
                                 }
                             }
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
+                                if (distance <= 1600)
+                                {
+                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                                }
+                            }
                         }   
                     }
                     break;
