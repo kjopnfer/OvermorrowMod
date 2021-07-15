@@ -207,8 +207,8 @@ namespace OvermorrowMod
                     titleColor = Color.Green;
                     break;
                 case 5:
-                    BossName = "Gra-knight and Apollus";
-                    BossTitle = "The Super Stoner Bros"; /*The Super Biome Brothers*/
+                    BossName = "Gra-knight and Lady Apollo";//"Gra-knight and Apollus";
+                    BossTitle = "The Super Stoner Buds";//"The Super Stoner Bros"; /*The Super Biome Brothers*/
                     nameColor = new Color(230, 228, 216);
                     titleColor = new Color(64, 80, 89);
                     break;

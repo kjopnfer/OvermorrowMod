@@ -39,7 +39,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.width = 320;
             npc.height = 482;
             npc.aiStyle = -1;
-            npc.damage = 21;
+            npc.damage = 59;//21;
             npc.defense = 35;
             npc.lifeMax = 6500;
             npc.HitSound = SoundID.NPCHit1;
@@ -200,7 +200,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
                 case 0: // Float towards the player
                     if (npc.ai[0] == 0)
-                    {                    
+                    {
                         // Break statements to stop movement and continue to phase initializers
                         if (/*!LocalPhaseTwo*/ !OvermorrowWorld.dripPhase2 && !spawnedRotaters && /*!randomrotatorshootistrue &&*/ countDripplers <= 0 && npc.life <= npc.lifeMax * 0.66f)
                         {
@@ -214,25 +214,26 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             npc.ai[1] = 0;
                             break;
                         }
-
-                        Vector2 moveTo = player.Center;
-                        var move = moveTo - npc.Center;
-                        var speed = 2;
-
-                        float length = move.Length();
-                        if (length > speed)
+                        if (!OvermorrowWorld.dripPhase2 || npc.Distance(player.Center) > 333)//750)
                         {
-                            move *= speed / length;
-                        }
-                        var turnResistance = 45;
-                        move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
-                        length = move.Length();
-                        if (length > 10)
-                        {
-                            move *= speed / length;
-                        }
-                        npc.velocity = move;
+                            Vector2 moveTo = player.Center;
+                            var move = moveTo - npc.Center;
+                            var speed = 2;
 
+                            float length = move.Length();
+                            if (length > speed)
+                            {
+                                move *= speed / length;
+                            }
+                            var turnResistance = 45;
+                            move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                            length = move.Length();
+                            if (length > 10)
+                            {
+                                move *= speed / length;
+                            }
+                            npc.velocity = move;
+                        }
                         if (countDripplers > 0 && !changedPhase3)
                         {
                             if (Main.rand.Next(100) == 0 && circleCooldown == 0 && !OvermorrowWorld.DripplerCircle)
@@ -525,6 +526,15 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void NPCLoot()
         {
+            for (int k = 0; k < 200; k++)
+            {
+                if (Main.npc[k].active && (Main.npc[k].type == mod.NPCType("LoomingDrippler") || Main.npc[k].type == mod.NPCType("RotatingDriplad")))
+                {
+                    ((LoomingDrippler)Main.npc[k].modNPC).run = true;
+                    ((RotatingDriplad)Main.npc[k].modNPC).run = true;
+                }
+            }
+
             OvermorrowWorld.downedDrippler = true;
             OvermorrowWorld.dripPhase2 = false;
             OvermorrowWorld.dripPhase3 = false;

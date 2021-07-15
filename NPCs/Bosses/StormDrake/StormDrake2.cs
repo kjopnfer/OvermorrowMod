@@ -127,7 +127,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.Move(player.Center + new Vector2(250 * (npc.spriteDirection * -1), -250), 4, 2);
                         }
-                        if (npc.ai[1]++ > 600)
+                        if (npc.ai[1]++ > 480)//600)
                         {
                             npc.dontTakeDamage = false;
                             npc.ai[1] = 0;
@@ -350,7 +350,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center + new Vector2(170 * npc.spriteDirection, -45), npc.DirectionTo(player.Center) * 6f, ModContent.ProjectileType<ElectricBallRadialLightning>(), npc.damage, 2, Main.myPlayer);
+                                Projectile.NewProjectile(npc.Center + new Vector2(170 * npc.spriteDirection, -45), npc.DirectionTo(player.Center) * 6f, ModContent.ProjectileType<ElectricBallRadialLightning>(), npc.damage / 2, 2, Main.myPlayer);
                             }
                         }
                         if (npc.ai[1] > 1 && npc.ai[1] < 900 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
@@ -390,7 +390,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center + new Vector2(160 * npc.spriteDirection, -40), npc.DirectionTo(player.Center) * (7.5f + Main.rand.NextFloat(2.5f)), ModContent.ProjectileType<LightningBreath>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
+                                Projectile.NewProjectile(npc.Center + new Vector2(160 * npc.spriteDirection, -40), npc.DirectionTo(player.Center) * (7.5f + Main.rand.NextFloat(/*2.5f*/5)), ModContent.ProjectileType<LightningBreath>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
                             }
                         }
                         if (npc.ai[1] > 1 && npc.ai[1] < 300 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
@@ -427,7 +427,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             }
                             else
                             {
-                                npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), targetFloat), 10, 2);
+                                npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), targetFloat), /*10*/ 15, 2);
                             }
                         }
                         if (++npc.ai[1] == 180)
@@ -515,7 +515,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         if (++npc.ai[1] > 0 && npc.ai[1] < 200 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
                         {
-                            npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 10, 2);
+                            npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), /*10*/ 15, 2);
                         }
                         else if (npc.ai[1] > 200 && npc.ai[1] < 260)
                         {

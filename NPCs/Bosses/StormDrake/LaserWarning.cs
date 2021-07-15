@@ -12,7 +12,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public bool killearly = false;
         public bool killnow = false;
         
-        public LaserWarning()  : base(300 + wait, 2500 + (wait / 10), 0f, Color.Blue, "NPCs/Bosses/StormDrake/LaserWarning") { }
+        public LaserWarning()  : base(300 + wait, 1500f, 0f, Color.Blue, "NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
@@ -23,7 +23,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 projectile.active = false;
                 projectile.timeLeft = 0;
             }
-            float length = (TRay.Cast(projectile.Center, projectile.velocity, 2500f) - projectile.Center).Length();
+            float length = (TRay.Cast(projectile.Center, projectile.velocity, 1500f) - projectile.Center).Length();
             LaserLength = length;
             projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.1f;
         }

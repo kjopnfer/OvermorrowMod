@@ -27,6 +27,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         bool fourthlife = false;
         bool circleactive = false;
         Vector2 playercentersnapshot;
+        private bool clockwise;
 
         public override void SetStaticDefaults()
         {
@@ -212,7 +213,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                                for (int i = 0; i < (halflife ? Main.rand.Next(1, 3) : Main.rand.Next(3, 5)); i++)
                                 {
                                     npc.netUpdate = true;
                                     Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-11, -6), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
@@ -220,7 +221,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                                 if (npc.life <= npc.lifeMax * 0.5f)
                                 {
-                                    for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                                    for (int i = 0; i < (halflife ? Main.rand.Next(1, 3) : Main.rand.Next(3, 5)); i++)
                                     {
                                         npc.netUpdate = true;
                                         Projectile.NewProjectile(new Vector2(player.Center.X - Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(6, 11), 0), ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
@@ -236,15 +237,14 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             npc.hide = true;
                             npc.width = 68;
                             npc.height = 56;
-                            //playercentersnapshot = player.Center;
                         }
 
                         if (npc.ai[2]++ > 0 && npc.ai[1] > 2)
                         {
-                            npc.position = /*playercentersnapshot*/ player.Center + new Vector2(-475, 0).RotatedBy(MathHelper.ToRadians(4 * npc.ai[3]));
+                            npc.position = player.Center + new Vector2(-475, 0).RotatedBy(MathHelper.ToRadians(4 * npc.ai[3]));
                             npc.position.X -= npc.width / 2;
                             npc.position.Y -= npc.height / 2;
-                            npc.ai[3]++;
+                            npc.ai[3] += (clockwise ? 1 : -1);
                             npc.ai[2] = 0;
                         }
 
@@ -252,7 +252,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(/*playercentersnapshot*/player.Center) * 7.5f, ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0, Main.myPlayer, 0, npc.ai[3]);
+                                Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<SandBall>(), npc.damage / (Main.expertMode ? 4 : 2), 0, Main.myPlayer, 0, npc.ai[3]);
                             }
                         }
                     }
@@ -307,7 +307,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     {
                         if (npc.ai[2] <= 0)
                         {
-                            float chargeSpeed = !player.ZoneDesert ? 30 : 22;
+                            float chargeSpeed = !player.ZoneDesert ? 25 : 18; //30 : 22;
                             move = player.Center - npc.Center;
                             float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
                             move *= chargeSpeed / magnitude;
@@ -455,6 +455,15 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     // Move the NPC around the center
                     if (npc.ai[1] == 2400)
                     {
+                        if (clockwise)
+                        {
+                            clockwise = false;
+                        }
+                        else
+                        {
+                            clockwise = true;
+                        }
+
                         npc.ai[0] = 0;
                         npc.ai[1] = 0;
                     }

@@ -35,7 +35,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Apollus");
+            DisplayName.SetDefault("Apollo");
             Main.npcFrameCount[npc.type] = 10;
         }
         public override void SetDefaults()
@@ -50,9 +50,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             npc.noGravity = true;
             npc.noTileCollide = true;
             npc.HitSound = SoundID.NPCHit4;
+            npc.damage = 45;
         }
-
-        
 
         public override void AI()
         {
@@ -140,7 +139,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 for (int i = 0; i < numLocations; i++)
                 {
                     Vector2 position = npc.Center + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                    Projectile.NewProjectile(position, Vector2.Zero, ModContent.ProjectileType<HostileReflectile>(), 0, 0f, Main.myPlayer, npc.whoAmI, 120 * i);
+                    Projectile.NewProjectile(position, Vector2.Zero, ProjectileType<HostileReflectile>(), 0, 0f, Main.myPlayer, npc.whoAmI, 120 * i);
                 }
                 spawnedShields = true;
             }
@@ -217,6 +216,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     {
                         if (changedPhase2 && !changedPhase2Indicator)
                         {
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 1;
                             npc.ai[0] = -2;
                             npc.ai[3] = 0;
                             break;
@@ -228,7 +229,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                proj = Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), 0, 0f, Main.myPlayer, -10, npc.whoAmI);
+                                proj = Projectile.NewProjectile(player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), npc.damage / 2, 0f, Main.myPlayer, -10, npc.whoAmI);
                             }
                         }
 
@@ -255,6 +256,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                     {
                         if (changedPhase2 && !changedPhase2Indicator)
                         {
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 1;
                             npc.ai[0] = -2;
                             npc.ai[3] = 0;
                             break;
@@ -270,7 +273,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(npc.Center, new Vector2(0f, 8.5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + (npc.ai[2] * 30) + random), ProjectileType<ApollusArrow>(), 12, 10f, Main.myPlayer);
+                                    Projectile.NewProjectile(npc.Center, new Vector2(0f, 8.5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + (npc.ai[2] * 30) + random), ProjectileType<ApollusArrow>(), npc.damage / 2, 10f, Main.myPlayer);
                                 }
                             }
                             npc.ai[2] += 1;
@@ -313,7 +316,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(playerCenterSnapShot) * 5f, ProjectileType<ApollusArrowTwo>(), 15, 12, Main.myPlayer, 0, npc.ai[3]);
+                                    Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(playerCenterSnapShot) * 5f, ProjectileType<ApollusArrowTwo>(), npc.damage / 2, /*12*/ 6, Main.myPlayer, 0, npc.ai[3]);
                                 }
                             }
                             Vector2 origin = npc.Center;
@@ -335,33 +338,22 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
                         if (npc.ai[3] == 390 / 30 && npc.ai[1] == 240)
                         {
-                            if (changedPhase2 == true && changedPhase2Indicator == false)
-                            {
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 1;
-                                npc.ai[0] = -2;
-                                npc.ai[3] = 0;
-                            }
-                            else
-                            {
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 1;
-                                npc.ai[0] = 4;
-                                npc.ai[3] = 0;
-                            }
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 1;
+                            npc.ai[0] = 4;
+                            npc.ai[3] = 0;
                         }
                     }
                     break;
                 case 3: // hold rune circle
                     {
-
                         if (!PlayerAlive(player)) { break; }
 
                         if (++npc.ai[1] == 1)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                projalt = Projectile.NewProjectile(npc.Center + npc.Center + new Vector2(-35 + (566 * npc.spriteDirection), -35), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), 0, direction ? -1 : 1, Main.myPlayer, -20, npc.whoAmI);
+                                projalt = Projectile.NewProjectile(npc.Center + npc.Center + new Vector2(-35 + (566 * npc.spriteDirection), -35), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), npc.damage / 2, direction ? -1 : 1, Main.myPlayer, -20, npc.whoAmI);
                             }
                         }
 
@@ -373,20 +365,11 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         if (npc.ai[1] == 360)
                         {
                             Main.projectile[projalt].Kill();
-                            if (changedPhase2 == true && changedPhase2Indicator == false)
-                            {
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 1;
-                                npc.ai[0] = -2;
-                                npc.ai[3] = 0;
-                            }
-                            else
-                            {
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 1;
-                                npc.ai[0] = 4;
-                                npc.ai[3] = 0;
-                            }
+                            
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 1;
+                            npc.ai[0] = 4;
+                            npc.ai[3] = 0;
                         }
                     }
                     break;
@@ -544,6 +527,11 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         public override void BossLoot(ref string name, ref int potionType)
         {
             potionType = ItemID.LesserHealingPotion;
+        }
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            return false;
         }
     }
 }

@@ -12,7 +12,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         float rotationCounter;
         int directionalStore;
         int whoAmiStore;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Rune Circle");
@@ -28,7 +27,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.penetrate = -1;
             projectile.scale = 1f;
         }
-      
         public override void AI()
         {
             if (projectile.ai[0] == -10)
@@ -37,27 +35,22 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 whoAmiStore = (int)projectile.ai[1];
                 projectile.ai[1] = 0;
             }
-
             if (projectile.ai[0] == -20)
             {
                 projectile.ai[0] = 2;
                 whoAmiStore = (int)projectile.ai[1];
                 projectile.ai[1] = 0;
             }
-
             NPC owner = Main.npc[whoAmiStore];
-
             if (!owner.active)
             {
                 projectile.Kill();
                 return;
             }
-
             if (projectile.damage == 15)
             {
                 projectile.ai[0] = 2;
             }
-
             switch (projectile.ai[0])
             {
                 case 0: // spawn animation
@@ -66,14 +59,12 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         {
                             projectile.scale = 0.01f;
                         }
-
                         if (projectile.ai[1] > 2 && projectile.ai[1] < 45)
                         {
                             projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
                             rotationCounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
                             projectile.rotation += rotationCounter;
                         }
-
                         if (projectile.ai[1] == 45)
                         {
                             projectile.ai[0] = 1;
@@ -88,7 +79,6 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                             if (projectile.ai[1] % 25 == 0)
                             {
                                 int shootSpeed = Main.rand.Next(6, 8);
-
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     float distance = 2000f;
@@ -120,7 +110,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                                 {
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), 12, 10f, Main.myPlayer);
+                                        Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), projectile.damage, 10f, Main.myPlayer);
                                     }
                                 }
                             }
@@ -130,7 +120,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 case 2: // spawn animation
                     {
                         NPC projectileOwner = Main.npc[whoAmiStore];
-                        projectile.position = projectileOwner.Center + new Vector2(/*-35*/ -70 * directionalStore, 0);
+                        projectile.position = projectileOwner.Center + new Vector2(-35 + (566 * directionalStore), -35);
                         if (projectile.ai[1] == 0)
                         {
                             projectile.scale = 0.01f;
@@ -138,14 +128,12 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                             projectile.knockBack = 10;
                             projectile.damage = 12;
                         }
-
                         if (projectile.ai[1] > 2 && projectile.ai[1] < 45)
                         {
                             projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
                             rotationCounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
                             projectile.rotation += rotationCounter;
                         }
-
                         if (projectile.ai[1] == 45)
                         {
                             projectile.ai[0] = 3;
@@ -163,7 +151,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalStore, Main.rand.Next(-3, 3) * directionalStore), ProjectileType<ApollusArrowNormal>(), 12, 2, Main.myPlayer);
+                                    Projectile.NewProjectile(projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalStore, Main.rand.Next(-3, 3) * directionalStore), ProjectileType<ApollusArrowNormal>(), projectile.damage, 2, Main.myPlayer);
                                 }
                             }
                         }
@@ -172,10 +160,13 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             }
             projectile.ai[1]++;
         }
-
         public override Color? GetAlpha(Color lightColor)
         {
             return Color.White;
+        }
+        public override bool CanHitPlayer(Player target)
+        {
+            return false;
         }
     }
 }

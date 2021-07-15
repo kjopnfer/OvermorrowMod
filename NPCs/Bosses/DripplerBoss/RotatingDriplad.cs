@@ -11,6 +11,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
     [AutoloadBossHead]
     public class RotatingDriplad : ModNPC
     {
+        public bool run;
         public override string Texture => "OvermorrowMod/NPCs/Bosses/DripplerBoss/Driplad";
         private NPC parentNPC;
         private bool initializedRadius = false;
@@ -27,9 +28,9 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         {
             npc.width = 68;
             npc.height = 110;
-            npc.damage = 25;
+            npc.damage = 37; //25;
             npc.defense = 0;
-            npc.lifeMax = 100; //250;
+            npc.lifeMax = 150; //100; //250;
             npc.HitSound = SoundID.NPCHit19;
             npc.knockBackResist = 0f;
             npc.DeathSound = SoundID.NPCDeath22;
@@ -39,138 +40,93 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
-            npc.lifeMax = (int)(npc.lifeMax * 0.5f * bossLifeScale);
+            npc.lifeMax = (int)(npc.lifeMax * /*0.5f*/ 1 * bossLifeScale);
         }
 
         public override void AI()
         {
-            if ((!Main.npc[(int)npc.ai[1]].boss) || !Main.bloodMoon)
+            if (run)
             {
-                npc.TargetClosest(false);
-                npc.direction = 1;
-                npc.velocity.Y = npc.velocity.Y - 0.1f;
-                if (npc.timeLeft > 20)
-                {
-                    npc.timeLeft = 20;
-                    return;
-                }
+                npc.velocity = Vector2.UnitY * -7.5f;
             }
             else
             {
-                parentNPC = Main.npc[(int)npc.ai[1]];
-                npc.timeLeft = 20;
-            }
-
-            if (!initializedRadius)
-            {
-                radius = npc.ai[2];
-                npc.ai[2] = 0;
-                initializedRadius = true;
-            }
-
-            // AI[0] is the orbit position timer
-            // AI[1] is used for locating Parent NPC
-            // AI[2] is the phase
-            // AI[3] is the timer
-
-
-            Player player = Main.player[npc.target];
-            npc.TargetClosest(true);
-
-            NPC_OrbitPosition(npc, parentNPC.Center, radius, radius == /*1050*/525 ? /*0.65*/ /*0.33f*/ /*0.65f*/ 0.325f : /*1.25f*/ /*0.75f*/ /*0.5f*/ /*0.75f*/ 1.25f);
-            switch (npc.ai[2])
-            {
-
-                case 0: // Do nothing
-                    if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3 && npc.ai[3] > 1600)
+                if ((!Main.npc[(int)npc.ai[1]].boss) || !Main.bloodMoon)
+                {
+                    npc.TargetClosest(false);
+                    npc.direction = 1;
+                    npc.velocity.Y = npc.velocity.Y - 0.1f;
+                    if (npc.timeLeft > 20)
                     {
-                        ((DripplerBoss)Main.npc[(int)npc.ai[1]].modNPC).turnonattackindicator = true;
-                        npc.ai[2] = 2;
-                        npc.ai[3] = 0;
+                        npc.timeLeft = 20;
+                        return;
                     }
-                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 0 && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3)
-                    {
-                        ((DripplerBoss)Main.npc[(int)npc.ai[1]].modNPC).turnonattackindicator = true;
-                        npc.ai[2] = 1;
-                        npc.ai[3] = 0;
-                    }
-                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 1 && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3)
-                    {
-                        npc.ai[2] = 3;
-                        npc.ai[3] = 0;
-                    }
-                    else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 2 && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3)
-                    {
-                        npc.ai[2] = 4;
-                        npc.ai[3] = 0;
-                    }
+                }
+                else
+                {
+                    parentNPC = Main.npc[(int)npc.ai[1]];
+                    npc.timeLeft = 20;
+                }
 
-                    /*if (npc.ai[3] % 240 == 0)
-                    {
-                        npc.ai[2] = 2;
-                        npc.ai[3] = 0;
-                    }*/
-                    break;
-                case 1: // Shoot outwards
+                if (!initializedRadius)
+                {
+                    radius = npc.ai[2];
+                    npc.ai[2] = 0;
+                    initializedRadius = true;
+                }
 
-                    if (/*30 <*/ 0 < npc.ai[3] && npc.ai[3] < 480/*90*/ && npc.ai[3] % 10 == 0)
-                    {
-                        //Vector2 ShootNormalizedVelocity = parentNPC.DirectionTo(npc.Center);
+                // AI[0] is the orbit position timer
+                // AI[1] is used for locating Parent NPC
+                // AI[2] is the phase
+                // AI[3] is the timer
 
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+
+                Player player = Main.player[npc.target];
+                npc.TargetClosest(true);
+
+                NPC_OrbitPosition(npc, parentNPC.Center, radius, radius == /*1050*/525 ? /*0.65*/ /*0.33f*/ /*0.65f*/ /*0.325f*/ ((OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 0 && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3) ? 0.4875f * 2 : 0.4875f) : /*1.25f*/ /*0.75f*/ /*0.5f*/ /*0.75f*/ 1.25f);
+                switch (npc.ai[2])
+                {
+
+                    case 0: // Do nothing
+                        if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase3 && npc.ai[3] > 1600)
                         {
-                            Projectile.NewProjectile(npc.Center, parentNPC.DirectionTo(npc.Center) * 7, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
-                        }
-                    }
-
-                    if (npc.ai[3] > /*120*/ 480)
-                    {
-                        npc.ai[2] = 0;
-                        npc.ai[3] = 0;
-                    }
-                    break;
-                case 2: // Shoot towards center
-
-                    if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 5 == 0 && ((0 < npc.ai[3] && npc.ai[3] < 60) || (120 < npc.ai[3] && npc.ai[3] < 180) || (240 < npc.ai[3] && npc.ai[3] < 300) || (360 < npc.ai[3] && npc.ai[3] < 420)))
-                    {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/ parentNPC.DirectionFrom(npc.Center) * 7, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
-                        }
-                    }
-
-                    if (npc.ai[3] > 480)
-                    {
-                        npc.ai[2] = 0;
-                        npc.ai[3] = 0;
-                    }
-                    break;
-                case 3: //shoot scatter shots at player
-                    {
-                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 40 == 0)
-                        { 
-                            ShootTarget = player.Center + Main.rand.NextVector2Circular(50, 50);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(npc.Center, npc.DirectionTo(ShootTarget) * 5, ModContent.ProjectileType<BloodyBall>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0);
-                            }
-                        }
-
-                        if (npc.ai[3] > 480)
-                        {
-                            npc.ai[2] = 0;
+                            ((DripplerBoss)Main.npc[(int)npc.ai[1]].modNPC).turnonattackindicator = true;
+                            npc.ai[2] = 2;
                             npc.ai[3] = 0;
                         }
-                    }
-                    break;
-                case 4: // volley
-                    {
-                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % /*10*/ 30 == 0)
+                        else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 0 && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3)
                         {
-                            ShootTarget = new Vector2((((npc.Center.X - player.Center.X) * 0.75f) * -1) + npc.Center.X, npc.Center.Y - 150);
+                            ((DripplerBoss)Main.npc[(int)npc.ai[1]].modNPC).turnonattackindicator = true;
+                            npc.ai[2] = 1;
+                            npc.ai[3] = 0;
+                        }
+                        else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 1 && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3)
+                        {
+                            npc.ai[2] = 3;
+                            npc.ai[3] = 0;
+                        }
+                        else if (OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 2 && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3)
+                        {
+                            npc.ai[2] = 4;
+                            npc.ai[3] = 0;
+                        }
+
+                        /*if (npc.ai[3] % 240 == 0)
+                        {
+                            npc.ai[2] = 2;
+                            npc.ai[3] = 0;
+                        }*/
+                        break;
+                    case 1: // Shoot outwards
+
+                        if (/*30 <*/ 0 < npc.ai[3] && npc.ai[3] < 480/*90*/ && npc.ai[3] % 10 == 0)
+                        {
+                            //Vector2 ShootNormalizedVelocity = parentNPC.DirectionTo(npc.Center);
+
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, npc.DirectionTo(ShootTarget) * 7.5f, ModContent.ProjectileType<BloodyBallGravity>(), npc.damage / 3, 3f, Main.myPlayer, 0, 0/*1*/);
+                                Projectile.NewProjectile(npc.Center, parentNPC.DirectionTo(npc.Center) * 7, ModContent.ProjectileType<BloodyBall>(), npc.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
                             }
                         }
 
@@ -179,11 +135,63 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             npc.ai[2] = 0;
                             npc.ai[3] = 0;
                         }
-                    }
-                    break;
+                        break;
+                    case 2: // Shoot towards center
 
+                        if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 5 == 0 && ((0 < npc.ai[3] && npc.ai[3] < 60) || (120 < npc.ai[3] && npc.ai[3] < 180) || (240 < npc.ai[3] && npc.ai[3] < 300) || (360 < npc.ai[3] && npc.ai[3] < 420)))
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(npc.Center, /*direction * shootSpeed*/ parentNPC.DirectionFrom(npc.Center) * 7, ModContent.ProjectileType<BloodyBall>(), npc.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
+                            }
+                        }
+
+                        if (npc.ai[3] > 480)
+                        {
+                            npc.ai[2] = 0;
+                            npc.ai[3] = 0;
+                        }
+                        break;
+                    case 3: //shoot scatter shots at player
+                        {
+                            if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % 40 == 0)
+                            {
+                                ShootTarget = player.Center + Main.rand.NextVector2Circular(50, 50);
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(npc.Center, npc.DirectionTo(ShootTarget) * 5, ModContent.ProjectileType<BloodyBall>(), npc.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
+                                }
+                            }
+
+                            if (npc.ai[3] > 480)
+                            {
+                                npc.ai[2] = 0;
+                                npc.ai[3] = 0;
+                            }
+                        }
+                        break;
+                    case 4: // volley
+                        {
+                            if (0 < npc.ai[3] && npc.ai[3] < 480 && npc.ai[3] % /*10*/ 30 == 0)
+                            {
+                                ShootTarget = new Vector2((((npc.Center.X - player.Center.X) * 0.75f) * -1) + npc.Center.X, npc.Center.Y - 150);
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(npc.Center, npc.DirectionTo(ShootTarget) * 7.5f, ModContent.ProjectileType<BloodyBallGravity>(), npc.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0/*1*/);
+                                }
+                            }
+
+                            if (npc.ai[3] > /*120*/ 480)
+                            {
+                                npc.ai[2] = 0;
+                                npc.ai[3] = 0;
+                            }
+                        }
+                        break;
+
+                }
+                npc.ai[3]++;
             }
-            npc.ai[3]++;
         }
 
         public void NPC_OrbitPosition(NPC modNPC, Vector2 position, double distance, double speed = 1.75)
@@ -194,7 +202,14 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
 
             if (OvermorrowWorld.dripPhase3)
             {
-                npc.ai[0] += 0.225f;
+                if ((OvermorrowWorld.DripladShoot && OvermorrowWorld.dripPhase2 && OvermorrowWorld.RotatingDripladAttackCounter == 0 && npc.ai[3] > 400 && !OvermorrowWorld.dripPhase3))
+                {
+                    npc.ai[0] += 0.3375f * 2;
+                }
+                else
+                {
+                    npc.ai[0] += 0.3375f; //0.225f;
+                }
             }
             else
             {
@@ -204,17 +219,15 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             npc.position.X = position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2;
             npc.position.Y = position.Y - (int)(Math.Sin(rad) * distance) - npc.height / 2;
         }
+        //// Get the outer circle
+        //public Vector2 NPC_CalculateOuter(NPC modNPC, Vector2 position, double distance, double speed = 1.75)
+        //{
+        //    double rad;
+        //    double deg = speed * npc.ai[0];
+        //    rad = deg * (Math.PI / 180);
 
-        // Get the outer circle
-        public Vector2 NPC_CalculateOuter(NPC modNPC, Vector2 position, double distance, double speed = 1.75)
-        {
-            double rad;
-            double deg = speed * npc.ai[0];
-            rad = deg * (Math.PI / 180);
-
-            return new Vector2(position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2, position.Y - (int)(Math.Sin(rad) * distance) - npc.height / 2);
-        }
-
+        //    return new Vector2(position.X - (int)(Math.Cos(rad) * distance) - npc.width / 2, position.Y - (int)(Math.Sin(rad) * distance) - npc.height / 2);
+        //}
         public override void HitEffect(int hitDirection, double damage)
         {
             if (npc.life > 0)
@@ -267,11 +280,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 NPC parentNPC = Main.npc[(int)npc.ai[1]];
                 if (Main.expertMode)
                 {
-                    parentNPC.life -= 200;
+                    parentNPC.life -= 400; //200;
                 }
                 else
                 {
-                    parentNPC.life -= 100;
+                    parentNPC.life -= 200; //100;
                 }
             }
         }

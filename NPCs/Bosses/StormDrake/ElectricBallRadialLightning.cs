@@ -113,7 +113,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
-            target.AddBuff(BuffID.Electrified, Main.expertMode ? 360 : 180);
+            target.AddBuff(BuffID.Electrified, Main.expertMode ? 180 : 90);//360 : 180);
         }
     }
 }

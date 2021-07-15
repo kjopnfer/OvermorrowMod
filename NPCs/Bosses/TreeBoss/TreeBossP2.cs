@@ -197,6 +197,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // Spawn nature waves in all directions
             // Move toward player slowly
 
+            npc.ai[0] = 3;
+
             if (npc.life <= npc.lifeMax * 0.5f)
             {
                 changedPhase2 = true;
@@ -364,30 +366,16 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                         npc.velocity.X = move.X;
                         npc.velocity.Y = move.Y * .98f;
+
+
                         if (npc.ai[1] == 180)
                         {
-                            if (npc.spriteDirection == 1)
+                            for (int i = -2; i < 3; i++)
                             {
-                                for (int i = 0; i < 4; i++)
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        float ProjectileSpawnX = npc.Center.X + 150 + (333 * i);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopLeft.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomLeft.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        float ProjectileSpawnX = npc.Center.X - 150 - (333 * i);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopRight.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomRight.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    }
+                                    Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y - 200), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y + 200), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
                                 }
                             }
                         }
