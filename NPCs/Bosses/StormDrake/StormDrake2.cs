@@ -112,7 +112,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 }
             }
 
-            if (twothirdshealth == true && phase2switched == false)
+            if (twothirdshealth == true && phase2switched == false && !(npc.ai[0] == -2))
             {
                 npc.ai[0] = -2;
                 npc.ai[1] = 0;
