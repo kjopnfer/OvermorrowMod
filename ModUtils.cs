@@ -121,7 +121,7 @@ namespace OvermorrowMod
         {
             return Vector3.Transform(vec, Matrix.CreateFromYawPitchRoll(yaw, pitch, roll));
         }
-        public static void Reload(this SpriteBatch spriteBatch, BlendState blendState = null, SpriteSortMode sortMode = default)
+        /*public static void Reload(this SpriteBatch spriteBatch, BlendState blendState = null, SpriteSortMode sortMode = default)
         {
             if ((bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch))
 			{
@@ -134,8 +134,27 @@ namespace OvermorrowMod
 			Effect effect = (Effect)spriteBatch.GetField("customEffect");
 			Matrix matrix = (Matrix)spriteBatch.GetField("transformMatrix");
 			spriteBatch.Begin(sortMode, blendState, state, state2, state3, effect, matrix);
-        }
+        }*/
         public static void Reload(this SpriteBatch spriteBatch, BlendState blendState = null)
+        {
+            if (spriteBatch.HasBegun())
+            {
+                spriteBatch.End();
+            }
+            SpriteSortMode sortMode = SpriteSortMode.Deferred;
+            if (blendState == null) blendState = (BlendState)spriteBatch.GetField("blendState");
+            SamplerState state = (SamplerState)spriteBatch.GetField("samplerState");
+            DepthStencilState state2 = (DepthStencilState)spriteBatch.GetField("depthStencilState");
+            RasterizerState state3 = (RasterizerState)spriteBatch.GetField("rasterizerState");
+            Effect effect = (Effect)spriteBatch.GetField("customEffect");
+            Matrix matrix = (Matrix)spriteBatch.GetField("transformMatrix");
+            spriteBatch.Begin(sortMode, blendState, state, state2, state3, effect, matrix);
+        }
+        public static bool HasBegun(this SpriteBatch spriteBatch)
+        {
+            return (bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch);
+        }
+        /*public static void Reload(this SpriteBatch spriteBatch, BlendState blendState = null)
         {
             if ((bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch))
 			{
@@ -149,7 +168,7 @@ namespace OvermorrowMod
 			Effect effect = (Effect)spriteBatch.GetField("customEffect");
 			Matrix matrix = (Matrix)spriteBatch.GetField("transformMatrix");
 			spriteBatch.Begin(sortMode, blendState, state, state2, state3, effect, matrix);
-        }
+        }*/
         public static object GetField(this object obj, string name)
         {
             return obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(obj);
