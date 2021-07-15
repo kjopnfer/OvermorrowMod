@@ -35,7 +35,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         int normal = 0;
         int bone = 0;
         int sting = 0;
-        public override string Texture => "OvermorrowMod/Items/Weapons/PreHardmode/Magic/MegaBlaster";
         
         public override void SetStaticDefaults()
         {
