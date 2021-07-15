@@ -90,6 +90,33 @@ namespace OvermorrowMod
             velocity.Y = velocity.Y / time - 0.5f * gravity * time;
             return velocity;
         }
+
+        public static bool HasParameter(this Effect effect, string name)
+        {
+            foreach (EffectParameter param in effect.Parameters)
+            {
+                if (param.Name == name) return true;
+            }
+            return false;
+        }
+
+        public static void SafeSetParameter(this Effect effect, string name, float value)
+        {
+            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
+        }
+        public static void SafeSetParameter(this Effect effect, string name, Color value)
+        {
+            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value.ToVector4());
+        }
+        public static void SafeSetParameter(this Effect effect, string name, Texture2D value)
+        {
+            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
+        }
+        public static void SafeSetParameter(this Effect effect, string name, Matrix value)
+        {
+            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
+        }
+
         public static Vector3 RotatedBy(this Vector3 vec, float yaw, float pitch, float roll)
         {
             return Vector3.Transform(vec, Matrix.CreateFromYawPitchRoll(yaw, pitch, roll));

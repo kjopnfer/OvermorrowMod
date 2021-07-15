@@ -152,7 +152,7 @@ namespace WardenClass
 
         private void UpdateResource()
         {
-            Main.NewText(soulPercentage);
+            //Main.NewText(soulPercentage);
             if (soulPercentage >= 100)
             {
                 soulPercentage = 0;
