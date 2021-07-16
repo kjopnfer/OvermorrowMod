@@ -176,8 +176,8 @@ namespace OvermorrowMod.NPCs.PostRider.NightCrawler
 
         public override void Init()
         {
-            minLength = 5;
-            maxLength = 5;
+            minLength = 15;
+            maxLength = 15;
             tailType = NPCType<NightTail>();
             bodyType = NPCType<NightBody>();
             headType = NPCType<NightHead>();
