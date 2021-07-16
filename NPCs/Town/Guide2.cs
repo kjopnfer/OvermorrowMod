@@ -21,19 +21,18 @@ namespace OvermorrowMod.NPCs.Town
     public class Guide2 : ModNPC
     {
         private bool changedPhase2 = false;
-        private int StopHeal = 0;
         int bulltimer;
         int arrowtimer;
 
-
-
+        int frame = 0;
+        int SummStopper = 0;
         int disctimer;
         bool leafatt = false;
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Enraged Guide");
-            Main.npcFrameCount[npc.type] = 4;
+            Main.npcFrameCount[npc.type] = 16;
         }
 
         public override void SetDefaults()
@@ -44,7 +43,7 @@ namespace OvermorrowMod.NPCs.Town
 
             // Reduced size
             npc.width = 86;
-            npc.height = 62;
+            npc.height = 58;
 
             // Actual dimensions
             //npc.width = 368;
@@ -92,7 +91,7 @@ namespace OvermorrowMod.NPCs.Town
 
         public override void AI()
         {
-            StopHeal--;
+            SummStopper--;
             // Death animation code
             if (npc.ai[3] > 0f)
             {
@@ -267,44 +266,51 @@ namespace OvermorrowMod.NPCs.Town
                 case 1: // Shoot scythes
                     if (npc.ai[0] == 1)
                     {
-                        Vector2 moveTo = player.Center;
-                        var move = moveTo - npc.Center;
-                        var speed = 5;
+                        if(SummStopper < 1)
+                        {
+                            Vector2 moveTo = player.Center;
+                            var move = moveTo - npc.Center;
+                            var speed = 5;
 
-                        float length = move.Length();
-                        if (length > speed)
-                        {
-                            move *= speed / length;
-                        }
-                        var turnResistance = 45;
-                        move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
-                        length = move.Length();
-                        if (length > 10)
-                        {
-                            move *= speed / length;
-                        }
-                        npc.velocity.X = move.X;
-                        npc.velocity.Y = move.Y * .98f;
+                            float length = move.Length();
+                            if (length > speed)
+                            {
+                                move *= speed / length;
+                            }
+                            var turnResistance = 45;
+                            move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                            length = move.Length();
+                            if (length > 10)
+                            {
+                                move *= speed / length;
+                            }
+                            npc.velocity.X = move.X;
+                            npc.velocity.Y = move.Y * .98f;
 
-                        if (npc.ai[1] == 100)
-                        {
-                            NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("NightHead"));
-                        }
+                            if (npc.ai[1] == 100)
+                            {
+                                NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
+                                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
+                            }
 
-                        if (npc.ai[1] == 200)
-                        {
-                            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("NightHead"));
-                        }
+                            if (npc.ai[1] == 200)
+                            {
+                                NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
+                                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
+                            }
 
-                        if (npc.ai[1] == 300)
-                        {
-                            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("NightHead"));
-                        }
+                            if (npc.ai[1] == 300)
+                            {
+                                NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
+                                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
+                            }
 
-                        if (npc.ai[1] > 400)
-                        {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
+                            if (npc.ai[1] > 400)
+                            {
+                                SummStopper = 1000;
+                                npc.ai[0] = -1;
+                                npc.ai[1] = 0;
+                            }
                         }
                     }
                     break;
@@ -508,6 +514,7 @@ namespace OvermorrowMod.NPCs.Town
                             direction.Normalize();
                             float Projspeed = 15f;
                             Projectile.NewProjectile(position, direction * Projspeed, ModContent.ProjectileType<LightDisc2>(), npc.damage, 0f, Main.myPlayer);  
+                            frame = 0;
                         }
 
                         if (npc.ai[1] > 540)
@@ -524,19 +531,82 @@ namespace OvermorrowMod.NPCs.Town
         {
 
             npc.rotation = npc.velocity.X * 0.015f;
+            npc.frame.Y = frameHeight * frame;
 
-            npc.frameCounter++;
-
-            if (npc.frameCounter == 5) // Ticks per frame
+            if(npc.ai[0] == 0 || npc.ai[0] == 1 || npc.ai[0] == 4)
             {
-                npc.frameCounter = 0;
-                npc.frame.Y += frameHeight;
+                npc.frameCounter++;
+                if (npc.frameCounter == 5) // Ticks per frame
+                {
+                    npc.frameCounter = 0;
+                    frame += 1;
+                }
+                if (frame >= 8) // 6 is max # of frames
+                {
+                    frame = 4; // Reset back to default
+                }
+               if (frame < 4) // 6 is max # of frames
+                {
+                    frame = 4; // Reset back to default
+                }
             }
-            if (npc.frame.Y >= frameHeight * 4) // 6 is max # of frames
+
+
+            if(npc.ai[0] == 2)
             {
-                npc.frame.Y = 0; // Reset back to default
+                npc.frameCounter++;
+                if(npc.ai[1] < 100)
+                {
+
+                    if (npc.frameCounter > 4) // Ticks per frame
+                    {
+                        npc.frameCounter = 0;
+                        frame += 1;
+                    }
+                    if (frame >= 12) // 6 is max # of frames
+                    {
+                        frame = 9; // Reset back to default
+                    }
+                    if (frame < 9) // 6 is max # of frames
+                    {
+                        frame = 9; // Reset back to default
+                    }
+                }
+                else
+                {
+                    if (npc.frameCounter > 4) // Ticks per frame
+                    {
+                        npc.frameCounter = 0;
+                        frame += 1;
+                    }
+                    if (frame >= 16) // 6 is max # of frames
+                    {
+                        frame = 13; // Reset back to default
+                    }
+                    if (frame < 13) // 6 is max # of frames
+                    {
+                        frame = 13; // Reset back to default
+                    }
+                }
+            }
+
+
+            if(npc.ai[0] == 3)
+            {
+                npc.frameCounter++;
+                if (npc.frameCounter > 4) // Ticks per frame
+                {
+                    npc.frameCounter = 0;
+                    frame += 1;
+                }
+                if (frame >= 8) // 6 is max # of frames
+                {
+                    frame = 4; // Reset back to default
+                }
             }
         }
+        
+        
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
