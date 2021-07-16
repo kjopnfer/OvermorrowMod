@@ -33,12 +33,21 @@ namespace OvermorrowMod.Particles
         {
             spriteBatch.Reload(SpriteSortMode.Immediate);
             Texture2D texture = Particle.ParticleTextures[particle.type];
-            DrawData data = new DrawData(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0);
+            Vector2 scale = new Vector2(particle.scale * 1.5f, particle.scale);
+            DrawData data = new DrawData(texture,
+                            particle.position - Main.screenPosition,
+                            new Rectangle(0, 0, texture.Width, texture.Height),
+                            particle.color * particle.alpha,
+                            particle.rotation,
+                            new Vector2(texture.Width, texture.Height) / 2,
+                            scale,
+                            SpriteEffects.None,
+                        0); 
             var effect = GameShaders.Misc["ForceField"];
             effect.UseColor(particle.color);
             effect.Apply(data);
             data.Draw(spriteBatch);
-			spriteBatch.Reload(SpriteSortMode.Deferred);
+            spriteBatch.Reload(SpriteSortMode.Deferred);
         }
     }
 }
