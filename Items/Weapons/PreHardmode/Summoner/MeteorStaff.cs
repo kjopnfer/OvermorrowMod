@@ -25,6 +25,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.noMelee = true;
             item.sentry = true;
             item.useTime = 40;
+            item.channel = true;
             item.useAnimation = 40;
             item.useStyle = ItemUseStyleID.SwingThrow;
             item.autoReuse = false;

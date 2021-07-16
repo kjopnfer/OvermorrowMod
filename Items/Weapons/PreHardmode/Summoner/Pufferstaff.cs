@@ -23,6 +23,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.UseSound = SoundID.Item82;
             item.summon = true;
             item.noMelee = true;
+            item.channel = true;
             item.sentry = true;
             item.useTime = 40;
             item.useAnimation = 40;

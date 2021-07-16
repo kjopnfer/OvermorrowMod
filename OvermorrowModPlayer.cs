@@ -16,7 +16,7 @@ namespace OvermorrowMod
     public class OvermorrowModPlayer : ModPlayer
     {
         //sadness
-        Vector2 screenpositionstore;
+        Vector2 screenPositionStore;
 
         // Accessories
         public bool ArmBracer;
@@ -450,68 +450,85 @@ namespace OvermorrowMod
             }*/
         }
 
+        private bool holdPosition;
+        private int holdCounter = 0;
+        private Vector2 focusTo;
+        private int holdCameraLength;
+        private float towardsLength;
+        private float returnLength;
+        public void PlayerFocusCamera(Vector2 focusTo, int holdCameraLength, float towardsLength, float returnLength)
+        {
+            // The position to move to and from
+            this.focusTo = focusTo;
+
+            // How long the camera stays in place
+            this.holdCameraLength = holdCameraLength;
+
+            // How long it takes to travel to the position
+            this.towardsLength = towardsLength;
+
+            // How long it takes to return to the player
+            this.returnLength = returnLength;
+
+            // Finally, flag boolean to activate ModifyScreenPosition hook
+            FocusBoss = true;
+            canFocus = true;
+        }
+
         public override void ModifyScreenPosition()
         {
             if (FocusBoss)
             {
                 if (canFocus)
                 {
-                    //Vector2 screenpositionstore = Vector2.Zero;
-
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    if (!Main.gamePaused)
                     {
-                        if (Main.npc[i].boss)
-                        {
-
-                            //Main.screenPosition = new Vector2(Main.npc[i].Center.X - Main.screenWidth / 2, Main.npc[i].Center.Y - Main.screenHeight / 2);
-                            if (!Main.gamePaused)
-                            {
-                                screenpositionstore = new Vector2(MathHelper.SmoothStep(player.Center.X - Main.screenWidth / 2, Main.npc[i].Center.X - Main.screenWidth / 2, amount), MathHelper.SmoothStep(player.Center.Y - Main.screenHeight / 2, Main.npc[i].Center.Y - Main.screenHeight / 2, amount));
-                            }
-                            Main.screenPosition = screenpositionstore;
-                        }
+                        screenPositionStore = new Vector2(MathHelper.Lerp(player.Center.X - Main.screenWidth / 2, focusTo.X - Main.screenWidth / 2, amount), MathHelper.Lerp(player.Center.Y - Main.screenHeight / 2, focusTo.Y - Main.screenHeight / 2, amount));
                     }
-                    amount += 0.005f;
-                    if (amount >= 1)
+
+                    Main.screenPosition = screenPositionStore;
+                    amount += 1 / towardsLength;
+                    if (amount >= 1f)
                     {
+                        holdPosition = true;
                         canFocus = false;
                         amount = 0;
                     }
-
                 }
                 else
                 {
-                    //Vector2 screenpositionstore = Vector2.Zero;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    if (holdPosition)
                     {
-                        if (Main.npc[i].boss)
+                        Main.screenPosition = screenPositionStore;
+                        holdCounter++;
+
+                        if (holdCounter == holdCameraLength)
                         {
-                            //Main.screenPosition = new Vector2(Main.npc[i].Center.X - Main.screenWidth / 2, Main.npc[i].Center.Y - Main.screenHeight / 2);
-                            if (!Main.gamePaused)
-                            {
-                                screenpositionstore = new Vector2(MathHelper.Lerp(Main.npc[i].Center.X - Main.screenWidth / 2, player.Center.X - Main.screenWidth / 2, amount), MathHelper.Lerp(Main.npc[i].Center.Y - Main.screenHeight / 2, player.Center.Y - Main.screenHeight / 2, amount));
-                            }
-                            Main.screenPosition = screenpositionstore;
-                            /*if (Main.gamePaused)
-                            {
-                                Main.screenPosition = screenpositionstore;
-                                Main.NewText(screenpositionstore);
-                            }*/
+                            holdCounter = 0;
+                            holdPosition = false;
                         }
+                    }
+                    else
+                    {
+                        if (!Main.gamePaused)
+                        {
+                            screenPositionStore = new Vector2(MathHelper.SmoothStep(focusTo.X - Main.screenWidth / 2, player.Center.X - Main.screenWidth / 2, amount), MathHelper.SmoothStep(focusTo.Y - Main.screenHeight / 2, player.Center.Y - Main.screenHeight / 2, amount));
+                        }
+                        Main.screenPosition = screenPositionStore;
 
-                        amount += 0.05f;
+                        amount += 1 / returnLength;
 
-                        if (amount >= 1)
+                        if (amount >= 1f)
                         {
                             amount = 0;
                             FocusBoss = false;
                             canFocus = true;
                             ShowText = false;
                         }
-
                     }
                 }
             }
+
             if (!Main.gamePaused)
             {
                 if (ScreenShake > 0)

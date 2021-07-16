@@ -16,7 +16,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Summoning Circles");
+            DisplayName.SetDefault("Storm Drake Spawner");
         }
         public override void SetDefaults()
         {
@@ -25,7 +25,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
             projectile.tileCollide = false;
             projectile.hostile = false;
             projectile.friendly = true;
-            projectile.timeLeft = 1800;
+            projectile.timeLeft = 900;
             projectile.penetrate = -1;
             projectile.alpha = 255;
         }
@@ -54,12 +54,13 @@ namespace OvermorrowMod.Items.Consumable.Boss
                         if (projectile.ai[1]++ > 300)
                         {
                             Player player = Main.player[projectile.owner];
+                            player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
+                            player.GetModPlayer<OvermorrowModPlayer>().ScreenShake = 50;
                             player.GetModPlayer<OvermorrowModPlayer>().TitleID = 2;
-                            player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
                             player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
                             Main.PlaySound(SoundID.Roar, player.position, 0);
-                            NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y - 144), ModContent.NPCType<StormDrake2>(), 0, -3f, -3f, 0f, 0f, 255);
-                            Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y - 144 - (232 / 2)));
+                            NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y), ModContent.NPCType<StormDrake2>(), 0, -3f, -3f, 0f, 0f, 255);
+                            Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
                             float radius = 100;
                             int numLocations = 200;
                             for (int i = 0; i < 200; i++)

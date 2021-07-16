@@ -24,6 +24,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.summon = true;
             item.noMelee = true;
             item.sentry = true;
+            item.channel = true;
             item.useTime = 40;
             item.useAnimation = 40;
             item.useStyle = ItemUseStyleID.SwingThrow;
@@ -33,11 +34,45 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.shoot = ModContent.ProjectileType<SkeletronSumm>();
             item.shootSpeed = 0f;
         }
+
+        public override bool AltFunctionUse(Player player)
+        {
+            return true;
+        }
+
         public override bool CanUseItem(Player player)
         {
-            // Ensures no more than one spear can be thrown out, use this when using autoReuse
-            return player.ownedProjectileCounts[item.shoot] < 1;
+            if (player.altFunctionUse == 2)
+            {
+                return player.ownedProjectileCounts[item.shoot] < 1;
+            }
+            else
+            {
+                return true;
+            }
         }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            if (player.altFunctionUse == 2)
+            {
+                return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        public override void UseStyle(Player player)
+        {
+            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
+            {
+                player.AddBuff(item.buffType, 3600, true);
+            }
+        }
+
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
@@ -45,13 +80,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();
-        }
-        public override void UseStyle(Player player)
-        {
-            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
-            {
-                player.AddBuff(item.buffType, 3600, true);
-            }
         }
     }
 }
