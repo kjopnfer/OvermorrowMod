@@ -245,8 +245,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, /*1000f*/ 750f);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, 240, 4f/*, true/*, Sine*/);
+            Length = TRay.CastLength(projectile.Center, projectile.velocity, 2500f);
+            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, 240, 4f);
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
@@ -254,8 +254,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 Positions[i].Size = Positions[i].DefSize * mult;
             }
             NPC projectileowner = Main.npc[(int)projectile.ai[1]];
-            projectile.position = projectileowner.Center + new Vector2(187 * direction, -49);
-            projectile.velocity = (Vector2.UnitX * direction).RotatedBy(MathHelper.ToRadians((direction == 1) ? 315 + rotateby : 45 + -rotateby));//Vector2.UnitX * direction;
+            projectile.position = projectileowner.Center + new Vector2(187 * direction, -49);//-110);//49);
+            projectile.velocity = (Vector2.UnitX * direction).RotatedBy(MathHelper.ToRadians((direction == 1) ? 315 + rotateby : 45 + -rotateby));
         }
     }
     public class TestLightning3 : Lightning
