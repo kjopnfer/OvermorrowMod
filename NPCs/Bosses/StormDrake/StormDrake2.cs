@@ -198,7 +198,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         else if (npc.ai[1] == 280)
                         {
-                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 4, 0, 1f);
                             Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
@@ -520,7 +520,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         if (npc.ai[1] == 300)
                         {
-                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 4, 0, 1f);
 
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
@@ -593,7 +593,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         else if (npc.ai[1] == 260)
                         {
-                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 4, 0, 1f);
 
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
@@ -655,7 +655,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             if (relativeX == -15)
                             {
-                                Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+                                Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 4, 0, 1f);
                                 PlayerCenterStore = player.Center;
                             }
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -682,7 +682,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             if (relativeX == 15)
                             {
-                                Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+                                Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 4, 0, 1f);
                                 PlayerCenterStore = player.Center + (Vector2.UnitX * 33);
                             }
                             if (Main.netMode != NetmodeID.MultiplayerClient)

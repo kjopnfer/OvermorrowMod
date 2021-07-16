@@ -91,13 +91,13 @@ namespace OvermorrowMod.Particles
             {
                 float div = MathHelper.Pi / small;
                 float rot = Main.rand.NextFloat(-div, div) + MathHelper.TwoPi / small * i;
-                lightnings.Add(new Lightning2(particle.position, particle.position + rot.ToRotationVector2() * 40f * particle.scale, 5f, Color.LightBlue, 4, 40));
+                lightnings.Add(new Lightning2(particle.position, particle.position + rot.ToRotationVector2() * 40f * particle.scale, 5f, Color.LightBlue, 4, 1280));
             }
             for (int i = 0; i < large; i++)
             {
                 float div = MathHelper.Pi / large;
                 float rot = Main.rand.NextFloat(-div, div) + MathHelper.TwoPi / large * i;
-                lightnings.Add(new Lightning2(particle.position, particle.position + rot.ToRotationVector2() * 80f * particle.scale, 10f, Color.LightBlue, 8, 80));
+                lightnings.Add(new Lightning2(particle.position, particle.position + rot.ToRotationVector2() * 80f * particle.scale, 10f, Color.LightBlue, 8, 1280));
             }
         }
         public override void Update()
