@@ -270,24 +270,23 @@ namespace OvermorrowMod.NPCs.Town
                     {
                         if(SummStopper < 1)
                         {
-                            Vector2 moveTo = player.Center;
-                            var move = moveTo - npc.Center;
-                            var speed = 5;
 
-                            float length = move.Length();
-                            if (length > speed)
+                            if(Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 450f)
                             {
-                                move *= speed / length;
+                                Vector2 GuidePos4 = npc.Center;
+                                Vector2 PlayerPosition4 = Main.player[npc.target].Center;
+                                Vector2 GuideDirection4 = PlayerPosition4 - GuidePos4;
+                                GuideDirection4.Normalize();
+                                npc.velocity += GuideDirection4 * -0.06f;  
                             }
-                            var turnResistance = 45;
-                            move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
-                            length = move.Length();
-                            if (length > 10)
+                            else
                             {
-                                move *= speed / length;
+                                Vector2 GuidePos5 = npc.Center;
+                                Vector2 PlayerPosition5 = Main.player[npc.target].Center;
+                                Vector2 GuideDirection5 = PlayerPosition5 - GuidePos5;
+                                GuideDirection5.Normalize();
+                                npc.velocity += GuideDirection5 * 0.08f;  
                             }
-                            npc.velocity.X = move.X;
-                            npc.velocity.Y = move.Y * .98f;
 
                             if (npc.ai[1] == 100)
                             {
@@ -394,21 +393,22 @@ namespace OvermorrowMod.NPCs.Town
 
                     if (npc.ai[0] == 5)
                     {
-                        Vector2 GuidePos3 = npc.Center;
-                        Vector2 PlayerPosition3 = Main.player[npc.target].Center;
-                        Vector2 GuideDirection3 = PlayerPosition3 - GuidePos3;
-                        GuideDirection3.Normalize();
-                        npc.velocity = GuideDirection3 * 6f;  
 
                         int RandomX = Main.rand.Next(-100, 100);
                         int RandomY = Main.rand.Next(-100, 100);
 
                         magictimer++;
 
-                        if(Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 250f)
+                        if(Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 310f)
                         {
                             if(magictimer > 7)
                             {
+                                Vector2 GuidePos2 = npc.Center;
+                                Vector2 PlayerPosition2 = Main.player[npc.target].Center;
+                                Vector2 GuideDirection2 = PlayerPosition2 - GuidePos2;
+                                GuideDirection2.Normalize();
+                                npc.velocity += GuideDirection2 * -0.07f;  
+
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
@@ -422,17 +422,50 @@ namespace OvermorrowMod.NPCs.Town
                         }
                         else
                         {
+                            Vector2 GuidePos3 = npc.Center;
+                            Vector2 PlayerPosition3 = Main.player[npc.target].Center;
+                            Vector2 GuideDirection3 = PlayerPosition3 - GuidePos3;
+                            GuideDirection3.Normalize();
+                            npc.velocity += GuideDirection3 * 0.08f;  
+
                             if(magictimer > 24)
                             {
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
-                                float speed = 7f;
-                                Projectile.NewProjectile(npc.Center.X + RandomX, npc.Center.Y + RandomY, direction.X, direction.Y, 596, npc.damage, 0f, Main.myPlayer);  
+                                float speed = 4f;
+                                int spirtflame = Projectile.NewProjectile(npc.Center.X + RandomX, npc.Center.Y + RandomY, direction.X * speed, direction.Y * speed, 596, npc.damage, 0f, Main.myPlayer);
+                                Main.projectile[spirtflame].timeLeft = 300;
                                 magictimer = 0;
                             }
                         }
+
+
+
+
+
+                        if(npc.velocity.Y < -9f)
+                        {
+                            npc.velocity.Y = -9f;
+                        }
+
+                        if(npc.velocity.Y > 9f)
+                        {
+                            npc.velocity.Y = 9f;
+                        }
+
+
+                        if(npc.velocity.X < -9f)
+                        {
+                            npc.velocity.X = -9f;
+                        }
+
+                        if(npc.velocity.X > 9f)
+                        {
+                            npc.velocity.X = 9f;
+                        }
+
 
 
                         if (npc.ai[1] > 350)
