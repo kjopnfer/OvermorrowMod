@@ -44,9 +44,10 @@ namespace OvermorrowMod.Items.Consumable.Boss
             if (projectile.ai[1] > 160)
             {
                 Player player = Main.player[projectile.owner];
+                player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
                 player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
-                player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
                 player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
                 NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y /*+ 650f*/), ModContent.NPCType<SandstormBoss>(), 0, 0f, 0f, 0f, 0f, 255);
                 Main.PlaySound(SoundID.Roar, player.position, 0);
                 Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));

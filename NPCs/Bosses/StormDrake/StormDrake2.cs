@@ -10,6 +10,7 @@ using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.Particles;
 using Terraria.Graphics.Shaders;
 using Terraria.DataStructures;
+using OvermorrowMod.Items.BossBags;
 
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
@@ -64,7 +65,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.value = Item.buyPrice(gold: 3);
             npc.npcSlots = 10f;
             music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/StormDrake");
-            //bossBag = ModContent.ItemType<DrakeBag>();
+            bossBag = ModContent.ItemType<DrakeBag>();
         }
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -216,7 +217,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 int projectiles = 12;
                                 for (int j = 0; j < projectiles; j++)
                                 {
-                                    Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy(j * MathHelper.TwoPi / projectiles), new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ModContent.ProjectileType<LaserWarning2>(), npc.damage, 10f, Main.myPlayer);
+                                    Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy(j * MathHelper.TwoPi / projectiles), new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ModContent.ProjectileType<LaserWarning2>(), npc.damage / 2, 10f, Main.myPlayer);
                                 }
                             }
                         }
@@ -227,7 +228,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 int projectiles = 24;
                                 for (int j = 0; j < projectiles; j++)
                                 {
-                                    Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy((j * MathHelper.TwoPi / projectiles) + MathHelper.ToRadians(25)), new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + 45), ModContent.ProjectileType<LaserWarning2>(), npc.damage, 10f, Main.myPlayer);
+                                    Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy((j * MathHelper.TwoPi / projectiles) + MathHelper.ToRadians(25)), new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + 45), ModContent.ProjectileType<LaserWarning2>(), npc.damage / 2, 10f, Main.myPlayer);
                                 }
                             }
                         }
@@ -403,7 +404,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 5, 2);
                         }
-                        if (npc.ai[1] > 900)
+                        if (npc.ai[1] > 940)//900)
                         {
                             if (!firstrunthru)
                             {

@@ -1,3 +1,16 @@
+//TODO
+//Make dashes innacurate
+//make sandy indicator for the dashes /*will just be a laser with the laser system*/
+
+//we'll just do dharuud for now
+//just throw on some indicators for all his attacks
+//id also maybe reduce his speed
+//when hes moving towards u
+//cause that is so annoying in the sandstorm
+//the zig zag is complicated
+//and not sure how to telegraph that
+//aight imma head out
+
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,6 +19,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.GameContent.Events;
@@ -249,7 +263,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             npc.position = player.Center + new Vector2(-475, 0).RotatedBy(MathHelper.ToRadians(4 * npc.ai[3]));
                             npc.position.X -= npc.width / 2;
                             npc.position.Y -= npc.height / 2;
-                            npc.ai[3] += (clockwise ? 1 : -1);
+                            npc.ai[3] += clockwise ? 1 : -1;
                             npc.ai[2] = 0;
                         }
 
@@ -258,6 +272,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 Projectile.NewProjectileDirect(npc.Center, npc.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<SandBall>(), 21 / (Main.expertMode ? 4 : 2), 0, Main.myPlayer, 0, npc.ai[3]);
+                                int proj = Projectile.NewProjectile(npc.Center, npc.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<SandyIndicator>(), 0, 0, Main.myPlayer);
+                                ((SandyIndicator)Main.projectile[proj].modProjectile).waittime = 49;
+                                ((SandyIndicator)Main.projectile[proj].modProjectile).length = 495f;
                             }
                         }
                     }
@@ -275,6 +292,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         npc.height = 112;
                         npc.ai[0] = 0f;
                         npc.ai[1] = 0;
+                        npc.ai[2] = 0;
+                        npc.ai[3] = 0;
                     }
                     break;
                 case 1.5f: // Do dust swirl animation
@@ -299,9 +318,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 case 2: // Turn into dust cloud
                     npc.hide = true;
 
-                    if (npc.ai[2] == (Main.expertMode ? 50 : 66) && npc.ai[1] <= 600)
+                    if (npc.ai[2] == (Main.expertMode ? 50 : 66) && npc.ai[1] < 600)
                     {
                         npc.velocity = Vector2.Zero;
+                        playercentersnapshot = player.Center;
+                        int proj = Projectile.NewProjectile(npc.Center, npc.DirectionTo(playercentersnapshot), ModContent.ProjectileType<SandyIndicator>(), 0, 0, Main.myPlayer);
+                        ((SandyIndicator)Main.projectile[proj].modProjectile).waittime = (Main.expertMode ? 49 : 65);
+                        ((SandyIndicator)Main.projectile[proj].modProjectile).length = 850f; //(Math.Abs(Main.projectile[proj].velocity.X) + Math.Abs(Main.projectile[proj].velocity.Y)) * (Main.expertMode ? 49 : 65); //1000;
                     }
                     else if (npc.ai[2] == 50)
                     {
@@ -310,21 +333,18 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     npc.width = 68;
                     npc.height = 56;
-                    if (npc.ai[1] <= 600)
+                    if (npc.ai[1] < 600)
                     {
                         if (npc.ai[2] <= 0)
                         {
-                            float chargeSpeed = !player.ZoneDesert ? 25 : 18; //30 : 22;
-                            move = player.Center - npc.Center;
-                            float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
-                            move *= chargeSpeed / magnitude;
-                            npc.velocity = move;
+                            float chargeSpeed = !player.ZoneDesert ? 25 : 18;
+                            npc.velocity = npc.DirectionTo(playercentersnapshot) * chargeSpeed;
                             npc.netUpdate = true;
-                            if (!player.ZoneDesert)
+                            if (!player.ZoneDesert && npc.ai[1] < 598)
                             {
                                 npc.ai[2] = 40;
                             }
-                            else
+                            else if (npc.ai[1] < 598)
                             {
                                 if (Main.expertMode)
                                 {
@@ -336,36 +356,51 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                                 }
                             }
                         }
+                        if (npc.ai[2] >= 0)
+                        {
+                            for (int i = 0; i < 18; i++)
+                            {
+                                Vector2 dustPos = npc.Center + new Vector2(npc.ai[2], 0).RotatedBy(MathHelper.ToRadians(i * 20 + (npc.ai[1] * /*7.5*/ /*10f*/ 12f)));
+                                Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, 32, 0f, 0f, 0, default, 2.04f)];
+                                dust.noGravity = true;
+                            }
+                        }
                         npc.ai[2] -= 1f;
-                        if (npc.ai[1] == 600)
+                        if (npc.ai[1] > 598)
                         {
                             npc.ai[2] = -100;
                         }
                     }
-                    else if (halflife == true)
+                    else if (halflife == true && npc.ai[1] > 600)
                     {
-                        if (npc.ai[2] == -100)
+                        if (npc.ai[2] < 0 && npc.ai[2] > -150)
                         {
                             leftOfPlayer = Main.rand.NextBool();
                             npc.ai[2] = 0;
                         }
                         if (leftOfPlayer == true)
                         {
-                            if (npc.ai[2] == 1)
+                            if (npc.ai[2] >= 0 && npc.ai[2] < 30)
                             {
                                 npc.Teleport(player.Center + new Vector2(-700, (npc.height / 2) - 90), 32);
                                 npc.velocity = Vector2.Zero;
                             }
-                            if (npc.ai[2] % 30 == 0)
+                            if (npc.ai[2] % 30 == 0 && npc.ai[2] < 150)
                             {
                                 if (movingUp == true)
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(10, 13), Main.rand.Next(-13, -10));
+                                    int proj = Projectile.NewProjectile(npc.Center, npc.velocity, ModContent.ProjectileType<SandyIndicator>(), 0, 0, Main.myPlayer);
+                                    ((SandyIndicator)Main.projectile[proj].modProjectile).waittime = 49;
+                                    ((SandyIndicator)Main.projectile[proj].modProjectile).length = 495f; //(Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y)) * 50;
                                     movingUp = false;
                                 }
                                 else
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(10, 13), Main.rand.Next(10, 13));
+                                    int proj = Projectile.NewProjectile(npc.Center, npc.velocity, ModContent.ProjectileType<SandyIndicator>(), 0, 0, Main.myPlayer);
+                                    ((SandyIndicator)Main.projectile[proj].modProjectile).waittime = 49;
+                                    ((SandyIndicator)Main.projectile[proj].modProjectile).length = 495f; //(Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y)) * 50;
                                     movingUp = true;
                                 }
                             }
@@ -377,21 +412,28 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         }
                         else
                         {
-                            if (npc.ai[2] == 1)
+                            if (npc.ai[2] >= 0 && npc.ai[2] < 30)
                             {
                                 npc.Teleport(player.Center + new Vector2(700, (npc.height / 2) - 90), 32);
                                 npc.velocity = Vector2.Zero;
                             }
-                            if (npc.ai[2] % 30 == 0)
+                            if (npc.ai[2] % 30 == 0 && npc.ai[2] < 150)
                             {
                                 if (movingUp == true)
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(-13, -10), Main.rand.Next(-13, -10));
+                                    int proj = Projectile.NewProjectile(npc.Center, npc.velocity, ModContent.ProjectileType<SandyIndicator>(), 0, 0, Main.myPlayer);
+                                    ((SandyIndicator)Main.projectile[proj].modProjectile).waittime = 49;
+                                    ((SandyIndicator)Main.projectile[proj].modProjectile).length = 495f; //(Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y)) * 50;
+
                                     movingUp = false;
                                 }
                                 else
                                 {
                                     npc.velocity = new Vector2(Main.rand.Next(-13, -10), Main.rand.Next(10, 13));
+                                    int proj = Projectile.NewProjectile(npc.Center, npc.velocity, ModContent.ProjectileType<SandyIndicator>(), 0, 0, Main.myPlayer);
+                                    ((SandyIndicator)Main.projectile[proj].modProjectile).waittime = 49;
+                                    ((SandyIndicator)Main.projectile[proj].modProjectile).length = 495f; //(Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y)) * 50;
                                     movingUp = true;
                                 }
                             }
@@ -481,7 +523,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             {
                 if (Main.rand.NextFloat() < 0.5526316f)
                 {
-
                     for (int num1202 = 0; num1202 < 4; num1202++)
                     {
                         Dust.NewDust(npc.Center - new Vector2(npc.width / 4, -35), npc.width / 3, npc.height, 32, 0, 2.63f, default, default, 1.45f);
