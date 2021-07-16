@@ -1,21 +1,18 @@
 using Terraria;
 using Terraria.Graphics.Shaders;
+using Terraria.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Particles
 {
-    public class Shockwave2 : CustomParticle
+    public class Shockwave3 : CustomParticle
     {
         public override string Texture => "Textures/Perlin";
         public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
         float maxTime = 60f;
         public override void OnSpawn()
         {
-            /*if (Main.rand.NextBool(3))
-            {
-                particle.customData[0] *= 2;
-            }*/
             if (particle.customData[1] == 0) particle.customData[1] = 1;
             if (particle.customData[2] == 0) particle.customData[2] = 1;
             if (particle.customData[3] == 0) particle.customData[3] = 1;
@@ -34,14 +31,14 @@ namespace OvermorrowMod.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Reload(BlendState.AlphaBlend, SpriteSortMode.Immediate);
-            var shader = GameShaders.Misc["OvermorrowMod: Shockwave"];
-            shader.UseColor(particle.color);
-            shader.UseSecondaryColor(particle.color);
-            shader.Apply();
+            spriteBatch.Reload(SpriteSortMode.Immediate);
             Texture2D texture = Particle.ParticleTextures[particle.type];
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), particle.color * particle.alpha, particle.rotation, texture.Size() / 2, particle.scale, SpriteEffects.None, 0);
-            spriteBatch.Reload(BlendState.AlphaBlend, SpriteSortMode.Deferred);
+            DrawData data = new DrawData(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0);
+            var effect = GameShaders.Misc["ForceField"];
+            effect.UseColor(particle.color);
+            effect.Apply(data);
+            data.Draw(spriteBatch);
+			spriteBatch.Reload(SpriteSortMode.Deferred);
         }
     }
 }

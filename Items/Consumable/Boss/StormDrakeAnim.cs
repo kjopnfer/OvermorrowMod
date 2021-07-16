@@ -4,6 +4,7 @@ using OvermorrowMod.Items.Materials;
 using OvermorrowMod.NPCs.Bosses.Apollus;
 using OvermorrowMod.NPCs.Bosses.GraniteMini;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
+using OvermorrowMod.Particles;
 using Steamworks;
 using Terraria;
 using Terraria.ID;
@@ -53,14 +54,15 @@ namespace OvermorrowMod.Items.Consumable.Boss
                         }
                         if (projectile.ai[1]++ > 300)
                         {
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), projectile.Center, Vector2.Zero, Color.DarkCyan, 1, 5, 0, 1f);
                             Player player = Main.player[projectile.owner];
                             player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
                             player.GetModPlayer<OvermorrowModPlayer>().ScreenShake = 50;
                             player.GetModPlayer<OvermorrowModPlayer>().TitleID = 2;
                             player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
                             Main.PlaySound(SoundID.Roar, player.position, 0);
-                            NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y), ModContent.NPCType<StormDrake2>(), 0, -3f, -3f, 0f, 0f, 255);
-                            Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
+                            NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y + 146), ModContent.NPCType<StormDrake2>(), 0, -3f, -3f, 0f, 0f, 255);
+                            /*Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
                             float radius = 100;
                             int numLocations = 200;
                             for (int i = 0; i < 200; i++)
@@ -69,7 +71,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
                                 Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
                                 int dust = Dust.NewDust(position, 2, 2, 229, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                 Main.dust[dust].noGravity = true;
-                            }
+                            }*/
                             projectile.Kill();
                         }
                     }
