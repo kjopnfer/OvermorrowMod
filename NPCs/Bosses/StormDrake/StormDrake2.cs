@@ -648,7 +648,10 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         hitboxoff = true;
                         npc.velocity = Vector2.Zero;
 
-                        if (npc.ai[1]++ % (10 - (5 - ((npc.life / npc.lifeMax) * 5))) == 0 && relativeX < 15)
+
+                        npc.ai[1]++;
+
+                        if (npc.ai[1] % (10 - (5 - ((npc.life / npc.lifeMax) * 5))) == 0 && relativeX < 15 && npc.ai[3] <= 0)
                         {
                             if (relativeX == -15)
                             {
@@ -661,10 +664,39 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             }
                             relativeX += 1;
                         }
-                        if (relativeX > 14)
+                        if (relativeX > 14 && npc.ai[3] <= 0)
                         {
-                            npc.ai[2]++;
+                            if (npc.life < npc.lifeMax / 3)
+                            {
+                                npc.ai[3] = 1;
+                                npc.ai[1] = 0;
+                            }
+                            else
+                            {
+                                npc.ai[2] += 1;
+                            }
+
                         }
+
+                        if (npc.ai[1] % (10 - (5 - ((npc.life / npc.lifeMax) * 5))) == 0 && relativeX > -15 && npc.ai[3] > 0)
+                        {
+                            if (relativeX == 15)
+                            {
+                                Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+                                PlayerCenterStore = player.Center + (Vector2.UnitX * 33);
+                            }
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
+                            }
+                            relativeX -= 1;
+                        }
+
+                        if (relativeX < -14 && npc.ai[3] > 0)
+                        {
+                            npc.ai[2] += 1;
+                        }
+
                         if (npc.ai[2] >= 100)
                         {
                             if (!firstrunthru)
@@ -681,6 +713,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             relativeX = -15;
                             npc.ai[1] = 0;
                             npc.ai[2] = 0;
+                            npc.ai[3] = 0;
                         }
                     }
                     break;
