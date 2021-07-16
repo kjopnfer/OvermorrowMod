@@ -254,7 +254,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 Positions[i].Size = Positions[i].DefSize * mult;
             }
             NPC projectileowner = Main.npc[(int)projectile.ai[1]];
-            projectile.position = projectileowner.Center + new Vector2(187 * direction, -49);//-110);//49);
+            //projectile.position = projectileowner.Center + new Vector2(187 * direction, -110);//49);
             projectile.velocity = (Vector2.UnitX * direction).RotatedBy(MathHelper.ToRadians((direction == 1) ? 315 + rotateby : 45 + -rotateby));
         }
     }

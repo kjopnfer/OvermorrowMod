@@ -198,6 +198,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         else if (npc.ai[1] == 280)
                         {
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
                             Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
@@ -235,6 +236,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             canPulse = false;
                             npc.ai[0] = 0;
                             npc.ai[1] = 0;
+                            npc.ai[2] = 0;
                             phase2switched = true;
                             npc.immortal = false;
                             npc.dontTakeDamage = false;
@@ -354,6 +356,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             ((TestLightning2)Main.projectile[myprojectilestore2].modProjectile).direction = npc.spriteDirection;
                             ((TestLightning2)Main.projectile[myprojectilestore].modProjectile).rotateby = npc.ai[2];
                             ((TestLightning2)Main.projectile[myprojectilestore2].modProjectile).rotateby = npc.ai[2];
+                            Main.projectile[myprojectilestore].position = npc.Center + new Vector2(187 * npc.spriteDirection, -49);
+                            Main.projectile[myprojectilestore2].position = npc.Center + new Vector2(187 * npc.spriteDirection, -49);
                         }
                         if (npc.ai[1] >= 600)
                         {
@@ -507,6 +511,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         if (npc.ai[1] == 300)
                         {
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
@@ -522,14 +528,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.velocity = Vector2.SmoothStep(npc.velocity, Vector2.Zero, 0.065f * 3);
                         }
-                        else if (npc.ai[1] > 400 && npc.ai[2] <= 2)
+                        else if (npc.ai[1] > 400 && npc.ai[2] <= 1)
                         {
                             npc.ai[1] = 0;
                             npc.ai[2]++;
                             dashing = false;
                             //createAfterimage = false;
                         }
-                        else if (npc.ai[1] > 400 && npc.ai[2] > 2)
+                        else if (npc.ai[1] > 400 && npc.ai[2] > 1)
                         {
                             if (!firstrunthru && twothirdshealth)
                             {
@@ -578,6 +584,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
                         else if (npc.ai[1] == 260)
                         {
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
+
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
@@ -633,8 +641,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                         if (npc.ai[1]++ % (10 - (5 - ((npc.life / npc.lifeMax) * 5))) == 0 && relativeX < 15)
                         {
-                            if (npc.ai[1] < 15)
+                            if (relativeX == -15)
                             {
+                                Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 1, 0, 1f);
                                 PlayerCenterStore = player.Center;
                             }
                             if (Main.netMode != NetmodeID.MultiplayerClient)
