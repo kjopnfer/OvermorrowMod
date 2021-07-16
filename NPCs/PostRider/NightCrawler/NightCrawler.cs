@@ -16,10 +16,10 @@ namespace OvermorrowMod.NPCs.PostRider.NightCrawler
         {
 
             npc.CloneDefaults(NPCID.WanderingEye);
-            npc.damage = 60;
+            npc.damage = 30;
             npc.aiStyle = 2;
-            npc.defense = 0;
-            npc.lifeMax = 135;
+            npc.defense = 20;
+            npc.lifeMax = 150;
             npc.width = 32;
             npc.height = 40;
             npc.noGravity = false;
@@ -35,14 +35,6 @@ namespace OvermorrowMod.NPCs.PostRider.NightCrawler
 
         public override void CustomBehavior()
         {
-
-            experttimer++;
-            if (expert && experttimer == 1)
-            {
-                npc.life = 455;
-                npc.lifeMax = 455;
-                npc.damage = 75;
-            }
 
 
 
