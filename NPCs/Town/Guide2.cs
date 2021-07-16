@@ -13,6 +13,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.NPCs.PostRider.NightCrawler;
 
 namespace OvermorrowMod.NPCs.Town
 {
@@ -32,7 +33,7 @@ namespace OvermorrowMod.NPCs.Town
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Enraged Guide");
-            Main.npcFrameCount[npc.type] = 21;
+            Main.npcFrameCount[npc.type] = 4;
         }
 
         public override void SetDefaults()
@@ -42,8 +43,8 @@ namespace OvermorrowMod.NPCs.Town
             NPCID.Sets.TrailingMode[npc.type] = 1;
 
             // Reduced size
-            npc.width = 56;
-            npc.height = 52;
+            npc.width = 86;
+            npc.height = 62;
 
             // Actual dimensions
             //npc.width = 368;
@@ -285,20 +286,22 @@ namespace OvermorrowMod.NPCs.Town
                         npc.velocity.X = move.X;
                         npc.velocity.Y = move.Y * .98f;
 
-                        if (npc.ai[1] % 90 == 0)
+                        if (npc.ai[1] == 100)
                         {
-                            int shootSpeed = Main.rand.Next(8, 12);
-                            Vector2 position = npc.Center;
-                            Vector2 targetPosition = Main.player[npc.target].Center;
-                            Vector2 direction = targetPosition - position;
-                            direction.Normalize();
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
-                            }
+                            NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("NightHead"));
                         }
 
-                        if (npc.ai[1] > 600)
+                        if (npc.ai[1] == 200)
+                        {
+                            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("NightHead"));
+                        }
+
+                        if (npc.ai[1] == 300)
+                        {
+                            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("NightHead"));
+                        }
+
+                        if (npc.ai[1] > 400)
                         {
                             npc.ai[0] = -1;
                             npc.ai[1] = 0;
@@ -353,7 +356,7 @@ namespace OvermorrowMod.NPCs.Town
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
-                                float speed = 20f;
+                                float speed = 30f;
                                 Vector2 Rot1 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
                                 Vector2 Rot2 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
                                 Vector2 Rot3 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
@@ -524,11 +527,12 @@ namespace OvermorrowMod.NPCs.Town
 
             npc.frameCounter++;
 
-            if (npc.frameCounter % 12f == 11f) // Ticks per frame
+            if (npc.frameCounter == 5) // Ticks per frame
             {
+                npc.frameCounter = 0;
                 npc.frame.Y += frameHeight;
             }
-            if (npc.frame.Y >= frameHeight * 6) // 6 is max # of frames
+            if (npc.frame.Y >= frameHeight * 4) // 6 is max # of frames
             {
                 npc.frame.Y = 0; // Reset back to default
             }
