@@ -23,6 +23,8 @@ namespace OvermorrowMod.NPCs.Town
         private bool changedPhase2 = false;
         int bulltimer;
         int arrowtimer;
+        int magictimer;
+
 
         int frame = 0;
         int SummStopper = 0;
@@ -103,17 +105,17 @@ namespace OvermorrowMod.NPCs.Town
 
                     if (npc.ai[2] == 480)
                     {
-                        BossText("I deem thee fit to inherit their powers.");
+                        BossText(":(");
                     }
 
                     if (npc.ai[2] == 300)
                     {
-                        BossText("Thou Dryad shalt guide thee.");
+                        BossText(">:(");
                     }
 
                     if (npc.ai[2] == 120)
                     {
-                        BossText("Fare thee well.");
+                        BossText("Not cool");
                     }
                 }
                 else
@@ -217,8 +219,8 @@ namespace OvermorrowMod.NPCs.Town
                     {
                         if (movement == true)
                         {
-                            if (changedPhase2 == true) { RandomCeiling = 5; }
-                            else { RandomCeiling = 5; }
+                            if (changedPhase2 == true) { RandomCeiling = 6; }
+                            else { RandomCeiling = 6; }
                             while (RandomCase == LastCase)
                             {
                                 RandomCase = Main.rand.Next(1, RandomCeiling);
@@ -312,6 +314,11 @@ namespace OvermorrowMod.NPCs.Town
                                 npc.ai[1] = 0;
                             }
                         }
+                        else
+                        {
+                            npc.ai[0] = -1;
+                            npc.ai[1] = 0; 
+                        }
                     }
                     break;
                 case 2: // Absorb energy
@@ -383,90 +390,57 @@ namespace OvermorrowMod.NPCs.Town
                         }
                     }
                     break;
-                /*case 4: // Shoot nature blasts
-                    npc.velocity = Vector2.Zero;
-                    if (npc.ai[0] == 4)
+                case 5: // Shoot nature blasts
+
+                    if (npc.ai[0] == 5)
                     {
+                        Vector2 GuidePos3 = npc.Center;
+                        Vector2 PlayerPosition3 = Main.player[npc.target].Center;
+                        Vector2 GuideDirection3 = PlayerPosition3 - GuidePos3;
+                        GuideDirection3.Normalize();
+                        npc.velocity = GuideDirection3 * 6f;  
 
-                        if (npc.ai[1] == 100)
+                        int RandomX = Main.rand.Next(-100, 100);
+                        int RandomY = Main.rand.Next(-100, 100);
+
+                        magictimer++;
+
+                        if(Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 250f)
                         {
-                            leafatt = true;
-                        }
-
-                        if (npc.ai[1] == 150)
-                        {
-                            leafatt = true;
-                        }
-
-                        if (npc.ai[1] == 200)
-                        {
-                            leafatt = true;
-                        }
-
-                        if (npc.ai[1] == 250)
-                        {
-                            leafatt = true;
-                        }
-
-                        if (npc.ai[1] == 300)
-                        {
-                            leafatt = true;
-                        }
-                        
-
-
-                        int RandDirect = Main.rand.Next(1, 4);   
-                        float speed = 8f;
-                        int damage = 20;
-                        if(leafatt)
-                        {
-                            if(RandDirect == 1)
+                            if(magictimer > 7)
                             {
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
-                                int type = ModContent.ProjectileType<NatureWave>();
-                                Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
-                                leafatt = false;
-                            }
-
-                            if(RandDirect == 2)
-                            {
-                                Vector2 position = npc.Center;
-                                Vector2 targetPosition = Main.player[npc.target].Center;
-                                Vector2 direction = targetPosition - position;
-                                direction.Normalize();
-                                Vector2 Rot1 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(25));
-                                Vector2 Rot2 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(-25));
-                                int type = ModContent.ProjectileType<NatureWave>();
-                                Projectile.NewProjectile(position, Rot1 * speed, type, damage, 0f, Main.myPlayer);
-                                Projectile.NewProjectile(position, Rot2 * speed, type, damage, 0f, Main.myPlayer);
-                                leafatt = false;
-                            }
-
-                            if(RandDirect == 3)
-                            {
-                                Vector2 position = npc.Center;
-                                Vector2 targetPosition = Main.player[npc.target].Center;
-                                Vector2 direction = targetPosition - position;
-                                direction.Normalize();
-                                Vector2 Rot1 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(32));
-                                Vector2 Rot2 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(-32));
-                                int type = ModContent.ProjectileType<NatureWave>();
-                                Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
-                                Projectile.NewProjectile(position, Rot1 * speed, type, damage, 0f, Main.myPlayer);
-                                Projectile.NewProjectile(position, Rot2 * speed, type, damage, 0f, Main.myPlayer);
-                                leafatt = false;
+                                float speed = 12f;
+                                int dagger = Projectile.NewProjectile(position, direction * speed, 93, npc.damage, 0f, Main.myPlayer);  
+                                Main.projectile[dagger].friendly = false;
+                                Main.projectile[dagger].hostile = true;
+                                magictimer = 0;
                             }
                         }
+                        else
+                        {
+                            if(magictimer > 24)
+                            {
+                                Vector2 position = npc.Center;
+                                Vector2 targetPosition = Main.player[npc.target].Center;
+                                Vector2 direction = targetPosition - position;
+                                direction.Normalize();
+                                float speed = 7f;
+                                Projectile.NewProjectile(npc.Center.X + RandomX, npc.Center.Y + RandomY, direction.X, direction.Y, 596, npc.damage, 0f, Main.myPlayer);  
+                                magictimer = 0;
+                            }
+                        }
+
 
                         if (npc.ai[1] > 350)
                         {
                             npc.ai[0] = -1;
                             npc.ai[1] = 0;
                         }
-                    }*/
+                    }
                     break;
                 case 4: // Shoot nature blasts
                     if (npc.ai[0] == 4)
