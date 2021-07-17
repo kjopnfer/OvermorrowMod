@@ -15,7 +15,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Fungal Vine");
             Tooltip.SetDefault("Attacks have a chance to inflict Fungal Infection\n[c/00FF00:{ Imbuement }]\n" +
-                "[c/800080:Right Click] to cause all attacks to launch a fungi bulb that spawns spores\nConsumes 1 Soul Essence" +
+                "[c/800080:Right Click] to cause attacks to spawns spores at your cursor\nConsumes 2 Soul Essences" +
                 "\n'Not toxic, but can still kill you'");
         }
 
@@ -44,7 +44,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.MushroomRune)
+            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 2 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -77,9 +77,16 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.MushroomRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
-                type = ModContent.ProjectileType<FungiPiercerProjectileAlt>();
-            }
-            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
+                for (int i = 0; i < Main.rand.Next(3, 5); i++)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ModContent.ProjectileType<FungiSpore>(), damage, 3f, player.whoAmI);
+                    }
+                }
+                return false;
+            }   
+            return true;
         }
     }
 }

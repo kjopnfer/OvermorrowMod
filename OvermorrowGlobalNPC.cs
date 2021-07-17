@@ -292,7 +292,7 @@ namespace OvermorrowMod
                     direction.Normalize();
                     float speed = 0f;
                     Vector2 perturbedSpeed = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
-                    Projectile.NewProjectile(npc.Center.X + Main.rand.Next(-75, 76) - npc.width / 2, npc.Center.Y + Main.rand.Next(-75, 76) - npc.height / 2, perturbedSpeed.X * speed, perturbedSpeed.Y * speed, 590, npc.defense + 5, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(npc.Center.X + Main.rand.Next(-75, 76) - npc.width / 2, npc.Center.Y + Main.rand.Next(-75, 76) - npc.height / 2, perturbedSpeed.X * speed, perturbedSpeed.Y * speed, ProjectileID.TruffleSpore, npc.defense + 5, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
                     FungiTime = 0;
                 }
             }

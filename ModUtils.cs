@@ -11,6 +11,30 @@ namespace OvermorrowMod
 {
     public static class ModUtils
     {
+        public static MethodInfo startRain;
+        public static MethodInfo stopRain;
+        public static void Load(bool unload)
+        {
+            if (unload)
+            {
+                startRain = null;
+                stopRain = null;
+            }
+            else
+            {
+                startRain = typeof(Main).GetMethod("StartRain", BindingFlags.Static | BindingFlags.NonPublic);
+                stopRain = typeof(Main).GetMethod("StopRain", BindingFlags.Static | BindingFlags.NonPublic);
+            }
+        }
+        public static void StartRain()
+        {
+            startRain.Invoke(null, null);
+        }
+        public static void StopRain()
+        {
+            stopRain.Invoke(null, null);
+        }
+
         public static void Draw(this Rectangle rect, bool collides = false)
         {
             PrimitivePacket packet = new PrimitivePacket();

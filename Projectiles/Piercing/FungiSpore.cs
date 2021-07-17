@@ -1,3 +1,5 @@
+using OvermorrowMod.Buffs.Debuffs;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -26,7 +28,7 @@ namespace OvermorrowMod.Projectiles.Piercing
         public override void AI()
         {
             // Projectile gravity
-            projectile.velocity.Y += 0.02f;
+            projectile.velocity.Y += 0.09f;
 
             if (projectile.velocity.Y > 1f) // Terminal velocity
             {
@@ -40,6 +42,11 @@ namespace OvermorrowMod.Projectiles.Piercing
             }
 
             projectile.ai[1]++;
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.AddBuff(ModContent.BuffType<FungalInfection>(), 400);
         }
     }
 }

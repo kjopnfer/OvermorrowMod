@@ -42,7 +42,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.SkyRune)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -59,14 +59,25 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             else
             {
                 item.autoReuse = true;
-                item.useStyle = ItemUseStyleID.SwingThrow;
                 item.useTurn = true;
-                item.useAnimation = 14;
-                item.useTime = 14;
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.SkyRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
+                {
+                    item.useStyle = ItemUseStyleID.HoldingUp;
+                    item.useAnimation = 35;
+                    item.useTime = 35;
+                    item.UseSound = null;
+                }
+                else
+                {
+                    item.useStyle = ItemUseStyleID.SwingThrow;
+                    item.useAnimation = 14;
+                    item.useTime = 14;
+                    item.UseSound = SoundID.Item71;
+                }
+
                 item.damage = 6;
                 item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("LightningPiercerProjectile");
-                item.UseSound = SoundID.Item71;
             }
 
             return base.CanUseItem(player);
@@ -76,8 +87,10 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.SkyRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
-                type = ModContent.ProjectileType<LightningPiercerProjectileAlt>();
+                position = Main.MouseWorld;
+                type = ModContent.ProjectileType<GoldCloud>();
             }
+
             return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }
     }

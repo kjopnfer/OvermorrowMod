@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.RuneBuffs;
+using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -41,7 +42,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 2 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -61,10 +62,19 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTurn = true;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                item.damage = 3;
-                item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.CrimsonRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
+                {                    
+                    item.UseSound = null;
+                    item.shootSpeed = 6f;
+                    item.damage = 16;
+                }
+                else
+                {
+                    item.UseSound = SoundID.Item71;
+                    item.shootSpeed = 14f + modPlayer.modifyShootSpeed();                
+                    item.damage = 3;
+                }
                 item.shoot = mod.ProjectileType("CrimsonPiercerProjectile");
-                item.UseSound = SoundID.Item71;
             }
 
             return base.CanUseItem(player);
@@ -74,13 +84,22 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.CrimsonRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
-                float numberProjectiles = 3; // This defines how many projectiles to shot
-                float rotation = MathHelper.ToRadians(15);
-                position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
-                for (int i = 0; i < numberProjectiles; i++)
+                Vector2 origin = Main.MouseWorld;
+                float radius = 15;
+                int numLocations = 30;
+                for (int i = 0; i < 30; i++)
                 {
-                    Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .8f; // This defines the projectile roatation and speed. .8f == 80% projectile speed
-                    Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockBack, player.whoAmI);
+                    Vector2 dustPosition = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                    int dust = Dust.NewDust(dustPosition, 2, 2, 90, dustvelocity.X, dustvelocity.Y, 0, default, 1.25f);
+                    Main.dust[dust].noGravity = true;
+                }
+
+                type = ModContent.ProjectileType<RedThornHead>();
+                int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
+                for (int i = 0; i < 6; i++)
+                {
+                    Projectile.NewProjectile(Main.MouseWorld, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / 6) * i + randRotation)), type, damage, knockBack, player.whoAmI);
                 }
                 return false;
             }
