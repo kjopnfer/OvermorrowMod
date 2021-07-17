@@ -20,6 +20,7 @@ namespace OvermorrowMod.NPCs.Town
 
         public override void SetDefaults()
         {
+            npc.noTileCollide = true;
             npc.noGravity = true;
             npc.width = 22;
             npc.height = 36;
@@ -34,6 +35,13 @@ namespace OvermorrowMod.NPCs.Town
             npc.aiStyle = 5;
             aiType = NPCID.EaterofSouls;
         }
+
+
+
+
+
+
+
 
         public override void AI()
         {

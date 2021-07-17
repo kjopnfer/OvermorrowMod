@@ -20,6 +20,7 @@ namespace OvermorrowMod.NPCs.Town
 
         public override void SetDefaults()
         {
+            npc.noTileCollide = true;
             npc.noGravity = true;
             npc.width = 22;
             npc.height = 50;
@@ -34,6 +35,9 @@ namespace OvermorrowMod.NPCs.Town
             npc.aiStyle = 5;
             aiType = NPCID.Crimera;
         }
+
+
+
 
         public override void AI()
         {

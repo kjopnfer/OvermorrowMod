@@ -26,6 +26,8 @@ namespace OvermorrowMod.NPCs.Town
         int magictimer;
 
 
+        bool Lamp = false;
+        bool TwinANI = false;
         int frame = 0;
         int SummStopper = 0;
         int disctimer;
@@ -34,7 +36,7 @@ namespace OvermorrowMod.NPCs.Town
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Enraged Guide");
-            Main.npcFrameCount[npc.type] = 16;
+            Main.npcFrameCount[npc.type] = 24;
         }
 
         public override void SetDefaults()
@@ -271,7 +273,7 @@ namespace OvermorrowMod.NPCs.Town
                         if(SummStopper < 1)
                         {
 
-                            if(Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 450f)
+                            if(Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 350f)
                             {
                                 Vector2 GuidePos4 = npc.Center;
                                 Vector2 PlayerPosition4 = Main.player[npc.target].Center;
@@ -292,23 +294,54 @@ namespace OvermorrowMod.NPCs.Town
                             {
                                 NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
                                 NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
+                                TwinANI = true;
+                                frame = 17;
                             }
 
                             if (npc.ai[1] == 200)
                             {
                                 NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
                                 NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
+                                TwinANI = true;
+                                frame = 17;
                             }
 
                             if (npc.ai[1] == 300)
                             {
                                 NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
                                 NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
+                                TwinANI = true;
+                                frame = 17;
                             }
+
+
+
+                            if(npc.velocity.Y < -9f)
+                            {
+                                npc.velocity.Y = -9f;
+                            }
+
+                            if(npc.velocity.Y > 9f)
+                            {
+                                npc.velocity.Y = 9f;
+                            }
+
+
+                            if(npc.velocity.X < -9f)
+                            {
+                                npc.velocity.X = -9f;
+                            }
+
+                            if(npc.velocity.X > 9f)
+                            {
+                                npc.velocity.X = 9f;
+                            }
+
+
 
                             if (npc.ai[1] > 400)
                             {
-                                SummStopper = 1000;
+                                SummStopper = 2000;
                                 npc.ai[0] = -1;
                                 npc.ai[1] = 0;
                             }
@@ -368,7 +401,7 @@ namespace OvermorrowMod.NPCs.Town
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
-                                float speed = 30f;
+                                float speed = 50f;
                                 Vector2 Rot1 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
                                 Vector2 Rot2 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
                                 Vector2 Rot3 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
@@ -417,6 +450,8 @@ namespace OvermorrowMod.NPCs.Town
                                 int dagger = Projectile.NewProjectile(position, direction * speed, 93, npc.damage, 0f, Main.myPlayer);  
                                 Main.projectile[dagger].friendly = false;
                                 Main.projectile[dagger].hostile = true;
+                                Lamp = false;
+                                frame = 0;
                                 magictimer = 0;
                             }
                         }
@@ -426,17 +461,18 @@ namespace OvermorrowMod.NPCs.Town
                             Vector2 PlayerPosition3 = Main.player[npc.target].Center;
                             Vector2 GuideDirection3 = PlayerPosition3 - GuidePos3;
                             GuideDirection3.Normalize();
-                            npc.velocity += GuideDirection3 * 0.08f;  
+                            npc.velocity += GuideDirection3 * 0.07f;  
 
-                            if(magictimer > 24)
+                            if(magictimer > 27)
                             {
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
                                 float speed = 4f;
-                                int spirtflame = Projectile.NewProjectile(npc.Center.X + RandomX, npc.Center.Y + RandomY, direction.X * speed, direction.Y * speed, 596, npc.damage, 0f, Main.myPlayer);
-                                Main.projectile[spirtflame].timeLeft = 300;
+                                int spirtflame = Projectile.NewProjectile(npc.Center.X + RandomX, npc.Center.Y + RandomY, direction.X * speed, direction.Y * speed, ModContent.ProjectileType<GuideFlame>(), npc.damage, 0f, Main.myPlayer);
+                                Main.projectile[spirtflame].timeLeft = 330;
+                                Lamp = true;
                                 magictimer = 0;
                             }
                         }
@@ -445,25 +481,25 @@ namespace OvermorrowMod.NPCs.Town
 
 
 
-                        if(npc.velocity.Y < -9f)
+                        if(npc.velocity.Y < -7.8f)
                         {
-                            npc.velocity.Y = -9f;
+                            npc.velocity.Y = -7.8f;
                         }
 
-                        if(npc.velocity.Y > 9f)
+                        if(npc.velocity.Y > 7.8f)
                         {
-                            npc.velocity.Y = 9f;
+                            npc.velocity.Y = 7.8f;
                         }
 
 
-                        if(npc.velocity.X < -9f)
+                        if(npc.velocity.X < -7.8f)
                         {
-                            npc.velocity.X = -9f;
+                            npc.velocity.X = -7.8f;
                         }
 
-                        if(npc.velocity.X > 9f)
+                        if(npc.velocity.X > 7.8f)
                         {
-                            npc.velocity.X = 9f;
+                            npc.velocity.X = 7.8f;
                         }
 
 
@@ -540,10 +576,10 @@ namespace OvermorrowMod.NPCs.Town
             npc.rotation = npc.velocity.X * 0.015f;
             npc.frame.Y = frameHeight * frame;
 
-            if(npc.ai[0] == 0 || npc.ai[0] == 1 || npc.ai[0] == 4)
+            if(npc.ai[0] == 0)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter == 5) // Ticks per frame
+                if (npc.frameCounter > 4) // Ticks per frame
                 {
                     npc.frameCounter = 0;
                     frame += 1;
@@ -557,6 +593,44 @@ namespace OvermorrowMod.NPCs.Town
                     frame = 4; // Reset back to default
                 }
             }
+
+
+
+            if(npc.ai[0] == 1)
+            {
+                if(!TwinANI)
+                {
+                    npc.frameCounter++;
+                    if (npc.frameCounter > 4) // Ticks per frame
+                    {
+                        npc.frameCounter = 0;
+                        frame += 1;
+                    }
+                    if (frame >= 8) // 6 is max # of frames
+                    {
+                        frame = 4; // Reset back to default
+                    }
+                    if (frame < 4) // 6 is max # of frames
+                    {
+                        frame = 4; // Reset back to default
+                    }
+                }
+                else
+                {
+                    npc.frameCounter++;
+                    if (npc.frameCounter > 7) // Ticks per frame
+                    {
+                        npc.frameCounter = 0;
+                        frame += 1;
+                    }
+                    if(frame >= 20)
+                    {
+                        frame = 4;
+                        TwinANI = false;
+                    }
+                }
+            }
+
 
 
             if(npc.ai[0] == 2)
@@ -611,6 +685,45 @@ namespace OvermorrowMod.NPCs.Town
                     frame = 4; // Reset back to default
                 }
             }
+
+
+
+
+
+
+            if(npc.ai[0] == 5)
+            {
+                if(!Lamp)
+                {
+                    npc.frameCounter++;
+                    if (npc.frameCounter > 4) // Ticks per frame
+                    {
+                        npc.frameCounter = 0;
+                        frame += 1;
+                    }
+                    if (frame >= 8) // 6 is max # of frames
+                    {
+                        frame = 4; // Reset back to default
+                    }
+                }
+                else
+                {
+                    npc.frameCounter++;
+                    if (npc.frameCounter > 4) // Ticks per frame
+                    {
+                        npc.frameCounter = 0;
+                        frame += 1;
+                    }
+                    if (frame >= 24) // 6 is max # of frames
+                    {
+                        frame = 21; // Reset back to default
+                    }
+                    if (frame < 21) // 6 is max # of frames
+                    {
+                        frame = 21; // Reset back to default
+                    }
+                }
+            }
         }
         
         
@@ -622,7 +735,7 @@ namespace OvermorrowMod.NPCs.Town
             {
                 // Adjust drawPos if the hitbox does not match sprite dimension
                 Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin;
-                Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.Green : Color.LightGreen;
+                Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.Red : Color.LightGreen;
                 Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
                 spriteBatch.Draw(Main.npcTexture[npc.type], drawPos, npc.frame, color, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
             }
