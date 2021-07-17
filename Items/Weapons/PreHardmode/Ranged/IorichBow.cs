@@ -20,7 +20,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.UseSound = SoundID.Item5;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 35;
+            item.damage = 20;
             item.useAnimation = 25;
             item.useTime = 25;
             item.width = 32;

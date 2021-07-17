@@ -386,11 +386,19 @@ namespace OvermorrowMod.Projectiles.Summon
             if (foundTarget)
             {
                 timer++;
-                if (timer == 210)
+                if (timer == 50)
                 {
-                    NPC.NewNPC((int)projectile.position.X, (int)projectile.position.Y, mod.NPCType("BloodSeeker"));
+                    Vector2 position = projectile.Center;
+                    Vector2 targetPosition = Rot;
+                    Vector2 direction = targetPosition - position;
+                    direction.Normalize();
+                    Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
+                    float speed = 7f;
+                    Projectile.NewProjectile(projectile.Center, newpoint2 * speed, 307, projectile.damage, 1f, projectile.owner, 0f);
                     timer = 0;
                 }
+
+
             }
 
             // Loop through the 13 animation frames, spending 5 ticks on each.
