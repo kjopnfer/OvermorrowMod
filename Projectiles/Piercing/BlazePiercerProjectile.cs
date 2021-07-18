@@ -1,12 +1,19 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Effects.Prim;
+using OvermorrowMod.Effects.Prim.Trails;
 using Terraria;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
-    public class BlazePiercerProjectile : PiercingProjectile
+    public class BlazePiercerProjectile : PiercingProjectile, ITrailEntity
     {
+        public Type TrailType()
+        {
+            return typeof(FireTrail);
+        }
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Blazing Spike");
@@ -31,12 +38,15 @@ namespace OvermorrowMod.Projectiles.Piercing
             {
                 for (int num453 = 0; num453 < 2; num453++)
                 {
-                    int num451 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y - 10), projectile.width, projectile.height, 6, projectile.velocity.X * 0.2f + (float)(projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, default(Color), 2.5f);
-                    Main.dust[num451].noGravity = true;
-                    Dust expr_D6EA_cp_0 = Main.dust[num451];
-                    expr_D6EA_cp_0.velocity.X = expr_D6EA_cp_0.velocity.X * 2f;
-                    Dust expr_D70A_cp_0 = Main.dust[num451];
-                    expr_D70A_cp_0.velocity.Y = expr_D70A_cp_0.velocity.Y * 2f;
+                    if (Main.rand.Next(4) == 0)
+                    {
+                        int num451 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y - 10), projectile.width, projectile.height, 6, projectile.velocity.X * 0.2f + (float)(projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, default(Color), 2.5f);
+                        Main.dust[num451].noGravity = true;
+                        Dust expr_D6EA_cp_0 = Main.dust[num451];
+                        expr_D6EA_cp_0.velocity.X = expr_D6EA_cp_0.velocity.X * 2f;
+                        Dust expr_D70A_cp_0 = Main.dust[num451];
+                        expr_D70A_cp_0.velocity.Y = expr_D70A_cp_0.velocity.Y * 2f;
+                    }
                 }
             }
 

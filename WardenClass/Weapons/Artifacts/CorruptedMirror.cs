@@ -12,7 +12,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Corrupted Mirror");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to gain a buff that reflects all damage for 3 minutes\n" +
+            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume a Soul Essence to gain a buff that reflects all damage for 3 minutes\n" +
                 "All players on the same team gain the same buff for 3 minutes\n" +
                 "'You can't shake the feeling of something otherworldy gazing from the mirror'");
         }
@@ -34,7 +34,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override bool CanUseItem(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            if (modPlayer.soulResourceCurrent >= 2)
+            if (modPlayer.soulResourceCurrent >= 1)
             {
                 return true;
             }
@@ -48,9 +48,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
             {
-                ConsumeSouls(2, player);
+                ConsumeSouls(1, player);
             }
-            player.AddBuff(ModContent.BuffType<MirrorBuff>(), 3600);
+            player.AddBuff(ModContent.BuffType<MirrorBuff>(), 10800);
 
             // Loop through all players and check if they are on the same team
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -71,6 +71,13 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             ModRecipe recipe = new ModRecipe(mod);
             recipe.AddIngredient(ItemID.MagicMirror);
             recipe.AddIngredient(ItemID.CrimtaneBar, 12);
+            recipe.AddTile(TileID.DemonAltar);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.MagicMirror);
+            recipe.AddIngredient(ItemID.DemoniteBar, 12);
             recipe.AddTile(TileID.DemonAltar);
             recipe.SetResult(this);
             recipe.AddRecipe();

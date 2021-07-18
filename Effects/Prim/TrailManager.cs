@@ -24,7 +24,7 @@ namespace OvermorrowMod.Effects.Prim
             newTrail.Entity = projectile;
             newTrail.Type = DrawType.Projectile;
             newTrail.EntityType = projectile.type;
-            Main.NewText("Projectile Trail created");
+            //Main.NewText("Projectile Trail created");
             newTrail.SetDefaults();
             activeTrails.Add(newTrail);
         }
