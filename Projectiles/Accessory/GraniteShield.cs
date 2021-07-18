@@ -11,7 +11,6 @@ namespace OvermorrowMod.Projectiles.Accessory
 {
     public class GraniteShield : ModProjectile
     {
-        private int maxDeflectNum;
         private int maxStored;
         private int storedDamage = 0;
         private int disabledCounter = 0;
@@ -44,18 +43,15 @@ namespace OvermorrowMod.Projectiles.Accessory
             // Determines the maximum damage stored within the shield before it breaks
             if (NPC.downedPlantBoss) 
             {
-                maxDeflectNum = 60;
-                maxStored = 120;
+                maxStored = 40;
             }
             else if (Main.hardMode)
             {
-                maxDeflectNum = 45;
-                maxStored = 80;
+                maxStored = 20;
             }
             else
             {
-                maxDeflectNum = 30;
-                maxStored = 40;
+                maxStored = 10;
             }
 
             if (storedDamage >= maxStored)
@@ -96,7 +92,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                 for (int i = 0; i < Main.maxProjectiles; i++)
                 {
                     Projectile incomingProjectile = Main.projectile[i];
-                    if (incomingProjectile.active && incomingProjectile.hostile && incomingProjectile.damage < maxDeflectNum)
+                    if (incomingProjectile.active && incomingProjectile.hostile)
                     {
                         if (projectile.Hitbox.Intersects(incomingProjectile.Hitbox))
                         {
@@ -104,7 +100,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                             incomingProjectile.friendly = true;
                             incomingProjectile.hostile = false;
 
-                            storedDamage += incomingProjectile.damage;
+                            storedDamage += 1;
 
                             incomingProjectile.damage *= 2;
                         }
