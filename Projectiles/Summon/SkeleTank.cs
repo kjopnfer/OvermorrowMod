@@ -20,29 +20,42 @@ namespace OvermorrowMod.Projectiles.Summon
 		int PosPlay = 0;
         private int NumProj = 0;
 		
-        int Randompos = Main.rand.Next(150, 300);
+        int Randompos = Main.rand.Next(150, 275);
 
         int rockettimer = 0;
         float NPCtargetWidth = 0;
         int postimer = 0;
 
 
+
+		bool straight = false;
+		bool angle = false;
+		bool up = false;
+
 		public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Skeletank"); 
-			Main.projFrames[projectile.type] = 3;
+			Main.projFrames[projectile.type] = 6;
 		}
 
 		public override void SetDefaults()
 		{
 			projectile.width = 22;
-			projectile.height = 46;
+			projectile.height = 40;
             projectile.timeLeft = 200000;
 		}
 
 
 		public override void AI()
 		{
+
+            Player player = Main.player[projectile.owner];
+			Vector2 idlePosition = player.Center;
+			float speed = 15f;
+			float inertia = 20f;
+			Vector2 vectorToIdlePosition = player.Center - projectile.Center;
+			float distanceToIdlePosition = vectorToIdlePosition.Length();
+
 
 
 
@@ -58,7 +71,6 @@ namespace OvermorrowMod.Projectiles.Summon
 
 
 
-            projectile.frame = 0;
 			if(!flying)
 			{
 				if (projectile.velocity.Y < 7f)
@@ -74,9 +86,8 @@ namespace OvermorrowMod.Projectiles.Summon
 			}
 
 
-            Player player = Main.player[projectile.owner];
 
-            float distanceFromTarget = 300f;
+            float distanceFromTarget = 100f;
             Vector2 targetCenter = projectile.position;
             bool foundTarget = false;
             if (!foundTarget)
@@ -85,9 +96,9 @@ namespace OvermorrowMod.Projectiles.Summon
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
                     NPC npc = Main.npc[i];
-                    if (npc.CanBeChasedBy())
+                    if (npc.CanBeChasedBy() && Vector2.Distance(Main.MouseWorld, npc.Center) < 220f)
                     {
-                        float between = Vector2.Distance(npc.Center, Main.MouseWorld);
+                        float between = Vector2.Distance(npc.Center, projectile.Center);
                         bool closest = Vector2.Distance(Main.MouseWorld, targetCenter) > between;
                         bool inRange = between < distanceFromTarget;
 
@@ -106,6 +117,34 @@ namespace OvermorrowMod.Projectiles.Summon
 			{
 			if(!flying)
 			{
+
+				if(NPCtarget.Y < projectile.Center.Y - 60)
+				{
+		 			angle = true;
+				}
+				else
+				{
+		 			angle = false;
+				}
+
+				if(NPCtarget.Y < projectile.Center.Y - 100 && Vector2.Distance(new Vector2(projectile.Center.X, projectile.Center.X), new Vector2(NPCtarget.X, NPCtarget.X)) < 50f)
+				{
+		 			up = true;
+				}
+				else
+				{
+		 			up = false;
+				}
+
+				if(!angle && !up)
+				{
+					straight = true;
+				}
+				else
+				{
+		 			straight = false;
+				}
+
 				if (projectile.velocity.Y < -7f)
 				{
 					projectile.velocity.Y = -7f;
@@ -130,11 +169,13 @@ namespace OvermorrowMod.Projectiles.Summon
 					{
 						if(NPCtarget.X > projectile.Center.X)
 						{
+							projectile.spriteDirection = -1;
 							projectile.velocity.X += 0.07f;
 						}
 
 						if(NPCtarget.X < projectile.Center.X)
 						{
+							projectile.spriteDirection = 1;
 							projectile.velocity.X -= 0.07f;
 						}
 					}
@@ -142,11 +183,13 @@ namespace OvermorrowMod.Projectiles.Summon
 					{
 						if(NPCtarget.X > projectile.Center.X)
 						{
+							projectile.spriteDirection = -1;
 							projectile.velocity.X -= 0.07f;
 						}
 
 						if(NPCtarget.X < projectile.Center.X)
 						{
+							projectile.spriteDirection = 1;
 							projectile.velocity.X += 0.07f;
 						}
 					}
@@ -159,8 +202,8 @@ namespace OvermorrowMod.Projectiles.Summon
 						Vector2 targetPosition = NPCtarget;
 						Vector2 direction = targetPosition - position;
 						direction.Normalize();
-						float speed = 10f;
-						Projectile.NewProjectile(projectile.Center, direction * speed, ModContent.ProjectileType<GraniteLaser>(), projectile.damage, 1f, projectile.owner, 0f);
+						float speed2 = 10f;
+						Projectile.NewProjectile(projectile.Center, direction * speed2, ModContent.ProjectileType<GraniteLaser>(), projectile.damage, 1f, projectile.owner, 0f);
 						rockettimer = 0;
 					}
 
@@ -176,6 +219,10 @@ namespace OvermorrowMod.Projectiles.Summon
 			}
             else
             {
+				straight = true;
+				angle = false;
+		 		up = false;
+				projectile.spriteDirection = -Main.player[projectile.owner].direction;
 				if(!flying)
 				{
 					targetjump = true;
@@ -184,7 +231,7 @@ namespace OvermorrowMod.Projectiles.Summon
 					Vector2 direction = targetPosition - position;
 					projectile.velocity.X = direction.X / 10;
 				}
-				if(Main.player[projectile.owner].Center.Y < projectile.Center.Y - 20f && !foundTarget)
+				if(Main.player[projectile.owner].Center.Y < projectile.Center.Y - 100f && !foundTarget)
 				{
 					flying = true;
 				}
@@ -199,24 +246,18 @@ namespace OvermorrowMod.Projectiles.Summon
 
 				if(flying)
 				{
-					Vector2 idlePosition = player.Center;
-					float speed = 15f;
-					float inertia = 20f;
-					Vector2 vectorToIdlePosition = idlePosition - projectile.Center;
-					float distanceToIdlePosition = vectorToIdlePosition.Length();
-
 					// Minion doesn't have a target: return to player and idle
 					if (distanceToIdlePosition > 100f)
 					{
 						// Speed up the minion if it's away from the player
-						speed = 40f;
-						inertia = 60f;
+                    	speed = 20f;
+                    	inertia = 60f;
 					}
 					else
 					{
 						// Slow down the minion if closer to the player
-						speed = 20f;
-						inertia = 80f;
+                    	speed = 10f;
+                    	inertia = 80f;
 					}
 					if (distanceToIdlePosition > 20f)
 					{
@@ -233,8 +274,91 @@ namespace OvermorrowMod.Projectiles.Summon
 						projectile.velocity.X = -0.15f;
 						projectile.velocity.Y = -0.15f;
 					}
+
+
+					if (projectile.velocity.Y > 20f)
+					{
+						projectile.velocity.Y = 20f;
+					}
+
+					if (projectile.velocity.Y < -20f)
+					{
+						projectile.velocity.Y = -20f;
+					}
+
+					if (projectile.velocity.X > 20f)
+					{
+						projectile.velocity.X = 20f;
+					}
+
+					if (projectile.velocity.X < -20f)
+					{
+						projectile.velocity.X = -20f;
+					}
+
+
 				}
             }
+
+
+
+
+
+			if(straight)
+			{
+				projectile.frameCounter++;
+                if (projectile.frameCounter > 4) // Ticks per frame
+                {
+                    projectile.frameCounter = 0;
+                    projectile.frame += 1;
+                }
+                if (projectile.frame > 1) // 6 is max # of frames
+                {
+                    projectile.frame = 0; // Reset back to default
+                }
+                if (projectile.frame < 0) // 6 is max # of frames
+                {
+                    projectile.frame = 0; // Reset back to default
+                }
+			}
+
+
+			if(angle)
+			{
+				projectile.frameCounter++;
+                if (projectile.frameCounter > 4) // Ticks per frame
+                {
+                    projectile.frameCounter = 0;
+                    projectile.frame += 1;
+                }
+                if (projectile.frame > 3) // 6 is max # of frames
+                {
+                    projectile.frame = 2; // Reset back to default
+                }
+                if (projectile.frame < 2) // 6 is max # of frames
+                {
+                    projectile.frame = 2; // Reset back to default
+                }
+			}
+
+
+			if(up)
+			{
+				projectile.frameCounter++;
+                if (projectile.frameCounter > 4) // Ticks per frame
+                {
+                    projectile.frameCounter = 0;
+                    projectile.frame += 1;
+                }
+                if (projectile.frame > 5) // 6 is max # of frames
+                {
+                    projectile.frame = 4; // Reset back to default
+                }
+                if (projectile.frame < 4) // 6 is max # of frames
+                {
+                    projectile.frame = 4; // Reset back to default
+                }
+			}
 		}
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough)
