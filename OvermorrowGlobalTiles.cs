@@ -38,7 +38,7 @@ namespace OvermorrowMod
                     // Crimson
                     if (type == TileID.Trees && (Main.tile[i, j + 1].type == TileID.FleshGrass))
                     {
-                        //Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<Greneyede>());
+                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<MeatMissile>());
                     }
 
                     // Jungle Trees

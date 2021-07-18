@@ -6,27 +6,27 @@ using Terraria.ID;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
-    public class SnotExplosion : ModProjectile
-    {
-		public override string Texture => "OvermorrowMod/Projectiles/Ranged/SnotRocket";
+	public class BloodExplosion : ModProjectile
+	{
+		public override string Texture => "OvermorrowMod/Projectiles/Ranged/MeatMissileProj";
 		public override void SetDefaults()
-        {
+		{
 			projectile.alpha = 255;
-            projectile.hostile = false;
-            projectile.friendly = true;
+			projectile.hostile = false;
+			projectile.friendly = true;
 			projectile.hostile = true;
-            projectile.tileCollide = false;
-            projectile.width = 64;
-            projectile.height = 64;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 3;
-        }
+			projectile.tileCollide = false;
+			projectile.width = 64;
+			projectile.height = 64;
+			projectile.penetrate = -1;
+			projectile.timeLeft = 3;
+		}
 
-        public override void Kill(int timeLeft)
-        {
+		public override void Kill(int timeLeft)
+		{
 
-            Vector2 position = projectile.Center;
-            Main.PlaySound(SoundID.NPCDeath1, (int)position.X, (int)position.Y);
+			Vector2 position = projectile.Center;
+			Main.PlaySound(SoundID.NPCDeath1, (int)position.X, (int)position.Y);
 
 			for (int num864 = 0; num864 < 30; num864++)
 			{
@@ -36,11 +36,11 @@ namespace OvermorrowMod.Projectiles.Ranged
 			}
 			for (int num866 = 0; num866 < 20; num866++)
 			{
-				int num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, 157, 0f, 0f, 100, default(Color), 2.5f);
+				int num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, 183, 0f, 0f, 100, default(Color), 2.5f);
 				Main.dust[num867].noGravity = true;
 				Dust dust = Main.dust[num867];
 				dust.velocity *= 3.5f;
-				num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, 157, 0f, 0f, 100, default(Color), 1f);
+				num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, 183, 0f, 0f, 100, default(Color), 1f);
 				dust = Main.dust[num867];
 				dust.velocity *= 1.5f;
 			}
@@ -72,16 +72,6 @@ namespace OvermorrowMod.Projectiles.Ranged
 				Main.gore[num870].velocity.X -= 1f;
 				Main.gore[num870].velocity.Y -= 1f;
 			}
-		}
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-			target.AddBuff(BuffID.Poisoned, 300);
-        }
-
-        public override void OnHitPlayer(Player target, int damage, bool crit)
-        {
-			target.AddBuff(BuffID.Poisoned, 300);
 		}
 	}
 }
