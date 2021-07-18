@@ -30,6 +30,10 @@ namespace OvermorrowMod
             {
 			    target.AddBuff(ModContent.BuffType<FungalInfection>(), 500);
             }
+            if(projectile.type == 30)
+            {
+			    target.immune[projectile.owner] = 0;
+            }
         }
 
 

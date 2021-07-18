@@ -26,6 +26,9 @@ namespace OvermorrowMod.Projectiles.Ranged
          int frame = 1;
 		public bool HasHitGround = false;
 
+		bool DMGsave = false;
+		int savedDMG = 0;
+
         public override void SetDefaults()
         {
             projectile.width = 38;
@@ -70,6 +73,13 @@ namespace OvermorrowMod.Projectiles.Ranged
 		}
 		public override void AI() 
 		{
+
+			if(!DMGsave)
+			{
+				savedDMG = projectile.damage;
+				DMGsave = true;
+			}
+
             {
                 Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 262, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 0.8f);
             }
@@ -120,6 +130,7 @@ namespace OvermorrowMod.Projectiles.Ranged
         	tf2 = target.defense;
 			HasHit++;
             projectile.timeLeft = 150;
+			target.immune[projectile.owner] = 0;
 		}
 		private void UpdateStickyJavelins(NPC target)
 		{
@@ -226,7 +237,8 @@ namespace OvermorrowMod.Projectiles.Ranged
             Vector2 eee = projectile.Center;
             Vector2 value1 = new Vector2(0f, 0f);
             Main.PlaySound(SoundID.Item64, (int)eee.X, (int)eee.Y);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y, ModContent.ProjectileType<SpearBomb>(), projectile.damage + 30, 3f, projectile.owner, 0f);
+            int explode = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y, 30, savedDMG * 3, 3f, projectile.owner, 0f);
+            Main.projectile[explode].timeLeft = 0;
             {
                 Dust.NewDust(eee, 5, 5, 6, 0.0f, 0.0f, 120, new Color(), 0.8f);  //this is the dust that will spawn after the explosion
             }
