@@ -17,7 +17,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 
         public override void SetDefaults()
         {
-            item.damage = 11;
+            item.damage = 14;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.useTime = 31;
             item.useAnimation = 31;
@@ -27,21 +27,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.ranged = true;
             item.UseSound = SoundID.Item61;
             item.shoot = ModContent.ProjectileType<AmoungUsExplosive>();
-            item.crit = 5;
+            item.scale = 0.86f;
             item.value = Item.sellPrice(0, 1, 0, 0);
             item.rare = ItemRarityID.Green;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(57, 12);
-            recipe1.AddTile(TileID.Anvils);
-            recipe1.SetResult(this);
-            recipe1.AddRecipe();
-
-
             ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddIngredient(1257, 12);
+            recipe2.AddIngredient(154, 30);
             recipe2.AddTile(TileID.Anvils);
             recipe2.SetResult(this);
             recipe2.AddRecipe();
