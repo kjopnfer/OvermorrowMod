@@ -26,19 +26,19 @@ namespace OvermorrowMod
                     // Tundra
                     if (type == TileID.Trees && (Main.tile[i, j + 1].type == TileID.SnowBlock))
                     {
-                        //Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<FrostPlum>(), Main.rand.Next(1, 2));
+                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<SpruceSprayer>());
                     }
 
                     // Corruption
                     if (type == TileID.Trees && (Main.tile[i, j + 1].type == TileID.CorruptGrass))
                     {
-                        //Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<PutridOlives>(), Main.rand.Next(1, 2));
+                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<RotRocket>());
                     }
 
                     // Crimson
                     if (type == TileID.Trees && (Main.tile[i, j + 1].type == TileID.FleshGrass))
                     {
-                        //Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<Greneyede>(), Main.rand.Next(1, 2));
+                        //Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<Greneyede>());
                     }
 
                     // Jungle Trees
