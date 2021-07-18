@@ -1,15 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Materials;
-using OvermorrowMod.NPCs.Bosses.Apollus;
-using OvermorrowMod.NPCs.Bosses.GraniteMini;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.SandstormBoss;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Projectiles.Artifact;
-using Steamworks;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 namespace OvermorrowMod.Items.Consumable.Boss
 {
@@ -37,6 +30,8 @@ namespace OvermorrowMod.Items.Consumable.Boss
             if (projectile.ai[1] == 0)
             {
                 int proj = Projectile.NewProjectile(projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, projectile.damage / 2, 0f, projectile.owner);
+                projectile.position = Main.projectile[proj].Center;
+                projectile.position -= new Vector2(Main.projectile[proj].width, Main.projectile[proj].height);
                 Main.projectile[proj].timeLeft = 160;
                 Main.projectile[proj].damage = 0;
                 Main.projectile[proj].friendly = false;
@@ -49,11 +44,12 @@ namespace OvermorrowMod.Items.Consumable.Boss
                 player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
                 player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
                 int npc = NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y), ModContent.NPCType<SandstormBoss>(), 0, 0f, 0f, 0f, 0f, 255);
-                Projectile.NewProjectile(projectile.Center + new Vector2(Main.rand.NextFloat(-1000, 1000), Main.rand.NextFloat(-200, 200)), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
-                Projectile.NewProjectile(projectile.Center + new Vector2(Main.rand.NextFloat(-1000, 1000), Main.rand.NextFloat(-200, 200)), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
-                Projectile.NewProjectile(projectile.Center + new Vector2(Main.rand.NextFloat(-1000, 1000), Main.rand.NextFloat(-200, 200)), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
-                Projectile.NewProjectile(projectile.Center + new Vector2(Main.rand.NextFloat(-1000, 1000), Main.rand.NextFloat(-200, 200)), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
-                Main.PlaySound(SoundID.Roar, player.position, 0);
+                int proj1 = Projectile.NewProjectile(projectile.Center + new Vector2(550, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
+                int proj2 = Projectile.NewProjectile(projectile.Center + new Vector2(-550, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
+                bool random = Main.rand.NextBool();
+                ((SafetyZone)Main.projectile[proj1].modProjectile).hide = random;
+                ((SafetyZone)Main.projectile[proj2].modProjectile).hide = !random;
+                //Main.PlaySound(SoundID.Roar, player.position, 0);
                 Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
                 float radius = 100;
                 int numLocations = 200;

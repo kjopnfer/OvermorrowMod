@@ -382,7 +382,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     {
                         if (!PlayerAlive(player)) { break; }
 
-                        if (((npc.ai[1] > 0 && npc.ai[1] <= 180) || (npc.ai[1] > 440 && npc.ai[1] <= 580)))
+                        if (((npc.ai[1] > 0 && npc.ai[1] <= 180)))//|| (npc.ai[1] > 440 && npc.ai[1] <= 580)))
                         {
                             Vector2 spawnpos = npc.Center + new Vector2((180 + Main.rand.NextFloat(75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(-60, 60));
                             Vector2 direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnpos;
@@ -393,7 +393,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Main.dust[mydust].velocity = npc.velocity + (direction * Main.rand.NextFloat(12, 14));
                         }
 
-                        if (npc.ai[1]++ == 180 || npc.ai[1] == 580)
+                        if (npc.ai[1]++ == 180)// || npc.ai[1] == 580)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -404,7 +404,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 5, 2);
                         }
-                        if (npc.ai[1] > 940)//900)
+                        if (npc.ai[1] > 540)//940)  //900)
                         {
                             if (!firstrunthru)
                             {
