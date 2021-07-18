@@ -284,7 +284,7 @@ namespace OvermorrowMod
             if (FungiInfection)
             {
                 FungiTime++;
-                if (FungiTime == 25)
+                if (FungiTime > 24)
                 {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = Main.player[npc.target].Center;
@@ -295,10 +295,6 @@ namespace OvermorrowMod
                     Projectile.NewProjectile(npc.Center.X + Main.rand.Next(-75, 76) - npc.width / 2, npc.Center.Y + Main.rand.Next(-75, 76) - npc.height / 2, perturbedSpeed.X * speed, perturbedSpeed.Y * speed, ProjectileID.TruffleSpore, npc.defense + 5, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
                     FungiTime = 0;
                 }
-            }
-            else
-            {
-                FungiTime = 0;
             }
         }
         public override void DrawEffects(NPC npc, ref Color drawColor)
