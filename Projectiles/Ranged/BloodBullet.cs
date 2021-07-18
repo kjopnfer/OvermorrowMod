@@ -16,7 +16,7 @@ namespace OvermorrowMod.Projectiles.Ranged
         {
             projectile.width = 2;
             projectile.height = 20;
-            projectile.penetrate = -1;//2;//1;
+            projectile.penetrate = 3;
             projectile.timeLeft = 240;
             projectile.friendly = true;
             projectile.hostile = false;

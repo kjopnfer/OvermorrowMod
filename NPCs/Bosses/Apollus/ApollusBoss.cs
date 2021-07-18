@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Armor.Marble;
+using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Projectiles.NPCs.Hostile;
@@ -35,7 +36,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Apollo");
+            DisplayName.SetDefault("Lady of Marble");
             Main.npcFrameCount[npc.type] = 10;
         }
         public override void SetDefaults()
@@ -51,6 +52,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             npc.noTileCollide = true;
             npc.HitSound = SoundID.NPCHit4;
             npc.damage = 45;
+            bossBag = ModContent.ItemType<LadyBag>();
         }
 
         public override void AI()

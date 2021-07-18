@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Armor;
+using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff;
@@ -54,6 +55,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.HitSound = SoundID.NPCHit4;
             npc.value = Item.buyPrice(gold: 5);
             npc.boss = true;
+            bossBag = ModContent.ItemType<KnightBag>();
         }
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
