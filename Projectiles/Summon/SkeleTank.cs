@@ -43,19 +43,27 @@ namespace OvermorrowMod.Projectiles.Summon
 		{
 			projectile.width = 22;
 			projectile.height = 40;
-            projectile.timeLeft = 200000;
+            projectile.minion = true;
+            projectile.minionSlots = 1f;
 		}
 
 
 		public override void AI()
 		{
 
+
             Player player = Main.player[projectile.owner];
-			Vector2 idlePosition = player.Center;
-			float speed = 15f;
-			float inertia = 20f;
-			Vector2 vectorToIdlePosition = player.Center - projectile.Center;
-			float distanceToIdlePosition = vectorToIdlePosition.Length();
+            #region Active check
+            if (player.dead || !player.active)
+            {
+                player.ClearBuff(ModContent.BuffType<TankBuff>());
+            }
+            if (player.HasBuff(ModContent.BuffType<TankBuff>()))
+            {
+                projectile.timeLeft = 2;
+            }
+            #endregion
+
 
 
 
