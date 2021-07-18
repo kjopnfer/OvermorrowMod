@@ -10,11 +10,12 @@ namespace OvermorrowMod.Projectiles.Summon
 {
 	public class SkeleTank : ModProjectile
 	{
+        public override bool CanDamage() => false;
 
         Vector2 NPCtarget;
 		bool targetjump;
 
-		bool flying = false;
+		private bool flying = false;
 
 		bool PosCheck = false;
 		int PosPlay = 0;
@@ -35,7 +36,7 @@ namespace OvermorrowMod.Projectiles.Summon
 		public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Skeletank"); 
-			Main.projFrames[projectile.type] = 6;
+			Main.projFrames[projectile.type] = 10;
 		}
 
 		public override void SetDefaults()
@@ -117,7 +118,7 @@ namespace OvermorrowMod.Projectiles.Summon
 			{
 			if(!flying)
 			{
-
+            	projectile.rotation = 0f;
 				if(NPCtarget.Y < projectile.Center.Y - 60)
 				{
 		 			angle = true;
@@ -202,8 +203,8 @@ namespace OvermorrowMod.Projectiles.Summon
 						Vector2 targetPosition = NPCtarget;
 						Vector2 direction = targetPosition - position;
 						direction.Normalize();
-						float speed2 = 10f;
-						Projectile.NewProjectile(projectile.Center, direction * speed2, ModContent.ProjectileType<GraniteLaser>(), projectile.damage, 1f, projectile.owner, 0f);
+						float speed2 = 14f;
+						Projectile.NewProjectile(projectile.Center, direction * speed2, ModContent.ProjectileType<Tankrocket>(), projectile.damage, 1f, projectile.owner, 0f);
 						rockettimer = 0;
 					}
 
@@ -219,19 +220,21 @@ namespace OvermorrowMod.Projectiles.Summon
 			}
             else
             {
-				straight = true;
-				angle = false;
-		 		up = false;
+				targetjump = true;
+
 				projectile.spriteDirection = -Main.player[projectile.owner].direction;
 				if(!flying)
 				{
-					targetjump = true;
+            		projectile.rotation = 0f;
+					straight = true;
+					angle = false;
+		 			up = false;
 					Vector2 position = projectile.Center;
 					Vector2 targetPosition = Main.player[projectile.owner].Center + new Vector2((PosPlay * 50 + 50) * -Main.player[projectile.owner].direction, 0);
 					Vector2 direction = targetPosition - position;
 					projectile.velocity.X = direction.X / 10;
 				}
-				if(Main.player[projectile.owner].Center.Y < projectile.Center.Y - 100f && !foundTarget)
+				if(Main.player[projectile.owner].Center.Y < projectile.Center.Y - 150f && !foundTarget)
 				{
 					flying = true;
 				}
@@ -244,63 +247,38 @@ namespace OvermorrowMod.Projectiles.Summon
 				}
 
 
-				if(flying)
-				{
-					// Minion doesn't have a target: return to player and idle
-					if (distanceToIdlePosition > 100f)
-					{
-						// Speed up the minion if it's away from the player
-                    	speed = 20f;
-                    	inertia = 60f;
-					}
-					else
-					{
-						// Slow down the minion if closer to the player
-                    	speed = 10f;
-                    	inertia = 80f;
-					}
-					if (distanceToIdlePosition > 20f)
-					{
-						// The immediate range around the player (when it passively floats about)
-
-						// This is a simple movement formula using the two parameters and its desired direction to create a "homing" movement
-						vectorToIdlePosition.Normalize();
-						vectorToIdlePosition *= speed;
-						projectile.velocity = (projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
-					}
-					else if (projectile.velocity == Vector2.Zero)
-					{
-						// If there is a case where it's not moving at all, give it a little "poke"
-						projectile.velocity.X = -0.15f;
-						projectile.velocity.Y = -0.15f;
-					}
-
-
-					if (projectile.velocity.Y > 20f)
-					{
-						projectile.velocity.Y = 20f;
-					}
-
-					if (projectile.velocity.Y < -20f)
-					{
-						projectile.velocity.Y = -20f;
-					}
-
-					if (projectile.velocity.X > 20f)
-					{
-						projectile.velocity.X = 20f;
-					}
-
-					if (projectile.velocity.X < -20f)
-					{
-						projectile.velocity.X = -20f;
-					}
-
-
-				}
             }
 
+				if(flying)
+				{
+					straight = false;
+					angle = false;
+		 			up = false;
+					Vector2 position = projectile.Center;
+					Vector2 targetPosition = Main.player[projectile.owner].Center + new Vector2((PosPlay * 50 + 50) * -Main.player[projectile.owner].direction, 10);
+					Vector2 direction = targetPosition - position;
+					projectile.velocity.X = direction.X / 10;
 
+					projectile.velocity.Y = direction.Y / 10;
+            		projectile.rotation = projectile.velocity.X * 0.02f;
+
+
+
+					projectile.frameCounter++;
+					if (projectile.frameCounter > 4) // Ticks per frame
+					{
+						projectile.frameCounter = 0;
+						projectile.frame += 1;
+					}
+					if (projectile.frame > 9) // 6 is max # of frames
+					{
+						projectile.frame = 7; // Reset back to default
+					}
+					if (projectile.frame < 7) // 6 is max # of frames
+					{
+						projectile.frame = 7; // Reset back to default
+					}
+				}
 
 
 
