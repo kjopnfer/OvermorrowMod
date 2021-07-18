@@ -233,7 +233,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public float maxTime = 360;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Electric breath");
+            DisplayName.SetDefault("Lightning Breath");
         }
         public override void SafeSetDefaults()
         {
@@ -291,7 +291,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public float maxTime = 600;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Bolt");
+            DisplayName.SetDefault("Lightning Beam");
         }
         public override void SafeSetDefaults()
         {

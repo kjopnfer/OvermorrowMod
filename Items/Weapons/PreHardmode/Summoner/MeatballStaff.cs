@@ -30,7 +30,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.buffType = ModContent.BuffType<MeatBallBuff>();
             item.shoot = ModContent.ProjectileType<FriendlyMeatball>();
             item.UseSound = SoundID.Item82;
-            item.channel = true;
         }
 
         public override void UseStyle(Player player)

@@ -86,7 +86,7 @@ namespace OvermorrowMod.Projectiles.Accessory
             double rad = (Main.player[projectile.owner].Center - Main.MouseWorld).ToRotation(); // rotation
             double dist = 65; // distance from the owner
 
-            projectile.position.X = Main.player[projectile.owner].Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
+            projectile.position.X = (Main.player[projectile.owner].Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2) + 7;
             projectile.position.Y = Main.player[projectile.owner].Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
 
             projectile.rotation = (float)rad;

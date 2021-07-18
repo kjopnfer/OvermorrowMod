@@ -15,6 +15,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             Tooltip.SetDefault("Summons a Storm Whelp to fight for you\nRequires at least 2 minion slots");
             ItemID.Sets.GamepadWholeScreenUseRange[item.type] = true; // This lets the player target anywhere on the whole screen while using a controller.
             ItemID.Sets.LockOnIgnoresCollision[item.type] = true;
+            ItemID.Sets.StaffMinionSlotsRequired[item.type] = 2;
         }
 
         public override void SetDefaults()

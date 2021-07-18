@@ -10,36 +10,20 @@ namespace OvermorrowMod.Projectiles.Summon
 {
     public class FriendlyMeatball : ModProjectile
     {
-
-        int colorcooldown = 0;
-        readonly int frame = 1;
         Vector2 Rot;
-        int Random2 = Main.rand.Next(-15, 12);
-        int Random = Main.rand.Next(1, 3);
-        public override bool CanDamage() => false;
-        private readonly int timer2 = 0;
-        private int timer = 0;
         private int PosCheck = 0;
         private int PosPlay = 0;
-        private int PosTimer = 0;
-        private int Pos = 0;
-        private int movement = 0;
-        
         private int HasChecked = 0;
-
         private int NumProj = 0;
-        private int movement2 = 0;
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
-        int mrand = Main.rand.Next(-100, 101);
-        int mrand2 = Main.rand.Next(-100, 101);
-
         private int CenterXPly = 5;
+
+        public override bool CanDamage() => false;
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Friendly Meatball");
-            Main.projFrames[base.projectile.type] = 13;
+            Main.projFrames[projectile.type] = 13;
+            ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
         }
         public override void SetDefaults()
         {
@@ -91,10 +75,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
                         if (((closest && inRange) || !foundTarget))
                         {
-                            NPCtargetX = npc.Center.X;
-                            NPCtargetY = npc.Center.Y;
                             Vector2 Rot = npc.Center;
-                            //projectile.rotation = (Rot - projectile.Center).ToRotation();
                             distanceFromTarget = between;
                             targetCenter = npc.Center;
                             foundTarget = true;
@@ -116,7 +97,6 @@ namespace OvermorrowMod.Projectiles.Summon
 
             if(PosPlay == 0 && PosCheck > 2)
             {
-                projectile.minionSlots = 0f;
                 double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / 180); //Convert degrees to radians
                 if(NumProj > HasChecked + 1)
@@ -174,7 +154,6 @@ namespace OvermorrowMod.Projectiles.Summon
                 {
                     HasChecked += 1;
                     projectile.ai[1] = 90;
-                    deg = 0;
                     rad = 0;
                 }
                 else
@@ -385,8 +364,8 @@ namespace OvermorrowMod.Projectiles.Summon
             }
             if (foundTarget)
             {
-                timer++;
-                if (timer == 50)
+                projectile.ai[0]++;
+                if (projectile.ai[0] == 110)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Rot;
@@ -394,11 +373,9 @@ namespace OvermorrowMod.Projectiles.Summon
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
                     float speed = 7f;
-                    Projectile.NewProjectile(projectile.Center, newpoint2 * speed, 307, projectile.damage, 1f, projectile.owner, 0f);
-                    timer = 0;
+                    Projectile.NewProjectile(projectile.Center, newpoint2 * speed, ModContent.ProjectileType<BloodSeeker>(), projectile.damage, 1f, projectile.owner, 0f);
+                    projectile.ai[0] = 0;
                 }
-
-
             }
 
             // Loop through the 13 animation frames, spending 5 ticks on each.
