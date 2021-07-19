@@ -15,13 +15,12 @@ namespace OvermorrowMod.NPCs.Biome
         private bool ComingBack = false;
         private int flametimer = 0;
         Vector2 DrawToPos;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LightDisc;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Biome/GranNPCChain";
 
         public override void SetDefaults()
         {
-            projectile.width = 32;
-            projectile.height = 32;
+            projectile.width = 44;
+            projectile.height = 44;
             projectile.timeLeft = 10000;
             projectile.penetrate = -1;
             projectile.hostile = true;
@@ -31,6 +30,10 @@ namespace OvermorrowMod.NPCs.Biome
             projectile.ignoreWater = true;
         }
 
+        public override void SetStaticDefaults()
+        {
+            Main.projFrames[base.projectile.type] = 2;
+        }
 
         public override void AI()
         {
@@ -40,8 +43,8 @@ namespace OvermorrowMod.NPCs.Biome
 
             NPC npc = Main.npc[(int)projectile.ai[1]];
             DrawToPos = npc.Center;
-            npc.rotation = (npc.Center - projectile.Center).ToRotation();
-            projectile.rotation = (npc.Center - projectile.Center).ToRotation();
+            npc.rotation = (npc.Center - Main.player[projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
+
             timer++;
             if(timer == 100)
             {
@@ -53,10 +56,22 @@ namespace OvermorrowMod.NPCs.Biome
                 projectile.velocity = Rot * 5f;
                 timer = 0;
             }
-
-            if(timer > 44)
+            
+            if(npc.velocity.X < 1 && npc.velocity.X > -1)
             {
-                npc.velocity *= 0.7f;
+                projectile.rotation = (projectile.Center - Main.player[projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
+                projectile.frame = 0;
+            }
+            else
+            {
+                npc.rotation = (npc.Center - projectile.Center).ToRotation() + MathHelper.ToRadians(-90f);
+                projectile.frame = 1;
+            }
+
+
+            if(Vector2.Distance(npc.Center, projectile.Center) < 77)
+            {
+                npc.velocity *= 0f;
             }
 
             if(timer > 25 && timer < 46)

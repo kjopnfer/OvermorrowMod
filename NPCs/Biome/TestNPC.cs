@@ -9,7 +9,6 @@ namespace OvermorrowMod.NPCs.Biome
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Clamper");
-            Main.npcFrameCount[npc.type] = 4;
         }
 
         int Random = Main.rand.Next(1, 1000);
@@ -18,8 +17,8 @@ namespace OvermorrowMod.NPCs.Biome
 
         public override void SetDefaults()
         {
-            npc.width = 34;
-            npc.height = 53;
+            npc.width = 46;
+            npc.height = 76;
             npc.damage = 14;
             npc.defense = 6;
             npc.lifeMax = 120;
@@ -46,21 +45,6 @@ namespace OvermorrowMod.NPCs.Biome
             }*/
 
 
-        }
-
-        public override void FindFrame(int frameHeight)
-        {
-            npc.spriteDirection = -npc.direction;
-            npc.frameCounter++;
-
-            if (npc.frameCounter % 6 == 5f) // Ticks per frame
-            {
-                npc.frame.Y += frameHeight;
-            }
-            if (npc.frame.Y >= frameHeight * 4) // 4 is max # of frames
-            {
-                npc.frame.Y = 0; // Reset back to default
-            }
         }
     }
 }
