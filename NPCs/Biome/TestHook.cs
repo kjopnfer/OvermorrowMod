@@ -64,7 +64,7 @@ namespace OvermorrowMod.NPCs.Biome
             }
             else
             {
-                npc.rotation = (npc.Center - projectile.Center).ToRotation() + MathHelper.ToRadians(-90f);
+                projectile.rotation = (npc.Center - projectile.Center).ToRotation() + MathHelper.ToRadians(-90f);
                 projectile.frame = 1;
             }
 
