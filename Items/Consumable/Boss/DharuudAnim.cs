@@ -46,9 +46,9 @@ namespace OvermorrowMod.Items.Consumable.Boss
                 int npc = NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y), ModContent.NPCType<SandstormBoss>(), 0, 0f, 0f, 0f, 0f, 255);
                 int proj1 = Projectile.NewProjectile(projectile.Center + new Vector2(550, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
                 int proj2 = Projectile.NewProjectile(projectile.Center + new Vector2(-550, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
-                bool random = Main.rand.NextBool();
-                ((SafetyZone)Main.projectile[proj1].modProjectile).hide = random;
-                ((SafetyZone)Main.projectile[proj2].modProjectile).hide = !random;
+                //bool random = Main.rand.NextBool();
+                //((SafetyZone)Main.projectile[proj1].modProjectile).hide = random;
+                //((SafetyZone)Main.projectile[proj2].modProjectile).hide = !random;
                 //Main.PlaySound(SoundID.Roar, player.position, 0);
                 Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
                 float radius = 100;

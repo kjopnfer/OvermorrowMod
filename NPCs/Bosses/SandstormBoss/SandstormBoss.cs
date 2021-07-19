@@ -1,3 +1,57 @@
+//TODO
+//safe zones workin pretty well
+//alright so next step
+//is to work with these even further
+//id reduce the radius by maybe half
+//we should also do an attack where if ur not in a safe zone u get damaged
+//but thered be a delay
+//and like a telegraph
+//ie darude glows red
+//id also decrease the delay for his charges
+//acutally no
+//dont reduce the radius
+//i have an idea
+//the safe zones have a value that stores the radius
+//the longer the player is in there
+//the more the circle shrinks
+//that way its an expendable resource
+//dharuud will reset the circles occasionally
+//basically the boss changes will be
+//- shrinking safe zones while inside them
+//- telegraphing and then making safe zones hostile (being inside damages you and the dust turns red)
+//-telegraphing and then making the sandstorm damage the player (darude has a red aura and not being in a safe zone hits you every few seconds)
+//-increase safe zone dust scale to be more obvious
+//- reduce the delay for his charges as his health goes down
+//and i think after like 2 runs through his moveset
+//he'll reset the safe zones
+//we might also keep two active at the same time idk
+//also the center of the safe zone glows red which i guess is code from the blood moon artifact
+//also not testing chat sadge
+//overall this means u have to manage your safe zones
+//using it too much or using it all up means when he does the sandstorm attack you wont have a safe zone to hide in
+//so youll have to occasionally choose to go outside and contend with dodging while inside the sandstorm
+//any feedback?
+
+
+//shrinking safe zones while inside them
+//-telegraphing and then making safe zones hostile (being inside damages you and the dust turns red)
+//-telegraphing and then making the sandstorm damage the player (darude has a red aura and not being in a safe zone hits you every few seconds)
+//-increase safe zone dust scale to be more obvious
+//- reduce the delay for his charges as his health goes down
+//after two run thrus he'll reset
+//in non expert the safezones will regen when you aren't in them
+//make glow sandy
+
+
+//hmm
+//id say after 2 run throughs
+//actually
+//the hostile safe zones should happen once during the 2 run throughs
+//and the sandstorm damaging will be at the end of the 2 run throughs
+//his telegraph will also be a thing in chat
+//ie. "The desert winds become more violent" or something prior to making the sandstorm damage u outside of safe zones
+
+
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,6 +62,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,13 +79,14 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         private bool enraged;
         bool movingUp = true;
         bool leftOfPlayer = true;
-        bool halflife = false;
-        bool fourthlife = false;
-        bool circleactive = false;
-        Vector2 playercentersnapshot;
+        bool halfLife = false;
+        bool fourthLife = false;
+        bool circleActive = false;
+        Vector2 playerCenterSnapShot;
         private int storedDamage;
-        private bool clockwise;
+        private bool clockWise;
         private bool moved = false;
+        public bool secondRunThru;// = false;
 
         public override void SetStaticDefaults()
         {
@@ -59,7 +115,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public static void SandstormStuff()
         {
-            Sandstorm.IntendedSeverity = 0.4f;
+            Sandstorm.IntendedSeverity = 10; //0.4f;
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
             NetMessage.SendData(MessageID.WorldData, -1, -1, null, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
@@ -72,10 +128,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             npc.spriteDirection = npc.direction;
 
-            if(npc.life <= npc.lifeMax * 0.5f) { halflife = true; }
-            if (npc.life <= npc.lifeMax * 0.25f) { fourthlife = true; }
-            if (npc.ai[0] == 1 && fourthlife) { circleactive = true; }
-            else { circleactive = false; }
+            if(npc.life <= npc.lifeMax * 0.5f) { halfLife = true; }
+            if (npc.life <= npc.lifeMax * 0.25f) { fourthLife = true; }
+            if (npc.ai[0] == 1 && fourthLife) { circleActive = true; }
+            else { circleActive = false; }
 
             // Handles Despawning
             if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
@@ -138,7 +194,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 npc.ai[1]++;
             }
 
-            if (npc.ai[0] == 2 || npc.ai[0] == 3 || circleactive == true)
+            if (npc.ai[0] == 2 || npc.ai[0] == 3 || circleActive == true)
             {
                 npc.dontTakeDamage = true;
             }
@@ -158,12 +214,16 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         break;
                     }
 
-                    if (!doDustAttack && (npc.ai[1] == 90 || npc.ai[1] == 91))
+                    if (!doDustAttack && (npc.ai[1] == 90 /*|| npc.ai[1] == 91*/))
                     {
-                        safetyCircleSwitch = !safetyCircleSwitch;
+                        //if (npc.ai[1] == 90)
+                        //{
+                            secondRunThru = !secondRunThru;
+                        //}
+                        //safetyCircleSwitch = !safetyCircleSwitch;
                     }
 
-                    if (!doDustAttack && npc.ai[1] <= 160)
+                    if (!doDustAttack && npc.ai[1] <= 160 && secondRunThru)
                     {
                         npc.velocity = Vector2.Zero;
                         if (npc.ai[1] == 90)
@@ -205,15 +265,50 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (npc.ai[1] == 360)
                     {
-                        if (doDustAttack)
+                        if (doDustAttack && !secondRunThru)
                         {
                             npc.ai[0] = 1.5f;
                             npc.ai[1] = 0;
                             npc.ai[2] = 900;
                             doDustAttack = false;
                         }
+                        else if (doDustAttack && secondRunThru)
+                        {
+                            npc.ai[0] = 0.5f;
+                            npc.ai[1] = 0;
+                        }
                         else
                         {
+                            storedDamage = npc.damage;
+                            npc.ai[0] = 1f;
+                            npc.ai[1] = 0;
+                        }
+                    }
+                    break;
+                case 0.5f: // attack if not inside 
+                    {
+                        if (npc.ai[1] == 1)
+                        {
+                            Main.NewText("The desert winds become more violent");
+                            npc.velocity = Vector2.Zero;
+                        }
+                        if (npc.ai[1] > 120 && npc.ai[1] % 60 == 0)
+                        {
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                                if (distance <= 2500)
+                                {
+                                    if (Main.player[i].HasBuff(194) == true)
+                                    {
+                                        Main.player[i].Hurt(PlayerDeathReason.ByNPC(npc.whoAmI), 50, 0, false, false, false, 60);
+                                    }
+                                }
+                            }
+                        }
+                        if (npc.ai[1] == 360)
+                        {
+                            Main.NewText("The desert winds calm");
                             storedDamage = npc.damage;
                             npc.ai[0] = 1f;
                             npc.ai[1] = 0;
@@ -231,7 +326,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     npc.damage = 0;
 
-                    if (fourthlife == false)
+                    if (fourthLife == false)
                     {
                         npc.velocity = Vector2.Zero;
 
@@ -239,13 +334,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                for (int i = 0; i < (halflife ? Main.rand.Next(1, 3) : Main.rand.Next(2, 4)); i++)
+                                for (int i = 0; i < (halfLife ? Main.rand.Next(1, 3) : Main.rand.Next(2, 4)); i++)
                                 {
                                     npc.netUpdate = true;
                                     Projectile.NewProjectile(new Vector2(player.Center.X + Main.rand.Next(1200, 1500), npc.Center.Y + Main.rand.Next(-360, 360)), new Vector2(Main.rand.Next(-11, -6), 0), ModContent.ProjectileType<SandBall>(), 21 / (Main.expertMode ? 4 : 2), 0f, Main.myPlayer);
                                 }
 
-                                if (halflife)
+                                if (halfLife)
                                 {
                                     for (int i = 0; i < Main.rand.Next(1, 3); i++)
                                     {
@@ -270,7 +365,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             npc.position = player.Center + new Vector2(-475, 0).RotatedBy(MathHelper.ToRadians(4 * npc.ai[3]));
                             npc.position.X -= npc.width / 2;
                             npc.position.Y -= npc.height / 2;
-                            npc.ai[3] += clockwise ? 1 : -1;
+                            npc.ai[3] += clockWise ? 1 : -1;
                             npc.ai[2] = 0;
                         }
 
@@ -328,8 +423,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     if (npc.ai[2] == (Main.expertMode ? 50 : 66) && npc.ai[1] < 600 || (npc.ai[1] < 80 && npc.ai[2] == 0))
                     {
                         npc.velocity = Vector2.Zero;
-                        playercentersnapshot = player.Center;
-                        int proj = Projectile.NewProjectile(npc.Center, npc.DirectionTo(playercentersnapshot), ModContent.ProjectileType<SandyIndicator>(), 0, 0, Main.myPlayer);
+                        playerCenterSnapShot = player.Center;
+                        int proj = Projectile.NewProjectile(npc.Center, npc.DirectionTo(playerCenterSnapShot), ModContent.ProjectileType<SandyIndicator>(), 0, 0, Main.myPlayer);
                         ((SandyIndicator)Main.projectile[proj].modProjectile).waittime = (Main.expertMode ? 49 : 65);
                         ((SandyIndicator)Main.projectile[proj].modProjectile).length = 850f;
                     }
@@ -345,7 +440,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         if (npc.ai[2] <= 0 && npc.ai[1] > 80)
                         {
                             float chargeSpeed = !player.ZoneDesert ? 25 : 18;
-                            npc.velocity = npc.DirectionTo(playercentersnapshot) * chargeSpeed;
+                            npc.velocity = npc.DirectionTo(playerCenterSnapShot) * chargeSpeed;
                             npc.netUpdate = true;
                             if (!player.ZoneDesert && npc.ai[1] < 598)
                             {
@@ -378,7 +473,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             npc.ai[2] = -100;
                         }
                     }
-                    else if (halflife == true && npc.ai[1] > 600 && npc.ai[1] < 900)
+                    else if (halfLife == true && npc.ai[1] > 600 && npc.ai[1] < 900)
                     {
                         if (npc.ai[2] < 0 && npc.ai[2] > -150)
                         {
@@ -460,7 +555,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         npc.ai[2] += 1f;
                     }
 
-                    if (npc.ai[1] == (halflife ? 900 : 600))
+                    if (npc.ai[1] == (halfLife ? 900 : 600))
                     {
                         moved = false;
                         if (player.ZoneDesert)
@@ -519,13 +614,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     // Move the NPC around the center
                     if (npc.ai[1] == 2400)
                     {
-                        if (clockwise)
+                        if (clockWise)
                         {
-                            clockwise = false;
+                            clockWise = false;
                         }
                         else
                         {
-                            clockwise = true;
+                            clockWise = true;
                         }
 
                         npc.ai[0] = 0;
@@ -534,7 +629,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     break;
             }
 
-            if (npc.ai[0] != 2 && npc.ai[0] != 3 && circleactive != true)
+            if (npc.ai[0] != 2 && npc.ai[0] != 3 && circleActive != true)
             {
                 if (Main.rand.NextFloat() < 0.5526316f)
                 {
@@ -574,7 +669,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            if (npc.ai[0] != 2 && npc.ai[0] != 3 && circleactive != true) //|| (!doDustAttack && npc.ai[0] == 0 && npc.ai[1] <= 120))
+            if (npc.ai[0] != 2 && npc.ai[0] != 3 && circleActive != true) //|| (!doDustAttack && npc.ai[0] == 0 && npc.ai[1] <= 120))
             {
                 Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
                 Texture2D texture2D16 = mod.GetTexture("NPCs/Bosses/SandstormBoss/SandstormBoss");
@@ -593,16 +688,16 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 float num176 = 1f - (float)Math.Cos((npc.ai[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
                 num176 /= 3f;
                 float scaleFactor10 = 7f; // Change scale factor of the pulsing effect and how far it draws outwards
-
+                
                 Color color47 = Color.Lerp(Color.White, Color.Yellow, 0.5f);
-                color55 = Color.LightGoldenrodYellow;
+                color55 = (npc.ai[0] == 0.5) ? Color.OrangeRed : Color.LightGoldenrodYellow;
                 amount10 = 1f;
 
                 // ok this is the pulsing effect drawing
                 for (int num164 = 1; num164 < num177; num164++)
                 {
                     // these assign the color of the pulsing
-                    Color color45 = color47;
+                    Color color45 = (npc.ai[0] == 0.5) ? Color.Red : color47;
                     color45 = Color.Lerp(color45, color55, amount10);
                     color45 = ((ModNPC)this).npc.GetAlpha(color45);
                     color45 *= 1f - num176; // num176 is put in here to effect the pulsing
@@ -617,7 +712,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 }
             }
 
-            if (npc.ai[0] == 2 || npc.ai[0] == 3 || circleactive == true)
+            if (npc.ai[0] == 2 || npc.ai[0] == 3 || circleActive == true)
             {
                 return false;
             }

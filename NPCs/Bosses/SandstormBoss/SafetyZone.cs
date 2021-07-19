@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.NPCs.Bosses.SandstormBoss;
 using Terraria;
@@ -35,7 +36,7 @@ namespace OvermorrowMod.Projectiles.Artifact
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 1.2f, 0f, 0f);
+            //Lighting.AddLight(projectile.Center, 1.2f, 1.2f, 1.2f);
 
             Player player = Main.player[projectile.owner];
             if (player.dead || !player.active)
@@ -43,24 +44,43 @@ namespace OvermorrowMod.Projectiles.Artifact
                 return;
             }
 
+            if (projectile.ai[0] == 0)
+            {
+                projectile.ai[1] = 450;
+            }
+
             projectile.ai[0] += 1;
+
+
             if (projectile.ai[1] < radius)
             {
-                projectile.ai[1] += 15;
+                projectile.ai[1] += 0.33f;//0.25f;//1;//10;//5;//1;
             }
-            else
+            else if (projectile.ai[1] > radius)
             {
-                isActive = true;
+                projectile.ai[1] -= 0.33f;//0.25f;//1;
             }
-            if (projectile.ai[1] > radius && hide)
-            {
-                projectile.ai[1] += -15;
-            }
-            else if (hide)
-            {
-                isActive = false;
-            }
-           
+            //MathHelper.Lerp(projectile.ai[1], radius, 1);//0.5f);
+            //if (Math.Abs(radius - projectile.ai[1]) > 1)
+            //{
+            //    MathHelper.Lerp();
+            //}
+            //if (projectile.ai[1] < radius)
+            //{
+            //    projectile.ai[1] += 15;
+            //}
+            //else
+            //{
+            //    isActive = true;
+            //}
+            //if (projectile.ai[1] > radius && hide)
+            //{
+            //    projectile.ai[1] += -15;
+            //}
+            //else if (hide)
+            //{
+            //    isActive = false;
+            //}
 
             Vector2 dustVelocity = Vector2.UnitX * 18f;
             dustVelocity = dustVelocity.RotatedBy(projectile.rotation - 1.57f);
@@ -69,35 +89,60 @@ namespace OvermorrowMod.Projectiles.Artifact
             Vector2 velocity = Vector2.Normalize(spawnPos - spawn) * 1.5f * 6 / 10f;
 
             Vector2 origin = projectile.Center;
-            if (isActive)
+            //if (isActive)
+            //{
+            for (int i = 0; i < 36; i++)
             {
-                for (int i = 0; i < 36; i++)
-                {
-                    Vector2 dustPos = projectile.Center + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[0]));
-                    Dust dust = Dust.NewDustPerfect(dustPos, 57 /* 32 */, Vector2.Zero, 0, new Color(255, 255, 255), 2.04f / 2);
-                    dust.noGravity = true;
-                }
+                Vector2 dustPos = projectile.Center + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[0]));
+                Dust dust = Dust.NewDustPerfect(dustPos, 57 /* 32 */, Vector2.Zero, 0, new Color(255, 255, 255), 2.04f);
+                dust.noGravity = true;
             }
+            //}
 
-            if (isActive)
+            //if (isActive)
+            //{
+            for (int i = 0; i < Main.maxPlayers; i++)
             {
-                for (int i = 0; i < Main.maxPlayers; i++)
+                float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
+                if (distance < projectile.ai[1])
                 {
-                    float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
-                    if (distance <= radius)
+                    //if (radius >= 0)
+                    //{
+                    //    radius -= 1;
+                    //}
+                    radius = -254;
+                    Main.player[i].buffImmune[194] = true;
+                }
+                else if (!(distance < projectile.ai[1]))
+                {
+                    //Main.NewText("a");
+                    if (radius <= 450)
                     {
-                        Main.player[i].buffImmune[194] = true;
+                        radius += 1;
                     }
                 }
+                //else //if (/*distance >= projectile.ai[1] && !(distance <= projectile.ai[1]) &&*/ radius <= 450)
+                //{
+                //    if (radius <= 450)
+                //    {
+                //        radius += 1;
+                //    }
+                //}
             }
+            //}
 
             owneralive = Main.npc[(int)projectile.knockBack].active;
 
-            if (((SandstormBoss)Main.npc[(int)projectile.knockBack].modNPC).safetyCircleSwitch)
-            {
-                hide = !hide;
-                radius = hide ? 0 : 433;
-            }
+            //if (((SandstormBoss)Main.npc[(int)projectile.knockBack].modNPC).safetyCircleSwitch)
+            //{
+            //    hide = !hide;
+            //    radius = hide ? 0 : 450;
+            //}
+
+            //if (((SandstormBoss)Main.npc[(int)projectile.knockBack].modNPC).secondRunThru)
+            //{
+            //    radius = 450;
+            //}
 
             if (projectile.timeLeft < 5 && !(player.dead || !player.active) && owneralive)
             {
