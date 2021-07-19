@@ -36,8 +36,7 @@ namespace OvermorrowMod.NPCs.Biome
             timer++;
             if(timer == 1)
             {
-				int p = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("TestHook"), npc.damage, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
-				Main.projectile[p].hostile = true;
+				int proj = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("TestHook"), npc.damage, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
 				npc.netUpdate = true;
             }
 
