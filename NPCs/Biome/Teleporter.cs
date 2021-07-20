@@ -24,14 +24,14 @@ namespace OvermorrowMod.NPCs.Biome
         {
             npc.width = 34;
             npc.height = 46;
-            npc.damage = 14;
-            npc.defense = 6;
-            npc.lifeMax = 45;
+            npc.damage = 40;
+            npc.defense = 8;
+            npc.lifeMax = 120;
             animationType = NPCID.ChaosElemental;
-            npc.HitSound = SoundID.Item64;
-            npc.DeathSound = SoundID.Item27;
+            npc.HitSound = SoundID.Item2;
+            npc.DeathSound = SoundID.Item2;
             npc.value = 5f;
-            npc.knockBackResist = 0.5f;
+            npc.knockBackResist = 0.4f;
             npc.aiStyle = 3;
             aiType = NPCID.GoblinScout;
         }
@@ -49,7 +49,7 @@ namespace OvermorrowMod.NPCs.Biome
             {
                 AttTimer++;
             }
-            if(AttTimer > 250 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 600 && npc.velocity.Y == 0)
+            if(AttTimer > 175 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 80 && npc.velocity.Y == 0)
             {
                 frameTimer++;
 
@@ -73,14 +73,14 @@ namespace OvermorrowMod.NPCs.Biome
 
 
                 ProjTimer++;
-                if(ProjTimer == 40)
+                if(ProjTimer == 20)
                 {
                     Vector2 position = npc.Center;
-                    Vector2 targetPosition = Main.player[npc.target].Center + new Vector2(0, -100);
+                    Vector2 targetPosition = Main.player[npc.target].Center + new Vector2(0, -120);
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
-                    Projectile.NewProjectile(npc.Center, direction * 13, ModContent.ProjectileType<Teleproj>(), 17, 3f, Main.player[npc.target].whoAmI, 0f);
-                    Main.PlaySound(2, npc.position, 61);
+				    int proj = Projectile.NewProjectile(npc.Center, direction * 12f, mod.ProjectileType("Teleproj"), 0, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
+                    Main.PlaySound(2, npc.position, 19);
                     frame = 4;
                 }
             }
@@ -109,7 +109,7 @@ namespace OvermorrowMod.NPCs.Biome
                 }
             }
 
-            if(AttTimer >= 300)
+            if(AttTimer >= 200)
             {
                 ProjTimer = 0;
                 AttTimer = 0;

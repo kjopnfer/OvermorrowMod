@@ -19,13 +19,13 @@ namespace OvermorrowMod.NPCs.Biome
         {
             npc.width = 46;
             npc.height = 76;
-            npc.damage = 14;
-            npc.defense = 6;
-            npc.lifeMax = 120;
-            npc.HitSound = SoundID.NPCHit50;
+            npc.damage = 40;
+            npc.defense = 9;
+            npc.lifeMax = 90;
+            npc.HitSound = SoundID.NPCHit4;
             npc.DeathSound = SoundID.NPCDeath53;
             npc.value = 60f;
-            npc.knockBackResist = 0.5f;
+            npc.knockBackResist = 0f;
             npc.noGravity = true;
         }
 
@@ -35,16 +35,9 @@ namespace OvermorrowMod.NPCs.Biome
             timer++;
             if(timer == 1)
             {
-				int proj = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("TestHook"), npc.damage, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
+				int proj = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("TestHook"), 13, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
 				npc.netUpdate = true;
             }
-
-            /*if(timer > 15)
-            {
-                timer = 0;
-            }*/
-
-
         }
     }
 }
