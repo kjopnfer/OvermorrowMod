@@ -53,7 +53,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.width = 296;
             npc.height = 232;
             npc.aiStyle = -1;
-            npc.damage = 37;
+            npc.damage = 40;
             npc.defense = 14;
             npc.lifeMax = 7600;
             npc.HitSound = SoundID.NPCHit1;
@@ -85,7 +85,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
             npc.defense = 19;
-            npc.damage = (int)(npc.damage * 0.25f);
+            npc.damage /= 2;
         }
         public override void AI()
         {
@@ -1062,8 +1062,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 return true;
             }
         }
+
         public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit)
         {
+            if (Main.expertMode)
+            {
+                target.AddBuff(BuffID.BrokenArmor, 3600);
+            }
+
             target.Hurt(PlayerDeathReason.ByNPC(npc.whoAmI), damage * 2, 0, false, false, crit);
         }
     }
