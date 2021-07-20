@@ -9,8 +9,8 @@ namespace OvermorrowMod.WardenClass.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Poison Rune");
-            Tooltip.SetDefault("Piercing weapons have a chance to inflict Poisoned");
+            DisplayName.SetDefault("Nature Rune");
+            Tooltip.SetDefault("Increase piercing damage by 2\nPiercing weapons have a chance to inflict Poisoned");
         }
 
         public override void SetDefaults()
@@ -25,6 +25,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             modPlayer.PoisonRune = true;
+            modPlayer.piercingDamageAdd += 2;
         }
     }
 }

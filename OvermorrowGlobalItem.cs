@@ -40,7 +40,12 @@ namespace OvermorrowMod
         {
             if (player.GetModPlayer<OvermorrowModPlayer>().EruditeDamage)
             {
-                flat = 2;
+                flat += 2;
+            }
+
+            if (player.GetModPlayer<OvermorrowModPlayer>().moonBuff)
+            {
+                flat += 4;
             }
         }
 

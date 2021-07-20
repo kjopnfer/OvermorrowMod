@@ -21,7 +21,7 @@ namespace OvermorrowMod.WardenClass.Armor
             item.height = 24;
             item.value = Item.sellPrice(gold: 1);
             item.rare = ItemRarityID.Orange;
-            item.defense = 5;
+            item.defense = 7;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

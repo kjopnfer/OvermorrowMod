@@ -51,8 +51,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         // As a modder, you could also opt to make these overrides also sealed. Up to the modder
         public override void ModifyWeaponDamage(Player player, ref float add, ref float mult, ref float flat)
         {
-            add += WardenDamagePlayer.ModPlayer(player).piercingDamageAdd;
+            //Main.NewText(WardenDamagePlayer.ModPlayer(player).piercingDamageAdd);
             mult *= WardenDamagePlayer.ModPlayer(player).piercingDamageMult;
+            flat += WardenDamagePlayer.ModPlayer(player).piercingDamageAdd;
         }
 
         // Because we want the damage tooltip to show our custom damage, we need to modify it

@@ -21,7 +21,7 @@ namespace OvermorrowMod.WardenClass.Armor
             item.height = 24;
             item.value = Item.sellPrice(gold: 1);
             item.rare = ItemRarityID.Green;
-            item.defense = 3;
+            item.defense = 5;
         }
 
         public override void UpdateEquip(Player player)

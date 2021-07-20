@@ -13,7 +13,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloody Antikythera");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 3 Soul Essences to summon a miniature Blood Moon\n" +
+            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to summon a miniature Blood Moon\n" +
                 "All players within range have their attack increased\n" +
                 "'Blood spilled onto the Earth shall rain from the sky'");
         }
@@ -36,7 +36,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             // Not sure why this isn't running in UseItem
-            ConsumeSouls(3, player);
+            ConsumeSouls(2, player);
 
             // Allow only one instance of the projectile
             if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<WorldTree>()] > 0) 
@@ -62,7 +62,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override bool CanUseItem(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            if (modPlayer.soulResourceCurrent >= 3)
+            if (modPlayer.soulResourceCurrent >= 2)
             {
                 return true;
             }
@@ -74,7 +74,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 
         public override bool UseItem(Player player)
         {
-            ConsumeSouls(3, player);
+            ConsumeSouls(2, player);
 
             return true;
         }

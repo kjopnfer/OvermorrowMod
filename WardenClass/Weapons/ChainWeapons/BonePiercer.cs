@@ -15,7 +15,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Grave Hook");
             Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause all attacks to explode into homing souls on hit\nConsumes 1 Soul Essence" +
+                            "[c/800080:Right Click] to cause attacks to launch cursed skulls\nConsumes 1 Soul Essence" +
                             "\n'Just gotta put all the femurs together...'");
         }
 

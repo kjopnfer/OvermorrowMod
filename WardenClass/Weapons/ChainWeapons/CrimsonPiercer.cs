@@ -14,7 +14,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Tendon Guillotine");
             Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                "[c/800080:Right Click] to cause all attacks to launch 3 chains that deal increased damage\nConsumes 1 Soul Essence");
+                "[c/800080:Right Click] to cause attacks to summon Crimson thorns\nConsumes 2 Soul Essences");
         }
 
         public override void SafeSetDefaults()
@@ -72,7 +72,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 {
                     item.UseSound = SoundID.Item71;
                     item.shootSpeed = 14f + modPlayer.modifyShootSpeed();                
-                    item.damage = 3;
+                    item.damage = 4;
                 }
                 item.shoot = mod.ProjectileType("CrimsonPiercerProjectile");
             }

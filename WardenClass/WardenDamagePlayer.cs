@@ -37,13 +37,9 @@ namespace WardenClass
         // List to keep track of the resource visuals for Soul Essences
         public List<int> soulList = new List<int> ();
 
-        // Vanilla only really has damage multipliers in code
-        // And crit and knockback is usually just added to
-        // As a modder, you could make separate variables for multipliers and simple addition bonuses
-        public float piercingDamageAdd;
+        // Additive bonuses for chain weapons
+        public int piercingDamageAdd;
         public float piercingDamageMult = 1f;
-        public float piercingKnockback;
-        public int piercingCrit;
 
         public int soulGainBonus = 0;
 
@@ -136,10 +132,8 @@ namespace WardenClass
         // Reset variables to prevent infinite scaling
         private void ResetVariables()
         {
-            piercingDamageAdd = 0f;
+            piercingDamageAdd = 0;
             piercingDamageMult = 1f;
-            piercingKnockback = 0f;
-            piercingCrit = 0;
 
             soulResourceMax2 = soulResourceMax;
             soulGainBonus = 0;

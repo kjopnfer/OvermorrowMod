@@ -12,7 +12,7 @@ namespace OvermorrowMod.WardenClass.Armor
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloodrazor Mask");
-            Tooltip.SetDefault("8% increased Piercing damage");
+            Tooltip.SetDefault("Increases Piercing damage by 3");
         }
 
         public override void SetDefaults()
@@ -21,7 +21,7 @@ namespace OvermorrowMod.WardenClass.Armor
             item.height = 20;
             item.value = Item.sellPrice(gold: 1);
             item.rare = ItemRarityID.Orange;
-            item.defense = 4;
+            item.defense = 5;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -32,8 +32,8 @@ namespace OvermorrowMod.WardenClass.Armor
         public override void UpdateEquip(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            //modPlayer.piercingDamageAdd += 1.08f;
-            modPlayer.piercingDamageMult *= 1.08f;
+            modPlayer.piercingDamageAdd += 3;
+            //modPlayer.piercingDamageMult *= 1.08f;
         }
 
         public override void UpdateArmorSet(Player player)

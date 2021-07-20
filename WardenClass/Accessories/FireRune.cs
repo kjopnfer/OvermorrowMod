@@ -9,8 +9,8 @@ namespace OvermorrowMod.WardenClass.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Fire Rune");
-            Tooltip.SetDefault("Piercing weapons have a chance to inflict On Fire!");
+            DisplayName.SetDefault("Infernal Rune");
+            Tooltip.SetDefault("Increase piercing damage by 2\nPiercing weapons have a chance to inflict On Fire!");
         }
 
         public override void SetDefaults()
@@ -26,6 +26,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             modPlayer.FireRune = true;
+            modPlayer.piercingDamageAdd += 2;
         }
     }
 }

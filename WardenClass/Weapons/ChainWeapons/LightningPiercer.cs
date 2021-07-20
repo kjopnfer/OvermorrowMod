@@ -12,9 +12,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Heaven's Rope");
-            Tooltip.SetDefault("Attacks have a chance to Electrified\n[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause all attacks to launch an electrically charged chain\nConsumes 1 Soul Essence");
+            DisplayName.SetDefault("Heaven's Chain");
+            Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
+                            "[c/800080:Right Click] to cause attacks to summon a golden storm cloud\nConsumes 2 Soul Essences");
         }
 
         public override void SafeSetDefaults()
@@ -42,7 +42,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent > 0 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 2 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;

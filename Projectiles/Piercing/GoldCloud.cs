@@ -19,7 +19,7 @@ namespace OvermorrowMod.Projectiles.Piercing
 			projectile.CloneDefaults(ProjectileID.RainCloudRaining);
 			aiType = 0;
 			projectile.alpha = 255;
-			projectile.timeLeft = 180;
+			projectile.timeLeft = 90;
 		}
 
 		public override void AI()
@@ -27,17 +27,17 @@ namespace OvermorrowMod.Projectiles.Piercing
 			projectile.damage = 0;
 			projectile.velocity = Vector2.Zero;
 
-			if (projectile.ai[0] < 160)
+			if (projectile.ai[0] < 80)
 			{
-				projectile.alpha -= 2;
+				projectile.alpha -= 4;
             }
             else
             {
-				projectile.alpha += 15;
+				projectile.alpha += 30;
             }
 
 
-			if (projectile.ai[0] == 140)
+			if (projectile.ai[0] == 70)
             {
 				for (int i = 0; i < Main.maxPlayers; i++)
 				{
@@ -48,7 +48,7 @@ namespace OvermorrowMod.Projectiles.Piercing
 					}
 				}
 
-				Projectile.NewProjectile(projectile.Center, new Vector2(0, 5), ModContent.ProjectileType<DivineLightning>(), 30, 10f, projectile.owner);
+				Projectile.NewProjectile(projectile.Center, new Vector2(0, 5), ModContent.ProjectileType<DivineLightning>(), 48, 10f, projectile.owner);
             }
 
 			projectile.ai[0]++;

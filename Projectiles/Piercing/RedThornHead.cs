@@ -50,7 +50,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 projectile.velocity = Vector2.Zero;
                 projectile.alpha = 255;
 
-                if (projectile.ai[0] % 90 == 0) // Spend 1.5 seconds doing nothing
+                if (projectile.ai[0] % 20 == 0) // Spend 1/3 seconds doing nothing
                 {
                     canGrow = true;
                     Main.PlaySound(new LegacySoundStyle(SoundID.Grass, 0)); // Grass

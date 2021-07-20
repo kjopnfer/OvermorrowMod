@@ -10,7 +10,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Soulstone Fragment");
-            Tooltip.SetDefault("Increases Soul Meter gain by 1%");
+            Tooltip.SetDefault("Increases Soul Meter gain by 3%");
         }
 
         public override void SetDefaults()
@@ -25,7 +25,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            modPlayer.soulGainBonus += 1;
+            modPlayer.soulGainBonus += 3;
         }
     }
 }
