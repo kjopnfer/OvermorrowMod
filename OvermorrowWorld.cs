@@ -14,6 +14,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 
 namespace OvermorrowMod
 {
@@ -43,7 +44,7 @@ namespace OvermorrowMod
         public static int graniteBiome;
 
         private bool placedBook = false;
-
+        private bool placedwep = false;
         public override void Initialize()
         {
             downedTree = false;
@@ -205,10 +206,47 @@ namespace OvermorrowMod
                         {
                             for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
                             {
-                                if (inventoryIndex == 0)
+                                if (inventoryIndex == 1)
                                 {
                                     chest.item[inventoryIndex].SetDefaults(itemsToPlaceInDungeonChests[itemsToPlaceInDungeonChestsChoice]);
                                     itemsToPlaceInDungeonChestsChoice = (itemsToPlaceInDungeonChestsChoice + 1) % itemsToPlaceInDungeonChests.Length;
+                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            
+
+            int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
+            int itemsToPlaceInGranChestsChoice = 0;
+                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 50 * 36)
+                {
+                    if (!placedwep) // Guarantees at least one book in a Dungeon Chest
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (inventoryIndex == 1)
+                            {
+                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInGranChests[itemsToPlaceInGranChestsChoice]);
+                                itemsToPlaceInGranChestsChoice = (itemsToPlaceInGranChestsChoice + 1) % itemsToPlaceInGranChests.Length;
+                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                break;
+                            }
+                        }
+                        placedwep = true;
+                    }
+                    else
+                    {
+                        if (Main.rand.Next(3) == 1)
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (inventoryIndex == 1)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInGranChests[itemsToPlaceInGranChestsChoice]);
+                                    itemsToPlaceInGranChestsChoice = (itemsToPlaceInGranChestsChoice + 1) % itemsToPlaceInGranChests.Length;
                                     // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
                                     break;
                                 }
