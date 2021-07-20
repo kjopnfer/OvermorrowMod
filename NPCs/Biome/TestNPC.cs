@@ -27,6 +27,7 @@ namespace OvermorrowMod.NPCs.Biome
             npc.value = 60f;
             npc.knockBackResist = 0f;
             npc.noGravity = true;
+            npc.noTileCollide = true;
         }
 
         public override void AI()
@@ -39,5 +40,12 @@ namespace OvermorrowMod.NPCs.Biome
 				npc.netUpdate = true;
             }
         }
+
+		public override float SpawnChance(NPCSpawnInfo spawnInfo)
+		{
+			return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == 368 ? 0.2f : 0f;
+		}
+
+
     }
 }

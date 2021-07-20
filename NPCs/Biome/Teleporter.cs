@@ -116,6 +116,11 @@ namespace OvermorrowMod.NPCs.Biome
             }
 
         }
+
+		public override float SpawnChance(NPCSpawnInfo spawnInfo)
+		{
+			return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == 367 ? 0.7f : 0f;
+		}
     }
 }
 
