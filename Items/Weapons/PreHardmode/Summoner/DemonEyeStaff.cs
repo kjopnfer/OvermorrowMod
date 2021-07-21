@@ -30,7 +30,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
             item.autoReuse = true;
             item.knockBack = 0;
             item.buffType = ModContent.BuffType<DemEyeBuff>();
-            item.shoot = ModContent.ProjectileType<MeteorSumm>();
+            item.shoot = ModContent.ProjectileType<EyeSummon>();
             item.shootSpeed = 11f;
         }
         public override void AddRecipes()

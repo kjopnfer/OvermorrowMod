@@ -10,12 +10,7 @@ namespace OvermorrowMod.Projectiles.Artifact
     public class DemonEye : ModProjectile
     {
         private bool canDive = false;
-        private int diveTimer = 0;
-        private int projectileMovement = 0;
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
-        int mRand = Main.rand.Next(-100, 101);
-        float NPCtargetHeight = 0;
+        private int storeDamage;
 
         public override void SetStaticDefaults()
         {
@@ -31,130 +26,302 @@ namespace OvermorrowMod.Projectiles.Artifact
             projectile.tileCollide = true;
             projectile.friendly = true;
             projectile.penetrate = 4;
-            projectile.timeLeft = 600; 
+            //aiType = 66;
+            //projectile.aiStyle = 388;
+            projectile.timeLeft = 600;
         }
 
         public override void AI()
         {
-            projectile.ai[0]++;
-
-            projectile.rotation = projectile.velocity.ToRotation();
-
-            if (projectile.ai[0] > 60) // Chase after enemies after 1 second
-            {
-                projectile.tileCollide = true;
-
-                if (projectile.localAI[0] == 0f)
-                {
-                    AdjustMagnitude(ref projectile.velocity);
-                    projectile.localAI[0] = 1f;
-                }
-
-                Vector2 move = Vector2.Zero;
-                float distance = 1200f;
-                bool target = false;
-                for (int k = 0; k < 200; k++)
-                {
-                    if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5 && Main.npc[k].CanBeChasedBy())
-                    {
-                        Vector2 newMove = Main.npc[k].Center - projectile.Center;
-                        float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
-                        if (distanceTo < distance)
-                        {
-                            move = newMove;
-                            distance = distanceTo;
-                            target = true;
-                            NPCtargetX = Main.npc[k].Center.X;
-                            NPCtargetY = Main.npc[k].Center.Y;
-                            NPCtargetHeight = Main.npc[k].height / 2;
-                        }
-                    }
-                }
-
-                if (target)
-                {
-                    projectile.tileCollide = false;
-                    if (!canDive)
-                    {
-                        diveTimer = 0;
-                        projectile.ai[1]++;
-                        projectileMovement--;
-                        if (projectile.ai[1] == 20)
-                        {
-                            canDive = true;
-                        }
-
-                        if (projectileMovement == 50)
-                        {
-                            mRand = Main.rand.Next(-100, 100);
-                        }
-
-                        if (NPCtargetX + mRand > projectile.Center.X)
-                        {
-                            projectile.velocity.X += 1.1f;
-                        }
-
-                        if (NPCtargetX + mRand < projectile.Center.X)
-                        {
-                            projectile.velocity.X -= 1.1f;
-                        }
-
-                        if (NPCtargetY - 50 - NPCtargetHeight > projectile.Center.Y)
-                        {
-                            projectile.velocity.Y += 1.1f;
-                        }
-                        if (NPCtargetY - 50 - NPCtargetHeight < projectile.Center.Y)
-                        {
-                            projectile.velocity.Y -= 1.1f;
-                        }
-                    }
-
-                    if (canDive)
-                    {
-                        diveTimer++;
-                        if (diveTimer < 6)
-                        {
-                            Vector2 position = projectile.Center;
-                            Vector2 targetPosition = new Vector2(NPCtargetX, NPCtargetY);
-                            Vector2 direction = targetPosition - position;
-                            direction.Normalize();
-                            projectile.velocity = direction * 11;
-
-                        }
-
-                        if (diveTimer == 15)
-                        {
-                            projectile.ai[1] = 0;
-                            canDive = false;
-                            projectileMovement = 51;
-                        }
-                    }
-                }
-            }
-
             // Make projectiles gradually disappear
             if (projectile.timeLeft <= 60)
             {
                 projectile.alpha += 5;
             }
 
-            // Loop through the 10 animation frames, spending 3 ticks on each.
-            if (++projectile.frameCounter >= 3)
+            if (!canDive)
             {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                projectile.rotation = projectile.velocity.ToRotation();
+
+                if (projectile.ai[0] == 0)
                 {
-                    projectile.frame = 0;
+                    storeDamage = projectile.damage;
+                    projectile.damage = 0;
+                }
+
+                projectile.ai[0]++;
+                if (projectile.ai[0] == 40)
+                {
+                    projectile.damage = storeDamage;
+                    projectile.ai[0] = 0;
+                    canDive = true;
                 }
             }
-        }
-
-        private void AdjustMagnitude(ref Vector2 vector)
-        {
-            float magnitude = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            if (magnitude > 6f)
+            else
             {
-                vector *= 6f / magnitude;
+                float num540 = 2000f;
+                float num541 = 800f;
+                float num542 = 1200f;
+                float num543 = 150f;
+
+                float num544 = 0.05f;
+                for (int num545 = 0; num545 < 1000; num545++)
+                {
+                    bool flag22 = true;
+
+                    if (num545 != projectile.whoAmI && Main.projectile[num545].active && Main.projectile[num545].owner == projectile.owner && flag22 && Math.Abs(projectile.position.X - Main.projectile[num545].position.X) + Math.Abs(projectile.position.Y - Main.projectile[num545].position.Y) < (float)projectile.width)
+                    {
+                        if (projectile.position.X < Main.projectile[num545].position.X)
+                        {
+                            projectile.velocity.X -= num544;
+                        }
+                        else
+                        {
+                            projectile.velocity.X += num544;
+                        }
+                        if (projectile.position.Y < Main.projectile[num545].position.Y)
+                        {
+                            projectile.velocity.Y -= num544;
+                        }
+                        else
+                        {
+                            projectile.velocity.Y += num544;
+                        }
+                    }
+                }
+
+                bool flag23 = false;
+                if (projectile.ai[0] == 2f)
+                {
+                    projectile.ai[1]++;
+                    projectile.extraUpdates = 1;
+                    projectile.rotation = projectile.velocity.ToRotation();
+
+                    if (projectile.ai[1] > 40f)
+                    {
+                        projectile.ai[1] = 1f;
+                        projectile.ai[0] = 0f;
+                        projectile.extraUpdates = 0;
+                        projectile.numUpdates = 0;
+                        projectile.netUpdate = true;
+                    }
+                    else
+                    {
+                        flag23 = true;
+                    }
+                }
+
+                if (flag23)
+                {
+                    return;
+                }
+                Vector2 center4 = projectile.position;
+                bool flag24 = false;
+                if (projectile.ai[0] != 1f)
+                {
+                    projectile.tileCollide = true;
+                }
+
+                if (projectile.tileCollide && WorldGen.SolidTile(Framing.GetTileSafely((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16)))
+                {
+                    projectile.tileCollide = false;
+                }
+                NPC ownerMinionAttackTargetNPC3 = projectile.OwnerMinionAttackTargetNPC;
+                if (ownerMinionAttackTargetNPC3 != null && ownerMinionAttackTargetNPC3.CanBeChasedBy(this))
+                {
+                    float num552 = Vector2.Distance(ownerMinionAttackTargetNPC3.Center, projectile.Center);
+                    float num553 = num540 * 3f;
+                    if (num552 < num553 && !flag24 && Collision.CanHitLine(projectile.position, projectile.width, projectile.height, ownerMinionAttackTargetNPC3.position, ownerMinionAttackTargetNPC3.width, ownerMinionAttackTargetNPC3.height))
+                    {
+                        num540 = num552;
+                        center4 = ownerMinionAttackTargetNPC3.Center;
+                        flag24 = true;
+                    }
+                }
+                if (!flag24)
+                {
+                    for (int num554 = 0; num554 < 200; num554++)
+                    {
+                        NPC nPC2 = Main.npc[num554];
+                        if (nPC2.CanBeChasedBy(this))
+                        {
+                            float num555 = Vector2.Distance(nPC2.Center, projectile.Center);
+                            if (!(num555 >= num540) && Collision.CanHitLine(projectile.position, projectile.width, projectile.height, nPC2.position, nPC2.width, nPC2.height))
+                            {
+                                num540 = num555;
+                                center4 = nPC2.Center;
+                                flag24 = true;
+                            }
+                        }
+                    }
+                }
+                float num556 = num541;
+                if (flag24)
+                {
+                    num556 = num542;
+                }
+                Player player4 = Main.player[projectile.owner];
+                if (Vector2.Distance(player4.Center, projectile.Center) > num556)
+                {
+                    projectile.ai[0] = 1f;
+                    projectile.tileCollide = false;
+                    projectile.netUpdate = true;
+                }
+                if (flag24 && projectile.ai[0] == 0f)
+                {
+                    Vector2 vector44 = center4 - projectile.Center;
+                    float num557 = vector44.Length();
+                    vector44.Normalize();
+                    if (num557 > 200f)
+                    {
+                        float num558 = 6f;
+
+                        num558 = 14f;
+
+                        vector44 *= num558;
+                        projectile.velocity = (projectile.velocity * 40f + vector44) / 41f;
+                    }
+                    else
+                    {
+                        float num559 = 4f;
+                        vector44 *= 0f - num559;
+                        projectile.velocity = (projectile.velocity * 40f + vector44) / 41f;
+                    }
+                }
+                else
+                {
+                    bool flag25 = false;
+                    if (!flag25)
+                    {
+                        flag25 = projectile.ai[0] == 1f;
+                    }
+                    if (!flag25)
+                    {
+                        flag25 = false;
+                    }
+                    float num560 = 6f;
+
+                    if (flag25)
+                    {
+                        num560 = 15f;
+                    }
+                    Vector2 center5 = projectile.Center;
+                    Vector2 vector45 = player4.Center - center5 + new Vector2(0f, -60f);
+                    float num561 = vector45.Length();
+                    float num562 = num561;
+                    if (num561 > 200f && num560 < 8f)
+                    {
+                        num560 = 8f;
+                    }
+                    if (num561 < num543 && flag25 && !Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
+                    {
+
+                        projectile.ai[0] = 0f;
+
+
+                        projectile.netUpdate = true;
+                    }
+                    if (num561 > 2000f)
+                    {
+                        projectile.position.X = Main.player[projectile.owner].Center.X - (float)(projectile.width / 2);
+                        projectile.position.Y = Main.player[projectile.owner].Center.Y - (float)(projectile.height / 2);
+                        projectile.netUpdate = true;
+                    }
+                    if (num561 > 70f)
+                    {
+                        Vector2 vector46 = vector45;
+                        vector45.Normalize();
+                        vector45 *= num560;
+                        projectile.velocity = (projectile.velocity * 40f + vector45) / 41f;
+                    }
+                    else if (projectile.velocity.X == 0f && projectile.velocity.Y == 0f)
+                    {
+                        projectile.velocity.X = -0.15f;
+                        projectile.velocity.Y = -0.05f;
+                    }
+                }
+                projectile.rotation = projectile.velocity.ToRotation();
+
+
+                if (projectile.ai[1] > 0f)
+                {
+                    projectile.ai[1] += Main.rand.Next(1, 4);
+                }
+
+                if (projectile.ai[1] > 40f)
+                {
+                    projectile.ai[1] = 0f;
+                    projectile.netUpdate = true;
+                }
+
+                if (projectile.ai[0] == 0f)
+                {
+                    if (projectile.ai[1] == 0f && flag24 && num540 < 500f)
+                    {
+                        projectile.ai[1]++;
+                        if (Main.myPlayer == projectile.owner)
+                        {
+                            projectile.ai[0] = 2f;
+                            Vector2 vector49 = center4 - projectile.Center;
+                            vector49.Normalize();
+                            projectile.velocity = vector49 * 8f;
+                            projectile.netUpdate = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (!(projectile.ai[0] < 3f))
+                    {
+                        return;
+                    }
+                    int num571 = 0;
+                    switch ((int)projectile.ai[0])
+                    {
+                        case 0:
+                        case 3:
+                        case 6:
+                            num571 = 400;
+                            break;
+                        case 1:
+                        case 4:
+                        case 7:
+                            num571 = 400;
+                            break;
+                        case 2:
+                        case 5:
+                        case 8:
+                            num571 = 600;
+                            break;
+                    }
+                    if (!(projectile.ai[1] == 0f && flag24) || !(num540 < (float)num571))
+                    {
+                        return;
+                    }
+                    projectile.ai[1]++;
+                    if (Main.myPlayer != projectile.owner)
+                    {
+                        return;
+                    }
+                    if (projectile.localAI[0] >= 3f)
+                    {
+                        projectile.ai[0] += 4f;
+                        if (projectile.ai[0] == 6f)
+                        {
+                            projectile.ai[0] = 3f;
+                        }
+                        projectile.localAI[0] = 0f;
+                    }
+                    else
+                    {
+                        projectile.ai[0] += 6f;
+                        Vector2 vector50 = center4 - projectile.Center;
+                        vector50.Normalize();
+                        float num572 = ((projectile.ai[0] == 8f) ? 12f : 10f);
+                        projectile.velocity = vector50 * num572;
+                        projectile.netUpdate = true;
+                    }
+                }
             }
         }
 

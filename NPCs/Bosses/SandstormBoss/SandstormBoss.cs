@@ -91,7 +91,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dharuud, the Sandstorm");
-            Main.npcFrameCount[npc.type] = 6;
+            Main.npcFrameCount[npc.type] = 4;
         }
 
         public override void SetDefaults()

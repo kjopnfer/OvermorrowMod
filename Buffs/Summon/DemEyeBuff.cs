@@ -16,7 +16,7 @@ namespace OvermorrowMod.Buffs.Summon
 
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<MeteorSumm>()] > 0)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<EyeSummon>()] > 0)
             {
                 player.buffTime[buffIndex] = 18000;
             }
