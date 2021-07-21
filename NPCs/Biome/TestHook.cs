@@ -119,9 +119,10 @@ namespace OvermorrowMod.NPCs.Biome
                 int direction = -1;
 
                 if (projectile.Center.X < mountedCenter.X)
+                {
                     direction = 1;
+                }
 
-                player.itemRotation = (float)Math.Atan2(remainingVectorToPlayer.Y * direction, remainingVectorToPlayer.X * direction);
             }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
