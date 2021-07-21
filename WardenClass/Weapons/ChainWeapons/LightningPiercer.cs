@@ -14,7 +14,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Heaven's Chain");
             Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause attacks to summon a golden storm cloud\nConsumes 2 Soul Essences");
+                            "[c/800080:Right Click] to cause attacks to summon a golden storm cloud\nConsumes 2 Soul Essences" +
+                            "\n'And then along came Zeus'");
         }
 
         public override void SafeSetDefaults()
@@ -34,7 +35,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.UseSound = SoundID.Item71;
             item.noUseGraphic = true;
 
-            soulGainChance = 2;
+            soulGainChance = 4;
         }
 
         public override bool CanUseItem(Player player)
@@ -52,7 +53,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.shoot = ProjectileID.None;
                 item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
 
-                ConsumeSouls(1, player);
+                ConsumeSouls(2, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
                 player.AddBuff(ModContent.BuffType<LightningRune>(), 600);
             }

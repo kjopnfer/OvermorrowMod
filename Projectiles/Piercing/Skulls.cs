@@ -37,7 +37,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.tileCollide = true;
             projectile.magic = true;
             projectile.usesLocalNPCImmunity = true;
-            projectile.localNPCHitCooldown = 20;
+            projectile.localNPCHitCooldown = 60;
         }
 
         public override void AI()

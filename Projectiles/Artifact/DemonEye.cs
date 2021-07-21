@@ -30,7 +30,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             projectile.height = 22;
             projectile.tileCollide = true;
             projectile.friendly = true;
-            projectile.penetrate = 5;
+            projectile.penetrate = 4;
             projectile.timeLeft = 600; 
         }
 

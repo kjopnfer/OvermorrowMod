@@ -34,7 +34,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.UseSound = SoundID.Item71;
             item.noUseGraphic = true;
 
-            soulGainChance = 3;
+            soulGainChance = 5;
         }
 
         public override bool CanUseItem(Player player)
@@ -86,19 +86,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.HellRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
-                for (int i = 0; i < 200; i++)
-                {
+                Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y - 165, 0, 0, ModContent.ProjectileType<HellFireDown>(), damage, 3, player.whoAmI);
+                Main.PlaySound(SoundID.Item45, Main.MouseWorld);
 
-                    NPC npc = Main.npc[i];
-                    if (Vector2.Distance(Main.MouseWorld, npc.Center) < 65)
-                    {
-                        if (npc.friendly == false && npc.life > 0)
-                        {
-                            Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 165, 0, 0, ModContent.ProjectileType<HellFireDown>(), item.damage, 3, player.whoAmI);
-                            Main.PlaySound(SoundID.Item45, Main.MouseWorld);
-                        }
-                    }
-                }
                 return false;
             }
             else

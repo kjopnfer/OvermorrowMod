@@ -8,7 +8,7 @@ namespace OvermorrowMod.Projectiles.Artifact
     public class RedCloud : ModProjectile
     {
         private bool isActive = false;
-
+        private int AuraRadius = 390;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Blood Moon");
@@ -37,7 +37,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             }
 
             projectile.ai[0] += 1;
-            if(projectile.ai[1] < 450) // The radius
+            if(projectile.ai[1] < AuraRadius) // The radius
             {
                 projectile.ai[1] += 15;
             }
@@ -86,7 +86,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                 for (int i = 0; i < Main.maxPlayers; i++)
                 {
                     float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
-                    if (distance <= 450)
+                    if (distance <= AuraRadius)
                     {
                         Main.player[i].AddBuff(ModContent.BuffType<MoonBuff>(), 60);
                     }

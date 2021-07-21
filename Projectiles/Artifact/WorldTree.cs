@@ -10,7 +10,7 @@ namespace OvermorrowMod.Projectiles.Artifact
     public class WorldTree : ModProjectile
     {
         private bool isActive = false;
-
+        private int AuraRadius = 330;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("World Tree");
@@ -52,7 +52,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             projectile.position = projectilePos * 16;
 
             projectile.ai[0] += 1;
-            if (projectile.ai[1] < 200) // The radius
+            if (projectile.ai[1] < AuraRadius) // The radius
             {
                 projectile.ai[1] += 15;
             }
@@ -73,7 +73,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                 for (int i = 0; i < Main.maxPlayers; i++)
                 {
                     float distance = Vector2.Distance((projectile.Center - new Vector2(0, 68)), Main.player[i].Center);
-                    if (distance <= 200)
+                    if (distance <= AuraRadius)
                     {
                         Main.player[i].AddBuff(ModContent.BuffType<TreeBuff>(), 60);
                     }

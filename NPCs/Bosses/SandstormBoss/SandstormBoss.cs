@@ -96,8 +96,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            npc.width = 136;
-            npc.height = 112;
+            npc.width = 168;
+            npc.height = 130;
             npc.aiStyle = -1;
             npc.damage = 21;
             npc.defense = 12;
@@ -390,8 +390,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                         npc.damage = storedDamage;
                         npc.hide = false;
-                        npc.width = 136;
-                        npc.height = 112;
+                        npc.width = 168;
+                        npc.height = 130;
                         npc.ai[0] = 0f;
                         npc.ai[1] = 0;
                         npc.ai[2] = 0;

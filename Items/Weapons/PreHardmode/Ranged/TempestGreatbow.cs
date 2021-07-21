@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Tempest Greatbow");
-            Tooltip.SetDefault("Transforms wooden arrows into Stormbolts\n'And then along came Zeus'");
+            Tooltip.SetDefault("Transforms wooden arrows into Stormbolts\n'Bring on The Thundah!'");
         }
 
         public override void SetDefaults()

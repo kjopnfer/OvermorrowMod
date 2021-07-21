@@ -36,7 +36,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.UseSound = new LegacySoundStyle(SoundID.Grass, 0); // Grass
             item.noUseGraphic = true;
 
-            soulGainChance = 4;
+            soulGainChance = 5;
         }
 
         public override bool CanUseItem(Player player)
@@ -44,7 +44,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 3 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 1 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -54,7 +54,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.shoot = ProjectileID.None;
                 item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
 
-                ConsumeSouls(3, player);
+                ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
                 player.AddBuff(ModContent.BuffType<VineRune>(), 600);
             }
@@ -65,7 +65,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useTime = 14;
                 if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.JungleRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate) 
                 {
-                    item.damage = 14;
+                    item.damage = 16;
                     item.useTurn = false;
                     item.shootSpeed = 6f;
                     item.autoReuse = true;

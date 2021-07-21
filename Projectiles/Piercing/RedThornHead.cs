@@ -23,10 +23,13 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.height = 16;
             projectile.friendly = true;
             projectile.penetrate = -1;
-            projectile.timeLeft = 240;
+            projectile.timeLeft = 30;
             projectile.tileCollide = false;
             projectile.ignoreWater = true;
             projectile.scale = 1f;
+
+            projectile.usesLocalNPCImmunity = true;
+            projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()
@@ -50,7 +53,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 projectile.velocity = Vector2.Zero;
                 projectile.alpha = 255;
 
-                if (projectile.ai[0] % 20 == 0) // Spend 1/3 seconds doing nothing
+                if (projectile.ai[0] % 5 == 0) // Spend 1/3 seconds doing nothing
                 {
                     canGrow = true;
                     Main.PlaySound(new LegacySoundStyle(SoundID.Grass, 0)); // Grass
@@ -62,18 +65,18 @@ namespace OvermorrowMod.Projectiles.Piercing
                 projectile.velocity = storeVelocity;
                 projectile.alpha = 0;
 
-                if (projectile.ai[0] < 110)
+                if (projectile.ai[0] < 20)
                 {
                     if (projectile.ai[0] % 2 == 0)
                     {
                         projectile.ai[1]++;
                         if (projectile.ai[1] % 2 == 0)
                         {
-                            Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<RedThornBody1>(), projectile.damage, 2f, projectile.owner, projectile.whoAmI);
+                            Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<RedThornBody1>(), projectile.damage / 3, 2f, projectile.owner, projectile.whoAmI);
                         }
                         else
                         {
-                            Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<RedThornBody2>(), projectile.damage, 2f, projectile.owner, projectile.whoAmI);
+                            Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<RedThornBody2>(), projectile.damage / 3, 2f, projectile.owner, projectile.whoAmI);
                         }
                     }
                 }

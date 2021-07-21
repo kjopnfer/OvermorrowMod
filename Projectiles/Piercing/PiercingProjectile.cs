@@ -106,14 +106,16 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
             }
 
+            target.immune[projectile.owner] = 8;
+
             // Held item sends back the Soul Gain Rate back to the modPlayer
             // Retrieve the values from the modPlayer as the gain rate
             SoulGain(target, modPlayer.heldGainPercentage);
 
-            if (projectile.type == ChainType["Sky"] || projectile.type == ChainType["Corruption"] || projectile.type == ChainType["Crimson"])
+            /*if (projectile.type == ChainType["Sky"] || projectile.type == ChainType["Corruption"] || projectile.type == ChainType["Crimson"])
             {
                 target.immune[projectile.owner] = 4;
-            }
+            }*/
 
             if (projectile.type == ChainType["Bone"] || projectile.type == ChainType["Hell"])
             {
@@ -127,8 +129,6 @@ namespace OvermorrowMod.Projectiles.Piercing
                         }
                     }
                 }
-
-                target.immune[projectile.owner] = 4;
             }
 
             if (projectile.type == ChainType["Jungle"])
@@ -137,7 +137,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 {
                     target.AddBuff(BuffID.Poisoned, 240); // Poison Debuff
                 }
-                target.immune[projectile.owner] = 4;
+                //target.immune[projectile.owner] = 4;
             }
 
             if (projectile.type == ChainType["Mushroom"])
@@ -146,7 +146,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 {
                     target.AddBuff(ModContent.BuffType<FungalInfection>(), 400);
                 }
-                target.immune[projectile.owner] = 4;
+                //target.immune[projectile.owner] = 4;
             }
         }
     }

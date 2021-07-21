@@ -22,7 +22,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
             projectile.hostile = true;
             projectile.timeLeft = 600;
             projectile.penetrate = 1;
-            projectile.alpha = 125;
+            projectile.alpha = 190;
             projectile.tileCollide = false;
         }
 

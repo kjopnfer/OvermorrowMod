@@ -34,7 +34,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.UseSound = SoundID.Item71;
             item.noUseGraphic = true;
 
-            soulGainChance = 2;
+            soulGainChance = 4;
         }
 
         public override bool CanUseItem(Player player)
@@ -42,7 +42,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 2 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 1 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -54,22 +54,25 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
                 ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
-                player.AddBuff(ModContent.BuffType<SanguineRune>(), 600);
+                player.AddBuff(ModContent.BuffType<SanguineRune>(), 300);
             }
             else
             {
                 item.useStyle = ItemUseStyleID.SwingThrow;
                 item.useTurn = true;
-                item.useAnimation = 14;
-                item.useTime = 14;
+                
                 if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.CrimsonRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-                {                    
+                {
+                    item.useAnimation = 20;
+                    item.useTime = 20;
                     item.UseSound = null;
                     item.shootSpeed = 6f;
-                    item.damage = 16;
+                    item.damage = 15;
                 }
                 else
                 {
+                    item.useAnimation = 14;
+                    item.useTime = 14;
                     item.UseSound = SoundID.Item71;
                     item.shootSpeed = 14f + modPlayer.modifyShootSpeed();                
                     item.damage = 4;
@@ -99,7 +102,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
                 for (int i = 0; i < 6; i++)
                 {
-                    Projectile.NewProjectile(Main.MouseWorld, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / 6) * i + randRotation)), type, damage, knockBack, player.whoAmI);
+                    Projectile.NewProjectile(Main.MouseWorld, new Vector2(6).RotatedBy(MathHelper.ToRadians((360 / 6) * i + randRotation)), type, damage, knockBack, player.whoAmI);
                 }
                 return false;
             }

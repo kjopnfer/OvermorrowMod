@@ -141,7 +141,7 @@ namespace OvermorrowMod.NPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return spawnInfo.player.ZoneDungeon && NPC.downedQueenBee ? 0.025f : 0f;
+            return spawnInfo.player.ZoneDungeon ? 0.025f : 0f;
         }
     }
 }

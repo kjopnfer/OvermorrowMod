@@ -36,7 +36,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.UseSound = SoundID.Item1;
             item.noUseGraphic = true;
 
-            soulGainChance = 3;
+            soulGainChance = 6;
         }
 
         public override bool CanUseItem(Player player)
@@ -56,7 +56,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
                 ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
-                player.AddBuff(ModContent.BuffType<BoneRune>(), 300);
+                player.AddBuff(ModContent.BuffType<BoneRune>(), 240);
             }
             else
             {

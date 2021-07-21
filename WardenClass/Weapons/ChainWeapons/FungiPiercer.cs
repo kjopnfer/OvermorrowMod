@@ -36,7 +36,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.UseSound = new LegacySoundStyle(SoundID.Grass, 0); // Grass
             item.noUseGraphic = true;
 
-            soulGainChance = 5;
+            soulGainChance = 7;
         }
 
         public override bool CanUseItem(Player player)
