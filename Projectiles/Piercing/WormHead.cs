@@ -8,11 +8,6 @@ namespace OvermorrowMod.Projectiles.Piercing
 {
     public class WormHead : ModProjectile
     {
-        private bool didHit = false;
-        private int timer = 0;
-        private int SaveVeloX = 0;
-        private int SaveVeloY = 0;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Corruptor");
@@ -26,7 +21,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.hostile = false;
             projectile.ranged = true;
             projectile.penetrate = -1;
-            projectile.timeLeft = 400;
+            projectile.timeLeft = 900;
             projectile.ignoreWater = true;
             projectile.tileCollide = false;
             projectile.extraUpdates = 1;
@@ -34,8 +29,6 @@ namespace OvermorrowMod.Projectiles.Piercing
         }
         public override void AI()
         {
-            if(!didHit)
-            {
             Player player = Main.player[projectile.owner];
             projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
             if (projectile.localAI[0] == 0f)
@@ -44,11 +37,11 @@ namespace OvermorrowMod.Projectiles.Piercing
                 projectile.localAI[0] = 1f;
             }
             Vector2 move = Vector2.Zero;
-            float distance = 400f;
+            float distance = 600f;
             bool target = false;
             for (int k = 0; k < 200; k++)
             {
-                if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
+                if (Main.npc[k].CanBeChasedBy(this))
                 {
                     Vector2 newMove = Main.npc[k].Center - projectile.Center;
                     float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
@@ -60,39 +53,39 @@ namespace OvermorrowMod.Projectiles.Piercing
                     }
                 }
             }
+
             if (target)
             {
                 AdjustMagnitude(ref move);
-                projectile.velocity += (10 * projectile.velocity + move) / 11f;
+                projectile.velocity += (5 * projectile.velocity + move) / 11f;
                 AdjustMagnitude(ref projectile.velocity);
             }
-            }
-            if(projectile.velocity.X > 11)
+
+            if (projectile.velocity.X > 6)
             {
-                projectile.velocity.X = 11;
+                projectile.velocity.X = 6;
             }
-            if(projectile.velocity.X < -11)
+            if (projectile.velocity.X < -6)
             {
-                projectile.velocity.X = -11;
+                projectile.velocity.X = -6;
             }
 
-            if(projectile.velocity.Y > 11)
+            if (projectile.velocity.Y > 6)
             {
-                projectile.velocity.Y = 11;
+                projectile.velocity.Y = 6;
             }
-            if(projectile.velocity.Y < -11)
+            if (projectile.velocity.Y < -6)
             {
-                projectile.velocity.Y = -11;
+                projectile.velocity.Y = -6;
             }
 
             projectile.velocity.Y = projectile.velocity.Y + 0.06f;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            timer++;
-            if(timer == 3)
+            projectile.ai[0]++;
+            if (projectile.ai[0] == 3)
             {
-            Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, ModContent.ProjectileType<WormBody>(), projectile.damage / 2, 1f, projectile.owner, 0f);
-            timer = 0;
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, ModContent.ProjectileType<WormBody>(), projectile.damage / 2, 1f, projectile.owner, 0f);
+                projectile.ai[0] = 0;
             }
         }
 
@@ -108,8 +101,23 @@ namespace OvermorrowMod.Projectiles.Piercing
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            didHit = true;
             projectile.tileCollide = false;
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            Vector2 origin = projectile.Center;
+            float radius = 10;
+            int numLocations = 30;
+            for (int i = 0; i < 30; i++)
+            {
+                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+                int dust = Dust.NewDust(position, 2, 2, 157, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
+                Main.dust[dust].noGravity = true;
+            }
+
+            Main.PlaySound(SoundID.DD2_GhastlyGlaiveImpactGhost);
         }
     }
 }
