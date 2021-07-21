@@ -15,7 +15,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 namespace OvermorrowMod
 {
     public class OvermorrowWorld : ModWorld
@@ -45,6 +45,8 @@ namespace OvermorrowMod
 
         private bool placedBook = false;
         private bool placedwep = false;
+        private bool placedtele = false;
+
         public override void Initialize()
         {
             downedTree = false;
@@ -219,6 +221,7 @@ namespace OvermorrowMod
                 }
             
 
+
             int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
             int itemsToPlaceInGranChestsChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 50 * 36)
@@ -254,7 +257,48 @@ namespace OvermorrowMod
                         }
                     }
                 }
+
+
+
+
+
+            int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
+            int itemsToPlaceInGranMarbleChoice = 0;
+                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 51 * 36)
+                {
+                    if (!placedtele) // Guarantees at least one book in a Dungeon Chest
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (inventoryIndex == 1)
+                            {
+                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInMarbChests[itemsToPlaceInGranMarbleChoice]);
+                                itemsToPlaceInGranMarbleChoice = (itemsToPlaceInGranMarbleChoice + 1) % itemsToPlaceInMarbChests.Length;
+                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                break;
+                            }
+                        }
+                        placedtele = true;
+                    }
+                    else
+                    {
+                        if (Main.rand.Next(2) == 1)
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (inventoryIndex == 1)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInMarbChests[itemsToPlaceInGranMarbleChoice]);
+                                    itemsToPlaceInGranMarbleChoice = (itemsToPlaceInGranMarbleChoice + 1) % itemsToPlaceInMarbChests.Length;
+                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
+            
         }
 
         // Worldgen Debugging
