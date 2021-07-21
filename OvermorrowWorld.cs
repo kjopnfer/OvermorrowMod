@@ -347,10 +347,10 @@ namespace OvermorrowMod
         private void TempleStart(GenerationProgress progress)
         {
             progress.Message = "Generating";
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00004); k++)
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000008); k++)
             {
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next(0, (int)WorldGen.worldSurfaceLow / 2);
+                int y = WorldGen.genRand.Next(50, (int)Main.maxTilesY / 7);
 
                 //bottom
                 for (int i = 0; i < 11; i++)
@@ -457,7 +457,6 @@ namespace OvermorrowMod
                 {
                     WorldGen.PlaceWall(x - i - 1, y - 1, 42);
                 }
-
             }
         }
 
