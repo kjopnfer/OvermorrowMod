@@ -363,6 +363,9 @@ namespace OvermorrowMod
                     WorldGen.PlaceTile(x - 10 - i, y - 1, 311);
                 }
 
+                WorldGen.PlaceTile(x - 8, y - 1, 21, style: 28);
+
+
                 //front
                 WorldGen.PlaceTile(x - 18, y - 2, 311);
                 WorldGen.PlaceTile(x - 19, y - 2, 311);
@@ -384,10 +387,75 @@ namespace OvermorrowMod
                     WorldGen.PlaceTile(x, y - i, 311);
                 }
 
+
+
                 //top
-                for (int i = 0; i < 24; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     WorldGen.PlaceTile(x - i, y - 7, 311);
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    WorldGen.PlaceTile(x - i - 4, y - 7, 19);
+                }
+
+                for (int i = 0; i < 6; i++)
+                {
+                    WorldGen.PlaceTile(x - 5, y - i - 1, 213);
+                }
+
+                for (int i = 0; i < 18; i++)
+                {
+                    WorldGen.PlaceTile(x - i - 7, y - 7, 311);
+                }
+
+
+
+                //sail
+                for (int i = 0; i < 9; i++)
+                {
+                    WorldGen.PlaceWall(x - 12, y - 8 - i, 106);
+                }
+
+                for (int j = 0; j < 5; j++)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        WorldGen.PlaceWall(x - 8 - i, y - 12 - j, 148);
+                    }
+                }
+
+
+                //walls
+                for (int i = 0; i < 21; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 6, 42);
+                }
+
+                for (int i = 0; i < 20; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 5, 42);
+                }
+
+                for (int i = 0; i < 19; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 4, 42);
+                }
+
+                for (int i = 0; i < 18; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 3, 42);
+                }
+
+                for (int i = 0; i < 17; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 2, 42);
+                }
+
+                for (int i = 0; i < 9; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 1, 42);
                 }
 
             }
