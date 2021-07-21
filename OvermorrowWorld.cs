@@ -333,7 +333,67 @@ namespace OvermorrowMod
             {
                 tasks.Insert(WetJungle + 1, new PassLegacy("WaterCaveGeneration", WaterCaveFinder));
             }
+
+            int TempleS = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
+            if (TempleS != -1)
+            {
+                tasks.Insert(TempleS + 1, new PassLegacy("Mddd", TempleStart));
+            }
+
         }
+
+
+
+        private void TempleStart(GenerationProgress progress)
+        {
+            progress.Message = "Generating";
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00004); k++)
+            {
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int y = WorldGen.genRand.Next(0, (int)WorldGen.worldSurfaceLow / 2);
+
+                //bottom
+                for (int i = 0; i < 11; i++)
+                {
+                    WorldGen.PlaceTile(x - i, y, 311);
+                }
+
+                for (int i = 0; i < 9; i++)
+                {
+                    WorldGen.PlaceTile(x - 10 - i, y - 1, 311);
+                }
+
+                //front
+                WorldGen.PlaceTile(x - 18, y - 2, 311);
+                WorldGen.PlaceTile(x - 19, y - 2, 311);
+                WorldGen.PlaceTile(x - 19, y - 3, 311);
+                WorldGen.PlaceTile(x - 20, y - 3, 311);
+                WorldGen.PlaceTile(x - 20, y - 4, 311);
+                WorldGen.PlaceTile(x - 21, y - 4, 311);
+                WorldGen.PlaceTile(x - 21, y - 5, 311);
+                WorldGen.PlaceTile(x - 22, y - 5, 311);
+                WorldGen.PlaceTile(x - 22, y - 6, 311);
+                WorldGen.PlaceTile(x - 23, y - 6, 311);
+                WorldGen.PlaceTile(x - 23, y - 7, 311);
+                WorldGen.PlaceTile(x - 24, y - 7, 311);  
+
+
+                //back
+                for (int i = 0; i < 7; i++)
+                {
+                    WorldGen.PlaceTile(x, y - i, 311);
+                }
+
+                //top
+                for (int i = 0; i < 24; i++)
+                {
+                    WorldGen.PlaceTile(x - i, y - 7, 311);
+                }
+
+            }
+        }
+
+
 
         int randSize = Main.rand.Next(140, 150);
         bool notInvalid = true;
