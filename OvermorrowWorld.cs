@@ -342,8 +342,9 @@ namespace OvermorrowMod
 
         }
 
-
-
+        bool doorc1 = false;
+        bool doorc2 = false;
+        bool doorc3 = false;
         private void TempleStart(GenerationProgress progress)
         {
             progress.Message = "Generating Sky Ships";
@@ -724,6 +725,131 @@ namespace OvermorrowMod
                 WorldGen.PlaceTile(x - 6, y - 2, 376, style: Main.rand.Next(10));
 
                 WorldGen.PlaceTile(x - 6, y - 7, 21, style: 28);
+            }
+
+
+
+
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.008); k++)
+            {
+                int x = WorldGen.genRand.Next(100, Main.maxTilesX - 100);
+                int y = WorldGen.genRand.Next(100, Main.maxTilesY - 100);
+
+                int randY = Main.rand.Next(10, 20);
+                int randX = Main.rand.Next(14, 15);
+
+                Tile tile = Framing.GetTileSafely(x, y);
+                if (tile.active() && tile.type == 2)
+                {
+
+
+                    for (int j = 0; j < randY + 3; j++)
+                    {
+                        for (int i = 0; i < 8; i++)
+                        {
+                            WorldGen.KillTile(x - 4 + i, y - j);
+                        }
+                    }
+
+                    for (int i = 0; i < randY; i++)
+                    {
+                        WorldGen.PlaceTile(x - 3, y - i - 4, 325);
+                    }
+
+                    for (int i = 0; i < randY; i++)
+                    {
+                        WorldGen.PlaceTile(x + 3, y - i - 4, 325);
+                    }
+
+                    WorldGen.PlaceTile(x - 3, y - 1, 10);
+                    WorldGen.PlaceTile(x + 3, y - 1, 10);
+
+
+                    for (int j = 0; j < 5; j++)
+                    {
+                        for (int i = 0; i < randY + 6; i++)
+                        {
+                            WorldGen.PlaceWall(x + j - 2, y - i - 4, 4);
+                        }
+                    }
+     
+
+                    for (int i = 0; i < randX; i++)
+                    {
+                        WorldGen.PlaceTile(x + i + 3, y - randY - 4, 325);
+                        WorldGen.PlaceTile(x - i - 3, y - randY - 4, 325);
+                    }
+
+                    for (int i = 0; i < 7; i++)
+                    {
+                        WorldGen.PlaceTile(x + randX + 3, y - i - randY - 4, 325);
+                        WorldGen.PlaceTile(x - randX - 3, y - i - randY - 4, 325);
+                    }
+
+
+                    for (int i = 0; i < 7; i++)
+                    {
+                        WorldGen.PlaceTile(x + randX + 3 - i, y - randY - 11 - i, 325);
+                        WorldGen.PlaceTile(x - randX - 3 + i, y - randY - 11 - i, 325);
+
+                        WorldGen.PlaceTile(x + randX + 2 - i, y - randY - 11 - i, 325);
+                        WorldGen.PlaceTile(x - randX - 2 + i, y - randY - 11 - i, 325);
+                        
+                    }
+
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        WorldGen.PlaceTile(x - i, y - randY - 17, 325);
+                        WorldGen.PlaceTile(x + i, y - randY - 17, 325);
+                    }
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        WorldGen.PlaceTile(x + 3 + i, y - randY - 4, 19);
+                        WorldGen.PlaceTile(x - 3 - i, y - randY - 4, 19);
+                    }
+
+                    for (int j = 0; j < 6; j++)
+                    {
+                        for (int i = 0; i < 33; i++)
+                        {
+                            WorldGen.PlaceWall(x - randX - 2 + i, y - randY - 5 - j, 4);
+                        }
+                    }
+
+
+                    for (int i = 0; i < 33 - 2; i++)
+                    {
+                        WorldGen.PlaceWall(x - randX + i - 1, y - randY - 11, 4);
+                    }
+
+                    for (int i = 0; i < 31 - 2; i++)
+                    {
+                        WorldGen.PlaceWall(x - randX + i - 0, y - randY - 12, 4);
+                    }
+
+                    for (int i = 0; i < 29 - 2; i++)
+                    {
+                        WorldGen.PlaceWall(x - randX + i + 1, y - randY - 13, 4);
+                    }
+
+                    for (int i = 0; i < 27 - 2; i++)
+                    {
+                        WorldGen.PlaceWall(x - randX + i + 2, y - randY - 14, 4);
+                    }
+
+                    for (int i = 0; i < 25 - 2; i++)
+                    {
+                        WorldGen.PlaceWall(x - randX + i + 3, y - randY - 15, 4);
+                    }
+
+                    for (int i = 0; i < 23 - 2; i++)
+                    {
+                        WorldGen.PlaceWall(x - randX + i + 4, y - randY - 16, 4);
+                    }
+
+                }
             }
         }
 
