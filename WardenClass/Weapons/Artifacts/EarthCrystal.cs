@@ -12,7 +12,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Earthen Crystal");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 3 Soul Essences to summon an ancient tree\n" +
+            Tooltip.SetDefault("[c/00FF00:{ Artifact of Wisdom }]\nConsume 2 Soul Essences to summon an ancient tree\n" +
                 "All players within range have their health regen increased\n" +
                 "'A crystal that once grew on the World Tree that had long since disappeared'");
         }
@@ -30,12 +30,14 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.consumable = false;
             item.autoReuse = false;
             item.shoot = ModContent.ProjectileType<WorldTree>();
+
+            soulResourceCost = 2;
         }
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             // Not sure why this isn't running in UseItem
-            ConsumeSouls(3, player);
+            ConsumeSouls(2, player);
 
             // Allow only one instance of the projectile
             if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<WorldTree>()] > 0)
@@ -54,26 +56,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             {
                 position = Main.MouseWorld;
             }
-
-            return true;
-        }
-
-        public override bool CanUseItem(Player player)
-        {
-            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            if (modPlayer.soulResourceCurrent >= 3)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public override bool UseItem(Player player)
-        {
-            ConsumeSouls(3, player);
 
             return true;
         }

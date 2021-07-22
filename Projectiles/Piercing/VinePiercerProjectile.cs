@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.WardenClass;
 using Terraria;
 
 namespace OvermorrowMod.Projectiles.Piercing

@@ -1,17 +1,18 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.WardenClass;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Piercing
+namespace OvermorrowMod.Projectiles.Artifact
 {
-    public class WormBody : ModProjectile
+    public class WormBody : ArtifactProjectile
     {
 
 
         private int timer = 0;
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             projectile.width = 22;
             projectile.height = 24;
@@ -23,7 +24,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.ignoreWater = true;
             projectile.tileCollide = false;
             projectile.extraUpdates = 1;
-
         }
         public override void AI()
         {

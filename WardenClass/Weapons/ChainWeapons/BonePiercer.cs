@@ -15,7 +15,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Grave Hook");
             Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause attacks to launch cursed skulls\nConsumes 1 Soul Essence" +
+                            "[c/800080:Right Click] to empower your Warden Artifacts on use" +
+                            "\n[c/09DBB8:{ All }] Summons 6 Cursed Skulls for each Artifact use" +
+                            "\nConsumes 1 Soul Essence" +
                             "\n'Just gotta put all the femurs together...'");
         }
 
@@ -56,7 +58,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
                 ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
-                player.AddBuff(ModContent.BuffType<BoneRune>(), 240);
+                player.AddBuff(ModContent.BuffType<BoneRune>(), 480);
             }
             else
             {

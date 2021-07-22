@@ -1,13 +1,14 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.WardenClass;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact
 {
-    public class DemonEye : ModProjectile
+    public class DemonEye : ArtifactProjectile
     {
         private bool canDive = false;
         private int storeDamage;
@@ -19,16 +20,18 @@ namespace OvermorrowMod.Projectiles.Artifact
             ProjectileID.Sets.TrailingMode[projectile.type] = 0;
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             projectile.width = 24;
             projectile.height = 22;
             projectile.tileCollide = true;
             projectile.friendly = true;
-            projectile.penetrate = 4;
+            projectile.penetrate = 5;
             //aiType = 66;
             //projectile.aiStyle = 388;
             projectile.timeLeft = 600;
+            projectile.usesLocalNPCImmunity = true;
+            projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()

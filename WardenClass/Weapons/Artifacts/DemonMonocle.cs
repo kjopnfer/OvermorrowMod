@@ -12,7 +12,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Baleful Spine");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to summon 6 Crimeras\n" +
+            Tooltip.SetDefault("[c/DE3A28:{ Artifact of Power }]\nConsume 2 Soul Essences to summon 6 Crimeras\n" +
                 "Crimeras will home in on nearby enemies");
         }
 
@@ -28,45 +28,18 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.UseSound = SoundID.Item103;
             item.consumable = false;
             item.autoReuse = false;
+            item.shoot = ModContent.ProjectileType<DemonEye>();
+            item.shootSpeed = 3f;
             item.damage = 21;
-        }
 
-        public override bool CanUseItem(Player player)
-        {
-            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            if (modPlayer.soulResourceCurrent >= 2)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public override bool UseItem(Player player)
-        {
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                ConsumeSouls(2, player);
-            }
-
-            int projectiles = 6;
-            if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
-            {
-                for (int i = 0; i < projectiles; i++)
-                {
-                    Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<DemonEye>(), item.damage, 2, player.whoAmI);
-                }
-            }
-
-            return true;
+            soulResourceCost = 1;
         }
 
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
             recipe.AddIngredient(ItemID.CrimtaneBar, 12);
+            recipe.AddIngredient(ItemID.Vertebrae, 4);
             recipe.AddIngredient(ItemID.TissueSample, 10);
             recipe.AddTile(TileID.DemonAltar);
             recipe.SetResult(this);

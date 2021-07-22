@@ -3,17 +3,18 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System;
+using OvermorrowMod.WardenClass;
 
-namespace OvermorrowMod.Projectiles.Piercing
+namespace OvermorrowMod.Projectiles.Artifact
 {
-    public class WormHead : ModProjectile
+    public class WormHead : ArtifactProjectile
     {
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Corruptor");
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             projectile.width = 30;
             projectile.height = 42;
@@ -25,6 +26,8 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.ignoreWater = true;
             projectile.tileCollide = false;
             projectile.extraUpdates = 1;
+            projectile.usesLocalNPCImmunity = true;
+            projectile.localNPCHitCooldown = 20;
 
         }
         public override void AI()
@@ -97,11 +100,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             {
                 vector *= 6f / magnitude;
             }
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            projectile.tileCollide = false;
         }
 
         public override void Kill(int timeLeft)

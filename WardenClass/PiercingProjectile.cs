@@ -1,14 +1,13 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
-using OvermorrowMod.NPCs.Bosses.DripplerBoss;
-using OvermorrowMod.WardenClass;
+using OvermorrowMod.Projectiles.Piercing;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WardenClass;
 
-namespace OvermorrowMod.Projectiles.Piercing
+namespace OvermorrowMod.WardenClass
 {
     public abstract class PiercingProjectile : ModProjectile
     {

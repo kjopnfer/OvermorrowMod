@@ -31,41 +31,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.autoReuse = false;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            if (modPlayer.soulResourceCurrent >= 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public override bool UseItem(Player player)
-        {
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                ConsumeSouls(1, player);
-            }
-            player.AddBuff(ModContent.BuffType<MirrorBuff>(), 10800);
-
-            // Loop through all players and check if they are on the same team
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                for (int i = 0; i < Main.maxPlayers; i++)
-                {
-                    if (Main.player[i].team == player.team && player.team != 0)
-                    {
-                        Main.player[i].AddBuff(ModContent.BuffType<MirrorBuff>(), 10800);
-                    }
-                }
-            }
-            return true;
-        }
-
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);

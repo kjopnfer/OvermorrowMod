@@ -13,7 +13,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloody Antikythera");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume 2 Soul Essences to summon a miniature Blood Moon\n" +
+            Tooltip.SetDefault("[c/00FF00:{ Artifact of Wisdom }]\nConsume 2 Soul Essences to summon a miniature Blood Moon\n" +
                 "All players within range have their attack increased\n" +
                 "'Blood spilled onto the Earth shall rain from the sky'");
         }
@@ -31,6 +31,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.consumable = false;
             item.autoReuse = false;
             item.shoot = ModContent.ProjectileType<RedCloud>();
+
+            soulResourceCost = 2;
         }
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
@@ -57,19 +59,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             }
 
             return true;
-        }
-
-        public override bool CanUseItem(Player player)
-        {
-            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-            if (modPlayer.soulResourceCurrent >= 2)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         public override bool UseItem(Player player)
