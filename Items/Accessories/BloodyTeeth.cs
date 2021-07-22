@@ -8,9 +8,9 @@ namespace OvermorrowMod.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bloody Teeth");
+            DisplayName.SetDefault("Giant Tooth");
             Tooltip.SetDefault("5% increased melee damage\nMelee attacks have a 25% chance to inflict Bleeding" +
-                "\n'I didn't see any teeth on those things... Unless...?'");
+                "\n'Where would you even put this? On your head?'");
         }
 
         public override void SetDefaults()
