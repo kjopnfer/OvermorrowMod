@@ -333,7 +333,134 @@ namespace OvermorrowMod
             {
                 tasks.Insert(WetJungle + 1, new PassLegacy("WaterCaveGeneration", WaterCaveFinder));
             }
+
+            int TempleS = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
+            if (TempleS != -1)
+            {
+                tasks.Insert(TempleS + 1, new PassLegacy("Mddd", TempleStart));
+            }
+
         }
+
+
+
+        private void TempleStart(GenerationProgress progress)
+        {
+            progress.Message = "Generating";
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000008); k++)
+            {
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int y = WorldGen.genRand.Next(50, (int)Main.maxTilesY / 7);
+
+                //bottom
+                for (int i = 0; i < 11; i++)
+                {
+                    WorldGen.PlaceTile(x - i, y, 311);
+                }
+
+                for (int i = 0; i < 9; i++)
+                {
+                    WorldGen.PlaceTile(x - 10 - i, y - 1, 311);
+                }
+
+                WorldGen.PlaceTile(x - 8, y - 1, 21, style: 28);
+
+
+                //front
+                WorldGen.PlaceTile(x - 18, y - 2, 311);
+                WorldGen.PlaceTile(x - 19, y - 2, 311);
+                WorldGen.PlaceTile(x - 19, y - 3, 311);
+                WorldGen.PlaceTile(x - 20, y - 3, 311);
+                WorldGen.PlaceTile(x - 20, y - 4, 311);
+                WorldGen.PlaceTile(x - 21, y - 4, 311);
+                WorldGen.PlaceTile(x - 21, y - 5, 311);
+                WorldGen.PlaceTile(x - 22, y - 5, 311);
+                WorldGen.PlaceTile(x - 22, y - 6, 311);
+                WorldGen.PlaceTile(x - 23, y - 6, 311);
+                WorldGen.PlaceTile(x - 23, y - 7, 311);
+                WorldGen.PlaceTile(x - 24, y - 7, 311);  
+
+
+                //back
+                for (int i = 0; i < 7; i++)
+                {
+                    WorldGen.PlaceTile(x, y - i, 311);
+                }
+
+
+
+                //top
+                for (int i = 0; i < 4; i++)
+                {
+                    WorldGen.PlaceTile(x - i, y - 7, 311);
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    WorldGen.PlaceTile(x - i - 4, y - 7, 19);
+                }
+
+                for (int i = 0; i < 6; i++)
+                {
+                    WorldGen.PlaceTile(x - 5, y - i - 1, 213);
+                }
+
+                for (int i = 0; i < 18; i++)
+                {
+                    WorldGen.PlaceTile(x - i - 7, y - 7, 311);
+                }
+
+
+
+                //sail
+                for (int i = 0; i < 9; i++)
+                {
+                    WorldGen.PlaceWall(x - 12, y - 8 - i, 106);
+                }
+
+                for (int j = 0; j < 5; j++)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        WorldGen.PlaceWall(x - 8 - i, y - 12 - j, 148);
+                    }
+                }
+
+
+                //walls
+                for (int i = 0; i < 21; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 6, 42);
+                }
+
+                for (int i = 0; i < 20; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 5, 42);
+                }
+
+                for (int i = 0; i < 19; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 4, 42);
+                }
+
+                for (int i = 0; i < 18; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 3, 42);
+                }
+
+                for (int i = 0; i < 17; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 2, 42);
+                }
+
+                for (int i = 0; i < 9; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 1, y - 1, 42);
+                }
+            }
+        }
+
+
 
         int randSize = Main.rand.Next(140, 150);
         bool notInvalid = true;
