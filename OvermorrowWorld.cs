@@ -347,7 +347,7 @@ namespace OvermorrowMod
         private void TempleStart(GenerationProgress progress)
         {
             progress.Message = "Generating";
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000008); k++)
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000000); k++)
             {
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
                 int y = WorldGen.genRand.Next(50, (int)Main.maxTilesY / 7);
@@ -457,6 +457,256 @@ namespace OvermorrowMod
                 {
                     WorldGen.PlaceWall(x - i - 1, y - 1, 42);
                 }
+            }
+
+
+
+
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000018); k++)
+            {
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int y = WorldGen.genRand.Next(50, (int)Main.maxTilesY / 8);
+
+
+
+                int wallypt = 42;
+                int tileypt = 311;
+
+
+                //bottom
+                for (int i = 0; i < 18; i++)
+                {
+                    WorldGen.PlaceTile(x - i - 6, y, tileypt);
+                }
+
+
+                //front
+                for (int i = 0; i < 3; i++)
+                {
+                    WorldGen.PlaceTile(x - 23 - i, y - 1, tileypt);
+                }
+
+                for (int i = 0; i < 2; i++)
+                {
+                    WorldGen.PlaceTile(x - 25, y - 2 - i, tileypt);
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    WorldGen.PlaceTile(x - 26, y - 3 - i, tileypt);
+                }
+
+
+                //back
+                for (int i = 0; i < 3; i++)
+                {
+                    WorldGen.PlaceTile(x - 6 + i, y - 1, tileypt);
+                }
+
+                for (int i = 0; i < 2; i++)
+                {
+                    WorldGen.PlaceTile(x - 4, y - 2 - i, tileypt);
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    WorldGen.PlaceTile(x - 3, y - 3 - i, tileypt);
+                }
+
+
+
+                //top
+                for (int i = 0; i < 6; i++)
+                {
+                    WorldGen.PlaceTile(x - 23 - i, y - 6, tileypt);
+                }
+
+                for (int i = 0; i < 5; i++)
+                {
+                    WorldGen.PlaceTile(x - 25 - i, y - 7, tileypt);
+                }
+
+
+                for (int i = 0; i < 5; i++)
+                {
+                    WorldGen.PlaceTile(x - 18 - i, y - 6, 19);
+                }
+
+
+                for (int i = 0; i < 17; i++)
+                {
+                    WorldGen.PlaceTile(x - 1 - i, y - 6, tileypt);
+                }
+
+
+                for (int i = 0; i < 2; i++)
+                {
+                    WorldGen.PlaceTile(x - 12, y - 5 + i, tileypt);
+                }
+
+                WorldGen.PlaceTile(x - 12, y - 1, 10);
+
+                for (int i = 0; i < 9; i++)
+                {
+                    WorldGen.PlaceTile(x - 35 + i, y - 8, tileypt);
+                }
+
+
+
+
+                //Room
+                for (int i = 0; i < 5; i++)
+                {
+                    WorldGen.PlaceTile(x - 1, y - 7 - i, tileypt);
+                }
+
+                for (int i = 0; i < 14; i++)
+                {
+                    WorldGen.PlaceTile(x - i, y - 12, tileypt);
+                }
+
+
+                for (int i = 0; i < 2; i++)
+                {
+                    WorldGen.PlaceTile(x - 12, y - 11 + i, tileypt);
+                }
+
+                WorldGen.PlaceTile(x - 12, y - 6, 10);
+                WorldGen.PlaceTile(x - 12, y - 7, 10);
+
+
+
+
+
+
+                //walls
+                for (int i = 0; i < 16; i++)
+                {
+                    WorldGen.PlaceWall(x - i - 7, y - 1, wallypt);
+                }
+
+                for (int j = 0; j < 2; j++)
+                {
+                    for (int i = 0; i < 20; i++)
+                    {
+                        WorldGen.PlaceWall(x - i - 5, y - 2 - j, wallypt);
+                    }
+                }
+
+                for (int j = 0; j < 2; j++)
+                {
+                    for (int i = 0; i < 22; i++)
+                    {
+                        WorldGen.PlaceWall(x - i - 4, y - 4 - j, wallypt);
+                    }
+                }
+
+                for (int j = 0; j < 5; j++)
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+                        WorldGen.PlaceWall(x - i - 2, y - 7 - j, wallypt);
+                    }
+                }
+
+
+
+                //sail
+                WorldGen.PlaceTile(x - 17, y - 25, tileypt);
+                WorldGen.PlaceTile(x - 16, y - 25, tileypt);
+
+                for (int i = 0; i < 7; i++)
+                {
+                    WorldGen.PlaceTile(x - 6, y - 13 - i, 214);
+                }
+
+                WorldGen.PlaceTile(x - 6, y - 20, tileypt);
+                WorldGen.PlaceTile(x - 5, y - 20, 19);
+                WorldGen.PlaceTile(x - 4, y - 20, 19);
+
+                for (int i = 0; i < 11; i++)
+                {
+                    WorldGen.PlaceTile(x - 27, y - 9 - i, 214);
+                }
+
+                WorldGen.PlaceTile(x - 27, y - 20, tileypt);
+                WorldGen.PlaceTile(x - 28, y - 20, 19);
+                WorldGen.PlaceTile(x - 29, y - 20, 19);
+
+                for (int i = 0; i < 11; i++)
+                {
+                    WorldGen.PlaceTile(x - 27, y - 9 - i, 214);
+                }
+
+                for (int i = 0; i < 20; i++)
+                {
+                    WorldGen.PlaceTile(x - 7 - i, y - 20, 19);
+                }
+
+
+                for (int i = 0; i < 20; i++)
+                {
+                    WorldGen.PlaceTile(x - 7 - i, y - 25, 19);
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    WorldGen.PlaceWall(x - 17, y - 18 - i, 4);
+                    WorldGen.PlaceWall(x - 16, y - 18 - i, 4);
+                }
+
+                for (int i = 0; i < 8; i++)
+                {
+                    WorldGen.PlaceWall(x - 5, y - 19 - i, 148);
+                }
+
+                for (int i = 0; i < 8; i++)
+                {
+                    WorldGen.PlaceWall(x - 29, y - 19 - i, 148);
+                }
+
+                for (int i = 0; i < 6; i++)
+                {
+                    WorldGen.PlaceWall(x - 4, y - 20 - i, 148);
+                }
+
+                for (int i = 0; i < 6; i++)
+                {
+                    WorldGen.PlaceWall(x - 30, y - 20 - i, 148);
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    WorldGen.PlaceWall(x - 6, y - 18 - i, 4);
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    WorldGen.PlaceWall(x - 28, y - 18 - i, 4);
+                }
+
+                for (int j = 0; j < 10; j++)
+                {
+                    for (int i = 0; i < 22; i++)
+                    {
+                        WorldGen.PlaceWall(x - i - 6, y - 18 - j, 148);
+                    }
+                }
+
+
+                WorldGen.PlaceTile(x - 6, y - 25, tileypt);
+                WorldGen.PlaceTile(x - 5, y - 25, 19);
+                WorldGen.PlaceTile(x - 4, y - 25, 19);
+
+                WorldGen.PlaceTile(x - 27, y - 25, tileypt);
+                WorldGen.PlaceTile(x - 28, y - 25, 19);
+                WorldGen.PlaceTile(x - 29, y - 25, 19);
+
+
+                
+
+
+
             }
         }
 
