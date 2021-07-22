@@ -346,39 +346,42 @@ namespace OvermorrowMod
 
         private void TempleStart(GenerationProgress progress)
         {
-            progress.Message = "Generating";
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000000); k++)
+            progress.Message = "Generating Sky Ships";
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.000001); k++)
             {
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next(50, (int)Main.maxTilesY / 7);
+                int y = WorldGen.genRand.Next(100, (int)Main.maxTilesY / 7);
 
                 //bottom
                 for (int i = 0; i < 11; i++)
                 {
-                    WorldGen.PlaceTile(x - i, y, 311);
+                    WorldGen.PlaceTile(x + i, y, 311);
                 }
 
                 for (int i = 0; i < 9; i++)
                 {
-                    WorldGen.PlaceTile(x - 10 - i, y - 1, 311);
+                    WorldGen.PlaceTile(x + 10 + i, y - 1, 311);
                 }
 
-                WorldGen.PlaceTile(x - 8, y - 1, 21, style: 28);
-
+                WorldGen.PlaceTile(x + 1, y - 1, 376);
+                WorldGen.PlaceTile(x + 10, y - 2, 376);
+                WorldGen.PlaceTile(x + 12, y - 2, 376);
+                WorldGen.PlaceTile(x + 14, y - 2, 376);
+                WorldGen.PlaceTile(x + 16, y - 2, 376);
 
                 //front
-                WorldGen.PlaceTile(x - 18, y - 2, 311);
-                WorldGen.PlaceTile(x - 19, y - 2, 311);
-                WorldGen.PlaceTile(x - 19, y - 3, 311);
-                WorldGen.PlaceTile(x - 20, y - 3, 311);
-                WorldGen.PlaceTile(x - 20, y - 4, 311);
-                WorldGen.PlaceTile(x - 21, y - 4, 311);
-                WorldGen.PlaceTile(x - 21, y - 5, 311);
-                WorldGen.PlaceTile(x - 22, y - 5, 311);
-                WorldGen.PlaceTile(x - 22, y - 6, 311);
-                WorldGen.PlaceTile(x - 23, y - 6, 311);
-                WorldGen.PlaceTile(x - 23, y - 7, 311);
-                WorldGen.PlaceTile(x - 24, y - 7, 311);  
+                WorldGen.PlaceTile(x + 18, y - 2, 311);
+                WorldGen.PlaceTile(x + 19, y - 2, 311);
+                WorldGen.PlaceTile(x + 19, y - 3, 311);
+                WorldGen.PlaceTile(x + 20, y - 3, 311);
+                WorldGen.PlaceTile(x + 20, y - 4, 311);
+                WorldGen.PlaceTile(x + 21, y - 4, 311);
+                WorldGen.PlaceTile(x + 21, y - 5, 311);
+                WorldGen.PlaceTile(x + 22, y - 5, 311);
+                WorldGen.PlaceTile(x + 22, y - 6, 311);
+                WorldGen.PlaceTile(x + 23, y - 6, 311);
+                WorldGen.PlaceTile(x + 23, y - 7, 311);
+                WorldGen.PlaceTile(x + 24, y - 7, 311);  
 
 
                 //back
@@ -388,26 +391,25 @@ namespace OvermorrowMod
                 }
 
 
-
                 //top
                 for (int i = 0; i < 4; i++)
                 {
-                    WorldGen.PlaceTile(x - i, y - 7, 311);
+                    WorldGen.PlaceTile(x + i, y - 7, 311);
                 }
 
                 for (int i = 0; i < 3; i++)
                 {
-                    WorldGen.PlaceTile(x - i - 4, y - 7, 19);
+                    WorldGen.PlaceTile(x + i + 4, y - 7, 19);
                 }
 
                 for (int i = 0; i < 6; i++)
                 {
-                    WorldGen.PlaceTile(x - 5, y - i - 1, 213);
+                    WorldGen.PlaceTile(x + 5, y - i - 1, 213);
                 }
 
                 for (int i = 0; i < 18; i++)
                 {
-                    WorldGen.PlaceTile(x - i - 7, y - 7, 311);
+                    WorldGen.PlaceTile(x + i + 7, y - 7, 311);
                 }
 
 
@@ -415,14 +417,14 @@ namespace OvermorrowMod
                 //sail
                 for (int i = 0; i < 9; i++)
                 {
-                    WorldGen.PlaceWall(x - 12, y - 8 - i, 106);
+                    WorldGen.PlaceWall(x + 12, y - 8 - i, 106);
                 }
 
                 for (int j = 0; j < 5; j++)
                 {
                     for (int i = 0; i < 9; i++)
                     {
-                        WorldGen.PlaceWall(x - 8 - i, y - 12 - j, 148);
+                        WorldGen.PlaceWall(x + 8 + i, y - 12 - j, 148);
                     }
                 }
 
@@ -430,42 +432,48 @@ namespace OvermorrowMod
                 //walls
                 for (int i = 0; i < 21; i++)
                 {
-                    WorldGen.PlaceWall(x - i - 1, y - 6, 42);
+                    WorldGen.PlaceWall(x + i + 1, y - 6, 42);
                 }
 
                 for (int i = 0; i < 20; i++)
                 {
-                    WorldGen.PlaceWall(x - i - 1, y - 5, 42);
+                    WorldGen.PlaceWall(x + i + 1, y - 5, 42);
                 }
 
                 for (int i = 0; i < 19; i++)
                 {
-                    WorldGen.PlaceWall(x - i - 1, y - 4, 42);
+                    WorldGen.PlaceWall(x + i + 1, y - 4, 42);
                 }
 
                 for (int i = 0; i < 18; i++)
                 {
-                    WorldGen.PlaceWall(x - i - 1, y - 3, 42);
+                    WorldGen.PlaceWall(x + i + 1, y - 3, 42);
                 }
 
                 for (int i = 0; i < 17; i++)
                 {
-                    WorldGen.PlaceWall(x - i - 1, y - 2, 42);
+                    WorldGen.PlaceWall(x + i + 1, y - 2, 42);
                 }
 
                 for (int i = 0; i < 9; i++)
                 {
-                    WorldGen.PlaceWall(x - i - 1, y - 1, 42);
+                    WorldGen.PlaceWall(x + i + 1, y - 1, 42);
                 }
             }
 
 
 
 
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000018); k++)
+
+
+
+
+
+
+            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000008); k++)
             {
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next(50, (int)Main.maxTilesY / 8);
+                int y = WorldGen.genRand.Next(125, (int)Main.maxTilesY / 7);
 
 
 
@@ -565,15 +573,13 @@ namespace OvermorrowMod
                     WorldGen.PlaceTile(x - i, y - 12, tileypt);
                 }
 
-
                 for (int i = 0; i < 2; i++)
                 {
                     WorldGen.PlaceTile(x - 12, y - 11 + i, tileypt);
                 }
 
-                WorldGen.PlaceTile(x - 12, y - 6, 10);
                 WorldGen.PlaceTile(x - 12, y - 7, 10);
-
+                
 
 
 
@@ -614,6 +620,9 @@ namespace OvermorrowMod
                 //sail
                 WorldGen.PlaceTile(x - 17, y - 25, tileypt);
                 WorldGen.PlaceTile(x - 16, y - 25, tileypt);
+
+                WorldGen.PlaceTile(x - 17, y - 20, tileypt);
+                WorldGen.PlaceTile(x - 16, y - 20, tileypt);
 
                 for (int i = 0; i < 7; i++)
                 {
@@ -703,10 +712,18 @@ namespace OvermorrowMod
                 WorldGen.PlaceTile(x - 29, y - 25, 19);
 
 
-                
+                //objects
+                WorldGen.PlaceTile(x - 16, y - 3, 240, style: 47);
+
+                WorldGen.PlaceTile(x - 20, y - 1, 376);
+                WorldGen.PlaceTile(x - 22, y - 1, 376);
+                WorldGen.PlaceTile(x - 26, y - 2, 376);
+                WorldGen.PlaceTile(x - 24, y - 2, 376);
 
 
+                WorldGen.PlaceTile(x - 6, y - 2, 376, style: Main.rand.Next(10));
 
+                WorldGen.PlaceTile(x - 6, y - 7, 21, style: 28);
             }
         }
 
