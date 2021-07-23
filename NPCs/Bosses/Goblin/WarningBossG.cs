@@ -1,15 +1,13 @@
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using System.Collections.Generic;
-using System.Linq;
-using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using System.Linq;
 
 namespace OvermorrowMod.NPCs.Bosses.Goblin
 {
+    [AutoloadHead]
     public class WarningBossG : ModNPC
     {
         public override void SetStaticDefaults()
@@ -62,6 +60,7 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
         public override void AI()
         {
+            npc.homeless = false;
             npc.noGravity = true;
             npc.velocity.Y = 0f;
             npc.velocity.X = 0f;

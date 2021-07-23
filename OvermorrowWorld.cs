@@ -16,6 +16,8 @@ using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.NPCs.Bosses.Goblin;
+
 namespace OvermorrowMod
 {
     public class OvermorrowWorld : ModWorld
@@ -46,6 +48,8 @@ namespace OvermorrowMod
         private bool placedBook = false;
         private bool placedwep = false;
         private bool placedtele = false;
+
+
 
         public override void Initialize()
         {
@@ -752,7 +756,7 @@ namespace OvermorrowMod
 
 
                     int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
-                    int y = (int)WorldGen.worldSurfaceLow + Main.maxTilesY / 12;
+                    int y = (int)WorldGen.worldSurfaceLow + Main.maxTilesY / 12 + 20;
                     int[] tileIDs = { 147, 2, 60 };
 
                     if(Main.tile[x, y].type <= -1)
@@ -809,6 +813,7 @@ namespace OvermorrowMod
                         WorldGen.PlaceTile(x - 3, y - 1, 325);
                         WorldGen.PlaceTile(x + 3, y - 1, 325);
 
+                        NPC.NewNPC(x, y - randY - 8, ModContent.NPCType<WarningBossG>());
 
                         for (int j = 0; j < 5; j++)
                         {
@@ -818,7 +823,6 @@ namespace OvermorrowMod
                             }
                         }
         
-
                         for (int i = 0; i < randX; i++)
                         {
                             WorldGen.PlaceTile(x + i + 3, y - randY - 4, 325);
@@ -853,8 +857,7 @@ namespace OvermorrowMod
                         {
                             WorldGen.PlaceTile(x - i, y - randY - 26, 325);
                             WorldGen.PlaceTile(x + i, y - randY - 26, 325);
-                        }
-
+                        }    
 
                         for (int j = 0; j < 15; j++)
                         {
