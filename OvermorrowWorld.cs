@@ -732,8 +732,8 @@ namespace OvermorrowMod
             {
                 if(!placedtower)
                 {
-                    int x = WorldGen.genRand.Next(338, 500);
-                    int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow - 100, (int)WorldGen.rockLayer + 70);
+                    int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
+                    int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, (int)WorldGen.rockLayer + Main.maxTilesY / 12);
 
                     int randY = Main.rand.Next(10, 20);
                     int randX = Main.rand.Next(14, 15);
@@ -741,7 +741,7 @@ namespace OvermorrowMod
                     for (int fuckyou = 0; fuckyou < 150; fuckyou++)
                     {
                     Tile tile = Framing.GetTileSafely(x, y);
-                    if (tile.active() && !WorldGen.SolidTile(x, y - 1 - fuckyou) && tile.type == 53 || tile.active() && !WorldGen.SolidTile(x, y - 1 - fuckyou) && tile.type == 2 || tile.active() && !WorldGen.SolidTile(x, y - 1 - fuckyou) && tile.type == 23 || tile.active() && !WorldGen.SolidTile(x, y - 1 - fuckyou) && tile.type == 199)
+                    if (tile.active() && Main.tile[x, y - fuckyou].active() && tile.type == 53 || tile.active() && !Main.tile[x, y - fuckyou].active && tile.type == 23 || tile.active() && !Main.tile[x, y - fuckyou].active && tile.type == 147 || tile.active() && !Main.tile[x, y - fuckyou].active && tile.type == 60)
                     {
 
                         for (int j = 0; j < randY + 3; j++)
@@ -755,9 +755,9 @@ namespace OvermorrowMod
 
                         for (int j = 0; j < randY + 12; j++)
                         {
-                            for (int i = 0; i < 30; i++)
+                            for (int i = 0; i < 39; i++)
                             {
-                                WorldGen.KillTile(x - 4 + i, y + j);
+                                WorldGen.KillTile(x - 19 + i, y - randY - j);
                             }
                         }
 
@@ -771,7 +771,7 @@ namespace OvermorrowMod
                             WorldGen.PlaceTile(x + 3, y - i - 4, 325);
                         }
 
-                        for (int i = 0; i < 6; i++)
+                        for (int i = 0; i < 7; i++)
                         {
                             WorldGen.PlaceTile(x - 3 + i, y, 53);
                         }
