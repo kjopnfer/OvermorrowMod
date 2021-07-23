@@ -752,7 +752,7 @@ namespace OvermorrowMod
 
 
                     int x = WorldGen.genRand.Next(380, Main.maxTilesX);
-                    int y = (int)Main.worldSurface - Main.maxTilesX / 15;
+                    int y = (int)WorldGen.worldSurfaceLow + Main.maxTilesY / 12;
                     int[] tileIDs = { 147, 2, 60 };
 
                     if(Main.tile[x, y].type <= -1)
