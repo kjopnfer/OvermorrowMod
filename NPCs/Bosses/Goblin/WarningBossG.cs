@@ -19,19 +19,18 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
         public override void SetDefaults()
         {
-            npc.width = 34;
-            npc.height = 53;
-            npc.damage = 14;
-            npc.defense = 6;
+            npc.width = 36;
+            npc.height = 36;
+            npc.damage = 0;
+            npc.defense = 0;
             npc.lifeMax = 120;
-            npc.HitSound = SoundID.NPCHit50;
-            npc.DeathSound = SoundID.NPCDeath53;
-            npc.value = 60f;
+            npc.HitSound = SoundID.NPCHit4;
+            npc.DeathSound = SoundID.NPCHit4;
+            npc.value = 0f;
             npc.knockBackResist = 0f;
-            npc.CloneDefaults(NPCID.Guide);
             npc.friendly = true;
-            npc.aiStyle = 7;
-            npc.townNPC = true;  
+            npc.townNPC = true;
+            npc.dontTakeDamage = true;
         }
 
         public override void OnChatButtonClicked(bool firstButton, ref bool shop)
@@ -46,14 +45,13 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
         public override string GetChat()
         {
-            return "Click 'shop' to fight the mini boss";
+            return "Click 'Fight' to battle the miniboss";
         }
-
 
 
         public override void SetChatButtons(ref string button, ref string button2)
         {
-            button = Language.GetTextValue("LegacyInterface.28");
+            button = "Fight";
         }
 
         void StartBoss()
