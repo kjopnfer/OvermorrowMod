@@ -751,7 +751,7 @@ namespace OvermorrowMod
 
 
 
-                    int x = WorldGen.genRand.Next(380, Main.maxTilesX);
+                    int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
                     int y = (int)WorldGen.worldSurfaceLow + Main.maxTilesY / 12;
                     int[] tileIDs = { 147, 2, 60 };
 
@@ -771,13 +771,20 @@ namespace OvermorrowMod
                         }
 
 
-                        for (int j = 0; j < randY + 12; j++)
+                        for (int j = 0; j < randY + 22; j++)
                         {
                             for (int i = 0; i < 39; i++)
                             {
                                 WorldGen.KillTile(x - 19 + i, y - randY - j);
                             }
                         }
+
+
+                        for (int i = 0; i < randY + 4 + 20; i++)
+                        {
+                            WorldGen.PlaceTile(x, y - i + 20, 213);
+                        }
+
 
                         for (int i = 0; i < randY; i++)
                         {
@@ -789,19 +796,18 @@ namespace OvermorrowMod
                             WorldGen.PlaceTile(x + 3, y - i - 4, 325);
                         }
 
-                        for (int i = 0; i < 6; i++)
+                        for (int i = 0; i < 5; i++)
                         {
-                            WorldGen.PlaceTile(x - 3 + i, y, 53);
-                        }
-
-                        for (int i = 0; i < randY + 4; i++)
-                        {
-                            WorldGen.PlaceTile(x, y - i, 213);
+                            WorldGen.PlaceTile(x - 2 + i, y - 1, 19);
                         }
 
 
-                        WorldGen.PlaceTile(x - 3, y - 1, 10);
-                        WorldGen.PlaceTile(x + 3, y - 1, 10);
+                        WorldGen.PlaceTile(x - 3, y - 3, 325);
+                        WorldGen.PlaceTile(x + 3, y - 3, 325);
+                        WorldGen.PlaceTile(x - 3, y - 2, 325);
+                        WorldGen.PlaceTile(x + 3, y - 2, 325);
+                        WorldGen.PlaceTile(x - 3, y - 1, 325);
+                        WorldGen.PlaceTile(x + 3, y - 1, 325);
 
 
                         for (int j = 0; j < 5; j++)
@@ -819,7 +825,7 @@ namespace OvermorrowMod
                             WorldGen.PlaceTile(x - i - 3, y - randY - 4, 325);
                         }
 
-                        for (int i = 0; i < 7; i++)
+                        for (int i = 0; i < 16; i++)
                         {
                             WorldGen.PlaceTile(x + randX + 3, y - i - randY - 4, 325);
                             WorldGen.PlaceTile(x - randX - 3, y - i - randY - 4, 325);
@@ -835,22 +841,22 @@ namespace OvermorrowMod
 
                         for (int i = 0; i < 7; i++)
                         {
-                            WorldGen.PlaceTile(x + randX + 3 - i, y - randY - 11 - i, 325);
-                            WorldGen.PlaceTile(x - randX - 3 + i, y - randY - 11 - i, 325);
+                            WorldGen.PlaceTile(x + randX + 3 - i, y - randY - 20 - i, 325);
+                            WorldGen.PlaceTile(x - randX - 3 + i, y - randY - 20 - i, 325);
 
-                            WorldGen.PlaceTile(x + randX + 2 - i, y - randY - 11 - i, 325);
-                            WorldGen.PlaceTile(x - randX - 2 + i, y - randY - 11 - i, 325);
+                            WorldGen.PlaceTile(x + randX + 2 - i, y - randY - 20 - i, 325);
+                            WorldGen.PlaceTile(x - randX - 2 + i, y - randY - 20 - i, 325);
                             
                         }
 
                         for (int i = 0; i < 10; i++)
                         {
-                            WorldGen.PlaceTile(x - i, y - randY - 17, 325);
-                            WorldGen.PlaceTile(x + i, y - randY - 17, 325);
+                            WorldGen.PlaceTile(x - i, y - randY - 26, 325);
+                            WorldGen.PlaceTile(x + i, y - randY - 26, 325);
                         }
 
 
-                        for (int j = 0; j < 6; j++)
+                        for (int j = 0; j < 15; j++)
                         {
                             for (int i = 0; i < 33; i++)
                             {
@@ -864,33 +870,33 @@ namespace OvermorrowMod
 
                         for (int i = 0; i < 33 - 2; i++)
                         {
-                            WorldGen.PlaceWall(x - randX + i - 1, y - randY - 11, 4);
+                            WorldGen.PlaceWall(x - randX + i - 1, y - randY - 20, 4);
                         }
 
                         for (int i = 0; i < 31 - 2; i++)
                         {
-                            WorldGen.PlaceWall(x - randX + i - 0, y - randY - 12, 4);
+                            WorldGen.PlaceWall(x - randX + i - 0, y - randY - 21, 4);
                         }
                         
 
                         for (int i = 0; i < 29 - 2; i++)
                         {
-                            WorldGen.PlaceWall(x - randX + i + 1, y - randY - 13, 4);
+                            WorldGen.PlaceWall(x - randX + i + 1, y - randY - 22, 4);
                         }
 
                         for (int i = 0; i < 27 - 2; i++)
                         {
-                            WorldGen.PlaceWall(x - randX + i + 2, y - randY - 14, 4);
+                            WorldGen.PlaceWall(x - randX + i + 2, y - randY - 23, 4);
                         }
 
                         for (int i = 0; i < 25 - 2; i++)
                         {
-                            WorldGen.PlaceWall(x - randX + i + 3, y - randY - 15, 4);
+                            WorldGen.PlaceWall(x - randX + i + 3, y - randY - 24, 4);
                         }
 
                         for (int i = 0; i < 23 - 2; i++)
                         {
-                            WorldGen.PlaceWall(x - randX + i + 4, y - randY - 16, 4);
+                            WorldGen.PlaceWall(x - randX + i + 4, y - randY - 25, 4);
                         }
                         return;
                     }
