@@ -738,10 +738,12 @@ namespace OvermorrowMod
                     int randY = Main.rand.Next(10, 20);
                     int randX = Main.rand.Next(14, 15);
 
+
+
                     for (int fuckyou = 0; fuckyou < 150; fuckyou++)
                     {
                     Tile tile = Framing.GetTileSafely(x, y);
-                    if (tile.active() && Main.tile[x, y - fuckyou].active() && tile.type == 53 || tile.active() && !Main.tile[x, y - fuckyou].active && tile.type == 23 || tile.active() && !Main.tile[x, y - fuckyou].active && tile.type == 147 || tile.active() && !Main.tile[x, y - fuckyou].active && tile.type == 60)
+                    if (tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 53 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 2 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 147 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 2 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 23 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 199)
                     {
 
                         for (int j = 0; j < randY + 3; j++)
@@ -771,7 +773,7 @@ namespace OvermorrowMod
                             WorldGen.PlaceTile(x + 3, y - i - 4, 325);
                         }
 
-                        for (int i = 0; i < 7; i++)
+                        for (int i = 0; i < 6; i++)
                         {
                             WorldGen.PlaceTile(x - 3 + i, y, 53);
                         }
