@@ -336,7 +336,7 @@ namespace OvermorrowMod
 
 
 
-            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Lihzahrd Altars"));
+            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
             if (TowerS != -1)
             {
                 tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
