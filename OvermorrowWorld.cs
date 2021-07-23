@@ -334,6 +334,17 @@ namespace OvermorrowMod
                 tasks.Insert(WetJungle + 1, new PassLegacy("WaterCaveGeneration", WaterCaveFinder));
             }
 
+
+
+            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Lihzahrd Altars"));
+            if (TowerS != -1)
+            {
+                tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
+            }
+
+
+
+
             int TempleS = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (TempleS != -1)
             {
@@ -726,24 +737,29 @@ namespace OvermorrowMod
             }
 
 
+        }
 
 
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY)); k++)
-            {
-                if(!placedtower)
-                {
-                    int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
-                    int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, (int)WorldGen.rockLayer + Main.maxTilesY / 12);
+
+
+
+        private void TowerStart(GenerationProgress progress)
+        {
 
                     int randY = Main.rand.Next(10, 20);
                     int randX = Main.rand.Next(14, 15);
 
 
 
-                    for (int fuckyou = 0; fuckyou < 150; fuckyou++)
+                    int x = WorldGen.genRand.Next(380, Main.maxTilesX);
+                    int y = (int)Main.worldSurface - Main.maxTilesX / 15;
+                    int[] tileIDs = { 147, 2, 60 };
+
+                    if(Main.tile[x, y].type <= -1)
                     {
-                    Tile tile = Framing.GetTileSafely(x, y);
-                    if (tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 53 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 2 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 147 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 2 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 23 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 199)
+                        y++;
+                    }
+                    else
                     {
 
                         for (int j = 0; j < randY + 3; j++)
@@ -876,12 +892,17 @@ namespace OvermorrowMod
                         {
                             WorldGen.PlaceWall(x - randX + i + 4, y - randY - 16, 4);
                         }
-                        placedtower = true;
+                        return;
                     }
-                    }
+                
                 }
-            }
-        }
+
+
+
+
+
+
+
 
 
 
