@@ -340,7 +340,7 @@ namespace OvermorrowMod
 
 
 
-            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
+            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Piles"));
             if (TowerS != -1)
             {
                 tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
@@ -744,8 +744,7 @@ namespace OvermorrowMod
         }
 
 
-
-
+        bool activetilecheck = false;
 
         private void TowerStart(GenerationProgress progress)
         {
@@ -759,50 +758,20 @@ namespace OvermorrowMod
                     int y = (int)WorldGen.worldSurfaceLow + Main.maxTilesY / 12 + 20;
                     int[] tileIDs = { 147, 2, 60 };
 
-                    if(Main.tile[x, y].type <= -1)
+
+
+                    if(Main.tile[x, y].type <= -1 && !Main.tile[x, y].active())
                     {
                         y++;
                     }
                     else
                     {
-
-                        for (int j = 0; j < randY + 3; j++)
-                        {
-                            for (int i = 0; i < 8; i++)
-                            {
-                                WorldGen.KillTile(x - 4 + i, y - j);
-                            }
-                        }
-
-
                         for (int j = 0; j < randY + 22; j++)
                         {
                             for (int i = 0; i < 39; i++)
                             {
                                 WorldGen.KillTile(x - 19 + i, y - randY - j);
                             }
-                        }
-
-
-                        for (int i = 0; i < randY + 4 + 20; i++)
-                        {
-                            WorldGen.PlaceTile(x, y - i + 20, 213);
-                        }
-
-
-                        for (int i = 0; i < randY; i++)
-                        {
-                            WorldGen.PlaceTile(x - 3, y - i - 4, 325);
-                        }
-
-                        for (int i = 0; i < randY; i++)
-                        {
-                            WorldGen.PlaceTile(x + 3, y - i - 4, 325);
-                        }
-
-                        for (int i = 0; i < 5; i++)
-                        {
-                            WorldGen.PlaceTile(x - 2 + i, y - 1, 19);
                         }
 
 
@@ -813,7 +782,7 @@ namespace OvermorrowMod
                         WorldGen.PlaceTile(x - 3, y - 1, 325);
                         WorldGen.PlaceTile(x + 3, y - 1, 325);
 
-                        NPC.NewNPC(x, y - randY - 8, ModContent.NPCType<WarningBossG>());
+                        NPC.NewNPC(x * 16, (y - randY - 8) * 16, ModContent.NPCType<WarningBossG>());
 
                         for (int j = 0; j < 5; j++)
                         {
@@ -855,8 +824,8 @@ namespace OvermorrowMod
 
                         for (int i = 0; i < 10; i++)
                         {
-                            WorldGen.PlaceTile(x - i, y - randY - 26, 325);
-                            WorldGen.PlaceTile(x + i, y - randY - 26, 325);
+                            WorldGen.PlaceTile(x - i, y - randY - 26, 19);
+                            WorldGen.PlaceTile(x + i, y - randY - 26, 19);
                         }    
 
                         for (int j = 0; j < 15; j++)
