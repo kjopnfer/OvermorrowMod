@@ -14,9 +14,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         {
             DisplayName.SetDefault("Vile Guillotine");
             Tooltip.SetDefault("[c/09DBB8:{ Imbuement }]\n" +
-                "[c/800080:Right Click] to empower your Warden Artifacts on use" +
-                "\n[c/DE3A28:{ Power }] Your summons inflict Cursed Flames" +
-                "\nConsumes 1 Soul Essence");
+                "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
+                "[c/DE3A28:{ Power }] Your summons inflict Cursed Flames\n" +
+                "Consumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()
