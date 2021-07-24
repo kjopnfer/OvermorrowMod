@@ -48,8 +48,7 @@ namespace OvermorrowMod
         private bool placedBook = false;
         private bool placedwep = false;
         private bool placedtele = false;
-
-
+        private bool placedclaw = false;
 
         public override void Initialize()
         {
@@ -301,8 +300,57 @@ namespace OvermorrowMod
                         }
                     }
                 }
-            }
             
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+            int[] itemsToPlaceInSteamChests = { 953 };
+            int itemsToPlaceInSteampunkChoice = 0;
+                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 30 * 36)
+                {
+                    if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (inventoryIndex == 1)
+                            {
+                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSteamChests[itemsToPlaceInSteampunkChoice]);
+                                itemsToPlaceInSteampunkChoice = (itemsToPlaceInSteampunkChoice + 1) % itemsToPlaceInSteamChests.Length;
+                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                break;
+                            }
+                        }
+                        placedclaw = true;
+                    }
+                    else
+                    {
+                        if (Main.rand.Next(2) == 1)
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (inventoryIndex == 1)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSteamChests[itemsToPlaceInSteampunkChoice]);
+                                    itemsToPlaceInSteampunkChoice = (itemsToPlaceInSteampunkChoice + 1) % itemsToPlaceInSteamChests.Length;
+                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Worldgen Debugging
@@ -340,7 +388,7 @@ namespace OvermorrowMod
 
 
 
-            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
+            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
             if (TowerS != -1)
             {
                 tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
@@ -745,27 +793,27 @@ namespace OvermorrowMod
 
 
         bool activetilecheck = false;
-
+        bool TowerPlaced = false;
+        
         private void TowerStart(GenerationProgress progress)
         {
 
-                    int randY = Main.rand.Next(10, 20);
-                    int randX = Main.rand.Next(14, 15);
+            int randY = Main.rand.Next(10, 20);
+            int randX = Main.rand.Next(14, 15);
+                
+            for (int k = 0; k < (int)(Main.maxTilesX * Main.maxTilesY); k++)
+            {
+                if(!TowerPlaced)
+                {
+                int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
+                int y = WorldGen.genRand.Next(0, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
 
+                // Strength controls size
+                // Steps control interations
+                Tile tile = Framing.GetTileSafely(x, y);
+                if (tile.active() && tile.type == 27 || tile.active() && tile.type == 80)
+                {
 
-
-                    int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
-                    int y = (int)WorldGen.worldSurfaceLow + Main.maxTilesY / 12 + 20;
-                    int[] tileIDs = { 147, 2, 60 };
-
-
-
-                    if(Main.tile[x, y].type <= -1 && !Main.tile[x, y].active())
-                    {
-                        y++;
-                    }
-                    else
-                    {
                         for (int j = 0; j < randY + 22; j++)
                         {
                             for (int i = 0; i < 39; i++)
@@ -791,6 +839,14 @@ namespace OvermorrowMod
                                 WorldGen.PlaceWall(x + j - 2, y - i - 4, 4);
                             }
                         }
+
+
+                        for (int i = 0; i < randY + 1; i++)
+                        {
+                            WorldGen.PlaceTile(x + 3, y - randY + i - 4, 325);
+                            WorldGen.PlaceTile(x - 3, y - randY + i - 4, 325);
+                        }
+                        
         
                         for (int i = 0; i < randX; i++)
                         {
@@ -809,6 +865,16 @@ namespace OvermorrowMod
                         {
                             WorldGen.PlaceTile(x - 3 + i, y - randY - 4, 19);
                         }
+
+                        for (int i = 0; i < 6; i++)
+                        {
+                            WorldGen.PlaceTile(x - 3 + i, y - randY + 1, 19);
+                        }
+
+
+
+
+                        WorldGen.PlaceTile(x, y - randY, 21, style: 30);
 
 
 
@@ -870,10 +936,11 @@ namespace OvermorrowMod
                         {
                             WorldGen.PlaceWall(x - randX + i + 4, y - randY - 25, 4);
                         }
-                        return;
+                        TowerPlaced = true;
                     }
-                
                 }
+            }
+        }
 
 
 
