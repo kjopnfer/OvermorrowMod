@@ -23,7 +23,7 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
         private bool introMessage = true;
         bool leafatt = false;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/Goblin/BossBar";
-        
+        private const string ChainTexturePath2 = "OvermorrowMod/NPCs/Bosses/Goblin/BossBar2";
 
 
         Vector2 savedplaypos;
@@ -418,7 +418,9 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
 
             Vector2 mountedCenter = Main.player[npc.target].Center + new Vector2(400, -npc.life / 2.5f);
+
             Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
+            Texture2D chainTexture2 = ModContent.GetTexture(ChainTexturePath2);
 
             var drawPosition = Main.player[npc.target].Center + new Vector2(400, 0);
             var remainingVectorToPlayer = mountedCenter - drawPosition;
