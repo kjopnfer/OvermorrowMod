@@ -228,8 +228,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
     }
     public class TestLightning2 : Lightning
     {
-        public int direction = 1;
-        public float rotateby;
+        public int Direction = 1;
+        public float RotateBy;
         public float maxTime = 360;
         public override void SetStaticDefaults()
         {
@@ -254,8 +254,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 Positions[i].Size = Positions[i].DefSize * mult;
             }
             NPC projectileowner = Main.npc[(int)projectile.ai[1]];
-            //projectile.position = projectileowner.Center + new Vector2(187 * direction, -110);//49);
-            projectile.velocity = (Vector2.UnitX * direction).RotatedBy(MathHelper.ToRadians((direction == 1) ? 315 + rotateby : 45 + -rotateby));
+            //projectile.position = projectileowner.Center + new Vector2(187 * Direction, -110);//49);
+            projectile.velocity = (Vector2.UnitX * Direction).RotatedBy(MathHelper.ToRadians((Direction == 1) ? 315 + RotateBy : 45 + -RotateBy));
         }
     }
     public class TestLightning3 : Lightning

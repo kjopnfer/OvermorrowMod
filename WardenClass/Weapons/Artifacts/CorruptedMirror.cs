@@ -12,7 +12,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Corrupted Mirror");
-            Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nConsume a Soul Essence to gain a buff that reflects all damage for 3 minutes\n" +
+            Tooltip.SetDefault("[c/EBDE34:{ Artifact of Courage }]\n" +
+                "Consume a Soul Essence to gain a buff that reflects all damage for 3 minutes\n" +
                 "All players on the same team gain the same buff for 3 minutes\n" +
                 "'You can't shake the feeling of something otherworldy gazing from the mirror'");
         }

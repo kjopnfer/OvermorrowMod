@@ -7,8 +7,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
     public class LaserBreathWarning : Deathray
     {
-        public float rotateby;
-        public int direction = 1;
+        public float RotateBy;
+        public int Direction = 1;
         public override string Texture => "OvermorrowMod/NPCs/Bosses/StormDrake/LaserWarning";
         public LaserBreathWarning() : base(180, 2500f, 0f, Color.Blue, "NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
@@ -19,8 +19,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             LaserLength = length;
             projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.1f;
             NPC projectileowner = Main.npc[(int)projectile.ai[1]];
-            projectile.position = projectileowner.Center + new Vector2(187 * direction, -50);
-            projectile.velocity = (Vector2.UnitX * direction).RotatedBy(MathHelper.ToRadians((direction == 1) ? 315 + rotateby : 45 + -rotateby));
+            projectile.position = projectileowner.Center + new Vector2(187 * Direction, -50);
+            projectile.velocity = (Vector2.UnitX * Direction).RotatedBy(MathHelper.ToRadians((Direction == 1) ? 315 + RotateBy : 45 + -RotateBy));
         }
     }
 }

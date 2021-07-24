@@ -14,11 +14,11 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Grave Hook");
-            Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to empower your Warden Artifacts on use" +
-                            "\n[c/09DBB8:{ All }] Summons 6 Cursed Skulls for each Artifact use" +
-                            "\nConsumes 1 Soul Essence" +
-                            "\n'Just gotta put all the femurs together...'");
+            Tooltip.SetDefault("[c/09DBB8:{ Imbuement }]\n" +
+                            "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
+                            "[c/09DBB8:{ All }] Summons 6 Cursed Skulls for each Artifact use\n" +
+                            "Consumes 1 Soul Essence\n" +
+                            "'Just gotta put all the femurs together...'");
         }
 
         public override void SafeSetDefaults()
@@ -33,7 +33,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             item.height = 50;
             item.damage = 8;
             item.shootSpeed = 14f;
-            item.shoot = mod.ProjectileType("BonePiercerProjectile");
+            item.shoot = ModContent.ProjectileType<BonePiercerProjectile>();
             item.rare = ItemRarityID.Green;
             item.UseSound = SoundID.Item1;
             item.noUseGraphic = true;

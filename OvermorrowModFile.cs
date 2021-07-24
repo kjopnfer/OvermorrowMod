@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
@@ -82,6 +83,7 @@ namespace OvermorrowMod
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
+                HexLoader.Load(false);
                 Particle.Load();
                 TestDetours.Load();
 
@@ -320,6 +322,7 @@ namespace OvermorrowMod
             VertexShader = null;
             TrailShader = null;
 
+            HexLoader.Load(true);
             Particle.Unload();
             TestDetours.Unload();
             ModDetours.Unload();
