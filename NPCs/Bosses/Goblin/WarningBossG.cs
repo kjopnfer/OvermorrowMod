@@ -43,7 +43,7 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
         public override string GetChat()
         {
-            return "Click 'Fight' to battle the miniboss, during this battle you can only shoot on the X axis.";
+            return "Click 'Fight' to battle the miniboss. During this battle you can only shoot on the X axis. It is recommended that you use climbing claws.";
         }
 
 
