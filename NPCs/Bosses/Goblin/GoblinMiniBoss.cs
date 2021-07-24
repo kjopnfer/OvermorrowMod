@@ -97,7 +97,7 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                 for (int i = 0; i < Main.maxProjectiles; i++)
                 {
                     Projectile incomingProjectile = Main.projectile[i];
-                    if (incomingProjectile.active && incomingProjectile.friendly)
+                    if (incomingProjectile.active && incomingProjectile.friendly && !incomingProjectile.minion && incomingProjectile.minionSlots < 0.5f)
                     {
                         incomingProjectile.velocity.Y = 0;
                         if(incomingProjectile.velocity.X > 0)
@@ -377,40 +377,10 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
         public override void NPCLoot()
         {
 
-            if (Main.expertMode)
-            {
-                npc.DropBossBags();
-            }
-            else
-            {
-                int choice = Main.rand.Next(5);
-                // Always drops one of:
-                if (choice == 0) // Warden
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EarthCrystal>());
-                }
-                else if (choice == 1) // Mage
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichStaff>());
-                }
-                if (choice == 2) // Warrior
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichHarvester>());
-                }
-                else if (choice == 3) // Ranger
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichBow>());
-                }
-                else if (choice == 4) // Summoner
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichWand>());
-                }
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HerosBlade>());
 
-                if (Main.rand.Next(10) == 0) // Trophy Dropchance
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TreeTrophy>());
-                }
-            }
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MegaBuster>());
+
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
