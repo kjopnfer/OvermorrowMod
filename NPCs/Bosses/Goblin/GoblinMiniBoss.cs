@@ -20,8 +20,15 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
     {
         private bool changedPhase2 = false;
         private int StopHeal = 0;
-
+        private bool introMessage = true;
         bool leafatt = false;
+        private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/Goblin/BossBar";
+        
+
+
+        Vector2 savedplaypos;
+        bool shoot;
+
 
         public override void SetStaticDefaults()
         {
@@ -31,13 +38,10 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
         public override void SetDefaults()
         {
-            // Afterimage effect
-            NPCID.Sets.TrailCacheLength[npc.type] = 7;
-            NPCID.Sets.TrailingMode[npc.type] = 1;
 
             // Reduced size
             npc.width = 24;
-            npc.height = 56;
+            npc.height = 44;
 
             // Actual dimensions
             //npc.width = 368;
@@ -81,87 +85,65 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
         int RandomCeiling;
         bool movement = true;
 
+
         public override void AI()
         {
-            StopHeal--;
-            // Death animation code
-            if (npc.ai[3] > 0f)
-            {
-                npc.velocity = Vector2.Zero;
+            Player player = Main.player[npc.target];
 
-                if (npc.ai[2] > 0)
+
+
+
+
+                for (int i = 0; i < Main.maxProjectiles; i++)
                 {
-                    npc.ai[2]--;
-
-                    if (npc.ai[2] == 480)
+                    Projectile incomingProjectile = Main.projectile[i];
+                    if (incomingProjectile.active && incomingProjectile.friendly)
                     {
-                        BossText("I deem thee fit to inherit their powers.");
+                        incomingProjectile.velocity.Y = 0;
+                        if(incomingProjectile.velocity.X > 0)
+                        {
+                            incomingProjectile.velocity.X = 7;
+                        }
+                        else
+                        {
+                            incomingProjectile.velocity.X = -7;
+                        }
                     }
+                }
 
-                    if (npc.ai[2] == 300)
-                    {
-                        BossText("Thou Dryad shalt guide thee.");
-                    }
 
-                    if (npc.ai[2] == 120)
-                    {
-                        BossText("Fare thee well.");
-                    }
+
+
+            npc.TargetClosest(true);
+
+
+
+            if (introMessage)
+            {
+                
+                npc.ai[3]++;
+
+                if (npc.ai[3] == 1)
+                {
+                    npc.life = 1;
+                }
+
+                npc.velocity.X = 0f;
+                if (npc.ai[3] > 1 && npc.ai[3] < npc.lifeMax / 5 - 1)
+                {
+                    Main.player[npc.target].AddBuff(23, 23);
+                    npc.life += 5;
+                }
+
+                if (npc.ai[3] <= npc.lifeMax / 5 + 50)
+                {
+                    return;
                 }
                 else
                 {
-                    npc.dontTakeDamage = true;
-                    npc.ai[3]++; // Death timer
-                    npc.velocity.X *= 0.95f;
-
-                    if (npc.velocity.Y < 0.5f)
-                    {
-                        npc.velocity.Y = npc.velocity.Y + 0.01f;
-                    }
-
-                    if (npc.velocity.X > 0.5f)
-                    {
-                        npc.velocity.Y = npc.velocity.Y - 0.01f;
-                    }
-
-                    if (npc.ai[3] > 120f)
-                    {
-                        npc.Opacity = 1f - (npc.ai[3] - 120f) / 60f;
-                    }
-
-                    if (Main.rand.NextBool(5) && npc.ai[3] < 120f)
-                    {
-                        // This dust spawn adapted from the Pillar death code in vanilla.
-                        for (int dustNumber = 0; dustNumber < 6; dustNumber++)
-                        {
-                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, 107, 0f, 0f, 0, default(Color), 1f)];
-                            dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
-                            dust.velocity.X = 0f;
-                            dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;
-                            dust.noGravity = true;
-                            dust.fadeIn = 1f;
-                            dust.scale = 1f + Main.rand.NextFloat() + (float)dustNumber * 0.3f;
-                        }
-                    }
-
-                    if (npc.ai[3] % 30f == 1f)
-                    {
-                        //Main.PlaySound(4, npc.Center, 22);
-                        Main.PlaySound(SoundID.Item25, npc.Center); // every half second while dying, play a sound
-                    }
-
-                    if (npc.ai[3] >= 180f)
-                    {
-                        npc.life = 0;
-                        npc.HitEffect(0, 0);
-                        npc.checkDead(); // This will trigger ModNPC.CheckDead the second time, causing the real death.
-                    }
+                    introMessage = false;
                 }
-                return;
             }
-
-            npc.TargetClosest(true);
-            Player player = Main.player[npc.target];
 
             npc.spriteDirection = npc.direction;
 
@@ -208,8 +190,8 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                     {
 
 
-                            if (changedPhase2 == true) { RandomCeiling = 5; }
-                            else { RandomCeiling = 5; }
+                            if (changedPhase2 == true) { RandomCeiling = 4; }
+                            else { RandomCeiling = 4; }
                             while (RandomCase == LastCase)
                             {
                                 RandomCase = Main.rand.Next(1, RandomCeiling);
@@ -231,32 +213,51 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                         }
                     }
                     break;
-                case 1: // Shoot scythes
+                case 1: // dash
 
+                    
                             if(npc.Center.X > player.Center.X && npc.ai[1] == 5)
                             {
-                                npc.velocity.X = -6;
+                                npc.velocity.X = -4.5f;
+                                savedplaypos = player.Center + new Vector2(-59, 0);
                             }
 
                             if(npc.Center.X < player.Center.X && npc.ai[1] == 5)
                             {
-                                npc.velocity.X = 6;
+                                npc.velocity.X = 4.5f;
+                                savedplaypos = player.Center + new Vector2(59, 0);;
                             }
                         
 
-                        if (npc.ai[1] > 25)
+
+                        if(npc.Center.X < savedplaypos.X && !shoot)
                         {
-                            npc.velocity.X *= 0.5f;
+                            if(savedplaypos.X - npc.Center.X < 40 && !shoot)
+                            {
+                                shoot = true;
+                            }
                         }
 
-                        if (npc.ai[1] > 60)
+
+                        if(npc.Center.X > savedplaypos.X && !shoot)
+                            {
+                            if(npc.Center.X - savedplaypos.X < 40 && !shoot)
+                            {
+                                shoot = true;
+                            }
+                        }
+
+
+                        if (npc.ai[1] > 80 || shoot)
                         {
-                            npc.ai[0] = -1;
+                            savedplaypos = new Vector2(0, 0);
+                            shoot = false;
+                            npc.ai[0] = 4;
                             npc.ai[1] = 0;
                         }
                     
                     break;
-                case 2: // Absorb energy
+                case 2: // Normal Attack
 
                         if (npc.ai[1] == 15)
                         {
@@ -333,33 +334,20 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                     break;
                 case 4: // scythes
                     {
-                        bool shoot;
                         npc.velocity = Vector2.Zero;
-                        if(npc.ai[1] == 1)
-                        {
-                            if(Vector2.Distance(npc.Center, player.Center) < 50f)
+
+                            if (npc.ai[1] == 30)
                             {
-                                shoot = true;
-                            }
-                            else
-                            {
-                                npc.ai[1] = 40;
-                            }
-                        }
-                        if(shoot = true)
-                        {
-                            if (npc.ai[1] == 45)
-                            {
-                                int proj1 = Projectile.NewProjectile(npc.Center + new Vector2(-40, 0), new Vector2(0, -5), 349, 20, 1f, Main.myPlayer);
-                                int proj2 = Projectile.NewProjectile(npc.Center + new Vector2(-20, 0), new Vector2(0, -5), 349, 20, 1f, Main.myPlayer);
-                                int proj3 = Projectile.NewProjectile(npc.Center + new Vector2(20, 0), new Vector2(0, -5), 349, 20, 1f, Main.myPlayer); 
-                                int proj4 = Projectile.NewProjectile(npc.Center + new Vector2(40, 0), new Vector2(0, -5), 349, 20, 1f, Main.myPlayer);  
-                            }
-                        }                        
+                                int proj1 = Projectile.NewProjectile(npc.Center + new Vector2(-60, 0), new Vector2(0, -7), 349, 20, 1f, Main.myPlayer);
+                                int proj2 = Projectile.NewProjectile(npc.Center + new Vector2(-30, 0), new Vector2(0, -8), 349, 20, 1f, Main.myPlayer);
+                                int proj3 = Projectile.NewProjectile(npc.Center + new Vector2(0, 0), new Vector2(0, -9), 349, 20, 1f, Main.myPlayer);
+                                int proj4 = Projectile.NewProjectile(npc.Center + new Vector2(30, 0), new Vector2(0, -8), 349, 20, 1f, Main.myPlayer); 
+                                int proj5 = Projectile.NewProjectile(npc.Center + new Vector2(60, 0), new Vector2(0, -7), 349, 20, 1f, Main.myPlayer);  
+                            }                  
                         
                         if (npc.ai[1] > 40)
                         {
-                            npc.ai[0] = -1;
+                            npc.ai[0] = 2;
                             npc.ai[1] = 0;
                         }
                         break;
@@ -384,38 +372,10 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
             }
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
-        {
-            Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
-            for (int k = 0; k < npc.oldPos.Length; k++)
-            {
-                // Adjust drawPos if the hitbox does not match sprite dimension
-                Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin;
-                Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.Green : Color.LightGreen;
-                Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
-                spriteBatch.Draw(Main.npcTexture[npc.type], drawPos, npc.frame, color, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
-            }
-            return base.PreDraw(spriteBatch, drawColor);
-        }
 
-        public override bool CheckDead()
-        {
-            if (npc.ai[3] == 0f)
-            {
-                npc.ai[2] = OvermorrowWorld.downedTree ? 0 : 540;
-                npc.ai[3] = 1f;
-                npc.damage = 0;
-                npc.life = npc.lifeMax;
-                npc.dontTakeDamage = true;
-                npc.netUpdate = true;
-                return false;
-            }
-            return true;
-        }
 
         public override void NPCLoot()
         {
-            OvermorrowWorld.downedTree = true;
 
             if (Main.expertMode)
             {
@@ -451,6 +411,48 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TreeTrophy>());
                 }
             }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+
+
+            Vector2 mountedCenter = Main.player[npc.target].Center + new Vector2(400, -npc.life / 2.5f);
+            Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
+
+            var drawPosition = Main.player[npc.target].Center + new Vector2(400, 0);
+            var remainingVectorToPlayer = mountedCenter - drawPosition;
+
+            float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
+
+            if (npc.alpha == 0)
+            {
+                int direction = -1;
+
+                if (npc.Center.X < mountedCenter.X)
+                    direction = 1;
+
+            }
+
+            // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
+            while (true)
+            {
+                float length = remainingVectorToPlayer.Length();
+
+                if (length < 25f || float.IsNaN(length))
+                    break;
+
+                // drawPosition is advanced along the vector back to the player by 12 pixels
+                // 12 comes from the height of ExampleFlailProjectileChain.png and the spacing that we desired between links
+                drawPosition += remainingVectorToPlayer * 1f / length;
+                remainingVectorToPlayer = mountedCenter - drawPosition;
+
+                // Finally, we draw the texture at the coordinates using the lighting information of the tile coordinates of the chain section
+                Color color = Color.Red;
+                spriteBatch.Draw(chainTexture, drawPosition - Main.screenPosition, null, color, 0, chainTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
+            }
+
+            return true;
         }
 
         public override void BossLoot(ref string name, ref int potionType)
