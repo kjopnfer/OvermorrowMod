@@ -16,6 +16,8 @@ using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.NPCs.Bosses.Goblin;
+
 namespace OvermorrowMod
 {
     public class OvermorrowWorld : ModWorld
@@ -46,6 +48,8 @@ namespace OvermorrowMod
         private bool placedBook = false;
         private bool placedwep = false;
         private bool placedtele = false;
+
+
 
         public override void Initialize()
         {
@@ -333,6 +337,17 @@ namespace OvermorrowMod
             {
                 tasks.Insert(WetJungle + 1, new PassLegacy("WaterCaveGeneration", WaterCaveFinder));
             }
+
+
+
+            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Piles"));
+            if (TowerS != -1)
+            {
+                tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
+            }
+
+
+
 
             int TempleS = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (TempleS != -1)
@@ -726,6 +741,7 @@ namespace OvermorrowMod
             }
 
 
+        }
 
 
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY)); k++)
@@ -787,6 +803,7 @@ namespace OvermorrowMod
                             WorldGen.PlaceTile(x - 3, y - 1, 10);
                             WorldGen.PlaceTile(x + 3, y - 1, 10);
 
+                        NPC.NewNPC(x * 16, (y - randY - 8) * 16, ModContent.NPCType<WarningBossG>());
 
                             for (int j = 0; j < 5; j++)
                             {
@@ -882,6 +899,13 @@ namespace OvermorrowMod
                 }
             }
         }
+
+
+
+
+
+
+
 
 
 
