@@ -55,7 +55,6 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
         void StartBoss()
         {
             Player player = Main.player[npc.target];
-            Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/BelowZeroOpening"), player.Center);
             NPC.NewNPC((int)npc.Center.X - 10 * 16, (int)npc.Center.Y, mod.NPCType("GoblinMiniBoss"));
             return;
         }

@@ -59,7 +59,7 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
             npc.boss = false;
             npc.value = Item.buyPrice(gold: 3);
             npc.npcSlots = 10f;
-            bossBag = ModContent.ItemType<TreeBag>();
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/MiniBossMusic");
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
