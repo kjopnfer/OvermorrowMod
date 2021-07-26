@@ -98,9 +98,10 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             List<int> ProjectileList = new List<int>();
-            
+
             ConsumeSouls(soulResourceCost, player);
 
+            // Attack
             if (item.type == ModContent.ItemType<EaterArtifact>())
             {
 
@@ -131,12 +132,54 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 }
             }
 
+            // Support
+            if (item.type == ModContent.ItemType<EarthCrystal>() || item.type == ModContent.ItemType<BloodyAntikythera>())
+            {
+                // Allow only one instance of the projectile
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<WorldTree>()] > 0)
+                {
+                    for (int i = 0; i < Main.maxProjectiles; i++)
+                    {
+                        if (Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI &&
+                            (Main.projectile[i].type == ModContent.ProjectileType<RedCloud>() || Main.projectile[i].type == ModContent.ProjectileType<WorldTree>()))
+                        {
+                            Main.projectile[i].Kill();
+                        }
+                    }
+                    position = Main.MouseWorld;
+
+                    int projectile = Projectile.NewProjectile(position, Vector2.Zero, type, 0, 0, player.whoAmI);
+                    ProjectileList.Add(projectile);
+                }
+                else
+                {
+                    position = Main.MouseWorld;
+                    int projectile = Projectile.NewProjectile(position, Vector2.Zero, type, 0, 0, player.whoAmI);
+                    ProjectileList.Add(projectile);
+                }
+            }
+
             // After spawning in the projectiles, apply the special properties
             if (player.GetModPlayer<WardenRunePlayer>().RuneID != WardenRunePlayer.Runes.None)
             {
                 foreach (int projectile in ProjectileList)
                 {
-                    ((ArtifactProjectile)Main.projectile[projectile].modProjectile).RuneID = player.GetModPlayer<WardenRunePlayer>().RuneID;
+                    if (Main.projectile[projectile].active)
+                    {
+                        // Pass Rune ID to the projectile
+                        ((ArtifactProjectile)Main.projectile[projectile].modProjectile).RuneID = player.GetModPlayer<WardenRunePlayer>().RuneID;
+
+                        // Set radius if it is a Support Artifact
+                        if (item.type == ModContent.ItemType<EarthCrystal>())
+                        {
+                            ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 330;
+                        }
+
+                        if (item.type == ModContent.ItemType<BloodyAntikythera>())
+                        {
+                            ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 390;
+                        }
+                    }
                 }
             }
 

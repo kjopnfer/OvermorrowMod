@@ -63,45 +63,15 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             {
                 item.useStyle = ItemUseStyleID.HoldingOut;
                 item.useTurn = true;
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.CorruptionRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-                {
-                    item.useAnimation = 28;
-                    item.useTime = 28;
-                    item.UseSound = mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Items/Hork");
-                    item.damage = 12;
-                }
-                else
-                {
-                    item.useAnimation = 14;
-                    item.useTime = 14;
-                    item.UseSound = SoundID.Item71;
-                    item.damage = 3;
-                }
+                item.useAnimation = 14;
+                item.useTime = 14;
+                item.UseSound = SoundID.Item71;
+                item.damage = 3;
                 item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("VilePiercerProjectile");
             }
 
             return base.CanUseItem(player);
-        }
-
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-        {
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.CorruptionRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-            {
-                /*float numberProjectiles = 3; // This defines how many projectiles to shot
-                float rotation = MathHelper.ToRadians(15);
-                position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
-                for (int i = 0; i < numberProjectiles; i++)
-                {
-                    Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .8f; // This defines the projectile roatation and speed. .8f == 80% of projectile speed
-                    Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockBack, player.whoAmI);
-                }
-                return false;*/
-                damage = 12;
-                //type = ModContent.ProjectileType<WormHead>();
-            }
-
-            return true;
         }
 
         public override void AddRecipes()

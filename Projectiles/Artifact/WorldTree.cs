@@ -1,13 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.WardenClass;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact
 {
-    public class WorldTree : ModProjectile
+    public class WorldTree : ArtifactProjectile
     {
         private bool isActive = false;
         private int AuraRadius = 330;
@@ -17,7 +18,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             Main.projFrames[projectile.type] = 12;
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             projectile.width = 32;
             projectile.height = 32;
@@ -30,7 +31,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             drawOriginOffsetY = -188;
         }
 
-        public override void AI()
+        /*public override void AI()
         {
             Lighting.AddLight(projectile.Center, 0f, 0.66f, 0f);
 
@@ -88,7 +89,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                     projectile.frame = 0;
                 }
             }
-        }
+        }*/
 
         public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {

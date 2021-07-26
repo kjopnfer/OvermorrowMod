@@ -1,11 +1,12 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.WardenClass;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact
 {
-    public class RedCloud : ModProjectile
+    public class RedCloud : ArtifactProjectile
     {
         private bool isActive = false;
         private int AuraRadius = 390;
@@ -15,7 +16,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             Main.projFrames[projectile.type] = 10;
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             projectile.width = 144;
             projectile.height = 106;
@@ -26,7 +27,7 @@ namespace OvermorrowMod.Projectiles.Artifact
         }
 
 
-        public override void AI()
+        /*public override void AI()
         {
             Lighting.AddLight(projectile.Center, 1.2f, 0f, 0f);
 
@@ -52,7 +53,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             Vector2 spawn = spawnPos + ((float)Main.rand.NextDouble() * 6.28f).ToRotationVector2() * (12f);
             Vector2 velocity = Vector2.Normalize(spawnPos - spawn) * 1.5f * 6 / 10f;
 
-            Vector2 origin = projectile.Center/* some position */;
+            Vector2 origin = projectile.Center/* some position ;
             //float radius = 450;
             //Get 30 locations in a circle around 'origin'
             //int numLocations = 2;
@@ -72,7 +73,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                 //dust.position.Y = projectile.Center.Y - (int)(Math.Sin(rad) * dist);
 
                 dust.position = projectile.Center + new Vector2(450, 0).RotatedBy(MathHelper.ToRadians(projectile.ai[0] * 2));
-            }*/
+            }
 
             for (int i = 0; i < 36; i++)
             {
@@ -128,7 +129,7 @@ namespace OvermorrowMod.Projectiles.Artifact
 
                 dust.position.X = projectile.Center.X - (int)(Math.Cos(rad) * dist);
                 dust.position.Y = projectile.Center.Y - (int)(Math.Sin(radY) * dist);
-            }*/
+            }
 
             // Loop through the 10 animation frames, spending 12 ticks on each.
             if (++projectile.frameCounter >= 12)
@@ -139,7 +140,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                     projectile.frame = 0;
                 }
             }
-        }
+        }*/
 
         public override Color? GetAlpha(Color lightColor)
         {

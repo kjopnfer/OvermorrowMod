@@ -33,31 +33,5 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 
             soulResourceCost = 2;
         }
-
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-        {
-            // Not sure why this isn't running in UseItem
-            ConsumeSouls(2, player);
-
-            // Allow only one instance of the projectile
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<WorldTree>()] > 0)
-            {
-                for (int i = 0; i < Main.maxProjectiles; i++)
-                {
-                    if (Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI &&
-                        (Main.projectile[i].type == ModContent.ProjectileType<RedCloud>() || Main.projectile[i].type == ModContent.ProjectileType<WorldTree>()))
-                    {
-                        Main.projectile[i].Kill();
-                    }
-                }
-                position = Main.MouseWorld;
-            }
-            else
-            {
-                position = Main.MouseWorld;
-            }
-
-            return true;
-        }
     }
 }

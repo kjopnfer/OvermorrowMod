@@ -16,7 +16,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             DisplayName.SetDefault("Grave Hook");
             Tooltip.SetDefault("[c/09DBB8:{ Imbuement }]\n" +
                             "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
-                            "[c/09DBB8:{ All }] Summons 6 Cursed Skulls for each Artifact use\n" +
+                            "[c/09DBB8:{ All }] Summons 6 Cursed Skulls on each Artifact use\n" +
                             "Consumes 1 Soul Essence\n" +
                             "'Just gotta put all the femurs together...'");
         }
@@ -64,49 +64,16 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             {
                 item.useStyle = ItemUseStyleID.HoldingOut;
                 item.useTurn = true;
-                
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-                {
-                    item.damage = 15;
-                    item.useAnimation = 26;
-                    item.useTime = 26;
-                    item.shootSpeed = 11f;
-                    item.autoReuse = true;
-                }
-                else
-                {
-                    item.damage = 8;
-                    item.useAnimation = 14;
-                    item.useTime = 14;
-                    item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
-                    item.autoReuse = false;
-                }
+                item.damage = 8;
+                item.useAnimation = 14;
+                item.useTime = 14;
+                item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                item.autoReuse = false;
                 item.shoot = mod.ProjectileType("BonePiercerProjectile");
                 item.UseSound = SoundID.Item1;
             }
 
             return base.CanUseItem(player);
-        }
-
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-        {
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-            {
-                type = ModContent.ProjectileType<Skulls>();
-                for (int i = 0; i < Main.rand.Next(2, 3); i++)
-                {
-                    Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-7, 7) * 10, player.Center.Y + Main.rand.Next(-7, 7) * 10);
-                    if (!Main.tile[(int)randPos.X / 16, (int)randPos.Y / 16].active())
-                    {
-                        Projectile.NewProjectile(randPos, new Vector2(speedX, speedY), type, damage, knockBack, player.whoAmI, 0f, Main.rand.NextBool() ? -1 : 1);
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-            }
-            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }
 
         public override void AddRecipes()
