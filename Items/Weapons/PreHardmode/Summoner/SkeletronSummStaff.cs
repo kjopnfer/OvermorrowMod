@@ -4,6 +4,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Buffs.Summon;
 using OvermorrowMod.Projectiles.Summon;
+using OvermorrowMod.Items.Materials;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
 {
@@ -75,11 +76,12 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
 
         public override void AddRecipes()
         {
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(154, 17);
-            recipe1.AddTile(TileID.Anvils);
-            recipe1.SetResult(this);
-            recipe1.AddRecipe();
+            ModRecipe recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.Bone, 60);
+            recipe.AddIngredient(ModContent.ItemType<SoulFire>());
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
         }
     }
 }

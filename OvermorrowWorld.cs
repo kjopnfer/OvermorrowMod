@@ -343,7 +343,7 @@ namespace OvermorrowMod
             int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Piles"));
             if (TowerS != -1)
             {
-                tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
+                tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TempleStart));
             }
 
 
@@ -741,7 +741,7 @@ namespace OvermorrowMod
             }
 
 
-        }
+        
 
 
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY)); k++)

@@ -84,6 +84,7 @@ namespace OvermorrowMod
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 HexLoader.Load(false);
+                ModUtils.Load(false);
                 Particle.Load();
                 TestDetours.Load();
 
@@ -322,6 +323,7 @@ namespace OvermorrowMod
             VertexShader = null;
             TrailShader = null;
 
+            ModUtils.Load(true);
             HexLoader.Load(true);
             Particle.Unload();
             TestDetours.Unload();
