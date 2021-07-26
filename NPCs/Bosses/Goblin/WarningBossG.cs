@@ -43,7 +43,7 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
         public override string GetChat()
         {
-            return "Click 'Fight' to battle the miniboss";
+            return "Click 'Fight' to battle the miniboss. During this battle you can only shoot on the X axis. It is recommended that you use climbing claws.";
         }
 
 
@@ -54,8 +54,15 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
         void StartBoss()
         {
-            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("GoblinMiniBoss"));
+            Player player = Main.player[npc.target];
+            NPC.NewNPC((int)npc.Center.X - 10 * 16, (int)npc.Center.Y, mod.NPCType("GoblinMiniBoss"));
             return;
+        }
+
+        public override bool StrikeNPC(ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
+        {
+            damage *= 0;
+            return false;
         }
 
         public override void AI()

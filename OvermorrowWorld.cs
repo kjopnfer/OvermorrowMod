@@ -48,8 +48,7 @@ namespace OvermorrowMod
         private bool placedBook = false;
         private bool placedwep = false;
         private bool placedtele = false;
-
-
+        private bool placedclaw = false;
 
         public override void Initialize()
         {
@@ -223,11 +222,11 @@ namespace OvermorrowMod
                         }
                     }
                 }
+            
 
 
-
-                int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
-                int itemsToPlaceInGranChestsChoice = 0;
+            int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
+            int itemsToPlaceInGranChestsChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 50 * 36)
                 {
                     if (!placedwep) // Guarantees at least one book in a Dungeon Chest
@@ -266,8 +265,8 @@ namespace OvermorrowMod
 
 
 
-                int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
-                int itemsToPlaceInGranMarbleChoice = 0;
+            int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
+            int itemsToPlaceInGranMarbleChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 51 * 36)
                 {
                     if (!placedtele) // Guarantees at least one book in a Dungeon Chest
@@ -301,8 +300,57 @@ namespace OvermorrowMod
                         }
                     }
                 }
-            }
+            
+            
 
+
+
+
+
+
+
+
+
+
+
+
+
+            int[] itemsToPlaceInSteamChests = { 953 };
+            int itemsToPlaceInSteampunkChoice = 0;
+                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 30 * 36)
+                {
+                    if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (inventoryIndex == 1)
+                            {
+                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSteamChests[itemsToPlaceInSteampunkChoice]);
+                                itemsToPlaceInSteampunkChoice = (itemsToPlaceInSteampunkChoice + 1) % itemsToPlaceInSteamChests.Length;
+                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                break;
+                            }
+                        }
+                        placedclaw = true;
+                    }
+                    else
+                    {
+                        if (Main.rand.Next(2) == 1)
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (inventoryIndex == 1)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSteamChests[itemsToPlaceInSteampunkChoice]);
+                                    itemsToPlaceInSteampunkChoice = (itemsToPlaceInSteampunkChoice + 1) % itemsToPlaceInSteamChests.Length;
+                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Worldgen Debugging
@@ -340,7 +388,7 @@ namespace OvermorrowMod
 
 
 
-            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Piles"));
+            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
             if (TowerS != -1)
             {
                 tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TempleStart));
@@ -395,7 +443,7 @@ namespace OvermorrowMod
                 WorldGen.PlaceTile(x + 22, y - 6, 311);
                 WorldGen.PlaceTile(x + 23, y - 6, 311);
                 WorldGen.PlaceTile(x + 23, y - 7, 311);
-                WorldGen.PlaceTile(x + 24, y - 7, 311);
+                WorldGen.PlaceTile(x + 24, y - 7, 311);  
 
 
                 //back
@@ -593,7 +641,7 @@ namespace OvermorrowMod
                 }
 
                 WorldGen.PlaceTile(x - 12, y - 7, 10);
-
+                
 
 
 
@@ -744,157 +792,151 @@ namespace OvermorrowMod
         
 
 
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY)); k++)
+        bool activetilecheck = false;
+        bool TowerPlaced = false;
+        
+        private void TowerStart(GenerationProgress progress)
+        {
+
+            int randY = Main.rand.Next(10, 20);
+            int randX = Main.rand.Next(14, 15);
+                
+            for (int k = 0; k < (int)(Main.maxTilesX * Main.maxTilesY); k++)
             {
-                if (!placedtower)
+                if(!TowerPlaced)
                 {
-                    int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
-                    int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, (int)WorldGen.rockLayer + Main.maxTilesY / 12);
+                int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
+                int y = WorldGen.genRand.Next(0, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
 
-                    int randY = Main.rand.Next(10, 20);
-                    int randX = Main.rand.Next(14, 15);
+                // Strength controls size
+                // Steps control interations
+                Tile tile = Framing.GetTileSafely(x, y);
+                if (tile.active() && tile.type == 27 || tile.active() && tile.type == 80)
+                {
 
-
-
-                    for (int fuckyou = 0; fuckyou < 150; fuckyou++)
-                    {
-                        Tile tile = Framing.GetTileSafely(x, y);
-                        if (tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 53 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 2 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 147 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 2 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 60 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 23 || tile.active() && !WorldGen.SolidTile(x + 1, y - 1 - fuckyou) && tile.type == 199)
+                        for (int j = 0; j < randY + 22; j++)
                         {
-
-                            for (int j = 0; j < randY + 3; j++)
+                            for (int i = 0; i < 39; i++)
                             {
-                                for (int i = 0; i < 8; i++)
-                                {
-                                    WorldGen.KillTile(x - 4 + i, y - j);
-                                }
+                                WorldGen.KillTile(x - 19 + i, y - randY - j);
                             }
+                        }
 
 
-                            for (int j = 0; j < randY + 12; j++)
-                            {
-                                for (int i = 0; i < 39; i++)
-                                {
-                                    WorldGen.KillTile(x - 19 + i, y - randY - j);
-                                }
-                            }
-
-                            for (int i = 0; i < randY; i++)
-                            {
-                                WorldGen.PlaceTile(x - 3, y - i - 4, 325);
-                            }
-
-                            for (int i = 0; i < randY; i++)
-                            {
-                                WorldGen.PlaceTile(x + 3, y - i - 4, 325);
-                            }
-
-                            for (int i = 0; i < 6; i++)
-                            {
-                                WorldGen.PlaceTile(x - 3 + i, y, 53);
-                            }
-
-                            for (int i = 0; i < randY + 4; i++)
-                            {
-                                WorldGen.PlaceTile(x, y - i, 213);
-                            }
-
-
-                            WorldGen.PlaceTile(x - 3, y - 1, 10);
-                            WorldGen.PlaceTile(x + 3, y - 1, 10);
+                        WorldGen.PlaceTile(x - 3, y - 3, 325);
+                        WorldGen.PlaceTile(x + 3, y - 3, 325);
+                        WorldGen.PlaceTile(x - 3, y - 2, 325);
+                        WorldGen.PlaceTile(x + 3, y - 2, 325);
+                        WorldGen.PlaceTile(x - 3, y - 1, 325);
+                        WorldGen.PlaceTile(x + 3, y - 1, 325);
 
                         NPC.NewNPC(x * 16, (y - randY - 8) * 16, ModContent.NPCType<WarningBossG>());
 
-                            for (int j = 0; j < 5; j++)
+                        for (int j = 0; j < 5; j++)
+                        {
+                            for (int i = 0; i < randY + 6; i++)
                             {
-                                for (int i = 0; i < randY + 6; i++)
-                                {
-                                    WorldGen.PlaceWall(x + j - 2, y - i - 4, 4);
-                                }
+                                WorldGen.PlaceWall(x + j - 2, y - i - 4, 4);
                             }
-
-
-                            for (int i = 0; i < randX; i++)
-                            {
-                                WorldGen.PlaceTile(x + i + 3, y - randY - 4, 325);
-                                WorldGen.PlaceTile(x - i - 3, y - randY - 4, 325);
-                            }
-
-                            for (int i = 0; i < 7; i++)
-                            {
-                                WorldGen.PlaceTile(x + randX + 3, y - i - randY - 4, 325);
-                                WorldGen.PlaceTile(x - randX - 3, y - i - randY - 4, 325);
-                            }
-
-
-                            for (int i = 0; i < 6; i++)
-                            {
-                                WorldGen.PlaceTile(x - 3 + i, y - randY - 4, 19);
-                            }
-
-
-
-                            for (int i = 0; i < 7; i++)
-                            {
-                                WorldGen.PlaceTile(x + randX + 3 - i, y - randY - 11 - i, 325);
-                                WorldGen.PlaceTile(x - randX - 3 + i, y - randY - 11 - i, 325);
-
-                                WorldGen.PlaceTile(x + randX + 2 - i, y - randY - 11 - i, 325);
-                                WorldGen.PlaceTile(x - randX - 2 + i, y - randY - 11 - i, 325);
-
-                            }
-
-                            for (int i = 0; i < 10; i++)
-                            {
-                                WorldGen.PlaceTile(x - i, y - randY - 17, 325);
-                                WorldGen.PlaceTile(x + i, y - randY - 17, 325);
-                            }
-
-
-                            for (int j = 0; j < 6; j++)
-                            {
-                                for (int i = 0; i < 33; i++)
-                                {
-                                    WorldGen.PlaceWall(x - randX - 2 + i, y - randY - 5 - j, 4);
-                                }
-                            }
-
-
-
-
-
-                            for (int i = 0; i < 33 - 2; i++)
-                            {
-                                WorldGen.PlaceWall(x - randX + i - 1, y - randY - 11, 4);
-                            }
-
-                            for (int i = 0; i < 31 - 2; i++)
-                            {
-                                WorldGen.PlaceWall(x - randX + i - 0, y - randY - 12, 4);
-                            }
-
-
-                            for (int i = 0; i < 29 - 2; i++)
-                            {
-                                WorldGen.PlaceWall(x - randX + i + 1, y - randY - 13, 4);
-                            }
-
-                            for (int i = 0; i < 27 - 2; i++)
-                            {
-                                WorldGen.PlaceWall(x - randX + i + 2, y - randY - 14, 4);
-                            }
-
-                            for (int i = 0; i < 25 - 2; i++)
-                            {
-                                WorldGen.PlaceWall(x - randX + i + 3, y - randY - 15, 4);
-                            }
-
-                            for (int i = 0; i < 23 - 2; i++)
-                            {
-                                WorldGen.PlaceWall(x - randX + i + 4, y - randY - 16, 4);
-                            }
-                            placedtower = true;
                         }
+
+
+                        for (int i = 0; i < randY + 1; i++)
+                        {
+                            WorldGen.PlaceTile(x + 3, y - randY + i - 4, 325);
+                            WorldGen.PlaceTile(x - 3, y - randY + i - 4, 325);
+                        }
+                        
+        
+                        for (int i = 0; i < randX; i++)
+                        {
+                            WorldGen.PlaceTile(x + i + 3, y - randY - 4, 325);
+                            WorldGen.PlaceTile(x - i - 3, y - randY - 4, 325);
+                        }
+
+                        for (int i = 0; i < 16; i++)
+                        {
+                            WorldGen.PlaceTile(x + randX + 3, y - i - randY - 4, 325);
+                            WorldGen.PlaceTile(x - randX - 3, y - i - randY - 4, 325);
+                        }
+
+
+                        for (int i = 0; i < 6; i++)
+                        {
+                            WorldGen.PlaceTile(x - 3 + i, y - randY - 4, 19);
+                        }
+
+                        for (int i = 0; i < 6; i++)
+                        {
+                            WorldGen.PlaceTile(x - 3 + i, y - randY + 1, 19);
+                        }
+
+
+
+
+                        WorldGen.PlaceTile(x, y - randY, 21, style: 30);
+
+
+
+                        for (int i = 0; i < 7; i++)
+                        {
+                            WorldGen.PlaceTile(x + randX + 3 - i, y - randY - 20 - i, 325);
+                            WorldGen.PlaceTile(x - randX - 3 + i, y - randY - 20 - i, 325);
+
+                            WorldGen.PlaceTile(x + randX + 2 - i, y - randY - 20 - i, 325);
+                            WorldGen.PlaceTile(x - randX - 2 + i, y - randY - 20 - i, 325);
+                            
+                        }
+
+                        for (int i = 0; i < 10; i++)
+                        {
+                            WorldGen.PlaceTile(x - i, y - randY - 26, 19);
+                            WorldGen.PlaceTile(x + i, y - randY - 26, 19);
+                        }    
+
+                        for (int j = 0; j < 15; j++)
+                        {
+                            for (int i = 0; i < 33; i++)
+                            {
+                                WorldGen.PlaceWall(x - randX - 2 + i, y - randY - 5 - j, 4);
+                            }
+                        }
+
+
+
+
+
+                        for (int i = 0; i < 33 - 2; i++)
+                        {
+                            WorldGen.PlaceWall(x - randX + i - 1, y - randY - 20, 4);
+                        }
+
+                        for (int i = 0; i < 31 - 2; i++)
+                        {
+                            WorldGen.PlaceWall(x - randX + i - 0, y - randY - 21, 4);
+                        }
+                        
+
+                        for (int i = 0; i < 29 - 2; i++)
+                        {
+                            WorldGen.PlaceWall(x - randX + i + 1, y - randY - 22, 4);
+                        }
+
+                        for (int i = 0; i < 27 - 2; i++)
+                        {
+                            WorldGen.PlaceWall(x - randX + i + 2, y - randY - 23, 4);
+                        }
+
+                        for (int i = 0; i < 25 - 2; i++)
+                        {
+                            WorldGen.PlaceWall(x - randX + i + 3, y - randY - 24, 4);
+                        }
+
+                        for (int i = 0; i < 23 - 2; i++)
+                        {
+                            WorldGen.PlaceWall(x - randX + i + 4, y - randY - 25, 4);
+                        }
+                        TowerPlaced = true;
                     }
                 }
             }
@@ -1042,7 +1084,7 @@ namespace OvermorrowMod
 
         private void GenerateWaterCave(int x, int y)
         {
-            int[] TileBlacklist = { 41, 43, 44, 226 };
+            int[] TileBlacklist = { 41, 43, 44, 226};
             Point point = new Point(x, y);
 
             // small world size is 4200x1200 , medium multiplies every axis by 1.5 , and large multiplies every axis by 2.0
@@ -1316,7 +1358,7 @@ namespace OvermorrowMod
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00025); k++)
             {
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY);
+                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY); 
 
                 WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 4), WorldGen.genRand.Next(2, 6), ModContent.TileType<EruditeTile>());
             }
@@ -1356,13 +1398,13 @@ namespace OvermorrowMod
                     }
                 }
             }
-
+            
         }
 
         private void GenerateAmbientObjects(GenerationProgress progress)
         {
             // Place ambient objects for the Flooded Caverns
-            for (int i = 0; i < Main.maxTilesY * 45; i++)
+            for(int i = 0; i < Main.maxTilesY * 45; i++)
             {
                 int[] rockFormations = { ModContent.TileType<Rock1>(), ModContent.TileType<Rock2>(), ModContent.TileType<Rock3>(), ModContent.TileType<Rock4>(), ModContent.TileType<Stalagmite1>(), ModContent.TileType<Stalagmite2>(), ModContent.TileType<Stalagmite3>(), ModContent.TileType<Stalagmite4>(), ModContent.TileType<Stalagmite5>() };
                 int x = WorldGen.genRand.Next(300, Main.maxTilesX - 300);
