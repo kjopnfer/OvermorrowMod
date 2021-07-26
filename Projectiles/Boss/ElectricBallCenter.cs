@@ -57,12 +57,13 @@ namespace OvermorrowMod.Projectiles.Boss
                 NPC parent = Main.npc[(int)projectile.ai[1]];
                 projectile.Center = parent.Center;
                 projectile.netUpdate = true;
+                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)projectile.position.X, (int)projectile.position.Y);
             }
             else // Launch at the nearest player
             {
                 Vector2 move = Vector2.Zero;
                 float distance = 6000f; // Search distance
-                if (!launchedProjectile)
+                if (projectile.ai[0] < 490/*!launchedProjectile*/)
                 {
                     Vector2 newMove = Main.player[Main.npc[(int)projectile.ai[1]].target].Center - projectile.Center;
                     float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
@@ -73,17 +74,16 @@ namespace OvermorrowMod.Projectiles.Boss
                         float launchSpeed = Main.expertMode ? 75f : 100f;
                         projectile.velocity = (move) / launchSpeed;
                         launchedProjectile = true;
-                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)projectile.position.X, (int)projectile.position.Y);
                     }
                 }
             }
 
-            if(projectile.ai[0] == 390)
+            if (projectile.ai[0] == 590)
             {
-                projectile.velocity *= Main.expertMode ? 2 : 3;
+                projectile.velocity *= 1.5f;
             }
 
-           
+
             if (!spawnedProjectiles)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)

@@ -17,7 +17,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.tileCollide = false;
             projectile.friendly = false;
             projectile.hostile = true;
-            projectile.timeLeft = 270;
+            projectile.timeLeft = 200;
         }
         public override void AI()
         {

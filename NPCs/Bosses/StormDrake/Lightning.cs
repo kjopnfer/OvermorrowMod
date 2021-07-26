@@ -216,7 +216,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, /*2000f*/ /*1500*/ /*1250f*/ 1500f);
+            Length = TRay.CastLength(projectile.Center, projectile.velocity, 2000f);
             Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
@@ -245,7 +245,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 2500f);
+            Length = TRay.CastLength(projectile.Center, projectile.velocity, 3000f);
             Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, 240, 4f);
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
@@ -303,7 +303,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override void AI()
         {
-            Length = 2500;
+            Length = TRay.CastLength(projectile.Center, projectile.velocity, 3000f);
             Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, /*320*/ 640, /*16*/ 8, true);
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
