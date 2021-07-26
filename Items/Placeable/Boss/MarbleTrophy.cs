@@ -4,11 +4,11 @@ using Terraria.ID;
 
 namespace OvermorrowMod.Items.Placeable.Boss
 {
-    public class DrakeTrophy : ModItem
-    {
+	public class MarbleTrophy : ModItem
+	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("The Storm Drake Trophy");
+			DisplayName.SetDefault("Marbella Trophy");
 		}
 
 		public override void SetDefaults()
@@ -24,7 +24,7 @@ namespace OvermorrowMod.Items.Placeable.Boss
 			item.consumable = true;
 			item.value = Terraria.Item.sellPrice(0, 1, 0, 0);
 			item.rare = ItemRarityID.Blue;
-			item.createTile = ModContent.TileType<StormDrakeTrophy>();
+			item.createTile = ModContent.TileType<MarbleBossTrophy>();
 			item.placeStyle = 0;
 		}
 	}
