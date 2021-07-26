@@ -391,7 +391,7 @@ namespace OvermorrowMod
             int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
             if (TowerS != -1)
             {
-                tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TempleStart));
+                tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
             }
 
 
@@ -443,7 +443,7 @@ namespace OvermorrowMod
                 WorldGen.PlaceTile(x + 22, y - 6, 311);
                 WorldGen.PlaceTile(x + 23, y - 6, 311);
                 WorldGen.PlaceTile(x + 23, y - 7, 311);
-                WorldGen.PlaceTile(x + 24, y - 7, 311);
+                WorldGen.PlaceTile(x + 24, y - 7, 311);  
 
 
                 //back
@@ -522,6 +522,15 @@ namespace OvermorrowMod
                     WorldGen.PlaceWall(x + i + 1, y - 1, 42);
                 }
             }
+
+
+
+
+
+
+
+
+
 
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0000008); k++)
             {
@@ -632,7 +641,7 @@ namespace OvermorrowMod
                 }
 
                 WorldGen.PlaceTile(x - 12, y - 7, 10);
-
+                
 
 
 
@@ -778,7 +787,10 @@ namespace OvermorrowMod
 
                 WorldGen.PlaceTile(x - 6, y - 7, 21, style: 28);
             }
+
+
         }
+
 
         bool activetilecheck = false;
         bool TowerPlaced = false;
