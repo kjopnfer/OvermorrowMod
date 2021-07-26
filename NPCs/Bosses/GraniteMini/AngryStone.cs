@@ -14,6 +14,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.NPCs.Bosses.GraniteMini
 {
+    [AutoloadBossHead]
     public class AngryStone : ModNPC
     {
         int spritetimer = 0;
