@@ -30,6 +30,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.UseSound = SoundID.Item103;
             item.consumable = false;
             item.autoReuse = false;
+
+            soulResourceCost = 1;
+            defBuffDuration = 10800; // 3 minutes
         }
 
         public override void AddRecipes()

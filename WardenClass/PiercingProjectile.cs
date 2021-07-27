@@ -82,6 +82,15 @@ namespace OvermorrowMod.WardenClass
                 }
             }
 
+            if (modPlayer.FungalRune)
+            {
+                int randChance = Main.rand.Next(3);
+                if (randChance == 0)
+                {
+                    target.AddBuff(ModContent.BuffType<FungalInfection>(), 240);
+                }
+            }
+
             if (modPlayer.FireRune)
             {
                 int randChance = Main.rand.Next(3);
@@ -132,7 +141,7 @@ namespace OvermorrowMod.WardenClass
 
                 if (projectile.type == ChainType["Bone"]) 
                 {
-                    target.AddHex(Hex.HexType<SoulFlame>(), 600);
+                    //target.AddHex(Hex.HexType<SoulFlame>(), 600);
                 }
             }
 

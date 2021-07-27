@@ -17,6 +17,7 @@ namespace WardenClass
         public bool AncientCrystal;
         public bool FireRune;
         public bool FrostburnRune;
+        public bool FungalRune;
         public bool ObsidianShackle;
         public bool PoisonRune;
         public bool ReaperBook;
@@ -97,6 +98,7 @@ namespace WardenClass
             AncientCrystal = false;
             FireRune = false;
             FrostburnRune = false;
+            FungalRune = false;
             ObsidianShackle = false;
             PoisonRune = false;
             ReaperBook = false;

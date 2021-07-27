@@ -74,6 +74,7 @@ namespace OvermorrowMod
         // Buffs
         public bool atomBuff;
         public bool graniteSpearBuff;
+        public bool goldWind;
         public bool mirrorBuff;
         public bool moonBuff;
         public bool smolBoi;
@@ -117,6 +118,7 @@ namespace OvermorrowMod
 
             atomBuff = false;
             graniteSpearBuff = false;
+            goldWind = false;
             mirrorBuff = false;
             moonBuff = false;
             smolBoi = false;
@@ -341,11 +343,6 @@ namespace OvermorrowMod
                 player.minionDamage += .1f;
             }
 
-            if (moonBuff)
-            {
-                player.allDamage += .25f;
-            }
-
             if (windBuff)
             {
                 if (player.HeldItem.ranged)
@@ -358,6 +355,11 @@ namespace OvermorrowMod
                         TrailTimer = 0;
                     }
                 }
+            }
+
+            if (goldWind)
+            {
+                player.moveSpeed += 1f;
             }
         }
 
