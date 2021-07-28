@@ -91,6 +91,12 @@ namespace OvermorrowMod.NPCs.Town
                 nextSlot++;
             }
 
+            if (Main.LocalPlayer.HasItem(ModContent.ItemType<FungiPiercer>()))
+            {
+                shop.item[nextSlot].SetDefaults(ModContent.ItemType<ShroomRune>());
+                nextSlot++;
+            }
+
             if (Main.LocalPlayer.HasItem(ModContent.ItemType<BlazePiercer>()))
             {
                 shop.item[nextSlot].SetDefaults(ModContent.ItemType<FireRune>());

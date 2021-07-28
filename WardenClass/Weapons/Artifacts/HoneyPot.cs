@@ -7,15 +7,17 @@ using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {
-    public class EaterArtifact : Artifact
+    public class HoneyPot : Artifact
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Maw of the Eater");
-            /*Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nUse to consume all your Soul Essences, \n" +
-                "Each Soul Essence consumed heals for 10 life each");*/
-            Tooltip.SetDefault("[c/DE3A28:{ Artifact of Power }]\nConsume 1 Soul Essence to summon 3 worms\n" +
-                "Worms will home in on nearby enemies");
+            DisplayName.SetDefault("Overflowing Honey Pot");
+            Tooltip.SetDefault("[c/EBDE34:{ Artifact of Courage }]\n" +
+                "Consumes all your Soul Essences\n" +
+                "Each Soul Essence consumed heals for 10 life each\n" +
+                "Additionally, gain the Honey buff for 1 minute\n" +
+                "All players on the same team gain the same effects\n" +
+                "'Keep away from any anthromorphic yellow bears'");
         }
 
         public override void SafeSetDefaults()
@@ -30,20 +32,17 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.UseSound = SoundID.Item103;
             item.consumable = false;
             item.autoReuse = false;
-            item.shoot = ModContent.ProjectileType<WormHead>();
-            item.shootSpeed = 3f;
-            item.damage = 18;
 
             soulResourceCost = 1;
+            defBuffDuration = 3600; // 1 minute
         }
 
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.DemoniteBar, 12);
-            recipe.AddIngredient(ItemID.ShadowScale, 10);
-            recipe.AddIngredient(ItemID.WormTooth, 2);
-            recipe.AddTile(TileID.DemonAltar);
+            recipe.AddIngredient(ItemID.HoneyComb, 12);
+            recipe.AddIngredient(ItemID.BottledHoney, 9);
+            recipe.AddTile(TileID.WorkBenches);
             recipe.SetResult(this);
             recipe.AddRecipe();
         }

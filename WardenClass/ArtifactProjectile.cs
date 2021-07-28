@@ -97,6 +97,7 @@ namespace OvermorrowMod.WardenClass
                     dust.noGravity = true;
                 }
 
+                // Apply buffs
                 if (isActive)
                 {
                     for (int i = 0; i < Main.maxPlayers; i++)
@@ -114,9 +115,9 @@ namespace OvermorrowMod.WardenClass
                                 Main.player[i].AddBuff(ModContent.BuffType<MoonBuff>(), 60);
                             }
 
-                            if (RuneID == WardenRunePlayer.Runes.CrimsonRune)
+                            if (RuneID == WardenRunePlayer.Runes.SkyRune)
                             {
-                                Main.player[i].AddBuff(BuffID.WellFed, 60);
+                                Main.player[i].AddBuff(ModContent.BuffType<GoldWind>(), 60);
                             }
                         }
                     }

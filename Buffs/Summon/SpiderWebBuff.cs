@@ -11,7 +11,7 @@ namespace OvermorrowMod.Buffs.Summon
         public override void SetDefaults()
         {
             DisplayName.SetDefault("Granite Shield");
-            Description.SetDefault("Granite Shield");
+            Description.SetDefault("A Granite Shield will protect you");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }
@@ -19,7 +19,7 @@ namespace OvermorrowMod.Buffs.Summon
 
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<StormWhelp>()] > 0)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<GraniteShield>()] > 0)
             {
                 player.buffTime[buffIndex] = 18000;
             }

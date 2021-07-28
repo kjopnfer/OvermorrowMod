@@ -13,8 +13,12 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Infernal Chains");
-            Tooltip.SetDefault("Attacks have a chance to set enemies on fire\n[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause attacks to summon hellfire to consume your enemies\nConsumes 3 Soul Essences");
+            Tooltip.SetDefault("Attacks have a chance to set enemies on fire\n" +
+                "[c/09DBB8:{ Imbuement }]\n" +
+                "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
+                "[c/DE3A28:{ Power }] Your summons spawn Demon Claws on enemy hits\n" +
+                "[c/EBDE34:{ Courage }] Releases a burst of flame whenever damaged\n" +
+                "Consumes 1 Soul Essence");
         }
 
         public override void SafeSetDefaults()
@@ -42,7 +46,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 3 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 1 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -52,7 +56,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.shoot = ProjectileID.None;
                 item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
 
-                ConsumeSouls(3, player);
+                ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
                 player.AddBuff(ModContent.BuffType<BlazeRune>(), 600);
             }

@@ -15,6 +15,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
     {
         public override bool CloneNewInstances => true;
         public int soulResourceCost = 0;
+        public int defBuffDuration;
 
         // Toggles the UI if holding an Artifact
         public override void HoldItem(Player player)
@@ -53,9 +54,10 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     int projectiles = 6;
                     if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
                     {
+                        int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
                         for (int i = 0; i < projectiles; i++)
                         {
-                            Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
+                            Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
                         }
                     }
                 }
@@ -88,7 +90,62 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         }
                     }
                 }
+            }
 
+            if (item.type == ModContent.ItemType<HoneyPot>())
+            {
+                int consumedSouls = 0;
+                if (Main.netMode == NetmodeID.SinglePlayer)
+                {
+                    var modPlayer = WardenDamagePlayer.ModPlayer(player);
+                    int soulCount = modPlayer.soulResourceCurrent;
+                    for (int i = 0; i < soulCount; i++)
+                    {
+                        consumedSouls++;
+                    }
+
+                    player.statLife += 10 * consumedSouls;
+                    player.HealEffect(10 * consumedSouls);
+
+                    ConsumeSouls(consumedSouls, player);
+                }
+
+                player.AddBuff(BuffID.Honey, 3600);
+
+                // Loop through all players and check if they are on the same team
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    for (int i = 0; i < Main.maxPlayers; i++)
+                    {
+                        if (Main.player[i].team == player.team && player.team != 0)
+                        {
+                            Main.player[i].AddBuff(BuffID.Honey, 3600);
+                            Main.player[i].statLife += 10 * consumedSouls;
+                            Main.player[i].HealEffect(10 * consumedSouls);
+                        }
+                    }
+                }
+            }
+
+            // Apply additional buffs while a rune is active
+            if (item.type == ModContent.ItemType<CorruptedMirror>() || item.type == ModContent.ItemType<HoneyPot>())
+            {
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.SkyRune)
+                {
+                    player.AddBuff(ModContent.BuffType<GoldWind>(), defBuffDuration);
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            if (Main.player[i].team == player.team && player.team != 0)
+                            {
+                                Main.player[i].AddBuff(ModContent.BuffType<GoldWind>(), defBuffDuration);
+                            }
+                        }
+                    }
+
+                }
                 return true;
             }
 

@@ -12,7 +12,6 @@ namespace OvermorrowMod.Buffs.Hexes
         public static Dictionary<Type, int> HexTypes;
         public static int HexType<T>() where T : ModHex => HexTypes[typeof(T)];
         public void Kill() {time = 0;}
-        public int index;
         public int type;
         public int time;
         public ModHex modHex;
@@ -34,19 +33,18 @@ namespace OvermorrowMod.Buffs.Hexes
             ModHex modHex = ModHex.ModHexes[type];
             Hex hex = new Hex();
             hex.type = type;
-            hex.modHex = modHex;
+            hex.modHex = (ModHex)Activator.CreateInstance(modHex.GetType());
             hex.modHex.hex = hex;
             hex.npc = npc;
             hex.time = time;
             var modNpc = npc.GetGlobalNPC<HexNPC>();
             // TODO: add multiplayer synchronization when adding hexes
             if (!npc.HasHex(type) && modHex.OnTryAdd())
-            modNpc.Hexes.Add(hex);
+                modNpc.Hexes.Add(hex);
         }
     }
     public class HexLoader
     {
-        // When loading do Hex.Load(false); and reverse when unloading
         public static void Load(bool unload)
         {
             if (unload)
@@ -57,15 +55,16 @@ namespace OvermorrowMod.Buffs.Hexes
             else
             {
                 OvermorrowModFile mod = ModContent.GetInstance<OvermorrowModFile>();
-                ModHex.ModHexes = new List<ModHex>();
+                ModHex.ModHexes = new Dictionary<int, ModHex>();
                 Hex.HexTypes = new Dictionary<Type, int>();
                 Type baseType = typeof(ModHex);
                 foreach (Type type in mod.Code.GetTypes())
                 {
-                    if (type != baseType && !type.IsAbstract && type.IsSubclassOf(type))
+                    if (type != baseType && !type.IsAbstract && type.IsSubclassOf(baseType))
                     {
-                        ModHex.ModHexes.Add((ModHex)Activator.CreateInstance(type));
-                        Hex.HexTypes.Add(type, Hex.HexTypes.Count);
+                        int id = Hex.HexTypes.Count;
+                        ModHex.ModHexes.Add(id, (ModHex)Activator.CreateInstance(type));
+                        Hex.HexTypes.Add(type, id);
                     }
                 }
             }
@@ -73,7 +72,7 @@ namespace OvermorrowMod.Buffs.Hexes
     }
     public abstract class ModHex
     {
-        public static List<ModHex> ModHexes;
+        public static Dictionary<int, ModHex> ModHexes;
         public Hex hex;
         public NPC npc {get{return hex.npc;} private set{}}
         /// <summary>Is ran every time a hex is added, return false to prevent the hex from being added</summary>

@@ -13,9 +13,12 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Heaven's Chain");
-            Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause attacks to summon a golden storm cloud\nConsumes 2 Soul Essences" +
-                            "\n'And then along came Zeus'");
+            Tooltip.SetDefault("[c/09DBB8:{ Imbuement }]\n" +
+                            "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
+                            "[c/EBDE34:{ Courage }] Summons a Storm Cloud to fight for each friendly teammate\n" +
+                            "[c/00FF00:{ Wisdom }] Grants 'Golden Wind', increasing speed while within range\n" +
+                            "Consumes 1 Soul Essence\n" +
+                            "'And then along came Zeus'");
         }
 
         public override void SafeSetDefaults()
@@ -43,7 +46,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 2 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 1 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
@@ -53,7 +56,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.shoot = ProjectileID.None;
                 item.UseSound = SoundID.DD2_WitherBeastAuraPulse;
 
-                ConsumeSouls(2, player);
+                ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
                 player.AddBuff(ModContent.BuffType<LightningRune>(), 600);
             }
