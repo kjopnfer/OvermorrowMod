@@ -17,6 +17,7 @@ using Terraria.World.Generation;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.NPCs.Bosses.Goblin;
+using OvermorrowMod.Projectiles.Ranged.Ammo;
 
 namespace OvermorrowMod
 {
@@ -350,7 +351,52 @@ namespace OvermorrowMod
                         }
                     }
                 }
+
+
+
+
+            int[] itemsToPlaceInSkyChests = { ModContent.ItemType<FeatherArrowAmmo>() };
+            int itemsToPlaceInSkyChoice = 0;
+                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 28 * 36)
+                {
+                    if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (inventoryIndex == 1)
+                            {
+                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSkyChests[itemsToPlaceInSkyChoice]);
+                                itemsToPlaceInSkyChoice = (itemsToPlaceInSkyChoice + 1) % itemsToPlaceInSkyChests.Length;
+                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                break;
+                            }
+                        }
+                        placedclaw = true;
+                    }
+                    else
+                    {
+
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (inventoryIndex == 1)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSkyChests[itemsToPlaceInSkyChoice]);
+                                    itemsToPlaceInSkyChoice = (itemsToPlaceInSkyChoice + 1) % itemsToPlaceInSkyChests.Length;
+                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                    break;
+                                }
+                            }
+                        StackSkyChest1(Main.chest[chestIndex].item);
+                    }
+                }
             }
+        }
+
+
+
+        void StackSkyChest1(Item[] ChestInventory)
+        {
+            ChestInventory[1].stack = Main.rand.Next(6, 49);
         }
 
         // Worldgen Debugging
@@ -394,8 +440,11 @@ namespace OvermorrowMod
                 tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
             }
 
-
-
+            int Iceeeee = tasks.FindIndex(genpass => genpass.Name.Equals("Lihzahrd Altars"));
+            if (Iceeeee != -1)
+            {
+                tasks.Insert(Iceeeee + 1, new PassLegacy("dsdwrv", IceStart));
+            }
 
             int TempleS = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (TempleS != -1)
@@ -404,6 +453,106 @@ namespace OvermorrowMod
             }
 
         }
+
+
+
+
+        private void IceStart(GenerationProgress progress)
+        {
+
+            int iceH = Main.rand.Next(3, 6);
+            int iceY = Main.rand.Next(7, 9);
+            int iceX = Main.rand.Next(9, 16);
+
+
+            progress.Message = "Generating Ice Temples";
+            for (int k = 0; k < (int)(Main.maxTilesX * Main.maxTilesY) * 0.008; k++)
+            {
+                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                int y = WorldGen.genRand.Next(0, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+
+                Tile tile = Framing.GetTileSafely(x, y);
+                if (tile.active() && tile.type == 162)
+                {
+
+
+                    //clear + wires
+                    for (int j = 0; j < iceY + iceH; j++)
+                    {
+                        for (int i = 0; i < iceX; i++)
+                        {
+                            WorldGen.KillTile(x + i, y - j);
+                            Main.tile[x + i, y - j].wire(true);
+                        }
+                    }
+
+
+                    //Stilts
+                    for (int j = 0; j < iceX - 2; j++)
+                    {
+                        for (int i = 0; i < iceH; i++)
+                        {
+                            WorldGen.PlaceWall(x + 1 + j, y - i, 150);
+                        }  
+                    }    
+
+                    //bottom
+                    for (int i = 0; i < iceX; i++)
+                    {
+                        WorldGen.PlaceTile(x + i, y - iceH, 206); 
+                    }
+
+
+                    //sides
+                    for (int i = 0; i < iceY; i++)
+                    {
+                        WorldGen.PlaceTile(x, y - i - iceH, 206); 
+                        WorldGen.PlaceTile(x + iceX, y - i - iceH, 206); 
+                    }
+
+
+                    //top
+                    for (int i = 0; i < iceX; i++)
+                    {
+                        WorldGen.PlaceTile(x + i, y - iceY - iceH, 206); 
+                    }
+
+                    //trap
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceH - 1, 135, style: 4); 
+                    WorldGen.PlaceTile(x + Main.rand.Next(2, iceX - 1), y - iceH - 1, 21, style: 22);
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
+
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         bool placedtower = false;
         private void TempleStart(GenerationProgress progress)
