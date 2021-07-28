@@ -132,7 +132,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             {
                 if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.SkyRune)
                 {
-                    player.AddBuff(ModContent.BuffType<GoldWind>(), defBuffDuration);
+                    player.AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
+                    Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, player.whoAmI, 0f, 0f);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -140,7 +141,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         {
                             if (Main.player[i].team == player.team && player.team != 0)
                             {
-                                Main.player[i].AddBuff(ModContent.BuffType<GoldWind>(), defBuffDuration);
+                                Main.player[i].AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
+                                Projectile.NewProjectile(player.Center + new Vector2(0, -50), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
                             }
                         }
                     }

@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,6 +26,20 @@ namespace OvermorrowMod.Projectiles.Piercing
 
 		public override void AI()
 		{
+			Player player = Main.player[projectile.owner];
+
+			if (player.dead || !player.active)
+			{
+				player.ClearBuff(ModContent.BuffType<LightningCloud>());
+			}
+
+			if (player.HasBuff(ModContent.BuffType<LightningCloud>()))
+			{
+				projectile.timeLeft = 2;
+			}
+
+			projectile.Center = player.Center - new Vector2(0, MathHelper.Lerp(75, 85, (float)Math.Sin(projectile.ai[0] / 60f)));
+
 			projectile.damage = 0;
 			projectile.velocity = Vector2.Zero;
 
@@ -31,27 +47,45 @@ namespace OvermorrowMod.Projectiles.Piercing
 			{
 				projectile.alpha -= 4;
             }
-            else
-            {
-				projectile.alpha += 30;
-            }
 
+			projectile.ai[0]++;
 
-			if (projectile.ai[0] == 70)
+			if (projectile.ai[0] % 180 == 0)
             {
-				for (int i = 0; i < Main.maxPlayers; i++)
+				Vector2 targetPos = projectile.position;
+				float targetDist = 400f;
+				bool target = false;
+				for (int k = 0; k < 200; k++)
 				{
-					float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
-					if (distance <= 1050)
+					NPC npc = Main.npc[k];
+					if (npc.CanBeChasedBy(this))
 					{
-						Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+						float distance = Vector2.Distance(npc.Center, projectile.Center);
+						if ((distance < targetDist || !target) && Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height))
+						{
+							targetDist = distance;
+							targetPos = npc.Center;
+							target = true;
+						}
 					}
 				}
 
-				Projectile.NewProjectile(projectile.Center, new Vector2(0, 5), ModContent.ProjectileType<DivineLightning>(), 48, 10f, projectile.owner);
-            }
+				if (target)
+				{
+					Vector2 shootVelocity = targetPos - projectile.Center;
+					shootVelocity.Normalize();
+					Projectile.NewProjectile(projectile.Center, shootVelocity, ModContent.ProjectileType<DivineLightning>(), 36, 10f, projectile.owner);
 
-			projectile.ai[0]++;
+					for (int i = 0; i < Main.maxPlayers; i++)
+					{
+						float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
+						if (distance <= 1050)
+						{
+							Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+						}
+					}
+				}
+            }
 
 			if (++projectile.frameCounter >= 8)
 			{

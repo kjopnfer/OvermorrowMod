@@ -17,17 +17,7 @@ namespace OvermorrowMod.Buffs
 
 		public override void Update(Player player, ref int buffIndex)
 		{
-			if (player.ownedProjectileCounts[ModContent.ProjectileType<GoldCloud>()] > 0)
-			{
-				player.buffTime[buffIndex] = 18000;
-			}
-			else
-			{
-				player.DelBuff(buffIndex);
-				buffIndex--;
-			}
-
-			player.GetModPlayer<OvermorrowModPlayer>().goldWind = true;
+			player.GetModPlayer<OvermorrowModPlayer>().lightningCloud = true;
 		}
 	}
 }

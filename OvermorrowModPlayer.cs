@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Projectiles.Piercing;
 
 namespace OvermorrowMod
 {
@@ -75,6 +76,7 @@ namespace OvermorrowMod
         public bool atomBuff;
         public bool graniteSpearBuff;
         public bool goldWind;
+        public bool lightningCloud;
         public bool mirrorBuff;
         public bool moonBuff;
         public bool smolBoi;
@@ -119,6 +121,7 @@ namespace OvermorrowMod
             atomBuff = false;
             graniteSpearBuff = false;
             goldWind = false;
+            lightningCloud = false;
             mirrorBuff = false;
             moonBuff = false;
             smolBoi = false;
