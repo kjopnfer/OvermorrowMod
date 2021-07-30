@@ -12,10 +12,10 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Maw of the Eater");
-            /*Tooltip.SetDefault("[c/00FF00:{ Artifact }]\nUse to consume all your Soul Essences, \n" +
-                "Each Soul Essence consumed heals for 10 life each");*/
-            Tooltip.SetDefault("[c/DE3A28:{ Artifact of Power }]\nConsume 1 Soul Essence to summon 3 worms\n" +
-                "Worms will home in on nearby enemies");
+            Tooltip.SetDefault("[c/DE3A28:{ Artifact of Power }]\n" +
+                               "Consume 1 Soul Essence to summon 3 worms\n" +
+                               "Worms will home in on nearby enemies\n" +
+                               "'I don't get it, what do you mean by calamitous worms?'");
         }
 
         public override void SafeSetDefaults()

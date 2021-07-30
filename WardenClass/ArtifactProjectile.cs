@@ -68,7 +68,7 @@ namespace OvermorrowMod.WardenClass
             // Generate the Aura
             if (projectile.type == ModContent.ProjectileType<RedCloud>() || projectile.type == ModContent.ProjectileType<WorldTree>())
             {
-                projectile.ai[0] += 1;
+                projectile.ai[0]++;
 
                 if (projectile.ai[1] < AuraRadius) // The radius
                 {
@@ -121,6 +121,42 @@ namespace OvermorrowMod.WardenClass
                             }
                         }
                     }
+
+                    // Do stuff against enemy NPCs
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        float distance = Vector2.Distance((projectile.Center - new Vector2(0, 68)), Main.npc[i].Center);
+                        if (distance <= AuraRadius)
+                        {
+                            if (RuneID == WardenRunePlayer.Runes.CorruptionRune)
+                            {
+                                Main.npc[i].AddBuff(BuffID.CursedInferno, 120);
+                            }
+
+                            if (RuneID == WardenRunePlayer.Runes.CrimsonRune)
+                            {
+                                if (projectile.ai[0] % 180 == 0 && Main.npc[i].active)
+                                {
+                                    Vector2 origin = Main.npc[i].Center;
+                                    float radius = 15;
+                                    int numLocations = 30;
+                                    for (int j = 0; j < 30; j++)
+                                    {
+                                        Vector2 dustPosition = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * j)) * radius;
+                                        Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * j));
+                                        int dust = Dust.NewDust(dustPosition, 2, 2, 90, dustvelocity.X, dustvelocity.Y, 0, default, 1.25f);
+                                        Main.dust[dust].noGravity = true;
+                                    }
+
+                                    int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
+                                    for (int j = 0; j < 6; j++)
+                                    {
+                                        Projectile.NewProjectile(Main.npc[i].Center, new Vector2(6).RotatedBy(MathHelper.ToRadians((360 / 6) * j + randRotation)), ModContent.ProjectileType<RedThornHead>(), 23, 6f, projectile.owner);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -154,7 +190,11 @@ namespace OvermorrowMod.WardenClass
         {
             if (RuneID == WardenRunePlayer.Runes.CorruptionRune)
             {
-                target.AddBuff(BuffID.CursedInferno, 120);
+                target.AddBuff(BuffID.CursedInferno, 480);
+            }
+            else if (RuneID == WardenRunePlayer.Runes.CrimsonRune)
+            {
+                target.AddBuff(BuffID.Ichor, 480);
             }
         }
     }

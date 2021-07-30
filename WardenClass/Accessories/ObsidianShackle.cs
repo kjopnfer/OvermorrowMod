@@ -11,7 +11,9 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Obsidian Spiked Shackle");
-            Tooltip.SetDefault("1 defense\nIncreases the velocity of Piercing weapons");
+            Tooltip.SetDefault("1 defense\n" +
+                "Increases the velocity of Piercing weapons\n" +
+                "'Even Wardens had an emo phase'");
         }
 
         public override void SetDefaults()

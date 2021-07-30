@@ -13,8 +13,12 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Tendon Guillotine");
-            Tooltip.SetDefault("[c/00FF00:{ Imbuement }]\n" +
-                "[c/800080:Right Click] to cause attacks to summon Crimson thorns\nConsumes 2 Soul Essences");
+            Tooltip.SetDefault("[c/09DBB8:{ Imbuement }]\n" +
+                               "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
+                               "[c/DE3A28:{ Power }] Your Artifact summons inflict Ichor\n" +
+                               "[c/00FF00:{ Wisdom }] Spawns Bloody Thorns to damage enemies within range\n" +
+                               "Consumes 1 Soul Essence\n" +
+                               "'How does the Crimson work!?'");
         }
 
         public override void SafeSetDefaults()

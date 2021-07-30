@@ -18,7 +18,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
                 "[c/DE3A28:{ Power }] Your summons spawn Demon Claws on enemy hits\n" +
                 "[c/EBDE34:{ Courage }] Releases a burst of flame whenever damaged\n" +
-                "Consumes 1 Soul Essence");
+                "Consumes 1 Soul Essence\n" +
+                "'A signature weapon of Demonic Wardens used to pierce the soul and set it aflame'");
         }
 
         public override void SafeSetDefaults()

@@ -64,38 +64,16 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             {
                 item.autoReuse = true;
                 item.useTurn = true;
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.SkyRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-                {
-                    item.useStyle = ItemUseStyleID.HoldingUp;
-                    item.useAnimation = 35;
-                    item.useTime = 35;
-                    item.UseSound = null;
-                }
-                else
-                {
-                    item.useStyle = ItemUseStyleID.SwingThrow;
-                    item.useAnimation = 14;
-                    item.useTime = 14;
-                    item.UseSound = SoundID.Item71;
-                }
-
+                item.useStyle = ItemUseStyleID.SwingThrow;
+                item.useAnimation = 14;
+                item.useTime = 14;
+                item.UseSound = SoundID.Item71;
                 item.damage = 6;
                 item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("LightningPiercerProjectile");
             }
 
             return base.CanUseItem(player);
-        }
-
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-        {
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.SkyRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-            {
-                position = Main.MouseWorld;
-                type = ModContent.ProjectileType<GoldCloud>();
-            }
-
-            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }
     }
 }

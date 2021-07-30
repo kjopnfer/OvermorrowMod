@@ -14,9 +14,12 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Stingvine");
-            Tooltip.SetDefault("Attacks have a chance to poison\n[c/00FF00:{ Imbuement }]\n" +
-                            "[c/800080:Right Click] to cause attacks to summon vines to ensnare enemies" +
-                            "\nHold down attack while the rune is active to rotate the vines\nConsumes 3 Soul Essences");
+            Tooltip.SetDefault("Attacks have a chance to inflict Poisoned\n" +
+                            "[c/09DBB8:{ Imbuement }]\n" +
+                            "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
+                            "[c/DE3A28:{ Power }] Your Artifact summons spawn Spores on hit\n" +
+                            "Consumes 1 Soul Essence\n" +
+                            "'Float like a butterfly, sting like a vine'");
         }
 
         public override void SafeSetDefaults()

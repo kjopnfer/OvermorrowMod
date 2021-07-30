@@ -10,7 +10,9 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Nature Rune");
-            Tooltip.SetDefault("Increase piercing damage by 2\nPiercing weapons have a chance to inflict Poisoned");
+            Tooltip.SetDefault("Increase piercing damage by 2\n" +
+                "Piercing weapons have a chance to inflict Poisoned\n" +
+                "'Don't you know that you're toxic?'");
         }
 
         public override void SetDefaults()

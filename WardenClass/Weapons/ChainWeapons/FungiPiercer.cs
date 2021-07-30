@@ -14,9 +14,11 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Fungal Vine");
-            Tooltip.SetDefault("Attacks have a chance to inflict Fungal Infection\n[c/00FF00:{ Imbuement }]\n" +
-                "[c/800080:Right Click] to cause attacks to spawns spores at your cursor\nConsumes 2 Soul Essences" +
-                "\n'Not toxic, but can still kill you'");
+            Tooltip.SetDefault("Attacks have a chance to inflict Fungal Infection\n" +
+                        "[c/09DBB8:{ Imbuement }]\n" +
+                        "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
+                        "Consumes 1 Soul Essence\n" +
+                        "'Not toxic, but can still kill you'");
         }
 
         public override void SafeSetDefaults()
@@ -44,7 +46,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 2 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 1 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;
