@@ -12,6 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Greater Diamond Staff");
+            Tooltip.SetDefault("'MINE- DIA- MOOOOOONDS'");
             Item.staff[item.type] = true;
         }
 
@@ -34,6 +35,17 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.knockBack = 6f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY)) * 86f;
+            if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
+            {
+                position += muzzleOffset;
+            }
+
+            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }
 
         public override void AddRecipes()

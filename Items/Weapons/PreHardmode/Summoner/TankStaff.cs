@@ -11,7 +11,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Tank Staff");
+            DisplayName.SetDefault("Tank Remote");
             Tooltip.SetDefault("Summons a tank to fight for you");
         }
         public override void SetDefaults()

@@ -81,7 +81,7 @@ namespace OvermorrowMod.NPCs
             else
             {
                 // Idle animation
-                if(npc.ai[0] == 120)
+                if (npc.ai[0] == 120)
                 {
                     Vector2 origin = npc.Center; // Origin of the circle
                     float radius = 175; // Distance from the circle
@@ -133,7 +133,7 @@ namespace OvermorrowMod.NPCs
 
         public override void NPCLoot()
         {
-            if(Main.rand.Next(4) == 0)
+            if (Main.rand.Next(3) == 0)
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFire>());
             }

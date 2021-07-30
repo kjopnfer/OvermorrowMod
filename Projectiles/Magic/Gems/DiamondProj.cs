@@ -15,7 +15,7 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
             projectile.CloneDefaults(ProjectileID.MagnetSphereBolt);
             aiType = ProjectileID.MagnetSphereBolt;
             projectile.penetrate = 1;
-            projectile.tileCollide = false;
+            projectile.tileCollide = true;
         }
 
         public override void AI()

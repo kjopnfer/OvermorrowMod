@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         {
             DisplayName.SetDefault("Splite rStaff");
             Item.staff[item.type] = true;
-            Tooltip.SetDefault("Splits foes into two on impact");
+            Tooltip.SetDefault("Splits foes into two on impact\n'Wouldn't recommend eating it'");
         }
 
 

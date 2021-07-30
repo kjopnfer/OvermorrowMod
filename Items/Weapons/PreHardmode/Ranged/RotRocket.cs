@@ -11,6 +11,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Rot Rocket");
+            Tooltip.SetDefault("'Or \"Rotket\" for short'");
         }
 
         public override void SetDefaults()

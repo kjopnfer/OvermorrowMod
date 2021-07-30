@@ -247,6 +247,13 @@ namespace OvermorrowMod.NPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (Main.npc[i].type == ModContent.NPCType<Hemomancer>() && Main.npc[i].active)
+                {
+                    return 0f;
+                }
+            }
             return spawnInfo.player.ZoneDungeon ? 0.025f : 0f;
         }
     }

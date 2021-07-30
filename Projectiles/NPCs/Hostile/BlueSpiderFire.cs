@@ -22,13 +22,12 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
             projectile.hostile = true;
             projectile.timeLeft = 600;
             projectile.penetrate = 1;
-            projectile.alpha = 190;
             projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 0f, 0f, 0.5f);
+            Lighting.AddLight(projectile.Center, 0f, 0f, 0.75f);
 
             projectile.ai[0]++;
             if (projectile.ai[0] >= 120)
@@ -54,7 +53,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
                 if (target)
                 {
                     AdjustMagnitude(ref move);
-                    projectile.velocity = (9 * projectile.velocity + move) / 11f;
+                    projectile.velocity = (8 * projectile.velocity + move) / 11f;
                     AdjustMagnitude(ref projectile.velocity);
                 }
             }
@@ -83,6 +82,11 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
             {
                 vector *= 6f / magnitude;
             }
+        }
+
+        public override Color? GetAlpha(Color lightColor)
+        {
+            return Color.White;
         }
     }
 }

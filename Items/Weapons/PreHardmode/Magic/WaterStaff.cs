@@ -12,6 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lacusite Staff");
+            Tooltip.SetDefault("'If you can't handle me at my worst, obey your thirst'");
             Item.staff[item.type] = true;
         }
 
