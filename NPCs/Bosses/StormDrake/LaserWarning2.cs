@@ -17,8 +17,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
         {
-            float length = (TRay.Cast(projectile.Center, projectile.velocity, /*2000f*/ /*2500f*/ 3000f) - projectile.Center).Length();
-            LaserLength = length;
+            /*float length = (TRay.Cast(projectile.Center, projectile.velocity, /*2000f*/ /*2500f 3000f) - projectile.Center).Length();
+            LaserLength = length;*/
             projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.1f;
         }
         public override void Kill(int timeLeft)
