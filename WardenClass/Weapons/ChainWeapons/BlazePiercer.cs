@@ -13,10 +13,10 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Infernal Chains");
-            Tooltip.SetDefault("Attacks have a chance to set enemies on fire\n" +
+            Tooltip.SetDefault("Attacks have a chance to inflict On Fire!\n" +
                 "[c/09DBB8:{ Imbuement }]\n" +
                 "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
-                "[c/DE3A28:{ Power }] Your summons spawn Demon Claws on enemy hits\n" +
+                "[c/DE3A28:{ Power }] Your summons spawn Blazing Scythes on enemy hits\n" +
                 "[c/EBDE34:{ Courage }] Releases a burst of flame whenever damaged\n" +
                 "Consumes 1 Soul Essence\n" +
                 "'A signature weapon of Demonic Wardens used to pierce the soul and set it aflame'");
@@ -66,20 +66,10 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.autoReuse = true;
                 item.useStyle = ItemUseStyleID.HoldingOut;
                 item.useTurn = true;
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.HellRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-                {
-                    item.damage = 17;
-                    item.useAnimation = 35;
-                    item.useTime = 35;
-                    item.UseSound = SoundID.Item45;
-                }
-                else
-                {
-                    item.damage = 9;
-                    item.useAnimation = 14;
-                    item.useTime = 14;
-                    item.UseSound = SoundID.Item71;
-                }
+                item.damage = 9;
+                item.useAnimation = 14;
+                item.useTime = 14;
+                item.UseSound = SoundID.Item71;
                 item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
                 item.shoot = mod.ProjectileType("BlazePiercerProjectile");
             }
@@ -87,7 +77,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             return base.CanUseItem(player);
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        /*public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.HellRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
             {
@@ -100,7 +90,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             {
                 return true;
             }
-        }
+        }*/
 
         public override void AddRecipes()
         {

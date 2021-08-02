@@ -148,6 +148,23 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     }
 
                 }
+
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.HellRune)
+                {
+                    player.AddBuff(ModContent.BuffType<ExplosionBuff>(), defBuffDuration);
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            if (Main.player[i].team == player.team && player.team != 0)
+                            {
+                                Main.player[i].AddBuff(ModContent.BuffType<ExplosionBuff>(), defBuffDuration);
+                            }
+                        }
+                    }
+
+                }
                 return true;
             }
 

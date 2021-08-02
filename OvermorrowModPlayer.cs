@@ -74,6 +74,7 @@ namespace OvermorrowMod
 
         // Buffs
         public bool atomBuff;
+        public bool explosionBuff;
         public bool graniteSpearBuff;
         public bool goldWind;
         public bool lightningCloud;
@@ -119,6 +120,7 @@ namespace OvermorrowMod
             SkyArmor = false;
 
             atomBuff = false;
+            explosionBuff = false;
             graniteSpearBuff = false;
             goldWind = false;
             lightningCloud = false;
@@ -249,6 +251,16 @@ namespace OvermorrowMod
                     }
                 }
                 NPC.NewNPC((int)player.position.X, (int)player.position.Y, mod.NPCType("BloodHeal"));
+            }
+
+            if (explosionBuff)
+            {
+                Main.PlaySound(SoundID.Item74);
+                int projectiles = 9;
+                for (int i = 0; i < projectiles; i++)
+                {
+                    Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<Flames>(), 60, 9, player.whoAmI);
+                }
             }
         }
 

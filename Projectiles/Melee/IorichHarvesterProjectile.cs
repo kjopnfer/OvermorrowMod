@@ -14,8 +14,8 @@ namespace OvermorrowMod.Projectiles.Melee
             DisplayName.SetDefault("Harvester of Iorich");
 
             // Afterimage effect
-            ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;    //The length of old position to be recorded
+            ProjectileID.Sets.TrailingMode[projectile.type] = 2;        //The recording mode, this tracks rotation
         }
         public override void SetDefaults()
         {
@@ -133,14 +133,25 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
-            for (int k = 0; k < projectile.oldPos.Length; k++)
+            Color color26 = Color.LightGreen;
+            Texture2D texture2D16 = mod.GetTexture("Projectiles/Melee/IorichHarvesterProjectile_Afterimage");
+
+            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+            int y2 = num154 * projectile.frame;
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
+
+            Vector2 origin2 = drawRectangle.Size() / 2f;
+
+            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[projectile.type]; i++)
             {
-                Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin + new Vector2(0f, projectile.gfxOffY);
-                Color color = projectile.GetAlpha(Color.Green) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
-                spriteBatch.Draw(Main.projectileTexture[projectile.type], drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
+                Color color27 = color26;
+                color27 *= (float)(ProjectileID.Sets.TrailCacheLength[projectile.type] - i) / ProjectileID.Sets.TrailCacheLength[projectile.type];
+                Vector2 value4 = projectile.oldPos[i];
+                float num165 = projectile.oldRot[i];
+                Main.spriteBatch.Draw(texture2D16, value4 + projectile.Size / 2f - Main.screenPosition + new Vector2(0, projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(drawRectangle), color27, num165, origin2, projectile.scale, SpriteEffects.None, 0f);
             }
-            return true;
+
+            return base.PreDraw(spriteBatch, lightColor);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

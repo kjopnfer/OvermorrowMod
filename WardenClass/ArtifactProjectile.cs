@@ -3,6 +3,7 @@ using OvermorrowMod.Buffs;
 using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Misc;
 using OvermorrowMod.Projectiles.Piercing;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -195,6 +196,15 @@ namespace OvermorrowMod.WardenClass
             else if (RuneID == WardenRunePlayer.Runes.CrimsonRune)
             {
                 target.AddBuff(BuffID.Ichor, 480);
+            }else if (RuneID == WardenRunePlayer.Runes.HellRune)
+            {
+                if (Main.rand.Next(2) == 0)
+                {
+                    Vector2 randPosition = new Vector2(target.Center.X - Main.rand.Next(-200, 200), target.Center.Y + 800);
+                    Vector2 moveTo = target.Center - randPosition;
+                    float magnitude = (float)Math.Sqrt(moveTo.X * moveTo.X + moveTo.Y * moveTo.Y);
+                    Projectile.NewProjectile(randPosition, moveTo / magnitude, ModContent.ProjectileType<DemonClaw>(), 36, 6f, projectile.owner);
+                }
             }
         }
     }
