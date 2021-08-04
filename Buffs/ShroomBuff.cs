@@ -3,12 +3,12 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Buffs
 {
-	public class TreeBuff : ModBuff
+	public class ShroomBuff : ModBuff
 	{
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Shade of the Forest");
-			Description.SetDefault("Your health regen is being increased");
+			DisplayName.SetDefault("Fungal Growth");
+			Description.SetDefault("Mushrooms grow from your back, firing towards your cursor");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = false;
 			canBeCleared = false;
@@ -16,7 +16,7 @@ namespace OvermorrowMod.Buffs
 
 		public override void Update(Player player, ref int buffIndex)
 		{
-			player.GetModPlayer<OvermorrowModPlayer>().treeBuff = true;
+			player.GetModPlayer<OvermorrowModPlayer>().shroomBuff = true;
 		}
 	}
 }

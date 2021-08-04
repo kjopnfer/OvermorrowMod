@@ -10,7 +10,7 @@ namespace OvermorrowMod.Buffs
 			DisplayName.SetDefault("Unstable Fire");
 			Description.SetDefault("Releases bursts of flame whenever damaged");
 			Main.buffNoSave[Type] = true;
-			Main.debuff[Type] = true;
+			Main.debuff[Type] = false;
 			canBeCleared = false;
 		}
 

@@ -10,7 +10,6 @@ namespace OvermorrowMod.Projectiles.Boss
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
         private bool spawnedProjectiles = false;
-        private bool launchedProjectile = false;
         private int storeDamage = 0;
 
         public override void SetStaticDefaults()
@@ -65,15 +64,18 @@ namespace OvermorrowMod.Projectiles.Boss
                 float distance = 6000f; // Search distance
                 if (projectile.ai[0] < 490/*!launchedProjectile*/)
                 {
-                    Vector2 newMove = Main.player[Main.npc[(int)projectile.ai[1]].target].Center - projectile.Center;
-                    float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
+                    Vector2 direction = Main.player[Main.npc[(int)projectile.ai[1]].target].Center - projectile.Center;
+                    float distanceTo = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
                     if (distanceTo < distance)
                     {
-                        move = newMove;
+                        move = direction;
+                        direction.SafeNormalize(Vector2.Zero);
+                        float launchSpeed = Main.expertMode ? 25f: 15f /*75f : 100f*/;
+                        direction *= launchSpeed;
                         distance = distanceTo;
-                        float launchSpeed = Main.expertMode ? 75f : 100f;
-                        projectile.velocity = (move) / launchSpeed;
-                        launchedProjectile = true;
+                        //projectile.velocity = (move) / launchSpeed;
+                        float inertia = 20f;
+                        projectile.velocity = (projectile.velocity * (inertia - 1) + direction) / inertia;
                     }
                 }
             }

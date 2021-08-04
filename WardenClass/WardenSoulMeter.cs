@@ -60,7 +60,7 @@ namespace OvermorrowMod.WardenClass
                         Main.playerDrawData.Add(drawData);
 
                         Rectangle rect = new Rectangle(0, 0, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), ChargeBar.Height);
-                        drawData = new DrawData(ChargeBar, position + new Vector2(48, 0), rect, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                        drawData = new DrawData(ChargeBar, position + new Vector2(47, 0), rect, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
                         Main.playerDrawData.Add(drawData);
                     }
                 }));

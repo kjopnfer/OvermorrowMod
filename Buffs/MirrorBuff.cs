@@ -11,7 +11,7 @@ namespace OvermorrowMod.Buffs
 			Description.SetDefault("Damage taken from enemies is reduced by 50%\nEnemies are then dealt their full damage" +
 				"\n(Will not deal fatal damage to enemies)");
 			Main.buffNoSave[Type] = true;
-			Main.debuff[Type] = true;
+			Main.debuff[Type] = false;
 			canBeCleared = false;
 		}
 

@@ -10,7 +10,7 @@ namespace OvermorrowMod.Buffs
 			DisplayName.SetDefault("Golden Wind");
 			Description.SetDefault("Greatly increased movement speed");
 			Main.buffNoSave[Type] = true;
-			Main.debuff[Type] = true;
+			Main.debuff[Type] = false;
 			canBeCleared = false;
 		}
 

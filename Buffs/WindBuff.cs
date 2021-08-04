@@ -10,7 +10,7 @@ namespace OvermorrowMod.Buffs
 			DisplayName.SetDefault("Apollo's Favor");
 			Description.SetDefault("Increases your speed & leaves a trail behind you while holding a ranged weapon");
 			Main.buffNoSave[Type] = true;
-			Main.debuff[Type] = true;
+			Main.debuff[Type] = false;
 			canBeCleared = false;
 		}
 

@@ -91,8 +91,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     }
                 }
             }
-
-            if (item.type == ModContent.ItemType<HoneyPot>())
+            else if (item.type == ModContent.ItemType<HoneyPot>())
             {
                 int consumedSouls = 0;
                 if (Main.netMode == NetmodeID.SinglePlayer)
@@ -165,6 +164,26 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     }
 
                 }
+
+                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.MushroomRune)
+                {
+                    player.AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
+                    Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 0f);
+                    Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, -1f);
+                    Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 1f);
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            if (Main.player[i].team == player.team && player.team != 0)
+                            {
+                                Main.player[i].AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
+                            }
+                        }
+                    }
+                }
+
                 return true;
             }
 

@@ -81,6 +81,7 @@ namespace OvermorrowMod
         public bool mirrorBuff;
         public bool moonBuff;
         public bool smolBoi;
+        public bool shroomBuff;
         public bool treeBuff;
         public bool windBuff;
 
@@ -127,6 +128,7 @@ namespace OvermorrowMod
             mirrorBuff = false;
             moonBuff = false;
             smolBoi = false;
+            shroomBuff = false;
             treeBuff = false;
             windBuff = false;
             MouseLampPlay = false;

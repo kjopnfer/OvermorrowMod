@@ -11,8 +11,9 @@ namespace OvermorrowMod.Projectiles.Boss
     public class ElectricBall : ModProjectile, ITrailEntity
     {
         Projectile parentProjectile;
+        private bool getParent = false;
         private int speedUpCounter = 0;
-
+        private float radius = 0;
         public Type TrailType()
         {
             return typeof(LightningTrail);
@@ -39,6 +40,14 @@ namespace OvermorrowMod.Projectiles.Boss
         {
             Lighting.AddLight(projectile.Center, 0, 0.5f, 0.5f);
 
+            // Parent projectile will have passed in the ID (projectile.whoAmI) for the projectile through AI fields when spawned
+            if (Main.projectile[(int)projectile.ai[0]].active && !getParent)
+            {
+                parentProjectile = Main.projectile[(int)projectile.ai[0]];
+                getParent = true;
+                projectile.ai[0] = 0;
+            }
+
             int num434 = Dust.NewDust(projectile.Center, 0, 0, 229, 0f, 0f, 100);
             Main.dust[num434].noLight = true;
             Main.dust[num434].noGravity = true;
@@ -55,13 +64,13 @@ namespace OvermorrowMod.Projectiles.Boss
                 }
             }
 
-            // Parent projectile will have passed in the ID (projectile.whoAmI) for the projectile through AI fields when spawned
-            if (Main.projectile[(int)projectile.ai[0]].active) {
-                parentProjectile = Main.projectile[(int)projectile.ai[0]];
-            }
 
+            if (projectile.ai[0] < 180)
+            {
+                radius = MathHelper.Lerp(0, 250, projectile.ai[0] / 180);
+            }
             // Orbit around the parent projectile
-            DoProjectile_OrbitPosition(projectile, parentProjectile.Center, 250);
+            DoProjectile_OrbitPosition(projectile, parentProjectile.Center, radius);
 
             // Make projectiles gradually disappear
             if (projectile.timeLeft <= 60 && projectile.alpha < 255)

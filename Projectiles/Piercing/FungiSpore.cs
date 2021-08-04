@@ -19,7 +19,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.width = 12;
             projectile.height = 12;
             projectile.friendly = true;
-            projectile.penetrate = -1;
+            projectile.penetrate = 1;
             projectile.tileCollide = true;
             projectile.ignoreWater = true;
             projectile.timeLeft = 600;
@@ -30,9 +30,9 @@ namespace OvermorrowMod.Projectiles.Piercing
             // Projectile gravity
             projectile.velocity.Y += 0.09f;
 
-            if (projectile.velocity.Y > 1f) // Terminal velocity
+            if (projectile.velocity.Y > 2.5f) // Terminal velocity
             {
-                projectile.velocity.Y = 1f;
+                projectile.velocity.Y = 2.5f;
             }
 
             // Make projectiles gradually disappear

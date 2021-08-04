@@ -10,7 +10,7 @@ namespace OvermorrowMod.Buffs
 			DisplayName.SetDefault("Light of the Moon");
 			Description.SetDefault("Your damage is being increased");
 			Main.buffNoSave[Type] = true;
-			Main.debuff[Type] = true;
+			Main.debuff[Type] = false;
 			canBeCleared = false;
 		}
 

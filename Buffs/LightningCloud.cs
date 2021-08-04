@@ -11,7 +11,7 @@ namespace OvermorrowMod.Buffs
 			DisplayName.SetDefault("Divine Cloud");
 			Description.SetDefault("The Divine Cloud will fight for you");
 			Main.buffNoSave[Type] = true;
-			Main.debuff[Type] = true;
+			Main.debuff[Type] = false;
 			canBeCleared = false;
 		}
 

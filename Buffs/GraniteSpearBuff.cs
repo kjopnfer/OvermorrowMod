@@ -10,7 +10,7 @@ namespace OvermorrowMod.Buffs
 			DisplayName.SetDefault("Granite Empowerment");
 			Description.SetDefault("Minion damage increased by 10%");
 			Main.buffNoSave[Type] = true;
-			Main.debuff[Type] = true;
+			Main.debuff[Type] = false;
 			canBeCleared = false;
 		}
 

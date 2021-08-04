@@ -196,7 +196,8 @@ namespace OvermorrowMod.WardenClass
             else if (RuneID == WardenRunePlayer.Runes.CrimsonRune)
             {
                 target.AddBuff(BuffID.Ichor, 480);
-            }else if (RuneID == WardenRunePlayer.Runes.HellRune)
+            }
+            else if (RuneID == WardenRunePlayer.Runes.HellRune)
             {
                 if (Main.rand.Next(2) == 0)
                 {
