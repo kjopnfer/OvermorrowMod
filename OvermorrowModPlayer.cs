@@ -83,6 +83,7 @@ namespace OvermorrowMod
         public bool smolBoi;
         public bool shroomBuff;
         public bool treeBuff;
+        public bool vineBuff;
         public bool windBuff;
 
         // Misc
@@ -130,6 +131,7 @@ namespace OvermorrowMod
             smolBoi = false;
             shroomBuff = false;
             treeBuff = false;
+            vineBuff = false;
             windBuff = false;
             MouseLampPlay = false;
 

@@ -18,6 +18,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                             "[c/09DBB8:{ Imbuement }]\n" +
                             "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
                             "[c/DE3A28:{ Power }] Your Artifact summons spawn Spores on hit\n" +
+                            "[c/EBDE34:{ Courage }] Summons Stingvines to fight for each friendly teammate\n" +
                             "Consumes 1 Soul Essence\n" +
                             "'Float like a butterfly, sting like a vine'");
         }
@@ -66,37 +67,17 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 item.useStyle = ItemUseStyleID.HoldingOut;
                 item.useAnimation = 14;
                 item.useTime = 14;
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.JungleRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate) 
-                {
-                    item.damage = 16;
-                    item.useTurn = false;
-                    item.shootSpeed = 6f;
-                    item.autoReuse = true;
-                    item.channel = true;
-                }
-                else
-                {
-                    item.damage = 5;
-                    item.useTurn = true;
-                    item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
-                    item.autoReuse = false;
-                    item.channel = false;
-                }
+                item.damage = 5;
+                item.useTurn = true;
+                item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                item.autoReuse = false;
+                item.channel = false;
                 item.shoot = mod.ProjectileType("VinePiercerProjectile");
                 item.UseSound = new LegacySoundStyle(SoundID.Grass, 0); // Grass
 
             }
 
             return base.CanUseItem(player);
-        }
-
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-        {
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.JungleRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-            {
-                type = ModContent.ProjectileType<JunglePiercer>();
-            }
-            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }
 
         public override void AddRecipes()

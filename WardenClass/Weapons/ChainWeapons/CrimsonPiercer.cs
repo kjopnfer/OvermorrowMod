@@ -87,33 +87,6 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             return base.CanUseItem(player);
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-        {
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.CrimsonRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-            {
-                Vector2 origin = Main.MouseWorld;
-                float radius = 15;
-                int numLocations = 30;
-                for (int i = 0; i < 30; i++)
-                {
-                    Vector2 dustPosition = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                    Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                    int dust = Dust.NewDust(dustPosition, 2, 2, 90, dustvelocity.X, dustvelocity.Y, 0, default, 1.25f);
-                    Main.dust[dust].noGravity = true;
-                }
-
-                type = ModContent.ProjectileType<RedThornHead>();
-                int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
-                for (int i = 0; i < 6; i++)
-                {
-                    Projectile.NewProjectile(Main.MouseWorld, new Vector2(6).RotatedBy(MathHelper.ToRadians((360 / 6) * i + randRotation)), type, damage, knockBack, player.whoAmI);
-                }
-                return false;
-            }
-
-            return true;
-        }
-
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);

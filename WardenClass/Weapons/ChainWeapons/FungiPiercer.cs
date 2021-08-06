@@ -17,6 +17,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             Tooltip.SetDefault("Attacks have a chance to inflict Fungal Infection\n" +
                         "[c/09DBB8:{ Imbuement }]\n" +
                         "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
+                        "[c/DE3A28:{ Power }] Your Artifact summons spawn mushrooms on hits\n" +
+                        "[c/EBDE34:{ Courage }] Summons Fungal Turrets to fight for each friendly teammate\n" +
                         "Consumes 1 Soul Essence\n" +
                         "'Not toxic, but can still kill you'");
         }
@@ -73,22 +75,6 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             }
 
             return base.CanUseItem(player);
-        }
-
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-        {
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.MushroomRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-            {
-                for (int i = 0; i < Main.rand.Next(3, 5); i++)
-                {
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ModContent.ProjectileType<FungiSpore>(), damage, 3f, player.whoAmI);
-                    }
-                }
-                return false;
-            }   
-            return true;
         }
     }
 }

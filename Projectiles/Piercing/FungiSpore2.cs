@@ -5,10 +5,10 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
-    public class FungiSpore : ModProjectile
+    public class FungiSpore2 : ModProjectile
     {
         public override string Texture => "Terraria/NPC_" + NPCID.FungiSpore;
-
+        private int storeDamage = 0;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Fungi Spore");
@@ -27,8 +27,19 @@ namespace OvermorrowMod.Projectiles.Piercing
 
         public override void AI()
         {
+            if (projectile.ai[1] == 0)
+            {
+                storeDamage = projectile.damage;
+                projectile.damage = 0;
+            }
+
+            if (projectile.ai[1] == 120)
+            {
+                projectile.damage = storeDamage;
+            }
+
             // Projectile gravity
-            projectile.velocity.Y += 0.09f;
+            projectile.velocity.Y += 0.07f;
 
             if (projectile.velocity.Y > 2.5f) // Terminal velocity
             {

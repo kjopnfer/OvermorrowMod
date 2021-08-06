@@ -1,13 +1,12 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
 using OvermorrowMod.Projectiles.Artifact;
-using OvermorrowMod.Projectiles.Misc;
+using OvermorrowMod.Projectiles.Magic;
 using OvermorrowMod.Projectiles.Piercing;
 using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using WardenClass;
 
 namespace OvermorrowMod.WardenClass
 {
@@ -65,7 +64,7 @@ namespace OvermorrowMod.WardenClass
 
             }
 
-
+            #region Aura
             // Generate the Aura
             if (projectile.type == ModContent.ProjectileType<RedCloud>() || projectile.type == ModContent.ProjectileType<WorldTree>())
             {
@@ -126,33 +125,37 @@ namespace OvermorrowMod.WardenClass
                     // Do stuff against enemy NPCs
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
-                        float distance = Vector2.Distance((projectile.Center - new Vector2(0, 68)), Main.npc[i].Center);
-                        if (distance <= AuraRadius)
+                        // Make it so it doesn't affect friendly NPCs
+                        if (!Main.npc[i].friendly)
                         {
-                            if (RuneID == WardenRunePlayer.Runes.CorruptionRune)
+                            float distance = Vector2.Distance((projectile.Center - new Vector2(0, 68)), Main.npc[i].Center);
+                            if (distance <= AuraRadius)
                             {
-                                Main.npc[i].AddBuff(BuffID.CursedInferno, 120);
-                            }
-
-                            if (RuneID == WardenRunePlayer.Runes.CrimsonRune)
-                            {
-                                if (projectile.ai[0] % 180 == 0 && Main.npc[i].active)
+                                if (RuneID == WardenRunePlayer.Runes.CorruptionRune)
                                 {
-                                    Vector2 origin = Main.npc[i].Center;
-                                    float radius = 15;
-                                    int numLocations = 30;
-                                    for (int j = 0; j < 30; j++)
-                                    {
-                                        Vector2 dustPosition = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * j)) * radius;
-                                        Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * j));
-                                        int dust = Dust.NewDust(dustPosition, 2, 2, 90, dustvelocity.X, dustvelocity.Y, 0, default, 1.25f);
-                                        Main.dust[dust].noGravity = true;
-                                    }
+                                    Main.npc[i].AddBuff(BuffID.CursedInferno, 120);
+                                }
 
-                                    int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
-                                    for (int j = 0; j < 6; j++)
+                                if (RuneID == WardenRunePlayer.Runes.CrimsonRune)
+                                {
+                                    if (projectile.ai[0] % 180 == 0 && Main.npc[i].active)
                                     {
-                                        Projectile.NewProjectile(Main.npc[i].Center, new Vector2(6).RotatedBy(MathHelper.ToRadians((360 / 6) * j + randRotation)), ModContent.ProjectileType<RedThornHead>(), 23, 6f, projectile.owner);
+                                        Vector2 origin = Main.npc[i].Center;
+                                        float radius = 15;
+                                        int numLocations = 30;
+                                        for (int j = 0; j < 30; j++)
+                                        {
+                                            Vector2 dustPosition = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * j)) * radius;
+                                            Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * j));
+                                            int dust = Dust.NewDust(dustPosition, 2, 2, 90, dustvelocity.X, dustvelocity.Y, 0, default, 1.25f);
+                                            Main.dust[dust].noGravity = true;
+                                        }
+
+                                        int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
+                                        for (int j = 0; j < 6; j++)
+                                        {
+                                            Projectile.NewProjectile(Main.npc[i].Center, new Vector2(6).RotatedBy(MathHelper.ToRadians((360 / 6) * j + randRotation)), ModContent.ProjectileType<RedThornHead>(), 23, 6f, projectile.owner);
+                                        }
                                     }
                                 }
                             }
@@ -160,7 +163,9 @@ namespace OvermorrowMod.WardenClass
                     }
                 }
             }
+            #endregion
 
+            #region Animation
             if (projectile.type == ModContent.ProjectileType<WorldTree>())
             {
                 if (++projectile.frameCounter >= 4)
@@ -185,27 +190,52 @@ namespace OvermorrowMod.WardenClass
                     }
                 }
             }
+            #endregion
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            if (RuneID == WardenRunePlayer.Runes.CorruptionRune)
+            switch (RuneID)
             {
-                target.AddBuff(BuffID.CursedInferno, 480);
-            }
-            else if (RuneID == WardenRunePlayer.Runes.CrimsonRune)
-            {
-                target.AddBuff(BuffID.Ichor, 480);
-            }
-            else if (RuneID == WardenRunePlayer.Runes.HellRune)
-            {
-                if (Main.rand.Next(2) == 0)
-                {
-                    Vector2 randPosition = new Vector2(target.Center.X - Main.rand.Next(-200, 200), target.Center.Y + 800);
-                    Vector2 moveTo = target.Center - randPosition;
-                    float magnitude = (float)Math.Sqrt(moveTo.X * moveTo.X + moveTo.Y * moveTo.Y);
-                    Projectile.NewProjectile(randPosition, moveTo / magnitude, ModContent.ProjectileType<DemonClaw>(), 36, 6f, projectile.owner);
-                }
+                case WardenRunePlayer.Runes.CorruptionRune:
+                    target.AddBuff(BuffID.CursedInferno, 480);
+                    break;
+                case WardenRunePlayer.Runes.CrimsonRune:
+                    target.AddBuff(BuffID.Ichor, 480);
+                    break;
+                case WardenRunePlayer.Runes.JungleRune:
+                    for (int i = 0; i < Main.rand.Next(3, 5); i++)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            if (Main.rand.Next(3) == 0)
+                            {
+                                Projectile.NewProjectile(projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 4, ModContent.ProjectileType<Spores>(), damage, 3f, projectile.owner);
+                            }
+                        }
+                    }
+                    break;
+                case WardenRunePlayer.Runes.MushroomRune:
+                    for (int i = 0; i < Main.rand.Next(3, 5); i++)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            if (Main.rand.Next(3) == 0)
+                            {
+                                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ModContent.ProjectileType<FungiSpore2>(), damage, 3f, projectile.owner);
+                            }
+                        }
+                    }
+                    break;
+                case WardenRunePlayer.Runes.HellRune:
+                    if (Main.rand.Next(2) == 0)
+                    {
+                        Vector2 randPosition = new Vector2(target.Center.X - Main.rand.Next(-200, 200), target.Center.Y + 800);
+                        Vector2 moveTo = target.Center - randPosition;
+                        float magnitude = (float)Math.Sqrt(moveTo.X * moveTo.X + moveTo.Y * moveTo.Y);
+                        Projectile.NewProjectile(randPosition, moveTo / magnitude, ModContent.ProjectileType<DemonClaw>(), 36, 6f, projectile.owner);
+                    }
+                    break;
             }
         }
     }

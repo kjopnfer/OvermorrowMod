@@ -48,7 +48,7 @@ namespace OvermorrowMod.Projectiles.Boss
                 }
             }
 
-            if (projectile.ai[0] < 180) // Stay still for 120 seconds
+            if (projectile.ai[0] < 240) // Stay still for 120 seconds
             {
                 projectile.velocity = new Vector2(0, 0);
 
@@ -70,11 +70,11 @@ namespace OvermorrowMod.Projectiles.Boss
                     {
                         move = direction;
                         direction.SafeNormalize(Vector2.Zero);
-                        float launchSpeed = Main.expertMode ? 25f: 15f /*75f : 100f*/;
+                        float launchSpeed = Main.expertMode ? 8f: 5f /*75f : 100f*/;
                         direction *= launchSpeed;
                         distance = distanceTo;
                         //projectile.velocity = (move) / launchSpeed;
-                        float inertia = 20f;
+                        float inertia = 100f;
                         projectile.velocity = (projectile.velocity * (inertia - 1) + direction) / inertia;
                     }
                 }

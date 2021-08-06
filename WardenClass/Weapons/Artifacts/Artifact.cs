@@ -129,61 +129,79 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             // Apply additional buffs while a rune is active
             if (item.type == ModContent.ItemType<CorruptedMirror>() || item.type == ModContent.ItemType<HoneyPot>())
             {
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.SkyRune)
+                switch (player.GetModPlayer<WardenRunePlayer>().RuneID)
                 {
-                    player.AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
-                    Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, player.whoAmI, 0f, 0f);
+                    case WardenRunePlayer.Runes.SkyRune:
+                        player.AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
+                        Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, player.whoAmI, 0f, 0f);
 
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        for (int i = 0; i < Main.maxPlayers; i++)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.player[i].team == player.team && player.team != 0)
+                            for (int i = 0; i < Main.maxPlayers; i++)
                             {
-                                Main.player[i].AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
-                                Projectile.NewProjectile(player.Center + new Vector2(0, -50), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                if (Main.player[i].team == player.team && player.team != 0)
+                                {
+                                    Main.player[i].AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
+                                    Projectile.NewProjectile(player.Center + new Vector2(0, -50), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                }
                             }
                         }
-                    }
+                        break;
+                    case WardenRunePlayer.Runes.HellRune:
+                        player.AddBuff(ModContent.BuffType<ExplosionBuff>(), defBuffDuration);
 
-                }
-
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.HellRune)
-                {
-                    player.AddBuff(ModContent.BuffType<ExplosionBuff>(), defBuffDuration);
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        for (int i = 0; i < Main.maxPlayers; i++)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.player[i].team == player.team && player.team != 0)
+                            for (int i = 0; i < Main.maxPlayers; i++)
                             {
-                                Main.player[i].AddBuff(ModContent.BuffType<ExplosionBuff>(), defBuffDuration);
+                                if (Main.player[i].team == player.team && player.team != 0)
+                                {
+                                    Main.player[i].AddBuff(ModContent.BuffType<ExplosionBuff>(), defBuffDuration);
+                                }
                             }
                         }
-                    }
+                        break;
+                    case WardenRunePlayer.Runes.JungleRune:
+                        player.AddBuff(ModContent.BuffType<VineBuff>(), defBuffDuration);
+                        Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 0f);
+                        Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, -1f);
+                        Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 1f);
 
-                }
-
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.MushroomRune)
-                {
-                    player.AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
-                    Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 0f);
-                    Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, -1f);
-                    Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 1f);
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        for (int i = 0; i < Main.maxPlayers; i++)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.player[i].team == player.team && player.team != 0)
+                            for (int i = 0; i < Main.maxPlayers; i++)
                             {
-                                Main.player[i].AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
+                                if (Main.player[i].team == player.team && player.team != 0)
+                                {
+                                    Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                    Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
+                                    Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
+                                    Main.player[i].AddBuff(ModContent.BuffType<VineBuff>(), defBuffDuration);
+                                }
                             }
                         }
-                    }
-                }
+                        break;
+                    case WardenRunePlayer.Runes.MushroomRune:
+                        player.AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
+                        Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 0f);
+                        Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, -1f);
+                        Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 1f);
 
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                if (Main.player[i].team == player.team && player.team != 0)
+                                {
+                                    Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                    Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
+                                    Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
+                                    Main.player[i].AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
+                                }
+                            }
+                        }
+                        break;
+                }
                 return true;
             }
 

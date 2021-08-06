@@ -69,6 +69,9 @@ namespace OvermorrowMod.Projectiles.Boss
             {
                 radius = MathHelper.Lerp(0, 250, projectile.ai[0] / 180);
             }
+
+            projectile.ai[0]++;
+
             // Orbit around the parent projectile
             DoProjectile_OrbitPosition(projectile, parentProjectile.Center, radius);
 
