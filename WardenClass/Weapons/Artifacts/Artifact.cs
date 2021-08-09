@@ -162,6 +162,15 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         }
                         break;
                     case WardenRunePlayer.Runes.JungleRune:
+                        // Remove shroom summons
+                        for (int i = 0; i < player.CountBuffs(); i++)
+                        {
+                            if (player.buffType[i] == ModContent.BuffType<ShroomBuff>()) // Apply Resolve Debuff after Resolve expires
+                            {
+                                player.DelBuff(i);
+                            }
+                        }
+
                         player.AddBuff(ModContent.BuffType<VineBuff>(), defBuffDuration);
                         Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 0f);
                         Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, -1f);
@@ -182,6 +191,15 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         }
                         break;
                     case WardenRunePlayer.Runes.MushroomRune:
+                        // Remove vine summons
+                        for (int i = 0; i < player.CountBuffs(); i++)
+                        {
+                            if (player.buffType[i] == ModContent.BuffType<VineBuff>()) // Apply Resolve Debuff after Resolve expires
+                            {
+                                player.DelBuff(i);
+                            }
+                        }
+
                         player.AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
                         Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 0f);
                         Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, -1f);

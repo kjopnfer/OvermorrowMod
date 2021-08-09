@@ -36,7 +36,7 @@ namespace WardenClass
         }
 
         // List to keep track of the resource visuals for Soul Essences
-        public List<int> soulList = new List<int> ();
+        public List<int> soulList = new List<int>();
 
         // Additive bonuses for chain weapons
         public int piercingDamageAdd;
@@ -74,7 +74,7 @@ namespace WardenClass
 
         private int SoulRingCalculation(int soulInput)
         {
-            if(soulInput % 2 == 0)
+            if (soulInput % 2 == 0)
             {
                 return soulInput / 2;
             }
@@ -103,7 +103,7 @@ namespace WardenClass
             PoisonRune = false;
             ReaperBook = false;
             SoulRing = false;
-          
+
             HemoArmor = false;
             WaterArmor = false;
             WaterHelmet = false;

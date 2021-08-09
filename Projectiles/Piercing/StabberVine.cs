@@ -16,7 +16,9 @@ namespace OvermorrowMod.Projectiles.Piercing
         private Vector2 retractPosition;
         private Vector2 idlePosition;
         private int launchCounter;
+        private bool retractIdle = false;
         private float retractCounter = 0;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Stabber Vine");
@@ -83,7 +85,10 @@ namespace OvermorrowMod.Projectiles.Piercing
                     {
                         targetDist = distance;
                         targetPos = npc.Center;
-                        target = true;
+                        if (!retractIdle)
+                        {
+                            target = true;
+                        }
                     }
                 }
             }
@@ -155,28 +160,54 @@ namespace OvermorrowMod.Projectiles.Piercing
             }
             else
             {
-                // No target, idle animation
-
-                Vector2 vector221 = new Vector2(projectile.position.X + projectile.width * 0.5f, projectile.position.Y + projectile.height * 0.5f);
-                float num494 = player.position.X + (player.width / 2) - vector221.X;
-                float num499 = player.position.Y + (player.height / 2) - vector221.Y;
-                projectile.rotation = (float)Math.Atan2(num499, num494) - 1.57f;
-
-                // Various position stuff
-                if (projectile.ai[1] == -1)
+                if (hasLaunched)
                 {
-                    projectile.Center = player.Center - new Vector2(-45, MathHelper.Lerp(50, 65, (float)Math.Sin(projectile.ai[0] / 60f)));
-                }
-                else if (projectile.ai[1] == 1)
-                {
-                    projectile.Center = player.Center - new Vector2(45, MathHelper.Lerp(50, 65, (float)Math.Sin(projectile.ai[0] / 60f)));
+                    if (!retractIdle)
+                    {
+                        canRetract = false;
+                        retractIdle = true;
+                        projectile.velocity = Vector2.Zero;
+                        retractPosition = projectile.Center;
+                    }
+                    
+                    if (retractIdle)
+                    {
+                        retractCounter += 0.025f;
+                        projectile.position = Vector2.Lerp(retractPosition, idlePosition, retractCounter);
+
+                        if (retractCounter >= 1)
+                        {
+                            retractCounter = 0;
+                            retractIdle = false;
+                            hasLaunched = false;
+                        }
+                    }
                 }
                 else
                 {
-                    projectile.Center = player.Center - new Vector2(0, MathHelper.Lerp(75, 85, (float)Math.Sin(projectile.ai[0] / 60f)));
-                }
+                    // No target, idle animation
 
-                projectile.velocity = Vector2.Zero;
+                    Vector2 vector221 = new Vector2(projectile.position.X + projectile.width * 0.5f, projectile.position.Y + projectile.height * 0.5f);
+                    float num494 = player.position.X + (player.width / 2) - vector221.X;
+                    float num499 = player.position.Y + (player.height / 2) - vector221.Y;
+                    projectile.rotation = (float)Math.Atan2(num499, num494) - 1.57f;
+
+                    // Various position stuff
+                    if (projectile.ai[1] == -1)
+                    {
+                        projectile.Center = player.Center - new Vector2(-45, MathHelper.Lerp(50, 65, (float)Math.Sin(projectile.ai[0] / 60f)));
+                    }
+                    else if (projectile.ai[1] == 1)
+                    {
+                        projectile.Center = player.Center - new Vector2(45, MathHelper.Lerp(50, 65, (float)Math.Sin(projectile.ai[0] / 60f)));
+                    }
+                    else
+                    {
+                        projectile.Center = player.Center - new Vector2(0, MathHelper.Lerp(75, 85, (float)Math.Sin(projectile.ai[0] / 60f)));
+                    }
+
+                    projectile.velocity = Vector2.Zero;
+                }
             }
         }
 
