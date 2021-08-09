@@ -44,7 +44,7 @@ namespace OvermorrowMod.WardenClass
         }
 
         // Calculate how much you gain per hit
-        protected void SoulGain(NPC target, int defaultCeiling)
+        protected void SoulGain(NPC target, float defaultCeiling)
         {
             // Get the projectile owner
             Player player = Main.player[projectile.owner];
@@ -55,7 +55,7 @@ namespace OvermorrowMod.WardenClass
             if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)
             {
                 // Gain souls between the default and the default + bonus
-                modPlayer.soulPercentage += Main.rand.Next(defaultCeiling, defaultCeiling + modPlayer.soulGainBonus);
+                modPlayer.soulPercentage += Main.rand.NextFloat(defaultCeiling, defaultCeiling + modPlayer.soulGainBonus);
             }
         }
 

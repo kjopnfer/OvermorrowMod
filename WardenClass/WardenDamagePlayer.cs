@@ -27,8 +27,8 @@ namespace WardenClass
         public bool WaterArmor;
         public bool WaterHelmet;
 
-        public int soulPercentage = 0;
-        public int heldGainPercentage = 0;
+        public float soulPercentage = 0;
+        public float heldGainPercentage = 0;
 
         public static WardenDamagePlayer ModPlayer(Player player)
         {
@@ -42,7 +42,7 @@ namespace WardenClass
         public int piercingDamageAdd;
         public float piercingDamageMult = 1f;
 
-        public int soulGainBonus = 0;
+        public float soulGainBonus = 0;
 
         // Here we include a custom resource, similar to mana or health.
         // Creating some variables to define the current value of our example resource as well as the current maximum value. We also include a temporary max value, as well as some variables to handle the natural regeneration of this resource.

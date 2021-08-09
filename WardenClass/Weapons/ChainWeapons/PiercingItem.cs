@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
@@ -13,13 +14,13 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
     public abstract class PiercingItem : ModItem
     {
         public override bool CloneNewInstances => true;
-        public int soulGainChance = 0;
+        public float soulGainChance = 0;
 
         public override void HoldItem(Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             modPlayer.UIToggled = true;
-            modPlayer.heldGainPercentage = soulGainChance;
+            modPlayer.heldGainPercentage = soulGainChance + item.GetGlobalItem<OvermorrowMod.WardenClass.WardenGlobalItem>().soulGainChance;
         }
 
         public virtual void SafeSetDefaults()
@@ -72,9 +73,29 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 string damageWord = splitText.Last();
                 // Change the tooltip text
                 tt.text = damageValue + " piercing " + damageWord;
-                tooltips.Add(new TooltipLine(mod, "Soul Gain Probability", $"Soul Gain Rate: {soulGainChance} [+{modPlayer.soulGainBonus}]%"));
+                tooltips.Add(new TooltipLine(mod, "Soul Gain Probability", $"Soul Gain Rate: {soulGainChance} [+{modPlayer.soulGainBonus + item.GetGlobalItem<OvermorrowMod.WardenClass.WardenGlobalItem>().soulGainChance}]%"));
+
+                if (item.GetGlobalItem<OvermorrowMod.WardenClass.WardenGlobalItem>().soulGainChance > 0) {
+                    tooltips.Add(new TooltipLine(mod, "Prefix Soul Gain Probability", $"+ {item.GetGlobalItem<OvermorrowMod.WardenClass.WardenGlobalItem>().soulGainChance} Soul Gain Chance") {
+                        isModifier = true
+                    });
+                }
             }
         }
+
+		public override int ChoosePrefix(UnifiedRandom rand) {
+			var prefixChooser = new WeightedRandom<int>();
+			prefixChooser.Add(mod.PrefixType("Cursed"),1);
+			prefixChooser.Add(mod.PrefixType("Enchanted"),1);
+			prefixChooser.Add(mod.PrefixType("Faithful"),1);
+			prefixChooser.Add(mod.PrefixType("Bound"),1);
+			int choice = prefixChooser;
+
+			if (item.maxStack == 1) {
+				return choice;
+			}
+			return -1;
+		}
 
         protected void ConsumeSouls(int numSouls, Player player)
         {
