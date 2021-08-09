@@ -8,8 +8,8 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 	{
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Imbuement: Thorns of the Jungle");
-			Description.SetDefault("Your attacks launch vines to ensnare your enemy!");
+			DisplayName.SetDefault("Imbuement: Stingvine");
+			Description.SetDefault("Your Artifacts will become empowered on use!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;

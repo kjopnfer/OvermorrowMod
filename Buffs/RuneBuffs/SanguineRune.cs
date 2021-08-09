@@ -8,8 +8,8 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 	{
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Imbuement: Sanguine Impaler");
-			Description.SetDefault("Your attacks launch three chains instead of one!");
+			DisplayName.SetDefault("Imbuement: Tendon Guillotine");
+			Description.SetDefault("Your Artifacts will become empowered on use!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;

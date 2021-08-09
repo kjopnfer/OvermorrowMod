@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Prefixes
 {
-    public class WardenPrefixes : ModPrefix 
+    public class WardenPrefixes : ModPrefix
     {
         private readonly float _power;
 
@@ -13,15 +13,19 @@ namespace OvermorrowMod.Prefixes
         public override PrefixCategory Category
             => PrefixCategory.Custom;
 
-        public WardenPrefixes() {
-            
+        public WardenPrefixes()
+        {
+
         }
-        public WardenPrefixes(float power) {
+        public WardenPrefixes(float power)
+        {
             _power = power;
         }
 
-        public override bool Autoload(ref string name) {
-            if (!base.Autoload(ref name)) {
+        public override bool Autoload(ref string name)
+        {
+            if (!base.Autoload(ref name))
+            {
                 return false;
             }
 
@@ -32,12 +36,13 @@ namespace OvermorrowMod.Prefixes
             return false;
         }
 
-        public override void Apply(Item item) 
+        public override void Apply(Item item)
             => item.GetGlobalItem<OvermorrowMod.WardenClass.WardenGlobalItem>().soulGainChance = _power;
 
-		public override void ModifyValue(ref float valueMult) {
-			float multiplier = 1f + 0.05f * _power;
-			valueMult *= multiplier;
-		}
+        public override void ModifyValue(ref float valueMult)
+        {
+            float multiplier = 1f + 0.05f * _power;
+            valueMult *= multiplier;
+        }
     }
 }
