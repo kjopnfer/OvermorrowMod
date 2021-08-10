@@ -4,6 +4,7 @@ using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Magic;
 using OvermorrowMod.Projectiles.Piercing;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -28,6 +29,18 @@ namespace OvermorrowMod.WardenClass
             projectile.magic = false;
             projectile.thrown = false;
             projectile.minion = false;
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(AuraRadius);
+            writer.Write((byte)RuneID);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            AuraRadius = reader.ReadInt32();
+            RuneID = (WardenRunePlayer.Runes)reader.ReadByte();
         }
 
         // Default AI will be for Support Artifacts, if its an Attack Artifact this will naturally be overrided
@@ -195,6 +208,9 @@ namespace OvermorrowMod.WardenClass
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
+            int randNum = Main.rand.Next(3, 5);
+            projectile.netUpdate = true;
+
             switch (RuneID)
             {
                 case WardenRunePlayer.Runes.CorruptionRune:
@@ -204,26 +220,20 @@ namespace OvermorrowMod.WardenClass
                     target.AddBuff(BuffID.Ichor, 480);
                     break;
                 case WardenRunePlayer.Runes.JungleRune:
-                    for (int i = 0; i < Main.rand.Next(3, 5); i++)
+                    for (int i = 0; i < randNum; i++)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        if (Main.rand.Next(3) == 0)
                         {
-                            if (Main.rand.Next(3) == 0)
-                            {
-                                Projectile.NewProjectile(projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 4, ModContent.ProjectileType<Spores>(), damage, 3f, projectile.owner);
-                            }
+                            Projectile.NewProjectile(projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 4, ModContent.ProjectileType<Spores>(), damage, 3f, projectile.owner);
                         }
                     }
                     break;
                 case WardenRunePlayer.Runes.MushroomRune:
-                    for (int i = 0; i < Main.rand.Next(3, 5); i++)
+                    for (int i = 0; i < randNum; i++)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        if (Main.rand.Next(3) == 0)
                         {
-                            if (Main.rand.Next(3) == 0)
-                            {
-                                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ModContent.ProjectileType<FungiSpore2>(), damage, 3f, projectile.owner);
-                            }
+                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ModContent.ProjectileType<FungiSpore2>(), damage, 3f, projectile.owner);
                         }
                     }
                     break;

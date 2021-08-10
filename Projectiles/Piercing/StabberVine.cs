@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
@@ -31,6 +32,28 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.friendly = true;
             projectile.penetrate = -1;
             projectile.alpha = 255;
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(hasLaunched);
+            writer.Write(canRetract);
+            Utils.WriteVector2(writer, retractPosition);
+            Utils.WriteVector2(writer, idlePosition);
+            writer.Write(launchCounter);
+            writer.Write(retractIdle);
+            writer.Write(retractCounter);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            hasLaunched = reader.ReadBoolean();
+            canRetract = reader.ReadBoolean();
+            retractPosition = Utils.ReadVector2(reader);
+            idlePosition = Utils.ReadVector2(reader);
+            launchCounter = reader.ReadInt32();
+            retractIdle = reader.ReadBoolean();
+            retractCounter = reader.ReadInt32();
         }
 
         public override void AI()
