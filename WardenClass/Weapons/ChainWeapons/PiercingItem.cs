@@ -84,7 +84,6 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 }
             }
         }
-<<<<<<< HEAD
 
         public override int ChoosePrefix(UnifiedRandom rand)
         {
@@ -101,22 +100,6 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             }
             return -1;
         }
-=======
-        
-		public override int ChoosePrefix(UnifiedRandom rand) {
-			var prefixChooser = new WeightedRandom<int>();
-			prefixChooser.Add(mod.PrefixType("Cursed"),1);
-			prefixChooser.Add(mod.PrefixType("Enchanted"),1);
-			prefixChooser.Add(mod.PrefixType("Faithful"),1);
-			prefixChooser.Add(mod.PrefixType("Bound"),1);
-			int choice = prefixChooser;
-
-			if (item.maxStack == 1) {
-				return choice;
-			}
-			return -1;
-		}
->>>>>>> parent of 29f53f4 (Added Enchanted Aegis)
 
         protected void ConsumeSouls(int numSouls, Player player)
         {
@@ -139,7 +122,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                         // Check that the projectile is the same as the removed projectile and it is active
                         if (Main.projectile[j] == Main.projectile[removeProjectile] && Main.projectile[j].active)
                         {
-                            Main.NewText("projectile " + j + " killed");
+                            // Main.NewText("projectile " + j + " killed");
                             // Kill the projectile
                             Main.projectile[j].Kill();
                             break;
