@@ -71,6 +71,7 @@ namespace OvermorrowMod
         private int treeCounter;
         private int treeDefenseStack;
         public bool MouseLampPlay;
+        public float storedDamage = 0;
 
         // Buffs
         public bool atomBuff;
@@ -265,6 +266,59 @@ namespace OvermorrowMod
                 {
                     Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<Flames>(), 60, 9, player.whoAmI);
                 }
+            }
+        }
+
+        public override void OnHitByNPC(NPC npc, int damage, bool crit) {
+
+            // creating cross on the npc
+            if (storedDamage > 0) {
+                Vector2 anchor = npc.Center;
+                float angle; 
+                float gap; // gap between each particle
+
+                for (int i = 0; i < 4; i++) {
+                    angle = (i * 90 + 45) * (float)(Math.PI / 180);
+                    gap = 20f;
+
+                    for (int j = 0; j < 5; j++) {
+                        Vector2 dustPos = anchor + j * (new Vector2(gap, 0).RotatedBy(angle));
+                        Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, 226, 0f, 0f, 0, default, 1.25f)];
+                        dust.noGravity = true;
+                    }
+                }
+
+                float hitDirection = (float)Math.Atan2(player.Center.Y - npc.Center.Y, player.Center.X - npc.Center.X);
+                npc.StrikeNPC((int)storedDamage, 3f, (int)hitDirection);
+
+                storedDamage = 0;
+            }
+        }
+
+        public override void OnHitByProjectile(Projectile proj, int damage, bool crit) 
+        {
+            // creating cross on the projectile
+            if (storedDamage > 0) {
+                Vector2 anchor = proj.Center;
+                float angle; 
+                float gap;
+
+                for (int i = 0; i < 4; i++) {
+                    angle = (i * 90 + 45) * (float)(Math.PI / 180);
+                    gap = 20f;
+
+                    for (int j = 0; j < 5; j++) {
+                        Vector2 dustPos = anchor + j * (new Vector2(gap, 0).RotatedBy(angle));
+                        Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, 226, 0f, 0f, 0, default, 1.25f)];
+                        dust.noGravity = true;
+                    }
+                }
+
+                if (storedDamage > damage) {
+                    proj.Kill();
+                }
+
+                storedDamage = 0;
             }
         }
 
