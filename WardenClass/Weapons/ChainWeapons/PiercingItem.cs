@@ -101,6 +101,9 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             return -1;
         }
 
+
+
+
         protected void ConsumeSouls(int numSouls, Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);

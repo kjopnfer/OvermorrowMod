@@ -47,7 +47,8 @@ namespace OvermorrowMod.Projectiles.Accessory
             }
             Player player = Main.player[projectile.owner];
 
-            Vector2 anchor = player.Center + new Vector2(0, -100);
+            // Vector2 anchor = player.Center + new Vector2(0, -100);
+            Vector2 anchor = player.Center;
 
             if (distance < 125) {
                 projectile.position = anchor + new Vector2(125 - distance, 0).RotatedBy(angle);
