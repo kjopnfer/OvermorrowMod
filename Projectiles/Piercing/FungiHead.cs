@@ -68,10 +68,8 @@ namespace OvermorrowMod.Projectiles.Piercing
             {
                 Vector2 shootVelocity = Main.MouseWorld - projectile.Center;
                 shootVelocity.Normalize();
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    Projectile.NewProjectile(projectile.Center, shootVelocity * Main.rand.Next(5, 7), ModContent.ProjectileType<FungiSpore>(), 21, 10f, projectile.owner);
-                }
+                Projectile.NewProjectile(projectile.Center, shootVelocity * Main.rand.Next(5, 7), ModContent.ProjectileType<FungiSpore>(), 21, 10f, projectile.owner);
+                
             }
         }
 

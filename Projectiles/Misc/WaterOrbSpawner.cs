@@ -51,7 +51,10 @@ namespace OvermorrowMod.Projectiles.Misc
 
         public override void Kill(int timeLeft)
         {
-            Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, ModContent.ItemType<WaterOrb>());
+            int item = Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, ModContent.ItemType<WaterOrb>());
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item);
         }
     }
 }

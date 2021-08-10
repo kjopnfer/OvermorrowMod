@@ -48,17 +48,48 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             if (modPlayer.soulResourceCurrent >= soulResourceCost)
             {
+                if (item.type == ModContent.ItemType<HoneyPot>())
+                {
+                    int consumedSouls = 0;
+
+                    int soulCount = modPlayer.soulResourceCurrent;
+                    for (int i = 0; i < soulCount; i++)
+                    {
+                        consumedSouls++;
+                    }
+
+                    player.statLife += 10 * consumedSouls;
+                    player.HealEffect(10 * consumedSouls);
+
+                    ConsumeSouls(consumedSouls, player);
+
+                    // Loop through all players and check if they are on the same team
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                    {
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            if (Main.player[i].team == player.team && player.team != 0)
+                            {
+                                Main.player[i].AddBuff(BuffID.Honey, 3600);
+                                Main.player[i].statLife += 10 * consumedSouls;
+                                Main.player[i].HealEffect(10 * consumedSouls);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    ConsumeSouls(soulResourceCost, player);
+                }
+
                 // Putting this in UseItem doesn't do anything for some apparent reason
                 if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune)
                 {
                     int projectiles = 6;
-                    if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
+                    int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
+                    for (int i = 0; i < projectiles; i++)
                     {
-                        int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
-                        for (int i = 0; i < projectiles; i++)
-                        {
-                            Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
-                        }
+                        Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
                     }
                 }
                 return true;
@@ -73,14 +104,10 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         {
             if (item.type == ModContent.ItemType<CorruptedMirror>())
             {
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                {
-                    ConsumeSouls(1, player);
-                }
                 player.AddBuff(ModContent.BuffType<MirrorBuff>(), 10800);
 
                 // Loop through all players and check if they are on the same team
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
                     for (int i = 0; i < Main.maxPlayers; i++)
                     {
@@ -93,37 +120,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             }
             else if (item.type == ModContent.ItemType<HoneyPot>())
             {
-                int consumedSouls = 0;
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                {
-                    var modPlayer = WardenDamagePlayer.ModPlayer(player);
-                    int soulCount = modPlayer.soulResourceCurrent;
-                    for (int i = 0; i < soulCount; i++)
-                    {
-                        consumedSouls++;
-                    }
-
-                    player.statLife += 10 * consumedSouls;
-                    player.HealEffect(10 * consumedSouls);
-
-                    ConsumeSouls(consumedSouls, player);
-                }
 
                 player.AddBuff(BuffID.Honey, 3600);
-
-                // Loop through all players and check if they are on the same team
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    for (int i = 0; i < Main.maxPlayers; i++)
-                    {
-                        if (Main.player[i].team == player.team && player.team != 0)
-                        {
-                            Main.player[i].AddBuff(BuffID.Honey, 3600);
-                            Main.player[i].statLife += 10 * consumedSouls;
-                            Main.player[i].HealEffect(10 * consumedSouls);
-                        }
-                    }
-                }
             }
 
             // Apply additional buffs while a rune is active
@@ -135,7 +133,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         player.AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
                         Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, player.whoAmI, 0f, 0f);
 
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
@@ -150,7 +148,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     case WardenRunePlayer.Runes.HellRune:
                         player.AddBuff(ModContent.BuffType<ExplosionBuff>(), defBuffDuration);
 
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
@@ -162,12 +160,21 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         }
                         break;
                     case WardenRunePlayer.Runes.JungleRune:
+                        // Remove shroom summons
+                        for (int i = 0; i < player.CountBuffs(); i++)
+                        {
+                            if (player.buffType[i] == ModContent.BuffType<ShroomBuff>()) // Apply Resolve Debuff after Resolve expires
+                            {
+                                player.DelBuff(i);
+                            }
+                        }
+
                         player.AddBuff(ModContent.BuffType<VineBuff>(), defBuffDuration);
                         Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 0f);
                         Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, -1f);
                         Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 1f);
 
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
@@ -182,12 +189,21 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         }
                         break;
                     case WardenRunePlayer.Runes.MushroomRune:
+                        // Remove vine summons
+                        for (int i = 0; i < player.CountBuffs(); i++)
+                        {
+                            if (player.buffType[i] == ModContent.BuffType<VineBuff>()) // Apply Resolve Debuff after Resolve expires
+                            {
+                                player.DelBuff(i);
+                            }
+                        }
+
                         player.AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
                         Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 0f);
                         Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, -1f);
                         Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 1f);
 
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
@@ -212,8 +228,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         {
             List<int> ProjectileList = new List<int>();
 
-            ConsumeSouls(soulResourceCost, player);
-
             // Attack
             if (item.type == ModContent.ItemType<EaterArtifact>())
             {
@@ -235,13 +249,10 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             if (item.type == ModContent.ItemType<DemonMonocle>())
             {
                 int projectiles = 6;
-                if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
+                for (int i = 0; i < projectiles; i++)
                 {
-                    for (int i = 0; i < projectiles; i++)
-                    {
-                        int projectile = Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<DemonEye>(), item.damage, 2, player.whoAmI);
-                        ProjectileList.Add(projectile);
-                    }
+                    int projectile = Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<DemonEye>(), item.damage, 2, player.whoAmI);
+                    ProjectileList.Add(projectile);
                 }
             }
 
@@ -273,28 +284,26 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             }
 
             // After spawning in the projectiles, apply the special properties
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID != WardenRunePlayer.Runes.None)
+            foreach (int projectile in ProjectileList)
             {
-                foreach (int projectile in ProjectileList)
+                if (Main.projectile[projectile].active)
                 {
-                    if (Main.projectile[projectile].active)
+                    // Pass Rune ID to the projectile
+                    ((ArtifactProjectile)Main.projectile[projectile].modProjectile).RuneID = player.GetModPlayer<WardenRunePlayer>().RuneID;
+
+                    // Set radius if it is a Support Artifact
+                    if (item.type == ModContent.ItemType<EarthCrystal>())
                     {
-                        // Pass Rune ID to the projectile
-                        ((ArtifactProjectile)Main.projectile[projectile].modProjectile).RuneID = player.GetModPlayer<WardenRunePlayer>().RuneID;
+                        ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 330;
+                    }
 
-                        // Set radius if it is a Support Artifact
-                        if (item.type == ModContent.ItemType<EarthCrystal>())
-                        {
-                            ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 330;
-                        }
-
-                        if (item.type == ModContent.ItemType<BloodyAntikythera>())
-                        {
-                            ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 390;
-                        }
+                    if (item.type == ModContent.ItemType<BloodyAntikythera>())
+                    {
+                        ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 390;
                     }
                 }
             }
+
 
             return false;
         }

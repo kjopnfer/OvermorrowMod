@@ -8,8 +8,8 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 	{
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Imbuement: Vile Piercer");
-			Description.SetDefault("Your attacks launch homing worms to devour your enemy!");
+			DisplayName.SetDefault("Imbuement: Vile Guillotine");
+			Description.SetDefault("Your Artifacts will become empowered on use!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;

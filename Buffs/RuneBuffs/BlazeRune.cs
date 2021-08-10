@@ -8,8 +8,8 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 	{
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Imbuement: Blaze Binder");
-			Description.SetDefault("Your attacks summon fires from the depths of hell!");
+			DisplayName.SetDefault("Imbuement: Infernal Chains");
+			Description.SetDefault("Your Artifacts will become empowered on use!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;
