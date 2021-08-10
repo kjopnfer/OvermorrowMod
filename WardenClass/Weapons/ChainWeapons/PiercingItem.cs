@@ -82,7 +82,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
                 }
             }
         }
-        
+
 		public override int ChoosePrefix(UnifiedRandom rand) {
 			var prefixChooser = new WeightedRandom<int>();
 			prefixChooser.Add(mod.PrefixType("Cursed"),1);
