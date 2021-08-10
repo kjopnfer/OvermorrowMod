@@ -8,8 +8,8 @@ namespace OvermorrowMod.Buffs.RuneBuffs
 	{
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Imbuement: Bone Spike");
-			Description.SetDefault("Your attacks launch cursed skulls!");
+			DisplayName.SetDefault("Imbuement: Grave Hook");
+			Description.SetDefault("Your Artifacts will become empowered on use!");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = true;
 			canBeCleared = false;

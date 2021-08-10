@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Utils = Terraria.Utils;
 
 namespace WardenClass
@@ -36,7 +37,7 @@ namespace WardenClass
         }
 
         // List to keep track of the resource visuals for Soul Essences
-        public List<int> soulList = new List<int> ();
+        public List<int> soulList = new List<int>();
 
         // Additive bonuses for chain weapons
         public int piercingDamageAdd;
@@ -74,7 +75,7 @@ namespace WardenClass
 
         private int SoulRingCalculation(int soulInput)
         {
-            if(soulInput % 2 == 0)
+            if (soulInput % 2 == 0)
             {
                 return soulInput / 2;
             }
@@ -103,7 +104,7 @@ namespace WardenClass
             PoisonRune = false;
             ReaperBook = false;
             SoulRing = false;
-          
+
             HemoArmor = false;
             WaterArmor = false;
             WaterHelmet = false;
@@ -111,17 +112,53 @@ namespace WardenClass
             ResetVariables();
         }
 
-
-        public override void ProcessTriggers(TriggersSet triggersSet)
+        public override void clientClone(ModPlayer clientClone)
         {
-            /*if (UIToggled)
+            WardenDamagePlayer clone = clientClone as WardenDamagePlayer;
+            // Here we would make a backup clone of values that are only correct on the local players Player instance.
+            // Some examples would be RPG stats from a GUI, Hotkey states, and Extra Item Slots
+            clone.soulList = soulList;
+        }
+
+        public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
+        {
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)player.whoAmI);
+            for (int i = 0; i < soulList.Count; i++)
             {
-                ModContent.GetInstance<OvermorrowModFile>().ShowMyUI();
+                packet.Write(soulList[i]);
             }
-            else
+            //packet.Write((byte[])soulList);
+            packet.Send(toWho, fromWho);
+        }
+
+        public override void SendClientChanges(ModPlayer clientPlayer)
+        {
+            var packet = mod.GetPacket();
+            packet.Write((byte)player.whoAmI);
+            for (int i = 0; i < soulList.Count; i++)
             {
-                ModContent.GetInstance<OvermorrowModFile>().HideMyUI();
-            }*/
+                packet.Write(soulList[i]);
+            }
+            packet.Send();
+        }
+
+        public override TagCompound Save()
+        {
+            // Read https://github.com/tModLoader/tModLoader/wiki/Saving-and-loading-using-TagCompound to better understand Saving and Loading data.
+            return new TagCompound {
+				// {"somethingelse", somethingelse}, // To save more data, add additional lines
+				{"soulList", soulList},
+            };
+            //note that C# 6.0 supports indexer initializers
+            //return new TagCompound {
+            //	["score"] = score
+            //};
+        }
+
+        public override void Load(TagCompound tag)
+        {
+            soulList = (List<int>)tag.GetList<int>("soulList");
         }
 
         public override void UpdateDead()
@@ -161,13 +198,6 @@ namespace WardenClass
 
             // Limit exampleResourceCurrent from going over the limit imposed by exampleResourceMax.
             soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
-        }
-
-        public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
-        {
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte)player.whoAmI);
-            packet.Send(toWho, fromWho);
         }
 
         public void AddSoul(int soulEssence)
