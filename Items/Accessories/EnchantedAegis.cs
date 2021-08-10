@@ -3,6 +3,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ID;
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace OvermorrowMod.Items.Accessories 
@@ -33,6 +34,7 @@ namespace OvermorrowMod.Items.Accessories
         public bool reachedCap = false;
 
         public int dustCounter = 0;
+        public int dustCounter2 = 0;
 
         public override void UpdateAccessory(Player player, bool hideVisual) {
             // Creating beams of light
@@ -53,15 +55,25 @@ namespace OvermorrowMod.Items.Accessories
             }
 
             // Spawning dust
-            if (player.GetModPlayer<OvermorrowModPlayer>().storedDamage > 0 && dustCounter % 3 == 0) {
-                Dust dust = Main.dust[Terraria.Dust.NewDust(player.Center + new Vector2(0, -100), 15, 15, 226, 0f, 0f, 0, default, 1.25f)];
+            if (player.GetModPlayer<OvermorrowModPlayer>().storedDamage > 0 && dustCounter % 2 == 0) {
+                Dust dust = Main.dust[Terraria.Dust.NewDust(player.Center + new Vector2(0, -100) + InfinityShape(dustCounter2)*100, 15, 15, 226, 0f, 0f, 0, default, 1.25f)];
                 dust.noGravity = true;
+
             }
 
             if (dustCounter >= 3) 
                 dustCounter = 0;
             
             dustCounter++;
+            dustCounter2+=2;
+        }
+
+        public Vector2 InfinityShape(int t) {
+            var scale = 2 / (3 - (float)Math.Cos(2*t));
+            var x = scale * (float)Math.Cos(t);
+            var y = scale * (float)Math.Sin(2 * t) / 2;
+
+            return new Vector2(x,y);
         }
     }
 }
