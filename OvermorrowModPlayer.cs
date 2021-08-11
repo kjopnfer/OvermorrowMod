@@ -21,6 +21,7 @@ namespace OvermorrowMod
 
         // Accessories
         public bool ArmBracer;
+        public bool ArtemisAmulet;
         public bool BloodyHeart;
         public bool BloodyTeeth;
         public bool DripplerEye;
@@ -72,6 +73,7 @@ namespace OvermorrowMod
         private int treeDefenseStack;
         public bool MouseLampPlay;
         public float storedDamage = 0;
+        public float amuletCounter;
 
         // Buffs
         public bool atomBuff;
@@ -107,6 +109,7 @@ namespace OvermorrowMod
         public override void ResetEffects()
         {
             ArmBracer = false;
+            ArtemisAmulet = false;
             BloodyHeart = false;
             BloodyTeeth = false;
             DripplerEye = false;
@@ -357,6 +360,9 @@ namespace OvermorrowMod
                     player.statMana = player.statManaMax;
                 }
             }
+            if (amuletCounter > 0) {
+                amuletCounter--;
+            }
         }
         public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
         {
@@ -507,6 +513,14 @@ namespace OvermorrowMod
                     sandMode = 0;
                     Main.NewText("Swapped to Defense Mode", Color.Yellow);
                 }
+            }
+
+            if (OvermorrowModFile.AmuletKey.JustPressed && ArtemisAmulet && amuletCounter == 0) {
+                Vector2 position = Main.MouseWorld;
+
+                Projectile.NewProjectile(position, new Vector2(0), ModContent.ProjectileType<ArtemisRune>(), 0, 5f, Main.myPlayer);
+
+                amuletCounter = 900;
             }
 
             if (OvermorrowModFile.ToggleUI.JustPressed)

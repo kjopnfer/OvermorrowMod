@@ -30,6 +30,7 @@ namespace OvermorrowMod
         // Hotkeys
         public static ModHotKey SandModeKey;
         public static ModHotKey ToggleUI;
+        public static ModHotKey AmuletKey;
 
         public static OvermorrowModFile Mod { get; set; }
         public Effect Sword;
@@ -71,6 +72,7 @@ namespace OvermorrowMod
         {
             // Keys
             SandModeKey = RegisterHotKey("Swap Sand Mode", "Q");
+            AmuletKey = RegisterHotKey("Artemis Amulet Attack", "C");
             ToggleUI = RegisterHotKey("Toggle UI", "R"); // This is for debugging
 
             if (!Main.dedServ)
@@ -333,6 +335,7 @@ namespace OvermorrowMod
             Souls = null;
             Altar = null;
             SandModeKey = null;
+            AmuletKey = null;
             ToggleUI = null;
         }
 
