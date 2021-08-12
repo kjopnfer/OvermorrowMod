@@ -60,7 +60,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             DisplayName.SetDefault("Storm Drake");
             Main.npcFrameCount[npc.type] = 6;
             NPCID.Sets.TrailCacheLength[npc.type] = 7;
-            NPCID.Sets.TrailingMode[npc.type] = 1;
+            NPCID.Sets.TrailingMode[npc.type] = 3;
         }
 
         public override void SetDefaults()
