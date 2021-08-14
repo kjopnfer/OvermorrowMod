@@ -70,49 +70,21 @@ namespace OvermorrowMod.WardenClass
                     }
 
                     Vector2 Position = drawPlayer.position;
-                    Vector2 position = new Vector2((int)(Position.X - (double)Main.screenPosition.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(Position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0) + 164) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
 
                     if (modPlayer.UIToggled)
                     {
-                        /*Player drawPlayer = drawInfo.drawPlayer;
-                        Mod mod = ModLoader.GetMod("SpiritMod");
-                        ChargeMeterPlayer modPlayer = drawPlayer.GetModPlayer<ChargeMeterPlayer>();*/
                         DrawData drawData = new DrawData();
 
-                        //Texture2D ChargeMeter = ModContent.GetTexture("OvermorrowMod/WardenClass/ChargeMeter");
-                        Texture2D ChargeMeter = ModContent.GetTexture("OvermorrowMod/WardenClass/SoulMeterF");
-                        //Texture2D ChargeBar = ModContent.GetTexture("OvermorrowMod/WardenClass/ChargeBar");
-                        Texture2D ChargeBar = ModContent.GetTexture("OvermorrowMod/WardenClass/SoulMeterFBar");
-
-                        // Soul Meter is completely full
-                        if (modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2)
+                        // Draw big bar for local player
+                        if (player.whoAmI == Main.myPlayer)
                         {
-                            frameCounter++;
+                            Vector2 position = new Vector2((int)(Position.X - (double)Main.screenPosition.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(Position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0) + 164) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
 
-                            if (frameCounter % 3f == 2f) // Ticks per frame
-                            {
-                                frame += 1;
-                            }
+                            Texture2D ChargeMeter = ModContent.GetTexture("OvermorrowMod/WardenClass/SoulMeterF");
+                            Texture2D ChargeBar = ModContent.GetTexture("OvermorrowMod/WardenClass/SoulMeterFBar");
 
-                            if (frame >= 6) // 5 is max # of frames
-                            {
-                                frame = 0; // Reset back to default
-                            }
-
-                            var drawRectangleMeter = new Rectangle(0, 42 * frame, ChargeMeter.Width, 42);
-
-                            drawData = new DrawData(ChargeMeter, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
-                            Main.playerDrawData.Add(drawData);
-
-                            Rectangle drawRectangleBar = new Rectangle(0, 42 * frame, ChargeBar.Width, 42);
-                            drawData = new DrawData(ChargeBar, position + new Vector2(47, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
-                            Main.playerDrawData.Add(drawData);
-                        }
-                        else
-                        {
-
-                            // Fill animation
-                            if (modPlayer.soulMeterMax)
+                            // Soul Meter is completely full
+                            if (modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2)
                             {
                                 frameCounter++;
 
@@ -121,12 +93,9 @@ namespace OvermorrowMod.WardenClass
                                     frame += 1;
                                 }
 
-                                if (frame >= 6) // 5 is max # of frames
+                                if (frame >= 6) // 6 is max # of frames
                                 {
                                     frame = 0; // Reset back to default
-                                    modPlayer.soulMeterMax = false;
-                                    modPlayer.soulPercentage = 0;
-                                    modPlayer.AddSoul(1);
                                 }
 
                                 var drawRectangleMeter = new Rectangle(0, 42 * frame, ChargeMeter.Width, 42);
@@ -134,20 +103,126 @@ namespace OvermorrowMod.WardenClass
                                 drawData = new DrawData(ChargeMeter, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
                                 Main.playerDrawData.Add(drawData);
 
-                                Rectangle drawRectangleBar = new Rectangle(0, 42 * frame, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), 42);
+                                Rectangle drawRectangleBar = new Rectangle(0, 42 * frame, ChargeBar.Width, 42);
                                 drawData = new DrawData(ChargeBar, position + new Vector2(47, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
                                 Main.playerDrawData.Add(drawData);
                             }
                             else
                             {
-                                var drawRectangleMeter = new Rectangle(0, 42 * 1, ChargeMeter.Width, 42);
+
+                                // Fill animation
+                                if (modPlayer.soulMeterMax)
+                                {
+                                    frameCounter++;
+
+                                    if (frameCounter % 3f == 2f) // Ticks per frame
+                                    {
+                                        frame += 1;
+                                    }
+
+                                    if (frame >= 6) // 6 is max # of frames
+                                    {
+                                        frame = 0; // Reset back to default
+                                        modPlayer.soulMeterMax = false;
+                                        modPlayer.soulPercentage = 0;
+                                        modPlayer.AddSoul(1);
+                                    }
+
+                                    var drawRectangleMeter = new Rectangle(0, 42 * frame, ChargeMeter.Width, 42);
+
+                                    drawData = new DrawData(ChargeMeter, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                    Main.playerDrawData.Add(drawData);
+
+                                    Rectangle drawRectangleBar = new Rectangle(0, 24 * frame, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), 42);
+                                    drawData = new DrawData(ChargeBar, position + new Vector2(47, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                    Main.playerDrawData.Add(drawData);
+                                }
+                                else
+                                {
+                                    var drawRectangleMeter = new Rectangle(0, 42 * 1, ChargeMeter.Width, 42);
+
+                                    drawData = new DrawData(ChargeMeter, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                    Main.playerDrawData.Add(drawData);
+
+                                    Rectangle drawRectangleBar = new Rectangle(0, 42 * 0, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), 42);
+                                    drawData = new DrawData(ChargeBar, position + new Vector2(47, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                    Main.playerDrawData.Add(drawData);
+                                }
+                            }
+                        }
+                        else // Smol bar for other players
+                        {
+                            Vector2 position = new Vector2((int)(Position.X - (double)Main.screenPosition.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(Position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0) + 153) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
+
+                            Texture2D ChargeMeter = ModContent.GetTexture("OvermorrowMod/WardenClass/SoulMeterSF");
+                            Texture2D ChargeBar = ModContent.GetTexture("OvermorrowMod/WardenClass/SoulMeterSFBar");
+
+                            const int textureHeight = 24;
+                            // Soul Meter is completely full
+                            if (modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2)
+                            {
+                                frameCounter++;
+
+                                if (frameCounter % 3f == 2f) // Ticks per frame
+                                {
+                                    frame += 1;
+                                }
+
+                                if (frame >= 10) // 10 is max # of frames
+                                {
+                                    frame = 0; // Reset back to default
+                                }
+
+                                var drawRectangleMeter = new Rectangle(0, textureHeight * frame, ChargeMeter.Width, textureHeight);
 
                                 drawData = new DrawData(ChargeMeter, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
                                 Main.playerDrawData.Add(drawData);
 
-                                Rectangle drawRectangleBar = new Rectangle(0, 42 * 0, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), 42);
-                                drawData = new DrawData(ChargeBar, position + new Vector2(47, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                Rectangle drawRectangleBar = new Rectangle(0, textureHeight * frame, ChargeBar.Width, textureHeight);
+                                drawData = new DrawData(ChargeBar, position + new Vector2(19, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
                                 Main.playerDrawData.Add(drawData);
+                            }
+                            else
+                            {
+
+                                // Fill animation
+                                if (modPlayer.soulMeterMax)
+                                {
+                                    frameCounter++;
+
+                                    if (frameCounter % 3f == 2f) // Ticks per frame
+                                    {
+                                        frame += 1;
+                                    }
+
+                                    if (frame >= 10) // 10 is max # of frames
+                                    {
+                                        frame = 0; // Reset back to default
+                                        modPlayer.soulMeterMax = false;
+                                        modPlayer.soulPercentage = 0;
+                                        modPlayer.AddSoul(1);
+                                    }
+
+                                    var drawRectangleMeter = new Rectangle(0, textureHeight * frame, ChargeMeter.Width, textureHeight);
+
+                                    drawData = new DrawData(ChargeMeter, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                    Main.playerDrawData.Add(drawData);
+
+                                    Rectangle drawRectangleBar = new Rectangle(0, textureHeight * frame, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), textureHeight);
+                                    drawData = new DrawData(ChargeBar, position + new Vector2(19, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                    Main.playerDrawData.Add(drawData);
+                                }
+                                else
+                                {
+                                    var drawRectangleMeter = new Rectangle(0, textureHeight * 0, ChargeMeter.Width, textureHeight);
+
+                                    drawData = new DrawData(ChargeMeter, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                    Main.playerDrawData.Add(drawData);
+
+                                    Rectangle drawRectangleBar = new Rectangle(0, textureHeight * 0, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), textureHeight);
+                                    drawData = new DrawData(ChargeBar, position + new Vector2(19, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
+                                    Main.playerDrawData.Add(drawData);
+                                }
                             }
                         }
                     }
