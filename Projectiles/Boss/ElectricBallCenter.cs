@@ -25,7 +25,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.penetrate = -1;
-            projectile.timeLeft = 600;
+            projectile.timeLeft = 720;
             projectile.alpha = 255;
             projectile.tileCollide = false;
         }
@@ -62,7 +62,7 @@ namespace OvermorrowMod.Projectiles.Boss
             {
                 Vector2 move = Vector2.Zero;
                 float distance = 6000f; // Search distance
-                if (projectile.ai[0] < 490/*!launchedProjectile*/)
+                if (projectile.ai[0] < 710/*!launchedProjectile*/)
                 {
                     Vector2 direction = Main.player[Main.npc[(int)projectile.ai[1]].target].Center - projectile.Center;
                     float distanceTo = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
@@ -70,17 +70,17 @@ namespace OvermorrowMod.Projectiles.Boss
                     {
                         move = direction;
                         direction.SafeNormalize(Vector2.Zero);
-                        float launchSpeed = Main.expertMode ? 8f: 5f /*75f : 100f*/;
+                        float launchSpeed = 0.05f /*75f : 100f*/;
                         direction *= launchSpeed;
                         distance = distanceTo;
                         //projectile.velocity = (move) / launchSpeed;
-                        float inertia = 100f;
+                        float inertia = 150f;
                         projectile.velocity = (projectile.velocity * (inertia - 1) + direction) / inertia;
                     }
                 }
             }
 
-            if (projectile.ai[0] == 590)
+            if (projectile.ai[0] == 710)
             {
                 projectile.velocity *= 1.5f;
             }

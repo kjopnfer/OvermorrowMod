@@ -133,15 +133,12 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         player.AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
                         Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, player.whoAmI, 0f, 0f);
 
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                        for (int i = 0; i < Main.maxPlayers; i++)
                         {
-                            for (int i = 0; i < Main.maxPlayers; i++)
+                            if (Main.player[i].team == player.team && player.team != 0)
                             {
-                                if (Main.player[i].team == player.team && player.team != 0)
-                                {
-                                    Main.player[i].AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
-                                    Projectile.NewProjectile(player.Center + new Vector2(0, -50), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
-                                }
+                                Main.player[i].AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
+                                Projectile.NewProjectile(player.Center + new Vector2(0, -50), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
                             }
                         }
                         break;
@@ -180,9 +177,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                             {
                                 if (Main.player[i].team == player.team && player.team != 0)
                                 {
-                                    Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
-                                    Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
-                                    Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
+                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
+                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
                                     Main.player[i].AddBuff(ModContent.BuffType<VineBuff>(), defBuffDuration);
                                 }
                             }
@@ -209,9 +206,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                             {
                                 if (Main.player[i].team == player.team && player.team != 0)
                                 {
-                                    Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
-                                    Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
-                                    Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
+                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
+                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
                                     Main.player[i].AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
                                 }
                             }

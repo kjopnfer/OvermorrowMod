@@ -52,7 +52,7 @@ namespace OvermorrowMod.WardenClass
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2)
+            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && !modPlayer.soulMeterMax)
             {
                 // Gain souls between the default and the default + bonus
                 modPlayer.soulPercentage += Main.rand.NextFloat(defaultCeiling, defaultCeiling + modPlayer.soulGainBonus);

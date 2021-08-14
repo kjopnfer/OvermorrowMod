@@ -622,7 +622,7 @@ namespace OvermorrowMod
             {
                 if (ScreenShake > 0)
                 {
-                    Main.screenPosition += new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10));
+                    Main.screenPosition += new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20));
                     ScreenShake--;
                 }
             }

@@ -84,6 +84,8 @@ namespace WardenClass
             {
                 projectile.ai[1] -= 4f;
             }
+
+            projectile.rotation += 0.1f;
         }
 
         public override bool? CanCutTiles()
@@ -93,6 +95,10 @@ namespace WardenClass
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
+            /*Vector2 center = new Vector2((float)(Main.npcTexture[projectile.type].Width / 2), (float)(Main.npcTexture[projectile.type].Height / Main.framecou[projectile.type] / 2));
+
+            Main.spriteBatch.Draw(SoulTexture, projectile.Center - Main.screenPosition, null, Color.Cyan, projectile.rotation, center, 1, SpriteEffects.None, 0f);*/
+            
 
             /*Texture2D projTexture = ModContent.GetTexture("OvermorrowMod/Effects/Trail3");
             int length = 32;
@@ -123,6 +129,30 @@ namespace WardenClass
             packet.Send();*/
 
             return base.PreDraw(spriteBatch, lightColor);
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            Texture2D SoulTexture = ModContent.GetTexture("OvermorrowMod/Textures/Extra_89");
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+            int frameHeight = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+            int startY = frameHeight * projectile.frame;
+            Rectangle sourceRectangle = new Rectangle(0, startY, SoulTexture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+
+            Main.spriteBatch.Draw(SoulTexture,
+                projectile.Center - Main.screenPosition,
+                null, Color.Cyan, projectile.rotation, SoulTexture.Size() / 2, projectile.scale * 0.8f, spriteEffects, 0f);
+
+
+            Main.spriteBatch.Draw(SoulTexture,
+                projectile.Center - Main.screenPosition,
+                null, Color.Lerp(Color.Cyan, Color.Transparent, 0.75f), projectile.rotation * -1, SoulTexture.Size() / 2, projectile.scale, spriteEffects, 0f);
         }
     }
 }

@@ -51,6 +51,7 @@ namespace WardenClass
         public const int DefaultSoulResourceMax = 3;
         public int soulResourceMax;
         public int soulResourceMax2;
+        public bool soulMeterMax;
 
 
         // We can use this for CombatText, if you create an item that replenishes exampleResourceCurrent.
@@ -143,24 +144,6 @@ namespace WardenClass
             packet.Send();
         }
 
-        public override TagCompound Save()
-        {
-            // Read https://github.com/tModLoader/tModLoader/wiki/Saving-and-loading-using-TagCompound to better understand Saving and Loading data.
-            return new TagCompound {
-				// {"somethingelse", somethingelse}, // To save more data, add additional lines
-				{"soulList", soulList},
-            };
-            //note that C# 6.0 supports indexer initializers
-            //return new TagCompound {
-            //	["score"] = score
-            //};
-        }
-
-        public override void Load(TagCompound tag)
-        {
-            soulList = (List<int>)tag.GetList<int>("soulList");
-        }
-
         public override void UpdateDead()
         {
             ResetVariables();
@@ -188,18 +171,16 @@ namespace WardenClass
             //Main.NewText(soulPercentage);
             if (soulPercentage >= 100)
             {
-                soulPercentage = 0;
-                AddSoul(1);
+                soulPercentage = 100;
+                soulMeterMax = true;
             }
 
             var chargePlayer = player.GetModPlayer<WardenSoulMeter>();
             chargePlayer.chargeProgress = player.GetModPlayer<WardenDamagePlayer>().soulPercentage;
 
-
             // Limit exampleResourceCurrent from going over the limit imposed by exampleResourceMax.
             soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
         }
-
         public void AddSoul(int soulEssence)
         {
             if (Main.gameMenu)
@@ -207,12 +188,13 @@ namespace WardenClass
                 return;
             }
 
-            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            var modPlayer = ModPlayer(player);
 
             int soul = Projectile.NewProjectile(player.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
             Main.projectile[soul].active = true;
-            NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, soul);
-            //modPlayer.soulList.Add(Projectile.NewProjectile(projectile.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, projectile.owner, Main.rand.Next(70, 95), 0f));
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, soul);
+
             modPlayer.soulList.Add(soul);
 
             soulResourceCurrent += soulEssence;
