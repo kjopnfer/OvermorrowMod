@@ -70,6 +70,7 @@ namespace OvermorrowMod.NPCs.Town
                 "If you have Chain Weapons with special debuffs, I can extract and bind them onto a rune for you. For a price of course.",
                 "You wouldn't happen to know anybody named Vaema would you?",
                 "\"Gods, demons, humanity, monsters, and other eternal beings are no match for 'him.' Azarel, eternity itself, must destroy!\" Ah sorry. Was quoting from my favorite book.",
+                "Centuries ago, the dungeon was actually at the bottom of the sea, some ancient ocean energies still reside there",
             };
 
             return Main.rand.Next(dialogue);

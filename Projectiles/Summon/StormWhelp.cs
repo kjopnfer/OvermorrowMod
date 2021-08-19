@@ -16,7 +16,7 @@ namespace OvermorrowMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Storm Whelp");
-            Main.projFrames[projectile.type] = 4;
+            Main.projFrames[projectile.type] = 8;
             ProjectileID.Sets.MinionTargettingFeature[projectile.type] = true;
 
             Main.projPet[projectile.type] = true;
@@ -26,8 +26,8 @@ namespace OvermorrowMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            projectile.width = 58;
-            projectile.height = 60;
+            projectile.width = 74;
+            projectile.height = 72;
             projectile.tileCollide = true;
             projectile.friendly = true;
             projectile.minion = true;

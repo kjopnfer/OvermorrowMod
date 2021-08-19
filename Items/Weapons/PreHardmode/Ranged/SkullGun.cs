@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Converts Musket Balls and Silver Bullets into Fire Bullets");
+            Tooltip.SetDefault("Converts Musket Balls and Silver Bullets into Fire Bullets\n'Snooze dart sold separately'");
         }
         public override void SetDefaults()
         {
