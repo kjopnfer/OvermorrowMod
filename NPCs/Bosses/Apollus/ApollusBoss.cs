@@ -52,6 +52,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             npc.noTileCollide = true;
             npc.HitSound = SoundID.NPCHit4;
             npc.damage = 45;
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/STONEBROS");
             bossBag = ModContent.ItemType<LadyBag>();
         }
 

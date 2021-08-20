@@ -56,6 +56,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             npc.HitSound = SoundID.NPCHit4;
             npc.value = Item.buyPrice(gold: 5);
             npc.boss = true;
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/STONEBROS");
             bossBag = ModContent.ItemType<KnightBag>();
         }
         public override void OnHitPlayer(Player target, int damage, bool crit)
