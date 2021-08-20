@@ -11,6 +11,9 @@ namespace OvermorrowMod.Items.Consumable.Boss
 {
     public class SSBAnim : ModProjectile
     {
+        public int graknightSummonIdentity;
+        public int apollusSummonIdentity;
+
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
         public override void SetStaticDefaults()
         {
@@ -48,6 +51,8 @@ namespace OvermorrowMod.Items.Consumable.Boss
                             projectileowner.GetModPlayer<OvermorrowModPlayer>().TitleID = 5;
                             projectileowner.GetModPlayer<OvermorrowModPlayer>().FocusBoss = false;
                             projectileowner.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+
+
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
