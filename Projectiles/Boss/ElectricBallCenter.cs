@@ -70,7 +70,7 @@ namespace OvermorrowMod.Projectiles.Boss
                     {
                         move = direction;
                         direction.SafeNormalize(Vector2.Zero);
-                        float launchSpeed = 0.05f /*75f : 100f*/;
+                        float launchSpeed = projectile.ai[0] > 480 ? 0.05f : 0.025f /*75f : 100f*/;
                         direction *= launchSpeed;
                         distance = distanceTo;
                         //projectile.velocity = (move) / launchSpeed;
