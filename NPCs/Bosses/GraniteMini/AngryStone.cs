@@ -36,6 +36,10 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
         int spriteDirectionStore = 0;
 
         bool dead = false;
+
+
+        public int apollusIdentity;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Gra-Knight");

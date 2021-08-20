@@ -396,10 +396,50 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (npc.ai[1] == 180)
                     {
-                        npc.ai[0] = 2;
+                        npc.ai[0] = 5;//2;
                         npc.ai[1] = 0;
 
                         bufferCount = 0;
+                    }
+                    break;
+                case 5: // segmented thorns wave
+                    {
+                        if (npc.ai[1] == 0)
+                        {
+                            // Get the ground beneath the player
+                            Vector2 npcPos = new Vector2((npc.position.X - /*60*/ 500 * bufferCount) / 16, npc.position.Y / 16);
+                            Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
+                            while (!tile.active() || tile.type == TileID.Trees)
+                            {
+                                npcPos.Y += 1;
+                                tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
+                            }
+
+                            // Same thing going right, I'm lazy
+                            Vector2 npcPos2 = new Vector2((npc.position.X + npc.width + (/*60*/ 500 * bufferCount)) / 16, npc.position.Y / 16);
+                            Tile tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
+                            while (!tile2.active() || tile2.type == TileID.Trees)
+                            {
+                                npcPos2.Y += 1;
+                                tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
+                            }
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+
+                                Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                                bufferCount++;
+                            }
+                        }
+
+                        if (npc.ai[1] == 480)
+                        {
+                            npc.ai[0] = 2;
+                            npc.ai[1] = 0;
+
+                            bufferCount = 0;
+                        }
                     }
                     break;
             }

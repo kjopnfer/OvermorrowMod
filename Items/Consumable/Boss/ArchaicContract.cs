@@ -12,6 +12,9 @@ namespace OvermorrowMod.Items.Consumable.Boss
 {
     public class ArchaicContract : ModItem
     {
+        private int graknightSummonIdentity;
+        private int apollusSummonIdentity;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Archaic Contract");
@@ -50,8 +53,12 @@ namespace OvermorrowMod.Items.Consumable.Boss
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                Projectile.NewProjectile(new Vector2((int)player.position.X + 250, (int)(player.position.Y - 250f)), Vector2.Zero, ModContent.ProjectileType<SSBAnim>(), 0, 0, Main.myPlayer, 0, 900);
-                Projectile.NewProjectile(new Vector2((int)player.position.X - 250, (int)(player.position.Y - 250f)), Vector2.Zero, ModContent.ProjectileType<SSBAnim>(), 0, 1, Main.myPlayer, 0, 900);
+                graknightSummonIdentity = Projectile.NewProjectile(new Vector2((int)player.position.X + 250, (int)(player.position.Y - 250f)), Vector2.Zero, ModContent.ProjectileType<SSBAnim>(), 0, 0, Main.myPlayer, 0, 900);
+                apollusSummonIdentity = Projectile.NewProjectile(new Vector2((int)player.position.X - 250, (int)(player.position.Y - 250f)), Vector2.Zero, ModContent.ProjectileType<SSBAnim>(), 0, 1, Main.myPlayer, 0, 900);
+
+                ((SSBAnim)Main.projectile[graknightSummonIdentity].modProjectile).graknightSummonIdentity = graknightSummonIdentity;
+                ((SSBAnim)Main.projectile[apollusSummonIdentity].modProjectile).apollusSummonIdentity = apollusSummonIdentity;
+
                 Main.PlaySound(SoundID.Roar, player.position, 0);
                 return true;
             }

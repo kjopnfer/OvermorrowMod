@@ -20,9 +20,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     public class TreeBossP2 : ModNPC
     {
         private bool changedPhase2 = false;
-        private int StopHeal = 0;
-
-        bool leafatt = false;
+        public int energiesAbsorbed;
+        public int energiesKilled;
 
         public override void SetStaticDefaults()
         {
@@ -45,7 +44,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             //npc.height = 338;
 
             npc.aiStyle = -1;
-            npc.damage = 26;
+            npc.damage = 20;
             npc.defense = 14;
             npc.lifeMax = 3300;
             npc.HitSound = SoundID.NPCHit1;
@@ -86,7 +85,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void AI()
         {
-            StopHeal--;
             // Death animation code
             if (npc.ai[3] > 0f)
             {
@@ -302,12 +300,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     break;
                 case 2: // Absorb energy
                     npc.velocity = Vector2.Zero;
-                    if(StopHeal > 1)
-                    {
-                        npc.ai[0] = -1;
-                    }
+
                     // Summon projectiles from off-screen that move towards the boss
-                    if (npc.ai[1] % 20 == 0)
+                    if (npc.ai[1] % 20 == 0 && (energiesAbsorbed + energiesKilled) < 33 && npc.ai[1] <= 660)
                     {
                         for (int i = 0; i < 6; i++)
                         {
@@ -316,102 +311,29 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             npc.netUpdate = true;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(new Vector2(randPositionX, randPositionY), new Vector2(0, 0), ModContent.ProjectileType<AbsorbEnergy>(), npc.damage / 3, 0f, Main.myPlayer, 0f, npc.whoAmI);
+                                NPC.NewNPC((int)randPositionX, (int)randPositionY, ModContent.NPCType<AbsorbEnergy>(), 0, 0f, npc.whoAmI, 0, npc.damage / 3, Main.myPlayer);
                             }
                         }
                     }
 
-                    if (npc.ai[1] > 660)
+                    if (energiesKilled <= 5 && npc.ai[1] > 660) // punish
                     {
-                        StopHeal = 7500;
+                        npc.ai[2] = 1;
+                        Main.NewText("u suk");
+                    }
+                    else if (npc.ai[1] > 660) // else
+                    {
+                        npc.ai[2] = 1;
+                    }
+
+                    if (npc.ai[1] > 660 && npc.ai[3] == 1)
+                    {
+                        energiesAbsorbed = 0;
+                        energiesKilled = 0;
                         npc.ai[0] = 4;
                         npc.ai[1] = 0;
+                        npc.ai[2] = 0;
                     }
-                    break;
-                /*case 4: // Shoot nature blasts
-                    npc.velocity = Vector2.Zero;
-                    if (npc.ai[0] == 4)
-                    {
-
-                        if (npc.ai[1] == 100)
-                        {
-                            leafatt = true;
-                        }
-
-                        if (npc.ai[1] == 150)
-                        {
-                            leafatt = true;
-                        }
-
-                        if (npc.ai[1] == 200)
-                        {
-                            leafatt = true;
-                        }
-
-                        if (npc.ai[1] == 250)
-                        {
-                            leafatt = true;
-                        }
-
-                        if (npc.ai[1] == 300)
-                        {
-                            leafatt = true;
-                        }
-                        
-
-
-                        int RandDirect = Main.rand.Next(1, 4);   
-                        float speed = 8f;
-                        int damage = 20;
-                        if(leafatt)
-                        {
-                            if(RandDirect == 1)
-                            {
-                                Vector2 position = npc.Center;
-                                Vector2 targetPosition = Main.player[npc.target].Center;
-                                Vector2 direction = targetPosition - position;
-                                direction.Normalize();
-                                int type = ModContent.ProjectileType<NatureWave>();
-                                Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
-                                leafatt = false;
-                            }
-
-                            if(RandDirect == 2)
-                            {
-                                Vector2 position = npc.Center;
-                                Vector2 targetPosition = Main.player[npc.target].Center;
-                                Vector2 direction = targetPosition - position;
-                                direction.Normalize();
-                                Vector2 Rot1 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(25));
-                                Vector2 Rot2 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(-25));
-                                int type = ModContent.ProjectileType<NatureWave>();
-                                Projectile.NewProjectile(position, Rot1 * speed, type, damage, 0f, Main.myPlayer);
-                                Projectile.NewProjectile(position, Rot2 * speed, type, damage, 0f, Main.myPlayer);
-                                leafatt = false;
-                            }
-
-                            if(RandDirect == 3)
-                            {
-                                Vector2 position = npc.Center;
-                                Vector2 targetPosition = Main.player[npc.target].Center;
-                                Vector2 direction = targetPosition - position;
-                                direction.Normalize();
-                                Vector2 Rot1 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(32));
-                                Vector2 Rot2 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(-32));
-                                int type = ModContent.ProjectileType<NatureWave>();
-                                Projectile.NewProjectile(position, direction * speed, type, damage, 0f, Main.myPlayer);
-                                Projectile.NewProjectile(position, Rot1 * speed, type, damage, 0f, Main.myPlayer);
-                                Projectile.NewProjectile(position, Rot2 * speed, type, damage, 0f, Main.myPlayer);
-                                leafatt = false;
-                            }
-                        }
-
-                        if (npc.ai[1] > 350)
-                        {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                        }
-                    }*/
                     break;
                 case 4: // Shoot nature blasts
                     npc.velocity = Vector2.Zero;
@@ -425,16 +347,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int proj = Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), 206, 19, 2, Main.myPlayer);
-                                Main.projectile[proj].friendly = false;
-                                Main.projectile[proj].hostile = true;
+                                Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<NatureBlast>(), 19, 2, Main.myPlayer);
                             }
                         }
                     }
 
                     if (npc.ai[1] > 240)
                     {
-                        npc.ai[0] =  -1;
+                        npc.ai[0] = -1;
                         npc.ai[1] = 0;
                     }
                     break;
@@ -459,30 +379,16 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                         npc.velocity.X = move.X;
                         npc.velocity.Y = move.Y * .98f;
+
+
                         if (npc.ai[1] == 180)
                         {
-                            if (npc.spriteDirection == 1)
+                            for (int i = -2; i < 3; i++)
                             {
-                                for (int i = 0; i < 4; i++)
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        float ProjectileSpawnX = npc.Center.X + 150 + (333 * i);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopLeft.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomLeft.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        float ProjectileSpawnX = npc.Center.X - 150 - (333 * i);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.TopRight.Y - 50), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                        Projectile.NewProjectile(new Vector2(ProjectileSpawnX, npc.BottomRight.Y + 50), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    }
+                                    Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y - 200), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y + 200), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
                                 }
                             }
                         }
