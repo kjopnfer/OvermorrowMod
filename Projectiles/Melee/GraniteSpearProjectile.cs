@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -56,9 +57,14 @@ namespace OvermorrowMod.Projectiles.Melee
             {
                 if (movementFactor == 0f) // When initially thrown out, the ai0 will be 0f
                 {
+                    int proj = Projectile.NewProjectile(projectile.Center, projectile.velocity * 4, ModContent.ProjectileType<GraniteSpike>(), projectile.damage, 2f, projectile.owner);
+                    Main.projectile[proj].magic = false;
+                    Main.projectile[proj].melee = true;
+
                     movementFactor = 3f; // Make sure the spear moves forward when initially thrown out
                     projectile.netUpdate = true; // Make sure to netUpdate this spear
                 }
+
                 if (projOwner.itemAnimation < projOwner.itemAnimationMax / 3) // Somewhere along the item animation, make sure the spear moves back
                 {
                     movementFactor -= 2.4f;
@@ -68,8 +74,6 @@ namespace OvermorrowMod.Projectiles.Melee
                     movementFactor += 2.1f;
                 }
             }
-
-
 
             projectile.ai[1]++;
 
@@ -98,6 +102,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 dust.velocity += projectile.velocity * 0.3f;
                 dust.velocity *= 0.2f;
             }
+
             if (Main.rand.NextBool(4))
             {
                 Dust dust = Dust.NewDustDirect(projectile.position, projectile.height, projectile.width, 206,
@@ -112,10 +117,10 @@ namespace OvermorrowMod.Projectiles.Melee
             {
                 //if (Main.netMode != NetmodeID.MultiplayerClient)
                 //{
-                    for (int i = 0; i < 5; i++)
+                    for (int i = 0; i < 3; i++)
                     {
                         // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
-                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<GraniteSpearElectricity>(), projectile.damage / 2, 1, projectile.owner, projectile.whoAmI, 42f * i);
+                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<GraniteSpearElectricity>(), projectile.damage / 2, 1, projectile.owner, projectile.whoAmI, 120f * i);
                     }
                 //}
                 spawnedProjectiles = true;
