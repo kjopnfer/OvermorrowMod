@@ -14,7 +14,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
         private Vector2 center;
         public int direction;
-        public float multiplier = 0.75f;
+        public float Multiplier = 0.75f;
         public Type TrailType()
         {
             return typeof(LightningTrail);
@@ -33,7 +33,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.penetrate = -1;
-            projectile.timeLeft = 375;//400;//450;
+            projectile.timeLeft = 265;//400;//450;
             projectile.tileCollide = false;
         }
 
@@ -64,25 +64,18 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.position = center + new Vector2(projectile.ai[0], 0).RotatedBy(MathHelper.ToRadians(projectile.ai[1] * direction));
             projectile.position -= new Vector2(projectile.width / 2, projectile.height / 2);
 
-            projectile.ai[0] += 3.5f * multiplier;//3;//2.5f;//2;//1;
-            projectile.ai[1] += 1.125f * multiplier;//1.25f;//1.5f;//2;//1;
+            projectile.ai[0] += 6.5f * Multiplier;//3;//2.5f;//2;//1;
+            projectile.ai[1] += 1.125f * Multiplier;//1.25f;//1.5f;//2;//1;
         }
 
         public override Color? GetAlpha(Color lightColor)
         {
-            if (projectile.timeLeft >= 60)
-            {
-                return Color.White;
-            }
-            else
-            {
-                return null;
-            }
+            return Color.White;
         }
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
-            target.AddBuff(BuffID.Electrified, Main.expertMode ? 180 : 90);
+            target.AddBuff(BuffID.Electrified, Main.expertMode ? 120 : 60);
         }
     }
 }

@@ -110,14 +110,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor)
         {
-            if (projectile.timeLeft >= 60)
-            {
-                return Color.White;
-            }
-            else
-            {
-                return null;
-            }
+            return Color.White;
         }
 
         public override void OnHitPlayer(Player target, int damage, bool crit)

@@ -69,7 +69,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.height = 232;
             npc.aiStyle = -1;
             npc.damage = 40;
-            npc.defense = 14;
+            npc.defense = 12;
             npc.lifeMax = 7600;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.DD2_BetsyDeath;
@@ -102,7 +102,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
-            npc.defense = 19;
+            npc.defense = 15;
             npc.damage /= 2;
         }
 
@@ -578,7 +578,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                    int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
                                     ((ElectricBall2)Main.projectile[proj].modProjectile).direction = npc.spriteDirection;
                                 }
                             }
@@ -589,9 +589,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 {
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                        int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
                                         ((ElectricBall2)Main.projectile[proj].modProjectile).direction = npc.spriteDirection * -1;
-                                        ((ElectricBall2)Main.projectile[proj].modProjectile).multiplier = 0.5f;
+                                        ((ElectricBall2)Main.projectile[proj].modProjectile).Multiplier = 0.5f;
                                     }
                                 }
                             }
@@ -689,7 +689,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                    int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
                                     ((ElectricBall2)Main.projectile[proj].modProjectile).direction = npc.spriteDirection;
                                 }
                             }
@@ -700,9 +700,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 {
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                        int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
                                         ((ElectricBall2)Main.projectile[proj].modProjectile).direction = npc.spriteDirection;
-                                        ((ElectricBall2)Main.projectile[proj].modProjectile).multiplier = 0.5f * -1;
+                                        ((ElectricBall2)Main.projectile[proj].modProjectile).Multiplier = 0.5f * -1;
                                     }
                                 }
                             }
