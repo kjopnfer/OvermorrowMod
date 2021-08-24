@@ -21,8 +21,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.ranged = true;
             item.width = 40;
             item.height = 25;
-            item.useTime = 10;
-            item.useAnimation = 60;
+            item.useTime = 5;
+            item.useAnimation = 30;
+            item.reuseDelay = 60;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.noMelee = true;
             item.knockBack = 4;
@@ -53,7 +54,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
                 type = ProjectileType<SpiritShot>();
             }
 
-            return true;
+            return !(player.itemAnimation < item.useAnimation - 1);
         }
 
         public override void AddRecipes()
