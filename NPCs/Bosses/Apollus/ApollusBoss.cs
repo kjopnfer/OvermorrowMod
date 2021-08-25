@@ -43,7 +43,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Marbella");
-            Main.npcFrameCount[npc.type] = 10;
+            Main.npcFrameCount[npc.type] = 5;
         }
         public override void SetDefaults()
         {

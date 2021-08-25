@@ -10,13 +10,10 @@ namespace OvermorrowMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
     public class EnchantedAegis : ModItem {
-        public override string Texture => "OvermorrowMod/Items/Accessories/StormShield"; //placeholder
+        public override string Texture => "OvermorrowMod/Items/Accessories/EnchantedAegis";
 
         public override void SetStaticDefaults() {
-            Tooltip.SetDefault(
-                "placeholder"
-                + "\nStores all Mana you consume in Damage"
-            );
+            Tooltip.SetDefault("Stores all consumed mana as damage\nReleases stored damage whenever damaged");
         }
 
         public override void SetDefaults() {

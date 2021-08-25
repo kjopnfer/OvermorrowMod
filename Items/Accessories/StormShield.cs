@@ -9,9 +9,11 @@ namespace OvermorrowMod.Items.Accessories
     [AutoloadEquip(EquipType.Shield)]
     public class StormShield : ModItem
     {
+        public override string Texture => "OvermorrowMod/Items/Accessories/StormShield";
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Infused Shield");
+            DisplayName.SetDefault("Blitz Bulwark");
             Tooltip.SetDefault("Leaves a trail of sparks behind you\nAllows the player to quickly dash into the enemy\n" +
                 "Dashing shoots out sparks from the player");
         }
