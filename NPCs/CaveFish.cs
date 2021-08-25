@@ -23,7 +23,7 @@ namespace OvermorrowMod.NPCs
 
 		public override void SetDefaults()
 		{
-			npc.width = 74;
+			npc.width = 64;
 			npc.height = 42;
 			npc.lifeMax = 100;
 			npc.damage = 26;

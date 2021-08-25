@@ -8,7 +8,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 {
     public class WormT1 : ModProjectile
     {
-        
+
         private int Wtimer = 0;
         private bool didHit = false;
         private int timer = 0;
@@ -21,7 +21,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 18;
+            projectile.width = 18;
             projectile.height = 18;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -34,58 +34,58 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
             Wtimer++;
-            if(Wtimer == 1)
+            if (Wtimer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT2"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
 
-            if(!didHit)
+            if (!didHit)
             {
-            Player player = Main.player[projectile.owner];
-            projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
-            if (projectile.localAI[0] == 0f)
-            {
-                AdjustMagnitude(ref projectile.velocity);
-                projectile.localAI[0] = 1f;
-            }
-            Vector2 move = Vector2.Zero;
-            float distance = 400f;
-            bool target = false;
-            for (int k = 0; k < 200; k++)
-            {
-                if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
+                Player player = Main.player[projectile.owner];
+                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
+                if (projectile.localAI[0] == 0f)
                 {
-                    Vector2 newMove = Main.npc[k].Center - projectile.Center;
-                    float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
-                    if (distanceTo < distance)
+                    AdjustMagnitude(ref projectile.velocity);
+                    projectile.localAI[0] = 1f;
+                }
+                Vector2 move = Vector2.Zero;
+                float distance = 400f;
+                bool target = false;
+                for (int k = 0; k < 200; k++)
+                {
+                    if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
                     {
-                        move = newMove;
-                        distance = distanceTo;
-                        target = true;
+                        Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                        float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
+                        if (distanceTo < distance)
+                        {
+                            move = newMove;
+                            distance = distanceTo;
+                            target = true;
+                        }
                     }
                 }
+                if (target)
+                {
+                    AdjustMagnitude(ref move);
+                    projectile.velocity += (10 * projectile.velocity + move) / 11f;
+                    AdjustMagnitude(ref projectile.velocity);
+                }
             }
-            if (target)
-            {
-                AdjustMagnitude(ref move);
-                projectile.velocity += (10 * projectile.velocity + move) / 11f;
-                AdjustMagnitude(ref projectile.velocity);
-            }
-            }
-            if(projectile.velocity.X > 11)
+            if (projectile.velocity.X > 11)
             {
                 projectile.velocity.X = 11;
             }
-            if(projectile.velocity.X < -11)
+            if (projectile.velocity.X < -11)
             {
                 projectile.velocity.X = -11;
             }
 
-            if(projectile.velocity.Y > 11)
+            if (projectile.velocity.Y > 11)
             {
                 projectile.velocity.Y = 11;
             }
-            if(projectile.velocity.Y < -11)
+            if (projectile.velocity.Y < -11)
             {
                 projectile.velocity.Y = -11;
             }
@@ -109,7 +109,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.tileCollide = false;
         }
     }
-    
+
     public class WormT2 : ModProjectile
     {
         private int length = 1;
@@ -122,7 +122,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 18;
+            projectile.width = 18;
             projectile.height = 18;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -139,7 +139,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         {
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT3"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -151,18 +151,18 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
-	}   
+    }
 
     public class WormT3 : ModProjectile
     {
@@ -176,7 +176,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 18;
+            projectile.width = 18;
             projectile.height = 18;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -193,7 +193,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         {
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT4"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -204,18 +204,18 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
-	}   
+    }
     public class WormT4 : ModProjectile
     {
         private int length = 1;
@@ -228,7 +228,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 18;
+            projectile.width = 18;
             projectile.height = 18;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -243,14 +243,14 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void AI()
         {
-            
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
             }
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT5"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -260,18 +260,18 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
-	} 
+    }
 
     public class WormT5 : ModProjectile
     {
@@ -285,7 +285,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 18;
+            projectile.width = 18;
             projectile.height = 18;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -306,16 +306,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
-	}   
+    }
 }

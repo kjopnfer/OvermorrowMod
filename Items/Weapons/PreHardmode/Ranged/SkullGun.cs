@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using Terraria;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 {
@@ -10,54 +11,66 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Converts Musket Balls and Silver Bullets into Fire Bullets\n'Snooze dart sold separately'");
+            DisplayName.SetDefault("Spirit Six-Shooter");
+            Tooltip.SetDefault("Converts Musket Balls into Fire Bullets\n'Snooze dart sold separately'");
         }
+
         public override void SetDefaults()
         {
             item.damage = 17;
             item.ranged = true;
             item.width = 40;
             item.height = 25;
-            item.useTime = 15;
-            item.useAnimation = 15;
+            item.useTime = 7;
+            item.useAnimation = 42;
+            item.reuseDelay = 90;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.noMelee = true;
             item.knockBack = 4;
             item.value = 10000;
             item.rare = ItemRarityID.Green;
             item.UseSound = SoundID.Item40;
-            item.shoot = ProjectileType<FlameCone>();
-            item.autoReuse = true;
-            item.shootSpeed = 5.5f;
+            item.shoot = ProjectileType<SpiritShot>();
+            item.autoReuse = false;
+            item.shootSpeed = 20.5f;
             item.scale = 0.7f;
             item.useAmmo = AmmoID.Bullet;
         }
-        public override bool Shoot(Terraria.Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+
+        public override bool ConsumeAmmo(Player player)
         {
+            return !(player.itemAnimation < item.useAnimation - 2);
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY)) * 15f;
+            if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
+            {
+                position += muzzleOffset;
+            }
+
+            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(45));
+            speedX = perturbedSpeed.X;
+            speedY = perturbedSpeed.Y;
+
             if (type == ProjectileID.Bullet)
             {
-                type = ProjectileType<FlameCone>();
+                type = ProjectileType<SpiritShot>();
             }
+
             return true;
         }
+
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(164, 1);
+            recipe1.AddIngredient(ItemID.Handgun, 1);
             recipe1.AddIngredient(175, 20);
-            recipe1.AddIngredient(154, 15);
+            recipe1.AddIngredient(ItemID.Bone, 15);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();
-
-
-            ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddIngredient(219, 1);
-            recipe2.AddIngredient(175, 20);
-            recipe2.AddIngredient(154, 15);
-            recipe2.AddTile(TileID.Anvils);
-            recipe2.SetResult(this);
-            recipe2.AddRecipe();
         }
         public override Vector2? HoldoutOffset()
         {

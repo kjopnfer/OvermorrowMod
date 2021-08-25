@@ -20,17 +20,11 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
 
         public override void AI()
         {
-
-
-
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 350)
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 350)
             {
                 projectile.Kill();
             }
 
-
-
-            Player player = Main.player[projectile.owner];
             projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
             if (projectile.localAI[0] == 0f)
             {

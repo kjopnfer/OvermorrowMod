@@ -16,11 +16,11 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
     public class ApollusBoss : ModNPC
     {
         public int maxRuneCircle = 3;
-        public int timer = 0;
-        int randomCase = 0;
-        int LastCase = 0;
+        public int timer; // = 0;
+        int randomCase; // = 0;
+        int LastCase; // = 0;
         int randomCeiling;
-        Vector2 teleportPosition = Vector2.Zero;
+        Vector2 teleportPosition; //= Vector2.Zero;
         int spriteTimer = 0;
         int frame = 1;
         int proj;
@@ -34,10 +34,16 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         Vector2 spawnpos;
         bool dead = false;
 
+
+        private int groupAttack;
+
+
+        public int graknightIdentity;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lady of Marble");
-            Main.npcFrameCount[npc.type] = 10;
+            DisplayName.SetDefault("Marbella");
+            Main.npcFrameCount[npc.type] = 5;
         }
         public override void SetDefaults()
         {
@@ -60,6 +66,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         {
             OvermorrowWorld.downedLady = false;
 
+            
             Player player = Main.player[npc.target];
 
             // AI [0] = Case Value
@@ -155,6 +162,36 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
             switch (npc.ai[0])
             {
+                case -10: // group attacks
+                    {
+                        if (!PlayerAlive(player)) { break; }
+
+                        switch (groupAttack)
+                        {
+
+                            case 0:
+                                {
+
+                                }
+                                break;
+                            case 1:
+                                {
+
+                                }
+                                break;
+                            case 2:
+                                {
+
+                                }
+                                break;
+                            case 3:
+                                {
+                                    
+                                }
+                                break;
+                        }
+                    }
+                    break;
                 case -2: // yell and change phase
                     {
                         if (!PlayerAlive(player)) { break; }

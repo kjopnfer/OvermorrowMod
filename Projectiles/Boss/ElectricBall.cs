@@ -74,11 +74,6 @@ namespace OvermorrowMod.Projectiles.Boss
 
             // Orbit around the parent projectile
             DoProjectile_OrbitPosition(projectile, parentProjectile.Center, radius);
-
-            // Make projectiles gradually disappear
-            if (projectile.timeLeft <= 60 && projectile.alpha < 255)
-                projectile.alpha += 5;
-            
         }
 
         public void DoProjectile_OrbitPosition(Projectile modProjectile, Vector2 position, double distance, double speed = 1.75)
@@ -88,17 +83,19 @@ namespace OvermorrowMod.Projectiles.Boss
             double rad = deg * (Math.PI / 180);
 
             // Controls how quickly the projectile rotates in a circle
-            if(speedUpCounter > 180)
+            if (speedUpCounter > 180)
             {
                 projectile.ai[1] += 4f;
-            }else if (speedUpCounter > 135)
+            }
+            else if (speedUpCounter > 135)
             {
                 projectile.ai[1] += 3f;
             }
-            else if(speedUpCounter > 90)
+            else if (speedUpCounter > 90)
             {
                 projectile.ai[1] += 2f;
-            }else
+            }
+            else
             {
                 projectile.ai[1] += 1f;
             }
@@ -113,19 +110,12 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor)
         {
-            if (projectile.timeLeft >= 60)
-            {
-                return Color.White;
-            }
-            else
-            {
-                return null;
-            }
+            return Color.White;
         }
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
-            target.AddBuff(BuffID.Electrified, Main.expertMode ? 360 : 180);
+            target.AddBuff(BuffID.Electrified, Main.expertMode ? 180 : 90);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             npc.height = 232;
             npc.aiStyle = -1;
             npc.damage = 40;
-            npc.defense = 14;
+            npc.defense = 12;
             npc.lifeMax = 7600;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.DD2_BetsyDeath;
@@ -102,7 +102,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
-            npc.defense = 19;
+            npc.defense = 15;
             npc.damage /= 2;
         }
 
@@ -517,14 +517,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         if (!PlayerAlive(player)) { break; }
 
                         // Create sparks between 300 - 320 every 3 ticks
-                        if (Dashing == true && AICounter % 3 == 0 && AICounter > 300 && AICounter < 320)
-                        {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(npc.Top, Vector2.Zero, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
-                                Projectile.NewProjectile(npc.Bottom, Vector2.Zero, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
-                            }
-                        }
+                        //if (Dashing == true && AICounter % 3 == 0 && AICounter > 300 && AICounter < 320)
+                        //{
+                        //    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        //    {
+                        //        Projectile.NewProjectile(npc.Top, Vector2.Zero, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
+                        //        Projectile.NewProjectile(npc.Bottom, Vector2.Zero, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
+                        //    }
+                        //}
 
                         if (++AICounter > 0 && AICounter < 180 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), targetFloat)) > 75)
                         {
@@ -573,6 +573,29 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 4, 0, 1f);
 
+                            int projectiles = 12;
+                            for (int j = 0; j < projectiles; j++)
+                            {
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                    ((ElectricBall2)Main.projectile[proj].modProjectile).direction = npc.spriteDirection;
+                                }
+                            }
+
+                            if (Main.expertMode)
+                            {
+                                for (int j = 0; j < projectiles; j++)
+                                {
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                        ((ElectricBall2)Main.projectile[proj].modProjectile).direction = npc.spriteDirection * -1;
+                                        ((ElectricBall2)Main.projectile[proj].modProjectile).Multiplier = 0.5f;
+                                    }
+                                }
+                            }
+
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
@@ -590,14 +613,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.velocity = Vector2.SmoothStep(npc.velocity, Vector2.Zero, 0.065f * 3);
                         }
-                        else if (AICounter > 400 && AICounter2 <= 1)
+                        else if (AICounter > 400 && AICounter2 <= 0)
                         {
                             AICounter = 0;
                             AICounter2++;
                             Dashing = false;
                             //createAfterimage = false;
                         }
-                        else if (AICounter > 400 && AICounter2 > 1)
+                        else if (AICounter > 400 && AICounter2 > 0)
                         {
                             if (!firstRunThru && halfHealth)
                             {
@@ -631,14 +654,14 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         if (!PlayerAlive(player)) { break; }
 
                         // Create sparks while dashing
-                        if (Dashing == true && AICounter % 3 == 0 && AICounter < 275)
-                        {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 60 + Main.rand.Next(-5, 5), 0, 0, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y + 60 + Main.rand.Next(-5, 5), 0, 0, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
-                            }
-                        }
+                        //if (Dashing == true && AICounter % 3 == 0 && AICounter < 275)
+                        //{
+                        //    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        //    {
+                        //        Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 60 + Main.rand.Next(-5, 5), 0, 0, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
+                        //        Projectile.NewProjectile(npc.Center.X, npc.Center.Y + 60 + Main.rand.Next(-5, 5), 0, 0, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
+                        //    }
+                        //}
 
                         // Glue self to side of player
                         if (++AICounter > 0 && AICounter < 200 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0)) > 75)
@@ -661,6 +684,29 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), npc.Center, Vector2.Zero, Color.LightCyan, 1, 4, 0, 1f);
 
+                            int projectiles = 12;
+                            for (int j = 0; j < projectiles; j++)
+                            {
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                    ((ElectricBall2)Main.projectile[proj].modProjectile).direction = npc.spriteDirection;
+                                }
+                            }
+
+                            if (Main.expertMode)
+                            {
+                                for (int j = 0; j < projectiles; j++)
+                                {
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        int proj = Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), npc.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                        ((ElectricBall2)Main.projectile[proj].modProjectile).direction = npc.spriteDirection;
+                                        ((ElectricBall2)Main.projectile[proj].modProjectile).Multiplier = 0.5f * -1;
+                                    }
+                                }
+                            }
+
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
@@ -681,7 +727,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.velocity = Vector2.SmoothStep(npc.velocity, Vector2.Zero, 0.065f * 3);
                         }
-                        else if (AICounter > 360 && AICounter2 <= 1) // Flag dash end
+                        else if (AICounter > 360 && AICounter2 <= 0) // Flag dash end
                         {
                             AICounter = 0;
                             AICounter2++;
@@ -689,7 +735,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             npc.velocity = Vector2.Zero;
                             createAfterimage = false;
                         }
-                        else if (AICounter > 360 && AICounter2 > 1) // End attack case, dashing must have occurred twice indicated by ai[2]
+                        else if (AICounter > 360 && AICounter2 > 0) // End attack case, dashing must have occurred twice indicated by ai[2]
                         {
                             // Run through next case for second phase
                             if (!firstRunThru && halfHealth)
@@ -812,7 +858,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 10, 2);
                         }
-                        if (AICounter >= 300)
+                        if (AICounter >= 240)//300)
                         {
                             if (!firstRunThru)
                             {
@@ -838,7 +884,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(player.Center + new Vector2(0, -500), Vector2.UnitY, ModContent.ProjectileType<LaserWarning2>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
+                                Projectile.NewProjectile(player.Center + new Vector2(Main.rand.NextFloat(-200, 200), -500), Vector2.UnitY, ModContent.ProjectileType<LaserWarning2>(), npc.damage, 2, Main.myPlayer, 0, npc.whoAmI);
                             }
                             AICounter2 = 0;
                         }
@@ -846,7 +892,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         {
                             npc.Move(player.Center + new Vector2(450 * (npc.spriteDirection * -1), 0), 10, 2);
                         }
-                        if (AICounter >= 300)
+                        if (AICounter >= 240)
                         {
                             hitBoxOff = false;
                             AICase = -1;
@@ -936,7 +982,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin - new Vector2(60f, 290);
                     //Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.LightCyan : drawColor;
                     Color afterImageColor = Color.Lerp(Color.DarkCyan, Color.DarkBlue, k / (float)npc.oldPos.Length);
-                    Main.NewText(k / (float)npc.oldPos.Length);
+                  //Main.NewText(k / (float)npc.oldPos.Length);
                     //Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
                     spriteBatch.Draw(texture2D16, drawPos, npc.frame, afterImageColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
