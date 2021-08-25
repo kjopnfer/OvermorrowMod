@@ -115,7 +115,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public static void SandstormStuff()
         {
-            Sandstorm.IntendedSeverity = 10; //0.4f;
+            Sandstorm.IntendedSeverity = 20; //0.4f;
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
             NetMessage.SendData(MessageID.WorldData, -1, -1, null, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
@@ -128,7 +128,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             npc.spriteDirection = npc.direction;
 
-            if(npc.life <= npc.lifeMax * 0.5f) { halfLife = true; }
+            if (npc.life <= npc.lifeMax * 0.5f) { halfLife = true; }
             if (npc.life <= npc.lifeMax * 0.25f) { fourthLife = true; }
             if (npc.ai[0] == 1 && fourthLife) { circleActive = true; }
             else { circleActive = false; }
@@ -169,7 +169,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             if (!player.ZoneDesert)
             {
-                if(enrageTimer == 120)
+                if (enrageTimer == 120)
                 {
                     enraged = true;
                 }
@@ -218,7 +218,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     {
                         //if (npc.ai[1] == 90)
                         //{
-                            secondRunThru = !secondRunThru;
+                        secondRunThru = !secondRunThru;
                         //}
                         //safetyCircleSwitch = !safetyCircleSwitch;
                     }
@@ -661,7 +661,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             {
                 npc.frame.Y += frameHeight;
             }
-            if (npc.frame.Y >= frameHeight * 6) // 6 is max # of frames
+
+            if (npc.frame.Y >= frameHeight * 4) // 6 is max # of frames
             {
                 npc.frame.Y = 0; // Reset back to default
             }
@@ -672,12 +673,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             if (npc.ai[0] != 2 && npc.ai[0] != 3 && circleActive != true) //|| (!doDustAttack && npc.ai[0] == 0 && npc.ai[1] <= 120))
             {
                 Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
-                Texture2D texture2D16 = mod.GetTexture("NPCs/Bosses/SandstormBoss/SandstormBoss");
+                Texture2D texture2D16 = mod.GetTexture("NPCs/Bosses/SandstormBoss/SandstormBoss_Afterimage");
 
 
                 // this gets the npc's frame
-                Vector2 vector47 = drawOrigin;
-                Color color55 = Color.White; // This is just white lol
                 float amount10 = 0f; // I think this controls amount of color
                 int num178 = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
                 int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
@@ -688,27 +687,24 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 float num176 = 1f - (float)Math.Cos((npc.ai[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
                 num176 /= 3f;
                 float scaleFactor10 = 7f; // Change scale factor of the pulsing effect and how far it draws outwards
-                
-                Color color47 = Color.Lerp(Color.White, Color.Yellow, 0.5f);
-                color55 = (npc.ai[0] == 0.5) ? Color.OrangeRed : Color.LightGoldenrodYellow;
+
                 amount10 = 1f;
 
                 // ok this is the pulsing effect drawing
                 for (int num164 = 1; num164 < num177; num164++)
                 {
                     // these assign the color of the pulsing
-                    Color color45 = (npc.ai[0] == 0.5) ? Color.Red : color47;
-                    color45 = Color.Lerp(color45, color55, amount10);
-                    color45 = ((ModNPC)this).npc.GetAlpha(color45);
-                    color45 *= 1f - num176; // num176 is put in here to effect the pulsing
+                    Color spriteColor = (npc.ai[0] == 0.5) ? Color.OrangeRed : Color.Yellow;
+                    spriteColor = npc.GetAlpha(spriteColor);
+                    spriteColor *= 1f - num176; // num176 is put in here to effect the pulsing
 
                     // num176 is used here too
                     Vector2 vector45 = ((Entity)((ModNPC)this).npc).Center + Terraria.Utils.ToRotationVector2((float)num164 / (float)num177 * ((float)Math.PI * 2f) + ((ModNPC)this).npc.rotation) * scaleFactor10 * num176 - Main.screenPosition;
                     vector45 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[((ModNPC)this).npc.type]) * ((ModNPC)this).npc.scale / 2f;
-                    vector45 += vector47 * ((ModNPC)this).npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
+                    vector45 += drawOrigin * npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
 
                     // the actual drawing of the pulsing effect
-                    spriteBatch.Draw(texture2D16, vector45 /*- new Vector2(0, 290 / 2)*/, ((ModNPC)this).npc.frame, color45, ((ModNPC)this).npc.rotation, vector47, ((ModNPC)this).npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture2D16, vector45, npc.frame, spriteColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
             }
 

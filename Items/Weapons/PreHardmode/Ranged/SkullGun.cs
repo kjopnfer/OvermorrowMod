@@ -21,9 +21,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.ranged = true;
             item.width = 40;
             item.height = 25;
-            item.useTime = 5;
-            item.useAnimation = 30;
-            item.reuseDelay = 60;
+            item.useTime = 7;
+            item.useAnimation = 42;
+            item.reuseDelay = 90;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.noMelee = true;
             item.knockBack = 4;
@@ -37,6 +37,11 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.useAmmo = AmmoID.Bullet;
         }
 
+        public override bool ConsumeAmmo(Player player)
+        {
+            return !(player.itemAnimation < item.useAnimation - 2);
+        }
+
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY)) * 15f;
@@ -45,7 +50,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
                 position += muzzleOffset;
             }
 
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(35));
+            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(45));
             speedX = perturbedSpeed.X;
             speedY = perturbedSpeed.Y;
 
@@ -54,7 +59,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
                 type = ProjectileType<SpiritShot>();
             }
 
-            return !(player.itemAnimation < item.useAnimation - 1);
+            return true;
         }
 
         public override void AddRecipes()
