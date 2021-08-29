@@ -12,7 +12,7 @@ namespace OvermorrowMod.Buffs
 			Description.SetDefault("The Divine Cloud will fight for you");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = false;
-			canBeCleared = false;
+			canBeCleared = true;
 		}
 
 		public override void Update(Player player, ref int buffIndex)

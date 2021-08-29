@@ -55,10 +55,8 @@ namespace OvermorrowMod.WardenClass
             }
 
             // Whatever spawning shenanigans
-            if (projectile.type == ModContent.ProjectileType<WorldTree>())
+            if (projectile.type == ModContent.ProjectileType<Pillar>() || projectile.type == ModContent.ProjectileType<Pillar>())
             {
-                Lighting.AddLight(projectile.Center, 0f, 0.66f, 0f);
-
                 // Get the ground beneath the projectile
                 Vector2 projectilePos = new Vector2(projectile.position.X / 16, projectile.position.Y / 16);
                 Tile tile = Framing.GetTileSafely((int)projectilePos.X, (int)projectilePos.Y);
@@ -74,12 +72,15 @@ namespace OvermorrowMod.WardenClass
             if (projectile.type == ModContent.ProjectileType<RedCloud>())
             {
                 Lighting.AddLight(projectile.Center, 1.2f, 0f, 0f);
-
+            }
+            else if (projectile.type == ModContent.ProjectileType<WorldTree>())
+            {
+                Lighting.AddLight(projectile.Center, 0f, 0.66f, 0f);
             }
 
             #region Aura
             // Generate the Aura
-            if (projectile.type == ModContent.ProjectileType<RedCloud>() || projectile.type == ModContent.ProjectileType<WorldTree>())
+            if (projectile.type == ModContent.ProjectileType<RedCloud>() || projectile.type == ModContent.ProjectileType<WorldTree>() || projectile.type == ModContent.ProjectileType<Pillar>())
             {
                 projectile.ai[0]++;
 
@@ -100,6 +101,11 @@ namespace OvermorrowMod.WardenClass
                 else if (projectile.type == ModContent.ProjectileType<WorldTree>())
                 {
                     DustType = 107;
+                    DustScale = 1f;
+                }
+                else if (projectile.type == ModContent.ProjectileType<Pillar>())
+                {
+                    DustType = 57;
                     DustScale = 1f;
                 }
 
@@ -126,6 +132,11 @@ namespace OvermorrowMod.WardenClass
                             if (projectile.type == ModContent.ProjectileType<RedCloud>())
                             {
                                 Main.player[i].AddBuff(ModContent.BuffType<MoonBuff>(), 60);
+                            }
+
+                            if (projectile.type == ModContent.ProjectileType<Pillar>())
+                            {
+                                Main.player[i].AddBuff(ModContent.BuffType<PillarBuff>(), 60);
                             }
 
                             if (RuneID == WardenRunePlayer.Runes.SkyRune)

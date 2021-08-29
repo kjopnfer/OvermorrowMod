@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
 {
-    public class DarkPortal : ModProjectile
+    public class DarkPortal : ArtifactProjectile
     {
         public override void SetStaticDefaults()
         {
@@ -16,7 +16,7 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
             Main.projFrames[projectile.type] = 8;
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             projectile.width = 142;
             projectile.height = 204;
@@ -39,10 +39,12 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
             {
                 if (Main.npc[i].active && !Main.npc[i].friendly)
                 {
-                    float distance = Vector2.Distance((projectile.Center), Main.npc[i].Center);
-                    if (distance <= 460 && projectile.ai[0] % 300 == 0)
+                    float distance = Vector2.Distance(projectile.Center, Main.npc[i].Center);
+                    if (distance <= 900 && projectile.ai[0] % 300 == 0)
                     {
-                        Projectile.NewProjectile(projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 2, ModContent.ProjectileType<DarkSerpent>(), 30, 2f, Main.myPlayer);
+                        int proj = Projectile.NewProjectile(projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 2, ModContent.ProjectileType<DarkSerpent>(), 30, 2f, Main.myPlayer);
+                        ((ArtifactProjectile)Main.projectile[proj].modProjectile).RuneID = RuneID;
+
                         return;
                     }
                 }
@@ -94,13 +96,21 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
             if (!spawnedSegment)
             {
                 // AI[1] keeps track of the segment number
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<DarkSerpent2>(), projectile.damage, 0f, Main.myPlayer, projectile.whoAmI, 1);
+                int proj = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<DarkSerpent2>(), projectile.damage, 0f, Main.myPlayer, projectile.whoAmI, 1);
+                ((ArtifactProjectile)Main.projectile[proj].modProjectile).RuneID = RuneID;
                 spawnedSegment = true;
             }
-
-            if (projectile.alpha > 0)
+            // Make projectiles gradually disappear
+            if (projectile.timeLeft <= 60)
             {
-                projectile.alpha -= 15;
+                projectile.alpha += 5;
+            }
+            else
+            {
+                if (projectile.alpha > 0)
+                {
+                    projectile.alpha -= 15;
+                }
             }
 
             projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
@@ -168,9 +178,6 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
         public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/Projectiles/Artifact/DarkPortal/DarkSerpent_Eyes");
-            Vector2 halfSize = texture.Size() / 2;
-            int num37 = 1;
-
             int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
             int y2 = num154 * projectile.frame;
             Rectangle drawRectangle = new Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
@@ -212,7 +219,7 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
         }
     }
 
-    public class DarkSerpent2 : ModProjectile
+    public class DarkSerpent2 : ArtifactProjectile
     {
         private bool spawnedSegment = false;
 
@@ -221,7 +228,7 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
             DisplayName.SetDefault("Dark Serpent");
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             projectile.width = 22;
             projectile.height = 22;
@@ -241,7 +248,8 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
                 // If we have 14 segments, spawn the tail
                 if (projectile.ai[1] == 14)
                 {
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<DarkSerpent3>(), projectile.damage, 0f, Main.myPlayer, projectile.whoAmI, projectile.ai[1]++);
+                    int proj = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<DarkSerpent3>(), projectile.damage, 0f, Main.myPlayer, projectile.whoAmI, projectile.ai[1]++);
+                    ((ArtifactProjectile)Main.projectile[proj].modProjectile).RuneID = RuneID;
                 }
                 else
                 {
@@ -249,7 +257,8 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
                     projectile.ai[1]++;
 
                     // AI[1] keeps track of the segment number
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<DarkSerpent2>(), projectile.damage, 0f, Main.myPlayer, projectile.whoAmI, projectile.ai[1]);
+                    int proj = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<DarkSerpent2>(), projectile.damage, 0f, Main.myPlayer, projectile.whoAmI, projectile.ai[1]);
+                    ((ArtifactProjectile)Main.projectile[proj].modProjectile).RuneID = RuneID;
                 }
 
                 spawnedSegment = true;
@@ -267,11 +276,19 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
                 projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
 
                 // Fade in once the parent has faded in
-                if (projectile2.alpha <= 0)
+                if (projectile2.timeLeft <= 60)
                 {
-                    if (projectile.alpha > 0)
+                    projectile.timeLeft = projectile2.timeLeft;
+                    projectile.alpha = projectile2.alpha;
+                }
+                else
+                {
+                    if (projectile2.alpha <= 0)
                     {
-                        projectile.alpha -= 35;
+                        if (projectile.alpha > 0)
+                        {
+                            projectile.alpha -= 35;
+                        }
                     }
                 }
             }
@@ -283,14 +300,14 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
         }
     }
 
-    public class DarkSerpent3 : ModProjectile
+    public class DarkSerpent3 : ArtifactProjectile
     {
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dark Serpent");
         }
 
-        public override void SetDefaults()
+        public override void SafeSetDefaults()
         {
             projectile.width = 22;
             projectile.height = 22;
@@ -316,14 +333,24 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
                 // position where the distance between parent and me is exactly the segment length
                 projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
 
-                // Fade in once the parent has faded in
-                if (projectile2.alpha <= 0)
+                // Fade out when the parent starts fading out
+                if (projectile2.timeLeft <= 60)
                 {
-                    if (projectile.alpha > 0)
+                    projectile.timeLeft = projectile2.timeLeft;
+                    projectile.alpha = projectile2.alpha;
+                }
+                else
+                {
+                    // Fade in once the parent has faded in
+                    if (projectile2.alpha <= 0)
                     {
-                        projectile.alpha -= 35;
+                        if (projectile.alpha > 0)
+                        {
+                            projectile.alpha -= 35;
+                        }
                     }
                 }
+
             }
             else
             {
