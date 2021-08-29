@@ -13,7 +13,7 @@ namespace OvermorrowMod.Projectiles.Ranged
     {
         public Type TrailType()
         {
-            return typeof(SkullTrail);
+            return typeof(SixShooterTrail);
         }
 
         public override void SetStaticDefaults()
@@ -98,7 +98,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 
             Main.spriteBatch.Draw(SoulTexture,
                 projectile.Center - Main.screenPosition,
-                null, Color.Cyan, projectile.rotation, SoulTexture.Size() / 2, projectile.scale * 1.2f, spriteEffects, 0f);
+                null, new Color(196, 247, 258), projectile.rotation, SoulTexture.Size() / 2, projectile.scale * 1.2f, spriteEffects, 0f);
         }
 
         public override void Kill(int timeLeft)

@@ -10,7 +10,7 @@ namespace OvermorrowMod.Effects.Prim.Trails
         private float Offset;
         public override void SetDefaults()
         {
-            Width = 6;
+            Width = 10;
             Length = 20;
             Effect = OvermorrowModFile.Mod.TrailShader;
             Color = Color.White;
@@ -38,6 +38,8 @@ namespace OvermorrowMod.Effects.Prim.Trails
         }
         public override void PrepareTrail()
         {
+            Color darkest = new Color(6, 106, 255);
+            Color lightest = new Color(196, 247, 258);
             if (Positions.Count < 2) return;
             for (int i = 0; i < Positions.Count - 1; i++)
             {
@@ -47,8 +49,8 @@ namespace OvermorrowMod.Effects.Prim.Trails
                 Vector2 pos2 = Positions[i + 1];
                 Vector2 off1 = GetRotation(Positions.ToArray(), i) * Width * prog1;
                 Vector2 off2 = GetRotation(Positions.ToArray(), i + 1) * Width * prog2;
-                Color col1 = Color.Lerp(Color.Cyan, Color.LightCyan, prog1) * prog1;
-                Color col2 = Color.Lerp(Color.Cyan, Color.LightCyan, prog2) * prog2;
+                Color col1 = Color.Lerp(darkest, lightest, prog1) * prog1;
+                Color col2 = Color.Lerp(darkest, lightest, prog2) * prog2;
                 AddVertex(pos1 + off1, col1, new Vector2(prog1 + Offset, 1));
                 AddVertex(pos1 - off1, col1, new Vector2(prog1 + Offset, 0));
                 AddVertex(pos2 + off2, col2, new Vector2(prog2 + Offset, 1));
