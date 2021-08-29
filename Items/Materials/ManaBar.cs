@@ -21,7 +21,6 @@ namespace OvermorrowMod.Items.Materials
 			item.rare = ItemRarityID.Green;
 			item.maxStack = 999;
 			item.autoReuse = true;
-			item.consumable = true;
 			item.useAnimation = 15;
 			item.useTime = 10;
 			//item.createTile = ModContent.TileType<ManaBarTile>();

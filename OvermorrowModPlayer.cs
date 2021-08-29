@@ -83,6 +83,7 @@ namespace OvermorrowMod
         public bool lightningCloud;
         public bool mirrorBuff;
         public bool moonBuff;
+        public bool slimeBuff;
         public bool smolBoi;
         public bool shroomBuff;
         public bool treeBuff;
@@ -132,6 +133,7 @@ namespace OvermorrowMod
             lightningCloud = false;
             mirrorBuff = false;
             moonBuff = false;
+            slimeBuff = false;
             smolBoi = false;
             shroomBuff = false;
             treeBuff = false;
@@ -272,19 +274,23 @@ namespace OvermorrowMod
             }
         }
 
-        public override void OnHitByNPC(NPC npc, int damage, bool crit) {
+        public override void OnHitByNPC(NPC npc, int damage, bool crit)
+        {
 
             // creating cross on the npc
-            if (storedDamage > 0) {
+            if (storedDamage > 0)
+            {
                 Vector2 anchor = npc.Center;
-                float angle; 
+                float angle;
                 float gap; // gap between each particle
 
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 4; i++)
+                {
                     angle = (i * 90 + 45) * (float)(Math.PI / 180);
                     gap = 20f;
 
-                    for (int j = 0; j < 5; j++) {
+                    for (int j = 0; j < 5; j++)
+                    {
                         Vector2 dustPos = anchor + j * (new Vector2(gap, 0).RotatedBy(angle));
                         Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, 226, 0f, 0f, 0, default, 1.25f)];
                         dust.noGravity = true;
@@ -298,26 +304,30 @@ namespace OvermorrowMod
             }
         }
 
-        public override void OnHitByProjectile(Projectile proj, int damage, bool crit) 
+        public override void OnHitByProjectile(Projectile proj, int damage, bool crit)
         {
             // creating cross on the projectile
-            if (storedDamage > 0) {
+            if (storedDamage > 0)
+            {
                 Vector2 anchor = proj.Center;
-                float angle; 
+                float angle;
                 float gap;
 
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 4; i++)
+                {
                     angle = (i * 90 + 45) * (float)(Math.PI / 180);
                     gap = 20f;
 
-                    for (int j = 0; j < 5; j++) {
+                    for (int j = 0; j < 5; j++)
+                    {
                         Vector2 dustPos = anchor + j * (new Vector2(gap, 0).RotatedBy(angle));
                         Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, 226, 0f, 0f, 0, default, 1.25f)];
                         dust.noGravity = true;
                     }
                 }
 
-                if (storedDamage > damage) {
+                if (storedDamage > damage)
+                {
                     proj.Kill();
                 }
 
@@ -360,7 +370,8 @@ namespace OvermorrowMod
                     player.statMana = player.statManaMax;
                 }
             }
-            if (amuletCounter > 0) {
+            if (amuletCounter > 0)
+            {
                 amuletCounter--;
             }
         }
@@ -436,6 +447,11 @@ namespace OvermorrowMod
                 }
             }
 
+            if (slimeBuff)
+            {
+                player.jumpSpeedBoost += 3f;
+            }
+
             if (goldWind)
             {
                 player.moveSpeed += 1f;
@@ -499,8 +515,70 @@ namespace OvermorrowMod
             }
         }
 
+        private bool jumpBool = false;
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
+            //if (triggersSet.Jump)
+            //{
+            //Main.NewText(player.oldVelocity.Y);
+
+            if (player.justJumped)
+            {
+                Main.NewText("jump");
+            }
+            /*if (player.justJumped && !jumpBool)
+            {
+                jumpBool = true;
+                Main.NewText("hi");
+            }
+            else
+            {
+                if (jumpBool && player.velocity.Y < 0)
+                {
+                    Main.NewText("yo");
+                    jumpBool = false;
+                }
+            }*/
+
+
+            /*if (player.justJumped)
+            {
+                Main.NewText("hu");
+            }*/
+
+            /*if (player.velocity.Y == 0)
+            {
+                jumpBool = false;
+            }*/
+
+            /*if (player.justJumped && player.velocity.Y != 0 && player.jumpAgainCloud)
+            {
+                Main.NewText("yo");
+            }*/
+            /*if (slimeBuff)
+            {
+                Main.NewText(player.velocity.Y);
+                if (player.controlJump && (player.jumpAgainCloud || player.jumpAgainSandstorm))
+                {
+                    Vector2 vector4 = new Vector2(player.position.X + (float)player.width * 0.5f, player.position.Y + (float)player.height * 0.5f);
+
+                    for (int j = 0; j < 5; j++)
+                    {
+                        Vector2 vector5 = new Vector2(j - 2, -4f);
+                        vector5.X *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
+                        vector5.Y *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
+                        vector5.Normalize();
+                        vector5 *= 4f + (float)Main.rand.Next(-50, 51) * 0.01f;
+                        int proj = Projectile.NewProjectile(vector4.X, vector4.Y, vector5.X, vector5.Y, ProjectileID.SpikedSlimeSpike, 16, 0f, Main.myPlayer);
+
+                        Main.projectile[proj].friendly = true;
+                        Main.projectile[proj].hostile = false;
+                    }
+                    //Main.NewText("bruh");
+                }
+            }*/
+            //}
+
             if (OvermorrowModFile.SandModeKey.JustPressed && ArmBracer)
             {
                 if (sandMode == 0) // Defense
@@ -515,7 +593,8 @@ namespace OvermorrowMod
                 }
             }
 
-            if (OvermorrowModFile.AmuletKey.JustPressed && ArtemisAmulet && amuletCounter == 0) {
+            if (OvermorrowModFile.AmuletKey.JustPressed && ArtemisAmulet && amuletCounter == 0)
+            {
                 Vector2 position = Main.MouseWorld;
 
                 Projectile.NewProjectile(position, new Vector2(0), ModContent.ProjectileType<ArtemisRune>(), 0, 5f, Main.myPlayer);

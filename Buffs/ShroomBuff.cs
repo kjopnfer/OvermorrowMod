@@ -11,7 +11,7 @@ namespace OvermorrowMod.Buffs
 			Description.SetDefault("Mushrooms grow from your back, firing towards your cursor");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = false;
-			canBeCleared = false;
+			canBeCleared = true;
 		}
 
 		public override void Update(Player player, ref int buffIndex)
