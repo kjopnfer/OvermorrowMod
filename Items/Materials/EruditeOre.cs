@@ -25,7 +25,6 @@ namespace OvermorrowMod.Items.Materials
             item.useAnimation = 15;
             item.useTime = 10;
             item.useStyle = ItemUseStyleID.SwingThrow;
-            item.consumable = true;
             item.createTile = ModContent.TileType<EruditeTile>();
         }
         public override Color? GetAlpha(Color lightColor)

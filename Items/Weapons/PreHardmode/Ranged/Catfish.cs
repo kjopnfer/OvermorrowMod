@@ -12,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("The Catfish");
+            DisplayName.SetDefault("The Fish-Eye");
             Tooltip.SetDefault("Transforms bullets into high velocity water bullets");
         }
 

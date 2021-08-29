@@ -33,7 +33,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.shoot = ProjectileType<SpiritShot>();
             item.autoReuse = false;
             item.shootSpeed = 20.5f;
-            item.scale = 0.7f;
             item.useAmmo = AmmoID.Bullet;
         }
 
