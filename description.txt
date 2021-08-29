@@ -1,1 +1,26 @@
 Overmorrow is content mod #671 aimed primarily towards deepening the nonexistent narrative of Terraria while also adding new features to build on the base game. Adds a new type of flexible support-based class called 'Warden' that focuses primarily on auxiliary effects such as debuffs and aura effects. Wardens utilize a unique resource called 'Souls' that are gained from attacking enemies with their signature chain weapons. Future content will aim to enhance the overall atmosphere and mystery of Terraria by providing new structures and biomes. Additionally, there are plans to implement RPG-esque elements such as a passive buff system and quests to incentivize exploration, and provide an optional goal for the player to pursue that will hopefully diversify gameplay.
+
+---==={ The Team }===---
+Director: kjopnfer/Japanese Name
+
+The Hands/Lead Devs:
+Grass (Spriter & Idea Person)
+SpicySpaceSnake (Spriter)
+Atom (Spriter & Writer)
+tplu (Coder)
+PeppaFan666 (Coder)
+KiatoPrime (Composer)
+
+Devs & Their Specialties:
+martosinc - Amazing Coder
+Woodio - God of Coding
+kinzoku - Coder. Has a Master's Degree in depression
+Goldy - Very Good Spriter
+Shrew - Also a very good spriter
+devoid - Pog Spriter
+ChileanGarbage - Pretty cool spriter
+manh - Concept Builder (makes structures)
+
+--=={ A BIG THANKS TO }==--
+PeppaFan666 for sacrificing his mental health & sanity to fix many of the
+issues we were having with Overmorrow in Multiplayer.
