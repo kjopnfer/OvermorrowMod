@@ -40,6 +40,7 @@ namespace OvermorrowMod.Effects.Prim.Trails
         {
             Color darkest = new Color(6, 106, 255);
             Color lightest = new Color(196, 247, 258);
+
             if (Positions.Count < 2) return;
             for (int i = 0; i < Positions.Count - 1; i++)
             {
