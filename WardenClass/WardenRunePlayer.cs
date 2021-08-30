@@ -44,6 +44,17 @@ namespace OvermorrowMod.WardenClass
 
                 layers.Insert(body - 1, Rune);
             }
+
+            if (player.GetModPlayer<OvermorrowModPlayer>().mirrorBuff)
+            {
+                int body = layers.FindIndex(l => l == PlayerLayer.MiscEffectsFront);
+                if (body < 0)
+                {
+                    return;
+                }
+
+                layers.Insert(body - 1, Mirror);
+            }
         }
 
         public int runeCounter;
@@ -133,6 +144,19 @@ namespace OvermorrowMod.WardenClass
             float scale = (float)((modPlayer.runeCounter * 2 >= 300 ? 300 : modPlayer.runeCounter * 2) / 300.0) * 1.25f;
 
             DrawData data = new DrawData(symbolTexture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.White, rad, symbolTexture.Size() / 2f, scale, SpriteEffects.None, 0);
+            Main.playerDrawData.Add(data);
+        });
+
+        public static readonly PlayerLayer Mirror = new PlayerLayer("OvermorrowMod", "Body", delegate (PlayerDrawInfo drawInfo)
+        {
+            Player drawPlayer = drawInfo.drawPlayer;
+            Mod mod = ModLoader.GetMod("OvermorrowMod");
+
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/WardenClass/Textures/boble");
+
+            Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2)) + new Vector2((-drawPlayer.direction), 0);
+
+            DrawData data = new DrawData(texture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.Lerp(Color.White, Color.Transparent, (float)Math.Sin(drawPlayer.miscCounter / 100f)), drawPlayer.bodyRotation, texture.Size() / 2f, 1, SpriteEffects.None, 0);
             Main.playerDrawData.Add(data);
         });
     }

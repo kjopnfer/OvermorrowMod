@@ -17,7 +17,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 
         public override void SetDefaults()
         {
-            item.damage = 17;
+            item.damage = 19;
             item.ranged = true;
             item.width = 40;
             item.height = 25;
@@ -33,7 +33,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.shoot = ProjectileType<SpiritShot>();
             item.autoReuse = false;
             item.shootSpeed = 20.5f;
-            item.scale = 0.7f;
             item.useAmmo = AmmoID.Bullet;
         }
 

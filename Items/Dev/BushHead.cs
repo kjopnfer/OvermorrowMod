@@ -3,15 +3,16 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Misc.Devs
+namespace OvermorrowMod.Items.Dev
 {
+
     [AutoloadEquip(EquipType.Head)]
-    public class ChileanGarbageSet : ModItem
+    public class BushHead : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Chilean's Weeb Mask");
-            Tooltip.SetDefault("'This is an anime server only'");
+            DisplayName.SetDefault("Bush-man's Visage");
+            Tooltip.SetDefault("'Ah yes, chlamydia mod'");
         }
 
         public override void SetDefaults()

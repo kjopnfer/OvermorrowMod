@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Pets
+namespace OvermorrowMod.Items.Dev
 {
 	public class AtomHeart : ModItem
 	{

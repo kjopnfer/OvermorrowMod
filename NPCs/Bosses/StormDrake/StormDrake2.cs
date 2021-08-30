@@ -173,6 +173,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         if (!PlayerAlive(player)) { break; }
 
                         npc.rotation = 0;
+                        createAfterimage = false;
 
                         if (++AICounter > 0 && AICounter < 100)
                         {
@@ -450,7 +451,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 2: // Spinning Electric Balls
                     {
                         // Break out phase change
-                        if (npc.life <= npc.lifeMax / 2 && !Phase2Switched)
+                        if (npc.life <= (Main.expertMode ? npc.lifeMax * 0.75f : npc.lifeMax / 2) && !Phase2Switched)
                         {
                             halfHealth = true;
                             AICase = -2;
@@ -505,7 +506,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 0: // Multi-directional Dash
                     {
                         // Break out phase change
-                        if (npc.life <= npc.lifeMax / 2 && !Phase2Switched)
+                        if (npc.life <= (Main.expertMode ? npc.lifeMax * 0.75f : npc.lifeMax / 2) && !Phase2Switched)
                         {
                             halfHealth = true;
                             AICase = -2;
@@ -515,16 +516,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         }
 
                         if (!PlayerAlive(player)) { break; }
-
-                        // Create sparks between 300 - 320 every 3 ticks
-                        //if (Dashing == true && AICounter % 3 == 0 && AICounter > 300 && AICounter < 320)
-                        //{
-                        //    if (Main.netMode != NetmodeID.MultiplayerClient)
-                        //    {
-                        //        Projectile.NewProjectile(npc.Top, Vector2.Zero, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
-                        //        Projectile.NewProjectile(npc.Bottom, Vector2.Zero, ModContent.ProjectileType<LightningSparkHitbox>(), npc.damage / 3, 1, Main.myPlayer, 0, 0);
-                        //    }
-                        //}
 
                         if (++AICounter > 0 && AICounter < 180 && npc.Distance(player.Center + new Vector2(450 * (npc.spriteDirection * -1), targetFloat)) > 75)
                         {
@@ -554,7 +545,6 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             npc.velocity = Vector2.Zero;
                             spriteDirectionStore = npc.spriteDirection;
                             Dashing = true;
-                            //createAfterimage = true;
                         }
                         // not only is the multi rotational dashes broken with afterimage, but pulse too
                         if (AICounter > 180 && AICounter < 240)
@@ -604,7 +594,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
                                 }
                             }
+
                             Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
+                            createAfterimage = true;
 
                             // Dashing speed
                             npc.velocity = (35 * 4) * npc.DirectionTo(PlayerCenterStore);
@@ -618,7 +610,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             AICounter = 0;
                             AICounter2++;
                             Dashing = false;
-                            //createAfterimage = false;
+                            createAfterimage = false;
                         }
                         else if (AICounter > 400 && AICounter2 > 0)
                         {
@@ -642,7 +634,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 case 1: // Horizontal Dash
                     {
                         // Break out phase change
-                        if (npc.life <= npc.lifeMax / 2 && !Phase2Switched)
+                        if (npc.life <= (Main.expertMode ? npc.lifeMax * 0.75f : npc.lifeMax / 2) && !Phase2Switched)
                         {
                             halfHealth = true;
                             AICase = -2;

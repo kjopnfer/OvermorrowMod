@@ -123,9 +123,13 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 
                 player.AddBuff(BuffID.Honey, 3600);
             }
+            else if (item.type == ModContent.ItemType<SlimeArtifact>())
+            {
+                player.AddBuff(ModContent.BuffType<SlimeBuff>(), 10800);
+            }
 
             // Apply additional buffs while a rune is active
-            if (item.type == ModContent.ItemType<CorruptedMirror>() || item.type == ModContent.ItemType<HoneyPot>())
+            if (item.type == ModContent.ItemType<CorruptedMirror>() || item.type == ModContent.ItemType<HoneyPot>() || item.type == ModContent.ItemType<SlimeArtifact>())
             {
                 switch (player.GetModPlayer<WardenRunePlayer>().RuneID)
                 {
@@ -228,8 +232,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             // Attack
             if (item.type == ModContent.ItemType<EaterArtifact>())
             {
-
-
                 type = ModContent.ProjectileType<WormHead>();
                 float numberProjectiles = 3;
                 float rotation = MathHelper.ToRadians(30);
@@ -253,16 +255,23 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 }
             }
 
+            if (item.type == ModContent.ItemType<DarkPearl>())
+            {
+                position = Main.MouseWorld;
+                int projectile = Projectile.NewProjectile(position, Vector2.Zero, type, 0, 0, player.whoAmI);
+                ProjectileList.Add(projectile);
+            }
+
             // Support
-            if (item.type == ModContent.ItemType<EarthCrystal>() || item.type == ModContent.ItemType<BloodyAntikythera>())
+            if (item.type == ModContent.ItemType<EarthCrystal>() || item.type == ModContent.ItemType<BloodyAntikythera>() || item.type == ModContent.ItemType<PillarArtifact>())
             {
                 // Allow only one instance of the projectile
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<WorldTree>()] > 0)
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<RedCloud>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<WorldTree>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<Pillar>()] > 0)
                 {
                     for (int i = 0; i < Main.maxProjectiles; i++)
                     {
                         if (Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI &&
-                            (Main.projectile[i].type == ModContent.ProjectileType<RedCloud>() || Main.projectile[i].type == ModContent.ProjectileType<WorldTree>()))
+                            (Main.projectile[i].type == ModContent.ProjectileType<RedCloud>() || Main.projectile[i].type == ModContent.ProjectileType<WorldTree>() || Main.projectile[i].type == ModContent.ProjectileType<Pillar>()))
                         {
                             Main.projectile[i].Kill();
                         }
@@ -297,6 +306,11 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     if (item.type == ModContent.ItemType<BloodyAntikythera>())
                     {
                         ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 390;
+                    }
+
+                    if (item.type == ModContent.ItemType<PillarArtifact>())
+                    {
+                        ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 330;
                     }
                 }
             }
