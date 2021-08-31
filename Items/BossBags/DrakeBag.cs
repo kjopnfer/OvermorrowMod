@@ -1,4 +1,5 @@
 using OvermorrowMod.Items.Accessories.Expert;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
@@ -69,6 +70,8 @@ namespace OvermorrowMod.Items.BossBags
             }
 
             player.QuickSpawnItem(ModContent.ItemType<StormScale>());
+
+            player.QuickSpawnItem(ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16));
         }
 
         public override int BossBagNPC => ModContent.NPCType</*StormDrake*/StormDrake2>();

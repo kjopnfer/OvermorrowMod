@@ -19,6 +19,7 @@ using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
+using OvermorrowMod.Items.Materials;
 
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
@@ -1143,6 +1144,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrakeTrophy>());
                 }
+
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16);
             }
         }
         public override void BossLoot(ref string name, ref int potionType)

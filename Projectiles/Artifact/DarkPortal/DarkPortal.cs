@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.WardenClass;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
@@ -13,13 +12,13 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dark Portal");
-            Main.projFrames[projectile.type] = 8;
+            Main.projFrames[projectile.type] = 1;
         }
 
         public override void SafeSetDefaults()
         {
-            projectile.width = 142;
-            projectile.height = 204;
+            projectile.width = 100;
+            projectile.height = 146;
             projectile.tileCollide = false;
             projectile.friendly = true;
             projectile.timeLeft = 3600;
@@ -51,14 +50,14 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
             }
 
 
-            if (++projectile.frameCounter >= 4)
+            /*if (++projectile.frameCounter >= 4)
             {
                 projectile.frameCounter = 0;
                 if (++projectile.frame >= Main.projFrames[projectile.type])
                 {
                     projectile.frame = 0;
                 }
-            }
+            }*/
         }
 
         public override Color? GetAlpha(Color lightColor)

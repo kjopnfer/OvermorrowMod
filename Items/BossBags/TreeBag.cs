@@ -1,4 +1,5 @@
 using OvermorrowMod.Items.Accessories.Expert;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
@@ -69,6 +70,8 @@ namespace OvermorrowMod.Items.BossBags
             }
 
             player.QuickSpawnItem(ModContent.ItemType<TreeNecklace>());
+
+            player.QuickSpawnItem(ModContent.ItemType<SapStone>(), Main.rand.Next(1, 3));
         }
 
         public override int BossBagNPC => ModContent.NPCType<TreeBossP2>();

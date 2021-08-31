@@ -13,6 +13,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Materials;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
@@ -485,6 +486,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TreeTrophy>());
                 }
+
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SapStone>(), Main.rand.Next(1, 4));
             }
         }
 
