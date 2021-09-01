@@ -22,8 +22,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.width = 40;
             item.height = 25;
             item.useTime = 7;
+            item.autoReuse = true;
             item.useAnimation = 42;
-            item.reuseDelay = 90;
+            item.reuseDelay = 75;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.noMelee = true;
             item.knockBack = 4;

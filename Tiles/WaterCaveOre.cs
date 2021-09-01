@@ -21,7 +21,8 @@ namespace OvermorrowMod.Tiles
             Main.tileLighted[Type] = true;
             soundType = 21;
             soundStyle = 1;
-            minPick = 65;
+            minPick = 55;
+            mineResist = 2f;
             drop = ModContent.ItemType<WaterOre>();
             AddMapEntry(new Color(102, 255, 255), name);
         }

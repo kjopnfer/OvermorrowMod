@@ -1145,7 +1145,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrakeTrophy>());
                 }
 
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16);
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16));
             }
         }
         public override void BossLoot(ref string name, ref int potionType)
