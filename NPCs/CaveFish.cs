@@ -2,6 +2,7 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 using OvermorrowMod;
+using OvermorrowMod.Items.Accessories;
 
 namespace OvermorrowMod.NPCs
 {
@@ -257,7 +258,15 @@ namespace OvermorrowMod.NPCs
 			}
 		}
 
-		public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        public override void NPCLoot()
+        {
+			if (Main.rand.Next(14) == 0)
+			{
+				Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<AnglerTooth>());
+			}
+		}
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
 			return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && spawnInfo.water ? 0.05f : 0f;
 		}

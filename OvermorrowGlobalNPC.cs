@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 using WardenClass;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Projectiles.Melee;
+using OvermorrowMod.Items.Accessories;
 
 namespace OvermorrowMod
 {
@@ -98,6 +99,13 @@ namespace OvermorrowMod
                 Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, ModContent.ProjectileType<HeroHoming>(), npc.damage * 3, 2, Main.player[npc.target].whoAmI);
             }
 
+            if (npc.type == NPCID.BoneSerpentHead)
+            {
+                if (Main.rand.Next(20) == 0)
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SerpentTooth>());
+                }
+            }
 
             if (npc.type == NPCID.EaterofSouls)
             {

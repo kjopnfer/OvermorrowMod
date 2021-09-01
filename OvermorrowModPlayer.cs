@@ -26,10 +26,12 @@ namespace OvermorrowMod
         public bool BloodyTeeth;
         public bool DripplerEye;
         public bool EruditeDamage;
+        public bool SerpentTooth;
         public bool ShatteredOrb;
         public bool StormScale;
         public bool StormShield;
         public bool TreeNecklace;
+        public bool PredatorTalisman;
         public bool Bloodmana;
 
         // Set Bonuses
@@ -115,10 +117,12 @@ namespace OvermorrowMod
             BloodyTeeth = false;
             DripplerEye = false;
             EruditeDamage = false;
+            SerpentTooth = false;
             ShatteredOrb = false;
             StormScale = false;
             StormShield = false;
             TreeNecklace = false;
+            PredatorTalisman = false;
             Bloodmana = false;
 
             BMSet = false;

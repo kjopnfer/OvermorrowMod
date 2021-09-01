@@ -9,14 +9,14 @@ namespace OvermorrowMod.Items.Accessories
 		public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Angler Tooth");
-			Tooltip.SetDefault("Grants 7% increased crit for all classes");
+			Tooltip.SetDefault("7% increased crit chance");
 		}
 
 		public override void SetDefaults()
 		{
 			item.accessory = true;
-			item.width = 26; //Filler
-			item.height = 24; //Filler
+			item.width = 26;
+			item.height = 24;
 			item.rare = ItemRarityID.Blue;
 			item.value = Item.sellPrice(0, 1, 0, 0);
 		}
@@ -27,7 +27,6 @@ namespace OvermorrowMod.Items.Accessories
             player.meleeCrit += 7;
 			player.rangedCrit += 7;
             player.thrownCrit += 7;
-
 		}
     }
 }

@@ -38,6 +38,16 @@ namespace OvermorrowMod
         }
         public override void ModifyWeaponDamage(Item item, Player player, ref float add, ref float mult, ref float flat)
         {
+            if (player.GetModPlayer<OvermorrowModPlayer>().SerpentTooth)
+            {
+                flat += 5;
+            }
+
+            if (player.GetModPlayer<OvermorrowModPlayer>().PredatorTalisman)
+            {
+                flat += 3;
+            }
+
             if (player.GetModPlayer<OvermorrowModPlayer>().EruditeDamage)
             {
                 flat += 2;
