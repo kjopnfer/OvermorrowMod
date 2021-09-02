@@ -18,6 +18,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.NPCs.Bosses.Goblin;
 using OvermorrowMod.Projectiles.Ranged.Ammo;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 
 namespace OvermorrowMod
 {

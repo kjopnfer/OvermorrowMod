@@ -3,14 +3,13 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
+namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class GraniteChomper : ModItem
     {
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Chomper");
-            Tooltip.SetDefault("Shoots out a chomping projectile");
         }
         public override void SetDefaults()
         {
