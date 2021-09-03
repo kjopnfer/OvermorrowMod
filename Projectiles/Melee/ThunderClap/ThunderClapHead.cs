@@ -4,6 +4,7 @@ using System;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
+using OvermorrowMod.NPCs.Bosses.StormDrake;
 
 namespace OvermorrowMod.Projectiles.Melee.ThunderClap
 {
@@ -73,6 +74,33 @@ namespace OvermorrowMod.Projectiles.Melee.ThunderClap
 
 				if (currentChainLength > maxChainLength)
 				{
+					Vector2 targetPos = projectile.position;
+					float targetDist = 100f;
+					bool target = false;
+					float targetNPC = 0;
+					for (int k = 0; k < 200; k++)
+					{
+						NPC npc = Main.npc[k];
+						if (npc.CanBeChasedBy(this))
+						{
+							float distance = Vector2.Distance(npc.Center, projectile.Center);
+							if ((distance < targetDist || !target) && Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height))
+							{
+								targetDist = distance;
+								targetPos = npc.Center;
+								targetNPC = npc.whoAmI;
+								target = true;
+							}
+						}
+					}
+
+					if (target)
+					{
+						Vector2 shootVelocity = targetPos - projectile.Center;
+						shootVelocity.Normalize();
+						Projectile.NewProjectile(projectile.Center, shootVelocity, ModContent.ProjectileType<LightningBurst>(), 36, 10f, projectile.owner, targetNPC, projectile.whoAmI);
+					}
+
 					// If we reach maxChainLength, we change behavior.
 					projectile.ai[0] = 1f;
 					projectile.netUpdate = true;
@@ -97,7 +125,7 @@ namespace OvermorrowMod.Projectiles.Melee.ThunderClap
 				if (projectile.ai[1] == 1f)
 					projectile.tileCollide = false;
 
-                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
+                //projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
 
 				// If the user lets go of the use button, or if the projectile is stuck behind some tiles as the player moves away, the projectile goes into a mode where it is forced to retract and no longer collides with tiles.
 				if (!player.channel || currentChainLength > maxStretchLength || !projectile.tileCollide)
@@ -140,8 +168,6 @@ namespace OvermorrowMod.Projectiles.Melee.ThunderClap
 			}
 
 			projectile.rotation = projectile.velocity.ToRotation();
-
-			// Here is where a flail like Flower Pow could spawn additional projectiles or other custom behaviors
 		}
 
 		public override bool OnTileCollide(Vector2 oldVelocity)

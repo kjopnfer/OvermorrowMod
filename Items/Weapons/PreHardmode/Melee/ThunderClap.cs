@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void SetStaticDefaults()
         {
 			DisplayName.SetDefault("ThunderClap");
-			Tooltip.SetDefault("'Begone with the thunder clap'");
+			Tooltip.SetDefault("Throws a flail that shocks nearby enemies\n'Begone with the thunder clap'");
         }
         public override void SetDefaults()
 		{
@@ -22,7 +22,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 			item.useAnimation = 40;
 			item.useTime = 40;
 			item.knockBack = 4f;
-			item.damage = 9;
+			item.damage = 24;
 			item.noUseGraphic = true;
 			item.shoot = ModContent.ProjectileType<ThunderClapHead>();
 			item.shootSpeed = 15.1f;

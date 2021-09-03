@@ -258,9 +258,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             projectile.velocity = (Vector2.UnitX * Direction).RotatedBy(MathHelper.ToRadians((Direction == 1) ? 315 + RotateBy : 45 + -RotateBy));
         }
     }
-    public class TestLightning3 : Lightning
+    public class LightningBurst : Lightning
     {
-        public float maxTime = 300;
+        public float maxTime = 90;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lightning Spark");
@@ -269,15 +269,21 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         {
             projectile.damage = 25;
             projectile.width = 5;
-            projectile.hostile = true;
+            projectile.hostile = false;
+            projectile.friendly = true;
             projectile.timeLeft = (int)maxTime;
             Length = 3f;
             Sine = true;
         }
         public override void AI()
         {
+            if (!Main.npc[(int)projectile.ai[0]].active || !Main.projectile[(int)projectile.ai[1]].active)
+            {
+                projectile.Kill();
+            }
+
             Length = TRay.CastLength(projectile.Center, projectile.velocity, 10f);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, 160, /*2f*/ 1f/*, true*/);
+            Positions = Lightning.CreateLightning(Main.projectile[(int)projectile.ai[1]].Center/*projectile.Center*/, Main.npc[(int)projectile.ai[0]].Center/*projectile.Center + projectile.velocity * Length*/, projectile.width, 160, /*2f*/ 1f/*, true*/);
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
