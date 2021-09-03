@@ -10,7 +10,7 @@ using OvermorrowMod.Projectiles.Accessory;
 namespace OvermorrowMod.Items.Accessories.Expert
 {
     public class ArtemisAmulet : ModItem {
-        public override string Texture => "Terraria/Item_" + ItemID.CharmofMyths;
+        //public override string Texture => "Terraria/Item_" + ItemID.CharmofMyths;
 
         public override void SetStaticDefaults() {
             Tooltip.SetDefault(

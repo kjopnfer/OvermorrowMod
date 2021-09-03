@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.WardenClass;
@@ -238,6 +239,7 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
             projectile.tileCollide = false;
             projectile.ignoreWater = true;
             projectile.alpha = 255;
+            projectile.hide = true;
         }
 
         public override void AI()
@@ -296,6 +298,11 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
                 // kil
                 projectile.Kill();
             }
+        }
+
+        public override void DrawBehind(int index, List<int> drawCacheProjsBehindNPCsAndTiles, List<int> drawCacheProjsBehindNPCs, List<int> drawCacheProjsBehindProjectiles, List<int> drawCacheProjsOverWiresUI)
+        {
+            drawCacheProjsBehindProjectiles.Add(index);
         }
     }
 
