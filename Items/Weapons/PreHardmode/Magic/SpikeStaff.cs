@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,7 +31,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.autoReuse = true;
             item.knockBack = 0;
-            item.shoot = mod.ProjectileType("CircleMagic");
+            item.shoot = ModContent.ProjectileType<CircleMagic>();
             item.shootSpeed = 0f;
         }
         
