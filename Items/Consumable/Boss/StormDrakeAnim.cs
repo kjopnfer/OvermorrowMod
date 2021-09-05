@@ -52,6 +52,13 @@ namespace OvermorrowMod.Items.Consumable.Boss
                             Projectile.NewProjectile(projectile.Center, Vector2.UnitY * -1, ModContent.ProjectileType<TestLightning4>(), projectile.damage, 2, Main.myPlayer, 0, projectile.whoAmI);
                             Projectile.NewProjectile(projectile.Center, (Vector2.UnitY * -1).RotatedBy(MathHelper.ToRadians(20)), ModContent.ProjectileType<TestLightning4>(), projectile.damage, 2, Main.myPlayer, 0, projectile.whoAmI);
                         }
+
+                        if (projectile.ai[1] == 260)
+                        {
+                            Player player = Main.player[projectile.owner];
+                            Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/woow"), player.position);
+                        }
+
                         if (projectile.ai[1]++ > 300)
                         {
                             Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), projectile.Center, Vector2.Zero, Color.DarkCyan, 1, 5, 0, 1f);

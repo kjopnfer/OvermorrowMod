@@ -37,6 +37,7 @@ namespace OvermorrowMod
         public Effect Shockwave;
         public Effect VertexShader;
         public Effect TrailShader;
+        public Effect TextShader;
 
         public TrailManager TrailManager;
 
@@ -81,6 +82,7 @@ namespace OvermorrowMod
                 Shockwave = GetEffect("Effects/Shockwave1");
                 VertexShader = GetEffect("Effects/VShader");
                 TrailShader = GetEffect("Effects/Trail");
+                TextShader = GetEffect("Effects/TextShader");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
@@ -324,6 +326,7 @@ namespace OvermorrowMod
             Shockwave = null;
             VertexShader = null;
             TrailShader = null;
+            TextShader = null;
 
             ModUtils.Load(true);
             HexLoader.Load(true);

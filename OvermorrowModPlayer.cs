@@ -525,11 +525,12 @@ namespace OvermorrowMod
             //if (triggersSet.Jump)
             //{
             //Main.NewText(player.oldVelocity.Y);
-
+            //Main.NewText(player.velocity.Y);
             if (player.justJumped)
             {
                 Main.NewText("jump");
             }
+
             /*if (player.justJumped && !jumpBool)
             {
                 jumpBool = true;

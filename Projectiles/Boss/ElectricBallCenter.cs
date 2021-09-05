@@ -56,7 +56,11 @@ namespace OvermorrowMod.Projectiles.Boss
                 NPC parent = Main.npc[(int)projectile.ai[1]];
                 projectile.Center = parent.Center;
                 projectile.netUpdate = true;
-                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)projectile.position.X, (int)projectile.position.Y);
+
+                if (projectile.ai[0] == 239)
+                {
+                    Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)projectile.position.X, (int)projectile.position.Y);
+                }
             }
             else // Launch at the nearest player
             {

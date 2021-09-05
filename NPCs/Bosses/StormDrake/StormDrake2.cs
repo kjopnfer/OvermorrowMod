@@ -554,6 +554,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             if (AICounter > 180 && AICounter < 230)
                             {
                                 canPulse = true;
+
+                                if (AICounter == 181)
+                                {
+                                    Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
+                                }
                             }
                             else
                             {
@@ -589,6 +594,15 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
+                                if (Main.rand.Next(2) == 0)
+                                {
+                                    Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/woosh"), Main.player[i].position);
+                                }
+                                else
+                                {
+                                    Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/flep"), Main.player[i].position);
+                                }
+
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                                 if (distance <= 1600)
                                 {
@@ -596,7 +610,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 }
                             }
 
-                            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
+                            
+                            //Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
                             createAfterimage = true;
 
                             // Dashing speed
@@ -667,6 +682,11 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             if (AICounter > 200 && AICounter < 250)
                             {
                                 canPulse = true;
+
+                                if (AICounter == 201)
+                                {
+                                    Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
+                                }
                             }
                             else
                             {
@@ -703,12 +723,19 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
-                                if (distance <= 1600)
+                                if (distance <= 6400)
                                 {
+                                    if (Main.rand.Next(2) == 0)
+                                    {
+                                        Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/woosh"), Main.player[i].position);
+                                    }
+                                    else
+                                    {
+                                        Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/flep"), Main.player[i].position);
+                                    }
                                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
                                 }
                             }
-                            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
 
                             // Dashing speed
                             npc.velocity = (Vector2.UnitX * (35f * 4)) * npc.spriteDirection;
