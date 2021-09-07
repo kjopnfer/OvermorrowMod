@@ -6,26 +6,28 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Materials
+namespace OvermorrowMod.Items.Misc
 {
-    public class FakeGem : ModItem
+    public class NineTails : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cursed Ore");
-            Tooltip.SetDefault("Used to craft cursed items\n'Touching it grants visions of various cursed images from the Internet'");
+            DisplayName.SetDefault("The Cat-o-Nine Tails");
+            Tooltip.SetDefault("Useable at the Dark Pantheon\n" +
+                "Invokes the Curse of Caerea");
         }
 
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 28;
+            item.width = 46;
+            item.height = 40;
             item.rare = ItemRarityID.Red;
-            item.maxStack = 999;
+            item.maxStack = 1;
             item.useTurn = true;
             item.autoReuse = true;
             item.useAnimation = 15;
-            item.useTime = 10;
+            item.useTime = 15;
+            item.consumable = false;
             item.useStyle = ItemUseStyleID.SwingThrow;
         }
 
@@ -68,22 +70,17 @@ namespace OvermorrowMod.Items.Materials
                 //fx.CurrentTechnique.Passes["Noise"].Apply();
                 fx.CurrentTechnique.Passes[2].Apply();
 
-                /*if (Main.rand.NextBool(30))
+                if (Main.rand.NextBool(30))
                 {
-                    Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.Lerp(Color.Red, Color.Transparent, 0.95f), 1f, Main.rand.NextFloat(-0.3f, 0.3f), Main.rand.NextFloat(-0.2f, 0.2f));
-                }*/
-                Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.Lerp(Color.Orange, Color.Transparent, 0.95f), 1f, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0);
+                    Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.Lerp(Color.Red, Color.Transparent, 0.95f), 1f, Main.rand.NextFloat(-0.5f, 0.5f), Main.rand.NextFloat(-0.5f, 0.5f));
+                }
+                //Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.Lerp(Color.Orange, Color.Transparent, 0.95f), 1f, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0);
                 Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.Lerp(Color.Orange, Color.Transparent, 0.95f), 1f, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0);
                 Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.White, 1f, Main.rand.NextBool(60) ? Main.rand.NextFloat(-0.45f, 0.45f) : 0);
                 spriteBatch.Reload(SpriteSortMode.Deferred);
                 return false;
             }
             return true;
-        }
-
-        public override void PostUpdate()
-        {
-            Lighting.AddLight(item.Center, 1f, 0f, 0f);
         }
     }
 }

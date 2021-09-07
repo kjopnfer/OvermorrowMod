@@ -71,6 +71,7 @@ namespace OvermorrowMod.NPCs.Town
                 "You wouldn't happen to know anybody named Vaema would you?",
                 "\"Gods, demons, humanity, monsters, and other eternal beings are no match for 'him.' Azarel, eternity itself, must destroy!\" Ah sorry. Was quoting from my favorite book.",
                 "Centuries ago, the dungeon was actually at the bottom of the sea, some ancient ocean energies still reside there",
+                "If you find any mysterious looking chests underground, do not open them",
             };
 
             return Main.rand.Next(dialogue);
