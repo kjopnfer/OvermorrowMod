@@ -7,8 +7,9 @@ namespace OvermorrowMod.Buffs
 	{
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Gelatin Empowerment");
-			Description.SetDefault("Increases jump height, jumping spawns gel spikes from the player");
+			DisplayName.SetDefault("Gelatin Physique");
+			Description.SetDefault("Every first jump spawns projectiles and restores 2 health\n" +
+				"Increased jump height");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = false;
 			canBeCleared = true;

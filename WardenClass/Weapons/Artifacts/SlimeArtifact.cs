@@ -13,7 +13,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         {
             DisplayName.SetDefault("Slime Chalice");
             Tooltip.SetDefault("[c/EBDE34:{ Artifact of Courage }]\n" +
-                "Consume a Soul Essence to gain a buff to increase jump height and spawn projectiles when jumping\n" +
+                "Consume a Soul Essence to gain [c/00FF00:Gelatin Physique]\n" +
+                "While active, every first jump spawns projectiles and restores 2 health\n" +
+                "Additionally, grants increased jump height\n" +
                 "All players on the same team gain the same buff for 3 minutes\n" +
                 "'Consume the slime chalice'");
         }

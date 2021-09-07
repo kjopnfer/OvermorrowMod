@@ -16,7 +16,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             Tooltip.SetDefault("[c/09DBB8:{ Imbuement }]\n" +
                             "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
                             "[c/EBDE34:{ Courage }] Summons a Storm Cloud to fight for each friendly teammate\n" +
-                            "[c/00FF00:{ Wisdom }] Grants 'Golden Wind', increasing speed while within range\n" +
+                            "[c/00FF00:{ Wisdom }] Grants [c/00FF00:Golden Wind], increasing speed while within range\n" +
                             "Consumes 1 Soul Essence\n" +
                             "'And then along came Zeus'");
         }
