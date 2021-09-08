@@ -87,7 +87,10 @@ namespace OvermorrowMod
 	{
 	    return player.GetModPlayer<OvermorrowModPlayer>();
 	}
-
+	public static WardenDamagePlayer Warden(this Player player)
+	{
+	    return player.GetModPlayer<WardenDamagePlayer>();
+	}
         public static void SafeSetParameter(this Effect effect, string name, float value)
         {
             if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
