@@ -519,7 +519,6 @@ namespace OvermorrowMod
             }
         }
 
-        private bool jumpBool = false;
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             
@@ -543,59 +542,6 @@ namespace OvermorrowMod
                 player.statLife += 2;
                 player.HealEffect(2);
             }
-
-            /*if (player.justJumped && !jumpBool)
-            {
-                jumpBool = true;
-                Main.NewText("hi");
-            }
-            else
-            {
-                if (jumpBool && player.velocity.Y < 0)
-                {
-                    Main.NewText("yo");
-                    jumpBool = false;
-                }
-            }*/
-
-
-            /*if (player.justJumped)
-            {
-                Main.NewText("hu");
-            }*/
-
-            /*if (player.velocity.Y == 0)
-            {
-                jumpBool = false;
-            }*/
-
-            /*if (player.justJumped && player.velocity.Y != 0 && player.jumpAgainCloud)
-            {
-                Main.NewText("yo");
-            }*/
-            /*if (slimeBuff)
-            {
-                Main.NewText(player.velocity.Y);
-                if (player.controlJump && (player.jumpAgainCloud || player.jumpAgainSandstorm))
-                {
-                    Vector2 vector4 = new Vector2(player.position.X + (float)player.width * 0.5f, player.position.Y + (float)player.height * 0.5f);
-
-                    for (int j = 0; j < 5; j++)
-                    {
-                        Vector2 vector5 = new Vector2(j - 2, -4f);
-                        vector5.X *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
-                        vector5.Y *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
-                        vector5.Normalize();
-                        vector5 *= 4f + (float)Main.rand.Next(-50, 51) * 0.01f;
-                        int proj = Projectile.NewProjectile(vector4.X, vector4.Y, vector5.X, vector5.Y, ProjectileID.SpikedSlimeSpike, 16, 0f, Main.myPlayer);
-
-                        Main.projectile[proj].friendly = true;
-                        Main.projectile[proj].hostile = false;
-                    }
-                    //Main.NewText("bruh");
-                }
-            }*/
-            //}
 
             if (OvermorrowModFile.SandModeKey.JustPressed && ArmBracer)
             {

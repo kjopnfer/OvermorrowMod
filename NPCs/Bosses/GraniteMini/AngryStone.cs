@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Armor;
 using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff;
@@ -738,7 +740,9 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
             if (Main.expertMode)
             {
                 npc.DropBossBags();
+                return;
             }
+
             int choice = Main.rand.Next(4);
             if (choice == 0) // Armor
             {
@@ -759,10 +763,12 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteStaff>());
             }
 
-            /*if (Main.rand.Next(10) == 0) // Trophy Dropchance
+            Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HeartStone>(), 2);
+
+            if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripplerTrophy>());
-            }*/
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteTrophy>());
+            }
         }
 
         public override void BossLoot(ref string name, ref int potionType)

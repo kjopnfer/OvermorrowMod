@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Armor.Marble;
 using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Projectiles.NPCs.Hostile;
@@ -541,7 +543,9 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             if (Main.expertMode)
             {
                 npc.DropBossBags();
+                return;
             }
+
             int choice = Main.rand.Next(3);
             if (choice == 0) // Armor
             {
@@ -558,10 +562,12 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleBook>());
             }
 
-            /*if (Main.rand.Next(10) == 0) // Trophy Dropchance
+            Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HeartStone>(), 2);
+
+            if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripplerTrophy>());
-            }*/
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleTrophy>());
+            }
         }
 
         public override void BossLoot(ref string name, ref int potionType)

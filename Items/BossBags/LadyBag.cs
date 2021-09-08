@@ -1,6 +1,7 @@
 using OvermorrowMod.Items.Accessories.Expert;
 using OvermorrowMod.Items.Armor;
 using OvermorrowMod.Items.Armor.Marble;
+using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
@@ -64,7 +65,9 @@ namespace OvermorrowMod.Items.BossBags
                 player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());
             }
 
-            //player.QuickSpawnItem(ModContent.ItemType<GraniteShield>());
+            player.QuickSpawnItem(ModContent.ItemType<HeartStone>(), 2);
+
+            player.QuickSpawnItem(ModContent.ItemType<ArtemisAmulet>());
         }
 
         public override int BossBagNPC => ModContent.NPCType<ApollusBoss>();
