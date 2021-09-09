@@ -33,13 +33,11 @@ namespace OvermorrowMod
         public static ModHotKey AmuletKey;
 
         public static OvermorrowModFile Mod { get; set; }
-        public Effect Sword;
         public Effect Shockwave;
-        public Effect VertexShader;
         public Effect TrailShader;
         public Effect TextShader;
 
-        public TrailManager TrailManager;
+        public static TrailManager TrailManager;
 
         public OvermorrowModFile()
         {
@@ -60,13 +58,15 @@ namespace OvermorrowMod
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
-            Message msg = (Message)reader.ReadByte();
+            /*Message msg = (Message)reader.ReadByte();
             switch (msg)
             {
                 case Message.AddSoul:
                     XPPacket.Read(reader);
-                    break;
-            }
+                break;
+                default:
+                break;
+            }*/
         }
 
         public override void Load()
@@ -78,9 +78,7 @@ namespace OvermorrowMod
 
             if (!Main.dedServ)
             {            // Effects
-                Sword = GetEffect("Effects/Trailshader");
                 Shockwave = GetEffect("Effects/Shockwave1");
-                VertexShader = GetEffect("Effects/VShader");
                 TrailShader = GetEffect("Effects/Trail");
                 TextShader = GetEffect("Effects/TextShader");
 
@@ -320,11 +318,7 @@ namespace OvermorrowMod
         public override void Unload()
         {
             Mod = null;
-            PlayerGlowmasks.Unload();
-
-            Sword = null;
             Shockwave = null;
-            VertexShader = null;
             TrailShader = null;
             TextShader = null;
 
@@ -344,7 +338,7 @@ namespace OvermorrowMod
 
         public override void PostUpdateEverything()
         {
-            if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
+            if (!Main.dedServ)
             {
                 Particle.UpdateParticles();
                 TrailManager.UpdateTrails();

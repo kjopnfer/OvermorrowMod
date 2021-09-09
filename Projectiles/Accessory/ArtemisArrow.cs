@@ -31,7 +31,7 @@ namespace OvermorrowMod.Projectiles.Accessory
         public override void AI() {
             Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
             Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
-            projectile.rotation = projectile.velocity.RotatedBy(MathHelper.ToRadians(90)).ToRotation();
+            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.Pi / 2;
         }
     }
 }

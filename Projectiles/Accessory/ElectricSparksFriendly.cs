@@ -29,37 +29,33 @@ namespace OvermorrowMod.Projectiles.Accessory
             Lighting.AddLight(projectile.Center, 0, 0.5f, 0.5f);
 
             // Make projectile slow down until stationary
-            if (projectile.timeLeft <= 125)
+            if (projectile.timeLeft <= 125 && ++projectile.ai[0] % 40 == 0)
             {
-                if (projectile.ai[0] % 40 == 0)
+                if (projectile.velocity.X != 0)
                 {
-                    if (projectile.velocity.X != 0)
+                    if (projectile.velocity.X < 0)
                     {
-                        if (projectile.velocity.X < 0)
-                        {
-                            projectile.velocity.X += 1;
-                        }
-                        else
-                        {
-                            projectile.velocity.X -= 1;
-                        }
+                        projectile.velocity.X += 1;
                     }
-
-                    if (projectile.velocity.Y != 0)
+                    else
                     {
-                        if (projectile.velocity.Y < 0)
-                        {
-                            projectile.velocity.Y += 1;
-                        }
-                        else
-                        {
-                            projectile.velocity.Y -= 1;
-                        }
+                        projectile.velocity.X -= 1;
+                    }
+                }
+
+                if (projectile.velocity.Y != 0)
+                {
+                    if (projectile.velocity.Y < 0)
+                    {
+                        projectile.velocity.Y += 1;
+                    }
+                    else
+                    {
+                        projectile.velocity.Y -= 1;
                     }
                 }
             }
 
-            projectile.ai[0]++;
             Dust.NewDust(projectile.position, 1, 1, 206);
         }
     }
