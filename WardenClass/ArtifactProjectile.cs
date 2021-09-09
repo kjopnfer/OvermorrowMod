@@ -16,6 +16,7 @@ namespace OvermorrowMod.WardenClass
         public WardenRunePlayer.Runes RuneID;
         public int AuraRadius = 0;
         private bool isActive = false;
+        private bool PillarLoop = false;
         public virtual void SafeSetDefaults()
         {
 
@@ -35,12 +36,14 @@ namespace OvermorrowMod.WardenClass
         {
             writer.Write(AuraRadius);
             writer.Write((byte)RuneID);
+            writer.Write((bool)PillarLoop);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             AuraRadius = reader.ReadInt32();
             RuneID = (WardenRunePlayer.Runes)reader.ReadByte();
+            PillarLoop = reader.ReadBoolean();
         }
 
         // Default AI will be for Support Artifacts, if its an Attack Artifact this will naturally be overrided
@@ -55,10 +58,10 @@ namespace OvermorrowMod.WardenClass
             }
 
             // Whatever spawning shenanigans
-            if (projectile.type == ModContent.ProjectileType<Pillar>() || projectile.type == ModContent.ProjectileType<Pillar>())
+            if (projectile.type == ModContent.ProjectileType<WorldTree>() || projectile.type == ModContent.ProjectileType<Pillar>())
             {
                 // Get the ground beneath the projectile
-                Vector2 projectilePos = new Vector2(projectile.position.X / 16, projectile.position.Y / 16);
+                Vector2 projectilePos = new Vector2(projectile.position.X / 16, (projectile.position.Y + projectile.height) / 16);
                 Tile tile = Framing.GetTileSafely((int)projectilePos.X, (int)projectilePos.Y);
                 while (!tile.active() || tile.type == TileID.Trees)
                 {
@@ -66,7 +69,7 @@ namespace OvermorrowMod.WardenClass
                     tile = Framing.GetTileSafely((int)projectilePos.X, (int)projectilePos.Y);
                 }
 
-                projectile.position = projectilePos * 16;
+                projectile.position = projectilePos * 16 - new Vector2(0, projectile.height);
             }
 
             if (projectile.type == ModContent.ProjectileType<RedCloud>())
@@ -103,17 +106,24 @@ namespace OvermorrowMod.WardenClass
                     DustType = 107;
                     DustScale = 1f;
                 }
-                else if (projectile.type == ModContent.ProjectileType<Pillar>())
+                                
+                if (projectile.type == ModContent.ProjectileType<Pillar>())
                 {
-                    DustType = 57;
-                    DustScale = 1f;
+                    for (int i = 0; i < 18; i++)
+                    {
+                        Vector2 dustPos = projectile.Center + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 20 + projectile.ai[0]));
+                        Dust dust = Dust.NewDustPerfect(dustPos, 64, Vector2.Zero, 0, new Color(255, 255, 255), 2.04f);
+                        dust.noGravity = true;
+                    }
                 }
-
-                for (int i = 0; i < 36; i++)
+                else
                 {
-                    Vector2 dustPos = (projectile.Center - new Vector2(0, 68)) + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[0]));
-                    Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, DustType, 0f, 0f, 0, default, DustScale)];
-                    dust.noGravity = true;
+                    for (int i = 0; i < 36; i++)
+                    {
+                        Vector2 dustPos = (projectile.Center - new Vector2(0, 68)) + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[0]));
+                        Dust dust = Main.dust[Terraria.Dust.NewDust(dustPos, 15, 15, DustType, 0f, 0f, 0, default, DustScale)];
+                        dust.noGravity = true;
+                    }
                 }
 
                 // Apply buffs
@@ -211,6 +221,35 @@ namespace OvermorrowMod.WardenClass
                     if (++projectile.frame >= Main.projFrames[projectile.type])
                     {
                         projectile.frame = 0;
+                    }
+                }
+            }
+
+            if (projectile.type == ModContent.ProjectileType<Pillar>())
+            {
+                // Loop through the first 10 animation frames, spending 5 ticks on each.
+                if (!PillarLoop)
+                {
+                    if (++projectile.frameCounter >= 5)
+                    {
+                        projectile.frameCounter = 0;
+                        if (++projectile.frame >= 10)
+                        {
+                            PillarLoop = true;
+                            projectile.netUpdate = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (++projectile.frameCounter >= 5)
+                    {
+                        projectile.frameCounter = 0;
+                        if (++projectile.frame >= 19)
+                        {
+                            PillarLoop = true;
+                            projectile.frame = 10;
+                        }
                     }
                 }
             }

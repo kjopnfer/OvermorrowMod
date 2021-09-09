@@ -176,6 +176,12 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                         npc.rotation = 0;
                         createAfterimage = false;
 
+                        Dust dust;
+                        // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
+                        Vector2 position = npc.Center;
+                        dust = Main.dust[Terraria.Dust.NewDust(position, 800, 800, 132, 1.052631f, 0.7894742f, 0, new Color(255, 255, 255), 0.3947368f)];
+
+
                         if (++AICounter > 0 && AICounter < 100)
                         {
                             npc.velocity = Vector2.Zero;
