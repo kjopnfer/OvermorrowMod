@@ -30,7 +30,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
-            target.AddBuff(32, MethodHelper.SecondsToTicks(5));
+            target.AddBuff(32, 300);
 
         }
 

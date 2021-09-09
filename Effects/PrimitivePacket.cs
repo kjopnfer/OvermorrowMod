@@ -7,7 +7,7 @@ namespace OvermorrowMod.Effects
 {
     public class PrimitivePacket
     {
-        public List<VertexInfo> Vertices = new List<VertexInfo>();
+        public List<VertexPositionColorTexture> Vertices = new List<VertexPositionColorTexture>();
         public PrimitiveType Type = PrimitiveType.TriangleList;
         public Effect Effect = OvermorrowModFile.Mod.TrailShader;
         public string Pass = "Basic";
@@ -37,7 +37,7 @@ namespace OvermorrowMod.Effects
         }
         public void Add(Vector2 position, Color color, Vector2 TexCoord)
         {
-            Vertices.Add(new VertexInfo(position - Main.screenPosition, color, TexCoord));
+            Vertices.Add(new VertexPositionColorTexture((position - Main.screenPosition).ToVector3(), color, TexCoord));
         }
         public static void SetTexture(int index, Texture2D texture, SamplerState state = null)
         {

@@ -10,14 +10,7 @@ namespace OvermorrowMod.Projectiles.Accessory
     public class ArtemisRune : ModProjectile
     {
         public override string Texture => "OvermorrowMod/NPCs/Bosses/Apollus/ArrowRuneCircle";
-
-        float rotationCounter;
-        int directionalStore;
-        int whoAmiStore;
-
-        // public ref float Stage => ref projectile.ai[0];
-        // public ref float Counter => ref projectile.ai[1];
-
+        
         public override void SetStaticDefaults() {
             DisplayName.SetDefault("Rune Circle");
         }
@@ -42,8 +35,6 @@ namespace OvermorrowMod.Projectiles.Accessory
                 return;
             }
 
-            directionalStore = (int)projectile.knockBack;
-
             if (projectile.ai[1] == 0) {
                 if (projectile.ai[0] == 0)
                     {
@@ -52,15 +43,15 @@ namespace OvermorrowMod.Projectiles.Accessory
                     if (projectile.ai[0] > 2 && projectile.ai[0] < 45)
                     {
                         projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
-                        rotationCounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
-                        projectile.rotation += rotationCounter;
+                        projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                        projectile.rotation += projectile.localAI[0];
                     }
                     if (projectile.ai[0] == 45)
                     {
                         projectile.ai[1] = 1;
                     }
             } else {
-                rotationCounter = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
 
                 if (projectile.ai[0] % 45 == 0)
                 {
@@ -75,7 +66,7 @@ namespace OvermorrowMod.Projectiles.Accessory
             }
 
             projectile.ai[0]++;
-            projectile.rotation += rotationCounter;
+            projectile.rotation += projectile.localAI[0];
         }
         public override Color? GetAlpha(Color lightColor)
         {

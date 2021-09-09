@@ -1,11 +1,9 @@
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using System.Reflection;
-using Terraria.ID;
 using Terraria;
 using System;
-using OvermorrowMod.Effects;
+using WardenClass;
 
 namespace OvermorrowMod
 {
@@ -60,21 +58,12 @@ namespace OvermorrowMod
         {
             return new Vector3(vec.X, vec.Y, 0);
         }
-        public static void ClampDistance(ref Vector2 start, ref Vector2 end, float maxDistance)
-	{
-		if (Vector2.Distance(end, start) > maxDistance)
-		{
-			end = start + Vector2.Normalize(end - start) * maxDistance;
-		}
-	}
-		/// <summary> Adjusts a velocity to a gravity </summary>
         public static Vector2 AdjustToGravity(this Vector2 velocity, float gravity, float time)
         {
             velocity.X = velocity.X / time;
             velocity.Y = velocity.Y / time - 0.5f * gravity * time;
             return velocity;
         }
-
         public static bool HasParameter(this Effect effect, string name)
         {
             foreach (EffectParameter param in effect.Parameters)
@@ -83,21 +72,21 @@ namespace OvermorrowMod
             }
             return false;
         }
-	public static OvermorrowModPlayer Overmorrow(this Player player)
-	{
-	    return player.GetModPlayer<OvermorrowModPlayer>();
-	}
-	public static WardenDamagePlayer Warden(this Player player)
-	{
-	    return player.GetModPlayer<WardenDamagePlayer>();
-	}
+        public static OvermorrowModPlayer Overmorrow(this Player player)
+        {
+            return player.GetModPlayer<OvermorrowModPlayer>();
+        }
+        public static WardenDamagePlayer Warden(this Player player)
+        {
+            return player.GetModPlayer<WardenDamagePlayer>();
+        }
         public static void SafeSetParameter(this Effect effect, string name, float value)
         {
             if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
         }
         public static void SafeSetParameter(this Effect effect, string name, Color value)
         {
-            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value.ToVector4());
+            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value.ToVector3());
         }
         public static void SafeSetParameter(this Effect effect, string name, Texture2D value)
         {
@@ -106,11 +95,6 @@ namespace OvermorrowMod
         public static void SafeSetParameter(this Effect effect, string name, Matrix value)
         {
             if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
-        }
-
-        public static Vector3 RotatedBy(this Vector3 vec, float yaw, float pitch, float roll)
-        {
-            return Vector3.Transform(vec, Matrix.CreateFromYawPitchRoll(yaw, pitch, roll));
         }
         public static void Reload(this SpriteBatch spriteBatch, SpriteSortMode sortMode = SpriteSortMode.Deferred)
         {
@@ -126,28 +110,12 @@ namespace OvermorrowMod
             Matrix matrix = (Matrix)spriteBatch.GetType().GetField("transformMatrix", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch);
             spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, matrix);
         }
-
         public static void Reload(this SpriteBatch spriteBatch, BlendState blendState = null, SpriteSortMode sortMode = default)
         {
             if ((bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch))
-	    {
-		spriteBatch.End();
-	    }
-	    if (blendState == null) blendState = (BlendState)spriteBatch.GetField("blendState");
-	    SamplerState state = (SamplerState)spriteBatch.GetField("samplerState");
-	    DepthStencilState state2 = (DepthStencilState)spriteBatch.GetField("depthStencilState");
-	    RasterizerState state3 = (RasterizerState)spriteBatch.GetField("rasterizerState");
-	    Effect effect = (Effect)spriteBatch.GetField("customEffect");
-	    Matrix matrix = (Matrix)spriteBatch.GetField("transformMatrix");
-	    spriteBatch.Begin(sortMode, blendState, state, state2, state3, effect, matrix);
-        }
-        public static void Reload(this SpriteBatch spriteBatch, BlendState blendState = null)
-        {
-            if (spriteBatch.HasBegun())
             {
-                spriteBatch.End();
+            spriteBatch.End();
             }
-            SpriteSortMode sortMode = SpriteSortMode.Deferred;
             if (blendState == null) blendState = (BlendState)spriteBatch.GetField("blendState");
             SamplerState state = (SamplerState)spriteBatch.GetField("samplerState");
             DepthStencilState state2 = (DepthStencilState)spriteBatch.GetField("depthStencilState");
@@ -163,31 +131,6 @@ namespace OvermorrowMod
         public static object GetField(this object obj, string name)
         {
             return obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(obj);
-        }
-        public static Vector2 HandPosition(this Player player)
-        {
-            Vector2 center = player.MountedCenter;
-            if (player.bodyFrame.Y == player.bodyFrame.Height * 3)
-            {
-                center.X += 8 * player.direction;
-                center.Y += 2 * player.gravDir;
-            }
-            else if (player.bodyFrame.Y == player.bodyFrame.Height * 2)
-            {
-                center.X += 6 * player.direction;
-                center.Y += -12 * player.gravDir;
-            }
-            else if (player.bodyFrame.Y == player.bodyFrame.Height * 4)
-            {
-                center.X += 6 * player.direction;
-                center.Y += 8 * player.gravDir;
-            }
-            else if (player.bodyFrame.Y == player.bodyFrame.Height)
-            {
-                center.X += -10 * player.direction;
-                center.Y += -14 * player.gravDir;
-            }
-            return center;
         }
         public static void Move(this NPC npc, Vector2 pos, float speed, float divider)
         {

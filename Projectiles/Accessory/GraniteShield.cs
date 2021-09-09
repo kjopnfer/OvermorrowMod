@@ -11,10 +11,6 @@ namespace OvermorrowMod.Projectiles.Accessory
 {
     public class GraniteShield : ModProjectile
     {
-        private int maxStored;
-        private int storedDamage = 0;
-        private int disabledCounter = 0;
-        private bool disabledReflect = false;
         public override bool CanDamage() => false;
 
         public override void SetStaticDefaults()
@@ -41,6 +37,7 @@ namespace OvermorrowMod.Projectiles.Accessory
             }
 
             // Determines the maximum damage stored within the shield before it breaks
+            float maxStored = 10;
             if (NPC.downedPlantBoss) 
             {
                 maxStored = 40;
@@ -49,31 +46,27 @@ namespace OvermorrowMod.Projectiles.Accessory
             {
                 maxStored = 20;
             }
-            else
-            {
-                maxStored = 10;
-            }
 
-            if (storedDamage >= maxStored)
+            if (projectile.localAI[0] >= maxStored)
             {
                 Main.PlaySound(SoundID.DD2_ExplosiveTrapExplode);
-                disabledReflect = true;
-                disabledCounter = 255;
+                projectile.ai[0] = 1;
+                projectile.ai[1] = 255;
                 projectile.alpha = 255;
-                storedDamage = 0;
+                projectile.localAI[0] = 0;
             }
 
-            if (disabledCounter > 0)
+            if (projectile.ai[1] > 0)
             {
                 projectile.alpha--;
-                disabledCounter--;
+                projectile.ai[1]--;
             }
             else
             {
-                if (disabledReflect)
+                if (projectile.ai[0] == 1)
                 {
                     Main.PlaySound(SoundID.Item70);
-                    disabledReflect = false;
+                    projectile.ai[0] = 0;
                 }
             }
 
@@ -87,7 +80,7 @@ namespace OvermorrowMod.Projectiles.Accessory
 
             projectile.rotation = (float)rad;
 
-            if (disabledCounter == 0)
+            if (projectile.ai[1] == 0)
             {
                 for (int i = 0; i < Main.maxProjectiles; i++)
                 {
@@ -100,7 +93,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                             incomingProjectile.friendly = true;
                             incomingProjectile.hostile = false;
 
-                            storedDamage += 1;
+                            projectile.localAI[0] += 1;
 
                             incomingProjectile.damage *= 2;
                         }
