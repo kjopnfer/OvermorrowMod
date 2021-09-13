@@ -30,6 +30,7 @@ namespace OvermorrowMod.Items.Consumable
             item.potion = true;
             item.buffType = ModContent.BuffType<SoulfulBuff>();
             item.buffTime = 7200; // 2 mins
+            item.value = Item.buyPrice(gold: 4);
         }
     }
 }

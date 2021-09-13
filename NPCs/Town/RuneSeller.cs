@@ -1,3 +1,4 @@
+using OvermorrowMod.Items.Consumable;
 using OvermorrowMod.Items.Pets;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
@@ -83,6 +84,9 @@ namespace OvermorrowMod.NPCs.Town
             nextSlot++;
 
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<BeanSummon>());
+            nextSlot++;
+
+            shop.item[nextSlot].SetDefaults(ModContent.ItemType<SoulPotion>());
             nextSlot++;
 
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<FrostburnRune>());
