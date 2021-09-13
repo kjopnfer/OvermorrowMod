@@ -7,7 +7,7 @@ namespace OvermorrowMod.Buffs
     {
 		public override void SetDefaults()
 		{
-			DisplayName.SetDefault("Unstable Fire");
+			DisplayName.SetDefault("Flaming Rage");
 			Description.SetDefault("Releases bursts of flame whenever damaged");
 			Main.buffNoSave[Type] = true;
 			Main.debuff[Type] = false;
