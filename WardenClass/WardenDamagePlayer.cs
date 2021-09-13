@@ -2,12 +2,17 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using OvermorrowMod;
 using OvermorrowMod.WardenClass;
+using OvermorrowMod.Buffs;
+using OvermorrowMod.Projectiles.Artifact;
+using OvermorrowMod.Projectiles.Misc;
+using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Utils = Terraria.Utils;
+using Terraria.ModLoader.IO;
+using WardenClass;
 
 namespace WardenClass
 {
@@ -53,7 +58,6 @@ namespace WardenClass
         public int soulResourceMax2;
         public bool soulMeterMax;
 
-
         // We can use this for CombatText, if you create an item that replenishes exampleResourceCurrent.
         public static readonly Color GainSoulResource = new Color(187, 91, 201);
 
@@ -88,9 +92,14 @@ namespace WardenClass
 
         public override void Initialize()
         {
-            soulList.Clear();
             soulResourceCurrent = 0;
             soulResourceMax = DefaultSoulResourceMax;
+        }
+
+        public override void Load(TagCompound tag)
+        {
+            soulList.Clear();
+            soulResourceCurrent = 0;
         }
 
         public override void ResetEffects()
@@ -113,35 +122,59 @@ namespace WardenClass
             ResetVariables();
         }
 
+
+        public void AddPercentage(float percent)
+        {
+            this.soulPercentage += percent;
+        }
         public override void clientClone(ModPlayer clientClone)
         {
             WardenDamagePlayer clone = clientClone as WardenDamagePlayer;
-            // Here we would make a backup clone of values that are only correct on the local players Player instance.
-            // Some examples would be RPG stats from a GUI, Hotkey states, and Extra Item Slots
-            clone.soulList = soulList;
+
+            clone.soulPercentage = soulPercentage;
+            clone.soulResourceCurrent = soulResourceCurrent;
         }
 
         public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
         {
             ModPacket packet = mod.GetPacket();
+
+            packet.Write((byte)Message.syncPlayer);
             packet.Write((byte)player.whoAmI);
-            for (int i = 0; i < soulList.Count; i++)
-            {
-                packet.Write(soulList[i]);
-            }
-            //packet.Write((byte[])soulList);
+            packet.Write(soulPercentage);
+            packet.Write((byte)soulResourceCurrent);
+
             packet.Send(toWho, fromWho);
         }
 
         public override void SendClientChanges(ModPlayer clientPlayer)
         {
-            var packet = mod.GetPacket();
-            packet.Write((byte)player.whoAmI);
-            for (int i = 0; i < soulList.Count; i++)
+            WardenDamagePlayer clone = clientPlayer as WardenDamagePlayer;
+            if (clone.soulResourceCurrent != soulResourceCurrent)
             {
-                packet.Write(soulList[i]);
+                var packet = mod.GetPacket();
+
+                packet.Write((byte)Message.soulAdded);
+                packet.Write((byte)player.whoAmI);
+                packet.Write((byte)soulResourceCurrent);
+
+                packet.Send();
             }
-            packet.Send();
+            if (clone.soulPercentage != soulPercentage)
+            {
+                var packet = mod.GetPacket();
+
+                packet.Write((byte)Message.soulsChanged);
+                packet.Write((byte)player.whoAmI);
+                packet.Write(soulPercentage);
+
+                packet.Send();
+            }
+        }
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+
         }
 
         public override void UpdateDead()
@@ -168,40 +201,26 @@ namespace WardenClass
 
         private void UpdateResource()
         {
-            //Main.NewText(soulPercentage);
+            bool meterMax = soulResourceCurrent == soulResourceMax2;
+
             if (soulPercentage >= 100)
             {
                 soulPercentage = 100;
                 soulMeterMax = true;
             }
 
-            var chargePlayer = player.GetModPlayer<WardenSoulMeter>();
-            chargePlayer.chargeProgress = player.GetModPlayer<WardenDamagePlayer>().soulPercentage;
+            // bool meterMax = soulResourceCurrent == soulResourceMax2;
 
-            // Limit exampleResourceCurrent from going over the limit imposed by exampleResourceMax.
+
+            // if (meterMax) {
+            //     soulPercentage = 100;
+            // }
+
+            // var chargePlayer = player.GetModPlayer<WardenSoulMeter>();
+            // chargePlayer.chargeProgress = player.GetModPlayer<WardenDamagePlayer>().soulPercentage;
+
+
             soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
-        }
-        public void AddSoul(int soulEssence)
-        {
-            if (Main.gameMenu)
-            {
-                return;
-            }
-
-            var modPlayer = ModPlayer(player);
-
-            int soul = Projectile.NewProjectile(player.position, new Vector2(0, 0), mod.ProjectileType("SoulEssence"), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
-            Main.projectile[soul].active = true;
-            if (Main.netMode != NetmodeID.SinglePlayer)
-                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, soul);
-
-            modPlayer.soulList.Add(soul);
-
-            soulResourceCurrent += soulEssence;
-            Color color = new Color(146, 227, 220);
-            CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y + 50, player.width, player.height), color, "Soul Essence Gained", true, false);
-
-            UpdatePosition(modPlayer);
         }
 
         private void UpdatePosition(WardenDamagePlayer player)
@@ -236,6 +255,49 @@ namespace WardenClass
             }
 
             return modifierFactor;
+        }
+
+        public void ConsumeSouls(int numSouls, Player player)
+        {
+            if (soulResourceCurrent >= numSouls)
+            {
+                for (int i = 0; i < numSouls; i++)
+                {
+                    // Get the instance of the first projectile in the list
+                    int removeProjectile = soulList[0];
+
+                    // Remove the projectile from the list
+                    soulList.RemoveAt(0);
+                    soulResourceCurrent--;
+
+                    // Call the projectile's method to kill itself
+                    for (int j = 0; j < Main.maxProjectiles; j++) // Loop through the projectile array
+                    {
+                        // Check that the projectile is the same as the removed projectile and it is active
+                        if (Main.projectile[j] == Main.projectile[removeProjectile] && Main.projectile[j].active)
+                        {
+                            // Kill the projectile
+                            Main.projectile[j].Kill();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Sullen Binder set bonus
+            if (WaterArmor)
+            {
+                Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-9, 9) * 10, player.Center.Y + Main.rand.Next(-9, 9) * 10);
+                Projectile.NewProjectile(randPos, Vector2.Zero, ModContent.ProjectileType<WaterOrbSpawner>(), 0, 0f);
+            }
+
+            var packet = mod.GetPacket();
+
+            packet.Write((byte)Message.soulAdded);
+            packet.Write((byte)player.whoAmI);
+            packet.Write((byte)soulResourceCurrent);
+
+            packet.Send();
         }
     }
 }

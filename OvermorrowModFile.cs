@@ -17,6 +17,13 @@ using Terraria.UI;
 
 namespace OvermorrowMod
 {
+    internal enum Message : byte
+    {
+        syncPlayer,
+        soulAdded,
+        soulsChanged,
+        meterMaxed,
+    }
     public class OvermorrowModFile : Mod
 	{
         // UI

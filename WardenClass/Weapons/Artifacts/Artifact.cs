@@ -48,33 +48,51 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             if (modPlayer.soulResourceCurrent >= soulResourceCost)
             {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override bool UseItem(Player player)
+        {
+            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            if (modPlayer.soulResourceCurrent >= soulResourceCost)
+            {
                 if (item.type == ModContent.ItemType<HoneyPot>())
                 {
-                    int consumedSouls = 0;
+                    int consumedSouls = modPlayer.soulResourceCurrent;
 
-                    int soulCount = modPlayer.soulResourceCurrent;
-                    for (int i = 0; i < soulCount; i++)
+                    if (consumedSouls > 0)
                     {
-                        consumedSouls++;
-                    }
 
-                    player.statLife += 10 * consumedSouls;
-                    player.HealEffect(10 * consumedSouls);
+                        Main.NewText(modPlayer.soulResourceCurrent);
 
-                    ConsumeSouls(consumedSouls, player);
+                        player.statLife += 10 * consumedSouls;
+                        player.HealEffect(10 * consumedSouls);
 
-                    // Loop through all players and check if they are on the same team
-                    if (Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        for (int i = 0; i < Main.maxPlayers; i++)
+                        // Loop through all players and check if they are on the same team
+                        if (Main.netMode == NetmodeID.MultiplayerClient && player.team != 0)
                         {
-                            if (Main.player[i].team == player.team && player.team != 0)
+                            for (int i = 0; i < Main.maxPlayers; i++)
                             {
-                                Main.player[i].AddBuff(BuffID.Honey, 3600);
-                                Main.player[i].statLife += 10 * consumedSouls;
-                                Main.player[i].HealEffect(10 * consumedSouls);
+                                Player client = Main.player[i];
+
+                                if (client.active && !client.dead && client.team == player.team && client.whoAmI != player.whoAmI)
+                                {
+                                    client.AddBuff(BuffID.Honey, 3600);
+
+                                    client.statLife += 10 * consumedSouls;
+                                    client.HealEffect(10 * consumedSouls);
+
+                                    Main.NewText(client.name);
+                                }
                             }
                         }
+
+                        ConsumeSouls(consumedSouls, player);
                     }
                 }
                 else
@@ -92,16 +110,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
                     }
                 }
-                return true;
             }
-            else
-            {
-                return false;
-            }
-        }
-
-        public override bool UseItem(Player player)
-        {
             if (item.type == ModContent.ItemType<CorruptedMirror>())
             {
                 player.AddBuff(ModContent.BuffType<MirrorBuff>(), 10800);
@@ -120,7 +129,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             }
             else if (item.type == ModContent.ItemType<HoneyPot>())
             {
-
                 player.AddBuff(BuffID.Honey, 3600);
             }
             else if (item.type == ModContent.ItemType<SlimeArtifact>())

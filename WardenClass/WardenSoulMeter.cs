@@ -11,45 +11,10 @@ namespace OvermorrowMod.WardenClass
 {
     public class WardenSoulMeter : ModPlayer
     {
-        /*public override void ModifyDrawLayers(List<PlayerLayer> layers)
-        {
-            if (RuneID != 0)
-            {
-                int body = layers.FindIndex(l => l == PlayerLayer.MiscEffectsBack);
-                if (body < 0)
-                {
-                    return;
-                }
-
-                layers.Insert(body - 1, Rune);
-            }
-        }*/
 
         public float chargeProgress;
         public int frameCounter;
         public int frame = 0;
-
-        public override void clientClone(ModPlayer clientClone)
-        {
-            WardenSoulMeter clone = clientClone as WardenSoulMeter;
-            clone.chargeProgress = chargeProgress;
-        }
-
-        public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
-        {
-            ModPacket packet = mod.GetPacket();
-            packet.Write((byte)player.whoAmI);
-            packet.Write(chargeProgress);
-            packet.Send(toWho, fromWho);
-        }
-
-        public override void SendClientChanges(ModPlayer clientPlayer)
-        {
-            var packet = mod.GetPacket();
-            packet.Write((byte)player.whoAmI);
-            packet.Write(chargeProgress);
-            packet.Send();
-        }
 
         public override void ModifyDrawLayers(List<PlayerLayer> layers)
         {
@@ -61,8 +26,9 @@ namespace OvermorrowMod.WardenClass
                 delegate (PlayerDrawInfo drawInfo)
                 {
                     Player drawPlayer = drawInfo.drawPlayer;
-                    Mod mod = ModLoader.GetMod("OvermorrowMod");
+                    Mod mod = this.mod;
                     WardenDamagePlayer modPlayer = drawPlayer.GetModPlayer<WardenDamagePlayer>();
+                    chargeProgress = modPlayer.soulPercentage;
 
                     if (drawInfo.shadow != 0f)
                     {
@@ -74,7 +40,6 @@ namespace OvermorrowMod.WardenClass
                     if (modPlayer.UIToggled)
                     {
                         DrawData drawData = new DrawData();
-
                         // Draw big bar for local player
                         if (player.whoAmI == Main.myPlayer)
                         {
@@ -124,8 +89,6 @@ namespace OvermorrowMod.WardenClass
                                     {
                                         frame = 0; // Reset back to default
                                         modPlayer.soulMeterMax = false;
-                                        modPlayer.soulPercentage = 0;
-                                        modPlayer.AddSoul(1);
                                     }
 
                                     var drawRectangleMeter = new Rectangle(0, 42 * frame, ChargeMeter.Width, 42);
@@ -133,7 +96,7 @@ namespace OvermorrowMod.WardenClass
                                     drawData = new DrawData(ChargeMeter, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
                                     Main.playerDrawData.Add(drawData);
 
-                                    Rectangle drawRectangleBar = new Rectangle(0, 24 * frame, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), 42);
+                                    Rectangle drawRectangleBar = new Rectangle(0, 42 * frame, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, chargeProgress / 100f)), 42);
                                     drawData = new DrawData(ChargeBar, position + new Vector2(47, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeMeter.Size() / 2f, 1f, SpriteEffects.None, 0);
                                     Main.playerDrawData.Add(drawData);
                                 }
@@ -200,7 +163,6 @@ namespace OvermorrowMod.WardenClass
                                         frame = 0; // Reset back to default
                                         modPlayer.soulMeterMax = false;
                                         modPlayer.soulPercentage = 0;
-                                        modPlayer.AddSoul(1);
                                     }
 
                                     var drawRectangleMeter = new Rectangle(0, textureHeight * frame, ChargeMeter.Width, textureHeight);

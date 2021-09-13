@@ -4,6 +4,7 @@ using System.Reflection;
 using Terraria;
 using System;
 using WardenClass;
+using OvermorrowMod.Effects.Prim;
 
 namespace OvermorrowMod
 {
@@ -136,6 +137,39 @@ namespace OvermorrowMod
         {
             Vector2 vel = npc.DirectionTo(pos) * speed;
             npc.velocity = (npc.velocity * divider + vel) / (divider + 1);
+        }
+
+        public static float isLeft(Vector2 P0, Vector2 P1, Vector2 P2)
+        {
+            return ((P1.X - P0.X) * (P2.X - P0.X) - (P2.X - P0.X) * (P1.X - P0.X));
+        }
+        public static bool PointInShape(Vector2 P, params Vector2[] args)
+        {
+            bool result = true;
+            for (int i = 0; i < args.Length; i++)
+            {
+                int i1 = i;
+                int i2 = (i + 1) % args.Length;
+                Vector2 a = args[i1];
+                Vector2 b = args[i2];
+                Vector2 c = P;
+                if (isLeft(a, b, c) < 0) result = false;
+            }
+            return result;
+        }
+
+        public static void DrawShape(Vector2[] args)
+        {
+            PrimitivePacket packet = new PrimitivePacket();
+            packet.Type = PrimitiveType.LineList;
+            for (int i = 0; i < args.Length; i++)
+            {
+                int i1 = i;
+                int i2 = (i + 1) % args.Length;
+                packet.Add(args[i1], Color.White, Vector2.Zero);
+                packet.Add(args[i2], Color.White, Vector2.Zero);
+            }
+            packet.Send();
         }
     }
 }

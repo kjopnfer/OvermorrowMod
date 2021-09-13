@@ -4,16 +4,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.WardenClass;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
 {
     public class DarkPortal : ArtifactProjectile
     {
+        Vector2 spawnPosition;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dark Portal");
-            Main.projFrames[projectile.type] = 1;
+            Main.projFrames[projectile.type] = 14;
         }
 
         public override void SafeSetDefaults()
@@ -27,6 +29,13 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
 
         public override void AI()
         {
+            if (projectile.ai[0] == 0)
+            {
+                spawnPosition = projectile.Center;
+            }
+
+            projectile.Center = spawnPosition - new Vector2(0, MathHelper.Lerp(0, 25, (float)Math.Sin(projectile.ai[0] / 100f)));
+
             // Make projectiles gradually disappear
             if (projectile.timeLeft <= 60)
             {
@@ -42,6 +51,7 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
                     float distance = Vector2.Distance(projectile.Center, Main.npc[i].Center);
                     if (distance <= 900 && projectile.ai[0] % 300 == 0)
                     {
+                        Main.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy, projectile.Center);
                         int proj = Projectile.NewProjectile(projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 2, ModContent.ProjectileType<DarkSerpent>(), 30, 2f, Main.myPlayer);
                         ((ArtifactProjectile)Main.projectile[proj].modProjectile).RuneID = RuneID;
 
@@ -51,19 +61,39 @@ namespace OvermorrowMod.Projectiles.Artifact.DarkPortal
             }
 
 
-            /*if (++projectile.frameCounter >= 4)
+            if (++projectile.frameCounter >= 5)
             {
                 projectile.frameCounter = 0;
                 if (++projectile.frame >= Main.projFrames[projectile.type])
                 {
                     projectile.frame = 0;
                 }
-            }*/
+            }
         }
 
-        public override Color? GetAlpha(Color lightColor)
+        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            return Color.White;
+            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+            int y2 = num154 * projectile.frame;
+
+            Texture2D texture = mod.GetTexture("Projectiles/Artifact/DarkPortal/DarkPortal_Glow");
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
+            spriteBatch.Draw
+            (
+                texture,
+                new Vector2
+                (
+                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
+                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f
+                ),
+                drawRectangle,
+                Color.White,
+                projectile.rotation,
+                new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2),
+                projectile.scale,
+                projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                0f
+            );
         }
     }
 
