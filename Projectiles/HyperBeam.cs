@@ -9,7 +9,7 @@ namespace OvermorrowMod.Projectiles
 {
     public class HyperBeam : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Effects/Trail3";
+        public override string Texture => "OvermorrowMod/Effects/TrailTextures/Trail3";
         public override void SetDefaults()
         {
             projectile.width = 320;

@@ -10,8 +10,6 @@ namespace OvermorrowMod.Projectiles.Artifact
 {
     public class WorldTree : ArtifactProjectile
     {
-        private bool isActive = false;
-        private int AuraRadius = 330;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("World Tree");
@@ -20,15 +18,15 @@ namespace OvermorrowMod.Projectiles.Artifact
 
         public override void SafeSetDefaults()
         {
-            projectile.width = 32;
-            projectile.height = 32;
+            projectile.width = 154;
+            projectile.height = 188;
             projectile.tileCollide = true;
             projectile.friendly = true;
             projectile.penetrate = -1;
             projectile.timeLeft = 5400; // 1.5 minutes
 
-            drawOffsetX = -55;
-            drawOriginOffsetY = -188;
+            //drawOffsetX = -55;
+            //drawOriginOffsetY = -188;
         }
 
         /*public override void AI()

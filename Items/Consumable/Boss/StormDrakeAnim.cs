@@ -7,6 +7,7 @@ using OvermorrowMod.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Particles;
 using Steamworks;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -52,6 +53,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
                             Projectile.NewProjectile(projectile.Center, Vector2.UnitY * -1, ModContent.ProjectileType<TestLightning4>(), projectile.damage, 2, Main.myPlayer, 0, projectile.whoAmI);
                             Projectile.NewProjectile(projectile.Center, (Vector2.UnitY * -1).RotatedBy(MathHelper.ToRadians(20)), ModContent.ProjectileType<TestLightning4>(), projectile.damage, 2, Main.myPlayer, 0, projectile.whoAmI);
                         }
+
 
                         if (projectile.ai[1] == 260)
                         {
