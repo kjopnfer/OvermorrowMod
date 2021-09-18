@@ -35,6 +35,7 @@ namespace OvermorrowMod.WardenClass
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(AuraRadius);
+            writer.Write(isActive);
             writer.Write((byte)RuneID);
             writer.Write((bool)PillarLoop);
         }
@@ -42,6 +43,7 @@ namespace OvermorrowMod.WardenClass
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             AuraRadius = reader.ReadInt32();
+            isActive = reader.ReadBoolean();
             RuneID = (WardenRunePlayer.Runes)reader.ReadByte();
             PillarLoop = reader.ReadBoolean();
         }
@@ -89,6 +91,13 @@ namespace OvermorrowMod.WardenClass
 
                 if (projectile.ai[1] < AuraRadius) // The radius
                 {
+                    if (projectile.ai[0] % 20 == 0)
+                    {
+                        projectile.netUpdate = true;
+
+                        projectile.netImportant = true;
+                    }
+
                     projectile.ai[1] += 15;
                 }
                 else
@@ -106,7 +115,7 @@ namespace OvermorrowMod.WardenClass
                     DustType = 107;
                     DustScale = 1f;
                 }
-                                
+
                 if (projectile.type == ModContent.ProjectileType<Pillar>())
                 {
                     for (int i = 0; i < 18; i++)

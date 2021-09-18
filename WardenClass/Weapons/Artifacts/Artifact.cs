@@ -48,6 +48,11 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
             if (modPlayer.soulResourceCurrent >= soulResourceCost)
             {
+                if (item.type != ModContent.ItemType<HoneyPot>())
+                {
+                    ConsumeSouls(soulResourceCost, player);
+                }
+
                 return true;
             }
             else
@@ -97,6 +102,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 }
                 else
                 {
+                    // This literally doesn't work lol
                     ConsumeSouls(soulResourceCost, player);
                 }
 
