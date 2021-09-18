@@ -11,7 +11,7 @@ namespace OvermorrowMod.Items.Armor
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sunplate Boots");
+            DisplayName.SetDefault("Galvan Boots");
             Tooltip.SetDefault("10% increased movement speed \n2% increased ranged damage");
         }
 

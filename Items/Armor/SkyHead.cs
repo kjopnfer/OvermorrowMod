@@ -15,7 +15,7 @@ namespace OvermorrowMod.Items.Armor
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sunplate Helmet");
+            DisplayName.SetDefault("Galvan Helmet");
             Tooltip.SetDefault("7% increased move speed \n2% increased ranged damage");
         }
 
