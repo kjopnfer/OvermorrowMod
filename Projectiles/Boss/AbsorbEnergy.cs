@@ -68,9 +68,10 @@ namespace OvermorrowMod.Projectiles.Boss
                 Main.dust[num1106].fadeIn = 1f;
             }
 
-            if (npc.Center == parent.Center)
+            if (npc.Distance(parent.Center) < 25)
             {
                 npc.ai[2] = 1;
+                npc.life = 0;
                 npc.active = false;
             }
         }

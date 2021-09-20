@@ -233,22 +233,24 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 int projectiles = 12;
                                 for (int j = 0; j < projectiles; j++)
                                 {
-                                    Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy(j * MathHelper.TwoPi / projectiles), new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ModContent.ProjectileType<LaserWarning2>(), npc.damage / 2, 10f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy(j * MathHelper.TwoPi / projectiles), new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ModContent.ProjectileType<LightningPhaseChangeWarning>(), npc.damage / 2, 10f, Main.myPlayer);
+                                    ((LightningPhaseChangeWarning)Main.projectile[proj].modProjectile).RotateBy = 0.375f;
                                 }
                             }
                         }
-                        else if (AICounter == 600)
+                        else if (AICounter == 780)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int projectiles = 24;
+                                int projectiles = 12;
                                 for (int j = 0; j < projectiles; j++)
                                 {
-                                    Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy((j * MathHelper.TwoPi / projectiles) + MathHelper.ToRadians(25)), new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + 45), ModContent.ProjectileType<LaserWarning2>(), npc.damage / 2, 10f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectile(npc.Center + new Vector2(0f, 75f).RotatedBy((j * MathHelper.TwoPi / projectiles) + MathHelper.ToRadians(25)), new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + 45), ModContent.ProjectileType<LightningPhaseChangeWarning>(), npc.damage / 2, 10f, Main.myPlayer);
+                                    ((LightningPhaseChangeWarning)Main.projectile[proj].modProjectile).RotateBy = -0.375f;
                                 }
                             }
                         }
-                        else if (AICounter == 700)
+                        else if (AICounter == 1080)
                         {
                             canPulse = false;
                             AICase = 0;

@@ -319,6 +319,35 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
         }
     }
+    public class TestLightning5 : Lightning
+    {
+        public float RotateBy;
+        public float maxTime = 180;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Lightning Breath");
+        }
+        public override void SafeSetDefaults()
+        {
+            projectile.width = 10;
+            projectile.hostile = true;
+            projectile.timeLeft = (int)maxTime;
+            Length = 1f;
+            Sine = true;
+        }
+        public override void AI()
+        {
+            Length = TRay.CastLength(projectile.Center, projectile.velocity, 3000f);
+            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, 240, 4f);
+            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            float mult = (float)Math.Sin(progress * Math.PI);
+            for (int i = 0; i < Positions.Count; i++)
+            {
+                Positions[i].Size = Positions[i].DefSize * mult;
+            }
+            projectile.velocity = projectile.velocity.RotatedBy(MathHelper.ToRadians(RotateBy));
+        }
+    }
     public class StormBolt2 : Lightning
     {
         public float maxTime = 15;
