@@ -55,7 +55,8 @@ namespace OvermorrowMod.WardenClass
             if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && !modPlayer.soulMeterMax)
             {
                 // Gain souls between the default and the default + bonus
-                modPlayer.soulPercentage += Main.rand.NextFloat(defaultCeiling, defaultCeiling + modPlayer.soulGainBonus);
+                //modPlayer.soulPercentage += Main.rand.NextFloat(defaultCeiling, defaultCeiling + modPlayer.soulGainBonus);
+                modPlayer.AddPercentage(Main.rand.NextFloat(defaultCeiling, defaultCeiling + modPlayer.soulGainBonus));
             }
         }
 

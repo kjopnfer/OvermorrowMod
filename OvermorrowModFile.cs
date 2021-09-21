@@ -14,6 +14,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using WardenClass;
 
 namespace OvermorrowMod
 {
@@ -25,7 +26,7 @@ namespace OvermorrowMod
         meterMaxed,
     }
     public class OvermorrowModFile : Mod
-	{
+    {
         // UI
         internal UserInterface MyInterface;
         internal UserInterface AltarUI;
@@ -61,19 +62,6 @@ namespace OvermorrowMod
                     priority = MusicPriority.BiomeHigh;
                 }
             }
-        }
-
-        public override void HandlePacket(BinaryReader reader, int whoAmI)
-        {
-            /*Message msg = (Message)reader.ReadByte();
-            switch (msg)
-            {
-                case Message.AddSoul:
-                    XPPacket.Read(reader);
-                break;
-                default:
-                break;
-            }*/
         }
 
         public override void Load()
@@ -187,14 +175,14 @@ namespace OvermorrowMod
         }
 
         internal void BossTitle(int BossID)
-		{
-			string BossName = "";
-			string BossTitle = "";
-			Color titleColor = Color.White;
+        {
+            string BossName = "";
+            string BossTitle = "";
+            Color titleColor = Color.White;
             Color nameColor = Color.White;
-			switch (BossID)
-			{
-				case 1:
+            switch (BossID)
+            {
+                case 1:
                     BossName = "Dharuud";
                     BossTitle = "The Sandstorm";
                     nameColor = Color.LightGoldenrodYellow;
@@ -232,16 +220,16 @@ namespace OvermorrowMod
                     break;
 
             }
-			Vector2 textSize = Main.fontDeathText.MeasureString(BossName);
-			Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
-			float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
-			float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
-			/*float alpha = 255;
+            Vector2 textSize = Main.fontDeathText.MeasureString(BossName);
+            Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
+            float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
+            float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
+            /*float alpha = 255;
 			float alpha2 = 255;*/
 
             DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
-			DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
-		}
+            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
+        }
 
         public override void UpdateUI(GameTime gameTime)
         {
@@ -341,14 +329,184 @@ namespace OvermorrowMod
             SandModeKey = null;
             AmuletKey = null;
             ToggleUI = null;
+
         }
 
-        public override void PostUpdateEverything()
+        public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
-            if (!Main.dedServ)
+            Message msg = (Message)reader.ReadByte();
+
+            switch (msg)
+            {
+                case Message.syncPlayer:
+                    {
+                        Player player = Main.player[(int)reader.ReadByte()];
+                        WardenDamagePlayer wardenPlayer = player.GetModPlayer<WardenDamagePlayer>();
+
+                        wardenPlayer.soulPercentage = reader.ReadSingle();
+                        wardenPlayer.soulResourceCurrent = (int)reader.ReadByte();
+
+                        break;
+                    }
+
+                case Message.soulsChanged:
+                    {
+                        // byte playernumber = reader.ReadByte();
+                        Player player = Main.player[(int)reader.ReadByte()];
+                        WardenDamagePlayer wardenPlayer = player.GetModPlayer<WardenDamagePlayer>();
+
+                        wardenPlayer.soulPercentage = reader.ReadSingle();
+
+                        if (Main.netMode == NetmodeID.Server)
+                        {
+
+                            var packet = GetPacket();
+
+                            packet.Write((byte)Message.soulsChanged);
+                            packet.Write((byte)player.whoAmI);
+                            packet.Write(wardenPlayer.soulPercentage);
+
+                            packet.Send(-1, (byte)player.whoAmI);
+                        }
+
+                        break;
+                    }
+
+                case Message.soulAdded:
+                    {
+                        Player player = Main.player[(int)reader.ReadByte()];
+                        WardenDamagePlayer wardenPlayer = player.GetModPlayer<WardenDamagePlayer>();
+
+                        byte souls = reader.ReadByte();
+
+                        wardenPlayer.soulResourceCurrent = souls;
+
+                        if (Main.netMode == NetmodeID.Server)
+                        {
+
+                            var packet = GetPacket();
+
+                            packet.Write((byte)Message.soulAdded);
+                            packet.Write((byte)player.whoAmI);
+                            packet.Write((byte)wardenPlayer.soulResourceCurrent);
+
+                            packet.Send(-1, (byte)player.whoAmI);
+                        }
+
+                        break;
+                    }
+                    // case Message.meterMaxed:
+                    // {
+                    //     Player player = Main.player[(int)reader.ReadByte()];
+                    //     WardenDamagePlayer wardenPlayer = player.GetModPlayer<WardenDamagePlayer>();
+
+                    //     wardenPlayer.soulMeterMax = reader.ReadBoolean();
+
+                    //     NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(player.name), Color.White);
+
+                    //     if (Main.netMode == NetmodeID.Server) {
+
+                    //         var packet = GetPacket();
+
+                    //         packet.Write((byte)Message.meterMaxed);
+                    //         packet.Write((byte)player.whoAmI);
+                    //         packet.Write(wardenPlayer.soulMeterMax);
+
+                    //         packet.Send(-1, (byte)player.whoAmI);
+                    //     }
+
+                    //     break;   
+                    // }
+
+            }
+
+
+        }
+        public override void PreUpdateEntities()
+        {
+            if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
             {
                 Particle.UpdateParticles();
                 TrailManager.UpdateTrails();
+            }
+
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                Player player = Main.player[i];
+
+                if (player.active && !player.dead)
+                {
+                    var modPlayer = player.GetModPlayer<WardenDamagePlayer>();
+
+                    bool meterMax = modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2;
+
+                    if (modPlayer.soulPercentage >= 100)
+                    {
+                        modPlayer.soulPercentage = 0;
+                    }
+                }
+            }
+        }
+        public override void PostUpdateEverything()
+        {
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                Player player = Main.player[i];
+
+                if (player.active && !player.dead)
+                {
+                    var modPlayer = player.GetModPlayer<WardenDamagePlayer>();
+
+                    bool meterMax = modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2;
+
+                    if (modPlayer.soulPercentage >= 100)
+                    {
+                        AddSoul(player, 1);
+                    }
+                }
+            }
+        }
+
+        public void AddSoul(Player owner, int soulEssence)
+        {
+            var modPlayer = owner.GetModPlayer<WardenDamagePlayer>();
+
+            int soul = Projectile.NewProjectile(owner.position, new Vector2(0, 0), ModContent.ProjectileType<SoulEssence>(), owner.whoAmI, 0f, Main.myPlayer, Main.rand.Next(70, 95), 0f);
+
+            Main.projectile[soul].active = true;
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, soul);
+
+            Main.projectile[soul].active = true;
+
+            modPlayer.soulList.Add(soul);
+
+            modPlayer.soulResourceCurrent += soulEssence;
+
+            Color color = new Color(146, 227, 220);
+            CombatText.NewText(new Rectangle((int)owner.position.X, (int)owner.position.Y + 50, owner.width, owner.height), color, "Soul Essence Gained", true, false);
+
+            UpdatePosition(modPlayer);
+        }
+
+        private void UpdatePosition(WardenDamagePlayer player)
+        {
+            int direction = 1;
+            for (int i = 0; i < player.soulList.Count; i++)
+            {
+                if (i % 5 == 4)
+                {
+                    direction *= -1;
+                }
+
+                int radiusBuffer = (int)(20 * System.Math.Floor(i / 4f));
+                Main.projectile[player.soulList[i]].knockBack = direction;
+                Main.projectile[player.soulList[i]].ai[0] = 70 + radiusBuffer;
+                Main.projectile[player.soulList[i]].ai[1] = i * 90;
+
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, player.soulList[i]);
             }
         }
     }
