@@ -59,7 +59,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Storm Drake");
-            Main.npcFrameCount[npc.type] = 6;
+            //Main.npcFrameCount[npc.type] = 6;
+            Main.npcFrameCount[npc.type] = 1;
             NPCID.Sets.TrailCacheLength[npc.type] = 7;
             NPCID.Sets.TrailingMode[npc.type] = 3;
         }
@@ -971,7 +972,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frameCounter++;
+            /*npc.frameCounter++;
 
             if (npc.frameCounter % 6f == 5f)
             {
@@ -980,7 +981,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             if (npc.frame.Y >= frameHeight * 6) // 6 is max # of frames
             {
                 npc.frame.Y = 0; // Reset back to default
-            }
+            }*/
             if (Main.player[npc.target].Center.X < npc.Center.X && Dashing == false)
             {
                 npc.spriteDirection = -1;
@@ -1132,7 +1133,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         {
 
             Texture2D texture = mod.GetTexture("NPCs/Bosses/StormDrake/StormDrake_Glowmask");
-            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y- 141), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            //spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y- 141), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public override void NPCLoot()
