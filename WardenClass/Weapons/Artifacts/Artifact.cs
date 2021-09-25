@@ -143,6 +143,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             }
 
             // Apply additional buffs while a rune is active
+            #region Runes
             if (item.type == ModContent.ItemType<CorruptedMirror>() || item.type == ModContent.ItemType<HoneyPot>() || item.type == ModContent.ItemType<SlimeArtifact>())
             {
                 switch (player.GetModPlayer<WardenRunePlayer>().RuneID)
@@ -235,7 +236,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 }
                 return true;
             }
-
+            #endregion
             return false;
         }
 
@@ -243,7 +244,13 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         {
             List<int> ProjectileList = new List<int>();
 
-            // Attack
+            #region Attack/Power
+            if (item.type == ModContent.ItemType<TorchGod>())
+            {
+                int projectile = Projectile.NewProjectile(position.X, position.Y, speedX, speedY, type, damage, knockBack, player.whoAmI, 0);
+                ProjectileList.Add(projectile);
+            }
+
             if (item.type == ModContent.ItemType<EaterArtifact>())
             {
                 type = ModContent.ProjectileType<WormHead>();
@@ -275,8 +282,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 int projectile = Projectile.NewProjectile(position, Vector2.Zero, type, 0, 0, player.whoAmI);
                 ProjectileList.Add(projectile);
             }
+            #endregion
 
-            // Support
+            #region Support/Wisdom
             if (item.type == ModContent.ItemType<EarthCrystal>() || item.type == ModContent.ItemType<BloodyAntikythera>() || item.type == ModContent.ItemType<PillarArtifact>())
             {
                 // Allow only one instance of the projectile
@@ -302,7 +310,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     ProjectileList.Add(projectile);
                 }
             }
+            #endregion
 
+            #region Properties
             // After spawning in the projectiles, apply the special properties
             foreach (int projectile in ProjectileList)
             {
@@ -329,7 +339,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 }
             }
 
-
+            #endregion
             return false;
         }
 
