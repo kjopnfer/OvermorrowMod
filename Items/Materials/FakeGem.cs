@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Tiles.Block;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -10,6 +11,8 @@ namespace OvermorrowMod.Items.Materials
 {
     public class FakeGem : ModItem
     {
+        int glowCounter;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Cursed Ore");
@@ -79,6 +82,29 @@ namespace OvermorrowMod.Items.Materials
                 return false;
             }
             return true;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            float glowScale = MathHelper.Lerp(1, 2, (float)Math.Sin(glowCounter / 20f));
+            Color glowColor = Color.Lerp(new Color(94, 3, 3), new Color(255, 38, 38), (float)Math.Sin(glowCounter / 10f));
+
+            glowCounter++;
+
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Glow");
+            Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
+            Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            spriteBatch.Draw(texture, item.Center - Main.screenPosition, new Rectangle?(rect), glowColor, rotation, drawOrigin, glowScale, SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+
+            return base.PreDrawInWorld(spriteBatch, lightColor, alphaColor, ref rotation, ref scale, whoAmI);
         }
 
         public override void PostUpdate()
