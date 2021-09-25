@@ -19,6 +19,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         {
             /*float length = (TRay.Cast(projectile.Center, projectile.velocity, /*2000f*/ /*2500f 3000f) - projectile.Center).Length();
             LaserLength = length;*/
+            laserColor = Color.Lerp(Color.Cyan, Color.White, (float)Math.Sin(projectile.ai[1] / 5));
+            projectile.ai[1]++;
+
             projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.1f;
         }
         public override void Kill(int timeLeft)

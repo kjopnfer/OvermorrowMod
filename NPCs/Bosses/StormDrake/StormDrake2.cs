@@ -1011,7 +1011,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Color afterImageColor = Color.Lerp(Color.DarkCyan, Color.DarkBlue, k / (float)npc.oldPos.Length);
                   //Main.NewText(k / (float)npc.oldPos.Length);
                     //Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
-                    spriteBatch.Draw(texture2D16, drawPos, npc.frame, afterImageColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                    //spriteBatch.Draw(texture2D16, drawPos, npc.frame, afterImageColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
             }
 

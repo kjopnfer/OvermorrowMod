@@ -45,7 +45,7 @@ namespace OvermorrowMod.NPCs.Bosses
         public float MaxTime = 0; // time the laser lasts
         public void DrawLaser(SpriteBatch spriteBatch, Color beamColor, float scale)
         {
-            spriteBatch.Draw(LaserBeginTexture, projectile.Center - Main.screenPosition, null, Color.White * projectile.Opacity, projectile.rotation, new Vector2(LaserBeginTexture.Width * scale, LaserBeginTexture.Height) / 2, new Vector2(scale, 1f), SpriteEffects.None, 0f);
+            spriteBatch.Draw(LaserBeginTexture, projectile.Center - Main.screenPosition, null, laserColor * projectile.Opacity, projectile.rotation, new Vector2(LaserBeginTexture.Width * scale, LaserBeginTexture.Height) / 2, new Vector2(scale, 1f), SpriteEffects.None, 0f);
             float middleLaserLength = LaserLength;
             middleLaserLength -= (LaserBeginTexture.Height / 2 + LaserEndTexture.Height);
             Vector2 centerOnLaser = projectile.Center;
@@ -57,7 +57,7 @@ namespace OvermorrowMod.NPCs.Bosses
                 float incrementalBodyLength = 0f;
                 while (incrementalBodyLength + 1f < middleLaserLength)
                 {
-                    spriteBatch.Draw(LaserMiddleTexture, centerOnLaser - Main.screenPosition, null, Color.White * projectile.Opacity, projectile.rotation, new Vector2(LaserMiddleTexture.Width * scale, LaserMiddleTexture.Height) / 2f, new Vector2(scale, 1f), SpriteEffects.None, 0f);
+                    spriteBatch.Draw(LaserMiddleTexture, centerOnLaser - Main.screenPosition, null, laserColor * projectile.Opacity, projectile.rotation, new Vector2(LaserMiddleTexture.Width * scale, LaserMiddleTexture.Height) / 2f, new Vector2(scale, 1f), SpriteEffects.None, 0f);
                     incrementalBodyLength += laserOffset;
                     centerOnLaser += projectile.velocity * laserOffset;
                 }
@@ -66,7 +66,7 @@ namespace OvermorrowMod.NPCs.Bosses
             if (Math.Abs(LaserLength - 2000) < 30f)
             {
                 Vector2 laserEndCenter = centerOnLaser - Main.screenPosition;
-                spriteBatch.Draw(LaserEndTexture, laserEndCenter, null, Color.White * projectile.Opacity, projectile.rotation, new Vector2(LaserEndTexture.Width * scale, LaserEndTexture.Height) / 2f, new Vector2(scale, 1f), SpriteEffects.None, 0f);
+                spriteBatch.Draw(LaserEndTexture, laserEndCenter, null, laserColor * projectile.Opacity, projectile.rotation, new Vector2(LaserEndTexture.Width * scale, LaserEndTexture.Height) / 2f, new Vector2(scale, 1f), SpriteEffects.None, 0f);
             }
         }
         public override void PostAI()
