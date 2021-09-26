@@ -13,7 +13,7 @@ namespace OvermorrowMod.Effects.Prim.Trails
             Width = 40;
             Length = 22;
             Effect = OvermorrowModFile.Mod.TrailShader;
-            Color = Color.White;
+            Color = Main.DiscoColor;
         }
         public override void Update()
         {

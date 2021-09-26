@@ -16,7 +16,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
         {
-            laserColor = Color.Lerp(Color.Cyan, Color.White, (float)Math.Sin(projectile.ai[1] / 5));
+            laserColor = Color.Lerp(Color.Cyan, Color.White, (float)Math.Sin(flashTimer / 5));
             flashTimer++;
 
             projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.1f;

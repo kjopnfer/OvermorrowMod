@@ -30,7 +30,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.consumable = false;
             item.autoReuse = false;
             item.shoot = ModContent.ProjectileType<TorchBall>();
-            item.shootSpeed = 12f;
+            item.shootSpeed = 8f;
             item.damage = 39;
             item.knockBack = 3f;
 

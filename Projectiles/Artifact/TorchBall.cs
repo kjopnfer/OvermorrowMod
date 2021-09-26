@@ -8,12 +8,14 @@ using OvermorrowMod.Effects.Prim.Trails;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.WardenClass;
 using OvermorrowMod.Effects.Prim.Trails.TorchVariants;
+using OvermorrowMod.Particles;
 
 namespace OvermorrowMod.Projectiles.Artifact
 {
     public class TorchBall : ArtifactProjectile, ITrailEntity
     {
-        public Color projectileColor = new Color(255, 255, 255);
+        //public Color projectileColor = Color.Yellow;
+        public Color projectileColor = Color.Yellow;
         public int dustId = 64;
 
         public Type TrailType()
@@ -66,7 +68,6 @@ namespace OvermorrowMod.Projectiles.Artifact
             projectile.width = 10;
             projectile.height = 10;
             projectile.friendly = true;
-            projectile.ranged = true;
             projectile.penetrate = 1;
             projectile.timeLeft = 100;
             //projectile.alpha = 255;
@@ -78,7 +79,7 @@ namespace OvermorrowMod.Projectiles.Artifact
 
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation();
+            projectile.rotation = projectile.ai[0] > -1 ? projectile.rotation += 0.085f : projectile.rotation += 0.17f;
 
             if (projectile.ai[1] > 10)
             {
@@ -100,53 +101,46 @@ namespace OvermorrowMod.Projectiles.Artifact
                     projectile.frame = 0;
                 }
             }
+
+            if (projectile.ai[0] > -1 ? Main.rand.NextBool(5) : Main.rand.NextBool(15))
+            {
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * Main.rand.Next(3, 6), projectile.ai[0] > -1 ? (Main.rand.NextBool(2) ? Color.Yellow : Color.Blue) : projectileColor, 1, 1, 0, 1f);
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             //Texture2D texture = Main.projectileTexture[projectile.type];
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/test");
+            Texture2D texture = projectile.ai[0] > -1 ? ModContent.GetTexture("OvermorrowMod/Textures/test") : ModContent.GetTexture("OvermorrowMod/Textures/test2");
+            Texture2D texture2 = ModContent.GetTexture("Terraria/Projectile_644");
+
             Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+            if (projectile.ai[0] > -1)
+            {
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+            }
+            else
+            {
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+
+            }
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
             return false;
-        }
-
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            if (/*projectile.ai[0] <= -1*/true)
-            {
-                projectile.alpha = 255;
-
-                //Texture2D Texture = ModContent.GetTexture("OvermorrowMod/Projectiles/Artifact/GreyBall");
-                Texture2D Texture = ModContent.GetTexture("OvermorrowMod/Textures/test");
-
-
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (projectile.spriteDirection == -1)
-                {
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-                }
-                int frameHeight = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-                int startY = frameHeight * projectile.frame;
-                Rectangle sourceRectangle = new Rectangle(0, startY, Texture.Width, frameHeight);
-                Vector2 origin = sourceRectangle.Size() / 2f;
-
-                /*Main.spriteBatch.Draw(Texture,
-                    projectile.Center - Main.screenPosition,
-                    sourceRectangle, projectileColor, projectile.rotation, origin, projectile.scale, spriteEffects, 0f);*/
-                /*Main.spriteBatch.Draw(Texture,
-                    projectile.Center - Main.screenPosition,
-                    null, projectileColor, projectile.rotation, Texture.Size() / 2, projectile.scale, spriteEffects, 0f);*/
-            }
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -163,17 +157,31 @@ namespace OvermorrowMod.Projectiles.Artifact
 
         public override void Kill(int timeLeft)
         {
+            if (projectile.ai[0] > -1)
+            {
+                Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Yellow, 1, 1, 0, 1f);
+            }
+
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
+                if (distance <= 1050 && projectile.ai[0] > -1)
+                {
+                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
+                }
+            }
+
             Vector2 origin = projectile.Center;
             float radius = 15;
-            int numLocations = projectile.ai[0] > -1 ? 30 : 15;
+            int numLocations = projectile.ai[0] > -1 ? 30 : 6;
 
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 6; i++)
             {
                 Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                Vector2 dustvelocity = new Vector2(0f, (projectile.ai[0] > -1 ? 5f : 2f)).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * (projectile.ai[0] > 1 ? Main.rand.Next(1, 4) : 1);
+                Vector2 dustvelocity = new Vector2(0f, (projectile.ai[0] > -1 ? 5f : 3f)).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * (projectile.ai[0] > 1 ? Main.rand.Next(1, 4) : 1);
 
-                Dust dust = Terraria.Dust.NewDustPerfect(position, projectile.ai[0] > -1 ? Main.rand.NextBool(3) ? 64 : 59 : dustId, new Vector2(dustvelocity.X, dustvelocity.Y), 0, projectileColor, projectile.ai[0] > -1 ? Main.rand.Next(1, 3) : 1);
-
+                //Dust dust = Terraria.Dust.NewDustPerfect(position, projectile.ai[0] > -1 ? Main.rand.NextBool(3) ? 64 : 59 : dustId, new Vector2(dustvelocity.X, dustvelocity.Y), 0, projectileColor, projectile.ai[0] > -1 ? Main.rand.Next(1, 3) : 1);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, projectile.ai[0] > -1 ? Color.Yellow : projectileColor, 1, 1, 0, 1f);
             }
 
             if (projectile.ai[0] > -1)
