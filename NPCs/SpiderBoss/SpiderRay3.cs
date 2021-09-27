@@ -37,7 +37,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
             timer++;
             NPC npc = Main.npc[(int)projectile.ai[0]];
             SpiderPos = npc.Center;
-            if(timer == 450)
+            if (timer == 450)
             {
                 projectile.timeLeft = 0;
             }

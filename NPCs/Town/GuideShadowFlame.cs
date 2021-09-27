@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using System;
 
 namespace OvermorrowMod.NPCs.Town
 {
@@ -26,7 +23,7 @@ namespace OvermorrowMod.NPCs.Town
         public override void AI()
         {
             Time++;
-            if(Time == 1)
+            if (Time == 1)
             {
                 Random2 = Main.rand.Next(-7, 8);
                 Random1 = Main.rand.Next(-7, 8);

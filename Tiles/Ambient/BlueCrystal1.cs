@@ -1,19 +1,17 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.ID;
 
 namespace OvermorrowMod.Tiles.Ambient
 {
-	public class BlueCrystal1 : ModTile
-	{
-		public override void SetDefaults()
-		{
-			/*TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
+    public class BlueCrystal1 : ModTile
+    {
+        public override void SetDefaults()
+        {
+            /*TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
 			TileObjectData.newAlternate.StyleHorizontal = true;
 			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
 			TileObjectData.newAlternate.Origin = new Point16(0, 0);
@@ -49,46 +47,46 @@ namespace OvermorrowMod.Tiles.Ambient
 			TileObjectData.addAlternate(4);
 			TileObjectData.addTile(Type);*/
 
-			TileObjectData.newTile.CopyFrom(TileObjectData.StyleTorch);
-			TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-			TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
-			TileObjectData.newAlternate.AnchorLeft = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide | AnchorType.Tree | AnchorType.AlternateTile, TileObjectData.newTile.Height, 0);
-			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
-			TileObjectData.addAlternate(1);
-			TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
-			TileObjectData.newAlternate.AnchorRight = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide | AnchorType.Tree | AnchorType.AlternateTile, TileObjectData.newTile.Height, 0);
-			TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
-			TileObjectData.addAlternate(2);
-			TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
-			TileObjectData.newAlternate.AnchorWall = true;
-			TileObjectData.addAlternate(0);
-			TileObjectData.addTile(Type);
+            TileObjectData.newTile.CopyFrom(TileObjectData.StyleTorch);
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+            TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
+            TileObjectData.newAlternate.AnchorLeft = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide | AnchorType.Tree | AnchorType.AlternateTile, TileObjectData.newTile.Height, 0);
+            TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
+            TileObjectData.addAlternate(1);
+            TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
+            TileObjectData.newAlternate.AnchorRight = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide | AnchorType.Tree | AnchorType.AlternateTile, TileObjectData.newTile.Height, 0);
+            TileObjectData.newAlternate.AnchorAlternateTiles = new int[] { 124 };
+            TileObjectData.addAlternate(2);
+            TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleTorch);
+            TileObjectData.newAlternate.AnchorWall = true;
+            TileObjectData.addAlternate(0);
+            TileObjectData.addTile(Type);
 
-			Main.tileFrameImportant[Type] = true;
-			Main.tileCut[Type] = true;
-			Main.tileSolid[Type] = false;
-			Main.tileMergeDirt[Type] = true;
-			Main.tileLighted[Type] = true;
-			TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
-			TileObjectData.newTile.CoordinateHeights = new int[]
-			{
-				16,
-			};
-			TileObjectData.addTile(Type);
-			dustType = DustID.DungeonSpirit;
-			drop = ModContent.ItemType<Items.Misc.BlueCrystal>();
-		}
+            Main.tileFrameImportant[Type] = true;
+            Main.tileCut[Type] = true;
+            Main.tileSolid[Type] = false;
+            Main.tileMergeDirt[Type] = true;
+            Main.tileLighted[Type] = true;
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
+            TileObjectData.newTile.CoordinateHeights = new int[]
+            {
+                16,
+            };
+            TileObjectData.addTile(Type);
+            dustType = DustID.DungeonSpirit;
+            drop = ModContent.ItemType<Items.Misc.BlueCrystal>();
+        }
 
-		public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
-		{
-			Main.PlaySound(new Terraria.Audio.LegacySoundStyle(2, 27));
-		}
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(2, 27));
+        }
 
-		public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-		{
-			r = 0f;
-			g = .5f;
-			b = .5f;
-		}
-	}
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            r = 0f;
+            g = .5f;
+            b = .5f;
+        }
+    }
 }

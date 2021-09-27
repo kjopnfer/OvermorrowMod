@@ -1,8 +1,6 @@
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -28,8 +26,8 @@ namespace OvermorrowMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-			target.immune[projectile.owner] = 1;
-		} 
+            target.immune[projectile.owner] = 1;
+        }
 
         public override void Kill(int timeLeft)
         {

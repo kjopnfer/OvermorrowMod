@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic
 {
@@ -38,16 +38,16 @@ namespace OvermorrowMod.Projectiles.Magic
                 storeVelocity = projectile.velocity;
             }
 
-            if(projectile.ai[0] >= 5 && projectile.ai[0] <= 25) // Make the projectile stops momentarily for 40 ticks
+            if (projectile.ai[0] >= 5 && projectile.ai[0] <= 25) // Make the projectile stops momentarily for 40 ticks
             {
                 projectile.velocity = new Vector2(0, 0);
-                if(projectile.ai[0] == 25) // Allow the projectile to accelerate
+                if (projectile.ai[0] == 25) // Allow the projectile to accelerate
                 {
                     canAccelerate = true;
                 }
             }
 
-            if(projectile.ai[0] <= 25) // Let's the 3rd projectile not get stuck in the ground
+            if (projectile.ai[0] <= 25) // Let's the 3rd projectile not get stuck in the ground
             {
                 projectile.tileCollide = false;
             }

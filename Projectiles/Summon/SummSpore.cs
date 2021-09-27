@@ -1,10 +1,8 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.Debuffs;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -30,7 +28,7 @@ namespace OvermorrowMod.Projectiles.Summon
         public override void AI()
         {
             projectile.velocity.Y += 0.2f;
-            if(projectile.velocity.Y > 3.5f)
+            if (projectile.velocity.Y > 3.5f)
             {
                 projectile.velocity.Y = 3.5f;
             }
@@ -41,37 +39,37 @@ namespace OvermorrowMod.Projectiles.Summon
 
 
 
-            if(projectile.velocity.Y > 0)
+            if (projectile.velocity.Y > 0)
             {
-            if (projectile.localAI[0] == 0f)
-            {
-                AdjustMagnitude(ref projectile.velocity);
-                projectile.localAI[0] = 1f;
-            }
-            Vector2 move = Vector2.Zero;
-            float distance = 500f;
-            bool target = false;
-            for (int k = 0; k < 200; k++)
-            {
-                if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
+                if (projectile.localAI[0] == 0f)
                 {
-                    Vector2 newMove = Main.npc[k].Center - projectile.Center;
-                    float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
-                    if (distanceTo < distance)
+                    AdjustMagnitude(ref projectile.velocity);
+                    projectile.localAI[0] = 1f;
+                }
+                Vector2 move = Vector2.Zero;
+                float distance = 500f;
+                bool target = false;
+                for (int k = 0; k < 200; k++)
+                {
+                    if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
                     {
-                        move = newMove;
-                        distance = distanceTo;
-                        target = true;
+                        Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                        float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
+                        if (distanceTo < distance)
+                        {
+                            move = newMove;
+                            distance = distanceTo;
+                            target = true;
+                        }
                     }
                 }
+                if (target)
+                {
+                    AdjustMagnitude(ref move);
+                    projectile.velocity.X = (10 * projectile.velocity.X + move.X) / 11f;
+                    AdjustMagnitude(ref projectile.velocity);
+                }
             }
-            if (target)
-            {
-                AdjustMagnitude(ref move);
-                projectile.velocity.X = (10 * projectile.velocity.X + move.X) / 11f;
-                AdjustMagnitude(ref projectile.velocity);
-            }
-        }
         }
 
 
@@ -84,7 +82,7 @@ namespace OvermorrowMod.Projectiles.Summon
                 target.AddBuff(ModContent.BuffType<FungalInfection>(), 300);
             }
         }
-  
+
 
 
 

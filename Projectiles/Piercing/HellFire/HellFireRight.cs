@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +16,7 @@ namespace OvermorrowMod.Projectiles.Piercing.HellFire
         }
 
         Vector2 PosCheck;
-	    Vector2 endPoint;
+        Vector2 endPoint;
         private int timer = 0;
 
         public override void SetDefaults()
@@ -43,16 +42,16 @@ namespace OvermorrowMod.Projectiles.Piercing.HellFire
         public override void AI()
         {
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 PosCheck = projectile.Center;
                 endPoint = PosCheck;
             }
-            if(timer == 3)
+            if (timer == 3)
             {
                 projectile.alpha = 0;
             }
-            if(timer < 25)
+            if (timer < 25)
             {
                 projectile.velocity.X = 5;
             }
@@ -62,11 +61,11 @@ namespace OvermorrowMod.Projectiles.Piercing.HellFire
             }
         }
 
-		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-		{
-			float point = 0f;
-			return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
-		}
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float point = 0f;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
+        }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {

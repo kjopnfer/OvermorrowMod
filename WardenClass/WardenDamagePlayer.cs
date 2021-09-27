@@ -1,18 +1,12 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using OvermorrowMod;
-using OvermorrowMod.WardenClass;
-using OvermorrowMod.Buffs;
-using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Misc;
-using OvermorrowMod.Projectiles.Piercing;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.GameInput;
-using Terraria.ID;
 using Terraria.ModLoader;
-using Utils = Terraria.Utils;
 using Terraria.ModLoader.IO;
-using WardenClass;
+using Utils = Terraria.Utils;
 
 namespace WardenClass
 {

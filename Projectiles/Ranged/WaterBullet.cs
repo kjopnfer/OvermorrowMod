@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
@@ -75,7 +75,7 @@ namespace OvermorrowMod.Projectiles.Ranged
                 }
             }
         }
-    
+
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {

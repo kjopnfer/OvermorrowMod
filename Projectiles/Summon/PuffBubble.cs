@@ -1,10 +1,6 @@
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -36,14 +32,14 @@ namespace OvermorrowMod.Projectiles.Summon
             {
                 release = true;
             }
-            if(release)
+            if (release)
             {
                 projectile.velocity.Y -= 0.5f;
             }
-            if(!release)
+            if (!release)
             {
-				projectile.velocity.X *= 0.90f;
-				projectile.velocity.Y *= 0.90f;
+                projectile.velocity.X *= 0.90f;
+                projectile.velocity.Y *= 0.90f;
             }
         }
 

@@ -1,16 +1,15 @@
-using System;
-using System.IO;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Projectiles.Accessory;
+using OvermorrowMod.Projectiles.Piercing;
+using System;
+using System.IO;
 using Terraria;
 using Terraria.GameInput;
-using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Piercing;
 
 namespace OvermorrowMod
 {
@@ -521,7 +520,7 @@ namespace OvermorrowMod
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            
+
             if (player.justJumped && slimeBuff)
             {
                 Vector2 vector4 = new Vector2(player.position.X + (float)player.width * 0.5f, player.position.Y + (float)player.height * 0.5f);

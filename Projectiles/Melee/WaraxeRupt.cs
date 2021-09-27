@@ -2,9 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
@@ -21,7 +19,7 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.width = 22;
             projectile.height = 22;
             projectile.timeLeft = 26;
-            projectile.light = 0.4f;   
+            projectile.light = 0.4f;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -37,7 +35,7 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.height = 22;
             projectile.scale = 1.3f;
             projectile.rotation = CircleArr + MathHelper.ToRadians(45f);
-            
+
             if (Main.MouseWorld.X < Main.player[projectile.owner].Center.X && okay2 < 1)
             {
                 okay1++;
@@ -72,14 +70,14 @@ namespace OvermorrowMod.Projectiles.Melee
             }
         }
 
-		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-		{
-			float point = 0f;
-			Vector2 endPoint;
-			endPoint.X = Main.player[projectile.owner].Center.X;
-			endPoint.Y = Main.player[projectile.owner].Center.Y;
-			return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
-		}
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float point = 0f;
+            Vector2 endPoint;
+            endPoint.X = Main.player[projectile.owner].Center.X;
+            endPoint.Y = Main.player[projectile.owner].Center.Y;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
+        }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {

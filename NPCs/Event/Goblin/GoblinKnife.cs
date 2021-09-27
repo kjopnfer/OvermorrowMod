@@ -1,10 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.NPCs.Event.Goblin
 {
@@ -27,7 +24,7 @@ namespace OvermorrowMod.NPCs.Event.Goblin
         {
             projectile.width = 24;
             projectile.height = 24;
-            projectile.timeLeft = 1000; 
+            projectile.timeLeft = 1000;
             projectile.penetrate = -1;
             projectile.hostile = true;
             projectile.friendly = false;
@@ -41,7 +38,7 @@ namespace OvermorrowMod.NPCs.Event.Goblin
 
             NPC npc = Main.npc[(int)projectile.ai[1]];
             DrawToPos = npc.Center;
-            if(npc.active)
+            if (npc.active)
             {
                 projectile.timeLeft = 3;
             }
@@ -51,9 +48,9 @@ namespace OvermorrowMod.NPCs.Event.Goblin
 
             projectile.rotation = (npc.Center - projectile.Center).ToRotation();
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
-                if(Main.player[projectile.owner].Center.X > npc.Center.X)
+                if (Main.player[projectile.owner].Center.X > npc.Center.X)
                 {
                     right = true;
                 }
@@ -65,48 +62,48 @@ namespace OvermorrowMod.NPCs.Event.Goblin
 
             projectile.position.Y = npc.Center.Y - projectile.height / 2;
 
-            if(right)
+            if (right)
             {
                 goright += 5;
                 projectile.position.X = npc.Center.X - projectile.width / 2 + goright;
             }
 
-            if(left)
+            if (left)
             {
                 goright -= 5;
                 projectile.position.X = npc.Center.X - projectile.width / 2 + goright;
             }
 
-            if(projectile.Center.X > npc.Center.X + 150)
+            if (projectile.Center.X > npc.Center.X + 150)
             {
                 comebackright = true;
                 right = false;
             }
 
-            if(projectile.Center.X < npc.Center.X - 150)
+            if (projectile.Center.X < npc.Center.X - 150)
             {
                 comebackleft = true;
                 left = false;
             }
 
 
-            if(comebackright)
+            if (comebackright)
             {
                 goright -= 10;
                 projectile.position.X = npc.Center.X - projectile.width / 2 + goright;
-                if(BetweenKill < 22)
+                if (BetweenKill < 22)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
 
-            if(comebackleft)
+            if (comebackleft)
             {
                 goright += 10;
                 projectile.position.X = npc.Center.X - projectile.width / 2 + goright;
-                if(BetweenKill < 22)
+                if (BetweenKill < 22)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
 
@@ -115,11 +112,11 @@ namespace OvermorrowMod.NPCs.Event.Goblin
         }
 
 
-		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-		{
-			float point = 0f;
-			return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, DrawToPos, 4f, ref point);
-		}
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float point = 0f;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, DrawToPos, 4f, ref point);
+        }
 
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)

@@ -1,11 +1,10 @@
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
+using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {

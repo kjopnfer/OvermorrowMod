@@ -24,7 +24,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
             projectile.timeLeft = 240;
             projectile.ignoreWater = true;
         }
-        
+
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             if (Main.rand.Next(6) == 3)
@@ -37,9 +37,9 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
         {
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
-                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                if (Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
                 {
                     projectile.velocity.X = 10;
                     projectile.velocity.Y = 0;

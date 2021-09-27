@@ -2,9 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Magic.Upgrades
 {
@@ -27,7 +25,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
         {
             projectile.width = 24;
             projectile.height = 24;
-            projectile.timeLeft = 1000; 
+            projectile.timeLeft = 1000;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -53,10 +51,10 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
 
             projectile.rotation = (Main.player[projectile.owner].Center - projectile.Center).ToRotation() + MathHelper.ToRadians(45f);
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.damage = projectile.damage - 5;
-                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                if (Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
                 {
                     right = true;
                 }
@@ -68,48 +66,48 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
 
             projectile.position.Y = Main.player[projectile.owner].Center.Y - projectile.height / 2;
 
-            if(right)
+            if (right)
             {
                 goright += 10;
                 projectile.position.X = Main.player[projectile.owner].Center.X - projectile.width / 2 + goright;
             }
 
-            if(left)
+            if (left)
             {
                 goright -= 10;
                 projectile.position.X = Main.player[projectile.owner].Center.X - projectile.width / 2 + goright;
             }
 
-            if(projectile.Center.X > Main.player[projectile.owner].Center.X + 250)
+            if (projectile.Center.X > Main.player[projectile.owner].Center.X + 250)
             {
                 comebackright = true;
                 right = false;
             }
 
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X - 250)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X - 250)
             {
                 comebackleft = true;
                 left = false;
             }
 
 
-            if(comebackright)
+            if (comebackright)
             {
                 goright -= 10;
                 projectile.position.X = Main.player[projectile.owner].Center.X - projectile.width / 2 + goright;
-                if(BetweenKill < 22)
+                if (BetweenKill < 22)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
 
-            if(comebackleft)
+            if (comebackleft)
             {
                 goright += 10;
                 projectile.position.X = Main.player[projectile.owner].Center.X - projectile.width / 2 + goright;
-                if(BetweenKill < 22)
+                if (BetweenKill < 22)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
 
@@ -118,14 +116,14 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
         }
 
 
-		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-		{
-			float point = 0f;
-			Vector2 endPoint;
-			endPoint.X = Main.player[projectile.owner].Center.X;
-			endPoint.Y = Main.player[projectile.owner].Center.Y;
-			return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
-		}
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float point = 0f;
+            Vector2 endPoint;
+            endPoint.X = Main.player[projectile.owner].Center.X;
+            endPoint.Y = Main.player[projectile.owner].Center.Y;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
+        }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {

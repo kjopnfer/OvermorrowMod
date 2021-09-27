@@ -1,14 +1,14 @@
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using Terraria.ID;
-using OvermorrowMod.Effects.Prim;
-using System;
-using OvermorrowMod.Effects.Prim.Trails;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.WardenClass;
+using OvermorrowMod.Effects.Prim;
+using OvermorrowMod.Effects.Prim.Trails;
 using OvermorrowMod.Effects.Prim.Trails.TorchVariants;
 using OvermorrowMod.Particles;
+using OvermorrowMod.WardenClass;
+using System;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact
 {
@@ -50,9 +50,9 @@ namespace OvermorrowMod.Projectiles.Artifact
                         return typeof(TorchTrail12);
                 }
             }
-            
+
             return typeof(TorchTrail);
-            
+
         }
 
         //public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;

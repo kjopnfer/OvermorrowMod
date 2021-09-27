@@ -28,7 +28,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void AI()
         {
-            if(projectile.ai[0] == 0)
+            if (projectile.ai[0] == 0)
             {
                 storeDamage = projectile.damage;
                 projectile.spriteDirection = Main.rand.NextBool(2) ? -1 : 1;
@@ -39,12 +39,12 @@ namespace OvermorrowMod.Projectiles.Boss
                 projectile.damage = 0;
                 projectile.rotation += 1f;
                 // Be affected by the shoot initial velocity
-                if(projectile.ai[0] % 180 == 0) // After 3 seconds, set velocity to zero
+                if (projectile.ai[0] % 180 == 0) // After 3 seconds, set velocity to zero
                 {
                     projectile.velocity = Vector2.Zero;
                     canDescend = true;
                     int chooseDirection = Main.rand.Next(2);
-                    if(chooseDirection == 0) // Go left
+                    if (chooseDirection == 0) // Go left
                     {
                         projectile.velocity.X = 5f;
                         goLeft = true;

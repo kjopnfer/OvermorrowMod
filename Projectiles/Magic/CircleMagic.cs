@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Summon;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Magic
 {
@@ -41,7 +39,7 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.penetrate = -1;
             projectile.timeLeft = 2;
         }
-        
+
 
         public override void AI()
         {
@@ -49,57 +47,57 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.rotation = (Main.MouseWorld - projectile.Center).ToRotation();
             projectile.tileCollide = false;
 
-            if(Main.player[projectile.owner].channel && !charge)
+            if (Main.player[projectile.owner].channel && !charge)
             {
 
-            NumProj = Main.player[projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<CircleMagic>()];
-            PosCheck++;
-            if(PosCheck == 1)
-            {
-                PosPlay = NumProj;
-                OrignalDamage = projectile.damage;
-            }
-            if(PosCheck == 2)
-            {
-                HasChecked = PosPlay;
-            }
-
-
-            if(PosCheck == 2)
-            {
-                CircleArr = NumProj * 20;
-            }
-
-            if(PosCheck > 2)
-            {
-                projectile.damage = OrignalDamage * NumProj;
-                double deg = (double)CircleArr; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
-                double rad = deg * (Math.PI / 180); //Convert degrees to radian
-                    
-                projectile.position.X = 50 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2;
-                projectile.position.Y = 50 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
-
-
-                CircleArr += 1.7f;
-            }
-            }
-            else if(!charge)
-            {
-                if(PosCheck > 2)
+                NumProj = Main.player[projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<CircleMagic>()];
+                PosCheck++;
+                if (PosCheck == 1)
                 {
-                Vector2 position = projectile.Center;
-                Vector2 targetPosition = Main.MouseWorld + projectile.position - Main.player[projectile.owner].Center;
-                Vector2 direction = targetPosition - position;
-                direction.Normalize();
-                float speed = 11;
-                Main.PlaySound(SoundID.Item, projectile.position, 8);
-                charge = true;
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, direction.X * speed, direction.Y * speed, ModContent.ProjectileType<ShotSpike>(), projectile.damage, 0f, projectile.owner, 0f);
+                    PosPlay = NumProj;
+                    OrignalDamage = projectile.damage;
+                }
+                if (PosCheck == 2)
+                {
+                    HasChecked = PosPlay;
+                }
+
+
+                if (PosCheck == 2)
+                {
+                    CircleArr = NumProj * 20;
+                }
+
+                if (PosCheck > 2)
+                {
+                    projectile.damage = OrignalDamage * NumProj;
+                    double deg = (double)CircleArr; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                    double rad = deg * (Math.PI / 180); //Convert degrees to radian
+
+                    projectile.position.X = 50 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2;
+                    projectile.position.Y = 50 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+
+
+                    CircleArr += 1.7f;
+                }
+            }
+            else if (!charge)
+            {
+                if (PosCheck > 2)
+                {
+                    Vector2 position = projectile.Center;
+                    Vector2 targetPosition = Main.MouseWorld + projectile.position - Main.player[projectile.owner].Center;
+                    Vector2 direction = targetPosition - position;
+                    direction.Normalize();
+                    float speed = 11;
+                    Main.PlaySound(SoundID.Item, projectile.position, 8);
+                    charge = true;
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, direction.X * speed, direction.Y * speed, ModContent.ProjectileType<ShotSpike>(), projectile.damage, 0f, projectile.owner, 0f);
                 }
                 projectile.Kill();
             }
 
-            if(PosPlay > 9 && PosCheck < 30)
+            if (PosPlay > 9 && PosCheck < 30)
             {
                 projectile.Kill();
             }

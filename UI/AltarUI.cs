@@ -114,7 +114,7 @@ namespace OvermorrowMod.UI
                 Main.LocalPlayer.mouseInterface = true;
             }
 
-            
+
         }
     }
 }

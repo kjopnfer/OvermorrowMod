@@ -1,9 +1,9 @@
-using System;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Consumable;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Projectiles.NPCs.Hostile;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -186,7 +186,7 @@ namespace OvermorrowMod.NPCs
             }
 
             // 15 ticks of frame 1
-            if(frame == 1 && frameTimer < 15)
+            if (frame == 1 && frameTimer < 15)
             {
                 frameTimer++;
             }

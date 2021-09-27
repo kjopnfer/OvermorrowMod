@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using System;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic
 {
@@ -20,14 +19,14 @@ namespace OvermorrowMod.Projectiles.Magic
         }
         public override void AI()
         {
-            projectile.rotation += 0.25f; 
+            projectile.rotation += 0.25f;
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-        
+
             int Hie = (int)Math.Round(target.width / 1.5f);
             int Wid = (int)Math.Round(target.height / 1.5f);
-			if(target.GetGlobalNPC<OvermorrowGlobalNPC>().split < 1)
+            if (target.GetGlobalNPC<OvermorrowGlobalNPC>().split < 1)
             {
 
                 target.lifeMax /= 2;
@@ -41,8 +40,8 @@ namespace OvermorrowMod.Projectiles.Magic
                 Main.npc[npc].scale /= 1.5f;
                 Main.npc[npc].lifeMax /= 2;
                 Main.npc[npc].life /= 2;
-                Main.npc[npc].defense /= 2;      
-                Main.npc[npc].GetGlobalNPC<OvermorrowGlobalNPC>().split = 1;    
+                Main.npc[npc].defense /= 2;
+                Main.npc[npc].GetGlobalNPC<OvermorrowGlobalNPC>().split = 1;
                 Main.npc[npc].width = Hie;
                 Main.npc[npc].height = Wid;
             }

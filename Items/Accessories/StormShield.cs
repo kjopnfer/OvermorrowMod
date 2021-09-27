@@ -64,7 +64,7 @@ namespace OvermorrowMod.Items.Accessories
                     int dashDirection = modPlayer.DashDir == OvermorrowModPlayer.DashRight ? 1 : -1;
                     newVelocity.X = dashDirection * modPlayer.DashVelocity;
 
-                } 
+                }
                 player.velocity = newVelocity;
             }
 

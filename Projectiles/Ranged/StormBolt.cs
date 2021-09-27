@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
@@ -28,7 +28,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if(projectile.ai[0] < 1)
+            if (projectile.ai[0] < 1)
             {
                 projectile.tileCollide = false;
             }
@@ -36,7 +36,7 @@ namespace OvermorrowMod.Projectiles.Ranged
             {
                 projectile.tileCollide = true;
             }
-            
+
             for (int num1101 = 0; num1101 < 3; num1101++)
             {
                 int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Clentaminator_Cyan, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1.2f);
@@ -66,7 +66,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 
             projectile.ai[0]++;
         }
-        
+
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             // Makes dust projectiled on tile

@@ -1,6 +1,6 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -65,7 +65,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 projectile.velocity = (10 * projectile.velocity + move) / 11f;
                 AdjustMagnitude(ref projectile.velocity);
                 float BetweenComeBack = Vector2.Distance(SavedMove, projectile.Center);
-                if(BetweenComeBack < 42)
+                if (BetweenComeBack < 42)
                 {
                     Main.PlaySound(SoundID.Shatter, projectile.position);
                     ComingBack = true;
@@ -77,24 +77,24 @@ namespace OvermorrowMod.Projectiles.Melee
             }
 
 
-			projectile.rotation += 0.36f; 
+            projectile.rotation += 0.36f;
 
-            if(projectile.timeLeft < 65 && !target)
+            if (projectile.timeLeft < 65 && !target)
             {
                 projectile.timeLeft = 10;
                 ComingBack = true;
             }
 
-            if(projectile.timeLeft > 98)
+            if (projectile.timeLeft > 98)
             {
                 projectile.tileCollide = false;
             }
-            else if(!ComingBack)
+            else if (!ComingBack)
             {
                 projectile.tileCollide = true;
             }
 
-            if(ComingBack)
+            if (ComingBack)
             {
                 float BetweenKill = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
                 projectile.tileCollide = false;
@@ -103,9 +103,9 @@ namespace OvermorrowMod.Projectiles.Melee
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 projectile.velocity = direction * 18;
-                if(BetweenKill < 32)
+                if (BetweenKill < 32)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
         }

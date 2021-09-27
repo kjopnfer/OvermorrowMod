@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,11 +26,11 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
         {
             projectile.rotation = projectile.velocity.ToRotation();
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 targetPosition = Main.MouseWorld;
             }
-            if(timer < 10)
+            if (timer < 10)
             {
                 Vector2 position = projectile.Center;
                 Vector2 direction = targetPosition - position;
@@ -46,7 +45,7 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
                 dust81.velocity *= 0.5f;
             }
 
-            
+
         }
     }
 }

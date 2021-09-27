@@ -117,11 +117,11 @@ namespace OvermorrowMod.Projectiles.Melee
             {
                 //if (Main.netMode != NetmodeID.MultiplayerClient)
                 //{
-                    for (int i = 0; i < 3; i++)
-                    {
-                        // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
-                        Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<GraniteSpearElectricity>(), projectile.damage / 2, 1, projectile.owner, projectile.whoAmI, 120f * i);
-                    }
+                for (int i = 0; i < 3; i++)
+                {
+                    // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
+                    Projectile.NewProjectile(projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<GraniteSpearElectricity>(), projectile.damage / 2, 1, projectile.owner, projectile.whoAmI, 120f * i);
+                }
                 //}
                 spawnedProjectiles = true;
                 projectile.netUpdate = true;

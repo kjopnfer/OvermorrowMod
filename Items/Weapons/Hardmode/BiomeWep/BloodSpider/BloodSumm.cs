@@ -1,6 +1,4 @@
-﻿using System;
-using OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -89,21 +87,21 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
 
 
 
-            if (foundTarget) 
-			{
-            projectile.velocity.Y = 0f;
-            movement = 1;
-			timer++;
-            movement++;
-			if(timer == 15)
-			{
-                Projectile.NewProjectile(projectile.Center.X + 5, projectile.Center.Y, 0, 10, mod.ProjectileType("RottingEgg"), projectile.damage, 1f, projectile.owner, 0f);
-			}
-            if (timer == 30)
+            if (foundTarget)
             {
-                Projectile.NewProjectile(projectile.Center.X - 5, projectile.Center.Y, 0, 10, mod.ProjectileType("RottingEgg"), projectile.damage, 1f, projectile.owner, 0f);
-                timer = 0;
-            }
+                projectile.velocity.Y = 0f;
+                movement = 1;
+                timer++;
+                movement++;
+                if (timer == 15)
+                {
+                    Projectile.NewProjectile(projectile.Center.X + 5, projectile.Center.Y, 0, 10, mod.ProjectileType("RottingEgg"), projectile.damage, 1f, projectile.owner, 0f);
+                }
+                if (timer == 30)
+                {
+                    Projectile.NewProjectile(projectile.Center.X - 5, projectile.Center.Y, 0, 10, mod.ProjectileType("RottingEgg"), projectile.damage, 1f, projectile.owner, 0f);
+                    timer = 0;
+                }
 
 
                 if (movement == 50 && !go)
@@ -125,7 +123,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
                     movement = 0;
                 }
 
-                if(go)
+                if (go)
                 {
                     if (NPCtargetX + mrand > projectile.Center.X)
                     {
@@ -157,34 +155,34 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
                 {
                     projectile.velocity.Y += 2f;
                 }
-                if(NPCtargetY + mrand3 < projectile.Center.Y)
+                if (NPCtargetY + mrand3 < projectile.Center.Y)
                 {
                     projectile.velocity.Y -= 2f;
                 }
 
 
-                if(projectile.velocity.Y < -18f)
+                if (projectile.velocity.Y < -18f)
                 {
                     projectile.velocity.Y = -18f;
                 }
 
-                if(projectile.velocity.Y > 18f)
+                if (projectile.velocity.Y > 18f)
                 {
                     projectile.velocity.Y = 18f;
                 }
 
 
-                if(projectile.velocity.X < -9f)
+                if (projectile.velocity.X < -9f)
                 {
                     projectile.velocity.X = -9f;
                 }
 
-                if(projectile.velocity.X > 9f)
+                if (projectile.velocity.X > 9f)
                 {
                     projectile.velocity.X = 9f;
                 }
 
-			}
+            }
         }
     }
 }

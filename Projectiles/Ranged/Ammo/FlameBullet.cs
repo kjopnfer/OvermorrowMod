@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Ranged.Ammo
 {
@@ -51,7 +49,7 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
             {
                 target.AddBuff(24, 400);
             }
-            projectile.damage /=2;
+            projectile.damage /= 2;
         }
     }
 }

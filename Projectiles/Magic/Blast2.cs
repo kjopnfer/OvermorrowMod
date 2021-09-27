@@ -1,7 +1,4 @@
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic
@@ -30,10 +27,10 @@ namespace OvermorrowMod.Projectiles.Magic
         public override void AI()
         {
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.damage = (projectile.damage * 2) + 7;
-                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                if (Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
                 {
                     projectile.velocity.X = 14.5f;
                     projectile.velocity.Y = 0;

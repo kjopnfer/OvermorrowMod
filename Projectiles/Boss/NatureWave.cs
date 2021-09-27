@@ -66,11 +66,11 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            
+
             /*Dust trail = Dust.NewDustPerfect(projectile.Center - projectile.velocity.SafeNormalize(-Vector2.UnitY) * projectile.height / 2, 107, projectile.velocity, 0, default, 1.5f);
             trail.noLight = false;
             trail.noGravity = true;*/
-            
+
 
             //Redraw the projectile with the color not influenced by light
             Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);

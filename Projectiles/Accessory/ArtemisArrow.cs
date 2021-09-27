@@ -9,11 +9,13 @@ namespace OvermorrowMod.Projectiles.Accessory
     {
         public override string Texture => "OvermorrowMod/Projectiles/Magic/MarbleArrow";
 
-        public override void SetStaticDefaults() {
+        public override void SetStaticDefaults()
+        {
             DisplayName.SetDefault("Arrow");
         }
 
-        public override void SetDefaults() {
+        public override void SetDefaults()
+        {
             projectile.width = 12;
             projectile.height = 12;
             projectile.friendly = true;
@@ -28,7 +30,8 @@ namespace OvermorrowMod.Projectiles.Accessory
             projectile.aiStyle = 1;
         }
 
-        public override void AI() {
+        public override void AI()
+        {
             Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
             Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.Pi / 2;

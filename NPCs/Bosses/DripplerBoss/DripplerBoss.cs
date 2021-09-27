@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs.Debuffs;
@@ -335,7 +334,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                         }
                     }
-                    
+
                     if (npc.ai[1] == 300)
                     {
                         npc.ai[0] = 0;
@@ -503,7 +502,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
             if (attackindicator == true)
-            { 
+            {
                 Texture2D texture = Main.npcTexture[npc.type];
                 Vector2 origin = npc.frame.Size() / 2;
                 int amount = 5;

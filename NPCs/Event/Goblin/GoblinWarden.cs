@@ -45,22 +45,22 @@ namespace OvermorrowMod.NPCs.Event.Goblin
         {
 
 
-            if(npc.velocity.X > 1)
+            if (npc.velocity.X > 1)
             {
                 npc.velocity.X = 1;
             }
 
-            if(npc.velocity.X < -1)
+            if (npc.velocity.X < -1)
             {
                 npc.velocity.X = -1;
             }
-            
+
             Player player = Main.player[npc.target];
-            if(npc.velocity.Y == 0)
+            if (npc.velocity.Y == 0)
             {
                 AttTimer++;
             }
-            if(AttTimer > 50 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 175 && npc.velocity.Y == 0)
+            if (AttTimer > 50 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 175 && npc.velocity.Y == 0)
             {
 
                 frameTimer = 0;
@@ -70,28 +70,28 @@ namespace OvermorrowMod.NPCs.Event.Goblin
 
 
 
-                if(ProjTimer > 33)
+                if (ProjTimer > 33)
                 {
                     ProjTimer = 0;
                 }
-                if(Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<GoblinKnife>()] > 0)
+                if (Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<GoblinKnife>()] > 0)
                 {
                     frame = 3;
                 }
-                else if(npc.velocity.X < 0.5f && npc.velocity.X > -0.5f)
+                else if (npc.velocity.X < 0.5f && npc.velocity.X > -0.5f)
                 {
                     frame = 0;
                 }
 
                 ProjTimer++;
-                if(ProjTimer > 30 && Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<GoblinKnife>()] < 1)
+                if (ProjTimer > 30 && Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<GoblinKnife>()] < 1)
                 {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = Main.player[npc.target].Center + new Vector2(0, -120);
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
-				    int proj = Projectile.NewProjectile(npc.Center, direction * 0, mod.ProjectileType("GoblinKnife"), 15, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
-				    npc.netUpdate = true;
+                    int proj = Projectile.NewProjectile(npc.Center, direction * 0, mod.ProjectileType("GoblinKnife"), 15, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
+                    npc.netUpdate = true;
                     Main.PlaySound(SoundID.Item, npc.position, 19);
                     ProjTimer = 0;
                 }
@@ -99,18 +99,18 @@ namespace OvermorrowMod.NPCs.Event.Goblin
             else
             {
                 frameTimer++;
-                if(npc.velocity.Y == 0)
+                if (npc.velocity.Y == 0)
                 {
                     if (frameTimer > 3)
                     {
                         frameTimer = 0;
                         frame++;
                     }
-                    if(frame > 19)
+                    if (frame > 19)
                     {
                         frame = 6;
                     }
-                    if(frame < 6)
+                    if (frame < 6)
                     {
                         frame = 6;
                     }
@@ -121,7 +121,7 @@ namespace OvermorrowMod.NPCs.Event.Goblin
                 }
             }
 
-            if(AttTimer >= 100)
+            if (AttTimer >= 100)
             {
                 ProjTimer = 0;
                 AttTimer = 0;

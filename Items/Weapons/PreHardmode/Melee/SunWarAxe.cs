@@ -1,7 +1,6 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
@@ -54,12 +53,12 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 
         public override bool CanUseItem(Player player)
         {
-            if(SwingRange > 10) 
+            if (SwingRange > 10)
             {
                 SwingRange = 10;
             }
 
-            if(Timerset > 0) 
+            if (Timerset > 0)
             {
                 SwingRange = 0;
                 Timerset = 0;

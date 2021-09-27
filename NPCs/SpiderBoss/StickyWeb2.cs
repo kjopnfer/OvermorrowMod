@@ -25,20 +25,20 @@ namespace OvermorrowMod.NPCs.SpiderBoss
         public override void AI()
         {
 
-            if(projectile.timeLeft > 970)
+            if (projectile.timeLeft > 970)
             {
                 projectile.damage = 0;
             }
 
 
-            if(projectile.timeLeft < 970)
+            if (projectile.timeLeft < 970)
             {
                 projectile.velocity.X = 0;
                 projectile.velocity.Y = 0;
             }
 
 
-            if(projectile.timeLeft < 930)
+            if (projectile.timeLeft < 930)
             {
                 projectile.damage = 30;
             }

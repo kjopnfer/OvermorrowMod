@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -37,16 +36,16 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
             Projectile parentProjectile = Main.projectile[(int)projectile.ai[0]];
             timer++;
 
-			projectile.rotation += 0.36f; 
+            projectile.rotation += 0.36f;
 
-            if(projectile.timeLeft < 40)
+            if (projectile.timeLeft < 40)
             {
                 projectile.timeLeft = 10;
                 ComingBack = true;
             }
 
 
-            if(ComingBack)
+            if (ComingBack)
             {
                 flametimer++;
                 float BetweenKill = Vector2.Distance(parentProjectile.Center, projectile.Center);
@@ -56,9 +55,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 projectile.velocity = direction * 18;
-                if(BetweenKill < 22)
+                if (BetweenKill < 22)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
         }
@@ -69,13 +68,13 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
 
             Texture2D texture = mod.GetTexture("NPCs/Bosses/EvilBoss/Sins/Envy");
 
-                Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
-                for (int k = 0; k < projectile.oldPos.Length; k++)
-                {
-                    Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin;
-                    Color color = projectile.GetAlpha(Color.White) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
-                    spriteBatch.Draw(texture, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
-                }
+            Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
+            for (int k = 0; k < projectile.oldPos.Length; k++)
+            {
+                Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin;
+                Color color = projectile.GetAlpha(Color.White) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
+                spriteBatch.Draw(texture, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
+            }
             return true;
         }
     }

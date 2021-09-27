@@ -61,9 +61,9 @@ namespace OvermorrowMod.Tiles
 
             if (!tileBelow.active())
             {
-                if(Random == 4)
+                if (Random == 4)
                 {
-                WorldGen.PlaceTile(i, j + 1, ModContent.TileType<BlueCrystalDown>());
+                    WorldGen.PlaceTile(i, j + 1, ModContent.TileType<BlueCrystalDown>());
                 }
             }
 

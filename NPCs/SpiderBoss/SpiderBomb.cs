@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.SpiderBoss
 {
@@ -25,7 +25,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
 
         public override void AI()
         {
-            if(projectile.timeLeft == 1)
+            if (projectile.timeLeft == 1)
             {
                 projectile.hostile = true;
                 projectile.friendly = false;

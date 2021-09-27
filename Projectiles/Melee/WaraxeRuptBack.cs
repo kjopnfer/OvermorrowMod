@@ -4,7 +4,6 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
@@ -22,7 +21,7 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.CloneDefaults(ProjectileID.WoodenBoomerang);
             projectile.width = 22;
             projectile.height = 22;
-            projectile.light = 0.4f;    
+            projectile.light = 0.4f;
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.penetrate = -1;
@@ -40,15 +39,15 @@ namespace OvermorrowMod.Projectiles.Melee
         {
             projectile.scale = 1.3f;
         }
-        
-		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-		{
-			float point = 0f;
-			Vector2 endPoint;
-			endPoint.X = Main.player[projectile.owner].Center.X;
-			endPoint.Y = Main.player[projectile.owner].Center.Y;
-			return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
-		}
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float point = 0f;
+            Vector2 endPoint;
+            endPoint.X = Main.player[projectile.owner].Center.X;
+            endPoint.Y = Main.player[projectile.owner].Center.Y;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
+        }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
@@ -57,7 +56,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 target.AddBuff(153, 200);
             }
         }
-        
+
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             var player = Main.player[projectile.owner];

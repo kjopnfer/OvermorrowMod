@@ -1,10 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.Apollus;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.DripplerBoss;
-using OvermorrowMod.NPCs.Bosses.GraniteMini;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
-using Steamworks;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

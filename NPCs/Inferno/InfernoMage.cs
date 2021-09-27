@@ -39,12 +39,12 @@ namespace OvermorrowMod.NPCs.Inferno
         public override void AI()
         {
 
-                experttimer++;
-                if(expert && experttimer == 1)
-                {
-                    npc.life = npc.life / 2;
-                    npc.lifeMax = npc.lifeMax / 2;
-                }
+            experttimer++;
+            if (expert && experttimer == 1)
+            {
+                npc.life = npc.life / 2;
+                npc.lifeMax = npc.lifeMax / 2;
+            }
 
 
             if (Main.player[npc.target].position.X + 275 > npc.position.X && Main.player[npc.target].position.X < npc.position.X)

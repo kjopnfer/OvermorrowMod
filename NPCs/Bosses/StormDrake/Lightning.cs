@@ -1,10 +1,10 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
@@ -98,7 +98,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
 
             return positions;
         }
-        
+
         public static List<LightningSegment> CreateLightning(Vector2 from, Vector2 to, float thickness, bool sine)
         {
             var positions = new List<LightningSegment>();
@@ -180,7 +180,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             //if (Positions == default || Positions == null) return false;
-            Texture2D texture =  ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
             for (int i = 0; i < Positions.Count - 1; i++)
             {
                 var seg1 = Positions[i];
@@ -192,7 +192,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Vector2 pos = Vector2.Lerp(seg1.Position, seg2.Position, progress);
                     float alpha = MathHelper.Lerp(seg1.Alpha, seg2.Alpha, progress);
                     float scale = MathHelper.Lerp(seg1.Size, seg2.Size, progress) / texture.Width;
-                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(Color.LightBlue, Color.Cyan, alpha) * alpha , 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(Color.LightBlue, Color.Cyan, alpha) * alpha, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale, SpriteEffects.None, 0f);
                 }
             }
             return false;

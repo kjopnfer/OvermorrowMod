@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic
@@ -48,7 +47,7 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
 
             projectile.ai[0]++;
-            if(projectile.ai[0] > 20)
+            if (projectile.ai[0] > 20)
             {
                 projectile.tileCollide = true;
             }

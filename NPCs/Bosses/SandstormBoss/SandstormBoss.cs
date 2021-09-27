@@ -52,7 +52,6 @@
 //ie. "The desert winds become more violent" or something prior to making the sandstorm damage u outside of safe zones
 
 
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.BossBags;
@@ -61,6 +60,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Projectiles.Boss;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;

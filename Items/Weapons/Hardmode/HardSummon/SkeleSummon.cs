@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 
 
@@ -43,14 +41,14 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
             timer++;
 
 
-            if(timer == 600)
+            if (timer == 600)
             {
-				projectile.Kill();
+                projectile.Kill();
             }
 
 
 
-            if(timer == 1)
+            if (timer == 1)
             {
                 savedDMG = projectile.damage;
                 projectile.position.Y = projectile.position.Y - projectile.height;
@@ -87,119 +85,119 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
             }
 
 
-			if (Target) 
-			{
+            if (Target)
+            {
                 projectile.tileCollide = false;
                 projectile.rotation = projectile.velocity.X * 0.03f;
 
 
-                if(NPCtargetY > projectile.Center.Y)
+                if (NPCtargetY > projectile.Center.Y)
                 {
                     projectile.velocity.Y += 0.7f;
                 }
 
-                if(NPCtargetY < projectile.Center.Y)
+                if (NPCtargetY < projectile.Center.Y)
                 {
                     projectile.velocity.Y -= 0.7f;
                 }
 
 
 
-                if(NPCtargetX > projectile.Center.X)
+                if (NPCtargetX > projectile.Center.X)
                 {
                     projectile.velocity.X += 0.7f;
                 }
 
-                if(NPCtargetX < projectile.Center.X)
+                if (NPCtargetX < projectile.Center.X)
                 {
                     projectile.velocity.X -= 0.7f;
                 }
 
 
-                if(projectile.velocity.Y < -7f)
+                if (projectile.velocity.Y < -7f)
                 {
                     projectile.velocity.Y = -7f;
                 }
 
-                if(projectile.velocity.Y > 7f)
+                if (projectile.velocity.Y > 7f)
                 {
                     projectile.velocity.Y = 7f;
                 }
 
 
-                if(projectile.velocity.X < -10f)
+                if (projectile.velocity.X < -10f)
                 {
                     projectile.velocity.X = -10f;
                 }
 
-                if(projectile.velocity.X > 10f)
+                if (projectile.velocity.X > 10f)
                 {
                     projectile.velocity.X = 10f;
                 }
 
             }
-        else
-        {
-            projectile.rotation = 0f;
-            projectile.tileCollide = true;
-            projectile.velocity.Y += 0.3f;
-            if (Main.player[projectile.owner].Center.X + 95 < projectile.Center.X)
+            else
             {
-                projectile.velocity.X -= 0.07f;
-            }
+                projectile.rotation = 0f;
+                projectile.tileCollide = true;
+                projectile.velocity.Y += 0.3f;
+                if (Main.player[projectile.owner].Center.X + 95 < projectile.Center.X)
+                {
+                    projectile.velocity.X -= 0.07f;
+                }
 
 
-            if (Main.player[projectile.owner].Center.X - 95 > projectile.Center.X)
-            {
-                projectile.velocity.X += 0.07f;
-            }
+                if (Main.player[projectile.owner].Center.X - 95 > projectile.Center.X)
+                {
+                    projectile.velocity.X += 0.07f;
+                }
 
-                if(projectile.velocity.X < -4f)
+                if (projectile.velocity.X < -4f)
                 {
                     projectile.velocity.X = -4f;
                 }
 
-                if(projectile.velocity.X > 4f)
+                if (projectile.velocity.X > 4f)
                 {
                     projectile.velocity.X = 4f;
                 }
             }
 
 
-            if(projectile.velocity.Y > 0 || projectile.velocity.Y < 0)
+            if (projectile.velocity.Y > 0 || projectile.velocity.Y < 0)
             {
                 frametimer2++;
                 frametimer++;
-                if(frametimer == 1)
+                if (frametimer == 1)
                 {
                     projectile.frame = 10;
                 }
 
-                if(frametimer2 == 4)
+                if (frametimer2 == 4)
                 {
                     frametimer2 = 0;
                     projectile.frame = projectile.frame + 1;
                 }
 
-                if(projectile.frame > 13)
+                if (projectile.frame > 13)
                 {
                     projectile.frame = 10;
                 }
             }
 
 
-            if(penet > 0)
+            if (penet > 0)
             {
-			    projectile.damage = 0;
+                projectile.damage = 0;
                 penet++;
             }
-            
-            if(projectile.damage == 0)
+
+            if (projectile.damage == 0)
             {
                 penet2++;
             }
 
-            if(penet2 > 25)
+            if (penet2 > 25)
             {
                 penet = 0;
                 penet2 = 0;

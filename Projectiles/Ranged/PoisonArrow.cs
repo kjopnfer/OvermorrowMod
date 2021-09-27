@@ -1,10 +1,7 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
@@ -40,7 +37,7 @@ namespace OvermorrowMod.Projectiles.Ranged
                 target.AddBuff(20, 240);
             }
         }
-        
+
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             // Makes dust projectiled on tile

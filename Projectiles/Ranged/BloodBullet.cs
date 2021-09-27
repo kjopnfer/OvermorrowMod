@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Effects;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
@@ -22,8 +19,8 @@ namespace OvermorrowMod.Projectiles.Ranged
             projectile.hostile = false;
             projectile.alpha = 255;
         }
-        public override void AI() 
-		{
+        public override void AI()
+        {
             Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
             projectile.damage = 17;
             projectile.ai[0]++;

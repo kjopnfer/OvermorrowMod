@@ -1,9 +1,9 @@
-using OvermorrowMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Ranged;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 {

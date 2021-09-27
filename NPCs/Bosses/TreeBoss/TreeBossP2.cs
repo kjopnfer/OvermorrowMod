@@ -1,19 +1,19 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Items.Placeable.Boss;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.Items.Placeable.Boss;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.WardenClass.Weapons.Artifacts;
-using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
-using OvermorrowMod.Items.BossBags;
-using OvermorrowMod.Items.Materials;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {

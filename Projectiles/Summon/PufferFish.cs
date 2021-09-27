@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Summon;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -40,7 +38,7 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.penetrate = -1;
             projectile.timeLeft = 80000;
         }
-        
+
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
@@ -63,14 +61,14 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.rotation = (projectile.Center - Main.MouseWorld).ToRotation();
 
 
-                projectile.rotation = (Main.MouseWorld - projectile.Center).ToRotation();
-            
-                projectile.spriteDirection = -1;
+            projectile.rotation = (Main.MouseWorld - projectile.Center).ToRotation();
+
+            projectile.spriteDirection = -1;
 
             if (Main.player[projectile.owner].channel)
             {
                 timer++;
-                if(timer == 10)
+                if (timer == 10)
                 {
                     int Random = Main.rand.Next(-15, 16);
                     Vector2 position = projectile.Center;
@@ -85,11 +83,11 @@ namespace OvermorrowMod.Projectiles.Summon
                 }
             }
 
-            if(Main.MouseWorld.X > projectile.Center.X)
+            if (Main.MouseWorld.X > projectile.Center.X)
             {
                 righttimer = 0;
                 lefttimer++;
-                if(lefttimer == 1)
+                if (lefttimer == 1)
                 {
                     projectile.frame = 2;
                 }
@@ -106,7 +104,7 @@ namespace OvermorrowMod.Projectiles.Summon
             {
                 lefttimer = 0;
                 righttimer++;
-                if(righttimer == 1)
+                if (righttimer == 1)
                 {
                     projectile.frame = 0;
                 }

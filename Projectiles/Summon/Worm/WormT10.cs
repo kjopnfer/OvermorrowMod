@@ -1,7 +1,5 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Summon.Worm
@@ -17,7 +15,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 200;
             projectile.penetrate = -1;
@@ -30,12 +28,12 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
             Wtimer++;
-            if(Wtimer == 1)
+            if (Wtimer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT11"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
@@ -50,7 +48,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             projectile.tileCollide = false;
         }
     }
-    
+
     public class WormT11 : ModProjectile
     {
         private int timer = 0;
@@ -62,7 +60,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -78,12 +76,12 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
 
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -95,7 +93,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT12"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -107,18 +105,18 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
-	}   
+    }
 
     public class WormT12 : ModProjectile
     {
@@ -131,7 +129,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -146,12 +144,12 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
 
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -160,7 +158,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 projectile.spriteDirection = -1;
             }
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT13"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -171,18 +169,18 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
-	}   
+    }
     public class WormT13 : ModProjectile
     {
         private int timer = 0;
@@ -194,7 +192,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -210,11 +208,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -222,13 +220,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             {
                 projectile.spriteDirection = -1;
             }
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
             }
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT14"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -238,18 +236,18 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
-	} 
+    }
 
     public class WormT14 : ModProjectile
     {
@@ -262,7 +260,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -276,11 +274,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -288,13 +286,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             {
                 projectile.spriteDirection = -1;
             }
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
             }
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT15"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -304,16 +302,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
     }
 
@@ -328,7 +326,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -344,11 +342,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -356,13 +354,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             {
                 projectile.spriteDirection = -1;
             }
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
             }
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT16"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -372,16 +370,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
     }
 
@@ -396,7 +394,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -410,11 +408,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -423,13 +421,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 projectile.spriteDirection = -1;
             }
             projectile.timeLeft = 2000;
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
             }
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT17"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -439,16 +437,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
     }
 
@@ -463,7 +461,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -478,11 +476,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -490,13 +488,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             {
                 projectile.spriteDirection = -1;
             }
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
             }
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT18"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -506,16 +504,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
     }
 
@@ -530,7 +528,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -545,11 +543,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -557,13 +555,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             {
                 projectile.spriteDirection = -1;
             }
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
             }
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT19"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -573,16 +571,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
     }
 
@@ -597,7 +595,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -611,11 +609,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -623,13 +621,13 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
             {
                 projectile.spriteDirection = -1;
             }
-            if(Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
             {
                 projectile.Kill();
             }
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT20"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
             }
@@ -639,16 +637,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 // set rotation to the parent segment
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
     }
 
@@ -662,7 +660,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void SetDefaults()
         {
-			projectile.width = 24;
+            projectile.width = 24;
             projectile.height = 24;
             projectile.timeLeft = 2000;
             projectile.penetrate = -1;
@@ -678,11 +676,11 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
         public override void AI()
         {
 
-            if(Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
+            if (Main.player[projectile.owner].GetModPlayer<OvermorrowModPlayer>().SkyArmor)
             {
                 projectile.timeLeft = 10;
             }
-            if(projectile.Center.X < Main.player[projectile.owner].Center.X)
+            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
             {
                 projectile.spriteDirection = 1;
             }
@@ -697,16 +695,16 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation() + MathHelper.ToRadians(90f);
                 // set rotation to the parent segment
                 // check if distance is over segment size (ps: adjust height to right value)
-                    // direction from parent to me
-                    Vector2 dir = projectile2.DirectionTo(projectile.Center);
-                    // position where the distance between parent and me is exactly the segment length
-                    projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                // direction from parent to me
+                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                // position where the distance between parent and me is exactly the segment length
+                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
             }
-                else
-                {
-                    // kil
-                    projectile.Kill();
-                }
+            else
+            {
+                // kil
+                projectile.Kill();
+            }
         }
-	}   
+    }
 }

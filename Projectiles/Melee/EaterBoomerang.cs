@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -37,29 +36,29 @@ namespace OvermorrowMod.Projectiles.Melee
         public override void AI()
         {
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 SavedDMG = projectile.damage;
             }
 
-			projectile.rotation += 0.36f; 
+            projectile.rotation += 0.36f;
 
-            if(projectile.timeLeft < 65)
+            if (projectile.timeLeft < 65)
             {
                 projectile.timeLeft = 10;
                 ComingBack = true;
             }
 
-            if(projectile.timeLeft > 98)
+            if (projectile.timeLeft > 98)
             {
                 projectile.tileCollide = false;
             }
-            else if(!ComingBack)
+            else if (!ComingBack)
             {
                 projectile.tileCollide = true;
             }
 
-            if(ComingBack)
+            if (ComingBack)
             {
                 flametimer++;
                 float BetweenKill = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
@@ -71,9 +70,9 @@ namespace OvermorrowMod.Projectiles.Melee
                 projectile.velocity = direction * 18;
                 projectile.damage = SavedDMG * 3;
                 projectile.frame = 1;
-                if(BetweenKill < 42)
+                if (BetweenKill < 42)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
         }
@@ -97,7 +96,7 @@ namespace OvermorrowMod.Projectiles.Melee
             Texture2D texture1 = mod.GetTexture("Projectiles/Melee/EaterBoomerangDraw1");
             Texture2D texture2 = mod.GetTexture("Projectiles/Melee/EaterBoomerangDraw2");
 
-            if(!ComingBack)
+            if (!ComingBack)
             {
                 Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
                 for (int k = 0; k < projectile.oldPos.Length; k++)
@@ -125,7 +124,7 @@ namespace OvermorrowMod.Projectiles.Melee
             Vector2 eeee = projectile.Center;
             Main.PlaySound(SoundID.Item64, (int)eeee.X, (int)eeee.Y);
             ComingBack = true;
-            if(ComingBack)
+            if (ComingBack)
             {
                 target.AddBuff(39, flametimer * 5 - 7);
             }

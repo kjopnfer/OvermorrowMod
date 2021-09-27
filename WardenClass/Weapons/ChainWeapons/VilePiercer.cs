@@ -1,6 +1,4 @@
-using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.RuneBuffs;
-using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -46,7 +44,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             // Get the class info from the player
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
-            if(player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 1 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
+            if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 1 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
             {
                 item.useStyle = ItemUseStyleID.HoldingUp;
                 item.useAnimation = 45;

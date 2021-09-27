@@ -1,6 +1,6 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.PostRider
@@ -39,18 +39,18 @@ namespace OvermorrowMod.NPCs.PostRider
         public override void AI()
         {
 
-                experttimer++;
-                if(expert && experttimer == 1)
-                {
-                    npc.life = 600;
-                    npc.lifeMax = 600;
-                    npc.damage = 55;
-                }
+            experttimer++;
+            if (expert && experttimer == 1)
+            {
+                npc.life = 600;
+                npc.lifeMax = 600;
+                npc.damage = 55;
+            }
 
 
 
             Attacktimer++;
-            if(Attacktimer == 75)
+            if (Attacktimer == 75)
             {
                 npc.velocity.X = 0;
                 npc.velocity.Y = 0;

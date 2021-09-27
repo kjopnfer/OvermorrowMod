@@ -39,7 +39,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
             Vector2 RotValue2 = new Vector2(-projectile.velocity.X, -projectile.velocity.Y).RotatedBy(MathHelper.ToRadians(-10f));
             Vector2 RotValue3 = new Vector2(-projectile.velocity.X, -projectile.velocity.Y).RotatedBy(MathHelper.ToRadians(20f));
             Vector2 RotValue4 = new Vector2(-projectile.velocity.X, -projectile.velocity.Y).RotatedBy(MathHelper.ToRadians(-20f));
-            Projectile.NewProjectile(projectile.Center, -projectile.velocity, ModContent.ProjectileType<EvilShotBlast2>(), projectile.damage / 2, 3f, projectile.owner, 0f);    
+            Projectile.NewProjectile(projectile.Center, -projectile.velocity, ModContent.ProjectileType<EvilShotBlast2>(), projectile.damage / 2, 3f, projectile.owner, 0f);
             Projectile.NewProjectile(projectile.Center, RotValue1, ModContent.ProjectileType<EvilShotBlast2>(), projectile.damage / 2, 3f, projectile.owner, 0f);
             Projectile.NewProjectile(projectile.Center, RotValue2, ModContent.ProjectileType<EvilShotBlast2>(), projectile.damage / 2, 3f, projectile.owner, 0f);
             Projectile.NewProjectile(projectile.Center, RotValue3, ModContent.ProjectileType<EvilShotBlast2>(), projectile.damage / 2, 3f, projectile.owner, 0f);
@@ -61,9 +61,9 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
 
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
-                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                if (Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
                 {
                     projectile.velocity.X = 10;
                     projectile.velocity.Y = 0;
@@ -119,7 +119,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             {
-                if(bounce < 3)
+                if (bounce < 3)
                 {
                     projectile.velocity.X *= -1;
                     projectile.velocity.Y *= -1;
@@ -135,7 +135,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            if(bounce < 3)
+            if (bounce < 3)
             {
                 projectile.velocity.X *= -1;
                 projectile.velocity.Y *= -1;
@@ -145,17 +145,17 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
                 projectile.Kill();
             }
         }
-        
+
         public override void AI()
         {
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 SavedDMG = projectile.damage;
                 projectile.damage = 0;
             }
-            if(timer > 5)
+            if (timer > 5)
             {
                 projectile.damage = SavedDMG;
             }

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -35,20 +34,20 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
         public override void AI()
         {
 
-			projectile.rotation += 0.43f; 
+            projectile.rotation += 0.43f;
 
-            if(projectile.timeLeft < 65)
+            if (projectile.timeLeft < 65)
             {
                 projectile.timeLeft = 10;
                 ComingBack = true;
             }
 
-            else if(!ComingBack)
+            else if (!ComingBack)
             {
                 projectile.tileCollide = true;
             }
 
-            if(ComingBack)
+            if (ComingBack)
             {
                 float BetweenKill = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
                 projectile.tileCollide = false;
@@ -57,16 +56,16 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 projectile.velocity = direction * 18;
-                if(BetweenKill < 22)
+                if (BetweenKill < 22)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            if(ComingBack)
+            if (ComingBack)
             {
                 Texture2D texture = mod.GetTexture("Projectiles/Magic/Gems/SapphireProj");
 

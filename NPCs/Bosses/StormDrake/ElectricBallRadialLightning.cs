@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -100,7 +99,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                                 }
                             }
-                        }   
+                        }
                     }
                     break;
             }

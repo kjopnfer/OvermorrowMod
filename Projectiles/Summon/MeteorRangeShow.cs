@@ -1,9 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using System;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -28,7 +26,7 @@ namespace OvermorrowMod.Projectiles.Summon
         {
             Projectile parentProjectile = Main.projectile[(int)projectile.ai[0]];
             projectile.timeLeft += 1;
-            if(parentProjectile.type == mod.ProjectileType("MeteorStill"))
+            if (parentProjectile.type == mod.ProjectileType("MeteorStill"))
             {
                 projectile.position.X = 200 * (float)Math.Cos(projectile.rotation) + parentProjectile.Center.X;
                 projectile.position.Y = 200 * (float)Math.Sin(projectile.rotation) + parentProjectile.Center.Y;

@@ -32,7 +32,7 @@ namespace OvermorrowMod.Projectiles.Summon
         {
             RandomCRYY = Main.rand.Next(-5, 6);
             RandomCRY = Main.rand.Next(-2, 2);
-            if(Shards > 0)
+            if (Shards > 0)
             {
                 Vector2 value1 = new Vector2(0f, 0f);
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("CrabBoom"), projectile.damage * 2, 1f, projectile.owner, 0f);

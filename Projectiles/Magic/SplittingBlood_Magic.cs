@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic
 {

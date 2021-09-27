@@ -98,7 +98,7 @@ namespace WardenClass
             /*Vector2 center = new Vector2((float)(Main.npcTexture[projectile.type].Width / 2), (float)(Main.npcTexture[projectile.type].Height / Main.framecou[projectile.type] / 2));
 
             Main.spriteBatch.Draw(SoulTexture, projectile.Center - Main.screenPosition, null, Color.Cyan, projectile.rotation, center, 1, SpriteEffects.None, 0f);*/
-            
+
 
             /*Texture2D projTexture = ModContent.GetTexture("OvermorrowMod/Effects/Trail3");
             int length = 32;

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Armor.Marble;
 using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Materials;
@@ -7,6 +6,7 @@ using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Projectiles.NPCs.Hostile;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -66,7 +66,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         {
             OvermorrowWorld.downedLady = false;
 
-            
+
             Player player = Main.player[npc.target];
 
             // AI [0] = Case Value
@@ -405,7 +405,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         if (npc.ai[1] == 360)
                         {
                             Main.projectile[projalt].Kill();
-                            
+
                             npc.ai[1] = 0;
                             npc.ai[2] = 1;
                             npc.ai[0] = 4;

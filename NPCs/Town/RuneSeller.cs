@@ -92,7 +92,8 @@ namespace OvermorrowMod.NPCs.Town
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<FrostburnRune>());
             nextSlot++;
 
-            if (Main.LocalPlayer.HasItem(ModContent.ItemType<VinePiercer>())) {
+            if (Main.LocalPlayer.HasItem(ModContent.ItemType<VinePiercer>()))
+            {
                 shop.item[nextSlot].SetDefaults(ModContent.ItemType<PoisonRune>());
                 nextSlot++;
             }

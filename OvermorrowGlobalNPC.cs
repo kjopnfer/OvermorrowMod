@@ -1,10 +1,12 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
+using OvermorrowMod.Projectiles.Melee;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System.Collections.Generic;
@@ -12,8 +14,6 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WardenClass;
-using OvermorrowMod.Projectiles.Melee;
-using OvermorrowMod.Items.Accessories;
 
 namespace OvermorrowMod
 {

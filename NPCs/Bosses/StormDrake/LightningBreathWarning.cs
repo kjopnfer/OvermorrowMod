@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {

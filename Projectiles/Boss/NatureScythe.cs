@@ -31,7 +31,7 @@ namespace OvermorrowMod.Projectiles.Boss
         public override void AI()
         {
             if (projectile.ai[1] < 15)
-            { 
+            {
                 Vector2 origin = projectile.Center;
                 float radius = 15;
                 int numLocations = 30;
@@ -78,7 +78,7 @@ namespace OvermorrowMod.Projectiles.Boss
             }
             else
             {
-                if(projectile.ai[0] == 161)
+                if (projectile.ai[0] == 161)
                 {
                     // Reverse the direction
                     projectile.velocity = storeVelocity * -1;

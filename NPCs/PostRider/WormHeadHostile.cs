@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace OvermorrowMod.NPCs.PostRider
 {
@@ -37,11 +35,11 @@ namespace OvermorrowMod.NPCs.PostRider
             projectile.velocity.Y = projectile.velocity.Y + 0.06f;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
             timer++;
-            if(timer == 3)
+            if (timer == 3)
             {
-            Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("WormBodyHostile"), projectile.damage - 10, 1f, projectile.owner, 0f);
-            timer = 0;
+                Vector2 value1 = new Vector2(0f, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("WormBodyHostile"), projectile.damage - 10, 1f, projectile.owner, 0f);
+                timer = 0;
             }
         }
     }

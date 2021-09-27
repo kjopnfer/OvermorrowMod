@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {

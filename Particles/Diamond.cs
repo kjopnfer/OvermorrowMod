@@ -1,8 +1,8 @@
-using System;
-using Terraria;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects;
+using System;
+using Terraria;
 
 namespace OvermorrowMod.Particles
 {
@@ -16,7 +16,7 @@ namespace OvermorrowMod.Particles
                 particle.customData[0] = particle.scale;
             }
             else
-            particle.customData[0] = Main.rand.NextFloat(1f, 3f);
+                particle.customData[0] = Main.rand.NextFloat(1f, 3f);
             particle.scale = 0;
         }
         public override void Update()

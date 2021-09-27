@@ -1,6 +1,6 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Inferno
@@ -44,14 +44,14 @@ namespace OvermorrowMod.NPCs.Inferno
         public override void AI()
         {
 
-                experttimer++;
-                if(expert && experttimer == 1)
-                {
-                    npc.life = npc.life / 2;
-                    npc.lifeMax = npc.lifeMax / 2;
-                    npc.damage = npc.damage / 2;
-                    expertflames = 0.5f;
-                }
+            experttimer++;
+            if (expert && experttimer == 1)
+            {
+                npc.life = npc.life / 2;
+                npc.lifeMax = npc.lifeMax / 2;
+                npc.damage = npc.damage / 2;
+                expertflames = 0.5f;
+            }
 
 
             if (Main.player[npc.target].position.X + 200 < npc.position.X && movetimer == 0)
@@ -120,12 +120,12 @@ namespace OvermorrowMod.NPCs.Inferno
             if (timer < 166)
             {
                 frametimer++;
-                if(frametimer == 3)
+                if (frametimer == 3)
                 {
                     frametimer = 0;
                     frame++;
                 }
-                if(frame > 19)
+                if (frame > 19)
                 {
                     frame = 6;
                 }

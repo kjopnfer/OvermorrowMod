@@ -1,8 +1,6 @@
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee
@@ -48,7 +46,7 @@ namespace OvermorrowMod.Projectiles.Melee
             float distanceFromTarget = 110f;
             Vector2 targetCenter = projectile.position;
             bool foundTarget = false;
-            if(!ComingBack)
+            if (!ComingBack)
             {
                 projectile.rotation = projectile.velocity.ToRotation();
             }
@@ -61,8 +59,8 @@ namespace OvermorrowMod.Projectiles.Melee
                     if (npc.CanBeChasedBy())
                     {
                         float between = Vector2.Distance(npc.Center, projectile.Center);
-                         closest = Vector2.Distance(projectile.Center, targetCenter) > between;
-                         inRange = between < distanceFromTarget;
+                        closest = Vector2.Distance(projectile.Center, targetCenter) > between;
+                        inRange = between < distanceFromTarget;
 
                         if (((closest && inRange) || !foundTarget))
                         {
@@ -84,28 +82,28 @@ namespace OvermorrowMod.Projectiles.Melee
             if (foundTarget && Main.player[projectile.owner].channel)
             {
                 float betweentar = Vector2.Distance(tar, projectile.Center);
-                if(betweentar < 110 || ComingBack)
+                if (betweentar < 110 || ComingBack)
                 {
-                projectile.tileCollide = false;
-                projectile.timeLeft = 100;
-                TimerOf++;
-                projectile.velocity.X = 0;
-                projectile.velocity.Y = 0;
-                if(TimerOf < 4)
-                {
-                    CircleArr = (projectile.Center - tar).ToRotation();
-                }
-                if(TimerOf > 2)
-                {
-                    projectile.rotation = (tar - projectile.Center).ToRotation();
-                    ComingBack = true;
-                    projectile.position.X = 90 * (float)Math.Cos(CircleArr) + tar.X - projectile.width / 2;
-                    projectile.position.Y = 90 * (float)Math.Sin(CircleArr) + tar.Y - projectile.height / 2;
-                    CircleArr += (float)((2 * Math.PI) / (Math.PI * 2 * 200 / 10)); // 200 is the speed, god only knows what dividing by 10 does
-                }
+                    projectile.tileCollide = false;
+                    projectile.timeLeft = 100;
+                    TimerOf++;
+                    projectile.velocity.X = 0;
+                    projectile.velocity.Y = 0;
+                    if (TimerOf < 4)
+                    {
+                        CircleArr = (projectile.Center - tar).ToRotation();
+                    }
+                    if (TimerOf > 2)
+                    {
+                        projectile.rotation = (tar - projectile.Center).ToRotation();
+                        ComingBack = true;
+                        projectile.position.X = 90 * (float)Math.Cos(CircleArr) + tar.X - projectile.width / 2;
+                        projectile.position.Y = 90 * (float)Math.Sin(CircleArr) + tar.Y - projectile.height / 2;
+                        CircleArr += (float)((2 * Math.PI) / (Math.PI * 2 * 200 / 10)); // 200 is the speed, god only knows what dividing by 10 does
+                    }
                 }
             }
-            else if(foundTarget && ComingBack)
+            else if (foundTarget && ComingBack)
             {
                 Vector2 position = projectile.Center;
                 Vector2 targetPosition = tar;

@@ -1,9 +1,9 @@
-using System;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.TreeBoss;
+using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Boss
 {

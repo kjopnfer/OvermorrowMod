@@ -1,7 +1,7 @@
-using System;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

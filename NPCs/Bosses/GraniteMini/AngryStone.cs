@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Armor;
 using OvermorrowMod.Items.BossBags;
@@ -9,6 +8,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff;
 using OvermorrowMod.Projectiles.Boss;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -161,7 +161,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 return;
             }
 
-           
+
 
             if (npc.life <= npc.lifeMax * 0.5f || OvermorrowWorld.downedLady)
             {
@@ -577,7 +577,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             }
 
                             if (npc.ai[1] > 5 && npc.ai[1] < 90)
-                            { 
+                            {
                                 Vector2 origin = new Vector2(player.Center.X + -300 * Direction, player.Center.Y);
                                 float radius = 15;
                                 int numLocations = 30;

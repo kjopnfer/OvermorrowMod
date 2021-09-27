@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Buffs;
 using OvermorrowMod.WardenClass;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact
 {

@@ -1,9 +1,8 @@
 using Microsoft.Xna.Framework;
-using System;
+using OvermorrowMod.Buffs.Debuffs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
@@ -52,7 +51,7 @@ namespace OvermorrowMod.Projectiles.Ranged
             {
                 target.AddBuff(ModContent.BuffType<FungalInfection>(), 400);
             }
-            projectile.damage /=2;
+            projectile.damage /= 2;
         }
     }
 }

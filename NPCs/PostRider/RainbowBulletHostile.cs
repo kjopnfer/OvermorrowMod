@@ -1,15 +1,14 @@
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.ID;
 
 namespace OvermorrowMod.NPCs.PostRider
 {
     public class RainbowBulletHostile : ModProjectile
     {
-        
+
         public override bool CanDamage() => false;
-        private int timer = 0; 
+        private int timer = 0;
 
         public override void SetDefaults()
         {
@@ -28,11 +27,11 @@ namespace OvermorrowMod.NPCs.PostRider
         {
 
             timer++;
-            if(timer == 2)
+            if (timer == 2)
             {
-            Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("RainbowTrailHostile"), projectile.damage, 1f, projectile.owner, 0f);
-            timer = 0;
+                Vector2 value1 = new Vector2(0f, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("RainbowTrailHostile"), projectile.damage, 1f, projectile.owner, 0f);
+                timer = 0;
             }
         }
     }

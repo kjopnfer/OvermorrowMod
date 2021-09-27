@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Inferno
 {
@@ -30,25 +30,25 @@ namespace OvermorrowMod.NPCs.Inferno
         public override void Kill(int timeLeft)
         {
             RandomNPC = Main.rand.Next(0, 5);
-            if(RandomNPC == 0)
+            if (RandomNPC == 0)
             {
-            NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("FlameThrower"));
+                NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("FlameThrower"));
             }
-            if(RandomNPC == 1)
+            if (RandomNPC == 1)
             {
-            NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("InfernoBomber"));
+                NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("InfernoBomber"));
             }
-            if(RandomNPC == 2)
+            if (RandomNPC == 2)
             {
-            NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("InfernoMage"));
+                NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("InfernoMage"));
             }
-            if(RandomNPC == 3)
+            if (RandomNPC == 3)
             {
-            NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("InfernoSupporter"));
+                NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("InfernoSupporter"));
             }
-            if(RandomNPC == 4)
+            if (RandomNPC == 4)
             {
-            NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("InfernoWarrior"));
+                NPC.NewNPC((int)projectile.Center.X + 0, (int)projectile.Center.Y + 0, mod.NPCType("InfernoWarrior"));
             }
 
             Vector2 value1 = new Vector2(0f, 0f);

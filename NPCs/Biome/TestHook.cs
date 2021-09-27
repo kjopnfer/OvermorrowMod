@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -37,7 +36,7 @@ namespace OvermorrowMod.NPCs.Biome
 
             NPC npc = Main.npc[(int)projectile.ai[1]];
 
-            if(npc.active)
+            if (npc.active)
             {
                 projectile.timeLeft = 3;
             }
@@ -45,7 +44,7 @@ namespace OvermorrowMod.NPCs.Biome
             npc.rotation = (npc.Center - Main.player[projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
 
             timer++;
-            if(timer == 100)
+            if (timer == 100)
             {
                 Vector2 position = projectile.Center;
                 Vector2 targetPosition = Main.player[projectile.owner].Center;
@@ -55,8 +54,8 @@ namespace OvermorrowMod.NPCs.Biome
                 Main.PlaySound(SoundID.Item, npc.position, 99);
                 timer = 0;
             }
-            
-            if(npc.velocity.X < 1 && npc.velocity.X > -1)
+
+            if (npc.velocity.X < 1 && npc.velocity.X > -1)
             {
                 projectile.rotation = (projectile.Center - Main.player[projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
                 projectile.frame = 0;
@@ -68,12 +67,12 @@ namespace OvermorrowMod.NPCs.Biome
             }
 
 
-            if(Vector2.Distance(npc.Center, projectile.Center) < 77)
+            if (Vector2.Distance(npc.Center, projectile.Center) < 77)
             {
                 npc.velocity *= 0f;
             }
 
-            if(timer > 25 && timer < 46)
+            if (timer > 25 && timer < 46)
             {
                 projectile.velocity *= 0.4f;
 
@@ -85,10 +84,10 @@ namespace OvermorrowMod.NPCs.Biome
             }
 
 
-			if (!Main.npc[(int)projectile.ai[1]].active) 
+            if (!Main.npc[(int)projectile.ai[1]].active)
             {
-				projectile.Kill();
-				projectile.active = false;
+                projectile.Kill();
+                projectile.active = false;
             }
         }
 

@@ -1,8 +1,8 @@
-using System;
-using Terraria;
-using System.Reflection;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Terraria;
 
 namespace OvermorrowMod.Effects.Prim
 {
@@ -47,18 +47,18 @@ namespace OvermorrowMod.Effects.Prim
             for (int i = 0; i < activeTrails.Count; i++)
             {
                 int type = (int)activeTrails[i].Entity.GetType().GetField("type", BindingFlags.Public | BindingFlags.Instance).GetValue(activeTrails[i].Entity);
-                if (type == 0 || type != activeTrails[i].EntityType) 
+                if (type == 0 || type != activeTrails[i].EntityType)
                 {
                     activeTrails[i].Dead = true;
                 }
                 if (activeTrails[i].Entity.active && !activeTrails[i].Dying)
-                activeTrails[i].Update();
+                    activeTrails[i].Update();
                 else
                 {
                     activeTrails[i].Dying = true;
                     activeTrails[i].UpdateDead();
                 }
-                if (activeTrails[i].Dead) 
+                if (activeTrails[i].Dead)
                 {
                     activeTrails.RemoveAt(i);
                     i--;

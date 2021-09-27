@@ -8,7 +8,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 {
     public class EvilRay6 : ModProjectile
     {
-        
+
         private int timer = 0;
         private int rot = 700;
         Color alpha = Color.Purple;
@@ -35,12 +35,12 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             Projectile parentProjectile = Main.projectile[(int)projectile.ai[0]];
             projectile.Center = parentProjectile.Center;
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.rotation = MathHelper.ToRadians(-45f);
             }
 
-            if(timer == 150)
+            if (timer == 150)
             {
                 alpha = Color.Red;
                 rot = -700;
@@ -65,7 +65,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         {
 
             projectile.alpha = 0;
-            
+
             projectile.rotation += (float)((2 * Math.PI) / (Math.PI * 2 * rot / 10)); // 200 is the speed, god only knows what dividing by 10 does
 
             projectile.velocity = Vector2.Zero;

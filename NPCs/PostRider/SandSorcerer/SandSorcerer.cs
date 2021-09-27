@@ -1,8 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
-using System;
 
 namespace OvermorrowMod.NPCs.PostRider.SandSorcerer
 {
@@ -38,13 +36,13 @@ namespace OvermorrowMod.NPCs.PostRider.SandSorcerer
 
 
 
-                experttimer++;
-                if(expert && experttimer == 1)
-                {
-                    npc.life = 600;
-                    npc.lifeMax = 600;
-                    npc.damage = 55;
-                }
+            experttimer++;
+            if (expert && experttimer == 1)
+            {
+                npc.life = 600;
+                npc.lifeMax = 600;
+                npc.damage = 55;
+            }
 
             Attacktimer++;
             int type = mod.ProjectileType("SandBolt2");

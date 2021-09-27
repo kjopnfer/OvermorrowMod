@@ -1,7 +1,7 @@
+using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 
@@ -37,22 +37,22 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
             Main.PlaySound(SoundID.Item6, projectile.Center);
 
 
-                Vector2 position = target.Center;
-                int radius = 9;     //this is the explosion radius, the highter is the value the bigger is the explosion
+            Vector2 position = target.Center;
+            int radius = 9;     //this is the explosion radius, the highter is the value the bigger is the explosion
 
-                for (int x = -radius; x <= radius; x++)
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
                 {
-                    for (int y = -radius; y <= radius; y++)
-                    {
 
-                        if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
-                        {
-                            Color alpha = Color.White; 
-                            int dust = Dust.NewDust(position, projectile.width, projectile.height, DustID.FrostHydra, 0.0f, 0.0f, 120, alpha, 2f);
-                            Main.dust[dust].noGravity = true;
-                        }
+                    if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
+                    {
+                        Color alpha = Color.White;
+                        int dust = Dust.NewDust(position, projectile.width, projectile.height, DustID.FrostHydra, 0.0f, 0.0f, 120, alpha, 2f);
+                        Main.dust[dust].noGravity = true;
                     }
                 }
+            }
 
         }
 

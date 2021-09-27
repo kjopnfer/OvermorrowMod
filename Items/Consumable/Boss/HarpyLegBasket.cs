@@ -1,9 +1,9 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.Items.Consumable.Boss
 {
@@ -39,7 +39,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         {
             if (player.ZoneSkyHeight)
             {
-                Projectile.NewProjectile(player.Center + Vector2.UnitY * - 75, Vector2.Zero, ModContent.ProjectileType<StormDrakeAnim>(), 0, 0, Main.myPlayer, 0, 900);
+                Projectile.NewProjectile(player.Center + Vector2.UnitY * -75, Vector2.Zero, ModContent.ProjectileType<StormDrakeAnim>(), 0, 0, Main.myPlayer, 0, 900);
                 return true;
             }
             return false;

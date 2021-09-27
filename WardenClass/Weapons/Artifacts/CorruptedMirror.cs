@@ -1,8 +1,5 @@
-using OvermorrowMod.Buffs;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {

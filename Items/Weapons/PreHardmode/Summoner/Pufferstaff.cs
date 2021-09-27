@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using OvermorrowMod.Buffs.Summon;
+using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Summon;
-using OvermorrowMod.Projectiles.Summon;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
 {

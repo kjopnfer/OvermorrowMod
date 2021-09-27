@@ -3,8 +3,6 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.NPCs.BloodMoon
 {
@@ -39,29 +37,29 @@ namespace OvermorrowMod.NPCs.BloodMoon
             Player player = Main.player[projectile.owner];
 
 
-            if(Vector2.Distance(player.Center, projectile.Center) > 500)
+            if (Vector2.Distance(player.Center, projectile.Center) > 500)
             {
-                if(projectile.velocity.Y > 0.9f)
+                if (projectile.velocity.Y > 0.9f)
                 {
                     projectile.velocity.Y = 0.9f;
                 }
             }
             else
             {
-                if(projectile.velocity.Y > 2f)
+                if (projectile.velocity.Y > 2f)
                 {
                     projectile.velocity.Y = 2f;
                 }
             }
 
 
-            if(projectile.Center.Y > player.Center.Y + 17 && Vector2.Distance(player.Center, projectile.Center) < 30)
+            if (projectile.Center.Y > player.Center.Y + 17 && Vector2.Distance(player.Center, projectile.Center) < 30)
             {
                 projectile.Kill();
             }
 
 
-            if(projectile.velocity.Y > 0)
+            if (projectile.velocity.Y > 0)
             {
                 if (projectile.localAI[0] == 0f)
                 {
@@ -92,7 +90,7 @@ namespace OvermorrowMod.NPCs.BloodMoon
         }
 
 
-  
+
 
         private void AdjustMagnitude(ref Vector2 vector)
         {

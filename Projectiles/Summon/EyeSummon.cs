@@ -1,15 +1,14 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.Summon;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Buffs.Summon;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
     public class EyeSummon : ModProjectile
-    {        
+    {
         public override void SetDefaults()
         {
             projectile.width = 38;
@@ -33,7 +32,7 @@ namespace OvermorrowMod.Projectiles.Summon
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
-            
+
             #region Active check
             if (player.dead || !player.active)
             {

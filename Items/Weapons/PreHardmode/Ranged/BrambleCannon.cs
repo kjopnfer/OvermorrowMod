@@ -36,7 +36,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             int numberProjectiles = Main.rand.Next(2, 3);
             for (int i = 0; i < numberProjectiles; i++)
             {
-             
+
                 Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(30f));
                 Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, 0.5f, player.whoAmI);
             }

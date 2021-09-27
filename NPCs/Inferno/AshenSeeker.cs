@@ -58,20 +58,20 @@ namespace OvermorrowMod.NPCs.Inferno
                 npc.velocity.Y += speed;
             }
 
-            if(npc.velocity.X > 4f)
+            if (npc.velocity.X > 4f)
             {
                 npc.velocity.X = 0f;
             }
-            if(npc.velocity.X < -4f)
+            if (npc.velocity.X < -4f)
             {
                 npc.velocity.X = 0f;
             }
 
-            if(npc.velocity.Y > 4f)
+            if (npc.velocity.Y > 4f)
             {
                 npc.velocity.Y = 0f;
             }
-            if(npc.velocity.Y < -4f)
+            if (npc.velocity.Y < -4f)
             {
                 npc.velocity.Y = 0f;
             }

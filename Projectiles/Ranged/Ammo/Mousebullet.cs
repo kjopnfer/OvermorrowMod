@@ -1,7 +1,5 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Ranged.Ammo
@@ -31,14 +29,14 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
             Vector2 PlayerPosition4 = Main.MouseWorld;
             Vector2 GuideDirection4 = PlayerPosition4 - GuidePos4;
             GuideDirection4.Normalize();
-            projectile.velocity = GuideDirection4 * 15f;  
+            projectile.velocity = GuideDirection4 * 15f;
             projectile.rotation = projectile.velocity.ToRotation();
-                
+
             float BetweenKill = Vector2.Distance(Main.MouseWorld, projectile.Center);
 
-            if(BetweenKill < 16)
+            if (BetweenKill < 16)
             {
-				projectile.Kill();    
+                projectile.Kill();
             }
 
         }

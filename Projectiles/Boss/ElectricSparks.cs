@@ -79,7 +79,7 @@ namespace OvermorrowMod.Projectiles.Boss
                     expr_14115_cp_0.position.Y = expr_14115_cp_0.position.Y + (float)(projectile.height / 2);
                     Main.dust[num1200].scale = (float)Main.rand.Next(70, 110) * 0.013f;
                     Dust dust81 = Main.dust[num1200];
-                    dust81.velocity *= 0.2f; 
+                    dust81.velocity *= 0.2f;
                 }
 
                 Dust.NewDustPerfect(projectile.Center, 206, null, 0, default, 1.5f);

@@ -11,7 +11,7 @@ namespace OvermorrowMod.Projectiles.Boss
         private bool canGrow = false;
         private int storeDamage;
         private Vector2 storeVelocity;
-        private enum spawnDirection { left, right}
+        private enum spawnDirection { left, right }
         private spawnDirection chooseDirection;
 
         public override void SetStaticDefaults()
@@ -44,7 +44,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
                 int direction = Main.rand.Next(2);
 
-                if(direction == 0)
+                if (direction == 0)
                 {
                     chooseDirection = spawnDirection.left;
                 }

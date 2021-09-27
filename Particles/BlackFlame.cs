@@ -1,5 +1,5 @@
-using Terraria;
 using Microsoft.Xna.Framework;
+using Terraria;
 
 namespace OvermorrowMod.Particles
 {

@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 {
@@ -39,7 +38,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 
 
             timer++;
-            if(timer == 17)
+            if (timer == 17)
             {
                 Main.PlaySound(SoundID.Item62, projectile.Center);
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("JungleEXP"), projectile.damage + 10, 1f, projectile.owner, 0f);
@@ -49,7 +48,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 
             Player player = Main.player[projectile.owner];
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(0f);
-			if (Main.player[projectile.owner].channel) 
+            if (Main.player[projectile.owner].channel)
             {
                 if (Main.MouseWorld.X < projectile.position.X)
                 {

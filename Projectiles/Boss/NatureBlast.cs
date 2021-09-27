@@ -1,8 +1,8 @@
-using System;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
@@ -86,7 +86,7 @@ namespace OvermorrowMod.Projectiles.Boss
                             move = newMove;
                             distance = distanceTo;
                             float launchSpeed = 100f;
-                            if(distance < 50)
+                            if (distance < 50)
                             {
                                 launchSpeed /= 1.5f;
                             }
@@ -99,7 +99,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
             if (foundTarget)
             {
-                if(projectile.ai[0] % 20 == 0)
+                if (projectile.ai[0] % 20 == 0)
                 {
                     projectile.velocity *= Main.expertMode ? 1.55f : 1.33f;
                 }

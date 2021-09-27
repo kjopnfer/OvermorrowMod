@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Items.Materials;
-using OvermorrowMod.Projectiles.NPCs.Hostile;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,7 +29,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             npc.lavaImmune = true;
         }
         int spiderexp = 0;
-        
+
         public override void FindFrame(int frameHeight)
         {
             npc.frame.Y = frameHeight * frame;
@@ -45,57 +43,57 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             spiderexp++;
             spiderspritetimer++;
-            if(spiderspritetimer > 4)
+            if (spiderspritetimer > 4)
             {
                 frame++;
                 spiderspritetimer = 0;
             }
-            if(frame > 1)
+            if (frame > 1)
             {
                 frame = 0;
             }
 
             float Charge = Vector2.Distance(Main.player[npc.target].Center, npc.Center);
 
-            if(spiderexp > 15)
+            if (spiderexp > 15)
             {
 
-                    Vector2 position = npc.Center;
-                    Vector2 targetPosition = Main.player[npc.target].Center;
-                    Vector2 direction = targetPosition - position;
-                    direction.Normalize();
-                    int speed1 = Main.rand.Next(3, 6);
-                    int speed2 = Main.rand.Next(2, 5);
-                    int speed3 = Main.rand.Next(2, 5);
-                    int damage = npc.damage;
-                    npc.velocity.X = 0;
-                    npc.velocity.Y = 0;
-                    Vector2 perturbedSpeed1 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(35f));
-                    Vector2 perturbedSpeed2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(35f));
-                    Vector2 perturbedSpeed3 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(35f));
-                    Projectile.NewProjectile(position, perturbedSpeed1 * speed1, mod.ProjectileType("ShadowPixie"), damage, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(position, perturbedSpeed2 * speed2, mod.ProjectileType("ShadowPixie"), damage, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(position, perturbedSpeed3 * speed3, mod.ProjectileType("ShadowPixie"), damage, 0f, Main.myPlayer);
-                    Main.PlaySound(SoundID.Item103, npc.position);
-                    spiderexp = 0;
-                
+                Vector2 position = npc.Center;
+                Vector2 targetPosition = Main.player[npc.target].Center;
+                Vector2 direction = targetPosition - position;
+                direction.Normalize();
+                int speed1 = Main.rand.Next(3, 6);
+                int speed2 = Main.rand.Next(2, 5);
+                int speed3 = Main.rand.Next(2, 5);
+                int damage = npc.damage;
+                npc.velocity.X = 0;
+                npc.velocity.Y = 0;
+                Vector2 perturbedSpeed1 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(35f));
+                Vector2 perturbedSpeed2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(35f));
+                Vector2 perturbedSpeed3 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(35f));
+                Projectile.NewProjectile(position, perturbedSpeed1 * speed1, mod.ProjectileType("ShadowPixie"), damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(position, perturbedSpeed2 * speed2, mod.ProjectileType("ShadowPixie"), damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(position, perturbedSpeed3 * speed3, mod.ProjectileType("ShadowPixie"), damage, 0f, Main.myPlayer);
+                Main.PlaySound(SoundID.Item103, npc.position);
+                spiderexp = 0;
+
             }
 
 
 
-            if(npc.velocity.X > 8)
+            if (npc.velocity.X > 8)
             {
                 npc.velocity.X = 8;
             }
-            if(npc.velocity.X < -8)
+            if (npc.velocity.X < -8)
             {
                 npc.velocity.X = -8;
             }
-            if(npc.velocity.Y > 8)
+            if (npc.velocity.Y > 8)
             {
                 npc.velocity.Y = 8;
             }
-            if(npc.velocity.Y < -8)
+            if (npc.velocity.Y < -8)
             {
                 npc.velocity.Y = -8;
             }
@@ -116,7 +114,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             return base.PreDraw(spriteBatch, drawColor);
         }
 
-    
+
 
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
@@ -124,7 +122,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
-    
+
 
         public override void SetStaticDefaults()
         {

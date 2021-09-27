@@ -38,9 +38,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            if (type == ProjectileID.WoodenArrowFriendly) 
+            if (type == ProjectileID.WoodenArrowFriendly)
             {
-                type = ModContent.ProjectileType<StormBolt2>(); 
+                type = ModContent.ProjectileType<StormBolt2>();
             }
             return true;
         }

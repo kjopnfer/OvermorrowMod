@@ -1,8 +1,6 @@
-using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Consumable

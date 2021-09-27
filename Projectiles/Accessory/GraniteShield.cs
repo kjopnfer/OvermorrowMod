@@ -1,11 +1,8 @@
-using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.Summon;
 using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Summon;
-using OvermorrowMod.Projectiles.Accessory;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Accessory
 {
@@ -38,7 +35,7 @@ namespace OvermorrowMod.Projectiles.Accessory
 
             // Determines the maximum damage stored within the shield before it breaks
             float maxStored = 10;
-            if (NPC.downedPlantBoss) 
+            if (NPC.downedPlantBoss)
             {
                 maxStored = 40;
             }

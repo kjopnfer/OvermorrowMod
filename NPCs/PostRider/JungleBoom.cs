@@ -1,8 +1,5 @@
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ID;
 
 namespace OvermorrowMod.NPCs.PostRider
 {
@@ -33,7 +30,7 @@ namespace OvermorrowMod.NPCs.PostRider
         {
 
             Anitimer++;
-            if(Anitimer == 1)
+            if (Anitimer == 1)
             {
                 projectile.frame += 1;
                 Anitimer = 0;

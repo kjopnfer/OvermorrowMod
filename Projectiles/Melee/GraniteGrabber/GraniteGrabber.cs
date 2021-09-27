@@ -1,9 +1,8 @@
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using System;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee.GraniteGrabber
 {
@@ -47,7 +46,7 @@ namespace OvermorrowMod.Projectiles.Melee.GraniteGrabber
         private int penet3 = 0;
 
 
-        
+
         public bool IsStickingToTarget
         {
             get => projectile.ai[0] == 1f;

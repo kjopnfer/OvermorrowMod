@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Summon;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Buffs.Summon;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -44,7 +42,7 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.penetrate = -1;
             projectile.timeLeft = 200000;
         }
-        
+
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
@@ -63,7 +61,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
             NumProj = Main.player[projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<GraniteSummon>()];
             PosCheck++;
-            if(PosCheck == 2)
+            if (PosCheck == 2)
             {
                 PosPlay = NumProj;
             }
@@ -105,7 +103,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
 
             if (foundTarget && Main.player[projectile.owner].channel)
-			{
+            {
                 movement2++;
 
                 if (movement2 == 70)
@@ -115,7 +113,7 @@ namespace OvermorrowMod.Projectiles.Summon
                     movement2 = 0;
                 }
 
-                if(NPCtargetX > projectile.Center.X)
+                if (NPCtargetX > projectile.Center.X)
                 {
                     projectile.spriteDirection = -1;
                 }
@@ -124,48 +122,48 @@ namespace OvermorrowMod.Projectiles.Summon
                     projectile.spriteDirection = 1;
                 }
 
-                if(NPCtargetX + mrand > projectile.Center.X)
+                if (NPCtargetX + mrand > projectile.Center.X)
                 {
                     projectile.velocity.X += 0.9f;
                 }
 
-                if(NPCtargetX + mrand < projectile.Center.X)
+                if (NPCtargetX + mrand < projectile.Center.X)
                 {
                     projectile.velocity.X -= 0.9f;
                 }
 
-                if(NPCtargetY + mrand2 > projectile.Center.Y)
+                if (NPCtargetY + mrand2 > projectile.Center.Y)
                 {
                     projectile.velocity.Y += 2f;
                 }
-                if(NPCtargetY + mrand2 < projectile.Center.Y)
+                if (NPCtargetY + mrand2 < projectile.Center.Y)
                 {
                     projectile.velocity.Y -= 2f;
                 }
 
 
-                if(projectile.velocity.Y < -9f)
+                if (projectile.velocity.Y < -9f)
                 {
                     projectile.velocity.Y = -9f;
                 }
 
-                if(projectile.velocity.Y > 9f)
+                if (projectile.velocity.Y > 9f)
                 {
                     projectile.velocity.Y = 9f;
                 }
 
 
-                if(projectile.velocity.X < -9f)
+                if (projectile.velocity.X < -9f)
                 {
                     projectile.velocity.X = -9f;
                 }
 
-                if(projectile.velocity.X > 9f)
+                if (projectile.velocity.X > 9f)
                 {
                     projectile.velocity.X = 9f;
                 }
 
-			}
+            }
             else
             {
                 projectile.spriteDirection = -Main.player[projectile.owner].direction;

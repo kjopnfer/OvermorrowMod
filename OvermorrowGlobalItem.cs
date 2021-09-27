@@ -1,11 +1,9 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Piercing;
 using OvermorrowMod.Projectiles.Ranged;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Items.Other;
 
 namespace OvermorrowMod
 {
@@ -30,11 +28,11 @@ namespace OvermorrowMod
                 item.ammo = item.type;
                 item.shoot = ModContent.ProjectileType<ShroomFlame>();
             }
-            
+
             if (item.type == ItemID.Shuriken)
             {
                 item.ammo = item.type;
-            }    
+            }
         }
         public override void ModifyWeaponDamage(Item item, Player player, ref float add, ref float mult, ref float flat)
         {
@@ -66,7 +64,7 @@ namespace OvermorrowMod
             Mirror.SetResult(ItemID.MagicMirror);
             Mirror.AddRecipe();
         }
-        
+
         public override bool Shoot(Item item, Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             if (item.type == ItemID.ChainKnife)

@@ -1,11 +1,7 @@
-using Microsoft.Xna.Framework;
-using OvermorrowMod.Projectiles.Piercing;
-using OvermorrowMod.Projectiles.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Items.Other;
 
 namespace OvermorrowMod
 {
@@ -51,7 +47,7 @@ namespace OvermorrowMod
                     if (type == TileID.PalmTree && Main.tile[i, j + 1].type == TileID.Sand)
                     {
                         Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<CoconutBuster>());
-                    } 
+                    }
                 }
             }
 

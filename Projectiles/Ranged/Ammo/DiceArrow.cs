@@ -29,13 +29,13 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
             Main.projFrames[base.projectile.type] = 6;
         }
 
-		public override void AI() 
-		{
+        public override void AI()
+        {
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
 
-            if(projectile.ai[0] != 10)
+            if (projectile.ai[0] != 10)
             {
-                if(!rando)
+                if (!rando)
                 {
                     Random = Main.rand.Next(1, 7);
                     rando = true;
@@ -43,7 +43,7 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
             }
             else
             {
-                if(!rando)
+                if (!rando)
                 {
                     Random = Main.rand.Next(1, 6);
                     rando = true;
@@ -51,24 +51,24 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
             }
 
 
-            if(Random == 1)
+            if (Random == 1)
             {
                 projectile.frame = 0;
                 projectile.penetrate = 5;
             }
 
-            if(Random == 2)
+            if (Random == 2)
             {
                 projectile.frame = 1;
             }
 
-            if(Random == 3)
+            if (Random == 3)
             {
                 projectile.frame = 2;
                 projectile.penetrate = -1;
             }
 
-            if(Random == 4)
+            if (Random == 4)
             {
                 projectile.frame = 3;
                 Vector2 move = Vector2.Zero;
@@ -96,17 +96,17 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
                 }
             }
 
-            if(Random == 5)
+            if (Random == 5)
             {
                 projectile.frame = 4;
             }
 
 
-            if(Random == 6)
+            if (Random == 6)
             {
                 projectile.frame = 5;
                 Splittimer++;
-                if(Splittimer == 30)
+                if (Splittimer == 30)
                 {
                     int splitproj1 = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X, projectile.velocity.Y, ModContent.ProjectileType<DiceArrow>(), projectile.damage - 5, 3f, projectile.owner, 0f);
                     Main.projectile[splitproj1].ai[0] = 10;
@@ -116,13 +116,13 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
                     int splitproj3 = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X, newpoint2.Y, ModContent.ProjectileType<DiceArrow>(), projectile.damage - 5, 3f, projectile.owner, 0f);
                     Main.projectile[splitproj2].ai[0] = 10;
                     Main.projectile[splitproj3].ai[0] = 10;
-				    projectile.Kill();
+                    projectile.Kill();
                 }
             }
 
 
 
-            if(Random != 4)
+            if (Random != 4)
             {
                 projectile.velocity.Y += 0.076f;
             }
@@ -154,20 +154,20 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            if(Random == 3)
+            if (Random == 3)
             {
-			    target.immune[projectile.owner] = 3;
+                target.immune[projectile.owner] = 3;
             }
 
 
-            if(Random == 1 && BOUNCE > 1)
+            if (Random == 1 && BOUNCE > 1)
             {
                 BOUNCE--;
                 projectile.velocity.X = -projectile.velocity.X * 1.5f;
                 projectile.velocity.Y = -projectile.velocity.Y * 1.5f;
             }
 
-            if(Random == 5)
+            if (Random == 5)
             {
                 target.AddBuff(24, 280);
                 target.AddBuff(20, 280);
@@ -181,7 +181,7 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
         {
             Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
             Main.PlaySound(SoundID.Item10, projectile.position);
-            if(Random == 1 && BOUNCE > 1)
+            if (Random == 1 && BOUNCE > 1)
             {
                 BOUNCE -= 1;
                 projectile.velocity.X = -projectile.velocity.X * 1.1f;

@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.Hardmode.HardRanged
 {
@@ -27,7 +27,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardRanged
         {
             int Random = Main.rand.Next(-4, 4);
 
-            if(projectile.timeLeft == 120)
+            if (projectile.timeLeft == 120)
             {
                 projectile.hostile = false;
                 projectile.friendly = true;

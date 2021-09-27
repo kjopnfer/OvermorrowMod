@@ -25,9 +25,9 @@ namespace OvermorrowMod.Projectiles.Other
         {
             DisplayName.SetDefault("Acorn");
         }
-        
-		public override void AI() 
-		{
+
+        public override void AI()
+        {
             SavedPlyPos = Main.player[projectile.owner].Center;
             projectile.velocity.X *= 0.98f;
             projectile.velocity.Y += 0.45f;
@@ -50,7 +50,7 @@ namespace OvermorrowMod.Projectiles.Other
 
 
         }
-        
+
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             target.Center = SavedPlyPos;
@@ -60,25 +60,25 @@ namespace OvermorrowMod.Projectiles.Other
 
         public override void Kill(int timeLeft)
         {
-                Main.player[projectile.owner].AddBuff(32, 60, true);
-                Main.player[projectile.owner].AddBuff(36, 60, true);   
-                Main.player[projectile.owner].immuneTime = 5;
-                Main.player[projectile.owner].immune = true;       
-                Vector2 position = projectile.Center + new Vector2(0, -10);
-                int radius = 5;     //this is the explosion radius, the highter is the value the bigger is the explosion
+            Main.player[projectile.owner].AddBuff(32, 60, true);
+            Main.player[projectile.owner].AddBuff(36, 60, true);
+            Main.player[projectile.owner].immuneTime = 5;
+            Main.player[projectile.owner].immune = true;
+            Vector2 position = projectile.Center + new Vector2(0, -10);
+            int radius = 5;     //this is the explosion radius, the highter is the value the bigger is the explosion
 
-                for (int x = -radius; x <= radius; x++)
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
                 {
-                    for (int y = -radius; y <= radius; y++)
-                    {
 
-                        if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
-                        {
-                            Color alpha = Color.LightBlue;
-                            Dust.NewDust(position, 5, 5, DustID.Enchanted_Gold, 0.0f, 0.0f, 120, alpha, 1f);
-                        }
+                    if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
+                    {
+                        Color alpha = Color.LightBlue;
+                        Dust.NewDust(position, 5, 5, DustID.Enchanted_Gold, 0.0f, 0.0f, 120, alpha, 1f);
                     }
                 }
+            }
             Main.player[projectile.owner].position.X = projectile.Center.X - Main.player[projectile.owner].width;
             Main.player[projectile.owner].position.Y = projectile.Center.Y - Main.player[projectile.owner].height - 10;
             Main.PlaySound(SoundID.Item6, projectile.Center);

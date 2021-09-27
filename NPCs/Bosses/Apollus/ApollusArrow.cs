@@ -67,7 +67,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 if (projectile.ai[0] > 15 && projectile.velocity != Vector2.Zero)
                 {
                     projectile.velocity = new Vector2(MathHelper.Lerp(projectile.velocity.X, 0, 0.25f), MathHelper.Lerp(projectile.velocity.Y, 0, 0.25f));
-                    if(projectile.velocity.X < 0.01 && projectile.velocity.Y < 0.01)
+                    if (projectile.velocity.X < 0.01 && projectile.velocity.Y < 0.01)
                     {
                         projectile.velocity = Vector2.Zero;
                     }

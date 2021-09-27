@@ -1,8 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using OvermorrowMod.Projectiles.Other;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Other;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {

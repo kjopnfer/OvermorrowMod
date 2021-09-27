@@ -1,10 +1,6 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Summon;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -39,7 +35,7 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.penetrate = -1;
             projectile.timeLeft = 8000;
         }
-        
+
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
@@ -79,9 +75,9 @@ namespace OvermorrowMod.Projectiles.Summon
                 timer++;
                 if (timer == 150)
                 {
-                    int Random5 = Main.rand.Next(-2, 3);        
+                    int Random5 = Main.rand.Next(-2, 3);
                     int Random4 = Main.rand.Next(-2, 3);
-                    int Random3 = Main.rand.Next(-2, 3);                    
+                    int Random3 = Main.rand.Next(-2, 3);
                     Random2 = Main.rand.Next(-2, 3);
                     Random = Main.rand.Next(-2, 3);
                     Vector2 position = projectile.Center;
@@ -96,16 +92,16 @@ namespace OvermorrowMod.Projectiles.Summon
 
                     float speed = 10f;
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint1.X * speed, newpoint1.Y * speed + Random, ModContent.ProjectileType<SummSpore>(), projectile.damage, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed + Random2 , ModContent.ProjectileType<SummSpore>(), projectile.damage, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed + Random2, ModContent.ProjectileType<SummSpore>(), projectile.damage, 1f, projectile.owner, 0f);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint3.X * speed, newpoint3.Y * speed + Random3, ModContent.ProjectileType<SummSpore>(), projectile.damage, 1f, projectile.owner, 0f);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint4.X * speed, newpoint4.Y * speed + Random4, ModContent.ProjectileType<SummSpore>(), projectile.damage, 1f, projectile.owner, 0f);
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint5.X * speed, newpoint5.Y * speed + Random5 , ModContent.ProjectileType<SummSpore>(), projectile.damage, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint5.X * speed, newpoint5.Y * speed + Random5, ModContent.ProjectileType<SummSpore>(), projectile.damage, 1f, projectile.owner, 0f);
 
                     timer = 0;
                 }
             }
 
-            if(timer < 130)
+            if (timer < 130)
             {
                 eyetimer = 0;
                 if (++projectile.frameCounter >= 8)
@@ -120,15 +116,15 @@ namespace OvermorrowMod.Projectiles.Summon
             else
             {
                 eyetimer++;
-                if(eyetimer < 11)
+                if (eyetimer < 11)
                 {
                     projectile.frame = 4;
                 }
-                if(eyetimer > 10)
+                if (eyetimer > 10)
                 {
                     projectile.frame = 5;
                 }
-                if(eyetimer == 20)
+                if (eyetimer == 20)
                 {
                     eyetimer = 0;
                 }

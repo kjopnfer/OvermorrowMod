@@ -1,19 +1,17 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Placeable.Boss;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.Items.Placeable.Boss;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.WardenClass.Weapons.Artifacts;
-using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
-using OvermorrowMod.Items.BossBags;
-using OvermorrowMod.NPCs.PostRider.NightCrawler;
 
 namespace OvermorrowMod.NPCs.Town
 {
@@ -271,16 +269,16 @@ namespace OvermorrowMod.NPCs.Town
                 case 1: // Shoot scythes
                     if (npc.ai[0] == 1)
                     {
-                        if(SummStopper < 1)
+                        if (SummStopper < 1)
                         {
 
-                            if(Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 350f)
+                            if (Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 350f)
                             {
                                 Vector2 GuidePos4 = npc.Center;
                                 Vector2 PlayerPosition4 = Main.player[npc.target].Center;
                                 Vector2 GuideDirection4 = PlayerPosition4 - GuidePos4;
                                 GuideDirection4.Normalize();
-                                npc.velocity += GuideDirection4 * -0.06f;  
+                                npc.velocity += GuideDirection4 * -0.06f;
                             }
                             else
                             {
@@ -288,14 +286,14 @@ namespace OvermorrowMod.NPCs.Town
                                 Vector2 PlayerPosition5 = Main.player[npc.target].Center;
                                 Vector2 GuideDirection5 = PlayerPosition5 - GuidePos5;
                                 GuideDirection5.Normalize();
-                                npc.velocity += GuideDirection5 * 0.08f;  
+                                npc.velocity += GuideDirection5 * 0.08f;
                             }
 
                             if (npc.ai[1] == 100)
                             {
-                                if(npc.life < npc.lifeMax / 2)
+                                if (npc.life < npc.lifeMax / 2)
                                 {
-                                    NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
+                                    NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
                                     NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
                                     TwinANI = true;
                                     frame = 17;
@@ -313,9 +311,9 @@ namespace OvermorrowMod.NPCs.Town
 
                             if (npc.ai[1] == 200)
                             {
-                                if(npc.life < npc.lifeMax / 2)
+                                if (npc.life < npc.lifeMax / 2)
                                 {
-                                    NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
+                                    NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
                                     NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
                                     TwinANI = true;
                                     frame = 17;
@@ -333,9 +331,9 @@ namespace OvermorrowMod.NPCs.Town
 
                             if (npc.ai[1] == 300)
                             {
-                                if(npc.life < npc.lifeMax / 2)
+                                if (npc.life < npc.lifeMax / 2)
                                 {
-                                    NPC.NewNPC((int)npc.Center.X , (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
+                                    NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin1NPC"));
                                     NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, mod.NPCType("Twin2NPC"));
                                     TwinANI = true;
                                     frame = 17;
@@ -353,23 +351,23 @@ namespace OvermorrowMod.NPCs.Town
 
 
 
-                            if(npc.velocity.Y < -9f)
+                            if (npc.velocity.Y < -9f)
                             {
                                 npc.velocity.Y = -9f;
                             }
 
-                            if(npc.velocity.Y > 9f)
+                            if (npc.velocity.Y > 9f)
                             {
                                 npc.velocity.Y = 9f;
                             }
 
 
-                            if(npc.velocity.X < -9f)
+                            if (npc.velocity.X < -9f)
                             {
                                 npc.velocity.X = -9f;
                             }
 
-                            if(npc.velocity.X > 9f)
+                            if (npc.velocity.X > 9f)
                             {
                                 npc.velocity.X = 9f;
                             }
@@ -386,7 +384,7 @@ namespace OvermorrowMod.NPCs.Town
                         else
                         {
                             npc.ai[0] = -1;
-                            npc.ai[1] = 0; 
+                            npc.ai[1] = 0;
                         }
                     }
                     break;
@@ -417,9 +415,9 @@ namespace OvermorrowMod.NPCs.Town
 
                         bulltimer++;
                         arrowtimer++;
-                        if(npc.ai[1] < 100)
+                        if (npc.ai[1] < 100)
                         {
-                            if(npc.life > npc.lifeMax / 2)
+                            if (npc.life > npc.lifeMax / 2)
                             {
                                 if (bulltimer > 9)
                                 {
@@ -428,9 +426,9 @@ namespace OvermorrowMod.NPCs.Town
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
                                     float speed = 9f;
-                                    int proj = Projectile.NewProjectile(position, direction * speed, ProjectileID.BulletDeadeye, npc.damage, 0f, Main.myPlayer);  
-                                    bulltimer = 0;  
-                                }  
+                                    int proj = Projectile.NewProjectile(position, direction * speed, ProjectileID.BulletDeadeye, npc.damage, 0f, Main.myPlayer);
+                                    bulltimer = 0;
+                                }
                             }
                             else
                             {
@@ -441,15 +439,15 @@ namespace OvermorrowMod.NPCs.Town
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
                                     float speed = 9f;
-                                    Vector2 Rot70 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(8));
-                                    int projbul = Projectile.NewProjectile(position, Rot70 * speed, ProjectileID.VenomBullet, npc.damage, 0f, Main.myPlayer);  
+                                    Vector2 Rot70 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(8));
+                                    int projbul = Projectile.NewProjectile(position, Rot70 * speed, ProjectileID.VenomBullet, npc.damage, 0f, Main.myPlayer);
                                     Main.projectile[projbul].friendly = false;
                                     Main.projectile[projbul].hostile = true;
-                                    bulltimer = 0;  
+                                    bulltimer = 0;
                                 }
                             }
                         }
-                        if(npc.ai[1] > 99)
+                        if (npc.ai[1] > 99)
                         {
                             if (arrowtimer > 9)
                             {
@@ -458,13 +456,13 @@ namespace OvermorrowMod.NPCs.Town
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
                                 float speed = 50f;
-                                Vector2 Rot1 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
-                                Vector2 Rot2 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
-                                Vector2 Rot3 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
-                                Projectile.NewProjectile(position, Rot1 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);  
-                                Projectile.NewProjectile(position, Rot2 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);  
-                                Projectile.NewProjectile(position, Rot3 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);  
-                                arrowtimer = 0;    
+                                Vector2 Rot1 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
+                                Vector2 Rot2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
+                                Vector2 Rot3 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
+                                Projectile.NewProjectile(position, Rot1 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(position, Rot2 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(position, Rot3 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);
+                                arrowtimer = 0;
                             }
                         }
 
@@ -488,39 +486,39 @@ namespace OvermorrowMod.NPCs.Town
 
                         magictimer++;
 
-                        if(Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 310f)
+                        if (Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 310f)
                         {
-                            if(npc.life < npc.lifeMax / 2 && magictimer > 7)
+                            if (npc.life < npc.lifeMax / 2 && magictimer > 7)
                             {
                                 Vector2 GuidePos2 = npc.Center;
                                 Vector2 PlayerPosition2 = Main.player[npc.target].Center;
                                 Vector2 GuideDirection2 = PlayerPosition2 - GuidePos2;
                                 GuideDirection2.Normalize();
-                                npc.velocity += GuideDirection2 * -0.07f;  
+                                npc.velocity += GuideDirection2 * -0.07f;
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
                                 float speed = 4f;
-                                Vector2 Rot10 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(30));
-                                Projectile.NewProjectile(position, Rot10 * speed, ModContent.ProjectileType<GuideShadowFlame>(), npc.damage, 0f, Main.myPlayer);  
+                                Vector2 Rot10 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(30));
+                                Projectile.NewProjectile(position, Rot10 * speed, ModContent.ProjectileType<GuideShadowFlame>(), npc.damage, 0f, Main.myPlayer);
                                 Lamp = false;
                                 frame = 0;
                                 magictimer = 0;
                             }
-                            else if(magictimer > 7 && npc.life > npc.lifeMax / 2)
+                            else if (magictimer > 7 && npc.life > npc.lifeMax / 2)
                             {
                                 Vector2 GuidePos2 = npc.Center;
                                 Vector2 PlayerPosition2 = Main.player[npc.target].Center;
                                 Vector2 GuideDirection2 = PlayerPosition2 - GuidePos2;
                                 GuideDirection2.Normalize();
-                                npc.velocity += GuideDirection2 * -0.07f;  
+                                npc.velocity += GuideDirection2 * -0.07f;
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
                                 float speed = 12f;
-                                int dagger = Projectile.NewProjectile(position, direction * speed, ProjectileID.MagicDagger, npc.damage, 0f, Main.myPlayer);  
+                                int dagger = Projectile.NewProjectile(position, direction * speed, ProjectileID.MagicDagger, npc.damage, 0f, Main.myPlayer);
                                 Main.projectile[dagger].friendly = false;
                                 Main.projectile[dagger].hostile = true;
                                 Lamp = false;
@@ -534,9 +532,9 @@ namespace OvermorrowMod.NPCs.Town
                             Vector2 PlayerPosition3 = Main.player[npc.target].Center;
                             Vector2 GuideDirection3 = PlayerPosition3 - GuidePos3;
                             GuideDirection3.Normalize();
-                            npc.velocity += GuideDirection3 * 0.07f;  
+                            npc.velocity += GuideDirection3 * 0.07f;
 
-                            if(magictimer > 27)
+                            if (magictimer > 27)
                             {
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
@@ -554,23 +552,23 @@ namespace OvermorrowMod.NPCs.Town
 
 
 
-                        if(npc.velocity.Y < -7.8f)
+                        if (npc.velocity.Y < -7.8f)
                         {
                             npc.velocity.Y = -7.8f;
                         }
 
-                        if(npc.velocity.Y > 7.8f)
+                        if (npc.velocity.Y > 7.8f)
                         {
                             npc.velocity.Y = 7.8f;
                         }
 
 
-                        if(npc.velocity.X < -7.8f)
+                        if (npc.velocity.X < -7.8f)
                         {
                             npc.velocity.X = -7.8f;
                         }
 
-                        if(npc.velocity.X > 7.8f)
+                        if (npc.velocity.X > 7.8f)
                         {
                             npc.velocity.X = 7.8f;
                         }
@@ -586,8 +584,8 @@ namespace OvermorrowMod.NPCs.Town
                     break;
                 case 4: // Shoot nature blasts
                     if (npc.ai[0] == 4)
-                    {   
-                        
+                    {
+
                         if (npc.ai[1] == 3)
                         {
                             Vector2 position = npc.Center;
@@ -607,7 +605,7 @@ namespace OvermorrowMod.NPCs.Town
                     break;
                 case 3: // scythes
                     {
-                        
+
                         Vector2 GuidePosition = npc.Center;
                         Vector2 PlayerPosition = Main.player[npc.target].Center;
                         Vector2 GuideDirection = PlayerPosition - GuidePosition;
@@ -615,93 +613,93 @@ namespace OvermorrowMod.NPCs.Town
                         npc.velocity = GuideDirection * 5f;
 
 
-                        if(npc.life > npc.lifeMax / 2)
+                        if (npc.life > npc.lifeMax / 2)
                         {
                             disctimer++;
-                            if(disctimer > 14)
+                            if (disctimer > 14)
                             {
                                 disctimer = 0;
                             }
 
-                            if(disctimer == 13 && Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<LightDisc2>()] < 5)
+                            if (disctimer == 13 && Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<LightDisc2>()] < 5)
                             {
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
                                 float Projspeed = 15f;
-                                Projectile.NewProjectile(position, direction * Projspeed, ModContent.ProjectileType<LightDisc2>(), npc.damage, 0f, Main.myPlayer);  
+                                Projectile.NewProjectile(position, direction * Projspeed, ModContent.ProjectileType<LightDisc2>(), npc.damage, 0f, Main.myPlayer);
                                 frame = 0;
                             }
                         }
                         else
                         {
                             disctimer++;
-                            if(disctimer == 13 && Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<LightDisc2>()] < 5 && !Sword)
+                            if (disctimer == 13 && Main.player[npc.target].ownedProjectileCounts[ModContent.ProjectileType<LightDisc2>()] < 5 && !Sword)
                             {
                                 Vector2 position = npc.Center;
                                 Vector2 targetPosition = Main.player[npc.target].Center;
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
                                 float Projspeed = 15f;
-                                Projectile.NewProjectile(position, direction * Projspeed, ModContent.ProjectileType<LightDisc2>(), npc.damage, 0f, Main.myPlayer);  
+                                Projectile.NewProjectile(position, direction * Projspeed, ModContent.ProjectileType<LightDisc2>(), npc.damage, 0f, Main.myPlayer);
                                 frame = 0;
                             }
 
-                            if(disctimer > 14)
+                            if (disctimer > 14)
                             {
                                 disctimer = 0;
                             }
 
-                            if(npc.ai[1] == 160 || npc.ai[1] == 360)
+                            if (npc.ai[1] == 160 || npc.ai[1] == 360)
                             {
                                 Sword = true;
                             }
 
-                            if(Sword)
+                            if (Sword)
                             {
                                 disctimer = 0;
                                 swordtimer++;
-                                if(swordtimer == 10)
+                                if (swordtimer == 10)
                                 {
                                     Vector2 position = npc.Center;
                                     Vector2 targetPosition = Main.player[npc.target].Center;
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
                                     float Projspeed = 15f;
-                                    int slash = Projectile.NewProjectile(position, direction * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);  
+                                    int slash = Projectile.NewProjectile(position, direction * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);
                                     Main.projectile[slash].friendly = false;
                                     Main.projectile[slash].hostile = true;
                                     frame = 25;
                                 }
-                                if(swordtimer == 20)
+                                if (swordtimer == 20)
                                 {
                                     Vector2 position = npc.Center;
                                     Vector2 targetPosition = Main.player[npc.target].Center;
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
                                     float Projspeed = 15f;
-                                    Vector2 Rot8 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(17));
-                                    int slash2 = Projectile.NewProjectile(position, Rot8 * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);  
+                                    Vector2 Rot8 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(17));
+                                    int slash2 = Projectile.NewProjectile(position, Rot8 * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);
                                     Main.projectile[slash2].friendly = false;
                                     Main.projectile[slash2].hostile = true;
                                     frame = 25;
                                 }
-                                if(swordtimer == 30)
+                                if (swordtimer == 30)
                                 {
                                     Vector2 position = npc.Center;
                                     Vector2 targetPosition = Main.player[npc.target].Center;
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
                                     float Projspeed = 15f;
-                                    Vector2 Rot9 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(-17));
-                                    int slash3 = Projectile.NewProjectile(position, Rot9 * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);  
+                                    Vector2 Rot9 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(-17));
+                                    int slash3 = Projectile.NewProjectile(position, Rot9 * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);
                                     Main.projectile[slash3].friendly = false;
                                     Main.projectile[slash3].hostile = true;
                                     frame = 25;
                                 }
 
-                                if(swordtimer == 40)
+                                if (swordtimer == 40)
                                 {
                                     swordtimer = 0;
                                     Sword = false;
@@ -725,7 +723,7 @@ namespace OvermorrowMod.NPCs.Town
             npc.rotation = npc.velocity.X * 0.015f;
             npc.frame.Y = frameHeight * frame;
 
-            if(npc.ai[0] == 0)
+            if (npc.ai[0] == 0)
             {
                 npc.frameCounter++;
                 if (npc.frameCounter > 4) // Ticks per frame
@@ -737,7 +735,7 @@ namespace OvermorrowMod.NPCs.Town
                 {
                     frame = 4; // Reset back to default
                 }
-               if (frame < 4) // 6 is max # of frames
+                if (frame < 4) // 6 is max # of frames
                 {
                     frame = 4; // Reset back to default
                 }
@@ -745,9 +743,9 @@ namespace OvermorrowMod.NPCs.Town
 
 
 
-            if(npc.ai[0] == 1)
+            if (npc.ai[0] == 1)
             {
-                if(!TwinANI)
+                if (!TwinANI)
                 {
                     npc.frameCounter++;
                     if (npc.frameCounter > 4) // Ticks per frame
@@ -772,7 +770,7 @@ namespace OvermorrowMod.NPCs.Town
                         npc.frameCounter = 0;
                         frame += 1;
                     }
-                    if(frame >= 20)
+                    if (frame >= 20)
                     {
                         frame = 4;
                         TwinANI = false;
@@ -782,10 +780,10 @@ namespace OvermorrowMod.NPCs.Town
 
 
 
-            if(npc.ai[0] == 2)
+            if (npc.ai[0] == 2)
             {
                 npc.frameCounter++;
-                if(npc.ai[1] < 100)
+                if (npc.ai[1] < 100)
                 {
 
                     if (npc.frameCounter > 4) // Ticks per frame
@@ -821,9 +819,9 @@ namespace OvermorrowMod.NPCs.Town
             }
 
 
-            if(npc.ai[0] == 3)
+            if (npc.ai[0] == 3)
             {
-                if(!Sword)
+                if (!Sword)
                 {
                     npc.frameCounter++;
                     if (npc.frameCounter > 4) // Ticks per frame
@@ -836,7 +834,7 @@ namespace OvermorrowMod.NPCs.Town
                         frame = 4; // Reset back to default
                     }
                 }
-                if(Sword)
+                if (Sword)
                 {
                     npc.frameCounter++;
                     if (npc.frameCounter > 4) // Ticks per frame
@@ -844,17 +842,17 @@ namespace OvermorrowMod.NPCs.Town
                         npc.frameCounter = 0;
                         frame += 1;
                     }
-                    if (frame < 4) 
+                    if (frame < 4)
                     {
                         frame = 4;
                     }
-                    if (frame == 8) 
+                    if (frame == 8)
                     {
-                        frame = 4; 
+                        frame = 4;
                     }
-                    if (frame >= 27) 
+                    if (frame >= 27)
                     {
-                        frame = 4; 
+                        frame = 4;
                     }
                 }
             }
@@ -864,9 +862,9 @@ namespace OvermorrowMod.NPCs.Town
 
 
 
-            if(npc.ai[0] == 5)
+            if (npc.ai[0] == 5)
             {
-                if(!Lamp)
+                if (!Lamp)
                 {
                     npc.frameCounter++;
                     if (npc.frameCounter > 4) // Ticks per frame
@@ -898,8 +896,8 @@ namespace OvermorrowMod.NPCs.Town
                 }
             }
         }
-        
-        
+
+
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {

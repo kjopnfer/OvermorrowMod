@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Tiles.Block;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;

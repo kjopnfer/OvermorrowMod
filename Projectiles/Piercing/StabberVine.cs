@@ -1,9 +1,8 @@
-using System;
-using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
-using OvermorrowMod.WardenClass;
+using System;
+using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -192,7 +191,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                         projectile.velocity = Vector2.Zero;
                         retractPosition = projectile.Center;
                     }
-                    
+
                     if (retractIdle)
                     {
                         retractCounter += 0.025f;

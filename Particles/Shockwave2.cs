@@ -1,14 +1,14 @@
-using Terraria;
-using Terraria.Graphics.Shaders;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Graphics.Shaders;
 
 namespace OvermorrowMod.Particles
 {
     public class Shockwave2 : CustomParticle
     {
         public override string Texture => "Textures/Perlin";
-        public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
+        public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
         float maxTime = 60f;
         public override void OnSpawn()
         {

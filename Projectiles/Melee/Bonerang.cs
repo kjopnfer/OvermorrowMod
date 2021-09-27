@@ -35,14 +35,14 @@ namespace OvermorrowMod.Projectiles.Melee
         public override void AI()
         {
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 SavedDMG = projectile.damage;
             }
 
-			projectile.rotation += 0.36f; 
+            projectile.rotation += 0.36f;
 
-            if(projectile.timeLeft < 80)
+            if (projectile.timeLeft < 80)
             {
                 projectile.timeLeft = 10;
                 ComingBack = true;
@@ -50,9 +50,9 @@ namespace OvermorrowMod.Projectiles.Melee
 
 
 
-            if(ComingBack)
+            if (ComingBack)
             {
-                if(flametimer == 1)
+                if (flametimer == 1)
                 {
                     flametimer++;
                     int DMG = projectile.damage / 2 - 3;
@@ -69,9 +69,9 @@ namespace OvermorrowMod.Projectiles.Melee
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 projectile.velocity = direction * 18;
-                if(BetweenKill < 22)
+                if (BetweenKill < 22)
                 {
-				    projectile.Kill();    
+                    projectile.Kill();
                 }
             }
         }
@@ -95,13 +95,13 @@ namespace OvermorrowMod.Projectiles.Melee
 
             Texture2D texture = mod.GetTexture("Projectiles/Melee/Bonerang");
 
-                Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
-                for (int k = 0; k < projectile.oldPos.Length; k++)
-                {
-                    Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin;
-                    Color color = projectile.GetAlpha(Color.White) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
-                    spriteBatch.Draw(texture, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
-                }
+            Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
+            for (int k = 0; k < projectile.oldPos.Length; k++)
+            {
+                Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin;
+                Color color = projectile.GetAlpha(Color.White) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
+                spriteBatch.Draw(texture, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
+            }
             return true;
         }
 

@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
 using OvermorrowMod.Projectiles.Artifact;
-using OvermorrowMod.Projectiles.Magic;
 using OvermorrowMod.Projectiles.Piercing;
 using System;
 using System.IO;

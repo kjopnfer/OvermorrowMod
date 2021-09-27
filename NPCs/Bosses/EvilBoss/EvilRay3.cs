@@ -34,12 +34,12 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             Projectile parentProjectile = Main.projectile[(int)projectile.ai[0]];
             projectile.Center = parentProjectile.Center;
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.rotation = MathHelper.ToRadians(90);
             }
 
-            if(timer == 150)
+            if (timer == 150)
             {
                 alpha = Color.Red;
                 rot = -700;
@@ -67,7 +67,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             projectile.alpha = 0;
 
             projectile.rotation += (float)((2 * Math.PI) / (Math.PI * 2 * rot / 10)); // 200 is the speed, god only knows what dividing by 10 does
-            
+
             projectile.velocity = Vector2.Zero;
             Vector2 endPoint;
             endPoint.X = 405 * (float)Math.Cos(projectile.rotation) + projectile.Center.X; // 5000 is basically the length

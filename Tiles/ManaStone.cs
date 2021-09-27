@@ -1,9 +1,9 @@
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using OvermorrowMod.Items.Materials;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Materials;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Tiles
 {
@@ -45,7 +45,7 @@ namespace OvermorrowMod.Tiles
                 zero = Vector2.Zero;
             }
             int height = tile.frameY == 36 ? 18 : 16;
-            Main.spriteBatch.Draw(mod.GetTexture("Tiles/ManaStone_Glow"), new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero, 
+            Main.spriteBatch.Draw(mod.GetTexture("Tiles/ManaStone_Glow"), new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero,
                 new Rectangle(tile.frameX, tile.frameY, 16, height), new Color(100, 100, 100), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
 

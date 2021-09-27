@@ -1,7 +1,6 @@
-﻿using Terraria;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using Terraria;
 
 namespace OvermorrowMod.Effects.Prim.Trails.TorchVariants
 {
@@ -103,7 +102,7 @@ namespace OvermorrowMod.Effects.Prim.Trails.TorchVariants
         }
         public override void PrepareTrail()
         {
-            
+
             if (Positions.Count < 2) return;
             for (int i = 0; i < Positions.Count - 1; i++)
             {

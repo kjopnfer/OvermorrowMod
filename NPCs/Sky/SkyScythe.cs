@@ -18,20 +18,20 @@ namespace OvermorrowMod.NPCs.Sky
         public override void SetDefaults()
         {
             projectile.CloneDefaults(ProjectileID.FlamingScythe);
-            projectile.width = 48;               
-            projectile.height = 48;      
-            projectile.friendly = false;      
-            projectile.hostile = true;       
-            projectile.penetrate = 1;         
+            projectile.width = 48;
+            projectile.height = 48;
+            projectile.friendly = false;
+            projectile.hostile = true;
+            projectile.penetrate = 1;
             projectile.timeLeft = 70;
-            projectile.ignoreWater = true;          
-            projectile.tileCollide = true;         
+            projectile.ignoreWater = true;
+            projectile.tileCollide = true;
         }
 
         public override void AI()
         {
             ProjTimer++;
-            if(ProjTimer == 60)
+            if (ProjTimer == 60)
             {
                 speed += 0.1f;
                 ProjTimer = 0;
@@ -40,7 +40,7 @@ namespace OvermorrowMod.NPCs.Sky
             {
                 Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.ManaRegeneration, projectile.oldVelocity.X * 0f, projectile.oldVelocity.Y * 0f, 1, new Color(), 0.8f);
             }
-            if(projectile.velocity.X > 0)
+            if (projectile.velocity.X > 0)
             {
                 projectile.rotation += speed;
             }

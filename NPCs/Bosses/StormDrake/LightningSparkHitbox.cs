@@ -1,9 +1,7 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Particles;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Boss
 {

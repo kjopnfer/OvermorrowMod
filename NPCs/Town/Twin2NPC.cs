@@ -40,14 +40,14 @@ namespace OvermorrowMod.NPCs.Town
         {
             Player player = Main.player[npc.target];
             AttTimer++;
-            if(AttTimer == 100)
+            if (AttTimer == 100)
             {
                 Vector2 position = npc.Center;
                 Vector2 targetPosition = Main.player[npc.target].Center;
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 float speed = 10f;
-                Projectile.NewProjectile(position, direction * speed, ProjectileID.PinkLaser, npc.damage, 0f, Main.myPlayer);  
+                Projectile.NewProjectile(position, direction * speed, ProjectileID.PinkLaser, npc.damage, 0f, Main.myPlayer);
                 AttTimer = 0;
             }
         }

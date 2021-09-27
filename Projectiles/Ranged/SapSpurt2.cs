@@ -1,7 +1,7 @@
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
@@ -38,7 +38,7 @@ namespace OvermorrowMod.Projectiles.Ranged
                 Dust dust81 = Main.dust[num1110];
                 dust81.velocity *= 0.5f;
             }
-           
+
             if (projectile.ai[0] > 6)
             {
                 projectile.damage = storeDamage;

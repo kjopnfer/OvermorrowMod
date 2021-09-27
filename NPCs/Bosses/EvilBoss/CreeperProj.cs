@@ -1,9 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using System;
 
 namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 {

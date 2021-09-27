@@ -1,5 +1,5 @@
-using System;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -39,15 +39,15 @@ namespace OvermorrowMod.Projectiles.Magic
 
         public override void AI()
         {
- 
+
             // This runs once when the projectile is created
-            if (initProperties) 
-            { 
+            if (initProperties)
+            {
                 storeDirection = projectile.velocity.ToRotation();
-                if(Main.netMode != NetmodeID.Server && projectile.owner == Main.myPlayer)
+                if (Main.netMode != NetmodeID.Server && projectile.owner == Main.myPlayer)
                 {
                     // This spawns the child projectile that travels in the opposite direction
-                    if(projectile.ai[0] == 0)
+                    if (projectile.ai[0] == 0)
                     {
                         childProjectile = Main.projectile[Projectile.NewProjectile(projectile.Center, projectile.velocity, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, 1, projectile.whoAmI)];
                     }

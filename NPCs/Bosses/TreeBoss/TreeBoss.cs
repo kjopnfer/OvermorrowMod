@@ -56,7 +56,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         private void BossText(string text) // boss messages
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
-            { 
+            {
                 Main.NewText(text, Color.Green);
             }
             else if (Main.netMode == NetmodeID.Server)
@@ -78,7 +78,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     BossText("I heed thy call.");
                 }
 
-                if(npc.ai[3] == 360)
+                if (npc.ai[3] == 360)
                 {
                     BossText("Thou wishes to unlock the secrets of the Dryads?");
                 }
@@ -206,7 +206,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if(npc.ai[1] == 240)
+                    if (npc.ai[1] == 240)
                     {
                         for (int i = 0; i < 3; i++)
                         {

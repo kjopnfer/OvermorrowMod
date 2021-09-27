@@ -1,8 +1,5 @@
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ID;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 {
@@ -30,7 +27,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
         {
 
             Anitimer++;
-            if(Anitimer == 1)
+            if (Anitimer == 1)
             {
                 projectile.frame += 1;
                 Anitimer = 0;

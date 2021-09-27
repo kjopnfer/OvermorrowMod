@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
@@ -28,7 +28,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override void AI()
         {
-            if(projectile.ai[0] == 0)
+            if (projectile.ai[0] == 0)
             {
                 projectile.netUpdate = true;
                 projectile.ai[0]++;
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Projectiles.Boss
                 Dust dustTrail = Dust.NewDustPerfect(new Vector2(projectile.position.X, projectile.position.Y), 32, projectile.velocity);
                 dustTrail.position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 dustTrail.noGravity = true;
-            }           
+            }
         }
     }
 }

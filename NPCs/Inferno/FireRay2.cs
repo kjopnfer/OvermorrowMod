@@ -2,8 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Inferno
 {
@@ -65,7 +65,7 @@ namespace OvermorrowMod.NPCs.Inferno
             unit.Normalize();
             for (float k = 0; k <= length; k += 4f)
             {
-                Vector2 drawPos = projectile.Center +  unit * k - Main.screenPosition;
+                Vector2 drawPos = projectile.Center + unit * k - Main.screenPosition;
                 Color alpha = Color.Orange * ((255 - projectile.alpha) / 255f);
                 spriteBatch.Draw(Main.projectileTexture[projectile.type], drawPos, null, alpha, projectile.rotation, new Vector2(2, 2), 1f, SpriteEffects.None, 0f);
             }

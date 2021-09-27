@@ -1,11 +1,11 @@
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using Terraria.ID;
-using OvermorrowMod.Effects.Prim;
-using System;
-using OvermorrowMod.Effects.Prim.Trails;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Effects.Prim;
+using OvermorrowMod.Effects.Prim.Trails;
+using System;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {

@@ -1,4 +1,3 @@
-using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Summon;
 using OvermorrowMod.Projectiles.Summon;
 using Terraria;

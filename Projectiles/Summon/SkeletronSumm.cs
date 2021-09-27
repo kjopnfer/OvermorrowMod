@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Summon;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
@@ -43,7 +41,7 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.penetrate = -1;
             projectile.timeLeft = 80000;
         }
-        
+
         public override void AI()
         {
 
@@ -69,14 +67,14 @@ namespace OvermorrowMod.Projectiles.Summon
             projectile.rotation = (projectile.Center - Main.MouseWorld).ToRotation();
 
 
-                projectile.rotation = (Main.MouseWorld - projectile.Center).ToRotation();
-            
-                projectile.spriteDirection = -1;
+            projectile.rotation = (Main.MouseWorld - projectile.Center).ToRotation();
+
+            projectile.spriteDirection = -1;
 
             if (Main.player[projectile.owner].channel)
             {
                 timer++;
-                if(timer == 5)
+                if (timer == 5)
                 {
                     Vector2 position = projectile.Center;
                     Vector2 targetPosition = Main.MouseWorld;
@@ -87,21 +85,21 @@ namespace OvermorrowMod.Projectiles.Summon
                     Main.PlaySound(SoundID.Item, projectile.position, 34);
                     Projectile.NewProjectile(projectile.Center + new Vector2(0, 10).RotatedBy(MathHelper.ToRadians(projectile.rotation)), newpoint2 * speed, ModContent.ProjectileType<SpritFlame>(), projectile.damage, 1f, projectile.owner, 0f);
 
-                    if(up)
+                    if (up)
                     {
                         Flamerot += 3;
                     }
-                    if(down)
+                    if (down)
                     {
                         Flamerot -= 3;
                     }
 
-                    if(Flamerot > 20)
+                    if (Flamerot > 20)
                     {
                         up = false;
                         down = true;
                     }
-                    if(Flamerot < -20)
+                    if (Flamerot < -20)
                     {
                         up = true;
                         down = false;
@@ -111,20 +109,20 @@ namespace OvermorrowMod.Projectiles.Summon
                 }
             }
 
-            if(Main.MouseWorld.X > projectile.Center.X && !Main.player[projectile.owner].channel)
+            if (Main.MouseWorld.X > projectile.Center.X && !Main.player[projectile.owner].channel)
             {
                 projectile.frame = 1;
             }
-            if(Main.MouseWorld.X > projectile.Center.X && Main.player[projectile.owner].channel)
+            if (Main.MouseWorld.X > projectile.Center.X && Main.player[projectile.owner].channel)
             {
                 projectile.frame = 0;
             }
 
-            if(Main.MouseWorld.X < projectile.Center.X && !Main.player[projectile.owner].channel)
+            if (Main.MouseWorld.X < projectile.Center.X && !Main.player[projectile.owner].channel)
             {
                 projectile.frame = 2;
             }
-            if(Main.MouseWorld.X < projectile.Center.X && Main.player[projectile.owner].channel)
+            if (Main.MouseWorld.X < projectile.Center.X && Main.player[projectile.owner].channel)
             {
                 projectile.frame = 3;
             }

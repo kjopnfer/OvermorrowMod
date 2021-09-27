@@ -30,19 +30,19 @@ namespace OvermorrowMod.NPCs.Biome
 
         public override void AI()
         {
-            
+
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
-				int proj = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("TestHook"), 13, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
-				npc.netUpdate = true;
+                int proj = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("TestHook"), 13, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
+                npc.netUpdate = true;
             }
         }
 
-		public override float SpawnChance(NPCSpawnInfo spawnInfo)
-		{
-			return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == 368 ? 0.2f : 0f;
-		}
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == 368 ? 0.2f : 0f;
+        }
 
 
     }

@@ -44,7 +44,7 @@ namespace OvermorrowMod.NPCs.Town
         {
             Player player = Main.player[npc.target];
             AttTimer++;
-            if(AttTimer == 100)
+            if (AttTimer == 100)
             {
                 Vector2 position = npc.Center;
                 Vector2 targetPosition = Main.player[npc.target].Center;
@@ -53,14 +53,14 @@ namespace OvermorrowMod.NPCs.Town
                 npc.velocity = direction * 7.5f;
                 AttTimer = 0;
             }
-            if(AttTimer < 50)
+            if (AttTimer < 50)
             {
                 if (Main.player[npc.target].position.X < npc.position.X)
                 {
-                    npc.velocity.X -=  0.05f;
+                    npc.velocity.X -= 0.05f;
                 }
 
-                if (Main.player[npc.target].position.Y < npc.position.Y )
+                if (Main.player[npc.target].position.Y < npc.position.Y)
                 {
                     npc.velocity.Y -= 0.05f;
                 }

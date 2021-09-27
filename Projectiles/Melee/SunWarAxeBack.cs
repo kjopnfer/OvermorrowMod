@@ -4,7 +4,6 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
@@ -41,7 +40,7 @@ namespace OvermorrowMod.Projectiles.Melee
         public override void AI()
         {
             StarTimer++;
-            if(StarTimer == 5)
+            if (StarTimer == 5)
             {
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ModContent.ProjectileType<StarAxe>(), projectile.damage / 2, 3f, projectile.owner, 0f);
                 StarTimer = 0;

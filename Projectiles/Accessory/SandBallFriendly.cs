@@ -1,8 +1,8 @@
-using System;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Accessory
 {
@@ -37,7 +37,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                 rotateSpeed = projectile.ai[1];
                 runOnce = false;
             }
-            
+
             //Making player variable "p" set as the projectile's owner
             Player player = Main.player[projectile.owner];
 
@@ -53,7 +53,7 @@ namespace OvermorrowMod.Projectiles.Accessory
 
             if (player.GetModPlayer<OvermorrowModPlayer>().sandMode == 1) // Attack Mode
             {
-                if(projectile.localAI[0] == 0f)
+                if (projectile.localAI[0] == 0f)
                 {
                     AdjustMagnitude(ref projectile.velocity);
                     projectile.localAI[0] = 1f;

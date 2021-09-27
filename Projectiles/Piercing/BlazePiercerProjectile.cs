@@ -1,9 +1,9 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
 using OvermorrowMod.WardenClass;
+using System;
 using Terraria;
 using Terraria.ID;
 
@@ -82,7 +82,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
             }
 
-            if(projectile.ai[0] == 0f)
+            if (projectile.ai[0] == 0f)
             {
                 projectile.extraUpdates = 0;
             }
@@ -103,7 +103,8 @@ namespace OvermorrowMod.Projectiles.Piercing
                 {
                     projectile.ai[0] = 1f;
                     projectile.netUpdate = true;
-                }else if (num501 > 350f) // Projectile's max length
+                }
+                else if (num501 > 350f) // Projectile's max length
                 {
                     projectile.ai[0] = 1f;
                     projectile.netUpdate = true;
@@ -111,12 +112,12 @@ namespace OvermorrowMod.Projectiles.Piercing
 
                 projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
                 projectile.ai[1] += 1f;
-                if(projectile.ai[1] > 5f)
+                if (projectile.ai[1] > 5f)
                 {
                     projectile.alpha = 0;
                 }
 
-                if(projectile.ai[1] > 8f)
+                if (projectile.ai[1] > 8f)
                 {
                     projectile.ai[1] = 8f;
                 }
@@ -127,7 +128,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                     projectile.velocity.Y = projectile.velocity.Y + 0.3f;
                 }
             } // When ai[0] == 1f, the projectile has either hit a tile or has reached maxChainLength, so now we retract the projectile
-            else if (projectile.ai[0] == 1f) 
+            else if (projectile.ai[0] == 1f)
             {
                 projectile.tileCollide = false; // Allows for retraction without collision
                 projectile.rotation = (float)Math.Atan2(num499, num494) - 1.57f;

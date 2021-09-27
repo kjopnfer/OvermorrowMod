@@ -1,7 +1,7 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.WardenClass;
+using System;
 using Terraria;
 
 namespace OvermorrowMod.Projectiles.Piercing
@@ -54,7 +54,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 }
             }
 
-            if(projectile.ai[0] == 0f)
+            if (projectile.ai[0] == 0f)
             {
                 projectile.extraUpdates = 0;
             }
