@@ -10,10 +10,8 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
     public class BloodSumm : ModProjectile
     {
         public override bool CanDamage() => false;
-        private readonly int timer2 = 0;
         private int timer = 0;
         private int movement = 0;
-        private int movement2 = 0;
         float NPCtargetX = 0;
         float NPCtargetY = 0;
         int mrand = Main.rand.Next(-100, 101);
@@ -96,7 +94,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
             projectile.velocity.Y = 0f;
             movement = 1;
 			timer++;
-            movement2++;
+            movement++;
 			if(timer == 15)
 			{
                 Projectile.NewProjectile(projectile.Center.X + 5, projectile.Center.Y, 0, 10, mod.ProjectileType("RottingEgg"), projectile.damage, 1f, projectile.owner, 0f);
@@ -108,23 +106,23 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
             }
 
 
-                if (movement2 == 50 && !go)
+                if (movement == 50 && !go)
                 {
                     go = true;
                     mrand2 = Main.rand.Next(-170, -39);
                     mrand = Main.rand.Next(40, 171);
                     mrand3 = Main.rand.Next(-25, 50);
-                    movement2 = 0;
+                    movement = 0;
                 }
 
 
-                if (movement2 == 50 && go)
+                if (movement == 50 && go)
                 {
                     go = false;
                     mrand2 = Main.rand.Next(-170, -39);
                     mrand = Main.rand.Next(40, 171);
                     mrand3 = Main.rand.Next(-25, 50);
-                    movement2 = 0;
+                    movement = 0;
                 }
 
                 if(go)

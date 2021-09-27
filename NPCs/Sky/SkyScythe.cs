@@ -38,7 +38,7 @@ namespace OvermorrowMod.NPCs.Sky
             }
 
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 45, projectile.oldVelocity.X * 0f, projectile.oldVelocity.Y * 0f, 1, new Color(), 0.8f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.ManaRegeneration, projectile.oldVelocity.X * 0f, projectile.oldVelocity.Y * 0f, 1, new Color(), 0.8f);
             }
             if(projectile.velocity.X > 0)
             {

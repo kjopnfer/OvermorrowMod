@@ -115,7 +115,6 @@ namespace OvermorrowMod.NPCs.PostRider
                 Vector2 targetPosition = Main.player[npc.target].Center;
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
-                float speed = 7f;
                 int type = mod.ProjectileType("JungleBoom");
                 Main.PlaySound(SoundID.Item62, npc.Center);
                 if (!expert)
@@ -138,8 +137,6 @@ namespace OvermorrowMod.NPCs.PostRider
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-
-
             Vector2 mountedCenter = vinepos;
             Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
 
@@ -147,15 +144,6 @@ namespace OvermorrowMod.NPCs.PostRider
             var remainingVectorToPlayer = mountedCenter - drawPosition;
 
             float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (npc.alpha == 0)
-            {
-                int direction = -1;
-
-                if (npc.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

@@ -58,7 +58,7 @@ namespace OvermorrowMod.NPCs
                 Main.PlaySound(SoundID.Item8, npc.position);
                 for (int num175 = 0; num175 < 50; num175++)
                 {
-                    int num214 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 5, 0f, 0f, 100, default, 1.5f);
+                    int num214 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
                     Dust dust46 = Main.dust[num214];
                     dust46.velocity *= 3f;
                     Main.dust[num214].noGravity = true;
@@ -72,7 +72,7 @@ namespace OvermorrowMod.NPCs
                 Main.PlaySound(SoundID.Item8, npc.position);
                 for (int num179 = 0; num179 < 50; num179++)
                 {
-                    int num180 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 5, 0f, 0f, 100, default, 1.5f);
+                    int num180 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
                     Dust dust46 = Main.dust[num180];
                     dust46.velocity *= 3f;
                     Main.dust[num180].noGravity = true;
@@ -175,7 +175,7 @@ namespace OvermorrowMod.NPCs
             // NPC Dust
             if (Main.rand.Next(3) != 0)
             {
-                int num327 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 5, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100, default(Color), 0.9f);
+                int num327 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, DustID.Blood, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100, default(Color), 0.9f);
                 Main.dust[num327].noGravity = true;
                 Dust expr_448D_cp_0 = Main.dust[num327];
                 expr_448D_cp_0.velocity.X = expr_448D_cp_0.velocity.X * 0.3f;
@@ -204,13 +204,13 @@ namespace OvermorrowMod.NPCs
             {
                 for (int num333 = 0; (double)num333 < dmg / (double)npc.lifeMax * 50.0; num333++)
                 {
-                    Dust.NewDust(npc.position, npc.width, npc.height, 26, hitDirection, -1f);
+                    Dust.NewDust(npc.position, npc.width, npc.height, DustID.Bone, hitDirection, -1f);
                 }
                 return;
             }
             for (int num331 = 0; num331 < 20; num331++)
             {
-                Dust.NewDust(npc.position, npc.width, npc.height, 26, 2.5f * (float)hitDirection, -2.5f);
+                Dust.NewDust(npc.position, npc.width, npc.height, DustID.Bone, 2.5f * (float)hitDirection, -2.5f);
             }
 
             Gore.NewGore(npc.position, npc.velocity, 42, npc.scale);

@@ -10,23 +10,12 @@ namespace OvermorrowMod.Projectiles.Summon
 {
     public class SkeletronSumm : ModProjectile
     {
-        int colorcooldown = 0;
-        readonly int frame = 1;
-        Vector2 Rot;
         int Random2 = Main.rand.Next(-15, 12);
         int Random = Main.rand.Next(1, 3);
         public override bool CanDamage() => false;
-        private readonly int timer2 = 0;
-        private int eyetimer = 0;
+
         private int timer = 0;
         private int PosCheck = 0;
-        private int PosPlay = 0;
-        private int Pos = 0;
-        private int movement = 0;
-        private int NumProj = 0;
-        private int movement2 = 0;
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
 
@@ -95,7 +84,7 @@ namespace OvermorrowMod.Projectiles.Summon
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(Flamerot));
                     float speed = 15.5f;
-                    Main.PlaySound(2, projectile.position, 34);
+                    Main.PlaySound(SoundID.Item, projectile.position, 34);
                     Projectile.NewProjectile(projectile.Center + new Vector2(0, 10).RotatedBy(MathHelper.ToRadians(projectile.rotation)), newpoint2 * speed, ModContent.ProjectileType<SpritFlame>(), projectile.damage, 1f, projectile.owner, 0f);
 
                     if(up)

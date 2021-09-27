@@ -32,7 +32,7 @@ namespace OvermorrowMod.Items.Armor
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(824, 12);
+            recipe1.AddIngredient(ItemID.SunplateBlock, 12);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this, 1);
             recipe1.AddRecipe();

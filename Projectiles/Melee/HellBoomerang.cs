@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,21 +9,10 @@ namespace OvermorrowMod.Projectiles.Melee
 {
     public class HellBoomerang : ModProjectile
     {
-        private int SavedDMG = 0;
-        private int timer = 0;
         private bool ComingBack = false;
-        private int flametimer = 0;
         Vector2 endPoint;
-        bool target;
-        private float CircleArr = 1;
         private const string ChainTexturePath = "OvermorrowMod/Projectiles/Melee/HellBoomerangDraw";
-
-        Vector2 newMove;
-        Vector2 ROT;
         Vector2 SavedMove;
-
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
 
         public override void SetStaticDefaults()
         {
@@ -45,11 +33,6 @@ namespace OvermorrowMod.Projectiles.Melee
         }
         public override void AI()
         {
-            timer++;
-            float distanceFromTarget = 200f;
-            Vector2 targetCenter = projectile.position;
-
-            Player player = Main.player[projectile.owner];
             if (projectile.localAI[0] == 0f)
             {
                 AdjustMagnitude(ref projectile.velocity);
@@ -84,7 +67,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 float BetweenComeBack = Vector2.Distance(SavedMove, projectile.Center);
                 if(BetweenComeBack < 42)
                 {
-                    Main.PlaySound(13, projectile.position);
+                    Main.PlaySound(SoundID.Shatter, projectile.position);
                     ComingBack = true;
                 }
             }
@@ -113,7 +96,6 @@ namespace OvermorrowMod.Projectiles.Melee
 
             if(ComingBack)
             {
-                flametimer++;
                 float BetweenKill = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
                 projectile.tileCollide = false;
                 Vector2 position = projectile.Center;
@@ -132,14 +114,11 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            if(!target)
+            // if(!target) this is always true here
+            Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
+            Main.PlaySound(SoundID.Shatter, projectile.position);
             {
-                Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
-                Vector2 eee = projectile.Center;
-                Main.PlaySound(13, projectile.position);
-                {
-                    ComingBack = true;
-                }
+                ComingBack = true;
             }
 
             return false;

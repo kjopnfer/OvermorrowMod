@@ -182,10 +182,6 @@ namespace OvermorrowMod.Projectiles.Pets
                     projectile.netUpdate = true;
                 }
             }
-            int num41 = 3;
-            int num42 = 0;
-            int num43 = 3;
-            num41 = 6;
             
             return;
         }

@@ -7,10 +7,7 @@ namespace OvermorrowMod.NPCs.Town
 {
     public class Twin1NPC : ModNPC
     {
-        private int ProjTimer = 0;
         private int AttTimer = 0;
-        private int frame = 0;
-        private int frameTimer = 0;
 
         public override void SetStaticDefaults()
         {

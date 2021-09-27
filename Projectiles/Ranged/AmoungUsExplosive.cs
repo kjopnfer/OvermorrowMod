@@ -14,17 +14,12 @@ namespace OvermorrowMod.Projectiles.Ranged
         }
         public override bool CanDamage() => true;
 
-        readonly int Rota = 0;
-        readonly int zimer = 0;
         float SpearTargetX = 0;
         float SpearTargetY = 0;
-        readonly float Thank = 0;
-        readonly float You = 0;
         int tf2 = 0;
         int HasHit = 0;
          int AniTimer = 20;
-         int frame = 1;
-		public bool HasHitGround = false;
+        public bool HasHitGround = false;
 
 		bool DMGsave = false;
 		int savedDMG = 0;
@@ -81,7 +76,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 			}
 
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 262, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 0.8f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.AmberBolt, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 0.8f);
             }
 			if(HasHit > 0 || HasHitGround)
 			{
@@ -237,10 +232,10 @@ namespace OvermorrowMod.Projectiles.Ranged
             Vector2 eee = projectile.Center;
             Vector2 value1 = new Vector2(0f, 0f);
             Main.PlaySound(SoundID.Item64, (int)eee.X, (int)eee.Y);
-            int explode = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y, 30, savedDMG * 3, 3f, projectile.owner, 0f);
+            int explode = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y, ProjectileID.Grenade, savedDMG * 3, 3f, projectile.owner, 0f);
             Main.projectile[explode].timeLeft = 0;
             {
-                Dust.NewDust(eee, 5, 5, 6, 0.0f, 0.0f, 120, new Color(), 0.8f);  //this is the dust that will spawn after the explosion
+                Dust.NewDust(eee, 5, 5, DustID.Fire, 0.0f, 0.0f, 120, new Color(), 0.8f);  //this is the dust that will spawn after the explosion
             }
 		}
 

@@ -8,9 +8,6 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
 {
     public class Mousebullet : ModProjectile
     {
-        private int length = 1;
-        private int timer = 0;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Holy Light");

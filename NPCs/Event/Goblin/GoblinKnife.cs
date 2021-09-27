@@ -21,8 +21,6 @@ namespace OvermorrowMod.NPCs.Event.Goblin
         bool comebackright = false;
         bool comebackleft = false;
 
-        int direction = -1;
-
         Vector2 DrawToPos;
 
         public override void SetDefaults()
@@ -47,13 +45,6 @@ namespace OvermorrowMod.NPCs.Event.Goblin
             {
                 projectile.timeLeft = 3;
             }
-
-            if (projectile.Center.X < npc.Center.X)
-            {
-                direction = 1;
-            }
-
-
 
             float BetweenKill = Vector2.Distance(npc.Center, projectile.Center);
 
@@ -139,17 +130,6 @@ namespace OvermorrowMod.NPCs.Event.Goblin
 
             var drawPosition = projectile.Center;
             var remainingVectorToPlayer = mountedCenter - drawPosition;
-
-            float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

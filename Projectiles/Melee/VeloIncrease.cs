@@ -8,7 +8,6 @@ namespace OvermorrowMod.Projectiles.Melee
 {
     public class VeloIncrease : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
 
         public override void SetStaticDefaults()

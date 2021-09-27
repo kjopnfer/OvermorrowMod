@@ -95,24 +95,11 @@ namespace OvermorrowMod.Projectiles.Piercing.HellFire
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            var player = Main.player[projectile.owner];
-
             Vector2 mountedCenter = endPoint;
             Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
 
             var drawPosition = projectile.Center;
             var remainingVectorToPlayer = mountedCenter - drawPosition;
-
-            float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

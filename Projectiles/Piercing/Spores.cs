@@ -40,7 +40,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 39, projectile.velocity.X, projectile.velocity.Y, 75, new Color(), 1f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.JungleGrass, projectile.velocity.X, projectile.velocity.Y, 75, new Color(), 1f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
@@ -104,7 +104,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             {
                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                 Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                int dust = Dust.NewDust(position, 2, 2, 39, dustvelocity.X, dustvelocity.Y, 0, default, 1f);
+                int dust = Dust.NewDust(position, 2, 2, DustID.JungleGrass, dustvelocity.X, dustvelocity.Y, 0, default, 1f);
                 Main.dust[dust].noGravity = true;
             }
         }

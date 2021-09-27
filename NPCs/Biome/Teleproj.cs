@@ -36,7 +36,7 @@ namespace OvermorrowMod.NPCs.Biome
 			{
                 npc.Center = projectile.Center;
                 projectile.Kill();
-                Main.PlaySound(2, npc.position, 9);
+                Main.PlaySound(SoundID.Item, npc.position, 9);
             } 
                     
             

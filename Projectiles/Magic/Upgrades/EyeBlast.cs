@@ -8,7 +8,6 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
 {
     public class EyeBlast : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         bool HasHit = false;
 

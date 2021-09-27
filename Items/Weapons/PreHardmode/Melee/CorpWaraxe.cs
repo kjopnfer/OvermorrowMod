@@ -7,13 +7,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class CorpWaraxe : ModItem
     {
-
-
         float SwingRange = 0;
         int Timerset = 0;
-        int TimerReal = 0;
-
-
         public override void SetDefaults()
         {
             item.noMelee = true;
@@ -42,15 +37,15 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(45, 1);
-            recipe.AddIngredient(86, 10);
+            recipe.AddIngredient(ItemID.WarAxeoftheNight, 1);
+            recipe.AddIngredient(ItemID.ShadowScale, 10);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
 
             ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddIngredient(57, 11);
-            recipe2.AddIngredient(86, 10);
+            recipe2.AddIngredient(ItemID.DemoniteBar, 11);
+            recipe2.AddIngredient(ItemID.ShadowScale, 10);
             recipe2.AddTile(TileID.Anvils);
             recipe2.SetResult(this);
             recipe2.AddRecipe();
@@ -65,17 +60,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 
         public override bool CanUseItem(Player player)
         {
-
             if(SwingRange > 8) 
             {
                 SwingRange = 8;
             }
 
-
             if(Timerset > 0) 
             {
                 SwingRange = 0;
-                TimerReal = 0;
                 Timerset = 0;
             }
 

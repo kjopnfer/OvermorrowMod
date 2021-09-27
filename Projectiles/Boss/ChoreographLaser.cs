@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
@@ -36,7 +37,7 @@ namespace OvermorrowMod.Projectiles.Boss
                     Vector2 vector304 = projectile.position;
                     vector304 -= projectile.velocity * ((float)num1202 * 0.25f);
                     projectile.alpha = 255;
-                    int num1200 = Dust.NewDust(vector304, 1, 1, 206);
+                    int num1200 = Dust.NewDust(vector304, 1, 1, DustID.UnusedWhiteBluePurple);
                     Main.dust[num1200].position = vector304;
                     Dust expr_140F1_cp_0 = Main.dust[num1200];
                     expr_140F1_cp_0.position.X = expr_140F1_cp_0.position.X + (float)(projectile.width / 2);

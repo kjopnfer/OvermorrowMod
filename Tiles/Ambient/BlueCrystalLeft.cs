@@ -17,7 +17,7 @@ namespace OvermorrowMod.Tiles.Ambient
             Main.tileSpelunker[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            soundType = 21;
+            soundType = SoundID.Tink;
             soundStyle = 1;
             minPick = 65;
             AddMapEntry(new Color(102, 255, 255), name);

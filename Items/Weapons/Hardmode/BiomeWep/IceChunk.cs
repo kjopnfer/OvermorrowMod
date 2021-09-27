@@ -64,7 +64,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep
 
 
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 135, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 2.3f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.IceTorch, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 2.3f);
             }
         }
 

@@ -31,7 +31,7 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
 		public override void AddRecipes() 
 		{
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(175, 1);
+			recipe.AddIngredient(ItemID.HellstoneBar, 1);
             recipe.AddTile(TileID.Anvils);
 			recipe.SetResult(this, 150);
 			recipe.AddRecipe();

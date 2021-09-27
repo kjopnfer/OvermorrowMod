@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.TreeBoss;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
@@ -52,7 +53,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
             for (int num1103 = 0; num1103 < 2; num1103++)
             {
-                int num1106 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 107, npc.velocity.X, npc.velocity.Y, 50, default(Color), 0.4f);
+                int num1106 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.TerraBlade, npc.velocity.X, npc.velocity.Y, 50, default(Color), 0.4f);
                 switch (num1103)
                 {
                     case 0:

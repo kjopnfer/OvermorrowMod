@@ -8,8 +8,6 @@ namespace OvermorrowMod.Projectiles.Artifact
 {
     public class RedCloud : ArtifactProjectile
     {
-        private bool isActive = false;
-        private int AuraRadius = 390;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Blood Moon");

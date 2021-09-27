@@ -10,10 +10,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
     {
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         private int Wtimer = 0;
-        private bool didHit = false;
-        private int timer = 0;
-        private int SaveVeloX = 0;
-        private int SaveVeloY = 0;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Holy Light");
@@ -44,10 +40,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
                 projectile.timeLeft = 10;
             }
 
-
-
-
-            Player player = Main.player[projectile.owner];
             projectile.position.X = Main.player[projectile.owner].Center.X - 9;
             projectile.position.Y = Main.player[projectile.owner].Center.Y - 9;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
@@ -55,15 +47,12 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            didHit = true;
             projectile.tileCollide = false;
         }
     }
     
     public class WormT11 : ModProjectile
     {
-
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         public override void SetStaticDefaults()
@@ -133,7 +122,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT12 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         public override void SetStaticDefaults()
@@ -197,7 +185,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 	}   
     public class WormT13 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         public override void SetStaticDefaults()
@@ -266,7 +253,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT14 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         public override void SetStaticDefaults()
@@ -333,7 +319,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT15 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         public override void SetStaticDefaults()
@@ -402,7 +387,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT16 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         public override void SetStaticDefaults()
@@ -470,7 +454,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT17 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         public override void SetStaticDefaults()
@@ -538,7 +521,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT18 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/Devourer";
         public override void SetStaticDefaults()
@@ -606,7 +588,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT19 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WhyT";
         public override void SetStaticDefaults()
@@ -673,8 +654,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT20 : ModProjectile
     {
-        private int length = 1;
-        private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WhyT2";
         public override void SetStaticDefaults()
         {

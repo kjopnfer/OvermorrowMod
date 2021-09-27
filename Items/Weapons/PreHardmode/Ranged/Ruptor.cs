@@ -34,7 +34,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void AddRecipes()
         {
             ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddIngredient(154, 30);
+            recipe2.AddIngredient(ItemID.Bone, 30);
             recipe2.AddTile(TileID.Anvils);
             recipe2.SetResult(this);
             recipe2.AddRecipe();

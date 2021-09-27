@@ -4,13 +4,12 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Buffs.Summon;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
     public class FriendlyMeatball : ModProjectile
     {
-        Vector2 Rot;
+        private readonly Vector2 Rot = new Vector2(0, 0);
         private int PosCheck = 0;
         private int PosPlay = 0;
         private int HasChecked = 0;

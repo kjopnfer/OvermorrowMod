@@ -20,25 +20,12 @@ namespace OvermorrowMod.Projectiles.Piercing
         }
         public override bool CanDamage() => true;
 
-
-
-        private int SavedDMG = 0;
         private int timer = 0;
         private bool ComingBack = false;
         private bool StickingToNPC = false;
-        private int flametimer = 0;
-
-
         private int ComingBackTimer = 0;
-
-
-
-        readonly int Rota = 0;
-        readonly int zimer = 0;
         float SpearTargetX = 0;
         float SpearTargetY = 0;
-        readonly float Thank = 0;
-        readonly float You = 0;
         int tf2 = 0;
 		private int savedDMG = 0;
 		int HasHit = 0;
@@ -297,7 +284,7 @@ namespace OvermorrowMod.Projectiles.Piercing
 					penet3++;
 				}
 				{
-					Dust.NewDust(Main.npc[projTargetIndex].position + projectile.velocity, Main.npc[projTargetIndex].width, Main.npc[projTargetIndex].height, 115, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 0, new Color(), 1f);
+					Dust.NewDust(Main.npc[projTargetIndex].position + projectile.velocity, Main.npc[projTargetIndex].width, Main.npc[projTargetIndex].height, DustID.CrimtaneWeapons, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 0, new Color(), 1f);
 				}
 
 			}
@@ -341,15 +328,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             var remainingVectorToPlayer = mountedCenter - drawPosition;
 
             float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

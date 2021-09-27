@@ -414,10 +414,6 @@ namespace OvermorrowMod
             }*/
         }
 
-        private void TestMethod(int x, int y)
-        {
-        }
-
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
             int ShiniesIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shinies"));
@@ -531,31 +527,6 @@ namespace OvermorrowMod
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        bool placedtower = false;
         private void TempleStart(GenerationProgress progress)
         {
             progress.Message = "Generating Sky Ships";
@@ -941,8 +912,6 @@ namespace OvermorrowMod
 
         }
 
-
-        bool activetilecheck = false;
         bool TowerPlaced = false;
         
         private void TowerStart(GenerationProgress progress)
@@ -1566,50 +1535,6 @@ namespace OvermorrowMod
                     NetMessage.SendObjectPlacment(-1, x, y, (ushort)type, 0, 0, -1, -1);
                 }
             }
-        }
-
-        private void GenerateAltar(GenerationProgress progress)
-        {
-            /*Point point = new Point(x, y);
-           
-            ShapeData circleShapeData = new ShapeData();
-            ShapeData halfCircleShapeData = new ShapeData();
-            ShapeData circleShapeData2 = new ShapeData();
-
-            // Generate the circle shape
-            WorldUtils.Gen(point, new Shapes.Circle(20), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
-
-            // Generate the platform
-            WorldUtils.Gen(point, new Shapes.Circle(8), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.SetTile(TileID.Dirt).Output(circleShapeData2)));
-
-            // Clear the top half of the shape
-            WorldUtils.Gen(point, new Shapes.HalfCircle(12), Actions.Chain(new Actions.ClearTile(frameNeighbors: true).Output(halfCircleShapeData)));
-
-            // Remove the top half of the shape from the shape data
-            circleShapeData2.Subtract(halfCircleShapeData, point, point);
-            WorldUtils.Gen(point, new ModShapes.OuterOutline(circleShapeData2), Actions.Chain(new Actions.SetTile(TileID.Grass), new Actions.SetFrames(frameNeighbors: true)));
-
-            // Place background
-            WorldUtils.Gen(point, new ModShapes.All(circleShapeData), new Actions.PlaceWall(WallID.LivingLeaf));
-            WorldUtils.Gen(point, new Shapes.Circle(7), Actions.Chain(new Modifiers.RadialDither(0.5f, 0.2f), new Actions.PlaceWall(WallID.Flower)));
-
-            // Place grass
-            WorldUtils.Gen(point, new ModShapes.InnerOutline(circleShapeData), Actions.Chain(new Actions.SetTile(TileID.LivingWood), new Actions.SetFrames(frameNeighbors: true)));
-
-            // Place water
-            WorldUtils.Gen(new Point(point.X, point.Y + 2), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
-
-            // Place special tile
-
-            // Using PlaceObject instead of PlaceTile works for some apparent reason
-            WorldGen.PlaceObject(point.X, point.Y - 1, ModContent.TileType<DruidAltar>(), mute: false, 0);
-            //WorldGen.PlaceTile(point.X, point.Y - 6, TileID.LunarCraftingStation, mute: false, forced: true, -1, 0);
-            //WorldGen.PlaceTile(point.X, point.Y - 3, ModContent.TileType<DruidAltar>(), mute: false, forced: true, -1, 0);
-            WorldGen.PlaceTile(point.X - 5, point.Y - 1, TileID.Campfire, mute: false, forced: true, -1, 0);
-            WorldGen.PlaceTile(point.X + 5, point.Y - 1, TileID.Campfire, mute: false, forced: true, -1, 0);
-
-            // Place plants
-            WorldUtils.Gen(new Point(x, y - 1), new ModShapes.All(halfCircleShapeData), Actions.Chain(new Modifiers.Offset(0, -1), new Modifiers.OnlyTiles(TileID.Dirt), new Modifiers.Offset(0, -1), new ActionGrass()));*/
         }
     }
 }

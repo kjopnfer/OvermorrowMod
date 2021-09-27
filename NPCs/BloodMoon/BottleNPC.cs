@@ -66,7 +66,7 @@ namespace OvermorrowMod.NPCs.BloodMoon
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
                     Projectile.NewProjectile(npc.Center, direction * 9, ModContent.ProjectileType<SkullHoming>(), 17, 3f, Main.player[npc.target].whoAmI, 0f);
-                    Main.PlaySound(2, npc.position, 61);
+                    Main.PlaySound(SoundID.Item, npc.position, 61);
                 }
             }
             else

@@ -36,7 +36,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(38, 10);
+            recipe1.AddIngredient(ItemID.Lens, 10);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();

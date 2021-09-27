@@ -16,7 +16,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         }
 
         Vector2 endPoint;
-        private int projshot = 0;
         private int timer = 0;
         private bool teleporting = false;
         private int TPtimer = 0;
@@ -24,29 +23,18 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         private int otherTPtimer = 0;
         float speed = 0f;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/EvilBoss/GraniteChain";
-        Vector2 LaserPos;
-        Vector2 TargetPos;
-        private int eggcooldown = 0;
-
         private int UnholyTimer = 0;
         private int UnholyAttTimer = 0;
-        int RandomAttackTime = Main.rand.Next(0, 21);
 
-
-        private int LaserTimer = 0;
         private int attacktimer = 0;
 
-
         private int PixieTimer = 0;
-        private int RoundaboutTimer = 0;
 
         private int CircleAttTimer = 0;
         private int CircleLaserTimer = 0;
 
 
         private int SinTimer = 0;
-        private int SinTimerTimer = 0;
-
         private int BloodBallTimer = 0;
         private int BloodAttTimer = 0;
 
@@ -64,8 +52,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         float CircleArr = 0f;
         float CircleArr2 = 0f;
         float CircleArr3 = 0f;
-        float CircleArr4 = 0f;
-        float CircleArr5 = 0f;
         float CircleSpeed = 0f;
         float StopPosX = 0f;
         float StopPosY = 0f;
@@ -209,12 +195,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             if (RandomAtt == 0)
             {
-                LaserTimer++;
                 attacktimer++;
-
-
-
-
 
                 if(attacktimer < 51)
                 {
@@ -232,7 +213,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                     Color granitedustc = Color.White;
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 185, 0.0f, 0.0f, 10, granitedustc, 2f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, DustID.FrostHydra, 0.0f, 0.0f, 10, granitedustc, 2f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * 3f;
                         Main.dust[dust].velocity = Dustdirection * 3f;
@@ -282,7 +263,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 {
                     RandomAtt = Main.rand.Next(0, 6);
                     attacktimer = 0;
-                    LaserTimer = 0;
                 }
             }
 
@@ -324,13 +304,13 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Color granitedustc1 = Color.Purple;
                     Color granitedustc2 = Color.Red;
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 51, 0.0f, 0.0f, 10, granitedustc1, 4f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, DustID.SnowBlock, 0.0f, 0.0f, 10, granitedustc1, 4f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * -2;
                         Main.dust[dust].velocity = Dustdirection * -2;
                     }
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 43, 0.0f, 0.0f, 10, granitedustc2, 4f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, DustID.Sparkle, 0.0f, 0.0f, 10, granitedustc2, 4f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * 2;
                         Main.dust[dust].velocity = Dustdirection * 2;
@@ -382,10 +362,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             {
                 UnholyTimer++;
                 UnholyAttTimer++;
-                if(UnholyTimer == 1)
-                {
-                    RandomAttackTime = Main.rand.Next(0, 21);
-                }
 
                 if(UnholyAttTimer == 5 && UnholyTimer < 271)
                 {
@@ -424,9 +400,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             if (RandomAtt == 3)
             {
-                RoundaboutTimer++;
                 PixieTimer++;
-                int Rot = 0;
                 if(PixieTimer < 50)
                 {
                     int Random1 = Main.rand.Next(-70, 0);
@@ -453,13 +427,13 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Color Corp = Color.Purple;
                     Color Crim = Color.Red;
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 16, 0.0f, 0.0f, 10, Crim, 2f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, DustID.Cloud, 0.0f, 0.0f, 10, Crim, 2f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * 3f;
                         Main.dust[dust].velocity = Dustdirection * 3f;
                     }
                     {
-                        int dust = Dust.NewDust(VDustposition2, projectile.width, projectile.height, 16, 0.0f, 0.0f, 10, Corp, 2f);
+                        int dust = Dust.NewDust(VDustposition2, projectile.width, projectile.height, DustID.Cloud, 0.0f, 0.0f, 10, Corp, 2f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection2 * -3f;
                         Main.dust[dust].velocity = Dustdirection2 * -3f;
@@ -588,7 +562,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Dustdirection.Normalize();
 
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 14, 0.0f, 0.0f, 10, new Color(), 3f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, DustID.Demonite, 0.0f, 0.0f, 10, new Color(), 3f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * 2.5f;
                         Main.dust[dust].velocity = Dustdirection * 2.5f;
@@ -642,7 +616,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                     Color Crim = Color.Red;
 
                     {
-                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 14, 0.0f, 0.0f, 10, Crim, 3f);
+                        int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, DustID.Demonite, 0.0f, 0.0f, 10, Crim, 3f);
                         Main.dust[dust].noGravity = true;
                         Vector2 velocity = Dustdirection * 2.5f;
                         Main.dust[dust].velocity = Dustdirection * 2.5f;
@@ -700,7 +674,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
                 Color granitedustc = Color.Blue;
                 {
-                    int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, 56, 0.0f, 0.0f, 400, granitedustc, 2.4f);
+                    int dust = Dust.NewDust(VDustposition, projectile.width, projectile.height, DustID.BlueFairy, 0.0f, 0.0f, 400, granitedustc, 2.4f);
                     Main.dust[dust].noGravity = true;
                     Vector2 velocity = Dustdirection;
                     Main.dust[dust].velocity = Dustdirection;

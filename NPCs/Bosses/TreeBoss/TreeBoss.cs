@@ -15,8 +15,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         private int bufferCount = 0;
 
         private enum spawnDirection { left, right }
-        private spawnDirection chooseDirection;
-
 
         public override void SetStaticDefaults()
         {

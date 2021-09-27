@@ -68,12 +68,12 @@ namespace OvermorrowMod.Projectiles.Summon
                     int randChoice = Main.rand.Next(2);
                     if (randChoice == 0)
                     {
-                        int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, 0, 0, 0, 0, default, 1.14f);
+                        int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, DustID.Dirt, 0, 0, 0, default, 1.14f);
                         Main.dust[dust].noGravity = true;
                     }
                     else
                     {
-                        int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, 2, 0, 0, 0, default, 1.14f);
+                        int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, DustID.Grass, 0, 0, 0, default, 1.14f);
                         Main.dust[dust].noGravity = true;
                     }
                 }

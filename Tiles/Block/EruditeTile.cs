@@ -19,7 +19,7 @@ namespace OvermorrowMod.Tiles.Block
             Main.tileMerge[Type][TileID.Stone] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            soundType = 21;
+            soundType = SoundID.Tink;
             soundStyle = 1;
             minPick = 40;
             drop = ModContent.ItemType<EruditeOre>();

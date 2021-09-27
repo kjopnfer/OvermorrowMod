@@ -5,6 +5,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using Terraria.ID;
 
 namespace OvermorrowMod.Tiles.Ambient
 {
@@ -74,7 +75,7 @@ namespace OvermorrowMod.Tiles.Ambient
 				16,
 			};
 			TileObjectData.addTile(Type);
-			dustType = 180;
+			dustType = DustID.DungeonSpirit;
 			drop = ModContent.ItemType<Items.Misc.BlueCrystal>();
 		}
 

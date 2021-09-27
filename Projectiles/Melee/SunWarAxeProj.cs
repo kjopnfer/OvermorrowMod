@@ -14,7 +14,6 @@ namespace OvermorrowMod.Projectiles.Melee
         int okay1 = 0;
         int okay2 = 0;
         float CircleArr = 0;
-        int StarTimer = 0;
 
         public override void SetDefaults()
         {

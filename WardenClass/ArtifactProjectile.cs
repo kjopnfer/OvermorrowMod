@@ -190,7 +190,7 @@ namespace OvermorrowMod.WardenClass
                                         {
                                             Vector2 dustPosition = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * j)) * radius;
                                             Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * j));
-                                            int dust = Dust.NewDust(dustPosition, 2, 2, 90, dustvelocity.X, dustvelocity.Y, 0, default, 1.25f);
+                                            int dust = Dust.NewDust(dustPosition, 2, 2, DustID.RubyBolt, dustvelocity.X, dustvelocity.Y, 0, default, 1.25f);
                                             Main.dust[dust].noGravity = true;
                                         }
 

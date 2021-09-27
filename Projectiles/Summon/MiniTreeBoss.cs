@@ -50,7 +50,7 @@ namespace OvermorrowMod.Projectiles.Summon
                 int num1109 = 80;
                 for (int num1108 = 0; num1108 < num1109; num1108++)
                 {
-                        int num1107 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y + 16f), projectile.width, projectile.height - 16, 107);
+                        int num1107 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y + 16f), projectile.width, projectile.height - 16, DustID.TerraBlade);
                         Dust dust81 = Main.dust[num1107];
                         dust81.velocity *= 2f;
                         Main.dust[num1107].noGravity = true;

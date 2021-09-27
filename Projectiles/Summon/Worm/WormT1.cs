@@ -11,9 +11,7 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
         private int Wtimer = 0;
         private bool didHit = false;
-        private int timer = 0;
-        private int SaveVeloX = 0;
-        private int SaveVeloY = 0;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Holy Light");
@@ -112,7 +110,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT2 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WormT3";
         public override void SetStaticDefaults()
@@ -166,7 +163,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT3 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
 
         public override void SetStaticDefaults()
@@ -218,7 +214,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
     }
     public class WormT4 : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WormT3";
         public override void SetStaticDefaults()
@@ -275,8 +270,6 @@ namespace OvermorrowMod.Projectiles.Summon.Worm
 
     public class WormT5 : ModProjectile
     {
-        private int length = 1;
-        private int timer = 0;
         public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WormT5";
         public override void SetStaticDefaults()
         {

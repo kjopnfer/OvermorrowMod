@@ -11,7 +11,7 @@ namespace OvermorrowMod.Projectiles.Summon
     public class PuffBubble : ModProjectile
     {
         private bool release = false;
-        private int timer = 0;
+
         public override string Texture => "Terraria/Projectile_" + ProjectileID.FlaironBubble;
 
         public override void SetStaticDefaults()
@@ -51,18 +51,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
         public override void Kill(int timeLeft)
         {
-            Main.PlaySound(2, projectile.position, 54);
-        }
-
-
-
-        private void AdjustMagnitude(ref Vector2 vector)
-        {
-            float magnitude = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            if (magnitude > 9f)
-            {
-                vector *= 9f / magnitude;
-            }
+            Main.PlaySound(SoundID.Item, projectile.position, 54);
         }
     }
 }

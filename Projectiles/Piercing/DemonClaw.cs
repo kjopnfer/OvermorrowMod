@@ -50,7 +50,7 @@ namespace OvermorrowMod.Projectiles.Piercing
 
             for (int num162 = 0; num162 < 2; num162++)
             {
-                int num163 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 6, 0f, 0f, 100);
+                int num163 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Fire, 0f, 0f, 100);
                 Main.dust[num163].noGravity = true;
             }
         }

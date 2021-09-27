@@ -48,7 +48,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             int numberProjectiles = 3;
             for (int i = 0; i < numberProjectiles; i++)
             {
-                Projectile.NewProjectile(player.Center.X + Main.rand.Next(-75, 76), player.Center.Y + Main.rand.Next(-75, 76), 0, 0, 590, item.damage, 3, player.whoAmI);
+                Projectile.NewProjectile(player.Center.X + Main.rand.Next(-75, 76), player.Center.Y + Main.rand.Next(-75, 76), 0, 0, ProjectileID.TruffleSpore, item.damage, 3, player.whoAmI);
             }
             return true;
         }

@@ -14,12 +14,8 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
         }
         public override bool CanDamage() => true;
 
-        readonly int Rota = 0;
-        readonly int zimer = 0;
         float SpearTargetX = 0;
         float SpearTargetY = 0;
-        readonly float Thank = 0;
-        readonly float You = 0;
         int tf2 = 0;
 		private int savedDMG = 0;
 		int HasHit = 0;
@@ -76,7 +72,7 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
 		{
 
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 12, projectile.oldVelocity.X * 0, projectile.oldVelocity.Y * 0, 1, new Color(), 1f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.HeartCrystal, projectile.oldVelocity.X * 0, projectile.oldVelocity.Y * 0, 1, new Color(), 1f);
             }
 
 			if(penet3 > 2)

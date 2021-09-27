@@ -12,8 +12,6 @@ namespace OvermorrowMod.NPCs.Inferno
 
         readonly bool expert = Main.expertMode;
         private int experttimer = 0;
-        private readonly Player player;
-        private readonly float speed;
         private int wormtimer = 0;
         private int bombtimer = 0;
         private int arrowtimer = 0;
@@ -21,14 +19,10 @@ namespace OvermorrowMod.NPCs.Inferno
         private int targettimer = 0;
         private int pandoratimer = 0;
         private int zerotimer = 0;
-        private readonly int tptimer = 0;
-        private readonly int xside = 5000;
         private int pufftimer = 0;
         int spritetimer = 0;
         private int look = 0;
         int frame = 1;
-        readonly int sprite1 = 1;
-        readonly int sprite2 = 0;
         int RandomAtt = Main.rand.Next(-2, 5);
         public override void SetStaticDefaults()
         {
@@ -96,7 +90,7 @@ namespace OvermorrowMod.NPCs.Inferno
 
                             if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
                             {
-                                Dust.NewDust(position, 5, 5, 55, 0.0f, 0.0f, 120, new Color(), 1f);  //this is the dust that will spawn after the explosion
+                                Dust.NewDust(position, 5, 5, DustID.Pixie, 0.0f, 0.0f, 120, new Color(), 1f);  //this is the dust that will spawn after the explosion
                             }
                         }
                     }
@@ -526,7 +520,7 @@ namespace OvermorrowMod.NPCs.Inferno
 
                     if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
                     {
-                        Dust.NewDust(position, 5, 5, 55, 0.0f, 0.0f, 120, new Color(), 1f);  //this is the dust that will spawn after the explosion
+                        Dust.NewDust(position, 5, 5, DustID.Pixie, 0.0f, 0.0f, 120, new Color(), 1f);  //this is the dust that will spawn after the explosion
                     }
                 }
             }

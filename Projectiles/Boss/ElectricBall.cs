@@ -48,7 +48,7 @@ namespace OvermorrowMod.Projectiles.Boss
                 projectile.ai[0] = 0;
             }
 
-            int num434 = Dust.NewDust(projectile.Center, 0, 0, 229, 0f, 0f, 100);
+            int num434 = Dust.NewDust(projectile.Center, 0, 0, DustID.Vortex, 0f, 0f, 100);
             Main.dust[num434].noLight = true;
             Main.dust[num434].noGravity = true;
             Main.dust[num434].velocity = projectile.velocity;

@@ -1,7 +1,5 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -85,7 +83,7 @@ namespace OvermorrowMod.Projectiles.Melee
             flametimer++;
             Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
             Vector2 eee = projectile.Center;
-            Main.PlaySound(3, projectile.position, 2);
+            Main.PlaySound(SoundID.NPCHit, projectile.position, 2);
             {
                 ComingBack = true;
             }
@@ -109,7 +107,7 @@ namespace OvermorrowMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Main.PlaySound(3, projectile.position, 2);
+            Main.PlaySound(SoundID.NPCHit, projectile.position, 2);
             ComingBack = true;
             flametimer++;
         }

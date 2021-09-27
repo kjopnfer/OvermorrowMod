@@ -10,7 +10,6 @@ namespace OvermorrowMod.Projectiles.Artifact
     public class SafetyZone : ModProjectile
     {
         public bool hide = false;
-        private bool isActive = false;
         private bool owneralive = false;
         private float radius = 450;
 

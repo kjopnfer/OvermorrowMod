@@ -5,6 +5,7 @@ using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
 using OvermorrowMod.WardenClass;
 using Terraria;
+using Terraria.ID;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
@@ -41,7 +42,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 {
                     if (Main.rand.Next(4) == 0)
                     {
-                        int num451 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y - 10), projectile.width, projectile.height, 6, projectile.velocity.X * 0.2f + (float)(projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, default(Color), 2.5f);
+                        int num451 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y - 10), projectile.width, projectile.height, DustID.Fire, projectile.velocity.X * 0.2f + (float)(projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, default(Color), 2.5f);
                         Main.dust[num451].noGravity = true;
                         Dust expr_D6EA_cp_0 = Main.dust[num451];
                         expr_D6EA_cp_0.velocity.X = expr_D6EA_cp_0.velocity.X * 2f;

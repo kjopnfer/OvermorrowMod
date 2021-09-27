@@ -10,36 +10,19 @@ namespace OvermorrowMod.Projectiles.Magic
 {
     public class CircleMagic : ModProjectile
     {
-
-        int colorcooldown = 0;
-        readonly int frame = 1;
-        Vector2 Rot;
         int Random2 = Main.rand.Next(-15, 12);
         int Random = Main.rand.Next(1, 3);
-        private readonly int timer2 = 0;
-        private int timer = 0;
         private float CircleArr = 1;
         private int PosCheck = 0;
         private int PosPlay = 0;
-        private int PosTimer = 0;
-        private int Pos = 0;
-        private int movement = 0;
-
-
         private int OrignalDamage = 0;
 
 
         private int HasChecked = 0;
 
         private int NumProj = 0;
-        private int movement2 = 0;
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
-
-        private int CenterXPly = 5;
-
         private bool charge = false;
 
         public override void SetStaticDefaults()
@@ -63,9 +46,6 @@ namespace OvermorrowMod.Projectiles.Magic
         public override void AI()
         {
             projectile.timeLeft = projectile.timeLeft + 1;
-            float distanceFromTarget = 300f;
-            Vector2 targetCenter = projectile.position;
-            bool foundTarget = false;
             projectile.rotation = (Main.MouseWorld - projectile.Center).ToRotation();
             projectile.tileCollide = false;
 
@@ -112,7 +92,7 @@ namespace OvermorrowMod.Projectiles.Magic
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 float speed = 11;
-                Main.PlaySound(2, projectile.position, 8);
+                Main.PlaySound(SoundID.Item, projectile.position, 8);
                 charge = true;
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, direction.X * speed, direction.Y * speed, ModContent.ProjectileType<ShotSpike>(), projectile.damage, 0f, projectile.owner, 0f);
                 }

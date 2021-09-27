@@ -4,16 +4,14 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Biome
 {
+    // This should not exist, probably
     public class TestNPC : ModNPC
     {
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Clamper");
         }
-
-        int Random = Main.rand.Next(1, 1000);
         int timer = 0;
-        int timer2 = 0;
 
         public override void SetDefaults()
         {

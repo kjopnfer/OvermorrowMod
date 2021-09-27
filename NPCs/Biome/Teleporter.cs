@@ -80,7 +80,7 @@ namespace OvermorrowMod.NPCs.Biome
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
 				    int proj = Projectile.NewProjectile(npc.Center, direction * 12f, mod.ProjectileType("Teleproj"), 0, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
-                    Main.PlaySound(2, npc.position, 19);
+                    Main.PlaySound(SoundID.Item, npc.position, 19);
                     frame = 4;
                 }
             }

@@ -39,7 +39,7 @@ namespace OvermorrowMod.Projectiles.Boss
                 {
                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                     Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                    int dust = Dust.NewDust(position, 2, 2, 107, dustvelocity.X, dustvelocity.Y, 0, default, 1);
+                    int dust = Dust.NewDust(position, 2, 2, DustID.TerraBlade, dustvelocity.X, dustvelocity.Y, 0, default, 1);
                     Main.dust[dust].noGravity = true;
                 }
                 projectile.ai[1]++;

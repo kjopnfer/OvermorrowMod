@@ -8,10 +8,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 {
     public class JungleEXP : ModProjectile
     {
-
         int Anitimer = 0;
-        int frame = 1;
-
         public override void SetDefaults()
         {
             projectile.hostile = false;

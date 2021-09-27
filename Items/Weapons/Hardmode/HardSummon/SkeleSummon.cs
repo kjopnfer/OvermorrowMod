@@ -13,11 +13,8 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
         private float NPCtargetX = 0;
         private float NPCtargetY = 0;
         private int timer = 0;
-		private bool target = false;
-        private int frame = 6;
         private int frametimer = 0;
         private int frametimer2 = 0;
-        private float distanceTo;
         private int penet = 0;
         private int penet2 = 0;
         private int savedDMG = 0;

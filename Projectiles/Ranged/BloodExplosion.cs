@@ -30,17 +30,17 @@ namespace OvermorrowMod.Projectiles.Ranged
 
 			for (int num864 = 0; num864 < 30; num864++)
 			{
-				int num865 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, 31, 0f, 0f, 100, default(Color), 1.5f);
+				int num865 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
 				Dust dust = Main.dust[num865];
 				dust.velocity *= 1.4f;
 			}
 			for (int num866 = 0; num866 < 20; num866++)
 			{
-				int num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, 183, 0f, 0f, 100, default(Color), 2.5f);
+				int num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, DustID.VampireHeal, 0f, 0f, 100, default(Color), 2.5f);
 				Main.dust[num867].noGravity = true;
 				Dust dust = Main.dust[num867];
 				dust.velocity *= 3.5f;
-				num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, 183, 0f, 0f, 100, default(Color), 1f);
+				num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, DustID.VampireHeal, 0f, 0f, 100, default(Color), 1f);
 				dust = Main.dust[num867];
 				dust.velocity *= 1.5f;
 			}

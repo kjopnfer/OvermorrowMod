@@ -9,7 +9,6 @@ namespace OvermorrowMod.NPCs.Inferno
     {
         readonly bool expert = Main.expertMode;
         private int experttimer = 0;
-        private readonly int timer = 0;
         private int movetimer = 0;
         private int jumptimer = 0;
         public override void SetDefaults()

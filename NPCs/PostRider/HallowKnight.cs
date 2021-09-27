@@ -15,7 +15,6 @@ namespace OvermorrowMod.NPCs.PostRider
         int Attacktimer = 4;
         readonly bool expert = Main.expertMode;
         private int experttimer = 0;
-        private readonly int timer = 0;
 
         public override void SetDefaults()
         {

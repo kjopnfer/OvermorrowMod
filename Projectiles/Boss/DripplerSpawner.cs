@@ -28,7 +28,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 3f)
             {
-                int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, 5, 0, 0, 0, default, 1.84f);
+                int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, DustID.Blood, 0, 0, 0, default, 1.84f);
                 Main.dust[dust].noGravity = true;
             }
         }

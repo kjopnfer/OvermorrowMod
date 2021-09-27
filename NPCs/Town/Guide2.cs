@@ -33,7 +33,6 @@ namespace OvermorrowMod.NPCs.Town
         int frame = 0;
         int SummStopper = 0;
         int disctimer;
-        bool leafatt = false;
 
         public override void SetStaticDefaults()
         {
@@ -148,7 +147,7 @@ namespace OvermorrowMod.NPCs.Town
                         // This dust spawn adapted from the Pillar death code in vanilla.
                         for (int dustNumber = 0; dustNumber < 6; dustNumber++)
                         {
-                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, 107, 0f, 0f, 0, default(Color), 1f)];
+                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, DustID.TerraBlade, 0f, 0f, 0, default(Color), 1f)];
                             dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
                             dust.velocity.X = 0f;
                             dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;
@@ -429,7 +428,7 @@ namespace OvermorrowMod.NPCs.Town
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
                                     float speed = 9f;
-                                    int proj = Projectile.NewProjectile(position, direction * speed, 180, npc.damage, 0f, Main.myPlayer);  
+                                    int proj = Projectile.NewProjectile(position, direction * speed, ProjectileID.BulletDeadeye, npc.damage, 0f, Main.myPlayer);  
                                     bulltimer = 0;  
                                 }  
                             }
@@ -443,7 +442,7 @@ namespace OvermorrowMod.NPCs.Town
                                     direction.Normalize();
                                     float speed = 9f;
                                     Vector2 Rot70 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(8));
-                                    int projbul = Projectile.NewProjectile(position, Rot70 * speed, 283, npc.damage, 0f, Main.myPlayer);  
+                                    int projbul = Projectile.NewProjectile(position, Rot70 * speed, ProjectileID.VenomBullet, npc.damage, 0f, Main.myPlayer);  
                                     Main.projectile[projbul].friendly = false;
                                     Main.projectile[projbul].hostile = true;
                                     bulltimer = 0;  
@@ -462,9 +461,9 @@ namespace OvermorrowMod.NPCs.Town
                                 Vector2 Rot1 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
                                 Vector2 Rot2 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
                                 Vector2 Rot3 = new Vector2(direction.X,  direction.Y).RotatedByRandom(MathHelper.ToRadians(5));
-                                Projectile.NewProjectile(position, Rot1 * speed, 82, npc.damage, 0f, Main.myPlayer);  
-                                Projectile.NewProjectile(position, Rot2 * speed, 82, npc.damage, 0f, Main.myPlayer);  
-                                Projectile.NewProjectile(position, Rot3 * speed, 82, npc.damage, 0f, Main.myPlayer);  
+                                Projectile.NewProjectile(position, Rot1 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);  
+                                Projectile.NewProjectile(position, Rot2 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);  
+                                Projectile.NewProjectile(position, Rot3 * speed, ProjectileID.FlamingArrow, npc.damage, 0f, Main.myPlayer);  
                                 arrowtimer = 0;    
                             }
                         }
@@ -521,7 +520,7 @@ namespace OvermorrowMod.NPCs.Town
                                 Vector2 direction = targetPosition - position;
                                 direction.Normalize();
                                 float speed = 12f;
-                                int dagger = Projectile.NewProjectile(position, direction * speed, 93, npc.damage, 0f, Main.myPlayer);  
+                                int dagger = Projectile.NewProjectile(position, direction * speed, ProjectileID.MagicDagger, npc.damage, 0f, Main.myPlayer);  
                                 Main.projectile[dagger].friendly = false;
                                 Main.projectile[dagger].hostile = true;
                                 Lamp = false;
@@ -670,7 +669,7 @@ namespace OvermorrowMod.NPCs.Town
                                     Vector2 direction = targetPosition - position;
                                     direction.Normalize();
                                     float Projspeed = 15f;
-                                    int slash = Projectile.NewProjectile(position, direction * Projspeed, 116, npc.damage, 0f, Main.myPlayer);  
+                                    int slash = Projectile.NewProjectile(position, direction * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);  
                                     Main.projectile[slash].friendly = false;
                                     Main.projectile[slash].hostile = true;
                                     frame = 25;
@@ -683,7 +682,7 @@ namespace OvermorrowMod.NPCs.Town
                                     direction.Normalize();
                                     float Projspeed = 15f;
                                     Vector2 Rot8 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(17));
-                                    int slash2 = Projectile.NewProjectile(position, Rot8 * Projspeed, 116, npc.damage, 0f, Main.myPlayer);  
+                                    int slash2 = Projectile.NewProjectile(position, Rot8 * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);  
                                     Main.projectile[slash2].friendly = false;
                                     Main.projectile[slash2].hostile = true;
                                     frame = 25;
@@ -696,7 +695,7 @@ namespace OvermorrowMod.NPCs.Town
                                     direction.Normalize();
                                     float Projspeed = 15f;
                                     Vector2 Rot9 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(-17));
-                                    int slash3 = Projectile.NewProjectile(position, Rot9 * Projspeed, 116, npc.damage, 0f, Main.myPlayer);  
+                                    int slash3 = Projectile.NewProjectile(position, Rot9 * Projspeed, ProjectileID.SwordBeam, npc.damage, 0f, Main.myPlayer);  
                                     Main.projectile[slash3].friendly = false;
                                     Main.projectile[slash3].hostile = true;
                                     frame = 25;

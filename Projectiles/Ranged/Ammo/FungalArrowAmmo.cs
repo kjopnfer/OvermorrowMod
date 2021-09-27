@@ -32,7 +32,7 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
 		{
 			ModRecipe recipe = new ModRecipe(mod);
 			recipe.AddIngredient(ItemID.WoodenArrow, 50);
-			recipe.AddIngredient(183, 10);
+			recipe.AddIngredient(ItemID.GlowingMushroom, 10);
             recipe.AddTile(TileID.WorkBenches);
 			recipe.SetResult(this, 50);
 			recipe.AddRecipe();

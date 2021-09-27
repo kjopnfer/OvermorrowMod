@@ -11,7 +11,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
  
     public class MegaBuster : ModItem
     {
-
         bool eyebuff = false;
         bool evilbuff = false;
         bool skelebuff = false;
@@ -22,20 +21,10 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         bool dripbuff = false;
         bool treebuff = false;
 
-
-
-        int savedusetime = 0;
-        int savedusetimeani = 0; 
-
         int Soundtimer = 0;
         int Charge = 0;
         int Mode = 0;
-        int eye = 0;
-        int evil = 0;
-        int normal = 0;
-        int bone = 0;
-        int sting = 0;
-        
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Mega Buster");
@@ -58,21 +47,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.shoot = mod.ProjectileType("Blast1");
             item.shootSpeed = 0f;
         }
-
-
-
-        private void BossText(string text) // boss messages
-        {
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            { 
-                Main.NewText(text, Color.Blue);
-            }
-            else if (Main.netMode == NetmodeID.Server)
-            {
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Blue);
-            }
-        }
-
 
         public override bool AltFunctionUse(Player player)//You use this to allow the item to be right clicked
         {
@@ -173,9 +147,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 
                     Color granitedustc = Color.Yellow;
                     {
-                        int dust = Dust.NewDust(VDustposition, player.width, player.height, 16, 0.0f, 0.0f, 10, granitedustc, 1.8f);
+                        int dust = Dust.NewDust(VDustposition, player.width, player.height, DustID.Cloud, 0.0f, 0.0f, 10, granitedustc, 1.8f);
                         Main.dust[dust].noGravity = true;
-                        Vector2 velocity = Dustdirection * 2f;
                         Main.dust[dust].velocity = Dustdirection * 2f;
                     }
                 }
@@ -200,9 +173,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 
                         Color granitedustc = Color.Cyan;
                         {
-                            int dust = Dust.NewDust(VDustposition, player.width, player.height, 16, 0.0f, 0.0f, 10, granitedustc, 1.8f);
+                            int dust = Dust.NewDust(VDustposition, player.width, player.height, DustID.Cloud, 0.0f, 0.0f, 10, granitedustc, 1.8f);
                             Main.dust[dust].noGravity = true;
-                            Vector2 velocity = Dustdirection * 2f;
                             Main.dust[dust].velocity = Dustdirection * 2f;
                         }
                     }
@@ -212,7 +184,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             if(Mode == 1 && NPC.downedBoss1)
             {
                 item.color = Color.Red;
-                normal = 0;
                 Charge = 0;
                 item.shoot = mod.ProjectileType("EyeBlast");
                 item.mana = 9;
@@ -228,7 +199,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             if(Mode == 2 && NPC.downedBoss2)
             {
                 item.color = Color.Purple;
-                normal = 0;
                 Charge = 0;
                 item.shoot = mod.ProjectileType("EvilShotBlast1");
                 item.mana = 11;
@@ -244,7 +214,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             if(Mode == 3 && NPC.downedQueenBee)
             {
                 item.color = Color.Green;
-                normal = 0;
                 Charge = 0;
                 item.shoot = mod.ProjectileType("HomingStinger");
                 item.mana = 6;
@@ -259,7 +228,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             if(Mode == 4 && NPC.downedBoss3)
             {
                 item.color = Color.Gray;
-                normal = 0;
                 Charge = 0;
                 item.shoot = mod.ProjectileType("HandHit");
                 item.mana = 15;

@@ -10,7 +10,6 @@ namespace OvermorrowMod.NPCs.PostRider.NightCrawler
     {
 
         readonly bool expert = Main.expertMode;
-        private int experttimer = 0;
 
         public override void SetDefaults()
         {
@@ -103,13 +102,8 @@ namespace OvermorrowMod.NPCs.PostRider.NightCrawler
     }
     internal class NightBody : Night
     {
-
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
         int wormrandX = Main.rand.Next(-50, 51);
         int wormrandY = Main.rand.Next(-50, 51);
-
-        int postimer = 0;
 
         public override void SetDefaults()
         {
@@ -429,7 +423,6 @@ namespace OvermorrowMod.NPCs.PostRider.NightCrawler
                             num192 = num188;
                         }
                     }
-                    bool flag21 = false;
                 }
                 npc.rotation = (float)System.Math.Atan2(npc.velocity.Y, npc.velocity.X) + 1.57f;
                 if (head)

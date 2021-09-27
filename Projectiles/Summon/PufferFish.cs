@@ -12,23 +12,12 @@ namespace OvermorrowMod.Projectiles.Summon
     {
         int righttimer = 0;
         int lefttimer = 0;
-        int colorcooldown = 0;
-        readonly int frame = 1;
-        Vector2 Rot;
         int Random2 = Main.rand.Next(-15, 12);
         int Random = Main.rand.Next(1, 3);
         public override bool CanDamage() => false;
-        private readonly int timer2 = 0;
-        private int eyetimer = 0;
+
         private int timer = 0;
         private int PosCheck = 0;
-        private int PosPlay = 0;
-        private int Pos = 0;
-        private int movement = 0;
-        private int NumProj = 0;
-        private int movement2 = 0;
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
 
@@ -90,7 +79,7 @@ namespace OvermorrowMod.Projectiles.Summon
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(7f));
                     float speed = 15.5f + (Random * 0.10f);
-                    Main.PlaySound(2, projectile.position, 85);
+                    Main.PlaySound(SoundID.Item, projectile.position, 85);
                     Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<PuffBubble>(), projectile.damage, 1f, projectile.owner, 0f);
                     timer = 0;
                 }

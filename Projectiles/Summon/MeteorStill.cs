@@ -10,31 +10,14 @@ namespace OvermorrowMod.Projectiles.Summon
 {
     public class MeteorStill : ModProjectile
     {
-        int righttimer = 0;
-        int lefttimer = 0;
-        int colorcooldown = 0;
-        readonly int frame = 1;
-        Vector2 Rot;
         int Random2 = Main.rand.Next(-15, 12);
         int Random = Main.rand.Next(1, 3);
         public override bool CanDamage() => false;
-        private readonly int timer2 = 0;
-        private int eyetimer = 0;
+
         private int timer = 0;
         private int PosCheck = 0;
-        private int PosPlay = 0;
-        private int Pos = 0;
-        private int movement = 0;
-        private int NumProj = 0;
-        private int movement2 = 0;
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
-
-        private int ShowTime = 0;
-
-
 
         public override void SetStaticDefaults()
         {
@@ -68,7 +51,7 @@ namespace OvermorrowMod.Projectiles.Summon
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                     Vector2 dustvelocity = new Vector2(0f, -5f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 174, dustvelocity.X, dustvelocity.Y, 0, default, 1.1f);
+                                    int dust = Dust.NewDust(position, 2, 2, DustID.InfernoFork, dustvelocity.X, dustvelocity.Y, 0, default, 1.1f);
                                     Main.dust[dust].noGravity = true;
                                 }
 
@@ -106,7 +89,7 @@ namespace OvermorrowMod.Projectiles.Summon
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(7f));
                     float speed = 0;
-                    Main.PlaySound(2, projectile.position, 20);
+                    Main.PlaySound(SoundID.Item, projectile.position, 20);
                     if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
                     {
                         Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<MeteorBall>(), projectile.damage, 1f, projectile.owner, 0f);

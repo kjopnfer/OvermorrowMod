@@ -82,7 +82,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
             Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
             Color Bloodc = Color.Red;
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 12, projectile.velocity.X, projectile.velocity.Y, 1, Bloodc, 1f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.HeartCrystal, projectile.velocity.X, projectile.velocity.Y, 1, Bloodc, 1f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
@@ -163,7 +163,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
 
             Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 18, projectile.velocity.X, projectile.velocity.Y, 50, new Color(), 1f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Vile, projectile.velocity.X, projectile.velocity.Y, 50, new Color(), 1f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];

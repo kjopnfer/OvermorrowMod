@@ -12,7 +12,7 @@ namespace OvermorrowMod.NPCs.Inferno
         int frame = 0;
         private int timer = 0;
         private readonly int movetimer = 0;
-        private readonly int jumptimer = 0;
+
         public override void SetDefaults()
         {
             npc.width = 20;

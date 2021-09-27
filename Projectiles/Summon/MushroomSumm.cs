@@ -10,24 +10,13 @@ namespace OvermorrowMod.Projectiles.Summon
 {
     public class MushroomSumm : ModProjectile
     {
-
-        int colorcooldown = 0;
-        readonly int frame = 1;
-        Vector2 Rot;
         int Random2 = Main.rand.Next(-15, 12);
         int Random = Main.rand.Next(1, 3);
         public override bool CanDamage() => false;
-        private readonly int timer2 = 0;
+
         private int eyetimer = 0;
         private int timer = 0;
         private int PosCheck = 0;
-        private int PosPlay = 0;
-        private int Pos = 0;
-        private int movement = 0;
-        private int NumProj = 0;
-        private int movement2 = 0;
-        float NPCtargetX = 0;
-        float NPCtargetY = 0;
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
 

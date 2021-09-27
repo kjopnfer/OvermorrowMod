@@ -7,10 +7,6 @@ namespace OvermorrowMod.NPCs.Town
 {
     public class LightDisc2 : ModProjectile
     {
-
-
-        private int SavedDMG = 0;
-        private int timer = 0;
         private bool ComingBack = false;
         private int flametimer = 0;
 

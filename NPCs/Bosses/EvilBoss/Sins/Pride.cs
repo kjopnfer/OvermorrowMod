@@ -48,7 +48,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
                         if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
                         {
                             Color alpha = Color.White; 
-                            int dust = Dust.NewDust(position, projectile.width, projectile.height, 185, 0.0f, 0.0f, 120, alpha, 2f);
+                            int dust = Dust.NewDust(position, projectile.width, projectile.height, DustID.FrostHydra, 0.0f, 0.0f, 120, alpha, 2f);
                             Main.dust[dust].noGravity = true;
                         }
                     }

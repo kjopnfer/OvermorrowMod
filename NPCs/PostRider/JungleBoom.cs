@@ -10,7 +10,6 @@ namespace OvermorrowMod.NPCs.PostRider
     {
 
         int Anitimer = 0;
-        int frame = 1;
 
         public override void SetDefaults()
         {

@@ -51,7 +51,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
                 }
             }
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 24, projectile.velocity.X, projectile.velocity.Y, 1, new Color(), 1f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.CorruptionThorns, projectile.velocity.X, projectile.velocity.Y, 1, new Color(), 1f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];

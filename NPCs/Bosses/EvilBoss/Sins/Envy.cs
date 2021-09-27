@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,7 +9,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
 {
     public class Envy : ModProjectile
     {
-        private int SavedDMG = 0;
         private int timer = 0;
         private bool ComingBack = false;
         private int flametimer = 0;

@@ -120,7 +120,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     {
                         Vector2 vector304 = npc.position - new Vector2(-165, 74).RotatedBy(MathHelper.ToRadians(npc.rotation));
                         vector304 -= npc.velocity * ((float)num1202 * 0.25f);
-                        Dust.NewDustDirect(vector304 + new Vector2(npc.width / 2, npc.height / 2), 1, 1, 206, 0, 0, 0, default, 1.5f);
+                        Dust.NewDustDirect(vector304 + new Vector2(npc.width / 2, npc.height / 2), 1, 1, DustID.UnusedWhiteBluePurple, 0, 0, 0, default, 1.5f);
                     }
                 }
                 else // Facing left
@@ -129,7 +129,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     {
                         Vector2 vector304 = npc.position + new Vector2(-165, -74).RotatedBy(MathHelper.ToRadians(npc.rotation));
                         vector304 -= npc.velocity * ((float)num1202 * 0.25f);
-                        Dust.NewDustDirect(vector304 + new Vector2(npc.width / 2, npc.height / 2), 1, 1, 206, 0, 0, 0, default, 1.5f);
+                        Dust.NewDustDirect(vector304 + new Vector2(npc.width / 2, npc.height / 2), 1, 1, DustID.UnusedWhiteBluePurple, 0, 0, 0, default, 1.5f);
                     }
                 }
             }
@@ -321,7 +321,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Vector2 spawnPos = npc.Center + new Vector2((180 + Main.rand.NextFloat(75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(-60, 60));
                             Vector2 Direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnPos;
                             Direction.Normalize();
-                            int mydust = Dust.NewDust(spawnPos, 0, 0, 229, 0f, 0f, 100);
+                            int mydust = Dust.NewDust(spawnPos, 0, 0, DustID.Vortex, 0f, 0f, 100);
                             Main.dust[mydust].noLight = true;
                             Main.dust[mydust].noGravity = true;
                             Main.dust[mydust].velocity = npc.velocity + (Direction * Main.rand.NextFloat(12, 14));
@@ -420,7 +420,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Vector2 spawnPos = npc.Center + new Vector2((180 + Main.rand.NextFloat(75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(-60, 60));
                             Vector2 Direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnPos;
                             Direction.Normalize();
-                            int mydust = Dust.NewDust(spawnPos, 0, 0, 229, 0f, 0f, 100);
+                            int mydust = Dust.NewDust(spawnPos, 0, 0, DustID.Vortex, 0f, 0f, 100);
                             Main.dust[mydust].noLight = true;
                             Main.dust[mydust].noGravity = true;
                             Main.dust[mydust].velocity = npc.velocity + (Direction * Main.rand.NextFloat(12, 14));
@@ -863,7 +863,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Vector2 spawnPos = npc.Center + new Vector2((180 + Main.rand.NextFloat(75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(-60, 60));
                             Vector2 Direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnPos;
                             Direction.Normalize();
-                            int mydust = Dust.NewDust(spawnPos, 0, 0, 229, 0f, 0f, 100);
+                            int mydust = Dust.NewDust(spawnPos, 0, 0, DustID.Vortex, 0f, 0f, 100);
                             Main.dust[mydust].noLight = true;
                             Main.dust[mydust].noGravity = true;
                             Main.dust[mydust].velocity = npc.velocity + (Direction * Main.rand.NextFloat(12, 14));
@@ -942,7 +942,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, 206, 2 * hitDirection, -2f);
+                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.UnusedWhiteBluePurple, 2 * hitDirection, -2f);
                     if (Main.rand.NextBool(2))
                     {
                         Main.dust[dust].noGravity = true;

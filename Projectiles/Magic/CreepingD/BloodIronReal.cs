@@ -9,7 +9,7 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
     {
 
         public override bool CanDamage() => false;
-        private int timer = 0;
+
         int RandomHeal = Main.rand.Next(1, 3);
 
 

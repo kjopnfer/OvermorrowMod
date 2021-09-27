@@ -32,7 +32,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(57, 10);
+            recipe1.AddIngredient(ItemID.DemoniteBar, 10);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();

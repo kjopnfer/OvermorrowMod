@@ -14,10 +14,6 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
         private bool charge = false;
         private int chargetimer = 0;
         private int returntimer = 0;
-        private int VeloTimer = 0;
-        private int ChargePlacement = 0;
-        private int ChargePlacement2 = 0;
-        private int TrailTimer = 0;
         private int SaveTimer = 0;
         private float savedMouseX = 0;
         private float savedMouseY = 0;
@@ -120,7 +116,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
                 projectile.velocity = direction * 18;
                 chargetimer++;
                 SaveTimer++;
-                Main.PlaySound(2, projectile.position, 103);
+                Main.PlaySound(SoundID.Item, projectile.position, 103);
             }
 
             if(SaveTimer == 120)

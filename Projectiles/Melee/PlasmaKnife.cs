@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,20 +9,10 @@ namespace OvermorrowMod.Projectiles.Melee
 {
     public class PlasmaKnife : ModProjectile
     {
-        private int SavedDMG = 0;
-        private int timer = 0;
         private bool ComingBack = false;
-        private bool OtherCheck = false;
-        private int flametimer = 0;
-        Vector2 endPoint;
-        bool foundTarget;
         float NPCtargetX = 0;
         float NPCtargetY = 0;
-        Vector2 newMove;
-        Vector2 Rot;
-        Vector2 SavedMove;
         float CircleArr = 0;
-        float CircleArr2 = 0;
         int NPCheight;
         int NPCwidth;
         Vector2 tar;

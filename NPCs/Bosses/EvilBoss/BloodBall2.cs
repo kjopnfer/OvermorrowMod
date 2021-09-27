@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,17 +9,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 {
     public class BloodBall2 : ModProjectile
     {
-
-
-        private float SavedX = 0;
-        private float SavedY = 0;
-
         private float CircleArr = 1;
         private float length = 1;
         private int timer = 0;
-        private int lefttimer = 0;
-        bool HasActivedGo = false;
-        bool HasActivedSprite = false;
 
         public override void SetStaticDefaults()
         {
@@ -100,7 +91,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
         {
                 Vector2 position = projectile.Center;
                 Main.PlaySound(SoundID.Item14, (int)position.X, (int)position.Y);
-                Main.PlaySound(3, projectile.Center, 1);
+                Main.PlaySound(SoundID.NPCHit, projectile.Center, 1);
                 int radius = 5;     //this is the explosion radius, the highter is the value the bigger is the explosion
 
                 for (int x = -radius; x <= radius; x++)
@@ -111,7 +102,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                         if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
                         {
                             Color alpha = Color.Red;
-                            Dust.NewDust(position, 5, 5, 57, 0.0f, 0.0f, 120, alpha, 1f);
+                            Dust.NewDust(position, 5, 5, DustID.Enchanted_Gold, 0.0f, 0.0f, 120, alpha, 1f);
                         }
                     }
                 }

@@ -62,14 +62,14 @@ namespace OvermorrowMod.Projectiles.Boss
 						float num546 = projectile.rotation + ((Main.rand.Next(2) == 1) ? (-1f) : 1f) * ((float)Math.PI / 2f);
 						float num545 = (float)Main.rand.NextDouble() * 0.8f + 1f;
 						Vector2 vector225 = new Vector2((float)Math.Cos(num546) * num545, (float)Math.Sin(num546) * num545);
-						int num543 = Dust.NewDust(projectile.Center, 0, 0, 226, vector225.X, vector225.Y);
+						int num543 = Dust.NewDust(projectile.Center, 0, 0, DustID.Electric, vector225.X, vector225.Y);
 						Main.dust[num543].noGravity = true;
 						Main.dust[num543].scale = 1.2f;
 					}
 					if (Main.rand.Next(5) == 0)
 					{
 						Vector2 value123 = projectile.velocity.RotatedBy(1.5707963705062866) * ((float)Main.rand.NextDouble() - 0.5f) * projectile.width;
-						int num547 = Dust.NewDust(projectile.Center + value123 - Vector2.One * 4f, 8, 8, 31, 0f, 0f, 100, default(Color), 1.5f);
+						int num547 = Dust.NewDust(projectile.Center + value123 - Vector2.One * 4f, 8, 8, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
 						Dust dust81 = Main.dust[num547];
 						dust81.velocity *= 0.5f;
 						Main.dust[num547].velocity.Y = 0f - Math.Abs(Main.dust[num547].velocity.Y);

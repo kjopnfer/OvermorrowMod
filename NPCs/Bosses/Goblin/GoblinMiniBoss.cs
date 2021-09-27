@@ -19,9 +19,7 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
     public class GoblinMiniBoss : ModNPC
     {
         private bool changedPhase2 = false;
-        private int StopHeal = 0;
         private bool introMessage = true;
-        bool leafatt = false;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Bosses/Goblin/BossBar";
         private const string ChainTexturePath2 = "OvermorrowMod/NPCs/Bosses/Goblin/BossBar2";
 
@@ -68,29 +66,13 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
             npc.defense = 4;
         }
 
-        private void BossText(string text) // boss messages
-        {
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                Main.NewText(text, Color.Green);
-            }
-            else if (Main.netMode == NetmodeID.Server)
-            {
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Green);
-            }
-        }
-
         int RandomCase = 0;
         int LastCase = 0;
         int RandomCeiling;
-        bool movement = true;
-
 
         public override void AI()
         {
             Player player = Main.player[npc.target];
-
-
 
 
 
@@ -197,7 +179,6 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                                 RandomCase = Main.rand.Next(1, RandomCeiling);
                             }
                             LastCase = RandomCase;
-                            movement = false;
                             npc.ai[0] = RandomCase;
 
 
@@ -263,14 +244,14 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                         {
                             if(npc.Center.X > player.Center.X)
                             {
-                                int proj = Projectile.NewProjectile(npc.Center, new Vector2(-7, 0), 124, 20, 1f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(npc.Center, new Vector2(-7, 0), ProjectileID.EmeraldBolt, 20, 1f, Main.myPlayer);
                                 Main.projectile[proj].friendly = false;
                                 Main.projectile[proj].hostile = true;
                             }
 
                             if(npc.Center.X < player.Center.X)
                             {
-                                int proj = Projectile.NewProjectile(npc.Center, new Vector2(7, 0), 124, 20, 1f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(npc.Center, new Vector2(7, 0), ProjectileID.EmeraldBolt, 20, 1f, Main.myPlayer);
                                 Main.projectile[proj].friendly = false;
                                 Main.projectile[proj].hostile = true;
                             }
@@ -290,12 +271,12 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                     {
                         if(npc.Center.X > player.Center.X)
                         {
-                            Projectile.NewProjectile(npc.Center, new Vector2(-4, 0), 44, 20, 1f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.Center, new Vector2(-4, 0), ProjectileID.DemonSickle, 20, 1f, Main.myPlayer);
                         }
 
                         if(npc.Center.X < player.Center.X)
                         {
-                            Projectile.NewProjectile(npc.Center, new Vector2(4, 0), 44, 20, 1f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.Center, new Vector2(4, 0), ProjectileID.DemonSickle, 20, 1f, Main.myPlayer);
                         }
                     }
 
@@ -303,12 +284,12 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                     {
                         if(npc.Center.X > player.Center.X)
                         {
-                            Projectile.NewProjectile(npc.Center, new Vector2(-4, 0), 44, 20, 1f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.Center, new Vector2(-4, 0), ProjectileID.DemonSickle, 20, 1f, Main.myPlayer);
                         }
 
                         if(npc.Center.X < player.Center.X)
                         {
-                            Projectile.NewProjectile(npc.Center, new Vector2(4, 0), 44, 20, 1f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.Center, new Vector2(4, 0), ProjectileID.DemonSickle, 20, 1f, Main.myPlayer);
                         }
                     }
 
@@ -316,13 +297,13 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
                     {
                         if(npc.Center.X > player.Center.X)
                         {
-                            int proj = Projectile.NewProjectile(npc.Center, new Vector2(-4.5f, 0), 348, 20, 1f, Main.myPlayer);
+                            int proj = Projectile.NewProjectile(npc.Center, new Vector2(-4.5f, 0), ProjectileID.FrostWave, 20, 1f, Main.myPlayer);
                             Main.projectile[proj].tileCollide = false;
                         }
 
                         if(npc.Center.X < player.Center.X)
                         {
-                            int proj = Projectile.NewProjectile(npc.Center, new Vector2(4.5f, 0), 348, 20, 1f, Main.myPlayer);
+                            int proj = Projectile.NewProjectile(npc.Center, new Vector2(4.5f, 0), ProjectileID.FrostWave, 20, 1f, Main.myPlayer);
                             Main.projectile[proj].tileCollide = false;
                         }
                     }
@@ -338,11 +319,11 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
 
                             if (npc.ai[1] == 30)
                             {
-                                int proj1 = Projectile.NewProjectile(npc.Center + new Vector2(-60, 0), new Vector2(0, -7), 349, 20, 1f, Main.myPlayer);
-                                int proj2 = Projectile.NewProjectile(npc.Center + new Vector2(-30, 0), new Vector2(0, -8), 349, 20, 1f, Main.myPlayer);
-                                int proj3 = Projectile.NewProjectile(npc.Center + new Vector2(0, 0), new Vector2(0, -9), 349, 20, 1f, Main.myPlayer);
-                                int proj4 = Projectile.NewProjectile(npc.Center + new Vector2(30, 0), new Vector2(0, -8), 349, 20, 1f, Main.myPlayer); 
-                                int proj5 = Projectile.NewProjectile(npc.Center + new Vector2(60, 0), new Vector2(0, -7), 349, 20, 1f, Main.myPlayer);  
+                                int proj1 = Projectile.NewProjectile(npc.Center + new Vector2(-60, 0), new Vector2(0, -7), ProjectileID.FrostShard, 20, 1f, Main.myPlayer);
+                                int proj2 = Projectile.NewProjectile(npc.Center + new Vector2(-30, 0), new Vector2(0, -8), ProjectileID.FrostShard, 20, 1f, Main.myPlayer);
+                                int proj3 = Projectile.NewProjectile(npc.Center + new Vector2(0, 0), new Vector2(0, -9), ProjectileID.FrostShard, 20, 1f, Main.myPlayer);
+                                int proj4 = Projectile.NewProjectile(npc.Center + new Vector2(30, 0), new Vector2(0, -8), ProjectileID.FrostShard, 20, 1f, Main.myPlayer); 
+                                int proj5 = Projectile.NewProjectile(npc.Center + new Vector2(60, 0), new Vector2(0, -7), ProjectileID.FrostShard, 20, 1f, Main.myPlayer);  
                             }                  
                         
                         if (npc.ai[1] > 40)
@@ -390,21 +371,10 @@ namespace OvermorrowMod.NPCs.Bosses.Goblin
             Vector2 mountedCenter = Main.player[npc.target].Center + new Vector2(400, -npc.life / 2.5f);
 
             Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
-            Texture2D chainTexture2 = ModContent.GetTexture(ChainTexturePath2);
+            // Texture2D chainTexture2 = ModContent.GetTexture(ChainTexturePath2);
 
             var drawPosition = Main.player[npc.target].Center + new Vector2(400, 0);
             var remainingVectorToPlayer = mountedCenter - drawPosition;
-
-            float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (npc.alpha == 0)
-            {
-                int direction = -1;
-
-                if (npc.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

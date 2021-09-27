@@ -33,7 +33,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
         public override void Kill(int timeLeft)
         {
-            int explode = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, 338, projectile.damage, 3f, projectile.owner, 0f);
+            int explode = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ProjectileID.RocketSnowmanI, projectile.damage, 3f, projectile.owner, 0f);
             Main.projectile[explode].timeLeft = 0;
             Main.projectile[explode].friendly = true;
             Main.projectile[explode].hostile = false;

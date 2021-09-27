@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace OvermorrowMod.Projectiles.Magic
 {
@@ -35,7 +36,7 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 5, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 2.5f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Blood, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 2.5f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];

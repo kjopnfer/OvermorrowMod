@@ -223,23 +223,6 @@ namespace WardenClass
             soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
         }
 
-        private void UpdatePosition(WardenDamagePlayer player)
-        {
-            int direction = 1;
-            for (int i = 0; i < player.soulList.Count; i++)
-            {
-                if (i % 5 == 4)
-                {
-                    direction *= -1;
-                }
-
-                int radiusBuffer = (int)(20 * System.Math.Floor(i / 4f));
-                Main.projectile[player.soulList[i]].knockBack = direction;
-                Main.projectile[player.soulList[i]].ai[0] = 70 + radiusBuffer;
-                Main.projectile[player.soulList[i]].ai[1] = i * 90;
-            }
-        }
-
         public float modifyShootSpeed()
         {
             int modifierFactor = 0;

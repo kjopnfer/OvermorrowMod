@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
@@ -57,7 +58,7 @@ namespace OvermorrowMod.Projectiles.Ranged
                 {
                     for (int num927 = 0; num927 < 1; num927++)
                     {
-                        int num929 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 32, projectile.velocity.X * 0.2f, projectile.velocity.Y * 0.2f, 100);
+                        int num929 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Sand, projectile.velocity.X * 0.2f, projectile.velocity.Y * 0.2f, 100);
                         Dust dust81;
                         if (Main.rand.Next(3) != 0 || (num920 == 75 && Main.rand.Next(3) == 0))
                         {

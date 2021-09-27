@@ -14,10 +14,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
             DisplayName.SetDefault("Spider Ray");
         }
         private int timer = 1000;
-        private readonly int timer2 = 0;
-        readonly int colorcooldown = 1;
-        readonly int colortimer = 0;
-        readonly int color;
         Vector2 SpiderPos = new Vector2(0f, 0f);
         public override void SetDefaults()
         {

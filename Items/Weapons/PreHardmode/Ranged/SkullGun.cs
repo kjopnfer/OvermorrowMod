@@ -66,7 +66,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         {
             ModRecipe recipe1 = new ModRecipe(mod);
             recipe1.AddIngredient(ItemID.Handgun, 1);
-            recipe1.AddIngredient(175, 20);
+            recipe1.AddIngredient(ItemID.HellstoneBar, 20);
             recipe1.AddIngredient(ItemID.Bone, 15);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);

@@ -7,13 +7,9 @@ namespace OvermorrowMod.NPCs.PostRider
 {
     public class AngryIceShards : ModNPC
     {
-
-        int randomX = 0;
-        int randomY = 0;
         int Attacktimer = 4;
         readonly bool expert = Main.expertMode;
         private int experttimer = 0;
-        private readonly int timer = 0;
 
         public override void SetDefaults()
         {

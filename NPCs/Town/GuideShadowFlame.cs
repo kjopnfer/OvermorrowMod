@@ -9,7 +9,6 @@ namespace OvermorrowMod.NPCs.Town
 {
     public class GuideShadowFlame : ModProjectile
     {
-        private int KeepAliveTime2 = 1;
         private int Time = 0;
         int Random2 = Main.rand.Next(-10, 11);
         int Random1 = Main.rand.Next(-10, 11);

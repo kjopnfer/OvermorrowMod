@@ -235,7 +235,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                 Vector2 dustvelocity = new Vector2(0f, -15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                int dust = Dust.NewDust(position, 2, 2, 32, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
+                                int dust = Dust.NewDust(position, 2, 2, DustID.Sand, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
                                 Main.dust[dust].noGravity = false;
                             }
                         }
@@ -404,7 +404,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     for (int i = 0; i < 18; i++)
                     {
                         Vector2 dustPos = npc.Center + new Vector2(npc.ai[2], 0).RotatedBy(MathHelper.ToRadians(i * 20 + npc.ai[1]));
-                        Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, 32, 0f, 0f, 0, default, 2.04f)];
+                        Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, DustID.Sand, 0f, 0f, 0, default, 2.04f)];
                         dust.noGravity = true;
                     }
 
@@ -463,7 +463,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             for (int i = 0; i < 18; i++)
                             {
                                 Vector2 dustPos = npc.Center + new Vector2(npc.ai[2], 0).RotatedBy(MathHelper.ToRadians(i * 20 + (npc.ai[1] * /*7.5*/ /*10f*/ 12f)));
-                                Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, 32, 0f, 0f, 0, default, 2.04f)];
+                                Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, DustID.Sand, 0f, 0f, 0, default, 2.04f)];
                                 dust.noGravity = true;
                             }
                         }
@@ -635,7 +635,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 {
                     for (int num1202 = 0; num1202 < 4; num1202++)
                     {
-                        Dust.NewDust(npc.Center - new Vector2(npc.width / 4, -35), npc.width / 3, npc.height, 32, 0, 2.63f, default, default, 1.45f);
+                        Dust.NewDust(npc.Center - new Vector2(npc.width / 4, -35), npc.width / 3, npc.height, DustID.Sand, 0, 2.63f, default, default, 1.45f);
                     }
                 }
             }
@@ -643,7 +643,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             {
                 for (int num1101 = 0; num1101 < 6; num1101++)
                 {
-                    int num1110 = Dust.NewDust(new Vector2(npc.Center.X, npc.Center.Y), npc.width, npc.height, 32, npc.velocity.X, npc.velocity.Y, 50, default(Color), 3f);
+                    int num1110 = Dust.NewDust(new Vector2(npc.Center.X, npc.Center.Y), npc.width, npc.height, DustID.Sand, npc.velocity.X, npc.velocity.Y, 50, default(Color), 3f);
                     Main.dust[num1110].position = (Main.dust[num1110].position + npc.Center) / 2f;
                     Main.dust[num1110].noGravity = true;
                     Dust dust81 = Main.dust[num1110];
@@ -677,7 +677,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
 
                 // this gets the npc's frame
-                float amount10 = 0f; // I think this controls amount of color
                 int num178 = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
                 int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
 
@@ -687,8 +686,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 float num176 = 1f - (float)Math.Cos((npc.ai[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
                 num176 /= 3f;
                 float scaleFactor10 = 7f; // Change scale factor of the pulsing effect and how far it draws outwards
-
-                amount10 = 1f;
 
                 // ok this is the pulsing effect drawing
                 for (int num164 = 1; num164 < num177; num164++)
@@ -755,16 +752,16 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             for (int num785 = 0; num785 < 4; num785++)
             {
-                Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 32, 0f, 0f, 100, default(Color), 1.5f);
+                Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 100, default(Color), 1.5f);
             }
 
             for (int num788 = 0; num788 < 40; num788++)
             {
-                int num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 32, 0f, 0f, 0, default(Color), 2.5f);
+                int num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 0, default(Color), 2.5f);
                 Main.dust[num797].noGravity = true;
                 Dust dust24 = Main.dust[num797];
                 dust24.velocity *= 3f;
-                num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, 32, 0f, 0f, 100, default(Color), 1.5f);
+                num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 100, default(Color), 1.5f);
                 dust24 = Main.dust[num797];
                 dust24.velocity *= 2f;
                 Main.dust[num797].noGravity = true;

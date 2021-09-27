@@ -10,9 +10,6 @@ namespace OvermorrowMod.Projectiles.Summon
 {
     public class SummSpore : ModProjectile
     {
-        private int length = 1;
-        private int timer = 0;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Mushroom Spore");

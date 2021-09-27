@@ -14,12 +14,8 @@ namespace OvermorrowMod.Projectiles.Melee
         }
         public override bool CanDamage() => true;
 
-        readonly int Rota = 0;
-        readonly int zimer = 0;
         float SpearTargetX = 0;
         float SpearTargetY = 0;
-        readonly float Thank = 0;
-        readonly float You = 0;
         int tf2 = 0;
 		private int savedDMG = 0;
 		int HasHit = 0;
@@ -246,7 +242,7 @@ namespace OvermorrowMod.Projectiles.Melee
 					penet3++;
 				}
 				{
-					Dust.NewDust(Main.npc[projTargetIndex].position + projectile.velocity, Main.npc[projTargetIndex].width, Main.npc[projTargetIndex].height, 115, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 0, new Color(), 1f);
+					Dust.NewDust(Main.npc[projTargetIndex].position + projectile.velocity, Main.npc[projTargetIndex].width, Main.npc[projTargetIndex].height, DustID.CrimtaneWeapons, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 0, new Color(), 1f);
 				}
 
 			}

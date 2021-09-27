@@ -9,8 +9,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 {
     public class CreeperProj : ModProjectile
     {
-        private int KeepAliveTime2 = 1; 
-        private int KeepAliveTime = 1;
         public override void SetDefaults()
         {
             projectile.CloneDefaults(ProjectileID.FlamingScythe);

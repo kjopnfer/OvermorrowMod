@@ -7,10 +7,7 @@ namespace OvermorrowMod.NPCs.Town
 {
     public class Twin2NPC : ModNPC
     {
-        private int ProjTimer = 0;
         private int AttTimer = 0;
-        private int frame = 0;
-        private int frameTimer = 0;
 
         public override void SetStaticDefaults()
         {
@@ -50,7 +47,7 @@ namespace OvermorrowMod.NPCs.Town
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 float speed = 10f;
-                Projectile.NewProjectile(position, direction * speed, 84, npc.damage, 0f, Main.myPlayer);  
+                Projectile.NewProjectile(position, direction * speed, ProjectileID.PinkLaser, npc.damage, 0f, Main.myPlayer);  
                 AttTimer = 0;
             }
         }

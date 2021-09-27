@@ -6,8 +6,6 @@ namespace OvermorrowMod.Projectiles.Magic
     public class ManaDust : ModProjectile
     {
         public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
-        private Projectile parentProjectile;
-        private bool initProperties = true;
 
         public override void SetStaticDefaults()
         {

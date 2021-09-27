@@ -92,7 +92,7 @@ namespace OvermorrowMod.NPCs.Event.Goblin
                     direction.Normalize();
 				    int proj = Projectile.NewProjectile(npc.Center, direction * 0, mod.ProjectileType("GoblinKnife"), 15, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
 				    npc.netUpdate = true;
-                    Main.PlaySound(2, npc.position, 19);
+                    Main.PlaySound(SoundID.Item, npc.position, 19);
                     ProjTimer = 0;
                 }
             }

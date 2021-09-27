@@ -1,5 +1,6 @@
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace OvermorrowMod.Projectiles.Accessory
 {
@@ -56,7 +57,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                 }
             }
 
-            Dust.NewDust(projectile.position, 1, 1, 206);
+            Dust.NewDust(projectile.position, 1, 1, DustID.UnusedWhiteBluePurple);
         }
     }
 }

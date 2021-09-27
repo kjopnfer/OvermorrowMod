@@ -10,10 +10,6 @@ namespace OvermorrowMod.NPCs.BloodMoon
 {
     public class SkullHoming : ModProjectile
     {
-        private int length = 1;
-        private int timer = 0;
-        bool fuckyou = false;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Homing Skull");
@@ -110,9 +106,8 @@ namespace OvermorrowMod.NPCs.BloodMoon
 
         public override void Kill(int timeLeft)
         {
-
             Vector2 position = projectile.Center;
-            Main.PlaySound(3, (int)position.X, (int)position.Y, 2);
+            Main.PlaySound(SoundID.NPCHit, (int)position.X, (int)position.Y, 2);
             int radius = 2;     //this is the explosion radius, the highter is the value the bigger is the explosion
 
             for (int x = -radius; x <= radius; x++)
@@ -122,7 +117,7 @@ namespace OvermorrowMod.NPCs.BloodMoon
 
                     if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
                     {
-                        Dust.NewDust(position, 5, 5, 162, 0.0f, 0.0f, 120, new Color(), 1f);  //this is the dust that will spawn after the explosion
+                        Dust.NewDust(position, 5, 5, DustID.HeatRay, 0.0f, 0.0f, 120, new Color(), 1f);  //this is the dust that will spawn after the explosion
                     }
                 }
             }

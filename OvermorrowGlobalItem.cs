@@ -25,13 +25,13 @@ namespace OvermorrowMod
                 item.shoot = ModContent.ProjectileType<AcornProj>();
             }*/
 
-            if (item.type == 183)
+            if (item.type == ItemID.GlowingMushroom)
             {
                 item.ammo = item.type;
                 item.shoot = ModContent.ProjectileType<ShroomFlame>();
             }
             
-            if (item.type == 42)
+            if (item.type == ItemID.Shuriken)
             {
                 item.ammo = item.type;
             }    
@@ -62,7 +62,7 @@ namespace OvermorrowMod
         public override void AddRecipes()
         {
             ModRecipe Mirror = new ModRecipe(mod);
-            Mirror.AddIngredient(2350, 7);
+            Mirror.AddIngredient(ItemID.RecallPotion, 7);
             Mirror.SetResult(ItemID.MagicMirror);
             Mirror.AddRecipe();
         }

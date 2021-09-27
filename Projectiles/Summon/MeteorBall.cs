@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,19 +9,8 @@ namespace OvermorrowMod.Projectiles.Summon
 {
     public class MeteorBall : ModProjectile
     {
-
-
-        private float SavedX = 0;
-        private float SavedY = 0;
-
-        private float CircleArr = 1;
         private float length = 1;
         private int timer = 0;
-        private int lefttimer = 0;
-        bool HasActivedGo = false;
-        bool HasActivedSprite = false;
-        bool left = false;
-        bool right = false;
 
         public override void SetStaticDefaults()
         {

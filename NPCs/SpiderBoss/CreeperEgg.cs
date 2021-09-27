@@ -9,7 +9,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
     {
         readonly bool expert = Main.expertMode;
         int RandomEggVelo = Main.rand.Next(-3, 4);
-        private readonly int ExpertHell = 0;
+
         public override void SetDefaults()
         {
             npc.width = 18;

@@ -55,14 +55,5 @@ namespace OvermorrowMod.NPCs.Inferno
                 target.life = target.life + 1;
             }
         }
-
-        private void AdjustMagnitude(ref Vector2 vector)
-        {
-            float magnitude = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            if (magnitude > 6f)
-            {
-                vector *= 6f / magnitude;
-            }
-        }
     }
 }

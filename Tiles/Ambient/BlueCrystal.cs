@@ -5,6 +5,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using Terraria.ID;
 
 namespace OvermorrowMod.Tiles.Ambient
 {
@@ -69,7 +70,7 @@ namespace OvermorrowMod.Tiles.Ambient
 				16,
 			};
 			TileObjectData.addTile(Type);
-			dustType = 180;
+			dustType = DustID.DungeonSpirit;
 		}
 
 		public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)

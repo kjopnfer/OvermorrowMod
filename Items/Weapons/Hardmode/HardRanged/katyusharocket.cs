@@ -53,7 +53,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardRanged
 
                     if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
                     {
-                        Dust.NewDust(position, 5, 5, 162, 0.0f, 0.0f, 120, new Color(), 3.3f);  //this is the dust that will spawn after the explosion
+                        Dust.NewDust(position, 5, 5, DustID.HeatRay, 0.0f, 0.0f, 120, new Color(), 3.3f);  //this is the dust that will spawn after the explosion
                     }
                 }
             }

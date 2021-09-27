@@ -9,11 +9,7 @@ namespace OvermorrowMod.NPCs.Biome
 {
     public class TestHook : ModProjectile
     {
-
-        private int SavedDMG = 0;
         private int timer = 0;
-        private bool ComingBack = false;
-        private int flametimer = 0;
         Vector2 DrawToPos;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Biome/GranNPCChain";
 
@@ -56,7 +52,7 @@ namespace OvermorrowMod.NPCs.Biome
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 projectile.velocity = direction * 5f;
-                Main.PlaySound(2, npc.position, 99);
+                Main.PlaySound(SoundID.Item, npc.position, 99);
                 timer = 0;
             }
             
@@ -104,26 +100,11 @@ namespace OvermorrowMod.NPCs.Biome
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            var player = Main.player[projectile.owner];
-
             Vector2 mountedCenter = DrawToPos;
             Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
 
             var drawPosition = projectile.Center;
             var remainingVectorToPlayer = mountedCenter - drawPosition;
-
-            float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                {
-                    direction = 1;
-                }
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

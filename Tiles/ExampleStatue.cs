@@ -23,7 +23,7 @@ namespace OvermorrowMod.Tiles
 			ModTranslation name = CreateMapEntryName();
 			name.SetDefault("Statue");
 			AddMapEntry(new Color(144, 148, 144), name);
-			dustType = 11;
+			dustType = DustID.Silver;
 			disableSmartCursor = true;
 		}
 
@@ -44,11 +44,10 @@ namespace OvermorrowMod.Tiles
 
 			// This example shows both item spawning code and npc spawning code, you can use whichever code suits your mod
 				// If you want to make an NPC spawning statue, see below.
-				int npcIndex = -1;
 				// 30 is the time before it can be used again. NPC.MechSpawn checks nearby for other spawns to prevent too many spawns. 3 in immediate vicinity, 6 nearby, 10 in world.
 				if (Wiring.CheckMech(x, y, 30)) 
 				{
-                    int proj = Projectile.NewProjectile(spawnX + 8, spawnY + 10, 0, 5, 337, 25, 3f, Main.myPlayer);
+                    int proj = Projectile.NewProjectile(spawnX + 8, spawnY + 10, 0, 5, ProjectileID.Blizzard, 25, 3f, Main.myPlayer);
                     Main.projectile[proj].hostile = true;
 				}
 		}

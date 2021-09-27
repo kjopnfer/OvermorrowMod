@@ -22,7 +22,6 @@ namespace OvermorrowMod.Items.Other
 			item.consumable = true;
 			item.useStyle = ItemUseStyleID.HoldingUp;
 		}
-		int timer = 0;
 		public override bool UseItem(Player player)
 		{
 			Main.NewText("You're going to Brazil!");

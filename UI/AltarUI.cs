@@ -90,11 +90,9 @@ namespace OvermorrowMod.UI
         {
             base.Update(gameTime);
 
-            const int slotX = 50;
-            const int slotY = 270;
             if (!_vanillaItemSlot.Item.IsAir)
             {
-                string name = _vanillaItemSlot.Item.Name;
+                // string name = _vanillaItemSlot.Item.Name;
                 header.SetText("choose buf");
                 cool = true;
             }

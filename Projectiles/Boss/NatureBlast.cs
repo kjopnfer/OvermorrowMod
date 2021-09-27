@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace OvermorrowMod.Projectiles.Boss
 {
@@ -38,7 +39,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
             for (int num1101 = 0; num1101 < 3; num1101++)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 107, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1.2f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.TerraBlade, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1.2f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
@@ -47,7 +48,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
             for (int num1103 = 0; num1103 < 2; num1103++)
             {
-                int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 107, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
+                int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.TerraBlade, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
                 switch (num1103)
                 {
                     case 0:

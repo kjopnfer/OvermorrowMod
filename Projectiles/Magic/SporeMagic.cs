@@ -8,9 +8,6 @@ namespace OvermorrowMod.Projectiles.Magic
 {
     public class SporeMagic : ModProjectile
     {
-        private int length = 1;
-        private int timer = 0;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Spore");
@@ -44,7 +41,7 @@ namespace OvermorrowMod.Projectiles.Magic
             projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 39, projectile.velocity.X, projectile.velocity.Y, 75, new Color(), 1.4f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.JungleGrass, projectile.velocity.X, projectile.velocity.Y, 75, new Color(), 1.4f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];

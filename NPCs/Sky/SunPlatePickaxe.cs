@@ -8,9 +8,6 @@ namespace OvermorrowMod.NPCs.Sky
 {
     public class SunPlatePickaxe : ModNPC
     {
-
-
-        private int ProjTimer = 0;
         private int AttTimer = 0;
         private int frame = 0;
         private int frameTimer = 0;
@@ -90,7 +87,7 @@ namespace OvermorrowMod.NPCs.Sky
                     direction.Normalize();
                     int proj = Projectile.NewProjectile(npc.Center, direction * 2, ModContent.ProjectileType<SkyScythe>(), npc.damage, 3f, Main.player[npc.target].whoAmI, 0f);
                     Main.projectile[proj].tileCollide = false;
-                    Main.PlaySound(2, npc.position, 8);
+                    Main.PlaySound(SoundID.Item, npc.position, 8);
                 }
             }
         }

@@ -53,7 +53,7 @@ namespace OvermorrowMod.Items.Accessories
 
             // Spawning dust
             if (player.GetModPlayer<OvermorrowModPlayer>().storedDamage > 0 && dustCounter % 2 == 0) {
-                Dust dust = Main.dust[Terraria.Dust.NewDust(player.Center + new Vector2(0, -100) + InfinityShape(dustCounter2)*100, 15, 15, 226, 0f, 0f, 0, default, 1.25f)];
+                Dust dust = Main.dust[Terraria.Dust.NewDust(player.Center + new Vector2(0, -100) + InfinityShape(dustCounter2)*100, 15, 15, DustID.Electric, 0f, 0f, 0, default, 1.25f)];
                 dust.noGravity = true;
 
             }

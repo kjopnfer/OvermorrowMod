@@ -40,7 +40,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 				{
 					Vector2 vector41 = projectile.velocity * num509 / 6f;
 					int num510 = 6;
-					int num511 = Dust.NewDust(projectile.position + Vector2.One * 6f, projectile.width - num510 * 2, projectile.height - num510 * 2, 4, 0f, 0f, num508, newColor2, 1.2f);
+					int num511 = Dust.NewDust(projectile.position + Vector2.One * 6f, projectile.width - num510 * 2, projectile.height - num510 * 2, DustID.t_Slime, 0f, 0f, num508, newColor2, 1.2f);
 					Dust dust;
 					if (Main.rand.Next(2) == 0)
 					{
@@ -71,7 +71,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 				if (Main.rand.Next(4) == 0)
 				{
 					int num512 = 6;
-					int num513 = Dust.NewDust(projectile.position + Vector2.One * 6f, projectile.width - num512 * 2, projectile.height - num512 * 2, 4, 0f, 0f, num508, newColor2, 1.2f);
+					int num513 = Dust.NewDust(projectile.position + Vector2.One * 6f, projectile.width - num512 * 2, projectile.height - num512 * 2, DustID.t_Slime, 0f, 0f, num508, newColor2, 1.2f);
 					Dust dust = Main.dust[num513];
 					dust.velocity *= 0.5f;
 					dust = Main.dust[num513];

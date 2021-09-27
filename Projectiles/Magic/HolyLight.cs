@@ -77,7 +77,7 @@ namespace OvermorrowMod.Projectiles.Magic
                         if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
                         {
                             Color alpha = Color.LightBlue;
-                            Dust.NewDust(position, 5, 5, 57, 0.0f, 0.0f, 120, alpha, 1f);
+                            Dust.NewDust(position, 5, 5, DustID.Enchanted_Gold, 0.0f, 0.0f, 120, alpha, 1f);
                         }
                     }
                 }

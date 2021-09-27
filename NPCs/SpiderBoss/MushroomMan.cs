@@ -7,7 +7,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
 {
     public class MushroomMan : ModNPC
     {
-        private readonly int timer = 0;
         private readonly int movetimer = 0;
         private int jumptimer = 0;
         private int frame = 1;

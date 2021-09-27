@@ -758,7 +758,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         Vector2 direction = targetPosition - position;
                         Vector2 pos = npc.Center;
-                        float speed = 0.5f;
                         int damage = 20;
                         if (Main.LocalPlayer.ownedProjectileCounts[ProjectileType<SpiderRay>()] < 1)
                         {      
@@ -772,7 +771,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         Vector2 direction = targetPosition - position;
                         Vector2 pos = npc.Center;
-                        float speed = 0.5f;
                         int damage = 20;
                         if (Main.LocalPlayer.ownedProjectileCounts[ProjectileType<SpiderRay2>()] < 1)
                         {      
@@ -786,7 +784,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         Vector2 direction = targetPosition - position;
                         Vector2 pos = npc.Center;
-                        float speed = 0.5f;
                         int damage = 20;
                         if (Main.LocalPlayer.ownedProjectileCounts[ProjectileType<SpiderRay3>()] < 1)
                         {      
@@ -800,7 +797,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         Vector2 direction = targetPosition - position;
                         Vector2 pos = npc.Center;
-                        float speed = 0.5f;
                         int damage = 20;
                         if (Main.LocalPlayer.ownedProjectileCounts[ProjectileType<SpiderRay4>()] < 1)
                         {      
@@ -814,7 +810,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
                         Vector2 targetPosition = Main.player[npc.target].Center;
                         Vector2 direction = targetPosition - position;
                         Vector2 pos = npc.Center;
-                        float speed = 0.5f;
                         int damage = 20;
                         if (Main.LocalPlayer.ownedProjectileCounts[ProjectileType<SpiderRay5>()] < 1)
                         {      
@@ -1489,13 +1484,12 @@ namespace OvermorrowMod.NPCs.SpiderBoss
                         Vector2 direction = targetPosition - position;
                         direction.Normalize();
                         float speed = 10f * expertfire;
-                        int type = 472;
                         int damage = 40;
                         Vector2 newpoint1 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(10));
                         Vector2 newpoint2 = new Vector2(direction.X,  direction.Y).RotatedBy(MathHelper.ToRadians(-10));
-                        Projectile.NewProjectile(position, direction * speed, 472, damage, 0f, Main.myPlayer);
-                        Projectile.NewProjectile(position, newpoint1 * speed, 472, damage, 0f, Main.myPlayer);
-                        Projectile.NewProjectile(position, newpoint2 * speed, 472, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(position, direction * speed, ProjectileID.WebSpit, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(position, newpoint1 * speed, ProjectileID.WebSpit, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(position, newpoint2 * speed, ProjectileID.WebSpit, damage, 0f, Main.myPlayer);
                     } 
 
 

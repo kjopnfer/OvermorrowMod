@@ -10,8 +10,7 @@ namespace OvermorrowMod.Projectiles.Summon
     public class MeteorRangeShow : ModProjectile
     {
         public override bool CanDamage() => false;
-        private int KeepAliveTime2 = 1; 
-        private int KeepAliveTime = 1;
+
         public override string Texture => "Terraria/Projectile_" + ProjectileID.HeatRay;
         public override void SetDefaults()
         {
