@@ -1,9 +1,8 @@
 using Microsoft.Xna.Framework;
-using System;
+using OvermorrowMod.Buffs.Debuffs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Ranged.Ammo
 {
@@ -25,8 +24,8 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
             DisplayName.SetDefault("Fungal Arrow");
         }
 
-		public override void AI() 
-		{
+        public override void AI()
+        {
             projectile.velocity.Y += 0.07f;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
         }

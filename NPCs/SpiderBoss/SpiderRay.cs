@@ -13,10 +13,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
             DisplayName.SetDefault("Spider Ray");
         }
         private int timer = 1000;
-        private readonly int timer2 = 0;
-        readonly int colorcooldown = 1;
-        readonly int colortimer = 0;
-        readonly int color;
         Vector2 SpiderPos = new Vector2(0f, 0f);
 
         public override void SetDefaults()
@@ -36,7 +32,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
             timer++;
             NPC npc = Main.npc[(int)projectile.ai[0]];
             SpiderPos = npc.Center;
-            if(timer == 550)
+            if (timer == 550)
             {
                 projectile.timeLeft = 0;
             }

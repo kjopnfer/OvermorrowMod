@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Armor.Marble;
 using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Materials;
@@ -7,6 +6,7 @@ using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Projectiles.NPCs.Hostile;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,21 +23,19 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         int LastCase; // = 0;
         int randomCeiling;
         Vector2 teleportPosition; //= Vector2.Zero;
-        int spriteTimer = 0;
-        int frame = 1;
-        int proj;
         int projalt;
+        // TODO: This is unused
+        int proj;
         //bool direction;
         bool direction = true;
         bool changedPhase2 = false;
         bool changedPhase2Indicator = false;
         bool spawnedShields = false;
         Vector2 playerCenterSnapShot;
-        Vector2 spawnpos;
         bool dead = false;
 
-
-        private int groupAttack;
+        // TODO: This is also unused
+        // private int groupAttack;
 
 
         public int graknightIdentity;
@@ -68,7 +66,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
         {
             OvermorrowWorld.downedLady = false;
 
-            
+
             Player player = Main.player[npc.target];
 
             // AI [0] = Case Value
@@ -110,7 +108,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         // This dust spawn adapted from the Pillar death code in vanilla.
                         for (int dustNumber = 0; dustNumber < 6; dustNumber++)
                         {
-                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, 57, 0f, 0f, 0, default(Color), 1f)];
+                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, DustID.Enchanted_Gold, 0f, 0f, 0, default(Color), 1f)];
                             dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
                             dust.velocity.X = 0f;
                             dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;
@@ -167,8 +165,8 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                 case -10: // group attacks
                     {
                         if (!PlayerAlive(player)) { break; }
-
-                        switch (groupAttack)
+                        // Unfinished
+                        /* switch (groupAttack)
                         {
 
                             case 0:
@@ -191,7 +189,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                                     
                                 }
                                 break;
-                        }
+                        } */
                     }
                     break;
                 case -2: // yell and change phase
@@ -370,7 +368,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                     Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 57, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    int dust = Dust.NewDust(position, 2, 2, DustID.Enchanted_Gold, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                     Main.dust[dust].noGravity = true;
                                 }
                             }
@@ -407,7 +405,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                         if (npc.ai[1] == 360)
                         {
                             Main.projectile[projalt].Kill();
-                            
+
                             npc.ai[1] = 0;
                             npc.ai[2] = 1;
                             npc.ai[0] = 4;
@@ -452,7 +450,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                     Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 57, dustvelocity.X, dustvelocity.Y, 0, default, /*1*/ 2);
+                                    int dust = Dust.NewDust(position, 2, 2, DustID.Enchanted_Gold, dustvelocity.X, dustvelocity.Y, 0, default, /*1*/ 2);
                                     Main.dust[dust].noGravity = true;
                                 }
                             }

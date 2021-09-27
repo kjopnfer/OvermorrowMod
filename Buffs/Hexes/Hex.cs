@@ -1,9 +1,9 @@
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Terraria.ModLoader;
-using Terraria;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Buffs.Hexes
 {
@@ -11,7 +11,7 @@ namespace OvermorrowMod.Buffs.Hexes
     {
         public static Dictionary<Type, int> HexTypes;
         public static int HexType<T>() where T : ModHex => HexTypes[typeof(T)];
-        public void Kill() {time = 0;}
+        public void Kill() { time = 0; }
         public int type;
         public int time;
         public ModHex modHex;
@@ -22,7 +22,7 @@ namespace OvermorrowMod.Buffs.Hexes
         public static bool HasHex(this NPC npc, int type)
         {
             var modNpc = npc.GetGlobalNPC<HexNPC>();
-            foreach(Hex hex in modNpc.Hexes)
+            foreach (Hex hex in modNpc.Hexes)
             {
                 if (hex.type == type) return true;
             }
@@ -74,9 +74,9 @@ namespace OvermorrowMod.Buffs.Hexes
     {
         public static Dictionary<int, ModHex> ModHexes;
         public Hex hex;
-        public NPC npc {get{return hex.npc;} private set{}}
+        public NPC npc { get { return hex.npc; } private set { } }
         /// <summary>Is ran every time a hex is added, return false to prevent the hex from being added</summary>
-        public virtual bool OnTryAdd() { return true;}
+        public virtual bool OnTryAdd() { return true; }
         /// <summary>Is ran right before removing the hex</summary>
         public virtual void OnRemove() { }
         /// <summary>Is ran every time a npc is updated</summary>

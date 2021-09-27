@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -33,7 +32,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(331, 9);
+            recipe.AddIngredient(ItemID.JungleSpores, 9);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();

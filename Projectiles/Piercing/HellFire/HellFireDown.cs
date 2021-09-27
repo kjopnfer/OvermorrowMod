@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +16,7 @@ namespace OvermorrowMod.Projectiles.Piercing.HellFire
         }
 
         Vector2 PosCheck;
-	    Vector2 endPoint;
+        Vector2 endPoint;
         private int timer = 0;
 
         public override void SetDefaults()
@@ -43,16 +42,16 @@ namespace OvermorrowMod.Projectiles.Piercing.HellFire
         public override void AI()
         {
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 PosCheck = projectile.Center;
                 endPoint = PosCheck;
             }
-            if(timer == 3)
+            if (timer == 3)
             {
                 projectile.alpha = 0;
             }
-            if(timer < 45)
+            if (timer < 45)
             {
                 projectile.velocity.Y = 5;
             }
@@ -60,12 +59,12 @@ namespace OvermorrowMod.Projectiles.Piercing.HellFire
             {
                 projectile.velocity.Y = 0;
             }
-            if(timer == 40)
+            if (timer == 40)
             {
                 Projectile.NewProjectile(projectile.Center.X - 60, projectile.Center.Y - 35, 0, 0, mod.ProjectileType("HellFireRight"), projectile.damage, 0f, projectile.owner, 0f);
             }
 
-            if(timer > 44)
+            if (timer > 44)
             {
                 int Random1 = Main.rand.Next(-40, 40);
                 int Random2 = Main.rand.Next(-200, 20);
@@ -87,32 +86,19 @@ namespace OvermorrowMod.Projectiles.Piercing.HellFire
             }
         }
 
-		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-		{
-			float point = 0f;
-			return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
-		}
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float point = 0f;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, endPoint, 4f, ref point);
+        }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            var player = Main.player[projectile.owner];
-
             Vector2 mountedCenter = endPoint;
             Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
 
             var drawPosition = projectile.Center;
             var remainingVectorToPlayer = mountedCenter - drawPosition;
-
-            float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

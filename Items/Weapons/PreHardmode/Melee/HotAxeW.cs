@@ -1,18 +1,13 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class HotAxeW : ModItem
     {
-
-
         float SwingRange = 0;
         int Timerset = 0;
-        int TimerReal = 0;
-
 
         public override void SetDefaults()
         {
@@ -21,7 +16,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.damage = 38;
             item.useTime = 25;
             item.useAnimation = 25;
-            item.useStyle = 5;
+            item.useStyle = ItemUseStyleID.HoldingOut;
             item.knockBack = 2;
             item.noUseGraphic = true;
             item.rare = ItemRarityID.Orange;
@@ -51,20 +46,17 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override bool CanUseItem(Player player)
         {
 
-            if(SwingRange > 11) 
+            if (SwingRange > 11)
             {
                 SwingRange = 11;
             }
 
-
-            if(Timerset > 0) 
+            if (Timerset > 0)
             {
                 SwingRange = 0;
-                TimerReal = 0;
                 Timerset = 0;
             }
 
-            
             for (int i = 0; i < 1000; ++i)
             {
                 if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == item.shoot)
@@ -90,7 +82,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
                 item.useAnimation = 25;
                 item.shootSpeed = 0f;
                 item.UseSound = SoundID.Item71;
-                item.useStyle = 5;
+                item.useStyle = ItemUseStyleID.HoldingOut;
             }
 
             return true;
@@ -99,7 +91,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(175, 27);
+            recipe1.AddIngredient(ItemID.HellstoneBar, 27);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();

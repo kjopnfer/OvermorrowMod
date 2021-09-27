@@ -1,6 +1,6 @@
-using System;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Summon;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -239,7 +239,7 @@ namespace OvermorrowMod.Projectiles.Summon
 
 
 
-                        if (distanceFromTarget <= 10 && Main.rand.Next(20) == 0) 
+                        if (distanceFromTarget <= 10 && Main.rand.Next(20) == 0)
                         {
                             makeStorm = true;
                             int proj = Projectile.NewProjectile(projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, projectile.damage / 2, 0f, projectile.owner);

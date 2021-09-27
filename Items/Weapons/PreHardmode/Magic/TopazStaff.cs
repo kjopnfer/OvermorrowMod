@@ -1,8 +1,8 @@
 using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Projectiles.Magic.Gems;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Magic.Gems;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
 {

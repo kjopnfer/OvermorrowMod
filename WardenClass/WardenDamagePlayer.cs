@@ -1,18 +1,12 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using OvermorrowMod;
-using OvermorrowMod.WardenClass;
-using OvermorrowMod.Buffs;
-using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Misc;
-using OvermorrowMod.Projectiles.Piercing;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.GameInput;
-using Terraria.ID;
 using Terraria.ModLoader;
-using Utils = Terraria.Utils;
 using Terraria.ModLoader.IO;
-using WardenClass;
+using Utils = Terraria.Utils;
 
 namespace WardenClass
 {
@@ -221,23 +215,6 @@ namespace WardenClass
 
 
             soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
-        }
-
-        private void UpdatePosition(WardenDamagePlayer player)
-        {
-            int direction = 1;
-            for (int i = 0; i < player.soulList.Count; i++)
-            {
-                if (i % 5 == 4)
-                {
-                    direction *= -1;
-                }
-
-                int radiusBuffer = (int)(20 * System.Math.Floor(i / 4f));
-                Main.projectile[player.soulList[i]].knockBack = direction;
-                Main.projectile[player.soulList[i]].ai[0] = 70 + radiusBuffer;
-                Main.projectile[player.soulList[i]].ai[1] = i * 90;
-            }
         }
 
         public float modifyShootSpeed()

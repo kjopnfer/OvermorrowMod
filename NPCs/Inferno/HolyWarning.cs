@@ -6,7 +6,7 @@ namespace OvermorrowMod.NPCs.Inferno
     public class HolyWarning : ModProjectile
     {
         public override bool CanDamage() => false;
-        private readonly int timer = 0;
+
         //int cooldown = 0;
         public override void SetDefaults()
         {

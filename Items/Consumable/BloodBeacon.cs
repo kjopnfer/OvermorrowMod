@@ -44,7 +44,7 @@ namespace OvermorrowMod.Items.Consumable
                 {
                     Main.NewText("The Blood Moon is rising...", 50, 255, 130);
                 }
-                else if(Main.netMode == NetmodeID.Server)
+                else if (Main.netMode == NetmodeID.Server)
                 {
                     NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The Blood Moon is rising..."), new Color(50, 255, 130));
                 }

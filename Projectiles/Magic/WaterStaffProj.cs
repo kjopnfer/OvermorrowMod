@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Effects;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic
@@ -40,7 +39,6 @@ namespace OvermorrowMod.Projectiles.Magic
         {
             knockback = 0;
         }
-        int direction = 1;
 
         List<Projectile> owned = new List<Projectile>();
         public override void AI()
@@ -66,7 +64,7 @@ namespace OvermorrowMod.Projectiles.Magic
             {
                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                 Vector2 dustvelocity = new Vector2(0f, -2.5f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                int dust = Dust.NewDust(position, 2, 2, 33, dustvelocity.X, dustvelocity.Y, 0, default, 1);
+                int dust = Dust.NewDust(position, 2, 2, DustID.Water, dustvelocity.X, dustvelocity.Y, 0, default, 1);
                 Main.dust[dust].noGravity = false;
             }
         }

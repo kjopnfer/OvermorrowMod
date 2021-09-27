@@ -1,6 +1,4 @@
-using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.RuneBuffs;
-using OvermorrowMod.Projectiles.Piercing;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

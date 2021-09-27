@@ -26,7 +26,7 @@ namespace OvermorrowMod.Tiles
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            
+
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

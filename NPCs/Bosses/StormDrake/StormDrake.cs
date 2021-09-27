@@ -203,7 +203,7 @@
 //                        var move = moveTo - npc.Center;
 //                        float distance = Vector2.Distance(npc.Center, player.Center);
 //                        var speed = distance >= 600 ? 16 : 10;
-                        
+
 //                        float length = move.Length();
 //                        if (length > speed)
 //                        {
@@ -577,7 +577,7 @@
 
 //                        if (npc.ai[1] == 160) 
 //                        {
-                            
+
 //                            if (!secondBalls && npc.life <= npc.lifeMax * 0.35f)
 //                            {
 //                                secondBalls = true;

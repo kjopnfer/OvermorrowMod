@@ -1,15 +1,15 @@
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
 {
     public class HealingBulletEgg : ModProjectile
     {
-        
+
         public override bool CanDamage() => false;
-        private int timer = 0; 
+        private int timer = 0;
         int RandomHeal = Main.rand.Next(1, 3);
 
 
@@ -31,15 +31,15 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep.BloodSpider
         public override void AI()
         {
 
-        RandomHeal = Main.rand.Next(1, 3);
+            RandomHeal = Main.rand.Next(1, 3);
 
 
             timer++;
-            if(timer == 2)
+            if (timer == 2)
             {
-            Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("BloodTrail"), projectile.damage, 1f, projectile.owner, 0f);
-            timer = 0;
+                Vector2 value1 = new Vector2(0f, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("BloodTrail"), projectile.damage, 1f, projectile.owner, 0f);
+                timer = 0;
             }
         }
         public override void Kill(int timeLeft)

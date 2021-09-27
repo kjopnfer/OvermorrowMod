@@ -1,7 +1,7 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Projectiles.Boss;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -234,13 +234,13 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
                 for (int num826 = 0; (double)num826 < 10 / (double)npc.lifeMax * 100.0; num826++)
                 {
-                    Dust.NewDust(npc.position, npc.width, npc.height, 5, hitDirection, -1f);
+                    Dust.NewDust(npc.position, npc.width, npc.height, DustID.Blood, hitDirection, -1f);
                 }
                 return;
             }
             for (int num827 = 0; num827 < 50; num827++)
             {
-                Dust.NewDust(npc.position, npc.width, npc.height, 5, 2.5f * (float)hitDirection, -2.5f);
+                Dust.NewDust(npc.position, npc.width, npc.height, DustID.Blood, 2.5f * (float)hitDirection, -2.5f);
             }
 
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/Driplad1"), npc.scale);

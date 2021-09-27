@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep
@@ -31,7 +30,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep
         {
             timer++;
             projectile.alpha = projectile.alpha + 15;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
@@ -40,7 +39,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep
                 projectile.velocity.Y = 0;
                 projectile.velocity.X = 0;
             }
-            if(timer == 2)
+            if (timer == 2)
             {
                 projectile.alpha = 0;
             }

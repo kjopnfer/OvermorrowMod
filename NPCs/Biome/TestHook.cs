@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,11 +8,7 @@ namespace OvermorrowMod.NPCs.Biome
 {
     public class TestHook : ModProjectile
     {
-
-        private int SavedDMG = 0;
         private int timer = 0;
-        private bool ComingBack = false;
-        private int flametimer = 0;
         Vector2 DrawToPos;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/Biome/GranNPCChain";
 
@@ -41,7 +36,7 @@ namespace OvermorrowMod.NPCs.Biome
 
             NPC npc = Main.npc[(int)projectile.ai[1]];
 
-            if(npc.active)
+            if (npc.active)
             {
                 projectile.timeLeft = 3;
             }
@@ -49,18 +44,18 @@ namespace OvermorrowMod.NPCs.Biome
             npc.rotation = (npc.Center - Main.player[projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
 
             timer++;
-            if(timer == 100)
+            if (timer == 100)
             {
                 Vector2 position = projectile.Center;
                 Vector2 targetPosition = Main.player[projectile.owner].Center;
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 projectile.velocity = direction * 5f;
-                Main.PlaySound(2, npc.position, 99);
+                Main.PlaySound(SoundID.Item, npc.position, 99);
                 timer = 0;
             }
-            
-            if(npc.velocity.X < 1 && npc.velocity.X > -1)
+
+            if (npc.velocity.X < 1 && npc.velocity.X > -1)
             {
                 projectile.rotation = (projectile.Center - Main.player[projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
                 projectile.frame = 0;
@@ -72,12 +67,12 @@ namespace OvermorrowMod.NPCs.Biome
             }
 
 
-            if(Vector2.Distance(npc.Center, projectile.Center) < 77)
+            if (Vector2.Distance(npc.Center, projectile.Center) < 77)
             {
                 npc.velocity *= 0f;
             }
 
-            if(timer > 25 && timer < 46)
+            if (timer > 25 && timer < 46)
             {
                 projectile.velocity *= 0.4f;
 
@@ -89,10 +84,10 @@ namespace OvermorrowMod.NPCs.Biome
             }
 
 
-			if (!Main.npc[(int)projectile.ai[1]].active) 
+            if (!Main.npc[(int)projectile.ai[1]].active)
             {
-				projectile.Kill();
-				projectile.active = false;
+                projectile.Kill();
+                projectile.active = false;
             }
         }
 
@@ -104,26 +99,11 @@ namespace OvermorrowMod.NPCs.Biome
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            var player = Main.player[projectile.owner];
-
             Vector2 mountedCenter = DrawToPos;
             Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
 
             var drawPosition = projectile.Center;
             var remainingVectorToPlayer = mountedCenter - drawPosition;
-
-            float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                {
-                    direction = 1;
-                }
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

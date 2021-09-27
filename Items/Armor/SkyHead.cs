@@ -1,8 +1,7 @@
+using OvermorrowMod.Projectiles.Summon.Worm;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using OvermorrowMod.Projectiles.Summon.Worm;
 
 namespace OvermorrowMod.Items.Armor
 {
@@ -44,10 +43,10 @@ namespace OvermorrowMod.Items.Armor
             player.setBonus = "10% increased movement speed";
             player.GetModPlayer<OvermorrowModPlayer>().SkyArmor = true;
             TailCheck++;
-            if(TailCheck == 15)
+            if (TailCheck == 15)
             {
                 TailCheck = 0;
-                if(player.ownedProjectileCounts[ModContent.ProjectileType<WormT10>()] < 1)
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<WormT10>()] < 1)
                 {
                     Projectile.NewProjectile(player.Center.X, player.Center.Y, 0, 0, mod.ProjectileType("WormT10"), 15, 0f, Main.myPlayer, 0, Main.myPlayer);
                 }
@@ -57,7 +56,7 @@ namespace OvermorrowMod.Items.Armor
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(824, 7);
+            recipe1.AddIngredient(ItemID.SunplateBlock, 7);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this, 1);
             recipe1.AddRecipe();

@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 {
@@ -11,7 +10,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
     {
         public override bool CanDamage() => false;
         private int timer = 0;
-        private bool target = false;
         private const string ChainTexturePath = "OvermorrowMod/NPCs/PostRider/Gore68";
         public override void SetStaticDefaults()
         {
@@ -19,11 +17,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
             ProjectileID.Sets.Homing[projectile.type] = true;
         }
 
-           Vector2 vineplace;
-
         public override void SetDefaults()
         {
-
             projectile.width = 68;
             projectile.height = 46;
 
@@ -43,10 +38,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 
 
             timer++;
-            if(timer == 17)
+            if (timer == 17)
             {
                 Main.PlaySound(SoundID.Item62, projectile.Center);
-                Vector2 value1 = new Vector2(0f, 0f);
                 Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("JungleEXP"), projectile.damage + 10, 1f, projectile.owner, 0f);
                 timer = 0;
             }
@@ -54,7 +48,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 
             Player player = Main.player[projectile.owner];
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(0f);
-			if (Main.player[projectile.owner].channel) 
+            if (Main.player[projectile.owner].channel)
             {
                 if (Main.MouseWorld.X < projectile.position.X)
                 {
@@ -89,15 +83,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
 
             float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
 
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
-
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)
             {
@@ -117,19 +102,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.JungleBomber
             }
 
             return true;
-        }
-
-
-
-
-
-        private void AdjustMagnitude(ref Vector2 vector)
-        {
-            float magnitude = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            if (magnitude > 6f)
-            {
-                vector *= 6f / magnitude;
-            }
         }
     }
 }

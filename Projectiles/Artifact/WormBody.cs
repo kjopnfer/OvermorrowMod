@@ -1,7 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.WardenClass;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Artifact
@@ -25,7 +23,7 @@ namespace OvermorrowMod.Projectiles.Artifact
         {
             projectile.ai[0]++;
             projectile.alpha = projectile.alpha + 3;
-            if(projectile.ai[0] == 1)
+            if (projectile.ai[0] == 1)
             {
                 projectile.alpha = 255;
                 projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
@@ -35,7 +33,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                 projectile.velocity.Y = 0;
                 projectile.velocity.X = 0;
             }
-            if(projectile.ai[0] == 2)
+            if (projectile.ai[0] == 2)
             {
                 projectile.alpha = 0;
             }

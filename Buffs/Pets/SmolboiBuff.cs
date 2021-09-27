@@ -1,5 +1,4 @@
 using OvermorrowMod.Projectiles.Pets;
-using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 

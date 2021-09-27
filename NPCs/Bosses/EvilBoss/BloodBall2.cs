@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -10,17 +9,9 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 {
     public class BloodBall2 : ModProjectile
     {
-
-
-        private float SavedX = 0;
-        private float SavedY = 0;
-
         private float CircleArr = 1;
         private float length = 1;
         private int timer = 0;
-        private int lefttimer = 0;
-        bool HasActivedGo = false;
-        bool HasActivedSprite = false;
 
         public override void SetStaticDefaults()
         {
@@ -49,35 +40,35 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             projectile.damage = 40;
             Projectile parentProjectile = Main.projectile[(int)projectile.ai[0]];
             timer++;
-                if (timer == 1)
+            if (timer == 1)
+            {
+                length = Vector2.Distance(Main.player[projectile.owner].Center, parentProjectile.Center);
+                if (Main.player[projectile.owner].Center.X > parentProjectile.Center.X)
                 {
-                    length = Vector2.Distance(Main.player[projectile.owner].Center, parentProjectile.Center);
-                    if(Main.player[projectile.owner].Center.X > parentProjectile.Center.X)
-                    {
-                        CircleArr = 90;
-                    }
-                    else
-                    {
-                        CircleArr = 270;
-                    }
-
-                }
-                
-
-                double deg = (double)CircleArr; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
-                double rad = deg * (Math.PI / 180); //Convert degrees to radian
-
-                projectile.position.X = length * (float)Math.Cos(rad) + parentProjectile.Center.X - projectile.width / 2;
-                projectile.position.Y = length * (float)Math.Sin(rad) + parentProjectile.Center.Y - projectile.height / 2;
-
-                if(length < 250)
-                {
-                    CircleArr -= length / 100f;
+                    CircleArr = 90;
                 }
                 else
                 {
-                    CircleArr -= length / 160f;
+                    CircleArr = 270;
                 }
+
+            }
+
+
+            double deg = (double)CircleArr; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+            double rad = deg * (Math.PI / 180); //Convert degrees to radian
+
+            projectile.position.X = length * (float)Math.Cos(rad) + parentProjectile.Center.X - projectile.width / 2;
+            projectile.position.Y = length * (float)Math.Sin(rad) + parentProjectile.Center.Y - projectile.height / 2;
+
+            if (length < 250)
+            {
+                CircleArr -= length / 100f;
+            }
+            else
+            {
+                CircleArr -= length / 160f;
+            }
 
         }
 
@@ -98,23 +89,23 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
         public override void Kill(int timeLeft)
         {
-                Vector2 position = projectile.Center;
-                Main.PlaySound(SoundID.Item14, (int)position.X, (int)position.Y);
-                Main.PlaySound(3, projectile.Center, 1);
-                int radius = 5;     //this is the explosion radius, the highter is the value the bigger is the explosion
+            Vector2 position = projectile.Center;
+            Main.PlaySound(SoundID.Item14, (int)position.X, (int)position.Y);
+            Main.PlaySound(SoundID.NPCHit, projectile.Center, 1);
+            int radius = 5;     //this is the explosion radius, the highter is the value the bigger is the explosion
 
-                for (int x = -radius; x <= radius; x++)
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
                 {
-                    for (int y = -radius; y <= radius; y++)
-                    {
 
-                        if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
-                        {
-                            Color alpha = Color.Red;
-                            Dust.NewDust(position, 5, 5, 57, 0.0f, 0.0f, 120, alpha, 1f);
-                        }
+                    if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
+                    {
+                        Color alpha = Color.Red;
+                        Dust.NewDust(position, 5, 5, DustID.Enchanted_Gold, 0.0f, 0.0f, 120, alpha, 1f);
                     }
                 }
+            }
         }
     }
 }

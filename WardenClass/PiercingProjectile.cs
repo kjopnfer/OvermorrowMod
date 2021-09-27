@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
-using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Projectiles.Piercing;
 using System.Collections.Generic;
 using Terraria;
@@ -140,7 +139,7 @@ namespace OvermorrowMod.WardenClass
                     }
                 }
 
-                if (projectile.type == ChainType["Bone"]) 
+                if (projectile.type == ChainType["Bone"])
                 {
                     //target.AddHex(Hex.HexType<SoulFlame>(), 600);
                 }

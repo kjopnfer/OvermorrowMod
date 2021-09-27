@@ -1,6 +1,5 @@
 
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -34,7 +33,7 @@ namespace OvermorrowMod.NPCs.Inferno
         {
             timer++;
             projectile.rotation = projectile.rotation + 1;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.position.Y = Main.player[projectile.owner].Center.Y - 35f;
                 projectile.friendly = true;
@@ -43,25 +42,16 @@ namespace OvermorrowMod.NPCs.Inferno
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            if(target.damage > 1)
+            if (target.damage > 1)
             {
-            target.damage += 5;
-            target.life = target.life + 15;
-            target.AddBuff(BuffID.Lovestruck, 100);
-            CombatText.NewText(target.getRect(), Color.Green, "+15 health +5 DMG");
+                target.damage += 5;
+                target.life = target.life + 15;
+                target.AddBuff(BuffID.Lovestruck, 100);
+                CombatText.NewText(target.getRect(), Color.Green, "+15 health +5 DMG");
             }
             else
             {
                 target.life = target.life + 1;
-            }
-        }
-
-        private void AdjustMagnitude(ref Vector2 vector)
-        {
-            float magnitude = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            if (magnitude > 6f)
-            {
-                vector *= 6f / magnitude;
             }
         }
     }

@@ -1,7 +1,6 @@
-using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 
@@ -30,19 +29,19 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-                Collision.HitTiles(projectile.position + projectile.velocity, projectile.velocity, projectile.width, projectile.height);
-                Main.PlaySound(SoundID.Item10, projectile.position);
-                if (projectile.velocity.X != oldVelocity.X)
-                {
-                    projectile.velocity.X = -oldVelocity.X;
-                }
-                if (projectile.velocity.Y != oldVelocity.Y)
-                {
-                    projectile.velocity.Y = -oldVelocity.Y;
-                }
+            Collision.HitTiles(projectile.position + projectile.velocity, projectile.velocity, projectile.width, projectile.height);
+            Main.PlaySound(SoundID.Item10, projectile.position);
+            if (projectile.velocity.X != oldVelocity.X)
+            {
+                projectile.velocity.X = -oldVelocity.X;
+            }
+            if (projectile.velocity.Y != oldVelocity.Y)
+            {
+                projectile.velocity.Y = -oldVelocity.Y;
+            }
             return false;
         }
-        
+
 
 
         public override void SetStaticDefaults()

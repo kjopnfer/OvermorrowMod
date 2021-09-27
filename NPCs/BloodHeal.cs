@@ -1,6 +1,5 @@
 ﻿using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs
@@ -28,7 +27,7 @@ namespace OvermorrowMod.NPCs
             npc.DeathSound = SoundID.NPCDeath1;
             npc.buffImmune[BuffID.OnFire] = true;
         }
-        
+
         public override void AI()
         {
             experttimer++;
@@ -60,7 +59,7 @@ namespace OvermorrowMod.NPCs
 
         public override void NPCLoot()
         {
-            if(experttimer < 120)
+            if (experttimer < 120)
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, 58);
             }

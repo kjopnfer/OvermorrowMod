@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs.Debuffs;
@@ -335,7 +334,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                             }
                         }
                     }
-                    
+
                     if (npc.ai[1] == 300)
                     {
                         npc.ai[0] = 0;
@@ -464,13 +463,13 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             {
                 for (int num826 = 0; (double)num826 < 10 / (double)npc.lifeMax * 100.0; num826++)
                 {
-                    Dust.NewDust(npc.position, npc.width, npc.height, 5, hitDirection, -1f);
+                    Dust.NewDust(npc.position, npc.width, npc.height, DustID.Blood, hitDirection, -1f);
                 }
                 return;
             }
             for (int num827 = 0; num827 < 50; num827++)
             {
-                Dust.NewDust(npc.position, npc.width, npc.height, 5, 2.5f * (float)hitDirection, -2.5f);
+                Dust.NewDust(npc.position, npc.width, npc.height, DustID.Blood, 2.5f * (float)hitDirection, -2.5f);
             }
 
             Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
@@ -503,7 +502,7 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
             if (attackindicator == true)
-            { 
+            {
                 Texture2D texture = Main.npcTexture[npc.type];
                 Vector2 origin = npc.frame.Size() / 2;
                 int amount = 5;

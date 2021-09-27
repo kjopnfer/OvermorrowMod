@@ -1,17 +1,13 @@
 using Microsoft.Xna.Framework;
-using System;
+using OvermorrowMod.Buffs.Debuffs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
     public class ShroomFlame : ModProjectile
     {
-        private int length = 1;
-        private int timer = 0;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Shroomfire");
@@ -38,7 +34,7 @@ namespace OvermorrowMod.Projectiles.Ranged
             projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width + Main.rand.Next(-25, 26), projectile.height + Main.rand.Next(-25, 26), 41, projectile.velocity.X, projectile.velocity.Y, 75, new Color(), 2.7f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width + Main.rand.Next(-25, 26), projectile.height + Main.rand.Next(-25, 26), DustID.GlowingMushroom, projectile.velocity.X, projectile.velocity.Y, 75, new Color(), 2.7f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
@@ -55,7 +51,7 @@ namespace OvermorrowMod.Projectiles.Ranged
             {
                 target.AddBuff(ModContent.BuffType<FungalInfection>(), 400);
             }
-            projectile.damage /=2;
+            projectile.damage /= 2;
         }
     }
 }

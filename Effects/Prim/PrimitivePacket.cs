@@ -1,8 +1,8 @@
-using System;
-using Terraria;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using Terraria;
 
 namespace OvermorrowMod.Effects.Prim
 {

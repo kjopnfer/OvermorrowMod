@@ -1,8 +1,8 @@
+using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod
 {
@@ -18,7 +18,7 @@ namespace OvermorrowMod
 
         public override void SetDefaults(Projectile projectile)
         {
-            if(projectile.type == 590)
+            if (projectile.type == 590)
             {
                 projectile.timeLeft = 100;
             }
@@ -26,13 +26,13 @@ namespace OvermorrowMod
 
         public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)
         {
-            if(projectile.type == 130 || projectile.type == 131)
+            if (projectile.type == 130 || projectile.type == 131)
             {
-			    target.AddBuff(ModContent.BuffType<FungalInfection>(), 500);
+                target.AddBuff(ModContent.BuffType<FungalInfection>(), 500);
             }
-            if(projectile.type == 30)
+            if (projectile.type == 30)
             {
-			    target.immune[projectile.owner] = 0;
+                target.immune[projectile.owner] = 0;
             }
         }
 

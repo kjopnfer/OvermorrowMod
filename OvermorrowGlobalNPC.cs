@@ -1,10 +1,12 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
+using OvermorrowMod.Projectiles.Melee;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System.Collections.Generic;
@@ -12,8 +14,6 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WardenClass;
-using OvermorrowMod.Projectiles.Melee;
-using OvermorrowMod.Items.Accessories;
 
 namespace OvermorrowMod
 {
@@ -310,7 +310,7 @@ namespace OvermorrowMod
             {
                 if (Main.rand.Next(4) < 3)
                 {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, 5, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
+                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, DustID.Blood, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
                     //Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 1.8f;
                     Main.dust[dust].velocity.Y -= 0.5f;
@@ -320,7 +320,7 @@ namespace OvermorrowMod
             {
                 if (Main.rand.Next(8) < 3)
                 {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width, npc.height, 41, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
+                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width, npc.height, DustID.GlowingMushroom, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
                     //Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 1.8f;
                     Main.dust[dust].velocity.Y -= 0.5f;

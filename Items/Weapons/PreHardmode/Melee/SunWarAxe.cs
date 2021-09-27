@@ -1,18 +1,13 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class SunWarAxe : ModItem
     {
-
-
         float SwingRange = 0;
         int Timerset = 0;
-        int TimerReal = 0;
-
 
         public override void SetDefaults()
         {
@@ -42,8 +37,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(117, 14);
-            recipe.AddIngredient(75, 3);
+            recipe.AddIngredient(ItemID.MeteoriteBar, 14);
+            recipe.AddIngredient(ItemID.FallenStar, 3);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
@@ -58,17 +53,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 
         public override bool CanUseItem(Player player)
         {
-
-            if(SwingRange > 10) 
+            if (SwingRange > 10)
             {
                 SwingRange = 10;
             }
 
-
-            if(Timerset > 0) 
+            if (Timerset > 0)
             {
                 SwingRange = 0;
-                TimerReal = 0;
                 Timerset = 0;
             }
 

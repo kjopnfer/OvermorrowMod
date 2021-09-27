@@ -1,24 +1,22 @@
 using Terraria;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using OvermorrowMod.Projectiles.Accessory;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Accessories.Expert
 {
-    public class ArtemisAmulet : ModItem {
+    public class ArtemisAmulet : ModItem
+    {
         //public override string Texture => "Terraria/Item_" + ItemID.CharmofMyths;
 
-        public override void SetStaticDefaults() {
+        public override void SetStaticDefaults()
+        {
             Tooltip.SetDefault(
                 "placeholder"
             );
         }
 
-        public override void SetDefaults() {
+        public override void SetDefaults()
+        {
             item.width = 24;
             item.height = 28;
             item.value = 17500;
@@ -26,7 +24,8 @@ namespace OvermorrowMod.Items.Accessories.Expert
             item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual) {
+        public override void UpdateAccessory(Player player, bool hideVisual)
+        {
             player.GetModPlayer<OvermorrowModPlayer>().ArtemisAmulet = true;
         }
     }

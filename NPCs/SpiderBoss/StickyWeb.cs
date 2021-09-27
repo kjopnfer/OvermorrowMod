@@ -23,7 +23,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
 
         public override void AI()
         {
-            if(projectile.timeLeft < 650)
+            if (projectile.timeLeft < 650)
             {
                 projectile.velocity.X = 0;
                 projectile.velocity.Y = 0;
@@ -31,7 +31,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
 
 
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 6, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 5, new Color(), 1f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.Fire, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 5, new Color(), 1f);
             }
         }
     }

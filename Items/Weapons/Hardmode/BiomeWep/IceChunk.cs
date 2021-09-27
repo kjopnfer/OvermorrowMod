@@ -46,25 +46,25 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep
 
 
             timer++;
-            if(timer == 30)
+            if (timer == 30)
             {
-            Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 6, value1.Y + 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 6, value1.Y + 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 6, value1.Y - 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 6, value1.Y - 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
+                Vector2 value1 = new Vector2(0f, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 6, value1.Y + 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 6, value1.Y + 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 6, value1.Y - 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 6, value1.Y - 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
 
 
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 6, value1.Y, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y + 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y - 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 6, value1.Y, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
-            timer = 0;
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X + 6, value1.Y, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y + 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X, value1.Y - 6, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, value1.X - 6, value1.Y, mod.ProjectileType("FrostWaveFriend"), projectile.damage + 10, 1f, projectile.owner, 0f);
+                timer = 0;
             }
 
 
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 135, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 2.3f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.IceTorch, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 2.3f);
             }
         }
 

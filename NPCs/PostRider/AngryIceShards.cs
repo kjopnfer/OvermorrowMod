@@ -1,19 +1,15 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.PostRider
 {
     public class AngryIceShards : ModNPC
     {
-
-        int randomX = 0;
-        int randomY = 0;
         int Attacktimer = 4;
         readonly bool expert = Main.expertMode;
         private int experttimer = 0;
-        private readonly int timer = 0;
 
         public override void SetDefaults()
         {
@@ -43,18 +39,18 @@ namespace OvermorrowMod.NPCs.PostRider
         public override void AI()
         {
 
-                experttimer++;
-                if(expert && experttimer == 1)
-                {
-                    npc.life = 600;
-                    npc.lifeMax = 600;
-                    npc.damage = 55;
-                }
+            experttimer++;
+            if (expert && experttimer == 1)
+            {
+                npc.life = 600;
+                npc.lifeMax = 600;
+                npc.damage = 55;
+            }
 
 
 
             Attacktimer++;
-            if(Attacktimer == 75)
+            if (Attacktimer == 75)
             {
                 npc.velocity.X = 0;
                 npc.velocity.Y = 0;

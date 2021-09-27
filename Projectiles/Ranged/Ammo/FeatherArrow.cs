@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,12 +23,12 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
             DisplayName.SetDefault("Featherfall Arrow");
         }
 
-		public override void AI() 
-		{
+        public override void AI()
+        {
             projectile.velocity.Y += 0.2f;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(135f);
 
-            if(projectile.velocity.Y > 6)
+            if (projectile.velocity.Y > 6)
             {
                 projectile.velocity.Y = 6f;
             }

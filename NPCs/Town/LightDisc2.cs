@@ -1,16 +1,12 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Town
 {
     public class LightDisc2 : ModProjectile
     {
-
-
-        private int SavedDMG = 0;
-        private int timer = 0;
         private bool ComingBack = false;
         private int flametimer = 0;
 
@@ -44,24 +40,24 @@ namespace OvermorrowMod.NPCs.Town
                 if (npc.type == mod.NPCType("Guide2"))
                 {
 
-                    projectile.rotation += 0.36f; 
+                    projectile.rotation += 0.36f;
 
-                    if(projectile.timeLeft < 65)
+                    if (projectile.timeLeft < 65)
                     {
                         projectile.timeLeft = 10;
                         ComingBack = true;
                     }
 
-                    if(projectile.timeLeft > 98)
+                    if (projectile.timeLeft > 98)
                     {
                         projectile.tileCollide = false;
                     }
-                    else if(!ComingBack)
+                    else if (!ComingBack)
                     {
                         projectile.tileCollide = true;
                     }
 
-                    if(ComingBack)
+                    if (ComingBack)
                     {
                         flametimer++;
                         float BetweenKill = Vector2.Distance(npc.Center, projectile.Center);
@@ -71,9 +67,9 @@ namespace OvermorrowMod.NPCs.Town
                         Vector2 direction = targetPosition - position;
                         direction.Normalize();
                         projectile.velocity = direction * 18;
-                        if(BetweenKill < 22)
+                        if (BetweenKill < 22)
                         {
-                            projectile.Kill();    
+                            projectile.Kill();
                         }
                     }
                 }
@@ -91,10 +87,10 @@ namespace OvermorrowMod.NPCs.Town
             return false;
         }
 
-		public override void OnHitPlayer(Player player, int damage, bool crit) 
+        public override void OnHitPlayer(Player player, int damage, bool crit)
         {
             Vector2 eeee = projectile.Center;
             ComingBack = true;
-		}
+        }
     }
 }

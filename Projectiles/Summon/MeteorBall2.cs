@@ -1,28 +1,14 @@
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Summon
 {
     public class MeteorBall2 : ModProjectile
     {
-
-
-        private float SavedX = 0;
-        private float SavedY = 0;
-
-        private float CircleArr = 1;
         private float length = 1;
         private int timer = 0;
-        private int lefttimer = 0;
-        bool HasActivedGo = false;
-        bool HasActivedSprite = false;
-        bool left = false;
-        bool right = false;
 
         public override void SetStaticDefaults()
         {
@@ -51,42 +37,42 @@ namespace OvermorrowMod.Projectiles.Summon
             for (int i = 0; i < 200; i++)
             {
 
-            Projectile parentProjectile = Main.projectile[i];
-            if (parentProjectile.active && parentProjectile.type == mod.ProjectileType("MeteorStill"))
-            {
-                timer++;
-                if (timer == 1)
+                Projectile parentProjectile = Main.projectile[i];
+                if (parentProjectile.active && parentProjectile.type == mod.ProjectileType("MeteorStill"))
                 {
-                    length = Vector2.Distance(Main.MouseWorld, parentProjectile.Center);
-                    projectile.rotation = MathHelper.ToRadians(270f);
-                
-                if(length > 190)
-                {
-                    length = 190;
-                }
-                }
-                
-                
-                if(length > 190)
-                {
-                    length = 190;
-                }
-                
+                    timer++;
+                    if (timer == 1)
+                    {
+                        length = Vector2.Distance(Main.MouseWorld, parentProjectile.Center);
+                        projectile.rotation = MathHelper.ToRadians(270f);
+
+                        if (length > 190)
+                        {
+                            length = 190;
+                        }
+                    }
+
+
+                    if (length > 190)
+                    {
+                        length = 190;
+                    }
+
                     projectile.position.X = length * (float)Math.Cos(projectile.rotation) + parentProjectile.Center.X - projectile.width / 2;
                     projectile.position.Y = length * (float)Math.Sin(projectile.rotation) + parentProjectile.Center.Y - projectile.height / 2;
                     projectile.rotation -= (float)((2 * Math.PI) / (Math.PI * 2 * 125 / 10)); // 200 is the speed, god only knows what dividing by 10 does
 
 
-            if (++projectile.frameCounter >= 4)
-            {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
-                {
-                    projectile.frame = 0;
+                    if (++projectile.frameCounter >= 4)
+                    {
+                        projectile.frameCounter = 0;
+                        if (++projectile.frame >= Main.projFrames[projectile.type])
+                        {
+                            projectile.frame = 0;
+                        }
+                    }
                 }
             }
-        }
-        }
         }
     }
 }

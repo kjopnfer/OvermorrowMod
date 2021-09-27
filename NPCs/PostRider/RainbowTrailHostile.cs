@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.PostRider
@@ -31,7 +30,7 @@ namespace OvermorrowMod.NPCs.PostRider
         {
             timer++;
             projectile.alpha = projectile.alpha + 17;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
@@ -40,7 +39,7 @@ namespace OvermorrowMod.NPCs.PostRider
                 projectile.velocity.Y = 0;
                 projectile.velocity.X = 0;
             }
-            if(timer == 2)
+            if (timer == 2)
             {
                 projectile.alpha = 0;
             }

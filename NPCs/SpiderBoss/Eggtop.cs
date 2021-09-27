@@ -16,7 +16,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
         public override void AI()
         {
             projectile.alpha = projectile.alpha + 1;
-            if(projectile.alpha == 255)
+            if (projectile.alpha == 255)
             {
                 projectile.timeLeft = 0;
             }

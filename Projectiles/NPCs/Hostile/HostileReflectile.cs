@@ -1,7 +1,5 @@
-using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.NPCs.Hostile
@@ -41,15 +39,15 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
             double rad = deg * (Math.PI / 180); // convert degrees to radians
             double dist = 100; // distance from the owner
 
-            
+
             projectile.position.X = projectileOwner.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
             projectile.position.Y = projectileOwner.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
 
             projectile.ai[1] += 0.5f;
 
             // orient sprite based on rotation
-            projectile.rotation = (float)rad; 
-            
+            projectile.rotation = (float)rad;
+
 
             for (int i = 0; i < Main.maxProjectiles; i++)
             {

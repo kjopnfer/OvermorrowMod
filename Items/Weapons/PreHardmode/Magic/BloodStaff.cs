@@ -32,7 +32,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.shootSpeed = 15f;
             item.knockBack = 3f;
             item.magic = true;
-            item.value = Item.sellPrice(gold: 1, silver:75);
+            item.value = Item.sellPrice(gold: 1, silver: 75);
         }
     }
 }

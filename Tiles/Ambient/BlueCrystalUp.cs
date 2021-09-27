@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using OvermorrowMod.Items.Materials;
-using Microsoft.Xna.Framework.Graphics;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Tiles.Ambient
 {
@@ -17,11 +15,11 @@ namespace OvermorrowMod.Tiles.Ambient
             Main.tileSpelunker[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            soundType = 21;
+            soundType = SoundID.Tink;
             soundStyle = 1;
             minPick = 65;
             AddMapEntry(new Color(102, 255, 255), name);
-			drop = ModContent.ItemType<Items.Misc.BlueCrystal>();
+            drop = ModContent.ItemType<Items.Misc.BlueCrystal>();
         }
 
         public override bool CanExplode(int i, int j)

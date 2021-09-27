@@ -1,14 +1,10 @@
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic.Upgrades
 {
     public class EyeBlast : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         bool HasHit = false;
 
@@ -33,9 +29,9 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
         {
             projectile.rotation = projectile.velocity.ToRotation();
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
-                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                if (Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
                 {
                     projectile.velocity.X = 10;
                     projectile.velocity.Y = 0;
@@ -48,7 +44,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
             }
 
 
-            if(!HasHit)
+            if (!HasHit)
             {
                 if (++projectile.frameCounter >= 4)
                 {
@@ -76,13 +72,13 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
             projectile.frame = 2;
             HasHit = true;
             projectile.damage += 5;
-            if(projectile.velocity.X > 0)
+            if (projectile.velocity.X > 0)
             {
-                projectile.velocity.X += 1.5f;   
+                projectile.velocity.X += 1.5f;
             }
             else
             {
-                projectile.velocity.X -= 1.5f;   
+                projectile.velocity.X -= 1.5f;
             }
         }
     }

@@ -1,6 +1,3 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -36,17 +33,17 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
 
 
-            if(projectile.timeLeft == 75)
+            if (projectile.timeLeft == 75)
             {
                 projectile.frame = 1;
             }
 
-            if(projectile.timeLeft == 50)
+            if (projectile.timeLeft == 50)
             {
                 projectile.frame = 2;
             }
 
-            if(projectile.timeLeft == 25)
+            if (projectile.timeLeft == 25)
             {
                 projectile.frame = 3;
             }

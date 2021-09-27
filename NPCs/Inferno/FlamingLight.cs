@@ -31,15 +31,15 @@ namespace OvermorrowMod.NPCs.Inferno
         {
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 6, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 5, new Color(), 0.7f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.Fire, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 5, new Color(), 0.7f);
             }
 
-            if(Main.player[projectile.owner].Center.X > projectile.position.X)
+            if (Main.player[projectile.owner].Center.X > projectile.position.X)
             {
                 projectile.velocity.X = 0.7f;
             }
 
-            if(Main.player[projectile.owner].Center.X < projectile.position.X)
+            if (Main.player[projectile.owner].Center.X < projectile.position.X)
             {
                 projectile.velocity.X = -0.7f;
             }

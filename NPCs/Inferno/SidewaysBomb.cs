@@ -28,7 +28,7 @@ namespace OvermorrowMod.NPCs.Inferno
         public override void AI()
         {
             timer++;
-            if(timer == 10)
+            if (timer == 10)
             {
                 Vector2 value1 = new Vector2(0f, 0f);
                 Projectile.NewProjectile(projectile.position.X, projectile.position.Y, value1.X, value1.Y, mod.ProjectileType("InfernoExplosion"), projectile.damage + 30, 1f, projectile.owner, 0f);

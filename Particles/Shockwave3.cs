@@ -1,15 +1,15 @@
-using Terraria;
-using Terraria.Graphics.Shaders;
-using Terraria.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
 
 namespace OvermorrowMod.Particles
 {
     public class Shockwave3 : CustomParticle
     {
         public override string Texture => "Textures/Perlin";
-        public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
+        public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
         float maxTime = 60f;
         public override void OnSpawn()
         {
@@ -42,7 +42,7 @@ namespace OvermorrowMod.Particles
                             new Vector2(texture.Width, texture.Height) / 2,
                             scale,
                             SpriteEffects.None,
-                        0); 
+                        0);
             var effect = GameShaders.Misc["ForceField"];
             effect.UseColor(particle.color);
             effect.Apply(data);

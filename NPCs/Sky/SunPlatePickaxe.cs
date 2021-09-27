@@ -1,16 +1,13 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Items.Tools;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Items.Tools;
 
 namespace OvermorrowMod.NPCs.Sky
 {
     public class SunPlatePickaxe : ModNPC
     {
-
-
-        private int ProjTimer = 0;
         private int AttTimer = 0;
         private int frame = 0;
         private int frameTimer = 0;
@@ -47,42 +44,42 @@ namespace OvermorrowMod.NPCs.Sky
                 frameTimer = 0;
                 frame++;
             }
-            if(frame > 3)
+            if (frame > 3)
             {
                 frame = 0;
             }
 
-            if(npc.velocity.X > 5)
+            if (npc.velocity.X > 5)
             {
                 npc.velocity.X = 5;
             }
 
-            if(npc.velocity.X < -5)
+            if (npc.velocity.X < -5)
             {
                 npc.velocity.X = -5;
             }
 
 
-            if(npc.velocity.Y > 5)
+            if (npc.velocity.Y > 5)
             {
                 npc.velocity.Y = 5;
             }
 
-            if(npc.velocity.Y < -5)
+            if (npc.velocity.Y < -5)
             {
                 npc.velocity.Y = -5;
             }
 
-            if(npc.velocity.X > 1 || npc.velocity.X < -1)
+            if (npc.velocity.X > 1 || npc.velocity.X < -1)
             {
                 AttTimer = 0;
             }
 
 
-            if(npc.velocity.X < 0.5f && npc.velocity.X > -0.5f)
+            if (npc.velocity.X < 0.5f && npc.velocity.X > -0.5f)
             {
                 AttTimer++;
-                if(AttTimer == 30)
+                if (AttTimer == 30)
                 {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = Main.player[npc.target].Center;
@@ -90,7 +87,7 @@ namespace OvermorrowMod.NPCs.Sky
                     direction.Normalize();
                     int proj = Projectile.NewProjectile(npc.Center, direction * 2, ModContent.ProjectileType<SkyScythe>(), npc.damage, 3f, Main.player[npc.target].whoAmI, 0f);
                     Main.projectile[proj].tileCollide = false;
-                    Main.PlaySound(2, npc.position, 8);
+                    Main.PlaySound(SoundID.Item, npc.position, 8);
                 }
             }
         }

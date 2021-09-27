@@ -61,9 +61,9 @@ namespace OvermorrowMod.Tiles
 
             if (!tileBelow.active())
             {
-                if(Random == 4)
+                if (Random == 4)
                 {
-                WorldGen.PlaceTile(i, j + 1, ModContent.TileType<BlueCrystalDown>());
+                    WorldGen.PlaceTile(i, j + 1, ModContent.TileType<BlueCrystalDown>());
                 }
             }
 
@@ -149,7 +149,7 @@ namespace OvermorrowMod.Tiles
                     Dust dust;
                     // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
                     Vector2 position = new Vector2(i * 16, j * 16);
-                    dust = Main.dust[Terraria.Dust.NewDust(position, 30, 30, 41, 0f, 0f, 0, new Color(0, 255, 242), 0.9210526f)];
+                    dust = Main.dust[Terraria.Dust.NewDust(position, 30, 30, DustID.GlowingMushroom, 0f, 0f, 0, new Color(0, 255, 242), 0.9210526f)];
                     dust.shader = GameShaders.Armor.GetSecondaryShader(25, Main.LocalPlayer);
                 }
 

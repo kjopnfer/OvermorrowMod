@@ -1,19 +1,19 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Items.Placeable.Boss;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.Items.Placeable.Boss;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.WardenClass.Weapons.Artifacts;
-using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
-using OvermorrowMod.Items.BossBags;
-using OvermorrowMod.Items.Materials;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
@@ -136,7 +136,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         // This dust spawn adapted from the Pillar death code in vanilla.
                         for (int dustNumber = 0; dustNumber < 6; dustNumber++)
                         {
-                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, 107, 0f, 0f, 0, default(Color), 1f)];
+                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, DustID.TerraBlade, 0f, 0f, 0, default(Color), 1f)];
                             dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
                             dust.velocity.X = 0f;
                             dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;

@@ -34,7 +34,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.shoot = ModContent.ProjectileType<CircleMagic>();
             item.shootSpeed = 0f;
         }
-        
+
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);

@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,7 +7,6 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
 {
     public class EmeraldProj : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
         Vector2 targetPosition;
 
@@ -28,11 +26,11 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
         {
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 targetPosition = Main.MouseWorld;
             }
-            if(timer < 10)
+            if (timer < 10)
             {
                 Vector2 position = projectile.Center;
                 Vector2 direction = targetPosition - position;
@@ -40,14 +38,14 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
                 projectile.velocity += direction * 1.5f;
             }
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), 2, 2, 2, projectile.velocity.X, projectile.velocity.Y, 10, Color.Green, 1.2f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), 2, 2, DustID.Grass, projectile.velocity.X, projectile.velocity.Y, 10, Color.Green, 1.2f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
                 dust81.velocity *= 0.5f;
             }
 
-            
+
         }
     }
 }

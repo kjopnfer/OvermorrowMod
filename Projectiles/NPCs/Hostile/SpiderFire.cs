@@ -62,7 +62,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Hostile
             projectile.localAI[0]++;
             if (projectile.localAI[0] > 3f && Main.rand.Next(3) == 0)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y), projectile.width, projectile.height, 92, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.5f);                
+                int num1110 = Dust.NewDust(new Vector2(projectile.Center.X, projectile.Center.Y), projectile.width, projectile.height, DustID.Frost, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.5f);
             }
 
             // Loop through the 4 animation frames, spending 5 ticks on each.

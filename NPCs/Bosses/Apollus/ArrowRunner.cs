@@ -36,7 +36,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             value1.Normalize();
             value1 *= 1f;
             int projectiles = 8;
-            if(++timer % 120 == 0)
+            if (++timer % 120 == 0)
             {
                 for (int j = 0; j < projectiles; j++)
                 {

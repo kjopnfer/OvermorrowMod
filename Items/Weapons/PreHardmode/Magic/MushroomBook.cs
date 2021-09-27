@@ -41,14 +41,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             recipe.SetResult(this);
             recipe.AddRecipe();
         }
-        
+
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
 
             int numberProjectiles = 3;
             for (int i = 0; i < numberProjectiles; i++)
             {
-                Projectile.NewProjectile(player.Center.X + Main.rand.Next(-75, 76), player.Center.Y + Main.rand.Next(-75, 76), 0, 0, 590, item.damage, 3, player.whoAmI);
+                Projectile.NewProjectile(player.Center.X + Main.rand.Next(-75, 76), player.Center.Y + Main.rand.Next(-75, 76), 0, 0, ProjectileID.TruffleSpore, item.damage, 3, player.whoAmI);
             }
             return true;
         }

@@ -26,20 +26,20 @@ namespace OvermorrowMod.NPCs.Biome
             DisplayName.SetDefault("Teleport");
         }
 
-		public override void AI() 
-		{
+        public override void AI()
+        {
 
-            
+
             NPC npc = Main.npc[(int)projectile.ai[1]];
 
             if (hashit)
-			{
+            {
                 npc.Center = projectile.Center;
                 projectile.Kill();
-                Main.PlaySound(2, npc.position, 9);
-            } 
-                    
-            
+                Main.PlaySound(SoundID.Item, npc.position, 9);
+            }
+
+
 
             float num116 = 16f;
             for (int num117 = 0; (float)num117 < 16; num117++)
@@ -60,7 +60,7 @@ namespace OvermorrowMod.NPCs.Biome
             projectile.velocity.Y += 0.3f;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(135f);
         }
-        
+
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             hashit = true;

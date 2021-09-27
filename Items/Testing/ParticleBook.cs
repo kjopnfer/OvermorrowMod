@@ -1,8 +1,8 @@
-using OvermorrowMod.Particles;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Particles;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Testing
 {

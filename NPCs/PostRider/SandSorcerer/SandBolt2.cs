@@ -1,6 +1,6 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.PostRider.SandSorcerer
@@ -60,7 +60,7 @@ namespace OvermorrowMod.NPCs.PostRider.SandSorcerer
             if (foundTarget)
             {
                 movement++;
-                if(movement == 1)
+                if (movement == 1)
                 {
                     mrand2 = Main.rand.Next(-60, 61);
                     mrand = Main.rand.Next(-60, 61);

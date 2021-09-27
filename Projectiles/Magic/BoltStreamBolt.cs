@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic
@@ -37,16 +38,16 @@ namespace OvermorrowMod.Projectiles.Magic
                 storeVelocity = projectile.velocity;
             }
 
-            if(projectile.ai[0] >= 5 && projectile.ai[0] <= 25) // Make the projectile stops momentarily for 40 ticks
+            if (projectile.ai[0] >= 5 && projectile.ai[0] <= 25) // Make the projectile stops momentarily for 40 ticks
             {
                 projectile.velocity = new Vector2(0, 0);
-                if(projectile.ai[0] == 25) // Allow the projectile to accelerate
+                if (projectile.ai[0] == 25) // Allow the projectile to accelerate
                 {
                     canAccelerate = true;
                 }
             }
 
-            if(projectile.ai[0] <= 25) // Let's the 3rd projectile not get stuck in the ground
+            if (projectile.ai[0] <= 25) // Let's the 3rd projectile not get stuck in the ground
             {
                 projectile.tileCollide = false;
             }
@@ -71,7 +72,7 @@ namespace OvermorrowMod.Projectiles.Magic
                             Vector2 vector304 = projectile.position;
                             vector304 -= projectile.velocity * ((float)num1202 * 0.25f);
                             projectile.alpha = 255;
-                            int num1200 = Dust.NewDust(vector304, 1, 1, 206);
+                            int num1200 = Dust.NewDust(vector304, 1, 1, DustID.UnusedWhiteBluePurple);
                             Main.dust[num1200].position = vector304;
                             Dust expr_140F1_cp_0 = Main.dust[num1200];
                             expr_140F1_cp_0.position.X = expr_140F1_cp_0.position.X + (float)(projectile.width / 2);
@@ -92,7 +93,7 @@ namespace OvermorrowMod.Projectiles.Magic
 
             for (int i = 0; i < 3; i++)
             {
-                Dust.NewDust(projectile.position, 1, 1, 206);
+                Dust.NewDust(projectile.position, 1, 1, DustID.UnusedWhiteBluePurple);
             }
             projectile.ai[0]++;
         }

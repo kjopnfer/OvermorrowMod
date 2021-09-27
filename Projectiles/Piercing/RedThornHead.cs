@@ -42,7 +42,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 storeDamage = projectile.damage;
                 storeVelocity = projectile.velocity;
                 projectile.damage = 0;
-                projectile.velocity = Vector2.Zero;                
+                projectile.velocity = Vector2.Zero;
             }
 
             projectile.ai[0]++;

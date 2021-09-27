@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Armor.Marble
@@ -30,7 +29,7 @@ namespace OvermorrowMod.Items.Armor.Marble
         {
             timer++;
             projectile.alpha = projectile.alpha + 2;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.alpha = 255;
                 projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
@@ -40,7 +39,7 @@ namespace OvermorrowMod.Items.Armor.Marble
                 projectile.velocity.Y = 0;
                 projectile.velocity.X = 0;
             }
-            if(timer == 2)
+            if (timer == 2)
             {
                 projectile.alpha = 0;
             }

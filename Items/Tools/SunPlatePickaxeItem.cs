@@ -35,11 +35,11 @@ namespace OvermorrowMod.Items.Tools
         {
             if (Main.rand.NextBool(10))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 45); //DustID.IceTorch);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.ManaRegeneration); //DustID.IceTorch);
             }
             if (Main.rand.NextBool(10))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 19); //DustID.RedTorch);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Sunflower); //DustID.RedTorch);
             }
         }
     }

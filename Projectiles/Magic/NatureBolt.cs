@@ -44,7 +44,7 @@ namespace OvermorrowMod.Projectiles.Magic
 
             for (int num1103 = 0; num1103 < 2; num1103++)
             {
-                int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 107, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
+                int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.TerraBlade, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
                 switch (num1103)
                 {
                     case 0:

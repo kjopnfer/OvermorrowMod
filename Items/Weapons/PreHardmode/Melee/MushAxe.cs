@@ -1,18 +1,13 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class MushAxe : ModItem
     {
-
-
         float SwingRange = 0;
         int Timerset = 0;
-        int TimerReal = 0;
-
 
         public override void SetDefaults()
         {
@@ -42,7 +37,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(183, 35);
+            recipe.AddIngredient(ItemID.GlowingMushroom, 35);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
@@ -57,17 +52,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 
         public override bool CanUseItem(Player player)
         {
-
-            if(SwingRange > 5) 
+            if (SwingRange > 5)
             {
                 SwingRange = 5;
             }
 
-
-            if(Timerset > 0) 
+            if (Timerset > 0)
             {
                 SwingRange = 0;
-                TimerReal = 0;
                 Timerset = 0;
             }
 

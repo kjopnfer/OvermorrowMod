@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -25,7 +25,7 @@ namespace OvermorrowMod.WardenClass
         }
 
         public Runes RuneID;
-       
+
         public override void ResetEffects()
         {
             ActiveRune = false;
@@ -65,7 +65,7 @@ namespace OvermorrowMod.WardenClass
             Player drawPlayer = drawInfo.drawPlayer;
             Mod mod = ModLoader.GetMod("OvermorrowMod");
             WardenRunePlayer modPlayer = drawPlayer.GetModPlayer<WardenRunePlayer>();
-            
+
             if (modPlayer.runeDeactivate && modPlayer.runeCounter == 0)
             {
                 modPlayer.ActiveRune = false;
@@ -134,7 +134,7 @@ namespace OvermorrowMod.WardenClass
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
                     break;
             }
-            
+
             Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2)) + new Vector2((-drawPlayer.direction), 0);
 
             // Replaced drawPlayer.miscCounter with modPlayer.symbolCounter, there might be syncing issues idk

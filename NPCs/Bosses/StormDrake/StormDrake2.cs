@@ -1,25 +1,24 @@
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System;
-using Terraria.Localization;
-using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.Particles;
-using Terraria.Graphics.Shaders;
-using Terraria.DataStructures;
-using OvermorrowMod.Items.BossBags;
-using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
-using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
+using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Items.Placeable.Boss;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.Particles;
+using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
+using System;
+using System.IO;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
@@ -120,7 +119,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     {
                         Vector2 vector304 = npc.position - new Vector2(-165, 74).RotatedBy(MathHelper.ToRadians(npc.rotation));
                         vector304 -= npc.velocity * ((float)num1202 * 0.25f);
-                        Dust.NewDustDirect(vector304 + new Vector2(npc.width / 2, npc.height / 2), 1, 1, 206, 0, 0, 0, default, 1.5f);
+                        Dust.NewDustDirect(vector304 + new Vector2(npc.width / 2, npc.height / 2), 1, 1, DustID.UnusedWhiteBluePurple, 0, 0, 0, default, 1.5f);
                     }
                 }
                 else // Facing left
@@ -129,7 +128,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     {
                         Vector2 vector304 = npc.position + new Vector2(-165, -74).RotatedBy(MathHelper.ToRadians(npc.rotation));
                         vector304 -= npc.velocity * ((float)num1202 * 0.25f);
-                        Dust.NewDustDirect(vector304 + new Vector2(npc.width / 2, npc.height / 2), 1, 1, 206, 0, 0, 0, default, 1.5f);
+                        Dust.NewDustDirect(vector304 + new Vector2(npc.width / 2, npc.height / 2), 1, 1, DustID.UnusedWhiteBluePurple, 0, 0, 0, default, 1.5f);
                     }
                 }
             }
@@ -193,7 +192,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Projectile.NewProjectile(npc.Center + new Vector2(25 * (i * npc.spriteDirection), -60), Vector2.UnitY * -1, ModContent.ProjectileType<TestLightning4>(), 0, 2, Main.myPlayer, 0, npc.whoAmI);
                                 }
                             }
-                            
+
                             if (!Main.raining)
                             {
                                 ModUtils.StartRain();
@@ -321,7 +320,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Vector2 spawnPos = npc.Center + new Vector2((180 + Main.rand.NextFloat(75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(-60, 60));
                             Vector2 Direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnPos;
                             Direction.Normalize();
-                            int mydust = Dust.NewDust(spawnPos, 0, 0, 229, 0f, 0f, 100);
+                            int mydust = Dust.NewDust(spawnPos, 0, 0, DustID.Vortex, 0f, 0f, 100);
                             Main.dust[mydust].noLight = true;
                             Main.dust[mydust].noGravity = true;
                             Main.dust[mydust].velocity = npc.velocity + (Direction * Main.rand.NextFloat(12, 14));
@@ -420,7 +419,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Vector2 spawnPos = npc.Center + new Vector2((180 + Main.rand.NextFloat(75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(-60, 60));
                             Vector2 Direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnPos;
                             Direction.Normalize();
-                            int mydust = Dust.NewDust(spawnPos, 0, 0, 229, 0f, 0f, 100);
+                            int mydust = Dust.NewDust(spawnPos, 0, 0, DustID.Vortex, 0f, 0f, 100);
                             Main.dust[mydust].noLight = true;
                             Main.dust[mydust].noGravity = true;
                             Main.dust[mydust].velocity = npc.velocity + (Direction * Main.rand.NextFloat(12, 14));
@@ -613,7 +612,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                 }
                             }
 
-                            
+
                             //Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)npc.position.X, (int)npc.position.Y);
                             createAfterimage = true;
 
@@ -863,7 +862,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                             Vector2 spawnPos = npc.Center + new Vector2((180 + Main.rand.NextFloat(75, 125)) * npc.spriteDirection, -40 + Main.rand.NextFloat(-60, 60));
                             Vector2 Direction = npc.Center + new Vector2(160 * npc.spriteDirection, -40) - spawnPos;
                             Direction.Normalize();
-                            int mydust = Dust.NewDust(spawnPos, 0, 0, 229, 0f, 0f, 100);
+                            int mydust = Dust.NewDust(spawnPos, 0, 0, DustID.Vortex, 0f, 0f, 100);
                             Main.dust[mydust].noLight = true;
                             Main.dust[mydust].noGravity = true;
                             Main.dust[mydust].velocity = npc.velocity + (Direction * Main.rand.NextFloat(12, 14));
@@ -942,7 +941,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, 206, 2 * hitDirection, -2f);
+                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.UnusedWhiteBluePurple, 2 * hitDirection, -2f);
                     if (Main.rand.NextBool(2))
                     {
                         Main.dust[dust].noGravity = true;
@@ -1009,7 +1008,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin - new Vector2(60f, 290);
                     //Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.LightCyan : drawColor;
                     Color afterImageColor = Color.Lerp(Color.DarkCyan, Color.DarkBlue, k / (float)npc.oldPos.Length);
-                  //Main.NewText(k / (float)npc.oldPos.Length);
+                    //Main.NewText(k / (float)npc.oldPos.Length);
                     //Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
                     //spriteBatch.Draw(texture2D16, drawPos, npc.frame, afterImageColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }

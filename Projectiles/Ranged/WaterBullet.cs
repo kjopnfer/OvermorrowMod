@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Ranged
@@ -31,7 +32,7 @@ namespace OvermorrowMod.Projectiles.Ranged
             int num949 = Main.rand.Next(5, 10);
             for (int num948 = 0; num948 < num949; num948++)
             {
-                int num947 = Dust.NewDust(projectile.Center, 0, 0, 101, 0f, 0f, 100, default(Color), 0.5f);
+                int num947 = Dust.NewDust(projectile.Center, 0, 0, DustID.Water_Snow, 0f, 0f, 100, default(Color), 0.5f);
                 Dust dust24 = Main.dust[num947];
                 dust24.velocity *= 1.6f;
                 Dust expr_9DCA_cp_0 = Main.dust[num947];
@@ -42,7 +43,7 @@ namespace OvermorrowMod.Projectiles.Ranged
                 Main.dust[num947].noGravity = true;
             }
 
-            int num434 = Dust.NewDust(projectile.Center, 0, 0, 101, 0f, 0f, 100);
+            int num434 = Dust.NewDust(projectile.Center, 0, 0, DustID.Water_Snow, 0f, 0f, 100);
             Main.dust[num434].noLight = true;
             Main.dust[num434].noGravity = true;
             Main.dust[num434].velocity = projectile.velocity;
@@ -65,7 +66,7 @@ namespace OvermorrowMod.Projectiles.Ranged
                 int num406 = Main.rand.Next(5, 10);
                 for (int num405 = 0; num405 < num406; num405++)
                 {
-                    int num404 = Dust.NewDust(projectile.Center, 0, 0, 101, 0f, 0f, 100);
+                    int num404 = Dust.NewDust(projectile.Center, 0, 0, DustID.Water_Snow, 0f, 0f, 100);
                     Dust expr_3DD4_cp_0 = Main.dust[num404];
                     expr_3DD4_cp_0.velocity.Y = expr_3DD4_cp_0.velocity.Y - 1f;
                     Main.dust[num404].velocity += value30 * 2f;
@@ -74,7 +75,7 @@ namespace OvermorrowMod.Projectiles.Ranged
                 }
             }
         }
-    
+
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {

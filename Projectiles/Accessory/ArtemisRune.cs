@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,12 +9,14 @@ namespace OvermorrowMod.Projectiles.Accessory
     public class ArtemisRune : ModProjectile
     {
         public override string Texture => "OvermorrowMod/NPCs/Bosses/Apollus/ArrowRuneCircle";
-        
-        public override void SetStaticDefaults() {
+
+        public override void SetStaticDefaults()
+        {
             DisplayName.SetDefault("Rune Circle");
         }
 
-        public override void SetDefaults() {
+        public override void SetDefaults()
+        {
             projectile.width = 62;
             projectile.height = 62;
             projectile.tileCollide = false;
@@ -26,7 +27,8 @@ namespace OvermorrowMod.Projectiles.Accessory
             projectile.scale = 1f;
         }
 
-        public override void AI() {
+        public override void AI()
+        {
 
             Player player = Main.player[projectile.owner];
             if (!player.active)
@@ -35,22 +37,25 @@ namespace OvermorrowMod.Projectiles.Accessory
                 return;
             }
 
-            if (projectile.ai[1] == 0) {
+            if (projectile.ai[1] == 0)
+            {
                 if (projectile.ai[0] == 0)
-                    {
-                        projectile.scale = 0.01f;
-                    }
-                    if (projectile.ai[0] > 2 && projectile.ai[0] < 45)
-                    {
-                        projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
-                        projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
-                        projectile.rotation += projectile.localAI[0];
-                    }
-                    if (projectile.ai[0] == 45)
-                    {
-                        projectile.ai[1] = 1;
-                    }
-            } else {
+                {
+                    projectile.scale = 0.01f;
+                }
+                if (projectile.ai[0] > 2 && projectile.ai[0] < 45)
+                {
+                    projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
+                    projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                    projectile.rotation += projectile.localAI[0];
+                }
+                if (projectile.ai[0] == 45)
+                {
+                    projectile.ai[1] = 1;
+                }
+            }
+            else
+            {
                 projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
 
                 if (projectile.ai[0] % 45 == 0)

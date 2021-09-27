@@ -1,14 +1,14 @@
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using OvermorrowMod.Items.Materials;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Armor
 {
-	[AutoloadEquip(EquipType.Body)]
-	public class HemoBreastplate : ModItem
-	{
+    [AutoloadEquip(EquipType.Body)]
+    public class HemoBreastplate : ModItem
+    {
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloodrazor Breastplate");

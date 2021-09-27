@@ -28,7 +28,7 @@ namespace OvermorrowMod.Projectiles.Boss
             projectile.localAI[0] += 1f;
             if (projectile.localAI[0] > 3f)
             {
-                int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, 5, 0, 0, 0, default, 1.84f);
+                int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, DustID.Blood, 0, 0, 0, default, 1.84f);
                 Main.dust[dust].noGravity = true;
             }
         }
@@ -39,8 +39,8 @@ namespace OvermorrowMod.Projectiles.Boss
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int spawnedNPC = NPC.NewNPC((int)(projectile.Center.X), (int)(projectile.Center.Y), ModContent.NPCType<LoomingDrippler>(), 0, 0, projectile.ai[1]);
-                    
-                    if(Main.netMode == NetmodeID.Server)
+
+                    if (Main.netMode == NetmodeID.Server)
                     {
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
                     }

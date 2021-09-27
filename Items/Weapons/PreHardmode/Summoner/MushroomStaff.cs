@@ -1,9 +1,8 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Summon;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using Microsoft.Xna.Framework;
-using OvermorrowMod.Projectiles.Summon;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
 {
@@ -35,7 +34,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(183, 35);
+            recipe.AddIngredient(ItemID.GlowingMushroom, 35);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();

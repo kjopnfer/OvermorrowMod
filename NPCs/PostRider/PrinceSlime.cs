@@ -1,11 +1,7 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using Terraria.GameContent.Events;
-using Terraria.ID;
 
 namespace OvermorrowMod.NPCs.PostRider
 {
@@ -16,7 +12,6 @@ namespace OvermorrowMod.NPCs.PostRider
         private int jumptimer = 0;
         int spritetimer = 0;
         int frame = 1;
-        bool jumping = false;
         int flyspritetimer = 0;
 
         int spritecatch = 0;
@@ -65,12 +60,6 @@ namespace OvermorrowMod.NPCs.PostRider
         }
         public override void AI()
         {
-            if (expert)
-            {
-                int expertBS = 10;
-            }
-
-
             npc.TargetClosest(true);
             jumptimer++;
 
@@ -125,7 +114,7 @@ namespace OvermorrowMod.NPCs.PostRider
             if (jumptimer < 150 && attacktimer == 10)
             {
                 Vector2 value1 = new Vector2(0f, -7f);
-                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, value1.X + RandomX, value1.Y + RandomY, 605, npc.damage / 2 - expertBS, 1f);
+                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, value1.X + RandomX, value1.Y + RandomY, ProjectileID.SpikedSlimeSpike, npc.damage / 2 - expertBS, 1f);
             }
             if (attacktimer > 10)
             {
