@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using System;
 
 namespace OvermorrowMod.Items.Weapons.MechWep.MechProj
 {
@@ -22,7 +19,7 @@ namespace OvermorrowMod.Items.Weapons.MechWep.MechProj
             projectile.timeLeft = 50;
             projectile.tileCollide = false;
         }
-        
+
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LaserMachinegunLaser;
     }
 }

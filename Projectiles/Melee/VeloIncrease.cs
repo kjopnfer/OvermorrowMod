@@ -1,14 +1,11 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
     public class VeloIncrease : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
 
         public override void SetStaticDefaults()
@@ -37,7 +34,7 @@ namespace OvermorrowMod.Projectiles.Melee
 
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 Vector2 position = Main.player[projectile.owner].Center;
                 Vector2 targetPosition = Main.MouseWorld;
@@ -68,7 +65,7 @@ namespace OvermorrowMod.Projectiles.Melee
             Main.player[projectile.owner].fullRotation = 0f;
 
 
-            if(Main.MouseWorld.X < Main.player[projectile.owner].Center.X)
+            if (Main.MouseWorld.X < Main.player[projectile.owner].Center.X)
             {
                 Main.player[projectile.owner].direction = -1;
             }

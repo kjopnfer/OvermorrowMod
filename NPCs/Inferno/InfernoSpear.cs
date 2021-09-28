@@ -18,13 +18,13 @@ namespace OvermorrowMod.NPCs.Inferno
         }
         public override void AI()
         {
-            if(projectile.timeLeft > 15)
+            if (projectile.timeLeft > 15)
             {
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
-            if(projectile.timeLeft == 15)
+            if (projectile.timeLeft == 15)
             {
-            projectile.velocity *= -1f;
+                projectile.velocity *= -1f;
             }
         }
     }

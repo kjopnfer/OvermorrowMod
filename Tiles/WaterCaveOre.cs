@@ -1,9 +1,9 @@
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using OvermorrowMod.Items.Materials;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Materials;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Tiles
 {
@@ -19,7 +19,7 @@ namespace OvermorrowMod.Tiles
             Main.tileMerge[Type][TileID.Stone] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            soundType = 21;
+            soundType = SoundID.Tink;
             soundStyle = 1;
             minPick = 55;
             mineResist = 2f;

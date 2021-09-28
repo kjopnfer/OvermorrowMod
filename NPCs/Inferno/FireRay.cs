@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Inferno
@@ -29,7 +30,7 @@ namespace OvermorrowMod.NPCs.Inferno
             NPC npc = Main.npc[(int)projectile.ai[0]];
             projectile.Center = npc.Center;
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 6, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 5, new Color(), 2f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.Fire, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 5, new Color(), 2f);
             }
         }
 

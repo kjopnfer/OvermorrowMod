@@ -40,7 +40,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             float rotation = MathHelper.ToRadians(45);
             position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f;
 
-            for(int i = 0; i < numberProjectiles; i++)
+            for (int i = 0; i < numberProjectiles; i++)
             {
                 Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * 2f;
                 Projectile.NewProjectile(position.X + perturbedSpeed.X, position.Y + perturbedSpeed.Y, speedX, speedY, type, damage, knockBack, player.whoAmI);

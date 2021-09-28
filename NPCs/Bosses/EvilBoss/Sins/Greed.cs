@@ -1,9 +1,6 @@
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using System.IO;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
 {
@@ -26,24 +23,24 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss.Sins
         {
             timer++;
             projectile.rotation += 0.5f;
-            if(timer == 20)
+            if (timer == 20)
             {
                 timer = 0;
             }
 
-                float OutsideRing = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
-                if(OutsideRing < 80f && timer == 10)
-                {
-                    Vector2 position = projectile.Center;
-                    Vector2 targetPosition = Main.player[projectile.owner].Center;
-                    Vector2 direction = targetPosition - position;
-                    direction.Normalize();
-                    float speed = 0.7f;
-                    int type = mod.ProjectileType("Xbolt");
-                    int damage = 11;
-                    Projectile.NewProjectile(position, direction * speed, type, damage, 1f, projectile.owner, 0f);
-                    timer = 0;
-                }
+            float OutsideRing = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
+            if (OutsideRing < 80f && timer == 10)
+            {
+                Vector2 position = projectile.Center;
+                Vector2 targetPosition = Main.player[projectile.owner].Center;
+                Vector2 direction = targetPosition - position;
+                direction.Normalize();
+                float speed = 0.7f;
+                int type = mod.ProjectileType("Xbolt");
+                int damage = 11;
+                Projectile.NewProjectile(position, direction * speed, type, damage, 1f, projectile.owner, 0f);
+                timer = 0;
+            }
         }
 
 

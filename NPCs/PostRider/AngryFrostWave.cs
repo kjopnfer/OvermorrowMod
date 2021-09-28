@@ -1,13 +1,11 @@
 using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.ID;
 
 namespace OvermorrowMod.NPCs.PostRider
 {
     public class AngryFrostWave : ModProjectile
     {
-        
+
 
         public override void SetDefaults()
         {

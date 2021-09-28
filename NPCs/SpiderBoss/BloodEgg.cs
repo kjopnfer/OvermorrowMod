@@ -38,68 +38,68 @@ namespace OvermorrowMod.NPCs.SpiderBoss
             RandomEggVelo = Main.rand.Next(-3, 4);
             npc.spriteDirection = 1;
             pscale++;
-            if(pscale > 0 && pscale < 25)
+            if (pscale > 0 && pscale < 25)
             {
                 npc.scale = npc.scale - 0.005f;
             }
 
-            if(pscale > 25 && pscale < 50)
+            if (pscale > 25 && pscale < 50)
             {
                 npc.scale = npc.scale + 0.005f;
             }
 
-            if(pscale > 50 && pscale < 75)
+            if (pscale > 50 && pscale < 75)
             {
                 npc.scale = npc.scale - 0.005f;
             }
 
-            if(pscale > 75 && pscale < 100)
+            if (pscale > 75 && pscale < 100)
             {
                 npc.scale = npc.scale + 0.005f;
             }
 
-            if(pscale > 100 && pscale < 125)
+            if (pscale > 100 && pscale < 125)
             {
                 npc.scale = npc.scale - 0.005f;
             }
 
-            if(pscale > 125 && pscale < 150)
+            if (pscale > 125 && pscale < 150)
             {
                 npc.scale = npc.scale + 0.005f;
             }
 
-            if(pscale > 150 && pscale < 175)
+            if (pscale > 150 && pscale < 175)
             {
                 npc.scale = npc.scale - 0.005f;
             }
 
-            if(pscale > 175 && pscale < 200)
+            if (pscale > 175 && pscale < 200)
             {
                 npc.scale = npc.scale + 0.005f;
             }
 
-            if(pscale > 200 && pscale < 225)
+            if (pscale > 200 && pscale < 225)
             {
                 npc.scale = npc.scale - 0.005f;
             }
 
-            if(pscale > 225 && pscale < 250)
+            if (pscale > 225 && pscale < 250)
             {
                 npc.scale = npc.scale + 0.005f;
             }
 
-            if(pscale > 250 && pscale < 275)
+            if (pscale > 250 && pscale < 275)
             {
                 npc.scale = npc.scale - 0.005f;
             }
 
-            if(pscale > 275 && pscale < 300)
+            if (pscale > 275 && pscale < 300)
             {
                 npc.scale = npc.scale + 0.005f;
             }
 
             direction++;
-            if(direction == 300)
+            if (direction == 300)
             {
                 npc.life -= 1000;
                 NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y - 20, 164);

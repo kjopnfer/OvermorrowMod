@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Magic;
 using Terraria;
@@ -37,7 +36,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         }
 
         // A lot of old code, this will just refund mana for now until I get around to making this actually work
-        
+
         //int limit = 0;
         //int capone = 0;
         //int z = 0;

@@ -5,7 +5,6 @@ namespace OvermorrowMod.NPCs.Inferno
 {
     public class PandorasBoxOpen : ModProjectile
     {
-        private readonly int look2 = 1;
         public override void SetDefaults()
         {
             projectile.width = 16;

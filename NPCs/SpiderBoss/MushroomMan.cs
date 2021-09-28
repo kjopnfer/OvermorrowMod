@@ -7,7 +7,6 @@ namespace OvermorrowMod.NPCs.SpiderBoss
 {
     public class MushroomMan : ModNPC
     {
-        private readonly int timer = 0;
         private readonly int movetimer = 0;
         private int jumptimer = 0;
         private int frame = 1;
@@ -44,7 +43,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
         public override void AI()
         {
 
-            if(lasertimer > 150)
+            if (lasertimer > 150)
             {
                 int dust = Dust.NewDust(npc.Center, npc.width, npc.height, DustID.Fire, 0.0f, 0.0f, 400, new Color(), 1.2f);
                 Main.dust[dust].noGravity = false;
@@ -99,16 +98,16 @@ namespace OvermorrowMod.NPCs.SpiderBoss
             lasertimer++;
             spiderexp++;
             spiderspritetimer++;
-            if(spiderspritetimer > 3)
+            if (spiderspritetimer > 3)
             {
                 frame++;
                 spiderspritetimer = 0;
             }
-            if(frame > 3)
+            if (frame > 3)
             {
                 frame = 0;
             }
-            if(lasertimer == 200 && Main.player[npc.target].Center.X + 220 > npc.Center.X && Main.player[npc.target].Center.X < npc.Center.X || lasertimer == 100 && Main.player[npc.target].Center.X - 220 < npc.Center.X && Main.player[npc.target].Center.X > npc.Center.X)
+            if (lasertimer == 200 && Main.player[npc.target].Center.X + 220 > npc.Center.X && Main.player[npc.target].Center.X < npc.Center.X || lasertimer == 100 && Main.player[npc.target].Center.X - 220 < npc.Center.X && Main.player[npc.target].Center.X > npc.Center.X)
             {
                 Vector2 position = npc.Center;
                 Vector2 targetPosition = Main.player[npc.target].Center;
@@ -121,7 +120,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
                 Main.PlaySound(SoundID.Item12, (int)position.X, (int)position.Y);
             }
 
-            if(lasertimer == 201)
+            if (lasertimer == 201)
             {
                 lasertimer = 0;
             }

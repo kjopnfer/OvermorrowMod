@@ -1,7 +1,7 @@
-using Terraria;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using Terraria;
 
 namespace OvermorrowMod.Effects
 {
@@ -16,24 +16,24 @@ namespace OvermorrowMod.Effects
             get
             {
                 int count = 0;
-                switch(Type)
+                switch (Type)
                 {
                     case PrimitiveType.LineList:
-                    count = Vertices.Count / 2;
-                    break;
+                        count = Vertices.Count / 2;
+                        break;
                     case PrimitiveType.LineStrip:
-                    count = Vertices.Count - 1;
-                    break;
+                        count = Vertices.Count - 1;
+                        break;
                     case PrimitiveType.TriangleList:
-                    count = Vertices.Count / 3;
-                    break;
+                        count = Vertices.Count / 3;
+                        break;
                     case PrimitiveType.TriangleStrip:
-                    count = Vertices.Count - 2;
-                    break;
+                        count = Vertices.Count - 2;
+                        break;
                 }
                 return count;
             }
-            private set{}
+            private set { }
         }
         public void Add(Vector2 position, Color color, Vector2 TexCoord)
         {

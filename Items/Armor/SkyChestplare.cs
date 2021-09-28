@@ -1,7 +1,6 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.Items.Armor
 {
@@ -33,7 +32,7 @@ namespace OvermorrowMod.Items.Armor
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(824, 10);
+            recipe1.AddIngredient(ItemID.SunplateBlock, 10);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this, 1);
             recipe1.AddRecipe();

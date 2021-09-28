@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Materials;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.Apollus;
 using OvermorrowMod.NPCs.Bosses.GraniteMini;
 using Terraria;
@@ -39,7 +37,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
                         for (int i = 0; i < 18; i++)
                         {
                             Vector2 dustPos = projectile.Center + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 20 + projectile.ai[0]));
-                            Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, 206, 0f, 0f, 0, default, 2.04f)];
+                            Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, DustID.UnusedWhiteBluePurple, 0f, 0f, 0, default, 2.04f)];
                             dust.noGravity = true;
                         }
                         projectile.ai[1] -= 15;
@@ -74,7 +72,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
                         for (int i = 0; i < 18; i++)
                         {
                             Vector2 dustPos = projectile.Center + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 20 + projectile.ai[0]));
-                            Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, 57, 0f, 0f, 0, default, 2.04f)];
+                            Dust dust = Main.dust[Dust.NewDust(dustPos, 15, 15, DustID.Enchanted_Gold, 0f, 0f, 0, default, 2.04f)];
                             dust.noGravity = true;
                         }
                         projectile.ai[1] -= 15;

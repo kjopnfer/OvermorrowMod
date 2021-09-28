@@ -1,12 +1,11 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.NPCs.Bosses.StormDrake;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
-using static Terraria.ModLoader.ModContent;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
 
 namespace OvermorrowMod.Particles
 {
@@ -32,7 +31,7 @@ namespace OvermorrowMod.Particles
                     previousSegments[i].DefSize = MathHelper.Lerp(previousSegments[i].DefSize, segments[i].DefSize, progress);
                     previousSegments[i].Alpha = MathHelper.Lerp(previousSegments[i].Alpha, segments[i].Alpha, progress);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Main.NewText(e.Message + " FUUUUUUUUUUUUUUUCK");
                 }
@@ -41,7 +40,7 @@ namespace OvermorrowMod.Particles
         public void Recreate()
         {
             // previousSegments = segments;
-            var seg = Lightning.CreateLightning(from, to, delegate (float progress) {return baseSize * (1f - progress);}, segDiv, sway);
+            var seg = Lightning.CreateLightning(from, to, delegate (float progress) { return baseSize * (1f - progress); }, segDiv, sway);
             segments = seg.Item1;
             lengths = seg.Item2;
         }
@@ -53,7 +52,7 @@ namespace OvermorrowMod.Particles
             this.baseSize = baseSize;
             this.from = from;
             this.to = to;
-            var seg = Lightning.CreateLightning(from, to, delegate (float progress) {return baseSize * (1f - progress);}, segDiv, sway);
+            var seg = Lightning.CreateLightning(from, to, delegate (float progress) { return baseSize * (1f - progress); }, segDiv, sway);
             segments = seg.Item1;
             previousSegments = seg.Item1;
             lengths = seg.Item2;
@@ -115,7 +114,7 @@ namespace OvermorrowMod.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            foreach(Lightning2 lightning in lightnings)
+            foreach (Lightning2 lightning in lightnings)
             {
                 lightning.Draw(spriteBatch);
             }

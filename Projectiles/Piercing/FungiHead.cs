@@ -1,10 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Piercing
@@ -69,7 +67,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 Vector2 shootVelocity = Main.MouseWorld - projectile.Center;
                 shootVelocity.Normalize();
                 Projectile.NewProjectile(projectile.Center, shootVelocity * Main.rand.Next(5, 7), ModContent.ProjectileType<FungiSpore>(), 21, 10f, projectile.owner);
-                
+
             }
         }
 

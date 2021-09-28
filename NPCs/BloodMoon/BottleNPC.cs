@@ -44,46 +44,46 @@ namespace OvermorrowMod.NPCs.BloodMoon
         public override void AI()
         {
             Player player = Main.player[npc.target];
-            if(npc.velocity.Y == 0)
+            if (npc.velocity.Y == 0)
             {
                 AttTimer++;
             }
-            if(AttTimer > 250 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 600 && npc.velocity.Y == 0)
+            if (AttTimer > 250 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 600 && npc.velocity.Y == 0)
             {
                 frameTimer = 0;
                 npc.velocity.X *= 0.3f;
-                if(npc.velocity.X < 0.5f && npc.velocity.X > -0.5f)
+                if (npc.velocity.X < 0.5f && npc.velocity.X > -0.5f)
                 {
                     frame = 7;
                 }
 
 
                 ProjTimer++;
-                if(ProjTimer == 40)
+                if (ProjTimer == 40)
                 {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = npc.Center + new Vector2(0, -100);
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
                     Projectile.NewProjectile(npc.Center, direction * 9, ModContent.ProjectileType<SkullHoming>(), 17, 3f, Main.player[npc.target].whoAmI, 0f);
-                    Main.PlaySound(2, npc.position, 61);
+                    Main.PlaySound(SoundID.Item, npc.position, 61);
                 }
             }
             else
             {
                 frameTimer++;
-                if(npc.velocity.Y == 0)
+                if (npc.velocity.Y == 0)
                 {
                     if (frameTimer > 3)
                     {
                         frameTimer = 0;
                         frame++;
                     }
-                    if(frame > 15)
+                    if (frame > 15)
                     {
                         frame = 2;
                     }
-                    if(frame < 2)
+                    if (frame < 2)
                     {
                         frame = 2;
                     }
@@ -94,7 +94,7 @@ namespace OvermorrowMod.NPCs.BloodMoon
                 }
             }
 
-            if(AttTimer >= 300)
+            if (AttTimer >= 300)
             {
                 ProjTimer = 0;
                 AttTimer = 0;

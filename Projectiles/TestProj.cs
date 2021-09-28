@@ -1,7 +1,6 @@
-using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.Projectiles
 {
@@ -18,7 +17,7 @@ namespace OvermorrowMod.Projectiles
             projectile.penetrate = -1;
             projectile.ignoreWater = false;
         }
-        
+
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             return ModUtils.PointInShape(targetHitbox.Center.ToVector2(), projHitbox.TopLeft(), projHitbox.TopRight(), projHitbox.BottomRight(), projHitbox.BottomLeft());

@@ -1,7 +1,7 @@
+using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.EvilBoss
@@ -10,7 +10,6 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
     {
         private int length = 1;
         private int timer = 0;
-        private int lefttimer = 0;
         bool HasActivedGo = false;
         bool HasActivedSprite = false;
 
@@ -38,14 +37,14 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             projectile.damage = 40;
             Projectile parentProjectile = Main.projectile[(int)projectile.ai[0]];
             timer++;
-            if(!HasActivedGo)
+            if (!HasActivedGo)
             {
                 projectile.timeLeft = 100;
                 if (timer == 1)
                 {
                     length++;
                 }
-                
+
                 if (timer == 2)
                 {
                     timer = 0;
@@ -58,24 +57,24 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
                 projectile.rotation += (float)((2 * Math.PI) / (Math.PI * 2 * 50 / 10)); // 200 is the speed, god only knows what dividing by 10 does
             }
 
-            if(parentProjectile.ranged)
+            if (parentProjectile.ranged)
             {
                 HasActivedGo = true;
             }
 
 
-            if(parentProjectile.melee)
+            if (parentProjectile.melee)
             {
                 HasActivedSprite = true;
             }
 
-            if(HasActivedSprite)
+            if (HasActivedSprite)
             {
                 projectile.frame = 1;
             }
 
 
-            if(HasActivedGo)
+            if (HasActivedGo)
             {
                 Vector2 position = projectile.Center;
                 Vector2 targetPosition = parentProjectile.Center;
@@ -89,23 +88,23 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
         public override void Kill(int timeLeft)
         {
-                Vector2 position = projectile.Center;
-                Main.PlaySound(SoundID.Item14, (int)position.X, (int)position.Y);
-                Main.PlaySound(3, projectile.Center, 1);
-                int radius = 5;     //this is the explosion radius, the highter is the value the bigger is the explosion
+            Vector2 position = projectile.Center;
+            Main.PlaySound(SoundID.Item14, (int)position.X, (int)position.Y);
+            Main.PlaySound(SoundID.NPCHit, projectile.Center, 1);
+            int radius = 5;     //this is the explosion radius, the highter is the value the bigger is the explosion
 
-                for (int x = -radius; x <= radius; x++)
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
                 {
-                    for (int y = -radius; y <= radius; y++)
-                    {
 
-                        if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
-                        {
-                            Color alpha = Color.Red;
-                            Dust.NewDust(position, 5, 5, 57, 0.0f, 0.0f, 120, alpha, 1f);
-                        }
+                    if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
+                    {
+                        Color alpha = Color.Red;
+                        Dust.NewDust(position, 5, 5, DustID.Enchanted_Gold, 0.0f, 0.0f, 120, alpha, 1f);
                     }
                 }
+            }
         }
     }
 }

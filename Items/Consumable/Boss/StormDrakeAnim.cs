@@ -1,15 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Materials;
-using OvermorrowMod.NPCs.Bosses.Apollus;
-using OvermorrowMod.NPCs.Bosses.GraniteMini;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Particles;
-using Steamworks;
 using Terraria;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 namespace OvermorrowMod.Items.Consumable.Boss
 {

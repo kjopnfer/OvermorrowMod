@@ -17,7 +17,7 @@ namespace OvermorrowMod.NPCs.Inferno
         private readonly int movetimer = 0;
         private int jumptimer = 0;
         private int look = 0;
-        
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Inferno Bomber");
@@ -51,13 +51,13 @@ namespace OvermorrowMod.NPCs.Inferno
 
 
 
-                experttimer++;
-                if(expert && experttimer == 1)
-                {
-                    npc.life = npc.life / 2;
-                    npc.lifeMax = npc.lifeMax / 2;
-                    npc.damage = npc.damage / 2;
-                }
+            experttimer++;
+            if (expert && experttimer == 1)
+            {
+                npc.life = npc.life / 2;
+                npc.lifeMax = npc.lifeMax / 2;
+                npc.damage = npc.damage / 2;
+            }
 
             if (Main.player[npc.target].position.X + 512 < npc.position.X && movetimer == 0)
             {
@@ -70,7 +70,7 @@ namespace OvermorrowMod.NPCs.Inferno
                 npc.velocity.X += 0.3f;
                 look = 1;
             }
-            
+
 
             if (Main.player[npc.target].position.X - 512 > npc.position.X && movetimer == 0)
             {
@@ -133,9 +133,9 @@ namespace OvermorrowMod.NPCs.Inferno
             }
             else
             {
-                othertimer++; 
-                if (npc.velocity.X > 0.3f || npc.velocity.X < -0.3f) 
-                {  
+                othertimer++;
+                if (npc.velocity.X > 0.3f || npc.velocity.X < -0.3f)
+                {
                     frame++;
                     othertimer = 0;
                 }

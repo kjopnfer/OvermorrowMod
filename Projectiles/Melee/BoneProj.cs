@@ -1,14 +1,11 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
     public class BoneProj : ModProjectile
     {
-        private int length = 1;
         private int timer = 0;
 
         public override void SetStaticDefaults()

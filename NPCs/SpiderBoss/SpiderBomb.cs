@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.SpiderBoss
 {
@@ -25,7 +25,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
 
         public override void AI()
         {
-            if(projectile.timeLeft == 1)
+            if (projectile.timeLeft == 1)
             {
                 projectile.hostile = true;
                 projectile.friendly = false;
@@ -46,7 +46,7 @@ namespace OvermorrowMod.NPCs.SpiderBoss
 
                     if (Math.Sqrt(x * x + y * y) <= radius + 0.5)   //this make so the explosion radius is a circle
                     {
-                        Dust.NewDust(position, 5, 5, 162, 0.0f, 0.0f, 120, new Color(), 3.3f);  //this is the dust that will spawn after the explosion
+                        Dust.NewDust(position, 5, 5, DustID.HeatRay, 0.0f, 0.0f, 120, new Color(), 3.3f);  //this is the dust that will spawn after the explosion
                     }
                 }
             }

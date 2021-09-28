@@ -1,18 +1,13 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class CrimWarAxe : ModItem
     {
-
-
         float SwingRange = 0;
         int Timerset = 0;
-        int TimerReal = 0;
-
 
         public override void SetDefaults()
         {
@@ -43,15 +38,15 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(799, 1);
-            recipe.AddIngredient(1329, 10);
+            recipe.AddIngredient(ItemID.BloodLustCluster, 1);
+            recipe.AddIngredient(ItemID.TissueSample, 10);
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
 
             ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddIngredient(1257, 11);
-            recipe2.AddIngredient(1329, 10);
+            recipe2.AddIngredient(ItemID.CrimtaneBar, 11);
+            recipe2.AddIngredient(ItemID.TissueSample, 10);
             recipe2.AddTile(TileID.Anvils);
             recipe2.SetResult(this);
             recipe2.AddRecipe();
@@ -67,17 +62,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 
         public override bool CanUseItem(Player player)
         {
-
-            if(SwingRange > 9) 
+            if (SwingRange > 9)
             {
                 SwingRange = 9;
             }
 
-
-            if(Timerset > 0) 
+            if (Timerset > 0)
             {
                 SwingRange = 0;
-                TimerReal = 0;
                 Timerset = 0;
             }
 

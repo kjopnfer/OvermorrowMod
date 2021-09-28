@@ -1,14 +1,9 @@
 using OvermorrowMod.Items.Accessories.Expert;
-using OvermorrowMod.Items.Armor;
 using OvermorrowMod.Items.Armor.Marble;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.NPCs.Bosses.Apollus;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -58,7 +53,7 @@ namespace OvermorrowMod.Items.BossBags
             {
                 player.QuickSpawnItem(ModContent.ItemType<MarbleBook>());
             }
-            
+
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {

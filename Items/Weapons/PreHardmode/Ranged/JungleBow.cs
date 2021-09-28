@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Ranged;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 {
@@ -46,8 +46,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(210, 1);
-            recipe1.AddIngredient(620, 14);
+            recipe1.AddIngredient(ItemID.Vine, 1);
+            recipe1.AddIngredient(ItemID.RichMahogany, 14);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();

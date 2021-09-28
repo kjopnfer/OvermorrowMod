@@ -97,7 +97,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
                                                 distance = distanceTo;
                                             }
                                         }
-                                        
+
                                     }
                                 }
                             }

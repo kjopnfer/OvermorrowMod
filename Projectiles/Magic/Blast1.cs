@@ -1,7 +1,4 @@
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic
@@ -26,10 +23,10 @@ namespace OvermorrowMod.Projectiles.Magic
         {
             projectile.rotation = projectile.velocity.ToRotation();
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
                 projectile.position.X -= 5;
-                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                if (Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
                 {
                     projectile.velocity.X = 10;
                     projectile.velocity.Y = 0;

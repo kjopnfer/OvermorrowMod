@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.Armor;
 using OvermorrowMod.Items.BossBags;
@@ -9,6 +8,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff;
 using OvermorrowMod.Projectiles.Boss;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -128,7 +128,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         // This dust spawn adapted from the Pillar death code in vanilla.
                         for (int dustNumber = 0; dustNumber < 6; dustNumber++)
                         {
-                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, 206, 0f, 0f, 0, default(Color), 1f)];
+                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, DustID.UnusedWhiteBluePurple, 0f, 0f, 0, default(Color), 1f)];
                             dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
                             dust.velocity.X = 0f;
                             dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;
@@ -161,7 +161,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 return;
             }
 
-           
+
 
             if (npc.life <= npc.lifeMax * 0.5f || OvermorrowWorld.downedLady)
             {
@@ -331,7 +331,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                 Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                int dust = Dust.NewDust(position, 2, 2, DustID.UnusedWhiteBluePurple, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                 Main.dust[dust].noGravity = true;
                             }
                         }
@@ -427,7 +427,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                 Vector2 dustvelocity = new Vector2(0f, 15f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                int dust = Dust.NewDust(position, 2, 2, DustID.UnusedWhiteBluePurple, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                 Main.dust[dust].noGravity = true;
                             }
                         }
@@ -493,7 +493,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             {
                                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                 Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                int dust = Dust.NewDust(position, 2, 2, DustID.UnusedWhiteBluePurple, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                 Main.dust[dust].noGravity = true;
                             }
                         }
@@ -572,12 +572,12 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                             {
                                 Vector2 position = origin1 + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations1 * i)) * radius1;
                                 Vector2 dustvelocity = new Vector2(0f, /*10*/ 7.5f).RotatedBy(MathHelper.ToRadians(360f / numLocations1 * i));
-                                int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f); //2);
+                                int dust = Dust.NewDust(position, 2, 2, DustID.UnusedWhiteBluePurple, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f); //2);
                                 Main.dust[dust].noGravity = true;
                             }
 
                             if (npc.ai[1] > 5 && npc.ai[1] < 90)
-                            { 
+                            {
                                 Vector2 origin = new Vector2(player.Center.X + -300 * Direction, player.Center.Y);
                                 float radius = 15;
                                 int numLocations = 30;
@@ -585,7 +585,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                                     Vector2 dustvelocity = new Vector2(0f, 10f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                                    int dust = Dust.NewDust(position, 2, 2, 206, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    int dust = Dust.NewDust(position, 2, 2, DustID.UnusedWhiteBluePurple, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                                     Main.dust[dust].noGravity = true;
                                 }
                             }

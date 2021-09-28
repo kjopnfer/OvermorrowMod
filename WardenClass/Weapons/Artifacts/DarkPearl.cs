@@ -1,10 +1,6 @@
-using Microsoft.Xna.Framework;
-using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Artifact.DarkPortal;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using WardenClass;
 
 namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {

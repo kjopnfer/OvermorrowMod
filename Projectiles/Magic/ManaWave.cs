@@ -1,5 +1,5 @@
-using System;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +17,6 @@ namespace OvermorrowMod.Projectiles.Magic
         private float previousR = 0;
 
         private bool initProperties = true;
-        private bool spawnedOnce = true;
         private Projectile childProjectile;
         public override void SetStaticDefaults()
         {
@@ -40,15 +39,15 @@ namespace OvermorrowMod.Projectiles.Magic
 
         public override void AI()
         {
- 
+
             // This runs once when the projectile is created
-            if (initProperties) 
-            { 
+            if (initProperties)
+            {
                 storeDirection = projectile.velocity.ToRotation();
-                if(Main.netMode != NetmodeID.Server && projectile.owner == Main.myPlayer)
+                if (Main.netMode != NetmodeID.Server && projectile.owner == Main.myPlayer)
                 {
                     // This spawns the child projectile that travels in the opposite direction
-                    if(projectile.ai[0] == 0)
+                    if (projectile.ai[0] == 0)
                     {
                         childProjectile = Main.projectile[Projectile.NewProjectile(projectile.Center, projectile.velocity, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, 1, projectile.whoAmI)];
                     }
@@ -70,7 +69,7 @@ namespace OvermorrowMod.Projectiles.Magic
 
             for (int num1103 = 0; num1103 < 2; num1103++)
             {
-                int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 221, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
+                int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.FireworkFountain_Blue, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
                 switch (num1103)
                 {
                     case 0:

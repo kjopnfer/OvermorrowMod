@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,9 +23,9 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
 
         public override void AI()
         {
-			projectile.rotation += 0.43f; 
+            projectile.rotation += 0.43f;
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 31, projectile.velocity.X, projectile.velocity.Y, 75, Color.Yellow, 1.2f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Smoke, projectile.velocity.X, projectile.velocity.Y, 75, Color.Yellow, 1.2f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];

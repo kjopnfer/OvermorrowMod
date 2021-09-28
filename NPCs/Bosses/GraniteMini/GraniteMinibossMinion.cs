@@ -48,7 +48,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                 case 0:
                     {
                         if (!PlayerAlive(player)) { break; }
-                        
+
                         if (npc.ai[3] == 0)
                         {
                             moveSpeed = Main.rand.Next(5, 10);
@@ -103,7 +103,7 @@ namespace OvermorrowMod.NPCs.Bosses.GraniteMini
                         }
                     }
                     break;
-                    
+
             }
             if (kill == true)
             {

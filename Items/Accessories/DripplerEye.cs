@@ -26,10 +26,10 @@ namespace OvermorrowMod.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            foreach(TooltipLine line in tooltips)
+            foreach (TooltipLine line in tooltips)
             {
                 Player player = Main.LocalPlayer;
-                if(line.mod == "Terraria" && line.Name == "Tooltip2")
+                if (line.mod == "Terraria" && line.Name == "Tooltip2")
                 {
                     line.text = "[" + player.GetModPlayer<OvermorrowModPlayer>().dripplerStack + " out of 25]";
                 }

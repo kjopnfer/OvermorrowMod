@@ -1,9 +1,9 @@
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
+using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Piercing
@@ -52,7 +52,7 @@ namespace OvermorrowMod.Projectiles.Piercing
                 {
                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                     Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                    int dust = Dust.NewDust(position, 2, 2, 160, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
+                    int dust = Dust.NewDust(position, 2, 2, DustID.MagnetSphere, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
                     Main.dust[dust].noGravity = true;
                 }
             }
@@ -135,7 +135,7 @@ namespace OvermorrowMod.Projectiles.Piercing
             {
                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                 Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                int dust = Dust.NewDust(position, 2, 2, 160, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
+                int dust = Dust.NewDust(position, 2, 2, DustID.MagnetSphere, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
                 Main.dust[dust].noGravity = true;
             }
         }

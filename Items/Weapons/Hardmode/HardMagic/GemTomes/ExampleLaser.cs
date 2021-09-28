@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.Enums;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.Hardmode.HardMagic.GemTomes
@@ -204,7 +203,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardMagic.GemTomes
         {
             DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
             Vector2 unit = projectile.velocity;
-            Terraria. Utils.PlotTileLine(projectile.Center, projectile.Center + unit * Distance, (projectile.width + 16) * projectile.scale, DelegateMethods.CutTiles);
+            Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + unit * Distance, (projectile.width + 16) * projectile.scale, DelegateMethods.CutTiles);
         }
     }
 }

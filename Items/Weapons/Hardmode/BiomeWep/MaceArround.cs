@@ -12,7 +12,6 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep
         private const string ChainTexturePath = "OvermorrowMod/Items/Weapons/Hardmode/BiomeWep/Spine";
         int okay1 = 0;
         int okay2 = 0;
-        int frosttimer = 0;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Example Flail Ball"); // Set the projectile name to Example Flail Ball
@@ -35,7 +34,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.BiomeWep
         {
 
             {
-                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, 135, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 2.3f);
+                Dust.NewDust(projectile.position + projectile.velocity, projectile.width, projectile.height, DustID.IceTorch, projectile.oldVelocity.X * 0.2f, projectile.oldVelocity.Y * 0.2f, 1, new Color(), 2.3f);
             }
             if (Main.MouseWorld.X < Main.player[projectile.owner].Center.X && okay2 < 1)
             {

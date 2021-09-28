@@ -1,8 +1,6 @@
-﻿using Terraria;
+﻿using OvermorrowMod.Projectiles.Accessory;
+using Terraria;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Summon;
-using OvermorrowMod.Projectiles.Accessory;
-using OvermorrowMod.Projectiles.Summon;
 
 namespace OvermorrowMod.Buffs.Summon
 {

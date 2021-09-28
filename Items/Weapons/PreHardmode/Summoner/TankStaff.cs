@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.Summon;
+using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Summon;
-using OvermorrowMod.Buffs.Summon;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
 {
@@ -36,7 +36,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Summoner
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(147, 12);
+            recipe1.AddIngredient(ItemID.Spike, 12);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();

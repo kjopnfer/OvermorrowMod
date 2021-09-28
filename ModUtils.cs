@@ -1,10 +1,10 @@
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Effects.Prim;
+using System;
 using System.Reflection;
 using Terraria;
-using System;
 using WardenClass;
-using OvermorrowMod.Effects.Prim;
 
 namespace OvermorrowMod
 {
@@ -43,7 +43,7 @@ namespace OvermorrowMod
         {
             return (float)(
                 x1 * Math.Pow(1 - t, 3) +
-                x2 * 3 * t * Math.Pow(1 - t, 2) + 
+                x2 * 3 * t * Math.Pow(1 - t, 2) +
                 x3 * 3 * Math.Pow(t, 2) * (1 - t) +
                 x4 * Math.Pow(t, 3)
                 );
@@ -115,7 +115,7 @@ namespace OvermorrowMod
         {
             if ((bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch))
             {
-            spriteBatch.End();
+                spriteBatch.End();
             }
             if (blendState == null) blendState = (BlendState)spriteBatch.GetField("blendState");
             SamplerState state = (SamplerState)spriteBatch.GetField("samplerState");

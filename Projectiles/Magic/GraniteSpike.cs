@@ -1,5 +1,5 @@
-using System;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -27,7 +27,7 @@ namespace OvermorrowMod.Projectiles.Magic
         public override void AI()
         {
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
-           
+
             float num116 = 16f;
             for (int num117 = 0; (float)num117 < 16; num117++)
             {

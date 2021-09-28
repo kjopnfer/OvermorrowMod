@@ -1,8 +1,7 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.Projectiles.Ranged
 {
@@ -34,47 +33,47 @@ namespace OvermorrowMod.Projectiles.Ranged
             float distanceFromTarget = 130f;
             Vector2 targetCenter = npc.position;
             bool foundTarget = false;
-                // This code is required either way, used for finding a target
-                for (int i = 0; i < Main.maxNPCs; i++)
+            // This code is required either way, used for finding a target
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC tar = Main.npc[i];
+                if (tar.friendly == false)
                 {
-                    NPC tar = Main.npc[i];
-                    if (tar.friendly == false)
+                    float betweenatt = Vector2.Distance(tar.Center, npc.Center);
+                    float between = Vector2.Distance(tar.Center, Main.player[npc.target].Center);
+                    bool closest = Vector2.Distance(npc.Center, targetCenter) > between;
+                    bool inRange = between < distanceFromTarget;
+                    if (betweenatt < 34)
                     {
-                        float betweenatt = Vector2.Distance(tar.Center, npc.Center);
-                        float between = Vector2.Distance(tar.Center, Main.player[npc.target].Center);
-                        bool closest = Vector2.Distance(npc.Center, targetCenter) > between;
-                        bool inRange = between < distanceFromTarget;
-                            if(betweenatt < 34)
-                            {
-			                    tar.StrikeNPC(npc.damage, 1, 0);
-                                npc.dontTakeDamage = false;
-                                npc.life = -3000;
-                            }
+                        tar.StrikeNPC(npc.damage, 1, 0);
+                        npc.dontTakeDamage = false;
+                        npc.life = -3000;
+                    }
 
 
-                        if (((closest && inRange) || !foundTarget))
-                        {
-                            distanceFromTarget = between;
-                            targetCenter = tar.Center;
-                            foundTarget = true;
-                        }
+                    if (((closest && inRange) || !foundTarget))
+                    {
+                        distanceFromTarget = between;
+                        targetCenter = tar.Center;
+                        foundTarget = true;
                     }
                 }
-                experttimer++;
+            }
+            experttimer++;
 
-                if(npc.velocity.Y != 0)
+            if (npc.velocity.Y != 0)
+            {
+                if (Main.MouseWorld.X < Main.player[npc.target].Center.X)
                 {
-                    if(Main.MouseWorld.X < Main.player[npc.target].Center.X)
-                    {
-                        npc.velocity.X = -5;
-                    }
-                    if(Main.MouseWorld.X > Main.player[npc.target].Center.X)
-                    {
-                        npc.velocity.X = 5;
-                    }
-                    npc.damage = 5;
+                    npc.velocity.X = -5;
                 }
-                
+                if (Main.MouseWorld.X > Main.player[npc.target].Center.X)
+                {
+                    npc.velocity.X = 5;
+                }
+                npc.damage = 5;
+            }
+
         }
 
         public override void SetStaticDefaults()

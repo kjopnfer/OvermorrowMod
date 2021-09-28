@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,7 +10,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
 
         private Vector2 storeVelocity;
         private float storeRotation = 25;
-        bool part2 = false;        
+        bool part2 = false;
 
         public override void SetStaticDefaults()
         {
@@ -69,7 +68,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             {
                 projectile.velocity = storeVelocity;
             }
-            
+
         }
     }
 }

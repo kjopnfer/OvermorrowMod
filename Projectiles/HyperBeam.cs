@@ -1,9 +1,9 @@
-using System;
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
+using System;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles
 {

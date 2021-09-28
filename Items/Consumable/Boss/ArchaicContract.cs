@@ -1,11 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Materials;
+﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.NPCs.Bosses.Apollus;
 using OvermorrowMod.NPCs.Bosses.GraniteMini;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Consumable.Boss

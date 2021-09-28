@@ -40,7 +40,7 @@ namespace OvermorrowMod.Items.Accessories.Expert
             foreach (TooltipLine line in tooltips)
             {
                 Player player = Main.LocalPlayer;
-                if(player.GetModPlayer<OvermorrowModPlayer>().sandMode == 0)
+                if (player.GetModPlayer<OvermorrowModPlayer>().sandMode == 0)
                 {
                     sandMode = "Attack";
                 }

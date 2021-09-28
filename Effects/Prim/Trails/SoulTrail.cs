@@ -1,7 +1,6 @@
-using Terraria;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using Terraria;
 
 namespace OvermorrowMod.Effects.Prim.Trails
 {
@@ -21,7 +20,7 @@ namespace OvermorrowMod.Effects.Prim.Trails
         }
         public override void UpdateDead()
         {
-            if (Positions.Count < 2) 
+            if (Positions.Count < 2)
             {
                 Dead = true;
                 return;

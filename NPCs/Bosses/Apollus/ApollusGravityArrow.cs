@@ -25,7 +25,7 @@ namespace OvermorrowMod.NPCs.Bosses.Apollus
             projectile.aiStyle = 1;
         }
         public override void AI()
-        { 
+        {
             Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
             Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
 

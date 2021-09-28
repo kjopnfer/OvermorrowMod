@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,7 +30,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         {
             Lighting.AddLight(projectile.Center, 0, 0.5f, 0.5f);
 
-            int num434 = Dust.NewDust(projectile.Center, 0, 0, 229, 0f, 0f, 100);
+            int num434 = Dust.NewDust(projectile.Center, 0, 0, DustID.Vortex, 0f, 0f, 100);
             Main.dust[num434].noLight = true;
             Main.dust[num434].noGravity = true;
             Main.dust[num434].velocity = projectile.velocity;
@@ -100,7 +99,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                                 }
                             }
-                        }   
+                        }
                     }
                     break;
             }

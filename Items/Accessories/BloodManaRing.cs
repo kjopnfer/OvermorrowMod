@@ -33,14 +33,14 @@ namespace OvermorrowMod.Items.Accessories
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(111, 1);
-            recipe1.AddIngredient(49, 1);
+            recipe1.AddIngredient(ItemID.BandofStarpower, 1);
+            recipe1.AddIngredient(ItemID.BandofRegeneration, 1);
             recipe1.SetResult(this, 1);
             recipe1.AddRecipe();
 
             ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddIngredient(1290, 1);
-            recipe2.AddIngredient(49, 1);
+            recipe2.AddIngredient(ItemID.PanicNecklace, 1);
+            recipe2.AddIngredient(ItemID.BandofRegeneration, 1);
             recipe2.SetResult(this, 1);
             recipe2.AddRecipe();
 
@@ -52,8 +52,8 @@ namespace OvermorrowMod.Items.Accessories
 
 
             ModRecipe recipe4 = new ModRecipe(mod);
-            recipe4.AddIngredient(109, 1);
-            recipe4.AddIngredient(29, 1);
+            recipe4.AddIngredient(ItemID.ManaCrystal, 1);
+            recipe4.AddIngredient(ItemID.LifeCrystal, 1);
             recipe4.SetResult(this, 1);
             recipe4.AddRecipe();
 

@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,11 +19,11 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
             projectile.tileCollide = true;
             projectile.ignoreWater = true;
         }
-		public override void AI() 
-		{
+        public override void AI()
+        {
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
-			projectile.velocity.Y += 0.13f;
-		}
+            projectile.velocity.Y += 0.13f;
+        }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {

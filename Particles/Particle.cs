@@ -1,9 +1,9 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Particles
 {
@@ -36,7 +36,7 @@ namespace OvermorrowMod.Particles
             ParticleTypes = new Dictionary<Type, int>();
             ParticleTextures = new Dictionary<int, Texture2D>();
             ParticleNames = new Dictionary<int, string>();
-			CustomParticle.CustomParticles = new Dictionary<int, CustomParticle>();
+            CustomParticle.CustomParticles = new Dictionary<int, CustomParticle>();
             OvermorrowModFile mod = OvermorrowModFile.Mod;
             foreach (Type type in mod.Code.GetTypes())
             {
@@ -63,19 +63,19 @@ namespace OvermorrowMod.Particles
         }
         public static void UpdateParticles()
         {
-            foreach(Particle particle in particles)
+            foreach (Particle particle in particles)
             {
                 if (particle == null) continue;
                 particle.activeTime++;
-				if (particle.cParticle.ShouldUpdatePosition())
-				    particle.position += particle.velocity;
+                if (particle.cParticle.ShouldUpdatePosition())
+                    particle.position += particle.velocity;
                 particle.cParticle.particle = particle;
                 particle.cParticle.Update();
             }
         }
         public static void DrawParticles(SpriteBatch spriteBatch)
         {
-            foreach(Particle particle in particles)
+            foreach (Particle particle in particles)
             {
                 if (particle == null) continue;
                 particle.cParticle.particle = particle;
@@ -83,7 +83,7 @@ namespace OvermorrowMod.Particles
                 {
                     particle.cParticle.Draw(spriteBatch);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     OvermorrowModFile.Mod.Logger.Error(e.Message);
                     OvermorrowModFile.Mod.Logger.Error(e.StackTrace);
@@ -103,7 +103,7 @@ namespace OvermorrowMod.Particles
         }
         public static bool ParticleExists(int type)
         {
-            foreach(Particle particle in particles)
+            foreach (Particle particle in particles)
             {
                 if (particle == null) continue;
                 if (particle.type == type) return true;
@@ -127,9 +127,9 @@ namespace OvermorrowMod.Particles
             particle.alpha = alpha;
             particle.scale = scale;
             particle.rotation = rotation;
-            particle.customData = new float[4] {data1, data2, data3, data4};
+            particle.customData = new float[4] { data1, data2, data3, data4 };
             particle.id = NextIndex;
-            
+
             CustomParticle particle1 = (CustomParticle)Activator.CreateInstance(CustomParticle.GetCParticle(particle.type).GetType());
             particle.cParticle = particle1;
             particle.cParticle.particle = particle;
@@ -137,11 +137,11 @@ namespace OvermorrowMod.Particles
 
             particles[NextIndex] = particle;
             if (NextIndex + 1 < particles.Length && particles[NextIndex + 1] == null)
-				NextIndex++;
-			else
-				for (int i = 0; i < particles.Length; i++)
-					if (particles[i] == null)
-						NextIndex = i;
+                NextIndex++;
+            else
+                for (int i = 0; i < particles.Length; i++)
+                    if (particles[i] == null)
+                        NextIndex = i;
 
             ActiveParticles++;
             return particle.id;

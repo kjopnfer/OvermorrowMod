@@ -24,7 +24,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
             projectile.timeLeft = 240;
             projectile.ignoreWater = true;
         }
-        
+
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             if (Main.rand.Next(6) == 3)
@@ -37,9 +37,9 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
         {
 
             timer++;
-            if(timer == 1)
+            if (timer == 1)
             {
-                if(Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
+                if (Main.MouseWorld.X > Main.player[projectile.owner].Center.X)
                 {
                     projectile.velocity.X = 10;
                     projectile.velocity.Y = 0;
@@ -51,7 +51,7 @@ namespace OvermorrowMod.Projectiles.Magic.Upgrades
                 }
             }
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 24, projectile.velocity.X, projectile.velocity.Y, 1, new Color(), 1f);
+                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.CorruptionThorns, projectile.velocity.X, projectile.velocity.Y, 1, new Color(), 1f);
                 Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];

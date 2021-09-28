@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic.CreepingD
@@ -9,7 +8,6 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
     {
 
         public override bool CanDamage() => false;
-        private int timer = 0;
 
         public override void SetDefaults()
         {

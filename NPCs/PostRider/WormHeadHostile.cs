@@ -1,19 +1,12 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace OvermorrowMod.NPCs.PostRider
 {
     public class WormHeadHostile : ModProjectile
     {
-
-
-        private bool didhit = false;
         private int timer = 0;
-        private int SaveVeloX = 0;
-        private int SaveVeloY = 0;
 
         public override void SetStaticDefaults()
         {
@@ -42,27 +35,12 @@ namespace OvermorrowMod.NPCs.PostRider
             projectile.velocity.Y = projectile.velocity.Y + 0.06f;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
             timer++;
-            if(timer == 3)
+            if (timer == 3)
             {
-            Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("WormBodyHostile"), projectile.damage - 10, 1f, projectile.owner, 0f);
-            timer = 0;
+                Vector2 value1 = new Vector2(0f, 0f);
+                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, projectile.velocity.X / 7, projectile.velocity.Y / 7, mod.ProjectileType("WormBodyHostile"), projectile.damage - 10, 1f, projectile.owner, 0f);
+                timer = 0;
             }
-        }
-
-
-        private void AdjustMagnitude(ref Vector2 vector)
-        {
-            float magnitude = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            if (magnitude > 6f)
-            {
-                vector *= 6f / magnitude;
-            }
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            didhit = true;
         }
     }
 }

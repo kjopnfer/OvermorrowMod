@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
@@ -36,7 +36,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void AddRecipes()
         {
             ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(1257, 8);
+            recipe1.AddIngredient(ItemID.CrimtaneBar, 8);
             recipe1.AddTile(TileID.Anvils);
             recipe1.SetResult(this);
             recipe1.AddRecipe();

@@ -31,10 +31,10 @@ namespace OvermorrowMod.NPCs.Inferno
         {
 
             direction++;
-            if(direction == 360)
+            if (direction == 360)
             {
-            npc.dontTakeDamage = false;
-            npc.life -= 1000;
+                npc.dontTakeDamage = false;
+                npc.life -= 1000;
             }
 
             npc.rotation = npc.rotation + 1;

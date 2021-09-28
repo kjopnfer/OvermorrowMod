@@ -21,10 +21,10 @@ namespace OvermorrowMod.Items.Armor
         }
 
 
-		public override void UpdateEquip(Player player)
-		{
-			player.maxMinions += 2;
-		}
+        public override void UpdateEquip(Player player)
+        {
+            player.maxMinions += 2;
+        }
 
         public override void AddRecipes()
         {

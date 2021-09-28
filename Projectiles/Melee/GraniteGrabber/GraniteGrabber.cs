@@ -1,9 +1,8 @@
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using System;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Melee.GraniteGrabber
 {
@@ -34,26 +33,12 @@ namespace OvermorrowMod.Projectiles.Melee.GraniteGrabber
 
         public override bool CanDamage() => true;
 
-
-
-        private int SavedDMG = 0;
         private int timer = 0;
         private bool ComingBack = false;
         private bool StickingToNPC = false;
-        private int flametimer = 0;
-
-
         private int ComingBackTimer = 0;
-
-
-
-        readonly int Rota = 0;
-        readonly int zimer = 0;
         float SpearTargetX = 0;
         float SpearTargetY = 0;
-        readonly float Thank = 0;
-        readonly float You = 0;
-        int tf2 = 0;
         private int savedDMG = 0;
         int HasHit = 0;
         private int penet = 0;
@@ -61,7 +46,7 @@ namespace OvermorrowMod.Projectiles.Melee.GraniteGrabber
         private int penet3 = 0;
 
 
-        
+
         public bool IsStickingToTarget
         {
             get => projectile.ai[0] == 1f;
@@ -119,17 +104,6 @@ namespace OvermorrowMod.Projectiles.Melee.GraniteGrabber
                 {
                     projectile.Kill();
                 }
-            }
-
-
-
-
-
-            int direction = -1;
-
-            if (projectile.Center.X < Main.player[projectile.owner].Center.X)
-            {
-                direction = 1;
             }
 
             var player2 = Main.player[projectile.owner];
@@ -358,15 +332,6 @@ namespace OvermorrowMod.Projectiles.Melee.GraniteGrabber
             var remainingVectorToPlayer = mountedCenter - drawPosition;
 
             float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)

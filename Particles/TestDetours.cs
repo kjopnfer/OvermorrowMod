@@ -1,6 +1,5 @@
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Particles;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 
 namespace OvermorrowMod.Particles

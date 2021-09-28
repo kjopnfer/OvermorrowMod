@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using System;
 
 namespace OvermorrowMod.Items.Weapons.MechWep.MechProj
 {
@@ -48,9 +47,9 @@ namespace OvermorrowMod.Items.Weapons.MechWep.MechProj
             RandomX3 = Main.rand.Next(-8, 9);
             RandomY3 = Main.rand.Next(-8, 9);
             Vector2 value1 = new Vector2(0f, 0f);
-            Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y, value1.X + RandomX, value1.Y + RandomY, 640, projectile.damage, 3f, projectile.owner, 0f);
-            Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y, value1.X + RandomX2, value1.Y + RandomY2, 640, projectile.damage, 3f, projectile.owner, 0f);
-            Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y, value1.X + RandomX3, value1.Y + RandomY3, 640, projectile.damage, 3f, projectile.owner, 0f);
+            Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y, value1.X + RandomX, value1.Y + RandomY, ProjectileID.MoonlordArrowTrail, projectile.damage, 3f, projectile.owner, 0f);
+            Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y, value1.X + RandomX2, value1.Y + RandomY2, ProjectileID.MoonlordArrowTrail, projectile.damage, 3f, projectile.owner, 0f);
+            Projectile.NewProjectile(Main.MouseWorld.X, Main.MouseWorld.Y, value1.X + RandomX3, value1.Y + RandomY3, ProjectileID.MoonlordArrowTrail, projectile.damage, 3f, projectile.owner, 0f);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace OvermorrowMod.Projectiles.Accessory
         public float angle;
         public bool spawned = true;
 
-        public override void SetDefaults() 
+        public override void SetDefaults()
         {
             projectile.width = 12;
             projectile.height = 12;
@@ -37,7 +37,8 @@ namespace OvermorrowMod.Projectiles.Accessory
 
         public override void AI()
         {
-            if (spawned) {
+            if (spawned)
+            {
                 angle = Main.rand.Next(360);
                 spawned = false;
 
@@ -50,15 +51,16 @@ namespace OvermorrowMod.Projectiles.Accessory
             // Vector2 anchor = player.Center + new Vector2(0, -100);
             Vector2 anchor = player.Center;
 
-            if (distance < 125) {
+            if (distance < 125)
+            {
                 projectile.position = anchor + new Vector2(125 - distance, 0).RotatedBy(angle);
                 distance += Math.Abs(movement);
                 movement -= delta;
 
-                Lighting.AddLight(projectile.position, 0.25f,0.4f,0.9f);
+                Lighting.AddLight(projectile.position, 0.25f, 0.4f, 0.9f);
 
                 projectile.timeLeft = 30;
-                
+
             }
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)

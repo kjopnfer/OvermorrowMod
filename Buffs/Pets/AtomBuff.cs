@@ -1,13 +1,11 @@
-using OvermorrowMod.Buffs.Pets;
 using OvermorrowMod.Projectiles.Pets;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Buffs.Pets
 {
-	public class AtomBuff : ModBuff
-	{
+    public class AtomBuff : ModBuff
+    {
         public override void SetDefaults()
         {
             DisplayName.SetDefault("Atomic Heart");

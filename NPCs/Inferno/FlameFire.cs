@@ -19,7 +19,7 @@ namespace OvermorrowMod.NPCs.Inferno
         }
         public override void AI()
         {
-            if(Flamevelo == 0)
+            if (Flamevelo == 0)
             {
                 projectile.velocity.X *= 2f;
                 projectile.velocity.Y *= 2f;

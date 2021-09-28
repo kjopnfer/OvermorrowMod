@@ -1,5 +1,4 @@
-﻿using OvermorrowMod.Items.Weapons.Hardmode.HardSummon;
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
@@ -13,7 +12,7 @@ namespace OvermorrowMod.Items.Weapons.Hardmode.HardSummon
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }
-    
+
         public override void Update(Player player, ref int buffIndex)
         {
             if (player.ownedProjectileCounts[ModContent.ProjectileType<EyeStill>()] > 0)

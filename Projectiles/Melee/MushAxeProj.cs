@@ -1,10 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Buffs.Debuffs;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
@@ -36,7 +35,7 @@ namespace OvermorrowMod.Projectiles.Melee
         public override void AI()
         {
             projectile.rotation = (Main.player[projectile.owner].Center - projectile.Center).ToRotation() + MathHelper.ToRadians(45f);
-            
+
             if (Main.MouseWorld.X < Main.player[projectile.owner].Center.X && okay2 < 1)
             {
                 okay1++;

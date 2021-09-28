@@ -1,7 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Items.Materials;
-using OvermorrowMod.Projectiles.NPCs.Hostile;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,7 +28,7 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
             npc.lavaImmune = true;
         }
         int spiderexp = 0;
-        
+
         public override void FindFrame(int frameHeight)
         {
             npc.frame.Y = frameHeight * frame;
@@ -45,57 +42,57 @@ namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 
             spiderexp++;
             spiderspritetimer++;
-            if(spiderspritetimer > 4)
+            if (spiderspritetimer > 4)
             {
                 frame++;
                 spiderspritetimer = 0;
             }
-            if(frame > 1)
+            if (frame > 1)
             {
                 frame = 0;
             }
 
             float Charge = Vector2.Distance(Main.player[npc.target].Center, npc.Center);
 
-            if(spiderexp > 3)
+            if (spiderexp > 3)
             {
-                    Vector2 position = npc.Center;
-                    Vector2 targetPosition = npc.Center + new Vector2(0, -40);
-                    Vector2 direction = targetPosition - position;
-                    direction.Normalize();
-                    float speed1 = 0.5f;
-                    int damage = npc.damage;
-                    npc.velocity.X = 0;
-                    npc.velocity.Y = 0;
-                    Vector2 perturbedSpeed1 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(Rot));
-                    Projectile.NewProjectile(position, perturbedSpeed1 * speed1, mod.ProjectileType("CreeperProj"), damage, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(position, -perturbedSpeed1 * speed1, mod.ProjectileType("CreeperProj"), damage, 0f, Main.myPlayer);
-                    Main.PlaySound(SoundID.Item12, npc.position);
-                    Rot += 10;
-                    spiderexp = 0;
-                
+                Vector2 position = npc.Center;
+                Vector2 targetPosition = npc.Center + new Vector2(0, -40);
+                Vector2 direction = targetPosition - position;
+                direction.Normalize();
+                float speed1 = 0.5f;
+                int damage = npc.damage;
+                npc.velocity.X = 0;
+                npc.velocity.Y = 0;
+                Vector2 perturbedSpeed1 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(Rot));
+                Projectile.NewProjectile(position, perturbedSpeed1 * speed1, mod.ProjectileType("CreeperProj"), damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(position, -perturbedSpeed1 * speed1, mod.ProjectileType("CreeperProj"), damage, 0f, Main.myPlayer);
+                Main.PlaySound(SoundID.Item12, npc.position);
+                Rot += 10;
+                spiderexp = 0;
+
             }
 
-            
-            if(npc.velocity.X > 7)
+
+            if (npc.velocity.X > 7)
             {
                 npc.velocity.X = 7;
             }
-            if(npc.velocity.X < -7)
+            if (npc.velocity.X < -7)
             {
                 npc.velocity.X = -7;
             }
-            if(npc.velocity.Y > 7)
+            if (npc.velocity.Y > 7)
             {
                 npc.velocity.Y = 7;
             }
-            if(npc.velocity.Y < -7)
+            if (npc.velocity.Y < -7)
             {
                 npc.velocity.Y = -7;
             }
         }
 
-    
+
 
         public override void SetStaticDefaults()
         {

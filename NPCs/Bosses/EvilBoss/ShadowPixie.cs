@@ -1,16 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using System;
 
 namespace OvermorrowMod.NPCs.Bosses.EvilBoss
 {
     public class ShadowPixie : ModProjectile
     {
-        private int KeepAliveTime2 = 1;
-        private int KeepAliveTime = 1;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.ShadowFlame;
         public override void SetDefaults()
         {

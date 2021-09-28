@@ -5,18 +5,18 @@ namespace OvermorrowMod.Buffs
 {
     public class ExplosionBuff : ModBuff
     {
-		public override void SetDefaults()
-		{
-			DisplayName.SetDefault("Flaming Rage");
-			Description.SetDefault("Releases bursts of flame whenever damaged");
-			Main.buffNoSave[Type] = true;
-			Main.debuff[Type] = false;
-			canBeCleared = false;
-		}
+        public override void SetDefaults()
+        {
+            DisplayName.SetDefault("Flaming Rage");
+            Description.SetDefault("Releases bursts of flame whenever damaged");
+            Main.buffNoSave[Type] = true;
+            Main.debuff[Type] = false;
+            canBeCleared = false;
+        }
 
-		public override void Update(Player player, ref int buffIndex)
-		{
-			player.GetModPlayer<OvermorrowModPlayer>().explosionBuff = true;
-		}
-	}
+        public override void Update(Player player, ref int buffIndex)
+        {
+            player.GetModPlayer<OvermorrowModPlayer>().explosionBuff = true;
+        }
+    }
 }

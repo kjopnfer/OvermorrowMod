@@ -1,24 +1,23 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.NPCs.Bosses.Goblin;
+using OvermorrowMod.Projectiles.Ranged.Ammo;
 using OvermorrowMod.Tiles;
 using OvermorrowMod.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Tiles.Block;
 using OvermorrowMod.Tiles.TrapOre;
 using OvermorrowMod.WardenClass.Accessories;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.NPCs.Bosses.Goblin;
-using OvermorrowMod.Projectiles.Ranged.Ammo;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 
 namespace OvermorrowMod
 {
@@ -224,11 +223,11 @@ namespace OvermorrowMod
                         }
                     }
                 }
-            
 
 
-            int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
-            int itemsToPlaceInGranChestsChoice = 0;
+
+                int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
+                int itemsToPlaceInGranChestsChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 50 * 36)
                 {
                     if (!placedwep) // Guarantees at least one book in a Dungeon Chest
@@ -267,8 +266,8 @@ namespace OvermorrowMod
 
 
 
-            int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
-            int itemsToPlaceInGranMarbleChoice = 0;
+                int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
+                int itemsToPlaceInGranMarbleChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 51 * 36)
                 {
                     if (!placedtele) // Guarantees at least one book in a Dungeon Chest
@@ -302,8 +301,6 @@ namespace OvermorrowMod
                         }
                     }
                 }
-            
-            
 
 
 
@@ -317,8 +314,10 @@ namespace OvermorrowMod
 
 
 
-            int[] itemsToPlaceInSteamChests = { 953 };
-            int itemsToPlaceInSteampunkChoice = 0;
+
+
+                int[] itemsToPlaceInSteamChests = { 953 };
+                int itemsToPlaceInSteampunkChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 30 * 36)
                 {
                     if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
@@ -356,8 +355,8 @@ namespace OvermorrowMod
 
 
 
-            int[] itemsToPlaceInSkyChests = { ModContent.ItemType<FeatherArrowAmmo>() };
-            int itemsToPlaceInSkyChoice = 0;
+                int[] itemsToPlaceInSkyChests = { ModContent.ItemType<FeatherArrowAmmo>() };
+                int itemsToPlaceInSkyChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 28 * 36)
                 {
                     if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
@@ -377,16 +376,16 @@ namespace OvermorrowMod
                     else
                     {
 
-                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (inventoryIndex == 1)
                             {
-                                if (inventoryIndex == 1)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSkyChests[itemsToPlaceInSkyChoice]);
-                                    itemsToPlaceInSkyChoice = (itemsToPlaceInSkyChoice + 1) % itemsToPlaceInSkyChests.Length;
-                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                    break;
-                                }
+                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSkyChests[itemsToPlaceInSkyChoice]);
+                                itemsToPlaceInSkyChoice = (itemsToPlaceInSkyChoice + 1) % itemsToPlaceInSkyChests.Length;
+                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
+                                break;
                             }
+                        }
                         StackSkyChest1(Main.chest[chestIndex].item);
                     }
                 }
@@ -412,10 +411,6 @@ namespace OvermorrowMod
             {
                 TestMethod((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
             }*/
-        }
-
-        private void TestMethod(int x, int y)
-        {
         }
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
@@ -494,68 +489,43 @@ namespace OvermorrowMod
                         for (int i = 0; i < iceH; i++)
                         {
                             WorldGen.PlaceWall(x + 1 + j, y - i, 150);
-                        }  
-                    }    
+                        }
+                    }
 
                     //bottom
                     for (int i = 0; i < iceX; i++)
                     {
-                        WorldGen.PlaceTile(x + i, y - iceH, 206); 
+                        WorldGen.PlaceTile(x + i, y - iceH, 206);
                     }
 
 
                     //sides
                     for (int i = 0; i < iceY; i++)
                     {
-                        WorldGen.PlaceTile(x, y - i - iceH, 206); 
-                        WorldGen.PlaceTile(x + iceX, y - i - iceH, 206); 
+                        WorldGen.PlaceTile(x, y - i - iceH, 206);
+                        WorldGen.PlaceTile(x + iceX, y - i - iceH, 206);
                     }
 
 
                     //top
                     for (int i = 0; i < iceX; i++)
                     {
-                        WorldGen.PlaceTile(x + i, y - iceY - iceH, 206); 
+                        WorldGen.PlaceTile(x + i, y - iceY - iceH, 206);
                     }
 
                     //trap
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceH - 1, 135, style: 4); 
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceH - 1, 135, style: 4);
                     WorldGen.PlaceTile(x + Main.rand.Next(2, iceX - 1), y - iceH - 1, 21, style: 22);
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>()); 
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
+                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
 
                 }
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        bool placedtower = false;
         private void TempleStart(GenerationProgress progress)
         {
             progress.Message = "Generating Sky Ships";
@@ -593,7 +563,7 @@ namespace OvermorrowMod
                 WorldGen.PlaceTile(x + 22, y - 6, 311);
                 WorldGen.PlaceTile(x + 23, y - 6, 311);
                 WorldGen.PlaceTile(x + 23, y - 7, 311);
-                WorldGen.PlaceTile(x + 24, y - 7, 311);  
+                WorldGen.PlaceTile(x + 24, y - 7, 311);
 
 
                 //back
@@ -791,7 +761,7 @@ namespace OvermorrowMod
                 }
 
                 WorldGen.PlaceTile(x - 12, y - 7, 10);
-                
+
 
 
 
@@ -941,28 +911,26 @@ namespace OvermorrowMod
 
         }
 
-
-        bool activetilecheck = false;
         bool TowerPlaced = false;
-        
+
         private void TowerStart(GenerationProgress progress)
         {
 
             int randY = Main.rand.Next(10, 20);
             int randX = Main.rand.Next(14, 15);
-                
+
             for (int k = 0; k < (int)(Main.maxTilesX * Main.maxTilesY); k++)
             {
-                if(!TowerPlaced)
+                if (!TowerPlaced)
                 {
-                int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
-                int y = WorldGen.genRand.Next(0, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+                    int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
+                    int y = WorldGen.genRand.Next(0, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
 
-                // Strength controls size
-                // Steps control interations
-                Tile tile = Framing.GetTileSafely(x, y);
-                if (tile.active() && tile.type == 27 || tile.active() && tile.type == 80)
-                {
+                    // Strength controls size
+                    // Steps control interations
+                    Tile tile = Framing.GetTileSafely(x, y);
+                    if (tile.active() && tile.type == 27 || tile.active() && tile.type == 80)
+                    {
 
                         for (int j = 0; j < randY + 22; j++)
                         {
@@ -996,8 +964,8 @@ namespace OvermorrowMod
                             WorldGen.PlaceTile(x + 3, y - randY + i - 4, 325);
                             WorldGen.PlaceTile(x - 3, y - randY + i - 4, 325);
                         }
-                        
-        
+
+
                         for (int i = 0; i < randX; i++)
                         {
                             WorldGen.PlaceTile(x + i + 3, y - randY - 4, 325);
@@ -1035,14 +1003,14 @@ namespace OvermorrowMod
 
                             WorldGen.PlaceTile(x + randX + 2 - i, y - randY - 20 - i, 325);
                             WorldGen.PlaceTile(x - randX - 2 + i, y - randY - 20 - i, 325);
-                            
+
                         }
 
                         for (int i = 0; i < 10; i++)
                         {
                             WorldGen.PlaceTile(x - i, y - randY - 26, 19);
                             WorldGen.PlaceTile(x + i, y - randY - 26, 19);
-                        }    
+                        }
 
                         for (int j = 0; j < 15; j++)
                         {
@@ -1065,7 +1033,7 @@ namespace OvermorrowMod
                         {
                             WorldGen.PlaceWall(x - randX + i - 0, y - randY - 21, 4);
                         }
-                        
+
 
                         for (int i = 0; i < 29 - 2; i++)
                         {
@@ -1234,7 +1202,7 @@ namespace OvermorrowMod
 
         private void GenerateWaterCave(int x, int y)
         {
-            int[] TileBlacklist = { 41, 43, 44, 226};
+            int[] TileBlacklist = { 41, 43, 44, 226 };
             Point point = new Point(x, y);
 
             // small world size is 4200x1200 , medium multiplies every axis by 1.5 , and large multiplies every axis by 2.0
@@ -1508,7 +1476,7 @@ namespace OvermorrowMod
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.00025); k++)
             {
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY); 
+                int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY);
 
                 WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 4), WorldGen.genRand.Next(2, 6), ModContent.TileType<EruditeTile>());
             }
@@ -1548,13 +1516,13 @@ namespace OvermorrowMod
                     }
                 }
             }
-            
+
         }
 
         private void GenerateAmbientObjects(GenerationProgress progress)
         {
             // Place ambient objects for the Flooded Caverns
-            for(int i = 0; i < Main.maxTilesY * 45; i++)
+            for (int i = 0; i < Main.maxTilesY * 45; i++)
             {
                 int[] rockFormations = { ModContent.TileType<Rock1>(), ModContent.TileType<Rock2>(), ModContent.TileType<Rock3>(), ModContent.TileType<Rock4>(), ModContent.TileType<Stalagmite1>(), ModContent.TileType<Stalagmite2>(), ModContent.TileType<Stalagmite3>(), ModContent.TileType<Stalagmite4>(), ModContent.TileType<Stalagmite5>() };
                 int x = WorldGen.genRand.Next(300, Main.maxTilesX - 300);
@@ -1566,50 +1534,6 @@ namespace OvermorrowMod
                     NetMessage.SendObjectPlacment(-1, x, y, (ushort)type, 0, 0, -1, -1);
                 }
             }
-        }
-
-        private void GenerateAltar(GenerationProgress progress)
-        {
-            /*Point point = new Point(x, y);
-           
-            ShapeData circleShapeData = new ShapeData();
-            ShapeData halfCircleShapeData = new ShapeData();
-            ShapeData circleShapeData2 = new ShapeData();
-
-            // Generate the circle shape
-            WorldUtils.Gen(point, new Shapes.Circle(20), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.ClearTile(frameNeighbors: true).Output(circleShapeData)));
-
-            // Generate the platform
-            WorldUtils.Gen(point, new Shapes.Circle(8), Actions.Chain(new Modifiers.Blotches(2, 0.4), new Actions.SetTile(TileID.Dirt).Output(circleShapeData2)));
-
-            // Clear the top half of the shape
-            WorldUtils.Gen(point, new Shapes.HalfCircle(12), Actions.Chain(new Actions.ClearTile(frameNeighbors: true).Output(halfCircleShapeData)));
-
-            // Remove the top half of the shape from the shape data
-            circleShapeData2.Subtract(halfCircleShapeData, point, point);
-            WorldUtils.Gen(point, new ModShapes.OuterOutline(circleShapeData2), Actions.Chain(new Actions.SetTile(TileID.Grass), new Actions.SetFrames(frameNeighbors: true)));
-
-            // Place background
-            WorldUtils.Gen(point, new ModShapes.All(circleShapeData), new Actions.PlaceWall(WallID.LivingLeaf));
-            WorldUtils.Gen(point, new Shapes.Circle(7), Actions.Chain(new Modifiers.RadialDither(0.5f, 0.2f), new Actions.PlaceWall(WallID.Flower)));
-
-            // Place grass
-            WorldUtils.Gen(point, new ModShapes.InnerOutline(circleShapeData), Actions.Chain(new Actions.SetTile(TileID.LivingWood), new Actions.SetFrames(frameNeighbors: true)));
-
-            // Place water
-            WorldUtils.Gen(new Point(point.X, point.Y + 2), new ModShapes.All(circleShapeData), Actions.Chain(new Modifiers.RectangleMask(-20, 20, 0, 5), new Modifiers.IsEmpty(), new Actions.SetLiquid()));
-
-            // Place special tile
-
-            // Using PlaceObject instead of PlaceTile works for some apparent reason
-            WorldGen.PlaceObject(point.X, point.Y - 1, ModContent.TileType<DruidAltar>(), mute: false, 0);
-            //WorldGen.PlaceTile(point.X, point.Y - 6, TileID.LunarCraftingStation, mute: false, forced: true, -1, 0);
-            //WorldGen.PlaceTile(point.X, point.Y - 3, ModContent.TileType<DruidAltar>(), mute: false, forced: true, -1, 0);
-            WorldGen.PlaceTile(point.X - 5, point.Y - 1, TileID.Campfire, mute: false, forced: true, -1, 0);
-            WorldGen.PlaceTile(point.X + 5, point.Y - 1, TileID.Campfire, mute: false, forced: true, -1, 0);
-
-            // Place plants
-            WorldUtils.Gen(new Point(x, y - 1), new ModShapes.All(halfCircleShapeData), Actions.Chain(new Modifiers.Offset(0, -1), new Modifiers.OnlyTiles(TileID.Dirt), new Modifiers.Offset(0, -1), new ActionGrass()));*/
         }
     }
 }

@@ -14,7 +14,7 @@ namespace OvermorrowMod.Tiles.Ambient
             Main.tileNoFail[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            dustType = 5;
+            dustType = DustID.Blood;
             soundType = SoundID.Grass;
             AddMapEntry(new Color(0, 200, 200));
         }

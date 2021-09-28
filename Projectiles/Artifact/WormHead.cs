@@ -1,9 +1,9 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.WardenClass;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using OvermorrowMod.WardenClass;
 
 namespace OvermorrowMod.Projectiles.Artifact
 {
@@ -111,7 +111,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             {
                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                 Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                int dust = Dust.NewDust(position, 2, 2, 157, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
+                int dust = Dust.NewDust(position, 2, 2, DustID.ChlorophyteWeapon, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
                 Main.dust[dust].noGravity = true;
             }
 

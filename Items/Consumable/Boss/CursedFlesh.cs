@@ -3,7 +3,6 @@ using OvermorrowMod.Items.Materials;
 using OvermorrowMod.NPCs.Bosses.DripplerBoss;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Consumable.Boss

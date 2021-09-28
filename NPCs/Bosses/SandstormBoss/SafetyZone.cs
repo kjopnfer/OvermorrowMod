@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.NPCs.Bosses.SandstormBoss;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -10,7 +8,6 @@ namespace OvermorrowMod.Projectiles.Artifact
     public class SafetyZone : ModProjectile
     {
         public bool hide = false;
-        private bool isActive = false;
         private bool owneralive = false;
         private float radius = 450;
 

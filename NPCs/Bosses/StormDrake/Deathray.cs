@@ -1,11 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using Terraria.Graphics.Shaders;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ModLoader;
-using Terraria.ID;
 
 namespace OvermorrowMod.NPCs.Bosses
 {
@@ -41,7 +39,7 @@ namespace OvermorrowMod.NPCs.Bosses
         public Texture2D LaserMiddleTexture => mod.GetTexture(TexturePath + "1");
         public Texture2D LaserEndTexture => mod.GetTexture(TexturePath + "2");
         public float LaserLength = 1000; // laser lenght
-        public float timer { get {return projectile.localAI[0];} set {projectile.localAI[0] = value;}}
+        public float timer { get { return projectile.localAI[0]; } set { projectile.localAI[0] = value; } }
         public float MaxTime = 0; // time the laser lasts
         public void DrawLaser(SpriteBatch spriteBatch, Color beamColor, float scale)
         {

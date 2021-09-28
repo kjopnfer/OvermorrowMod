@@ -1,14 +1,13 @@
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Items.Materials;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Particles;
 using OvermorrowMod.UI;
 using ReLogic.Graphics;
+using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;

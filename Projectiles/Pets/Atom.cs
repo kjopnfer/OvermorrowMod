@@ -61,9 +61,9 @@ namespace OvermorrowMod.Projectiles.Pets
             }
 
             float num26 = 0.4f;
-            
-                num26 = 0.3f;
-            
+
+            num26 = 0.3f;
+
 
             projectile.tileCollide = false;
             int num27 = 100;
@@ -76,22 +76,22 @@ namespace OvermorrowMod.Projectiles.Pets
             float num32 = Main.player[projectile.owner].position.X + (float)(Main.player[projectile.owner].width / 2) - vector3.X;
             float num33 = Main.player[projectile.owner].position.Y + (float)(Main.player[projectile.owner].height / 2) - vector3.Y;
 
-            
+
             num33 += (float)Main.rand.Next(-10, 21);
             num32 += (float)Main.rand.Next(-10, 21);
-            
+
             num32 += (float)(60 * -Main.player[projectile.owner].direction);
             num33 -= 60f;
 
             Vector2 vector4 = new Vector2(num32, num33);
-            
+
             float num36 = (float)Math.Sqrt(num32 * num32 + num33 * num33);
             float num37 = num36;
             float num38 = 14f;
-            
-                num38 = 6f;
-            
-            
+
+            num38 = 6f;
+
+
             if (num36 < (float)num27 && Main.player[projectile.owner].velocity.Y == 0f && projectile.position.Y + (float)projectile.height <= Main.player[projectile.owner].position.Y + (float)Main.player[projectile.owner].height && !Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
             {
                 projectile.ai[0] = 0f;
@@ -104,27 +104,27 @@ namespace OvermorrowMod.Projectiles.Pets
             {
                 if (Math.Abs(projectile.velocity.X) > 2f || Math.Abs(projectile.velocity.Y) > 2f)
                 {
-                        projectile.velocity *= 0.99f;
-                    
+                    projectile.velocity *= 0.99f;
+
                 }
                 num26 = 0.01f;
             }
             else
             {
-               
-                    if (num36 < 100f)
-                    {
-                        num26 = 0.1f;
-                    }
-                    if (num36 > 300f)
-                    {
-                        num26 = 0.4f;
-                    }
-                    if (num36 > num31)
-                    {
-                        flag6 = true;
-                    }
-                
+
+                if (num36 < 100f)
+                {
+                    num26 = 0.1f;
+                }
+                if (num36 > 300f)
+                {
+                    num26 = 0.4f;
+                }
+                if (num36 > num31)
+                {
+                    flag6 = true;
+                }
+
                 num36 = num38 / num36;
                 num32 *= num36;
                 num33 *= num36;
@@ -161,12 +161,12 @@ namespace OvermorrowMod.Projectiles.Pets
                     projectile.velocity.Y -= num26 * 2f;
                 }
             }
-            
+
             projectile.rotation = projectile.velocity.X * 0.05f;
             if (flag6)
             {
                 int num39 = 33;
-                
+
                 for (int k = 0; k < 12; k++)
                 {
                     float speedX3 = 1f - Main.rand.NextFloat() * 2f;
@@ -182,11 +182,7 @@ namespace OvermorrowMod.Projectiles.Pets
                     projectile.netUpdate = true;
                 }
             }
-            int num41 = 3;
-            int num42 = 0;
-            int num43 = 3;
-            num41 = 6;
-            
+
             return;
         }
 

@@ -1,9 +1,8 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Tiles;
-using OvermorrowMod.Items.Materials;
 
 namespace OvermorrowMod.Tiles.TrapOre
 {
@@ -27,7 +26,7 @@ namespace OvermorrowMod.Tiles.TrapOre
             name.SetDefault("\"Platinum\"");
             drop = ModContent.ItemType<FakeGem>();
             AddMapEntry(new Color(100, 0, 0), name);
-            dustType = 9;
+            dustType = DustID.Copper;
             soundType = SoundID.Tink;
             soundStyle = 1;
             mineResist = 2f;

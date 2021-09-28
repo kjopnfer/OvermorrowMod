@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -33,7 +32,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
         public override void HoldItem(Player player)
         {
             {
-                if(player.ownedProjectileCounts[mod.ProjectileType("GraniteGrabber")] < 1)
+                if (player.ownedProjectileCounts[mod.ProjectileType("GraniteGrabber")] < 1)
                 {
                     item.shoot = mod.ProjectileType("GraniteGrabber");
                     item.UseSound = SoundID.Item71;

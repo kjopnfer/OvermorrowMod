@@ -1,6 +1,6 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -42,7 +42,7 @@ namespace OvermorrowMod.Projectiles.Summon
             Player player = Main.player[projectile.owner];
             player.UpdateMaxTurrets();
 
-            if(projectile.localAI[0] == 0f)
+            if (projectile.localAI[0] == 0f)
             {
                 projectile.localAI[1] = 1f;
                 projectile.localAI[0] = 1f;
@@ -50,17 +50,17 @@ namespace OvermorrowMod.Projectiles.Summon
                 int num1109 = 80;
                 for (int num1108 = 0; num1108 < num1109; num1108++)
                 {
-                        int num1107 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y + 16f), projectile.width, projectile.height - 16, 107);
-                        Dust dust81 = Main.dust[num1107];
-                        dust81.velocity *= 2f;
-                        Main.dust[num1107].noGravity = true;
-                        dust81 = Main.dust[num1107];
-                        dust81.scale *= 1.15f;
-                }    
+                    int num1107 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y + 16f), projectile.width, projectile.height - 16, DustID.TerraBlade);
+                    Dust dust81 = Main.dust[num1107];
+                    dust81.velocity *= 2f;
+                    Main.dust[num1107].noGravity = true;
+                    dust81 = Main.dust[num1107];
+                    dust81.scale *= 1.15f;
+                }
             }
             projectile.velocity.X = 0f;
             projectile.velocity.Y = projectile.velocity.Y + 0.2f;
-            if(projectile.velocity.Y > 16f)
+            if (projectile.velocity.Y > 16f)
             {
                 projectile.velocity.Y = 16f;
             }
@@ -138,7 +138,7 @@ namespace OvermorrowMod.Projectiles.Summon
                     {
                         Projectile.NewProjectile(npcPos * 16, new Vector2(0, -6), ModContent.ProjectileType<ThornHeadFriendly>(), projectile.damage / 2, 0f, projectile.owner);
                     }
-                } 
+                }
             }
 
 

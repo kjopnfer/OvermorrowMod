@@ -1,17 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Projectiles.Piercing
 {
     public class JunglePiercer : ModProjectile
     {
-
-        private int timer = 0;
-        private bool target = false;
         private const string ChainTexturePath = "OvermorrowMod/Projectiles/Piercing/VinePiercerChain";
         public override string Texture => "OvermorrowMod/Projectiles/Piercing/VinePiercerProjectile";
         public override void SetStaticDefaults()
@@ -19,8 +15,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             DisplayName.SetDefault("Stingvine");
             ProjectileID.Sets.Homing[projectile.type] = true;
         }
-
-        Vector2 vineplace;
 
         public override void SetDefaults()
         {
@@ -90,15 +84,6 @@ namespace OvermorrowMod.Projectiles.Piercing
 
             float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
 
-            if (projectile.alpha == 0)
-            {
-                int direction = -1;
-
-                if (projectile.Center.X < mountedCenter.X)
-                    direction = 1;
-
-            }
-
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
             while (true)
             {
@@ -118,15 +103,6 @@ namespace OvermorrowMod.Projectiles.Piercing
             }
 
             return true;
-        }
-
-        private void AdjustMagnitude(ref Vector2 vector)
-        {
-            float magnitude = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            if (magnitude > 6f)
-            {
-                vector *= 6f / magnitude;
-            }
         }
     }
 }

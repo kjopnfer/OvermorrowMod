@@ -2,9 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Buffs.Debuffs;
 
 namespace OvermorrowMod.Projectiles.Melee
 {
@@ -14,14 +12,13 @@ namespace OvermorrowMod.Projectiles.Melee
         int okay1 = 0;
         int okay2 = 0;
         float CircleArr = 0;
-        int StarTimer = 0;
 
         public override void SetDefaults()
         {
             projectile.width = 36;
             projectile.height = 36;
             projectile.timeLeft = 33;
-            projectile.light = 0.5f;   
+            projectile.light = 0.5f;
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -36,7 +33,7 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.width = 36;
             projectile.height = 36;
             projectile.rotation = CircleArr + MathHelper.ToRadians(45f);
-            
+
             if (Main.MouseWorld.X < Main.player[projectile.owner].Center.X && okay2 < 1)
             {
                 okay1++;
