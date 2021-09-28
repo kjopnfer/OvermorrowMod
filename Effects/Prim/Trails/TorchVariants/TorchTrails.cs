@@ -509,8 +509,8 @@ namespace OvermorrowMod.Effects.Prim.Trails.TorchVariants
                 Vector2 pos2 = Positions[i + 1];
                 Vector2 off1 = GetRotation(Positions.ToArray(), i) * Width * prog1;
                 Vector2 off2 = GetRotation(Positions.ToArray(), i + 1) * Width * prog2;
-                Color col1 = Color.Lerp(Color.Blue, Color.White, prog1) * prog1;
-                Color col2 = Color.Lerp(Color.Blue, Color.White, prog2) * prog2;
+                Color col1 = Color.Lerp(Color.Teal, Color.White, prog1) * prog1;
+                Color col2 = Color.Lerp(Color.Teal, Color.White, prog2) * prog2;
                 AddVertex(pos1 + off1, col1, new Vector2(prog1 + Offset, 1));
                 AddVertex(pos1 - off1, col1, new Vector2(prog1 + Offset, 0));
                 AddVertex(pos2 + off2, col2, new Vector2(prog2 + Offset, 1));
@@ -641,8 +641,8 @@ namespace OvermorrowMod.Effects.Prim.Trails.TorchVariants
                 Vector2 pos2 = Positions[i + 1];
                 Vector2 off1 = GetRotation(Positions.ToArray(), i) * Width * prog1;
                 Vector2 off2 = GetRotation(Positions.ToArray(), i + 1) * Width * prog2;
-                Color col1 = Color.Lerp(Color.Teal, Color.White, prog1) * prog1;
-                Color col2 = Color.Lerp(Color.Teal, Color.White, prog2) * prog2;
+                Color col1 = Color.Lerp(Color.Indigo, Color.White, prog1) * prog1;
+                Color col2 = Color.Lerp(Color.Indigo, Color.White, prog2) * prog2;
                 AddVertex(pos1 + off1, col1, new Vector2(prog1 + Offset, 1));
                 AddVertex(pos1 - off1, col1, new Vector2(prog1 + Offset, 0));
                 AddVertex(pos2 + off2, col2, new Vector2(prog2 + Offset, 1));

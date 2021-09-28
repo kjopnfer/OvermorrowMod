@@ -14,8 +14,8 @@ namespace OvermorrowMod.Projectiles.Artifact
 {
     public class TorchBall : ArtifactProjectile, ITrailEntity
     {
-        //public Color projectileColor = Color.Yellow;
-        public Color projectileColor = Color.Yellow;
+        //public Color projectileColor = Main.DiscoColor;
+        public Color projectileColor = Main.DiscoColor;
         public int dustId = 64;
 
         public Type TrailType()
@@ -104,7 +104,7 @@ namespace OvermorrowMod.Projectiles.Artifact
 
             if (projectile.ai[0] > -1 ? Main.rand.NextBool(5) : Main.rand.NextBool(15))
             {
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * Main.rand.Next(3, 6), projectile.ai[0] > -1 ? (Main.rand.NextBool(2) ? Color.Yellow : Color.Blue) : projectileColor, 1, 1, 0, 1f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * Main.rand.Next(3, 6), projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, 1, 1, 0, 1f);
             }
         }
 
@@ -122,18 +122,18 @@ namespace OvermorrowMod.Projectiles.Artifact
 
             if (projectile.ai[0] > -1)
             {
-                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
-                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
 
-                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
             }
             else
             {
-                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
-                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
 
-                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
-                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Color.Yellow : projectileColor, projectile.rotation, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, projectile.rotation, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
 
             }
 
@@ -159,7 +159,7 @@ namespace OvermorrowMod.Projectiles.Artifact
         {
             if (projectile.ai[0] > -1)
             {
-                Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Yellow, 1, 1, 0, 1f);
+                Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 1, 1, 0, 1f);
             }
 
             for (int i = 0; i < Main.maxPlayers; i++)
@@ -181,7 +181,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                 Vector2 dustvelocity = new Vector2(0f, (projectile.ai[0] > -1 ? 5f : 3f)).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * (projectile.ai[0] > 1 ? Main.rand.Next(1, 4) : 1);
 
                 //Dust dust = Terraria.Dust.NewDustPerfect(position, projectile.ai[0] > -1 ? Main.rand.NextBool(3) ? 64 : 59 : dustId, new Vector2(dustvelocity.X, dustvelocity.Y), 0, projectileColor, projectile.ai[0] > -1 ? Main.rand.Next(1, 3) : 1);
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, projectile.ai[0] > -1 ? Color.Yellow : projectileColor, 1, 1, 0, 1f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, projectile.ai[0] > -1 ? Main.DiscoColor : projectileColor, 1, 1, 0, 1f);
             }
 
             if (projectile.ai[0] > -1)
@@ -211,7 +211,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                             dustId = 61;
                             break;
                         case -5:
-                            projectileColor = Color.Yellow;
+                            projectileColor = Main.DiscoColor;
                             dustId = 64;
                             break;
                         case -6:
@@ -223,7 +223,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                             dustId = 69;
                             break;
                         case -8:
-                            projectileColor = Color.LightCoral;
+                            projectileColor = Color.Teal;
                             dustId = 59;
                             break;
                         case -9:
@@ -231,7 +231,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                             dustId = 64;
                             break;
                         case -10:
-                            projectileColor = Color.LightCyan;
+                            projectileColor = Color.Indigo;
                             dustId = 56;
                             break;
                         case -11:
