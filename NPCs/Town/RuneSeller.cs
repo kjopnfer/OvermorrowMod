@@ -1,5 +1,6 @@
 using OvermorrowMod.Items.Consumable;
 using OvermorrowMod.Items.Pets;
+using OvermorrowMod.Projectiles.NPCs.Town;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System.Collections.Generic;
@@ -138,7 +139,7 @@ namespace OvermorrowMod.NPCs.Town
 
         public override void TownNPCAttackProj(ref int projType, ref int attackDelay)
         {
-            projType = ProjectileID.RubyBolt;
+            projType = ModContent.ProjectileType<MerchantRune>();
             attackDelay = 1;
         }
 
