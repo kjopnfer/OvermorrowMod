@@ -41,11 +41,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Town
                 Particle.CreateParticle(Particle.ParticleType<BlackFlame>(), vector29, Vector2.Zero, Main.DiscoColor, 1, (float)Main.rand.Next(70, 110) * 0.013f, 0, 1f);
             }
 
-            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 350)
-            {
-                projectile.Kill();
-            }
-
+            
             projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
             if (projectile.localAI[0] == 0f)
             {

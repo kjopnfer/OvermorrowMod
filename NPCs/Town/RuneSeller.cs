@@ -29,7 +29,7 @@ namespace OvermorrowMod.NPCs.Town
             Main.npcFrameCount[npc.type] = 26;
             NPCID.Sets.ExtraFramesCount[npc.type] = 9;
             NPCID.Sets.AttackFrameCount[npc.type] = 4;
-            NPCID.Sets.DangerDetectRange[npc.type] = 1000;
+            NPCID.Sets.DangerDetectRange[npc.type] = 400;
             NPCID.Sets.AttackType[npc.type] = 2;
             NPCID.Sets.AttackTime[npc.type] = 128;
             NPCID.Sets.AttackAverageChance[npc.type] = 30;

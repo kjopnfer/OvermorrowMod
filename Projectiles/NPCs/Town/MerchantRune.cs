@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Particles;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -63,12 +64,13 @@ namespace OvermorrowMod.Projectiles.NPCs.Town
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
                     float distance = Vector2.Distance(projectile.Center, Main.npc[i].Center);
-                    if (distance <= 400 && Main.npc[i].chaseable)
+                    if (distance <= 400 && !Main.npc[i].friendly && projectile.ai[0] >= 90)
                     {
                         Main.NewText("shoot");
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 4, ProjectileType<MerchantSpike>(), projectile.damage, 3f, Main.myPlayer);
+
                             projectile.Kill();
                         }
                     }
@@ -82,6 +84,22 @@ namespace OvermorrowMod.Projectiles.NPCs.Town
         {
             return Color.White;
         }
+
+        public override void Kill(int timeLeft)
+        {
+            Vector2 origin = projectile.Center;
+            float radius = 15;
+            int numLocations = 6;
+
+            for (int i = 0; i < 6; i++)
+            {
+                Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                Vector2 dustvelocity = new Vector2(0f, 3f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * 2;
+
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Color.White, 1, 1, MathHelper.ToRadians(360f / numLocations * i), 1f);
+            }
+        }
+
         public override bool? CanHitNPC(NPC target)
         {
             return false;
