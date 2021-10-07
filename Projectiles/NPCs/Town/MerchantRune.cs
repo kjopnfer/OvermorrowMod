@@ -24,6 +24,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Town
             projectile.friendly = true;
             projectile.timeLeft = 240;
             projectile.penetrate = -1;
+            projectile.alpha = 255;
             projectile.scale = 1f;
         }
 
@@ -38,7 +39,8 @@ namespace OvermorrowMod.Projectiles.NPCs.Town
                     initPos = projectile.position;
                 }
 
-                projectile.position = Vector2.Lerp(initPos, initPos - new Vector2(0, 45), projectile.ai[0] / 45f);
+                projectile.position = Vector2.SmoothStep(initPos, initPos - new Vector2(0, 36), projectile.ai[0] / 45f);
+                projectile.alpha -= 7;
 
                 if (projectile.ai[0] == 0)
                 {
@@ -66,7 +68,6 @@ namespace OvermorrowMod.Projectiles.NPCs.Town
                     float distance = Vector2.Distance(projectile.Center, Main.npc[i].Center);
                     if (distance <= 400 && !Main.npc[i].friendly && projectile.ai[0] >= 90)
                     {
-                        Main.NewText("shoot");
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 4, ProjectileType<MerchantSpike>(), projectile.damage, 3f, Main.myPlayer);
@@ -82,7 +83,7 @@ namespace OvermorrowMod.Projectiles.NPCs.Town
         }
         public override Color? GetAlpha(Color lightColor)
         {
-            return Color.White;
+            return Color.White * projectile.Opacity;  
         }
 
         public override void Kill(int timeLeft)
