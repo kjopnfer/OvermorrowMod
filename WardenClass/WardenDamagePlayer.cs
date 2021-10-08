@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod;
 using OvermorrowMod.Projectiles.Misc;
+using OvermorrowMod.WardenClass;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameInput;
@@ -197,8 +198,9 @@ namespace WardenClass
         {
             bool meterMax = soulResourceCurrent == soulResourceMax2;
 
-            if (soulPercentage >= 100)
+            if (soulPercentage >= 100 && !soulMeterMax)
             {
+                //player.GetModPlayer<WardenSoulMeter>().frame = 0;
                 soulPercentage = 100;
                 soulMeterMax = true;
             }

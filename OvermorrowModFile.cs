@@ -5,6 +5,7 @@ using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Particles;
 using OvermorrowMod.UI;
+using OvermorrowMod.WardenClass;
 using ReLogic.Graphics;
 using System.Collections.Generic;
 using System.IO;
@@ -439,13 +440,15 @@ namespace OvermorrowMod
 
                     bool meterMax = modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2;
 
-                    if (modPlayer.soulPercentage >= 100)
+                    if (modPlayer.soulPercentage >= 100 && !meterMax)
                     {
-                        modPlayer.soulPercentage = 0;
+                        // Main.NewText("bruh");
+                        // modPlayer.soulPercentage = 100;
                     }
                 }
             }
         }
+
         public override void PostUpdateEverything()
         {
             for (int i = 0; i < Main.maxPlayers; i++)
@@ -458,9 +461,12 @@ namespace OvermorrowMod
 
                     bool meterMax = modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2;
 
-                    if (modPlayer.soulPercentage >= 100)
+                    if (modPlayer.soulPercentage >= 100 && !modPlayer.soulMeterMax && !meterMax)
                     {
+                        Main.NewText("add");
+                        player.GetModPlayer<WardenSoulMeter>().frame = 0;
                         AddSoul(player, 1);
+                        //modPlayer.soulPercentage = 0;
                     }
                 }
             }
