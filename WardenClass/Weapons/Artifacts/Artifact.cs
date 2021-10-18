@@ -248,6 +248,16 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             if (item.type == ModContent.ItemType<TorchGod>())
             {
                 int projectile = Projectile.NewProjectile(position.X, position.Y, speedX, speedY, type, damage, knockBack, player.whoAmI, 0);
+                int numberProjectiles = 2 + Main.rand.Next(2); 
+                for (int i = 0; i < numberProjectiles; i++)
+                {
+                    Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(30));
+                    float scale = 1f - (Main.rand.NextFloat() * .3f);
+                    perturbedSpeed = perturbedSpeed * scale;
+
+                    ProjectileList.Add(Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<SmallBlueFire>(), damage / numberProjectiles, knockBack, player.whoAmI));
+                }
+
                 ProjectileList.Add(projectile);
             }
 

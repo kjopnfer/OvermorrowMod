@@ -1,4 +1,6 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Artifact;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -26,9 +28,10 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             item.UseSound = SoundID.DD2_BetsyFlameBreath;
             item.consumable = false;
             item.autoReuse = false;
-            item.shoot = ModContent.ProjectileType<TorchBall>();
-            item.shootSpeed = 8f;
-            item.damage = 39;
+            //item.shoot = ModContent.ProjectileType<TorchBall>();
+            item.shoot = ModContent.ProjectileType<BigBlueFire>();
+            item.shootSpeed = 12f;
+            item.damage = 69;
             item.knockBack = 3f;
 
             soulResourceCost = 1;
