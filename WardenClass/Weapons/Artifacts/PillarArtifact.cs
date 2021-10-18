@@ -6,8 +6,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 {
     public class PillarArtifact : Artifact
     {
-        public override string Texture => "OvermorrowMod/WardenClass/Weapons/Artifacts/SlimeArtifact";
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Pillar of Fortitude");

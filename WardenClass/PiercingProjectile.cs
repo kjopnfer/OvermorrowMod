@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
+using OvermorrowMod.Items.Consumable;
 using OvermorrowMod.Projectiles.Piercing;
 using System.Collections.Generic;
 using Terraria;
@@ -121,10 +122,17 @@ namespace OvermorrowMod.WardenClass
             // Retrieve the values from the modPlayer as the gain rate
             SoulGain(target, modPlayer.heldGainPercentage);
 
-            /*if (projectile.type == ChainType["Sky"] || projectile.type == ChainType["Corruption"] || projectile.type == ChainType["Crimson"])
+            // The code for the Reaper Book
+            if (ChainType.ContainsValue(projectile.type) && modPlayer.ReaperBook)
             {
-                target.immune[projectile.owner] = 4;
-            }*/
+                if (Main.rand.NextBool(20))
+                {
+                    int item = Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, ModContent.ItemType<ReaperFlame>());
+
+                    if (Main.netMode != NetmodeID.SinglePlayer)
+                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item);
+                }
+            }
 
             if (projectile.type == ChainType["Bone"] || projectile.type == ChainType["Hell"])
             {
