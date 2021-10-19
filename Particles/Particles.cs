@@ -83,7 +83,7 @@ namespace OvermorrowMod.Particles
     }
     public class LightningSpark : CustomParticle
     {
-        public override string Texture => "Textures/Empty";
+        public override string Texture => "OvermorrowMod/Textures/Empty";
 
         public List<Lightning2> lightnings = new List<Lightning2>();
         public override void OnSpawn()
@@ -253,7 +253,7 @@ namespace OvermorrowMod.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.GetTexture("Terraria/Images/Projectile_644");
+            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_644");
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             Color col = Color.White * particle.alpha * 0.9f;
             col.A /= 2;
@@ -274,7 +274,7 @@ namespace OvermorrowMod.Particles
     }
     public class Shockwave : CustomParticle
     {
-        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark;
+        public override string Texture => "Terraria/Projectile_" + ProjectileID.StardustTowerMark;
         public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
         float maxTime = 60f;
         public override void OnSpawn()
@@ -308,7 +308,7 @@ namespace OvermorrowMod.Particles
     }
     public class Shockwave2 : CustomParticle
     {
-        public override string Texture => "TestMod/Textures/Perlin";
+        public override string Texture => "OvermorrowMod/Textures/Perlin";
         public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
         float maxTime = 60f;
         public override void OnSpawn()

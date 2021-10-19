@@ -81,6 +81,7 @@ namespace OvermorrowMod
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
+                TrailTextures = new List<Texture2D>();
                 for (int i = 0; i < 7; i++)
                 {
                     TrailTextures.Add(GetTexture("Effects/TrailTextures/Trail" + i));
