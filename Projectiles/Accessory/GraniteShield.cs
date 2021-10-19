@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Summon;
 using System;
 using Terraria;
@@ -28,7 +29,8 @@ namespace OvermorrowMod.Projectiles.Accessory
         }
         public override void AI()
         {
-            if (Main.player[projectile.owner].HasBuff(ModContent.BuffType<SpiderWebBuff>()))
+            Player player = Main.player[projectile.owner];
+            if (player.HasBuff(ModContent.BuffType<SpiderWebBuff>()))
             {
                 projectile.timeLeft = 2;
             }
@@ -69,13 +71,11 @@ namespace OvermorrowMod.Projectiles.Accessory
 
 
             //Factors for calculations
-            double rad = (Main.player[projectile.owner].Center - Main.MouseWorld).ToRotation(); // rotation
-            double dist = 65; // distance from the owner
+            Vector2 direction = player.DirectionTo(Main.MouseWorld);
+            float dist = 65f;
 
-            projectile.position.X = (Main.player[projectile.owner].Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2) + 7;
-            projectile.position.Y = Main.player[projectile.owner].Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
-
-            projectile.rotation = (float)rad;
+            projectile.Center = player.Center + direction * dist;
+            projectile.rotation = (float)direction.ToRotation();
 
             if (projectile.ai[1] == 0)
             {

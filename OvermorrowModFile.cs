@@ -15,6 +15,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using WardenClass;
+using System;
 
 namespace OvermorrowMod
 {
@@ -46,7 +47,7 @@ namespace OvermorrowMod
         public Effect TextShader;
 
         public static TrailManager TrailManager;
-
+        public static List<Texture2D> TrailTextures;
         public OvermorrowModFile()
         {
             Mod = this;
@@ -72,21 +73,30 @@ namespace OvermorrowMod
             ToggleUI = RegisterHotKey("Toggle UI", "R"); // This is for debugging
 
             if (!Main.dedServ)
-            {            // Effects
+            {
+                // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
                 TrailShader = GetEffect("Effects/Trail");
                 TextShader = GetEffect("Effects/TextShader");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
-
-                HexLoader.Load(false);
+                for (int i = 0; i < 7; i++)
+                {
+                    TrailTextures.Add(GetTexture("Effects/TrailTextures/Traill" + i));
+                }
                 ModUtils.Load(false);
+                HexLoader.Load(false);
                 Particle.Load();
                 TestDetours.Load();
 
                 TrailManager = new TrailManager();
                 ModDetours.Load();
+                foreach (Type type in Code.GetTypes())
+                {
+                    HexLoader.TryRegisteringHex(type);
+                    Particle.TryRegisteringParticle(type);
+                }
 
                 AltarUI = new UserInterface();
 
@@ -316,7 +326,8 @@ namespace OvermorrowMod
             Shockwave = null;
             TrailShader = null;
             TextShader = null;
-
+            
+            TrailTextures = null;
             ModUtils.Load(true);
             HexLoader.Load(true);
             Particle.Unload();
@@ -395,32 +406,7 @@ namespace OvermorrowMod
 
                         break;
                     }
-                    // case Message.meterMaxed:
-                    // {
-                    //     Player player = Main.player[(int)reader.ReadByte()];
-                    //     WardenDamagePlayer wardenPlayer = player.GetModPlayer<WardenDamagePlayer>();
-
-                    //     wardenPlayer.soulMeterMax = reader.ReadBoolean();
-
-                    //     NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(player.name), Color.White);
-
-                    //     if (Main.netMode == NetmodeID.Server) {
-
-                    //         var packet = GetPacket();
-
-                    //         packet.Write((byte)Message.meterMaxed);
-                    //         packet.Write((byte)player.whoAmI);
-                    //         packet.Write(wardenPlayer.soulMeterMax);
-
-                    //         packet.Send(-1, (byte)player.whoAmI);
-                    //     }
-
-                    //     break;   
-                    // }
-
             }
-
-
         }
         public override void PreUpdateEntities()
         {

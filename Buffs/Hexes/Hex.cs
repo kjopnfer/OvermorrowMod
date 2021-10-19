@@ -54,19 +54,18 @@ namespace OvermorrowMod.Buffs.Hexes
             }
             else
             {
-                OvermorrowModFile mod = ModContent.GetInstance<OvermorrowModFile>();
                 ModHex.ModHexes = new Dictionary<int, ModHex>();
                 Hex.HexTypes = new Dictionary<Type, int>();
-                Type baseType = typeof(ModHex);
-                foreach (Type type in mod.Code.GetTypes())
-                {
-                    if (type != baseType && !type.IsAbstract && type.IsSubclassOf(baseType))
-                    {
-                        int id = Hex.HexTypes.Count;
-                        ModHex.ModHexes.Add(id, (ModHex)Activator.CreateInstance(type));
-                        Hex.HexTypes.Add(type, id);
-                    }
-                }
+            }
+        }
+        public static void TryRegisteringHex(Type type)
+        {
+            Type baseType = typeof(ModHex);
+            if (type != baseType && !type.IsAbstract && type.IsSubclassOf(baseType))
+            {
+                int id = Hex.HexTypes.Count;
+                ModHex.ModHexes.Add(id, (ModHex)Activator.CreateInstance(type));
+                Hex.HexTypes.Add(type, id);
             }
         }
     }

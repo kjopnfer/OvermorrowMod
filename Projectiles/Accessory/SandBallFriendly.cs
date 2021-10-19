@@ -55,7 +55,7 @@ namespace OvermorrowMod.Projectiles.Accessory
             {
                 if (projectile.localAI[0] == 0f)
                 {
-                    AdjustMagnitude(ref projectile.velocity);
+                    if (projectile.velocity.Length() > 6f) projectile.velocity = projectile.velocity.SafeNormalize(Vector2.Zero) * 6;
                     projectile.localAI[0] = 1f;
                 }
 
@@ -86,9 +86,9 @@ namespace OvermorrowMod.Projectiles.Accessory
 
                 if (target)
                 {
-                    AdjustMagnitude(ref move);
+                    if (move.Length() > 6f) move = move.SafeNormalize(Vector2.Zero) * 6f;
                     projectile.velocity = (10 * projectile.velocity + move) / 11f;
-                    AdjustMagnitude(ref projectile.velocity);
+                    if (projectile.velocity.Length() > 6f) projectile.velocity = projectile.velocity.SafeNormalize(Vector2.Zero) * 6;
                 }
                 else
                 {
@@ -139,15 +139,6 @@ namespace OvermorrowMod.Projectiles.Accessory
                 Dust dustTrail = Dust.NewDustPerfect(new Vector2(projectile.position.X, projectile.position.Y), 32, projectile.velocity);
                 dustTrail.position = (Main.dust[num1110].position + projectile.Center) / 2f;
                 dustTrail.noGravity = true;
-            }
-        }
-
-        private void AdjustMagnitude(ref Vector2 vector)
-        {
-            float magnitude = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            if (magnitude > 6f)
-            {
-                vector *= 6f / magnitude;
             }
         }
 

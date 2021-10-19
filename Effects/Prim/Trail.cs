@@ -13,7 +13,6 @@ namespace OvermorrowMod.Effects.Prim
         public List<VertexPositionColorTexture> Vertices = new List<VertexPositionColorTexture>();
         public bool Pixelated;
         public DrawType Type;
-        public int EntityType;
         public bool Dead { get; set; }
         public bool Dying { get; set; } = false;
         public Color Color { get; set; }

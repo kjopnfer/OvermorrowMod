@@ -1,9 +1,10 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.Graphics.Effects;
 
 namespace OvermorrowMod.Particles
 {
@@ -11,6 +12,7 @@ namespace OvermorrowMod.Particles
     {
         public CustomParticle cParticle;
         public int type;
+        public int extraUpdates;
         public int id;
         public Vector2 position;
         public Vector2 velocity;
@@ -23,7 +25,7 @@ namespace OvermorrowMod.Particles
         public float[] customData;
         public void Kill() => Particle.RemoveAtIndex(id);
         protected Vector2 DirectionTo(Vector2 pos) => Vector2.Normalize(pos - position);
-        private static readonly int MaxParticleCount = 500;
+        private static int MaxParticleCount = 1000;
         public static int NextIndex;
         public static int ActiveParticles;
         public static Particle[] particles;
@@ -36,46 +38,64 @@ namespace OvermorrowMod.Particles
             ParticleTypes = new Dictionary<Type, int>();
             ParticleTextures = new Dictionary<int, Texture2D>();
             ParticleNames = new Dictionary<int, string>();
-            CustomParticle.CustomParticles = new Dictionary<int, CustomParticle>();
-            OvermorrowModFile mod = OvermorrowModFile.Mod;
-            foreach (Type type in mod.Code.GetTypes())
+			CustomParticle.CustomParticles = new Dictionary<int, CustomParticle>();
+            On.Terraria.Main.DrawInterface += Draw;
+        }
+        public static void TryRegisteringParticle(Type type)
+        {
+            Type baseType = typeof(CustomParticle);
+            if (type.IsSubclassOf(baseType) && !type.IsAbstract && type != baseType)
             {
-                if (type.IsSubclassOf(typeof(CustomParticle)) && !type.IsAbstract && type != typeof(CustomParticle))
-                {
-                    int id = ParticleTypes.Count;
-                    ParticleTypes.Add(type, id);
-                    CustomParticle particle = (CustomParticle)Activator.CreateInstance(type);
-                    particle.mod = mod;
-                    CustomParticle.CustomParticles.Add(id, particle);
-                    Texture2D texture = particle.Texture == null ? ModContent.GetTexture(type.FullName.Replace('.', '/')) : mod.GetTexture(particle.Texture);
-                    ParticleTextures.Add(id, texture);
-                    ParticleNames.Add(id, type.Name);
-                }
+                int id = ParticleTypes.Count;
+                ParticleTypes.Add(type, id);
+                CustomParticle particle = (CustomParticle)Activator.CreateInstance(type);
+                particle.mod = OvermorrowModFile.Mod;
+                CustomParticle.CustomParticles.Add(id, particle);
+                Texture2D texture = particle.Texture == null ? ModContent.GetTexture(type.FullName.Replace('.', '/')) : ModContent.GetTexture(particle.Texture);
+                ParticleTextures.Add(id, texture);
+                ParticleNames.Add(id, type.Name);
             }
         }
         public static void Unload()
         {
+            NextIndex = -1;
+            ActiveParticles = -1;
+            MaxParticleCount = -1;
+            On.Terraria.Main.DrawInterface -= Draw;
             particles = null;
             ParticleTypes = null;
             ParticleTextures = null;
             ParticleNames = null;
             CustomParticle.CustomParticles = null;
         }
+        public static void Draw(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)
+        {
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+            DrawParticles(Main.spriteBatch);
+            Main.spriteBatch.End();
+            orig(self, time);
+        }
         public static void UpdateParticles()
         {
-            foreach (Particle particle in particles)
+            foreach(Particle particle in particles)
             {
                 if (particle == null) continue;
-                particle.activeTime++;
-                if (particle.cParticle.ShouldUpdatePosition())
-                    particle.position += particle.velocity;
-                particle.cParticle.particle = particle;
-                particle.cParticle.Update();
+                for (int i = 0; i < particle.extraUpdates + 1; i++)
+                {
+                    particle.activeTime++;
+                    if (particle.cParticle.ShouldUpdatePosition())
+                        particle.position += particle.velocity;
+                    particle.cParticle.particle = particle;
+                    particle.cParticle.Update();
+                    particle.oldPos[0] = particle.position;
+                    for (int j = (particle.oldPos.Length - 1); j > 0; j--)
+                        particle.oldPos[j] = particle.oldPos[j - 1];
+                }
             }
         }
         public static void DrawParticles(SpriteBatch spriteBatch)
         {
-            foreach (Particle particle in particles)
+            foreach(Particle particle in particles)
             {
                 if (particle == null) continue;
                 particle.cParticle.particle = particle;
@@ -83,7 +103,7 @@ namespace OvermorrowMod.Particles
                 {
                     particle.cParticle.Draw(spriteBatch);
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                     OvermorrowModFile.Mod.Logger.Error(e.Message);
                     OvermorrowModFile.Mod.Logger.Error(e.StackTrace);
@@ -103,7 +123,7 @@ namespace OvermorrowMod.Particles
         }
         public static bool ParticleExists(int type)
         {
-            foreach (Particle particle in particles)
+            foreach(Particle particle in particles)
             {
                 if (particle == null) continue;
                 if (particle.type == type) return true;
@@ -127,9 +147,9 @@ namespace OvermorrowMod.Particles
             particle.alpha = alpha;
             particle.scale = scale;
             particle.rotation = rotation;
-            particle.customData = new float[4] { data1, data2, data3, data4 };
+            particle.customData = new float[4] {data1, data2, data3, data4};
             particle.id = NextIndex;
-
+            
             CustomParticle particle1 = (CustomParticle)Activator.CreateInstance(CustomParticle.GetCParticle(particle.type).GetType());
             particle.cParticle = particle1;
             particle.cParticle.particle = particle;
@@ -137,14 +157,30 @@ namespace OvermorrowMod.Particles
 
             particles[NextIndex] = particle;
             if (NextIndex + 1 < particles.Length && particles[NextIndex + 1] == null)
-                NextIndex++;
-            else
-                for (int i = 0; i < particles.Length; i++)
-                    if (particles[i] == null)
-                        NextIndex = i;
+				NextIndex++;
+			else
+				for (int i = 0; i < particles.Length; i++)
+					if (particles[i] == null)
+						NextIndex = i;
 
             ActiveParticles++;
             return particle.id;
+        }
+    }
+    public class CustomParticle
+    {
+        public static Dictionary<int, CustomParticle> CustomParticles;
+        public OvermorrowModFile mod;
+        public static CustomParticle GetCParticle(int type) => CustomParticles[type];
+        public Particle particle;
+        public virtual void OnSpawn() { }
+        public virtual void Update() { }
+        public virtual string Texture { get{return null; } private set{}}
+		public virtual bool ShouldUpdatePosition() => true;
+        public virtual void Draw(SpriteBatch spriteBatch) 
+        {
+            Texture2D texture = Particle.GetTexture(particle.type);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width / 2, texture.Height / 2), particle.scale, SpriteEffects.None, 0f);
         }
     }
 }

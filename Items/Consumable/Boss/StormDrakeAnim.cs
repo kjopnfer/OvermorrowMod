@@ -56,7 +56,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
 
                         if (projectile.ai[1]++ > 300)
                         {
-                            Particle.CreateParticle(Particle.ParticleType<Shockwave3>(), projectile.Center, Vector2.Zero, Color.DarkCyan, 1, 5, 0, 1f);
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), projectile.Center, Vector2.Zero, Color.DarkCyan, 1, 5, 0, 1f);
                             Player player = Main.player[projectile.owner];
                             player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
                             player.GetModPlayer<OvermorrowModPlayer>().ScreenShake = 50;

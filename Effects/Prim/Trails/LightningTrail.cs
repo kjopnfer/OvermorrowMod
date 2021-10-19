@@ -32,7 +32,7 @@ namespace OvermorrowMod.Effects.Prim.Trails
         public override void PrepareEffect()
         {
             Effect.SafeSetParameter("WorldViewProjection", GetWVP());
-            Effect.SafeSetParameter("uImage0", OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail7"));
+            Effect.SafeSetParameter("uImage0", OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail6"));
             Effect.CurrentTechnique.Passes["Texturized"].Apply();
         }
         public override void PrepareTrail()

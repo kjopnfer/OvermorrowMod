@@ -8,7 +8,6 @@ namespace OvermorrowMod.Items.Accessories.Expert
 {
     public class ArmBracer : ModItem
     {
-        private string sandMode;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dharuud's Arm Bracer");
@@ -36,6 +35,7 @@ namespace OvermorrowMod.Items.Accessories.Expert
             {
                 hotkey = key;
             }
+            string sandMode = "";
 
             foreach (TooltipLine line in tooltips)
             {
