@@ -83,7 +83,7 @@ namespace OvermorrowMod
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
                 for (int i = 0; i < 7; i++)
                 {
-                    TrailTextures.Add(GetTexture("Effects/TrailTextures/Traill" + i));
+                    TrailTextures.Add(GetTexture("Effects/TrailTextures/Trail" + i));
                 }
                 ModUtils.Load(false);
                 HexLoader.Load(false);

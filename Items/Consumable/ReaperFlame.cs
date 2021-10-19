@@ -1,4 +1,6 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
+using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -30,6 +32,9 @@ namespace OvermorrowMod.Items.Consumable
         public override bool CanPickup(Player player)
         {
             // Can only pick up the item if the player is holding an Artifact or Chain Weapon
+            if (player.HeldItem.modItem != null)
+                player.GetModPlayer<WardenDamagePlayer>().UIToggled = player.HeldItem.modItem is Artifact || player.HeldItem.modItem is PiercingItem;
+
             return player.GetModPlayer<WardenDamagePlayer>().UIToggled;
         }
 
