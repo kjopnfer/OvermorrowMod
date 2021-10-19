@@ -11,7 +11,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         {
             DisplayName.SetDefault("Book of the Reaper");
             Tooltip.SetDefault("Enemies you hit have a 5% chance to create a Reaped Soul\n" +
-                "Picking up Reaped Souls increases the Soul Meter by 10%" +
+                "Picking up Reaped Souls increases the Soul Meter by 3%" +
                 "\n'Hey look! This has my name in it!'");
         }
 

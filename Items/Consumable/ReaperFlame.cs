@@ -43,7 +43,7 @@ namespace OvermorrowMod.Items.Consumable
             var modPlayer = player.GetModPlayer<WardenDamagePlayer>();
             if (modPlayer.soulPercentage < 100)
             {
-                modPlayer.soulPercentage += 10;
+                modPlayer.soulPercentage += 3;
             }
 
             return false;
