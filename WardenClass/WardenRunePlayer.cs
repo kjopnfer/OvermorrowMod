@@ -21,7 +21,8 @@ namespace OvermorrowMod.WardenClass
             MushroomRune = 4,
             CrimsonRune = 5,
             CorruptionRune = 6,
-            JungleRune = 7
+            JungleRune = 7,
+            DefaultRune = 8
         }
 
         public Runes RuneID;
@@ -129,6 +130,9 @@ namespace OvermorrowMod.WardenClass
                     break;
                 case Runes.JungleRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/JungleRuneCircle");
+                    break;
+                case Runes.DefaultRune:
+                    symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DefaultRuneCircle");
                     break;
                 default:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");

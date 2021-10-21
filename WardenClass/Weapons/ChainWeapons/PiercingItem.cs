@@ -104,7 +104,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
 
 
-        protected void ConsumeSouls(int numSouls, Player player)
+        public static void ConsumeSouls(int numSouls, Player player)
         {
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
