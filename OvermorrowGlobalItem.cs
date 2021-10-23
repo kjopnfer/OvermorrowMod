@@ -21,6 +21,7 @@ namespace OvermorrowMod
             {
                 item.damage = 5;
                 item.value = Item.sellPrice(gold: 2, silver: 75);
+                item.autoReuse = false;
 
                 item.melee = false;
                 item.ranged = false;
