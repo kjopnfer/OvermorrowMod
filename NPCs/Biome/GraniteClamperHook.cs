@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Biome
 {
-    public class TestHook : ModProjectile
+    public class GraniteClamperHook : ModProjectile
     {
         private int timer = 0;
         Vector2 DrawToPos;
