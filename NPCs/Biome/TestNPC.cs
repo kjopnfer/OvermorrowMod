@@ -15,8 +15,8 @@ namespace OvermorrowMod.NPCs.Biome
 
         public override void SetDefaults()
         {
-            npc.width = 46;
-            npc.height = 76;
+            npc.width = 44;
+            npc.height = 42;
             npc.damage = 40;
             npc.defense = 9;
             npc.lifeMax = 90;
