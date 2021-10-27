@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.NPCs.Biome
 {
     // This should not exist, probably
-    public class TestNPC : ModNPC
+    public class GraniteClamper : ModNPC
     {
         public override void SetStaticDefaults()
         {
@@ -15,8 +15,8 @@ namespace OvermorrowMod.NPCs.Biome
 
         public override void SetDefaults()
         {
-            npc.width = 46;
-            npc.height = 76;
+            npc.width = 44;
+            npc.height = 42;
             npc.damage = 40;
             npc.defense = 9;
             npc.lifeMax = 90;
@@ -34,7 +34,7 @@ namespace OvermorrowMod.NPCs.Biome
             timer++;
             if (timer == 1)
             {
-                int proj = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("TestHook"), 13, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
+                int proj = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("GraniteClamperHook"), 13, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
                 npc.netUpdate = true;
             }
         }
