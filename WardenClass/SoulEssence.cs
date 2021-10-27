@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
+using OvermorrowMod.Particles;
+using OvermorrowMod.WardenClass;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -9,12 +11,13 @@ using Terraria.ModLoader;
 
 namespace WardenClass
 {
-    public class SoulEssence : ModProjectile, ITrailEntity
+    public class SoulEssence : OrbitingProjectile, ITrailEntity
     {
         public Type TrailType()
         {
             return typeof(SoulTrail);
         }
+
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
@@ -31,12 +34,22 @@ namespace WardenClass
             projectile.alpha = 255;
             projectile.ignoreWater = true;
             projectile.timeLeft = 2;
+
+            ProjectileSlot = 1;
+            Period = 300;
+            PeriodFast = 100;
+            ProjectileSpeed = 8;
+            OrbitingRadius = 100;
+            CurrentOrbitingRadius = 300;
         }
 
         public override void AI()
         {
             //Making player variable "p" set as the projectile's owner
-            Player player = Main.player[projectile.owner];
+            player = Main.player[projectile.owner];
+
+            RelativeVelocity = player.velocity;
+            OrbitCenter = player.Center;
 
             var modPlayer = WardenDamagePlayer.ModPlayer(player);
 
@@ -46,46 +59,39 @@ namespace WardenClass
                 projectile.timeLeft = 2;
             }
 
-            /*projectile.localAI[0] += 1f;
-            if (projectile.localAI[0] > 4f)
-            {
-                for (int num1163 = 0; num1163 < 5; num1163++)
-                {
-                    int num1161 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 175, 0f, 0f, 100, default(Color), 2f);
-                    Main.dust[num1161].noGravity = true;
-                    Dust dust81 = Main.dust[num1161];
-                    dust81.velocity *= 0f;
-                }
-            }*/
-
             if (player.dead)
             {
                 projectile.Kill();
                 return;
             }
 
-            //Factors for calculations
-            double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
-            double rad = deg * (Math.PI / 180); //Convert degrees to radians
-            double dist = projectile.ai[0]; //Distance away from the player
+            projectile.rotation += 0.04f;
+            projectile.ai[1]++;
+
+            // Factors for calculations
+            // double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+            // double rad = deg * (Math.PI / 180); //Convert degrees to radians
+            // double dist = projectile.ai[0]; //Distance away from the player
 
             /*Position the player projectiled on where the player is, the Sin/Cos of the angle times the /
 			/distance for the desired distance away from the player minus the projectile's width   /
 			/and height divided by two so the center of the projectile is at the right place.     */
-            projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
-            projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
+            // projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
+            // projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
 
             //Increase the counter/angle in degrees by 1 point, you can change the rate here too, but the orbit may look choppy depending on the value
-            if (projectile.knockBack == 1)
+            /*if (projectile.knockBack == 1)
             {
                 projectile.ai[1] += 4f;
             }
             else
             {
                 projectile.ai[1] -= 4f;
-            }
+            }*/
 
-            projectile.rotation += 0.1f;
+            base.AI();
+
+            // projectile.rotation = (float)rad;
         }
 
         public override bool? CanCutTiles()
@@ -93,66 +99,35 @@ namespace WardenClass
             return false;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            /*Vector2 center = new Vector2((float)(Main.npcTexture[projectile.type].Width / 2), (float)(Main.npcTexture[projectile.type].Height / Main.framecou[projectile.type] / 2));
-
-            Main.spriteBatch.Draw(SoulTexture, projectile.Center - Main.screenPosition, null, Color.Cyan, projectile.rotation, center, 1, SpriteEffects.None, 0f);*/
-
-
-            /*Texture2D projTexture = ModContent.GetTexture("OvermorrowMod/Effects/Trail3");
-            int length = 32;
-            TrailHelper helper = new TrailHelper(projectile.oldPos, new TrailConfig
-            {
-                color = delegate (float progress)
-                {
-                    return Color.Lerp(Color.Cyan, Color.White, progress) * (1f - progress);
-                },
-                size = delegate (float progress)
-                {
-                    return 16f * (1f - progress);
-                },
-                Length = length,
-                texture = projTexture,
-                TAlpha = true
-            });
-            helper.Draw();*/
-
-            /*PrimitivePacket packet = new PrimitivePacket();
-            float size = 100f;
-            packet.Pass = "Basic";
-            packet.Type = PrimitiveType.TriangleStrip;
-            for (int i = 0; i < 4; i++)
-            {
-                packet.Add(projectile.Center + Vector2.One.RotatedBy(Math.PI / 2 * i) * size, Color.Red, Vector2.Zero);
-            }
-            packet.Send();*/
-
-            return base.PreDraw(spriteBatch, lightColor);
-        }
-
         public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.GetTexture("OvermorrowMod/Textures/Extra_89");
+            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_644");
+            Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
+            Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
 
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (projectile.spriteDirection == -1)
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(182, 255, 231), projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(MathHelper.Lerp(0.3f, 0.5f, (float)Math.Sin(projectile.ai[1] / 10f)), 1f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(182, 255, 231), projectile.rotation, drawOrigin, new Vector2(MathHelper.Lerp(0.3f, 0.5f, (float)Math.Sin(projectile.ai[1] / 10f)), 1f), SpriteEffects.None, 0);
+            
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            if (Proj_State == 1 || Proj_State == 2)
             {
-                spriteEffects = SpriteEffects.FlipHorizontally;
+                GeneratePositionsAfterKill();
             }
-            int frameHeight = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-            int startY = frameHeight * projectile.frame;
-            Rectangle sourceRectangle = new Rectangle(0, startY, SoulTexture.Width, frameHeight);
-            Vector2 origin = sourceRectangle.Size() / 2f;
 
-            Main.spriteBatch.Draw(SoulTexture,
-                projectile.Center - Main.screenPosition,
-                null, Color.Cyan, projectile.rotation, SoulTexture.Size() / 2, projectile.scale * 0.8f, spriteEffects, 0f);
+            Vector2 origin = projectile.Center;
+            float radius = 5;
+            int numLocations = 3;
 
+            for (int i = 0; i < 3; i++)
+            {
+                Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                Vector2 dustvelocity = new Vector2(0f, 0.5f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * 2;
 
-            Main.spriteBatch.Draw(SoulTexture,
-                projectile.Center - Main.screenPosition,
-                null, Color.Lerp(Color.Cyan, Color.Transparent, 0.75f), projectile.rotation * -1, SoulTexture.Size() / 2, projectile.scale, spriteEffects, 0f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Color.Cyan, 1, 0.5f, MathHelper.ToRadians(360f / numLocations * i), 1f);
+            }
         }
     }
 }
