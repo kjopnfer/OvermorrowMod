@@ -84,8 +84,6 @@ namespace OvermorrowMod
                 if (player.altFunctionUse == 2 && modPlayer.soulResourceCurrent >= 1 && player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.None)
                 {
                     item.useStyle = ItemUseStyleID.HoldingUp;
-                    item.useAnimation = 45;
-                    item.useTime = 45;
                     item.damage = 5;
                     item.shootSpeed = 0f;
                     item.shoot = ProjectileID.None;
@@ -97,15 +95,11 @@ namespace OvermorrowMod
                 }
                 else
                 {
-                    item.autoReuse = true;
+                    item.autoReuse = false;
                     item.useStyle = ItemUseStyleID.HoldingOut;
                     item.useTurn = true;
                     item.damage = 5;
-                    item.useAnimation = 14;
-                    item.useTime = 14;
                     item.UseSound = SoundID.Item71;
-                    item.shootSpeed = 18f + modPlayer.modifyShootSpeed();
-                    item.shoot = mod.ProjectileType("BlazePiercerProjectile");
                 }
 
             }
