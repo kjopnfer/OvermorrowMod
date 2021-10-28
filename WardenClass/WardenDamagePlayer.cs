@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod;
+using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Projectiles.Misc;
 using OvermorrowMod.WardenClass;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace WardenClass
         public bool FireRune;
         public bool FrostburnRune;
         public bool FungalRune;
+        public bool LacusiteGauntlet;
         public bool ObsidianShackle;
         public bool PoisonRune;
         public bool ReaperBook;
@@ -30,6 +32,8 @@ namespace WardenClass
 
         public float soulPercentage = 0;
         public float heldGainPercentage = 0;
+
+        public bool Shattered;
 
         public static WardenDamagePlayer ModPlayer(Player player)
         {
@@ -105,10 +109,13 @@ namespace WardenClass
             FireRune = false;
             FrostburnRune = false;
             FungalRune = false;
+            LacusiteGauntlet = false;
             ObsidianShackle = false;
             PoisonRune = false;
             ReaperBook = false;
             SoulRing = false;
+
+            Shattered = false;
 
             HemoArmor = false;
             WaterArmor = false;
@@ -277,6 +284,16 @@ namespace WardenClass
             packet.Write((byte)soulResourceCurrent);
 
             packet.Send();
+        }
+
+        public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit)
+        {
+            if (player.GetModPlayer<WardenDamagePlayer>().LacusiteGauntlet && !Shattered)
+            {
+                player.AddBuff(ModContent.BuffType<Shattered>(), 60 * 20);
+            }
+
+            base.PostHurt(pvp, quiet, damage, hitDirection, crit);
         }
     }
 }
