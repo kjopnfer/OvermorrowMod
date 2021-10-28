@@ -15,7 +15,7 @@ namespace OvermorrowMod.Items.Consumable
         {
             DisplayName.SetDefault("Reaped Soul");
             ItemID.Sets.ItemNoGravity[item.type] = true;
-            Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(6, 9));
+            Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(3, 9));
         }
 
         public override void SetDefaults()
