@@ -106,21 +106,27 @@ namespace OvermorrowMod.WardenClass
             modPlayer.rotateCounter++;
 
             Texture2D symbolTexture = null;
+            Texture2D ringTexture = null;
+            Texture2D ringTexture2 = null; // Reserved for certain Rune Circles like the Chain Knife
 
             // Symbol Texture
             switch (modPlayer.RuneID)
             {
                 case Runes.HellRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/HellRuneCircle");
+                    ringTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/HellCircle_Outer");
                     break;
                 case Runes.BoneRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DungeonRuneCircle2");
+                    ringTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DungeonCircle_Outer");
                     break;
                 case Runes.SkyRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/SkyRuneCircle");
+                    ringTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/SkyCircle_Outer");
                     break;
                 case Runes.MushroomRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/MushroomRuneCircle");
+                    ringTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/MushroomCircle_Outer");
                     break;
                 case Runes.CrimsonRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonRuneCircle");
@@ -133,6 +139,8 @@ namespace OvermorrowMod.WardenClass
                     break;
                 case Runes.DefaultRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DefaultRuneCircle");
+                    ringTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DefaultCircle_Outer1");
+                    ringTexture2 = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DefaultCircle_Outer2");
                     break;
                 default:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/temp");
@@ -149,6 +157,18 @@ namespace OvermorrowMod.WardenClass
 
             DrawData data = new DrawData(symbolTexture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.White, rad, symbolTexture.Size() / 2f, scale, SpriteEffects.None, 0);
             Main.playerDrawData.Add(data);
+
+            if (ringTexture != null)
+            {
+                DrawData data2 = new DrawData(ringTexture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.White, rad * -1, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
+                Main.playerDrawData.Add(data2);
+
+                if(ringTexture2 != null)
+                {
+                    DrawData data3 = new DrawData(ringTexture2, position, new Microsoft.Xna.Framework.Rectangle?(), Color.White, rad * -1 * 0.5f, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
+                    Main.playerDrawData.Add(data3);
+                }
+            }
         });
 
         public static readonly PlayerLayer Mirror = new PlayerLayer("OvermorrowMod", "Body", delegate (PlayerDrawInfo drawInfo)
