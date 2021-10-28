@@ -9,6 +9,7 @@ using OvermorrowMod.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Tiles.Block;
 using OvermorrowMod.Tiles.TrapOre;
 using OvermorrowMod.WardenClass.Accessories;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,7 +48,8 @@ namespace OvermorrowMod
         public static int graniteBiome;
 
         private bool placedBook = false;
-        private bool placedwep = false;
+        private bool placedGranite = false;
+        private bool placedPearl = false;
         private bool placedtele = false;
         private bool placedclaw = false;
 
@@ -184,13 +186,15 @@ namespace OvermorrowMod
         {
             // Place items in Gold Chests
             int[] itemsToPlaceInDungeonChests = { ModContent.ItemType<ReaperBook>() };
+            int[] dungeonWalls = { 7, 8, 9, 94, 98, 96, 95, 99, 97 };
+
             int itemsToPlaceInDungeonChestsChoice = 0;
             for (int chestIndex = 0; chestIndex < 1000; chestIndex++)
             {
                 Chest chest = Main.chest[chestIndex];
                 // If you look at the sprite for Chests by extracting Tiles_21.xnb, you'll see that the 12th chest is the Ice Chest. Since we are counting from 0, this is where 11 comes from. 36 comes from the width of each tile including padding. 
                 // For a Locked Dungeon Chest, it is the 3rd chest therefore the value will be 2.
-                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 2 * 36)
+                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 2 * 36 && dungeonWalls.Contains(Main.tile[chest.x, chest.y].wall))
                 {
                     if (!placedBook) // Guarantees at least one book in a Dungeon Chest
                     {
@@ -200,7 +204,6 @@ namespace OvermorrowMod
                             {
                                 chest.item[inventoryIndex].SetDefaults(itemsToPlaceInDungeonChests[itemsToPlaceInDungeonChestsChoice]);
                                 itemsToPlaceInDungeonChestsChoice = (itemsToPlaceInDungeonChestsChoice + 1) % itemsToPlaceInDungeonChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
                                 break;
                             }
                         }
@@ -208,15 +211,14 @@ namespace OvermorrowMod
                     }
                     else
                     {
-                        if (Main.rand.Next(5) == 0)
+                        if (Main.rand.NextBool(7))
                         {
                             for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
                             {
-                                if (inventoryIndex == 1)
+                                if (inventoryIndex == 0)
                                 {
                                     chest.item[inventoryIndex].SetDefaults(itemsToPlaceInDungeonChests[itemsToPlaceInDungeonChestsChoice]);
                                     itemsToPlaceInDungeonChestsChoice = (itemsToPlaceInDungeonChestsChoice + 1) % itemsToPlaceInDungeonChests.Length;
-                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
                                     break;
                                 }
                             }
@@ -224,13 +226,46 @@ namespace OvermorrowMod
                     }
                 }
 
-
+                int[] itemsToPlaceInShadowChests = { ModContent.ItemType<DarkPearl>() };
+                int itemsToPlaceInShadowChestsChoice = 0;
+                // The frame for the Locked Shadow Chest is 4
+                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 4 * 36)
+                {
+                    if (!placedPearl) // Guarantees at least one Dark Pearl in a Shadow Chest
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (inventoryIndex == 0)
+                            {
+                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInShadowChests[itemsToPlaceInShadowChestsChoice]);
+                                itemsToPlaceInShadowChestsChoice = (itemsToPlaceInShadowChestsChoice + 1) % itemsToPlaceInShadowChests.Length;
+                                break;
+                            }
+                        }
+                        placedPearl = true;
+                    }
+                    else
+                    {
+                        if (Main.rand.NextBool(7))
+                        {
+                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                            {
+                                if (inventoryIndex == 0)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInShadowChests[itemsToPlaceInShadowChestsChoice]);
+                                    itemsToPlaceInShadowChestsChoice = (itemsToPlaceInShadowChestsChoice + 1) % itemsToPlaceInShadowChests.Length;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
                 int itemsToPlaceInGranChestsChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 50 * 36)
                 {
-                    if (!placedwep) // Guarantees at least one book in a Dungeon Chest
+                    if (!placedGranite) // Guarantees at least one book in a Dungeon Chest
                     {
                         for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
                         {
@@ -242,7 +277,7 @@ namespace OvermorrowMod
                                 break;
                             }
                         }
-                        placedwep = true;
+                        placedGranite = true;
                     }
                     else
                     {
@@ -302,20 +337,6 @@ namespace OvermorrowMod
                     }
                 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 int[] itemsToPlaceInSteamChests = { 953 };
                 int itemsToPlaceInSteampunkChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 30 * 36)
@@ -351,9 +372,6 @@ namespace OvermorrowMod
                         }
                     }
                 }
-
-
-
 
                 int[] itemsToPlaceInSkyChests = { ModContent.ItemType<FeatherArrowAmmo>() };
                 int itemsToPlaceInSkyChoice = 0;
@@ -391,8 +409,6 @@ namespace OvermorrowMod
                 }
             }
         }
-
-
 
         void StackSkyChest1(Item[] ChestInventory)
         {
