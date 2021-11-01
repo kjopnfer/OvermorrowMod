@@ -44,6 +44,14 @@ namespace OvermorrowMod.WardenClass
                 }
 
                 layers.Insert(body - 1, Rune);
+
+                int body2 = layers.FindIndex(l => l == PlayerLayer.MiscEffectsFront);
+                if (body2 < 0)
+                {
+                    return;
+                }
+
+                layers.Insert(body2 - 1, Front);
             }
 
             if (player.GetModPlayer<OvermorrowModPlayer>().mirrorBuff)
@@ -59,6 +67,7 @@ namespace OvermorrowMod.WardenClass
         }
 
         public int runeCounter;
+        public int outerCounter;
         public int rotateCounter;
         public bool runeDeactivate = false;
         public static readonly PlayerLayer Rune = new PlayerLayer("OvermorrowMod", "Body", delegate (PlayerDrawInfo drawInfo)
@@ -130,12 +139,14 @@ namespace OvermorrowMod.WardenClass
                     break;
                 case Runes.CrimsonRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonRuneCircle");
+                    ringTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonCircle_Outer");
                     break;
                 case Runes.CorruptionRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CorruptionRuneCircle");
                     break;
                 case Runes.JungleRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/JungleRuneCircle");
+                    ringTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/JungleCircle_Outer");
                     break;
                 case Runes.DefaultRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DefaultRuneCircle");
@@ -147,41 +158,124 @@ namespace OvermorrowMod.WardenClass
                     break;
             }
 
-            Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2)) + new Vector2((-drawPlayer.direction), 0);
+            Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2));
 
             // Replaced drawPlayer.miscCounter with modPlayer.symbolCounter, there might be syncing issues idk
             double deg = (modPlayer.rotateCounter * 0.8) * MathHelper.Lerp(1, 4, (float)(!modPlayer.runeDeactivate ? modPlayer.runeCounter / 300.0 : 1));
             float rad = (float)(deg * (Math.PI / 180));
 
-            float scale = (float)((modPlayer.runeCounter * 2 >= 300 ? 300 : modPlayer.runeCounter * 2) / 300.0) /** 1.25f*/;
+            float scale = (float)((modPlayer.runeCounter * 2 >= 300 ? 300 : modPlayer.runeCounter * 2) / 300.0);
 
             DrawData data = new DrawData(symbolTexture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.White, rad, symbolTexture.Size() / 2f, scale, SpriteEffects.None, 0);
             Main.playerDrawData.Add(data);
 
             if (ringTexture != null)
             {
-                DrawData data2 = new DrawData(ringTexture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.White, rad * -1, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
+                if (!modPlayer.runeDeactivate && scale == 1)
+                {
+                    if (modPlayer.outerCounter < 300)
+                    {
+                        modPlayer.outerCounter++;
+                    }
+                }
+                else
+                {
+                    if (modPlayer.outerCounter > 0)
+                    {
+                        modPlayer.outerCounter -= 5;
+                    }
+                }
+
+                Color runeColor = Color.Lerp(Color.Transparent, Color.White, (float)((modPlayer.outerCounter * 2 >= 300 ? 300 : modPlayer.outerCounter * 2) / 300.0));
+
+                DrawData data2 = new DrawData(ringTexture, position, new Microsoft.Xna.Framework.Rectangle?(), runeColor, rad * -1, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
                 Main.playerDrawData.Add(data2);
 
-                if(ringTexture2 != null)
+                if (ringTexture2 != null)
                 {
-                    DrawData data3 = new DrawData(ringTexture2, position, new Microsoft.Xna.Framework.Rectangle?(), Color.White, rad * -1 * 0.5f, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
+                    DrawData data3 = new DrawData(ringTexture2, position, new Microsoft.Xna.Framework.Rectangle?(), modPlayer.runeDeactivate ? Color.White : Color.White, rad * -1 * 0.5f, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
                     Main.playerDrawData.Add(data3);
                 }
             }
         });
 
-        public static readonly PlayerLayer Mirror = new PlayerLayer("OvermorrowMod", "Body", delegate (PlayerDrawInfo drawInfo)
+        public float runeCounter2;
+        public static readonly PlayerLayer Front = new PlayerLayer("OvermorrowMod", "Body", delegate (PlayerDrawInfo drawInfo)
         {
             Player drawPlayer = drawInfo.drawPlayer;
             Mod mod = ModLoader.GetMod("OvermorrowMod");
+            WardenRunePlayer modPlayer = drawPlayer.GetModPlayer<WardenRunePlayer>();
 
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/WardenClass/Textures/boble");
+            if (modPlayer.runeDeactivate && modPlayer.runeCounter == 0)
+            {
+                modPlayer.runeCounter2 = 0;
+                return;
+            }
 
-            Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2)) + new Vector2((-drawPlayer.direction), 0);
+            Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2));
 
-            DrawData data = new DrawData(texture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.Lerp(Color.White, Color.Transparent, (float)Math.Sin(drawPlayer.miscCounter / 100f)), drawPlayer.bodyRotation, texture.Size() / 2f, 1, SpriteEffects.None, 0);
-            Main.playerDrawData.Add(data);
+            Texture2D runeTexture = null;
+
+            switch (modPlayer.RuneID)
+            {
+                case Runes.HellRune:
+
+                    break;
+                case Runes.BoneRune:
+
+                    break;
+                case Runes.SkyRune:
+                    runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/SkyRune");
+                    break;
+                case Runes.MushroomRune:
+
+                    break;
+                case Runes.CrimsonRune:
+                    runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonRune");
+                    break;
+                case Runes.CorruptionRune:
+                    break;
+                case Runes.JungleRune:
+
+                    break;
+                case Runes.DefaultRune:
+
+                    break;
+                default:
+                    break;
+            }
+
+            float scaleCap = 90f;
+            float runeScale = (float)MathHelper.Lerp(0, 2.25f, modPlayer.runeCounter2 / scaleCap);
+            if (runeTexture != null && runeScale != 2.25f)
+            {
+                // Slows down the counter near the end
+                if (modPlayer.runeCounter2 < scaleCap - 20)
+                {
+                    modPlayer.runeCounter2++;
+                }
+                else
+                {
+                    modPlayer.runeCounter2 += 0.25f;
+                }
+
+                DrawData data = new DrawData(runeTexture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.Lerp(Color.White, Color.Transparent, (float)Math.Sin(modPlayer.runeCounter2 / scaleCap)), drawPlayer.bodyRotation, runeTexture.Size() / 2f, runeScale, SpriteEffects.None, 0);
+                Main.playerDrawData.Add(data);
+            }
         });
+
+        public static readonly PlayerLayer Mirror = new PlayerLayer("OvermorrowMod", "Body", delegate (PlayerDrawInfo drawInfo)
+            {
+                Player drawPlayer = drawInfo.drawPlayer;
+                Mod mod = ModLoader.GetMod("OvermorrowMod");
+                WardenRunePlayer modPlayer = drawPlayer.GetModPlayer<WardenRunePlayer>();
+
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/WardenClass/Textures/boble");
+
+                Vector2 position = new Vector2((int)(drawPlayer.position.X - (double)Main.screenPosition.X - (drawPlayer.bodyFrame.Width / 2) + (drawPlayer.width / 2)), (int)(drawPlayer.position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0)) + drawPlayer.bodyPosition + new Vector2((drawPlayer.bodyFrame.Width / 2), (drawPlayer.bodyFrame.Height / 2));
+
+                DrawData data = new DrawData(texture, position, new Microsoft.Xna.Framework.Rectangle?(), Color.Lerp(Color.White, Color.Transparent, (float)Math.Sin(drawPlayer.miscCounter / 100f)), drawPlayer.bodyRotation, texture.Size() / 2f, 1, SpriteEffects.None, 0);
+                Main.playerDrawData.Add(data);
+            });
     }
 }
