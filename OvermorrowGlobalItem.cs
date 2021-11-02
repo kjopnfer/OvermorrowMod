@@ -91,14 +91,16 @@ namespace OvermorrowMod
 
                     PiercingItem.ConsumeSouls(1, player);
                     player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
-                    player.AddBuff(ModContent.BuffType<ChainRune>(), 600);
+                    player.AddBuff(ModContent.BuffType<ChainRune>(), 60 * 15);
                 }
                 else
                 {
                     item.autoReuse = false;
                     item.useStyle = ItemUseStyleID.HoldingOut;
                     item.useTurn = true;
+                    item.shootSpeed = 8f + modPlayer.modifyShootSpeed();
                     item.damage = 5;
+                    item.shoot = ModContent.ProjectileType<ChainKnifeProjectile>();
                     item.UseSound = SoundID.Item71;
                 }
 

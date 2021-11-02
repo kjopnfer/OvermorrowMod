@@ -62,23 +62,11 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             {
                 item.useStyle = ItemUseStyleID.SwingThrow;
                 item.useTurn = true;
-
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.CrimsonRune && !player.GetModPlayer<WardenRunePlayer>().runeDeactivate)
-                {
-                    item.useAnimation = 20;
-                    item.useTime = 20;
-                    item.UseSound = null;
-                    item.shootSpeed = 6f;
-                    item.damage = 15;
-                }
-                else
-                {
-                    item.useAnimation = 14;
-                    item.useTime = 14;
-                    item.UseSound = SoundID.Item71;
-                    item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
-                    item.damage = 4;
-                }
+                item.useAnimation = 14;
+                item.useTime = 14;
+                item.UseSound = SoundID.Item71;
+                item.shootSpeed = 14f + modPlayer.modifyShootSpeed();
+                item.damage = 4;
                 item.shoot = mod.ProjectileType("CrimsonPiercerProjectile");
             }
 

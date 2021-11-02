@@ -193,7 +193,7 @@ namespace OvermorrowMod.WardenClass
 
                 if (ringTexture2 != null)
                 {
-                    DrawData data3 = new DrawData(ringTexture2, position, new Microsoft.Xna.Framework.Rectangle?(), modPlayer.runeDeactivate ? Color.White : Color.White, rad * -1 * 0.5f, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
+                    DrawData data3 = new DrawData(ringTexture2, position, new Microsoft.Xna.Framework.Rectangle?(), runeColor, rad * -1 * 0.5f, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
                     Main.playerDrawData.Add(data3);
                 }
             }
@@ -222,13 +222,13 @@ namespace OvermorrowMod.WardenClass
 
                     break;
                 case Runes.BoneRune:
-
+                    runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DungeonRune");
                     break;
                 case Runes.SkyRune:
                     runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/SkyRune");
                     break;
                 case Runes.MushroomRune:
-
+                    runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/MushroomRune");
                     break;
                 case Runes.CrimsonRune:
                     runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonRune");
@@ -236,7 +236,7 @@ namespace OvermorrowMod.WardenClass
                 case Runes.CorruptionRune:
                     break;
                 case Runes.JungleRune:
-
+                    runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/JungleRune");
                     break;
                 case Runes.DefaultRune:
 
@@ -246,8 +246,8 @@ namespace OvermorrowMod.WardenClass
             }
 
             float scaleCap = 90f;
-            float runeScale = (float)MathHelper.Lerp(0, 2.25f, modPlayer.runeCounter2 / scaleCap);
-            if (runeTexture != null && runeScale != 2.25f)
+            float runeScale = (float)MathHelper.Lerp(0, 2f, modPlayer.runeCounter2 / scaleCap);
+            if (runeTexture != null && runeScale != 2f)
             {
                 // Slows down the counter near the end
                 if (modPlayer.runeCounter2 < scaleCap - 20)
