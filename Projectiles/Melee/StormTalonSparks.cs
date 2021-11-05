@@ -21,18 +21,17 @@ namespace OvermorrowMod.Projectiles.Melee
             projectile.penetrate = -1;
             projectile.timeLeft = 65;
             projectile.alpha = 255;
-            projectile.tileCollide = true;
+            projectile.tileCollide = false;
             projectile.melee = true;
         }
 
         public override void AI()
         {
             Lighting.AddLight(projectile.Center, 0, 0.5f, 0.5f);
-
-            projectile.localAI[0] += 1f;
-            if (projectile.localAI[0] > 3f)
+            if (projectile.localAI[0]++ >= 2f)
             {
                 Dust.NewDustPerfect(projectile.Center, 206, null, 0, default, 1.5f);
+                projectile.localAI[0] = 0f;
             }
         }
     }
