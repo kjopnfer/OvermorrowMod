@@ -245,12 +245,12 @@ namespace OvermorrowMod.WardenClass
                     break;
             }
 
-            float scaleCap = 90f;
+            float scaleCap = 70f;
             float runeScale = (float)MathHelper.Lerp(0, 2f, modPlayer.runeCounter2 / scaleCap);
             if (runeTexture != null && runeScale != 2f)
             {
                 // Slows down the counter near the end
-                if (modPlayer.runeCounter2 < scaleCap - 20)
+                if (modPlayer.runeCounter2 < scaleCap - 10)
                 {
                     modPlayer.runeCounter2++;
                 }

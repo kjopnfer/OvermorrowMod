@@ -57,7 +57,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
 
                 ConsumeSouls(1, player);
                 player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
-                player.AddBuff(ModContent.BuffType<BoneRune>(), 480);
+                player.AddBuff(ModContent.BuffType<BoneRune>(), 60 * 15);
             }
             else
             {

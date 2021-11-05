@@ -73,7 +73,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     if (consumedSouls > 0)
                     {
 
-                        Main.NewText(modPlayer.soulResourceCurrent);
+                        //Main.NewText(modPlayer.soulResourceCurrent);
 
                         player.statLife += 10 * consumedSouls;
                         player.HealEffect(10 * consumedSouls);
@@ -92,7 +92,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                                     client.statLife += 10 * consumedSouls;
                                     client.HealEffect(10 * consumedSouls);
 
-                                    Main.NewText(client.name);
+                                    //Main.NewText(client.name);
                                 }
                             }
                         }
@@ -104,19 +104,9 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 {
                     // This literally doesn't work lol
                     ConsumeSouls(soulResourceCost, player);
-                }
-
-                // Putting this in UseItem doesn't do anything for some apparent reason
-                if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune)
-                {
-                    int projectiles = 6;
-                    int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
-                    for (int i = 0; i < projectiles; i++)
-                    {
-                        Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
-                    }
-                }
+                }     
             }
+
             if (item.type == ModContent.ItemType<CorruptedMirror>())
             {
                 player.AddBuff(ModContent.BuffType<MirrorBuff>(), 10800);
@@ -233,6 +223,16 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                             }
                         }
                         break;
+                    case WardenRunePlayer.Runes.BoneRune:
+                        // This doesn't get called in the shoot hook for Support, so I put it in here again
+                        int projectiles = 6;
+                        int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
+                        for (int i = 0; i < projectiles; i++)
+                        {
+                            Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
+                        }
+
+                        break;
                 }
                 return true;
             }
@@ -290,6 +290,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             {
                 position = Main.MouseWorld;
                 int projectile = Projectile.NewProjectile(position, Vector2.Zero, type, 0, 0, player.whoAmI);
+                Main.projectile[projectile].spriteDirection = player.direction;
+
                 ProjectileList.Add(projectile);
             }
             #endregion
@@ -346,6 +348,17 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     {
                         ((ArtifactProjectile)Main.projectile[projectile].modProjectile).AuraRadius = 330;
                     }
+                }
+            }
+
+            // Putting this in UseItem doesn't do anything for some apparent reason
+            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune)
+            {
+                int projectiles = 6;
+                int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
+                for (int i = 0; i < projectiles; i++)
+                {
+                    Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
                 }
             }
 

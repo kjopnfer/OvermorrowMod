@@ -91,7 +91,7 @@ namespace OvermorrowMod
 
                     PiercingItem.ConsumeSouls(1, player);
                     player.GetModPlayer<WardenRunePlayer>().ActiveRune = true;
-                    player.AddBuff(ModContent.BuffType<ChainRune>(), 60 * 15);
+                    player.AddBuff(ModContent.BuffType<ChainRune>(), 60 * 30);
                 }
                 else
                 {
@@ -161,7 +161,8 @@ namespace OvermorrowMod
                     tt.text = damageValue + " piercing " + damageWord;
                     tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Tooltip", "[c/09DBB8:{ Imbuement }]"));
                     tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Tooltip 2", "[c/800080:Right Click] to empower your Warden Artifacts on use"));
-                    tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Effect", "[c/09DBB8:{ All }] Summons 6 Cursed Skulls on each Artifact use"));
+                    tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Effect", "[c/09DBB8:{ All }] Slows down all projectiles for 2 seconds on each Artifact use"));
+                    tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Effect2", "If clock hands are aligned, slow down all non-boss enemies for an additional 8 seconds"));
                     tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Cost", "Consumes 1 Soul Essence"));
                     
                     tooltips.Add(new TooltipLine(mod, "Soul Gain Probability", $"Soul Gain Rate: {4} [+{modPlayer.soulGainBonus + item.GetGlobalItem<OvermorrowMod.WardenClass.WardenGlobalItem>().soulGainChance}]%"));
