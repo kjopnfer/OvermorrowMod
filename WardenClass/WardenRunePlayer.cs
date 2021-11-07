@@ -193,6 +193,7 @@ namespace OvermorrowMod.WardenClass
 
                 if (ringTexture2 != null)
                 {
+                    Main.NewText(deg % 360);
                     DrawData data3 = new DrawData(ringTexture2, position, new Microsoft.Xna.Framework.Rectangle?(), runeColor, rad * -1 * 0.5f, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
                     Main.playerDrawData.Add(data3);
                 }
@@ -219,7 +220,7 @@ namespace OvermorrowMod.WardenClass
             switch (modPlayer.RuneID)
             {
                 case Runes.HellRune:
-
+                    runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/HellRune");
                     break;
                 case Runes.BoneRune:
                     runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DungeonRune");
@@ -234,12 +235,13 @@ namespace OvermorrowMod.WardenClass
                     runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CrimsonRune");
                     break;
                 case Runes.CorruptionRune:
+                    runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CorruptionRune");
                     break;
                 case Runes.JungleRune:
                     runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/JungleRune");
                     break;
                 case Runes.DefaultRune:
-
+                    runeTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/DefaultRune");
                     break;
                 default:
                     break;
