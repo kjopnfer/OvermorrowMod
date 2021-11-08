@@ -12,8 +12,8 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
 
         public override void SetDefaults()
         {
-            projectile.width = 200;
-            projectile.height = 200;
+            projectile.width = 408; // from 200
+            projectile.height = 408;
             projectile.friendly = true;
             projectile.tileCollide = false;
             projectile.penetrate = -1;
@@ -26,8 +26,8 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
         {
             Lighting.AddLight(projectile.Center, 0.65f, 0f, 0f);
 
-            projectile.position.X = Main.player[projectile.owner].Center.X - 100;
-            projectile.position.Y = Main.player[projectile.owner].Center.Y - 100;
+            projectile.Center = Main.player[projectile.owner].Center;
+
             projectile.scale = projectile.scale - 0.002f;
             projectile.rotation = projectile.rotation + 1;
             projectile.alpha = projectile.alpha + 5;
