@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Items.Consumable;
+using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Piercing;
 using System.Collections.Generic;
 using Terraria;
@@ -127,10 +128,11 @@ namespace OvermorrowMod.WardenClass
             {
                 if (Main.rand.NextBool(20))
                 {
-                    int item = Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, ModContent.ItemType<ReaperFlame>());
+                    /*int item = Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, ModContent.ItemType<ReaperFlame>());
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
-                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item);
+                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item);*/
+                    Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<SoulSpawner>(), 0, 0f);
                 }
             }
 
