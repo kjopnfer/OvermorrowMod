@@ -518,10 +518,15 @@ namespace OvermorrowMod
             }
         }
 
+        private int slimeCounter = 0;
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
+            if (slimeBuff && slimeCounter > 0)
+            {
+                slimeCounter--;
+            }
 
-            if (player.justJumped && slimeBuff)
+            if (player.justJumped && slimeBuff && slimeCounter == 0)
             {
                 Vector2 vector4 = new Vector2(player.position.X + (float)player.width * 0.5f, player.position.Y + (float)player.height * 0.5f);
 
@@ -540,6 +545,7 @@ namespace OvermorrowMod
 
                 player.statLife += 2;
                 player.HealEffect(2);
+                slimeCounter = 45;
             }
 
             if (OvermorrowModFile.SandModeKey.JustPressed && ArmBracer)
