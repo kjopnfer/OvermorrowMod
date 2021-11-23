@@ -233,16 +233,32 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     case WardenRunePlayer.Runes.DefaultRune:
                         // Rotation for the hour hand
                         double deg = Math.Abs(player.GetModPlayer<WardenRunePlayer>().rotateCounter * 0.8 * MathHelper.Lerp(1, 4, (float)(!player.GetModPlayer<WardenRunePlayer>().runeDeactivate ? player.GetModPlayer<WardenRunePlayer>().runeCounter / 300.0 : 1)) % 720) * 0.5f;
-                        
+
                         // The 90th degree is when both hands cross
                         if (deg >= 80 && deg <= 95) // Error margin
                         {
                             Main.NewText("hit: " + deg);
                             Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.DarkGray, 1, 2f, 0, 1f);
+                            for (int i = 0; i < Main.maxProjectiles; i++)
+                            {
+                                float distance = Vector2.Distance(Main.projectile[i].Center, Main.LocalPlayer.Center);
+                                if (distance <= 390)
+                                {
+                                    Main.projectile[i].GetGlobalProjectile<OvermorrowGlobalProjectile>().slowedTime = true;
+                                }
+                            }
                         }
                         else
                         {
-                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.Gray, 1, 1f, 0, 1f);
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.Gray, 1, 2f, 0, 1f);
+                            for (int i = 0; i < Main.maxProjectiles; i++)
+                            {
+                                float distance = Vector2.Distance(Main.projectile[i].Center, Main.LocalPlayer.Center);
+                                if (distance <= 390)
+                                {
+                                    Main.projectile[i].GetGlobalProjectile<OvermorrowGlobalProjectile>().slowedTime = true;
+                                }
+                            }
                         }
                         break;
                 }
@@ -384,10 +400,27 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     {
                         Main.NewText("hit: " + deg);
                         Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.DarkGray, 1, 2f, 0, 1f);
+
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            float distance = Vector2.Distance(Main.projectile[i].Center, Main.LocalPlayer.Center);
+                            if (distance <= 390)
+                            {
+                                Main.projectile[i].GetGlobalProjectile<OvermorrowGlobalProjectile>().slowedTime = true;
+                            }
+                        }
                     }
                     else
                     {
-                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.Gray, 1, 1f, 0, 1f);
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.Gray, 1, 2f, 0, 1f);
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            float distance = Vector2.Distance(Main.projectile[i].Center, Main.LocalPlayer.Center);
+                            if (distance <= 390)
+                            {
+                                Main.projectile[i].GetGlobalProjectile<OvermorrowGlobalProjectile>().slowedTime = true;
+                            }
+                        }
                     }
                     break;
             }

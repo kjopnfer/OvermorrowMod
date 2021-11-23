@@ -13,13 +13,14 @@ namespace OvermorrowMod
         private bool spawnedBlood = false;
         public bool slowedTime = false;
 
-        public override bool ShouldUpdatePosition(Projectile projectile)
+        public override bool PreAI(Projectile projectile)
         {
-            if (slowedTime)
+            if (slowedTime && !projectile.friendly)
             {
-
+                projectile.position -= projectile.velocity * 0.95f;
             }
-            return base.ShouldUpdatePosition(projectile);
+
+            return base.PreAI(projectile);
         }
 
         public override void SetDefaults(Projectile projectile)
