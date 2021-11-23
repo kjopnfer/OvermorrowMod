@@ -8,6 +8,7 @@ using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Melee;
 using OvermorrowMod.WardenClass.Accessories;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System.Collections.Generic;
 using Terraria;
@@ -55,33 +56,69 @@ namespace OvermorrowMod
         }
 
         public override void NPCLoot(NPC npc)
-        {
-            if (npc.type == NPCID.AngryBones || npc.type == NPCID.AngryBonesBig || npc.type == NPCID.AngryBonesBigHelmet || npc.type == NPCID.AngryBonesBigMuscle ||
-                npc.type == NPCID.DarkCaster || npc.type == NPCID.CursedSkull)
+        {    
+            switch (npc.type)
             {
-                int dropChance = Main.rand.Next(100);
-                if (dropChance == 0) // 1% drop chance
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFragment>());
-                }
+                case NPCID.KingSlime:
+                    if (Main.rand.NextBool(5) && !Main.expertMode)
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SlimeArtifact>());
+                    }
+                    break;
+                case NPCID.AngryBones:
+                case NPCID.AngryBonesBig: 
+                case NPCID.AngryBonesBigHelmet:
+                case NPCID.AngryBonesBigMuscle:
+                case NPCID.DarkCaster:
+                case NPCID.CursedSkull:
+                    if (Main.rand.NextBool(100)) // 1% drop chance
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFragment>());
+                    }
+                    break;
+                case NPCID.CaveBat:
+                    if (Main.rand.NextBool(20)) // 5% drop chance
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemID.ChainKnife);
+                    }
+                    break;
+                case NPCID.BoneSerpentHead:
+                    if (Main.rand.NextBool(20))
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SerpentTooth>());
+                    }
+                    break;
+                case NPCID.EaterofSouls:
+                    if (Main.rand.NextBool(75))
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EatersBlade>());
+                    }
+                    break;
+                case NPCID.Harpy:
+                    if (Main.rand.NextBool(10)) // 10% drop chance
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HarpyLeg>());
+                    }
+                    break;
+                case NPCID.Drippler:
+                case NPCID.BloodZombie:
+                    if (Main.rand.NextBool(30)) // 3.33% drop chance
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<AncientCrystal>());
+                    }
+
+                    if (Main.rand.NextBool(3))
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrippingFlesh>(), Main.rand.Next(1, 3));
+                    }
+                    break;
+                case NPCID.FungiBulb:
+                    if (Main.rand.NextBool(6)) // 8.33% drop chance
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<FungiPiercer>());
+                    }
+                    break;
             }
-
-            /*if (npc.type == NPCID.SkeletonArcher || npc.type == NPCID.ChaosElemental || npc.type == NPCID.GiantBat || npc.type == NPCID.Clinger || npc.type == NPCID.FloatyGross || npc.type == NPCID.EnchantedSword || npc.type == NPCID.CursedHammer || npc.type == NPCID.CrimsonAxe || npc.type == NPCID.ArmoredSkeleton)
-            {
-                if (Main.rand.NextBool(50))
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Items.Weapons.Hardmode.HardRanged.Katyusha>());
-                }
-            }*/
-
-            if (npc.type == NPCID.CaveBat)
-            {
-                if (Main.rand.Next(20) == 0) // 5% drop chance
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemID.ChainKnife);
-                }
-            }
-
 
 
             if (npc.type == NPCID.CaveBat || npc.type == NPCID.SmallSkeleton || npc.type == NPCID.BigSkeleton || npc.type == NPCID.SmallHeadacheSkeleton || npc.type == NPCID.BigHeadacheSkeleton || npc.type == NPCID.SmallMisassembledSkeleton || npc.type == NPCID.BigMisassembledSkeleton || npc.type == NPCID.SmallPantlessSkeleton || npc.type == NPCID.BigPantlessSkeleton || npc.type == NPCID.MotherSlime || npc.type == NPCID.Skeleton || npc.type == NPCID.GiantWormHead || npc.type == NPCID.RedSlime || npc.type == NPCID.UndeadMiner || npc.type == NPCID.Harpy || npc.type == NPCID.ManEater || npc.type == NPCID.SnowFlinx || npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.GreekSkeleton || npc.type == NPCID.GraniteGolem || npc.type == NPCID.GraniteFlyer || npc.type == NPCID.Salamander)
@@ -98,54 +135,6 @@ namespace OvermorrowMod
                 Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, ModContent.ProjectileType<HeroHoming>(), npc.damage * 3, 2, Main.player[npc.target].whoAmI);
             }
 
-            if (npc.type == NPCID.BoneSerpentHead)
-            {
-                if (Main.rand.Next(20) == 0)
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SerpentTooth>());
-                }
-            }
-
-            if (npc.type == NPCID.EaterofSouls)
-            {
-                if (Main.rand.Next(75) == 3)
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EatersBlade>());
-                }
-            }
-
-            if (npc.type == NPCID.FungiBulb)
-            {
-                int dropChance = Main.rand.Next(2);
-                if (dropChance == 0) // 8.33% drop chance
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<FungiPiercer>());
-                }
-            }
-
-            if (npc.type == NPCID.Harpy)
-            {
-                int dropChance = Main.rand.Next(10);
-                if (dropChance == 0) // 10% drop chance
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HarpyLeg>());
-                }
-            }
-
-            if (npc.type == NPCID.Drippler || npc.type == NPCID.BloodZombie)
-            {
-                int dropChance = Main.rand.Next(30);
-                if (dropChance == 0) // 3.33% drop chance
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<AncientCrystal>());
-                }
-
-                int dropChance2 = Main.rand.Next(2); // 50% drop chance
-                if (dropChance2 == 0)
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrippingFlesh>(), Main.rand.Next(1, 3));
-                }
-            }
 
             if (Main.netMode == NetmodeID.Server)
             {

@@ -3,6 +3,7 @@ using OvermorrowMod.Buffs.RuneBuffs;
 using OvermorrowMod.Projectiles.Piercing;
 using OvermorrowMod.Projectiles.Ranged;
 using OvermorrowMod.WardenClass;
+using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System.Collections.Generic;
 using System.Linq;
@@ -164,7 +165,7 @@ namespace OvermorrowMod
                     tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Effect", "[c/09DBB8:{ All }] Slows down all projectiles on each Artifact use"));
                     tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Effect2", "If clock hands are aligned, also slow down all non-boss enemies for 8 seconds"));
                     tooltips.Add(new TooltipLine(mod, "Chain Knife Imbuement Cost", "Consumes 1 Soul Essence"));
-                    
+
                     tooltips.Add(new TooltipLine(mod, "Soul Gain Probability", $"Soul Gain Rate: {4} [+{modPlayer.soulGainBonus + item.GetGlobalItem<OvermorrowMod.WardenClass.WardenGlobalItem>().soulGainChance}]%"));
 
                     if (item.GetGlobalItem<OvermorrowMod.WardenClass.WardenGlobalItem>().soulGainChance > 0)
@@ -178,6 +179,18 @@ namespace OvermorrowMod
             }
 
             base.ModifyTooltips(item, tooltips);
+        }
+
+        public override void OpenVanillaBag(string context, Player player, int arg)
+        {
+            if (arg == ItemID.KingSlimeBossBag)
+            {
+                if (Main.rand.NextBool(5))
+                {
+                    player.QuickSpawnItem(ModContent.ItemType<SlimeArtifact>());
+                }
+                base.OpenVanillaBag(context, player, arg);
+            }
         }
     }
 }
