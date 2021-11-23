@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Particles;
 using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Misc;
@@ -237,14 +238,23 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         // The 90th degree is when both hands cross
                         if (deg >= 80 && deg <= 95) // Error margin
                         {
-                            Main.NewText("hit: " + deg);
-                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.DarkGray, 1, 2f, 0, 1f);
+                            //Main.NewText("hit: " + deg);
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.Goldenrod, 1, 2f, 0, 1f);
                             for (int i = 0; i < Main.maxProjectiles; i++)
                             {
                                 float distance = Vector2.Distance(Main.projectile[i].Center, Main.LocalPlayer.Center);
                                 if (distance <= 390)
                                 {
                                     Main.projectile[i].GetGlobalProjectile<OvermorrowGlobalProjectile>().slowedTime = true;
+                                }
+                            }
+
+                            for (int i = 0; i < Main.maxNPCs; i++)
+                            {
+                                float distance = Vector2.Distance(Main.npc[i].Center, Main.LocalPlayer.Center);
+                                if (distance <= 390 && !Main.npc[i].boss)
+                                {
+                                    Main.npc[i].AddHex(Hex.HexType<TimeSlow>(), 60 * 8);
                                 }
                             }
                         }
@@ -398,8 +408,8 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     // The 90th degree is when both hands cross
                     if (deg >= 80 && deg <= 95) // Error margin
                     {
-                        Main.NewText("hit: " + deg);
-                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.DarkGray, 1, 2f, 0, 1f);
+                        //Main.NewText("hit: " + deg);
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.Goldenrod, 1, 2f, 0, 1f);
 
                         for (int i = 0; i < Main.maxProjectiles; i++)
                         {
@@ -407,6 +417,15 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                             if (distance <= 390)
                             {
                                 Main.projectile[i].GetGlobalProjectile<OvermorrowGlobalProjectile>().slowedTime = true;
+                            }
+                        }
+
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            float distance = Vector2.Distance(Main.npc[i].Center, Main.LocalPlayer.Center);
+                            if (distance <= 390 && !Main.npc[i].boss)
+                            {
+                                Main.npc[i].AddHex(Hex.HexType<TimeSlow>(), 60 * 8);
                             }
                         }
                     }
