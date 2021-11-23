@@ -39,7 +39,6 @@ namespace OvermorrowMod.Projectiles.Magic
 
         public override void AI()
         {
-
             // This runs once when the projectile is created
             if (initProperties)
             {

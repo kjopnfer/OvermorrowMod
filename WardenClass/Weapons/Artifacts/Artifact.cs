@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.Particles;
 using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Misc;
 using OvermorrowMod.Projectiles.Piercing;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -100,11 +102,6 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         ConsumeSouls(consumedSouls, player);
                     }
                 }
-                else
-                {
-                    // This literally doesn't work lol
-                    ConsumeSouls(soulResourceCost, player);
-                }     
             }
 
             if (item.type == ModContent.ItemType<CorruptedMirror>())
@@ -233,6 +230,21 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         }
 
                         break;
+                    case WardenRunePlayer.Runes.DefaultRune:
+                        // Rotation for the hour hand
+                        double deg = Math.Abs(player.GetModPlayer<WardenRunePlayer>().rotateCounter * 0.8 * MathHelper.Lerp(1, 4, (float)(!player.GetModPlayer<WardenRunePlayer>().runeDeactivate ? player.GetModPlayer<WardenRunePlayer>().runeCounter / 300.0 : 1)) % 720) * 0.5f;
+                        
+                        // The 90th degree is when both hands cross
+                        if (deg >= 80 && deg <= 95) // Error margin
+                        {
+                            Main.NewText("hit: " + deg);
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.DarkGray, 1, 2f, 0, 1f);
+                        }
+                        else
+                        {
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.Gray, 1, 1f, 0, 1f);
+                        }
+                        break;
                 }
                 return true;
             }
@@ -248,7 +260,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             if (item.type == ModContent.ItemType<TorchGod>())
             {
                 int projectile = Projectile.NewProjectile(position.X, position.Y, speedX, speedY, type, damage, knockBack, player.whoAmI, 0);
-                int numberProjectiles = 2 + Main.rand.Next(2); 
+                /*int numberProjectiles = 2 + Main.rand.Next(2); 
                 for (int i = 0; i < numberProjectiles; i++)
                 {
                     Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(30));
@@ -256,7 +268,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                     perturbedSpeed = perturbedSpeed * scale;
 
                     ProjectileList.Add(Projectile.NewProjectile(position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<SmallBlueFire>(), damage / numberProjectiles, knockBack, player.whoAmI));
-                }
+                }*/
 
                 ProjectileList.Add(projectile);
             }
@@ -351,15 +363,33 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 }
             }
 
-            // Putting this in UseItem doesn't do anything for some apparent reason
-            if (player.GetModPlayer<WardenRunePlayer>().RuneID == WardenRunePlayer.Runes.BoneRune)
+            // This thing is for when you use Attack/Aura Artifacts because the Shoot hook is called, I guess
+            switch (player.GetModPlayer<WardenRunePlayer>().RuneID)
             {
-                int projectiles = 6;
-                int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
-                for (int i = 0; i < projectiles; i++)
-                {
-                    Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
-                }
+                case WardenRunePlayer.Runes.BoneRune:
+                    int projectiles = 6;
+                    int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
+                    for (int i = 0; i < projectiles; i++)
+                    {
+                        Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + randRotation)), ModContent.ProjectileType<Skulls>(), 16, 2, player.whoAmI);
+                    }
+
+                    break;
+                case WardenRunePlayer.Runes.DefaultRune:
+                    // Rotation for the hour hand
+                    double deg = Math.Abs(player.GetModPlayer<WardenRunePlayer>().rotateCounter * 0.8 * MathHelper.Lerp(1, 4, (float)(!player.GetModPlayer<WardenRunePlayer>().runeDeactivate ? player.GetModPlayer<WardenRunePlayer>().runeCounter / 300.0 : 1)) % 720) * 0.5f;
+
+                    // The 90th degree is when both hands cross
+                    if (deg >= 80 && deg <= 95) // Error margin
+                    {
+                        Main.NewText("hit: " + deg);
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.DarkGray, 1, 2f, 0, 1f);
+                    }
+                    else
+                    {
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), player.Center, Vector2.Zero, Color.Gray, 1, 1f, 0, 1f);
+                    }
+                    break;
             }
 
             #endregion

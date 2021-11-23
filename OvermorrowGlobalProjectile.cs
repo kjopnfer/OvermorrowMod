@@ -11,10 +11,16 @@ namespace OvermorrowMod
         public override bool InstancePerEntity => true;
 
         private bool spawnedBlood = false;
+        public bool slowedTime = false;
 
+        public override bool ShouldUpdatePosition(Projectile projectile)
+        {
+            if (slowedTime)
+            {
 
-
-
+            }
+            return base.ShouldUpdatePosition(projectile);
+        }
 
         public override void SetDefaults(Projectile projectile)
         {
@@ -36,17 +42,14 @@ namespace OvermorrowMod
             }
         }
 
-
         public override void Kill(Projectile projectile, int timeLeft)
         {
             Player player = Main.player[projectile.owner];
             var modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
             if (modPlayer.ShatteredOrb && !spawnedBlood && projectile.magic)
             {
-                int explodeChance = Main.rand.Next(6);
-
                 // This thing is absolutely insane without the explosion chance
-                if (explodeChance == 0)
+                if (Main.rand.NextBool(6))
                 {
                     // I'm lazy
                     // Determine if the projectiles go straight or at an angle

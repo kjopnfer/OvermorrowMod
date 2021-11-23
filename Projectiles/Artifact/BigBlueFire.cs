@@ -12,7 +12,8 @@ namespace OvermorrowMod.Projectiles.Artifact
 {
     public class BigBlueFire : ArtifactProjectile
     {
-
+        private bool initProperties = true;
+        
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Torch God's Wrath");
@@ -32,6 +33,19 @@ namespace OvermorrowMod.Projectiles.Artifact
 
         public override void AI()
         {
+            if (initProperties)
+            {
+                if (Main.netMode != NetmodeID.Server && projectile.owner == Main.myPlayer)
+                {
+                    // This spawns the child projectile that travels in the opposite direction
+                    if (projectile.ai[0] == 0)
+                    {
+                        Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<SmallBlueFire>(), projectile.damage, projectile.knockBack, projectile.owner, 0, projectile.whoAmI);
+                    }
+                }
+                initProperties = false;
+            }
+
             projectile.localAI[0]++;
 
             Dust dust;
@@ -74,11 +88,7 @@ namespace OvermorrowMod.Projectiles.Artifact
 
         }
 
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return Color.White;
-        }
+        public override Color? GetAlpha(Color lightColor) => Color.White;
 
         public override void Kill(int timeLeft)
         {
@@ -102,7 +112,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
-                if (distance <= 1050 && projectile.ai[0] > -1)
+                if (distance <= 1050)
                 {
                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
                 }
@@ -110,10 +120,24 @@ namespace OvermorrowMod.Projectiles.Artifact
 
             Main.PlaySound(SoundID.Item14);
         }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.AddBuff(BuffID.OnFire, 60 * 15);
+            base.OnHitNPC(target, damage, knockback, crit);
+        }
     }
 
     public class SmallBlueFire : ArtifactProjectile
     {
+        private bool initProperties = true;
+        private float storeDirection;
+        private float trigCounter = 0;
+        private float period = 60;
+        private float amplitude = 40;
+        private float previousR = 0;
+        private Projectile childProjectile;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Torch God's Wrath");
@@ -127,12 +151,36 @@ namespace OvermorrowMod.Projectiles.Artifact
             projectile.friendly = true;
             projectile.penetrate = 1;
             projectile.timeLeft = 100;
-
             projectile.extraUpdates = 1;
         }
 
         public override void AI()
         {
+            if (initProperties)
+            {
+                storeDirection = projectile.velocity.ToRotation();
+                if (Main.netMode != NetmodeID.Server && projectile.owner == Main.myPlayer)
+                {
+                    // This spawns the child projectile that travels in the opposite direction
+                    if (projectile.ai[0] == 0)
+                    {
+                        childProjectile = Main.projectile[Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<SmallBlueFire>(), projectile.damage, projectile.knockBack, projectile.owner, 1, projectile.whoAmI)];
+                    }
+                    else // This is the check that the child projectile enters in
+                    {
+                        childProjectile = Main.projectile[(int)projectile.ai[1]];
+                    }
+                }
+                initProperties = false;
+            }
+
+            trigCounter += 2 * (float)Math.PI / period;
+            float r = amplitude * (float)Math.Sin(trigCounter) * (projectile.ai[0] == 0 ? 1 : -1);
+            Vector2 instaVel = PolarVector(r - previousR, storeDirection + (float)Math.PI / 2);
+            projectile.position += instaVel;
+            previousR = r;
+            projectile.rotation = (projectile.velocity + instaVel).ToRotation();
+
             projectile.localAI[0]++;
 
             Dust dust;
@@ -140,7 +188,7 @@ namespace OvermorrowMod.Projectiles.Artifact
             dust = Terraria.Dust.NewDustPerfect(position, 59, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1.5f);
             dust.noGravity = true;
 
-            if (projectile.localAI[0] % 30 == 0)
+            if (projectile.localAI[0] % 15 == 0)
             {
                 DelegateMethods.v3_1 = new Vector3(0.6f, 1f, 1f) * 0.2f;
                 Utils.PlotTileLine(projectile.Center, projectile.Center + projectile.velocity * 10f, 8f, DelegateMethods.CastLightOpen);
@@ -158,7 +206,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                 }
             }
 
-            projectile.rotation = projectile.velocity.ToRotation();
+            //projectile.rotation = projectile.velocity.ToRotation();
 
             if (++projectile.frameCounter >= 4)
             {
@@ -170,12 +218,12 @@ namespace OvermorrowMod.Projectiles.Artifact
             }
 
         }
-
-
-        public override Color? GetAlpha(Color lightColor)
+        public Vector2 PolarVector(float radius, float theta)
         {
-            return Color.White;
+            return new Vector2((float)Math.Cos(theta), (float)Math.Sin(theta)) * radius;
         }
+
+        public override Color? GetAlpha(Color lightColor) => Color.White;
 
         public override void Kill(int timeLeft)
         {
@@ -194,6 +242,13 @@ namespace OvermorrowMod.Projectiles.Artifact
                 Main.dust[num653].fadeIn = 0.5f;
                 Main.dust[num653].noGravity = true;
             }
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.AddBuff(BuffID.OnFire, 60 * 15);
+
+            base.OnHitNPC(target, damage, knockback, crit);
         }
     }
 }

@@ -193,7 +193,7 @@ namespace OvermorrowMod.WardenClass
 
                 if (ringTexture2 != null)
                 {
-                    Main.NewText(deg % 360);
+                    //Main.NewText(deg % 720 * 0.5f);
                     DrawData data3 = new DrawData(ringTexture2, position, new Microsoft.Xna.Framework.Rectangle?(), runeColor, rad * -1 * 0.5f, ringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
                     Main.playerDrawData.Add(data3);
                 }

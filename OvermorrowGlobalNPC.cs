@@ -159,15 +159,6 @@ namespace OvermorrowMod
                             var modPlayer = WardenDamagePlayer.ModPlayer(player);
                             var modPlayer2 = player.GetModPlayer<OvermorrowModPlayer>();
 
-                            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook)
-                            {
-                                if (Main.rand.Next(8) == 0) // 12.5% chance to gain Soul Essence on death
-                                {
-                                    modPlayer.soulPercentage += 10;
-                                    CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.DarkCyan, "+ 10% Soul Essences", true, false);
-                                }
-                            }
-
                             if (modPlayer2.DripplerEye)
                             {
                                 if (modPlayer2.dripplerStack < 25)
@@ -190,16 +181,6 @@ namespace OvermorrowMod
                             Player player = Main.LocalPlayer;
                             var modPlayer = WardenDamagePlayer.ModPlayer(player);
                             var modPlayer2 = player.GetModPlayer<OvermorrowModPlayer>();
-
-                            if (modPlayer.soulResourceCurrent < modPlayer.soulResourceMax2 && modPlayer.ReaperBook)
-                            {
-                                if (Main.rand.Next(8) == 0) // 12.5% chance to gain Soul Essence on death
-                                {
-                                    modPlayer.soulPercentage += 10;
-                                    CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.DarkCyan, "Soul Essence Gained", true, false);
-                                }
-                            }
-
 
                             if (modPlayer2.DripplerEye)
                             {
