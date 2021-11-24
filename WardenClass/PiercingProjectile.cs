@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
+using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Items.Consumable;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Piercing;
@@ -110,10 +111,10 @@ namespace OvermorrowMod.WardenClass
             // Armor
             if (modPlayer.HemoArmor)
             {
-                int randChance = Main.rand.Next(3);
-                if (randChance == 0)
+                if (Main.rand.NextBool(4))
                 {
-                    target.AddBuff(ModContent.BuffType<Bleeding2>(), 240);
+                    target.AddHex(Hex.HexType<Bleeding>(), 60 * 4);
+                    target.AddHex(Hex.HexType<Bleeding2>(), 60 * 4);
                 }
             }
 

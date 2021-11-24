@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs.Debuffs;
+using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Piercing;
@@ -237,7 +238,7 @@ namespace OvermorrowMod
                 int bleedChance = Main.rand.Next(4);
                 if (bleedChance == 0 && item.melee)
                 {
-                    target.AddBuff(ModContent.BuffType<Bleeding>(), 360);
+                    target.AddHex(Hex.HexType<Bleeding>(), 60 * 6);
                 }
             }
         }

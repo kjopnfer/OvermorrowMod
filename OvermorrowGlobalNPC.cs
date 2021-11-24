@@ -26,16 +26,12 @@ namespace OvermorrowMod
         public override bool InstancePerEntity => true;
 
         public bool Homingdie;
-        public bool bleedingDebuff;
-        public bool bleedingDebuff2;
         public bool FungiInfection;
         public int FungiTime;
         public int split;
 
         public override void ResetEffects(NPC npc)
         {
-            bleedingDebuff = false;
-            bleedingDebuff2 = false;
             FungiInfection = false;
         }
 
@@ -246,29 +242,6 @@ namespace OvermorrowMod
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
-            if (bleedingDebuff || bleedingDebuff2)
-            {
-                // These lines zero out any positive lifeRegen. This is expected for all bad life regeneration effects.
-                if (npc.lifeRegen > 0)
-                {
-                    npc.lifeRegen = 0;
-                }
-
-                if (bleedingDebuff2) // This is only applied in tandem with the bleedingDebuff anyways
-                {
-                    // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 4 + 4 life lost per second.
-                    npc.lifeRegen -= 16;
-                }
-                else
-                {
-                    // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 4 life lost per second.
-                    npc.lifeRegen -= 8;
-                    // The damage visual value
-                }
-
-                damage = 1;
-            }
-
             if (npc.HasHex(Hex.HexType<LesserIchor>()))
             {
                 npc.defense -= 8;
@@ -296,18 +269,7 @@ namespace OvermorrowMod
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            if (bleedingDebuff || bleedingDebuff2)
-            {
-                if (Main.rand.Next(4) < 3)
-                {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, DustID.Blood, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
-                    //Main.dust[dust].noGravity = true;
-                    Main.dust[dust].velocity *= 1.8f;
-                    Main.dust[dust].velocity.Y -= 0.5f;
-                }
-            }
-
-            if (FungiInfection)
+                if (FungiInfection)
             {
                 if (Main.rand.NextBool(10))
                 {
