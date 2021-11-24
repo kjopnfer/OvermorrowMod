@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Projectiles.Artifact;
 using OvermorrowMod.Projectiles.Piercing;
 using System;
@@ -272,7 +273,8 @@ namespace OvermorrowMod.WardenClass
             switch (RuneID)
             {
                 case WardenRunePlayer.Runes.CorruptionRune:
-                    target.AddBuff(BuffID.CursedInferno, 480);
+                    //target.AddBuff(BuffID.CursedInferno, 480);
+                    target.AddHex(Hex.HexType<CursedFlames>(), 60 * 30);
                     break;
                 case WardenRunePlayer.Runes.CrimsonRune:
                     target.AddBuff(BuffID.Ichor, 480);

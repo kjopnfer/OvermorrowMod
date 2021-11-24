@@ -1,11 +1,14 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
+using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
+using OvermorrowMod.Projectiles.Hexes;
 using OvermorrowMod.Projectiles.Melee;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
@@ -33,6 +36,12 @@ namespace OvermorrowMod
             bleedingDebuff = false;
             bleedingDebuff2 = false;
             FungiInfection = false;
+        }
+
+        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)
+        {
+
+            base.PostDraw(npc, spriteBatch, drawColor);
         }
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
@@ -204,9 +213,14 @@ namespace OvermorrowMod
                 }
             }
 
+            if (npc.HasHex(Hex.HexType<CursedFlames>()))
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
+                }
+            }
         }
-
-
 
         public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
         {
@@ -274,6 +288,7 @@ namespace OvermorrowMod
                 }
             }
         }
+
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
             if (bleedingDebuff || bleedingDebuff2)
@@ -286,6 +301,7 @@ namespace OvermorrowMod
                     Main.dust[dust].velocity.Y -= 0.5f;
                 }
             }
+
             if (FungiInfection)
             {
                 if (Main.rand.Next(8) < 3)
@@ -296,95 +312,6 @@ namespace OvermorrowMod
                     Main.dust[dust].velocity.Y -= 0.5f;
                 }
             }
-        }
-
-        // New method to apply buffs to NPCs, this is WIP
-        public void AddNewBuff(NPC npc, int type, int time)
-        {
-            // Check to make sure that the NPC is not immune to the applied debuff
-            if (npc.buffImmune[type])
-            {
-                return;
-            }
-
-            // The netcode to send for updating NPC buff
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                NetMessage.SendData(MessageID.AddNPCBuff, -1, -1, null, npc.whoAmI, type, time, 0f, 0, 0, 0);
-            }
-            else if (Main.netMode == NetmodeID.Server)
-            {
-                NetMessage.SendData(MessageID.SendNPCBuffs, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
-            }
-
-            // This handles reapplying an existing buff on an NPC
-            // Loop through the NPC's buffs
-            for (int i = 0; i < npc.buffType.Length; i++)
-            {
-                // Check if the buff matches the type being applied
-                if (npc.buffType[i] == type)
-                {
-                    // Reapply the debuff
-                    if (!BuffLoader.ReApply(type, npc, time, i) && npc.buffTime[i] < time)
-                    {
-                        npc.buffTime[i] = time;
-                    }
-                    return;
-                }
-            }
-
-            // While loop flag
-            int num3 = -1;
-            while (num3 == -1)
-            {
-                // Default break-out int
-                int num2 = -1;
-
-                // Loop through the NPC's buffs
-                for (int i = 0; i < npc.buffType.Length; i++)
-                {
-                    // Check if the buff is NOT a debuff
-                    if (!Main.debuff[npc.buffType[i]])
-                    {
-                        // Set the default break-out int to be the index
-                        // This prevents the while loop from exiting
-                        num2 = i;
-
-                        // Break out of the for loop
-                        break;
-                    }
-                }
-
-                // Catch the default break-out int
-                if (num2 == -1)
-                {
-                    // Exit from the while loop
-                    return;
-                }
-
-                // Loop through the NPC's buffs, using the int obtained from the not debuff checker
-                for (int i = num2; i < npc.buffType.Length; i++)
-                {
-                    // Break out of the while loop if the buff index is 0
-                    if (npc.buffType[i] == 0)
-                    {
-                        // Set the loop value to the index, thus breaking out of the loop by end of loop
-                        // This is because the value is no longer -1
-                        num3 = i;
-                        break;
-                    }
-                }
-
-                // If the looping int is still valid, remove the buff passed by the buff check
-                if (num3 == -1)
-                {
-                    npc.DelBuff(num2);
-                }
-            }
-
-            // Apply the buff to the NPC
-            npc.buffType[num3] = type;
-            npc.buffTime[num3] = time;
         }
     }
 }
