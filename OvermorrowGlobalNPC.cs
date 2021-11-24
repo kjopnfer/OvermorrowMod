@@ -31,17 +31,12 @@ namespace OvermorrowMod
         public bool FungiInfection;
         public int FungiTime;
         public int split;
+
         public override void ResetEffects(NPC npc)
         {
             bleedingDebuff = false;
             bleedingDebuff2 = false;
             FungiInfection = false;
-        }
-
-        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)
-        {
-
-            base.PostDraw(npc, spriteBatch, drawColor);
         }
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
@@ -220,6 +215,17 @@ namespace OvermorrowMod
                     Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
                 }
             }
+
+            if (npc.HasHex(Hex.HexType<LesserIchor>()))
+            {
+                if (Main.rand.NextBool(8))
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<IchorStream>(), 12, 2f, owner.whoAmI);
+                    }
+                }
+            }
         }
 
         public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
@@ -260,13 +266,12 @@ namespace OvermorrowMod
                     // The damage visual value
                 }
 
-
-
-
-
-
-
                 damage = 1;
+            }
+
+            if (npc.HasHex(Hex.HexType<LesserIchor>()))
+            {
+                npc.defense -= 8;
             }
         }
 
@@ -304,13 +309,22 @@ namespace OvermorrowMod
 
             if (FungiInfection)
             {
-                if (Main.rand.Next(8) < 3)
+                if (Main.rand.NextBool(10))
                 {
                     int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width, npc.height, DustID.GlowingMushroom, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 0, default(Color), 1f);
-                    //Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 1.8f;
                     Main.dust[dust].velocity.Y -= 0.5f;
                 }
+            }
+
+            if (npc.HasHex(Hex.HexType<CursedFlames>()))
+            {
+                drawColor = Color.LimeGreen;
+            }
+
+            if (npc.HasHex(Hex.HexType<LesserIchor>()))
+            {
+                drawColor = Color.Yellow;
             }
         }
     }

@@ -7,15 +7,8 @@ namespace OvermorrowMod.Buffs.Hexes
 {
     public class CursedFlames : ModHex
     {
-        public override void Draw(SpriteBatch spriteBatch, ref Color drawColor)
-        {
-            drawColor = Color.LightBlue;
-        }
-
         public override void Update()
         {
-            npc.color = Color.LimeGreen;
-
             if (Main.rand.NextBool(5))
             {
                 Vector2 position = npc.Center + new Vector2(Main.rand.Next(-npc.width / 2, npc.width / 2), Main.rand.Next(-npc.height / 2, npc.height / 2));

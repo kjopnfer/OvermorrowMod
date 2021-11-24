@@ -10,7 +10,7 @@ namespace OvermorrowMod.WardenClass.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Fungal Rune");
-            Tooltip.SetDefault("Increase piercing damage by 2\nPiercing weapons have a chance to inflict Poisoned");
+            Tooltip.SetDefault("Increase piercing damage by 2\nPiercing weapons have a chance to inflict Fungal Infection");
         }
 
         public override void SetDefaults()

@@ -273,11 +273,10 @@ namespace OvermorrowMod.WardenClass
             switch (RuneID)
             {
                 case WardenRunePlayer.Runes.CorruptionRune:
-                    //target.AddBuff(BuffID.CursedInferno, 480);
                     target.AddHex(Hex.HexType<CursedFlames>(), 60 * 30);
                     break;
                 case WardenRunePlayer.Runes.CrimsonRune:
-                    target.AddBuff(BuffID.Ichor, 480);
+                    target.AddHex(Hex.HexType<LesserIchor>(), 60 * 15);
                     break;
                 case WardenRunePlayer.Runes.JungleRune:
                     for (int i = 0; i < randNum; i++)
