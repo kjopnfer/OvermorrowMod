@@ -70,7 +70,7 @@ namespace OvermorrowMod.Projectiles.Hexes
                 float num111 = projectile.velocity.X / 3f * (float)num110;
                 float num112 = projectile.velocity.Y / 3f * (float)num110;
                 int num113 = 14;
-                int num114 = Dust.NewDust(new Vector2(projectile.position.X + (float)num113, projectile.position.Y + (float)num113), projectile.width - num113 * 2, projectile.height - num113 * 2, 170, 0f, 0f, 100);
+                int num114 = Dust.NewDust(new Vector2(projectile.position.X + (float)num113, projectile.position.Y + (float)num113), projectile.width - num113 * 2, projectile.height - num113 * 2, DustID.Ichor, 0f, 0f, 100);
                 Main.dust[num114].noGravity = true;
                 Dust dust = Main.dust[num114];
                 dust.velocity *= 0.1f;
@@ -83,7 +83,7 @@ namespace OvermorrowMod.Projectiles.Hexes
             if (Main.rand.Next(8) == 0)
             {
                 int num115 = 16;
-                int num116 = Dust.NewDust(new Vector2(projectile.position.X + (float)num115, projectile.position.Y + (float)num115), projectile.width - num115 * 2, projectile.height - num115 * 2, 170, 0f, 0f, 100, default(Color), 0.5f);
+                int num116 = Dust.NewDust(new Vector2(projectile.position.X + (float)num115, projectile.position.Y + (float)num115), projectile.width - num115 * 2, projectile.height - num115 * 2, DustID.Ichor, 0f, 0f, 100, default(Color), 0.5f);
                 Dust dust = Main.dust[num116];
                 dust.velocity *= 0.25f;
                 dust = Main.dust[num116];

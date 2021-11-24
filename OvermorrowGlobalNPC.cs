@@ -246,6 +246,11 @@ namespace OvermorrowMod
             {
                 npc.defense -= 8;
             }
+
+            if (npc.HasHex(Hex.HexType<SoulFlame>()))
+            {
+                npc.defense -= 5;
+            }
         }
 
         public override void AI(NPC npc)

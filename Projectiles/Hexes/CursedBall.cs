@@ -62,7 +62,7 @@ namespace OvermorrowMod.Projectiles.Hexes
 
             projectile.ai[0]++;
 
-            int num98 = Dust.NewDust(new Vector2(projectile.position.X + projectile.velocity.X, projectile.position.Y + projectile.velocity.Y), projectile.width, projectile.height, 75, projectile.velocity.X, projectile.velocity.Y, 100, default(Color), 2f * projectile.scale);
+            int num98 = Dust.NewDust(new Vector2(projectile.position.X + projectile.velocity.X, projectile.position.Y + projectile.velocity.Y), projectile.width, projectile.height, DustID.CursedTorch, projectile.velocity.X, projectile.velocity.Y, 100, default(Color), 2f * projectile.scale);
             Main.dust[num98].noGravity = true;
 
             projectile.localAI[0]++;
@@ -76,7 +76,7 @@ namespace OvermorrowMod.Projectiles.Hexes
                     Vector2 spinningpoint5 = Vector2.UnitX * 0f;
                     spinningpoint5 += -Vector2.UnitY.RotatedBy((float)num109 * ((float)Math.PI * 2f / num108)) * new Vector2(1f, 4f);
                     spinningpoint5 = spinningpoint5.RotatedBy(projectile.velocity.ToRotation());
-                    int num110 = Dust.NewDust(projectile.Center, 0, 0, 75);
+                    int num110 = Dust.NewDust(projectile.Center, 0, 0, DustID.CursedTorch);
                     Main.dust[num110].scale = 1.5f;
                     Main.dust[num110].noGravity = true;
                     Main.dust[num110].position = projectile.Center + spinningpoint5;
@@ -122,7 +122,7 @@ namespace OvermorrowMod.Projectiles.Hexes
             {
                 Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                 Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-                int dust = Dust.NewDust(position, 2, 2, 75, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
+                int dust = Dust.NewDust(position, 2, 2, DustID.CursedTorch, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
                 Main.dust[dust].noGravity = true;
             }
         }

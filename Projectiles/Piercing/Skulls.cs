@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
 using System;
@@ -110,6 +111,13 @@ namespace OvermorrowMod.Projectiles.Piercing
             Lighting.AddLight(projectile.Center, 0, 0.5f, 0.5f);
 
             projectile.ai[0]++;
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.AddHex(Hex.HexType<SoulFlame>(), 60 * 10);
+
+            base.OnHitNPC(target, damage, knockback, crit);
         }
 
         private void AdjustMagnitude(ref Vector2 vector)
