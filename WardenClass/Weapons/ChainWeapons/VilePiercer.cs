@@ -13,7 +13,8 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
             DisplayName.SetDefault("Vile Guillotine");
             Tooltip.SetDefault("[c/09DBB8:{ Imbuement }]\n" +
                 "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
-                "[c/DE3A28:{ Power }] Your Artifact summons inflict Cursed Flames\n" +
+                "[c/DE3A28:{ Power }] Your Artifact summons inflict 'Emerald Hex,' dealing damage over time\n" +
+                "Additionally, spawns Cursed Fireballs on enemy hits that chase down nearby enemies\n" +
                 "[c/00FF00:{ Wisdom }] Enemies within range are inflicted with Cursed Flames\n" +
                 "Consumes 1 Soul Essence\n" +
                 "'The Corruption is the birthplace for many wicked creatures: Like politicians'");
