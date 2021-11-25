@@ -208,7 +208,10 @@ namespace OvermorrowMod
             {
                 if (Main.rand.NextBool(10))
                 {
-                    Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
+                    if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
+                    {
+                        Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
+                    }
                 }
             }
 
@@ -216,12 +219,16 @@ namespace OvermorrowMod
             {
                 if (Main.rand.NextBool(8))
                 {
-                    for (int i = 0; i < 2; i++)
+                    if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
                     {
-                        Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<IchorStream>(), 12, 2f, owner.whoAmI);
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<IchorStream>(), 12, 2f, owner.whoAmI);
+                        }
                     }
                 }
             }
+
         }
 
         public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)

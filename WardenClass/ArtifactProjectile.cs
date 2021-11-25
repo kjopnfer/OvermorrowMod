@@ -195,10 +195,15 @@ namespace OvermorrowMod.WardenClass
                                         }
 
                                         int randRotation = Main.rand.Next(24) * 15; // Uhhh, random degrees in increments of 15
-                                        for (int j = 0; j < 6; j++)
+                                        if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
                                         {
-                                            Projectile.NewProjectile(Main.npc[i].Center, new Vector2(6).RotatedBy(MathHelper.ToRadians((360 / 6) * j + randRotation)), ModContent.ProjectileType<RedThornHead>(), 23, 6f, projectile.owner);
+                                            for (int j = 0; j < 6; j++)
+                                            {
+                                                Projectile.NewProjectile(Main.npc[i].Center, new Vector2(6).RotatedBy(MathHelper.ToRadians((360 / 6) * j + randRotation)), ModContent.ProjectileType<RedThornHead>(), 23, 6f, projectile.owner);
+                                            }
                                         }
+
+                                        return;
                                     }
                                 }
                             }

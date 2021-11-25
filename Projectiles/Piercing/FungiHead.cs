@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
 using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Piercing
@@ -62,12 +63,15 @@ namespace OvermorrowMod.Projectiles.Piercing
 
             projectile.ai[0]++;
 
-            if (projectile.ai[0] % 180 == 0)
+            if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
             {
-                Vector2 shootVelocity = Main.MouseWorld - projectile.Center;
-                shootVelocity.Normalize();
-                Projectile.NewProjectile(projectile.Center, shootVelocity * Main.rand.Next(5, 7), ModContent.ProjectileType<FungiSpore>(), 21, 10f, projectile.owner);
+                if (projectile.ai[0] % 180 == 0)
+                {
+                    Vector2 shootVelocity = Main.MouseWorld - projectile.Center;
+                    shootVelocity.Normalize();
+                    Projectile.NewProjectile(projectile.Center, shootVelocity * Main.rand.Next(5, 7), ModContent.ProjectileType<FungiSpore>(), 21, 10f, projectile.owner);
 
+                }
             }
         }
 
