@@ -92,22 +92,7 @@ namespace OvermorrowMod.Projectiles.Artifact
 
         public override void Kill(int timeLeft)
         {
-            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.LightBlue, 1, 0.5f, 0, 1f);
-            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Cyan, 1, 1, 0, 1f);
-
-            int num651 = Main.rand.Next(4, 10);
-            for (int num652 = 0; num652 < num651; num652++)
-            {
-                int num653 = Dust.NewDust(projectile.Center, 0, 0, Main.rand.NextBool(2) ? 180 : 6, 0f, 0f, 100);
-                Dust dust = Main.dust[num653];
-                dust.velocity *= 1.6f;
-                Main.dust[num653].velocity.Y -= 1f;
-                dust = Main.dust[num653];
-                dust.velocity += -projectile.velocity * (Main.rand.NextFloat() * 2f - 1f) * 0.5f;
-                Main.dust[num653].scale = 2f;
-                Main.dust[num653].fadeIn = 0.5f;
-                Main.dust[num653].noGravity = true;
-            }
+            Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<TorchAoE>(), projectile.damage, 6f, projectile.owner);
 
             for (int i = 0; i < Main.maxPlayers; i++)
             {
@@ -227,21 +212,7 @@ namespace OvermorrowMod.Projectiles.Artifact
 
         public override void Kill(int timeLeft)
         {
-            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Cyan, 1, 0.35f, 0, 1f);
-
-            int num651 = Main.rand.Next(4, 10);
-            for (int num652 = 0; num652 < num651; num652++)
-            {
-                int num653 = Dust.NewDust(projectile.Center, 0, 0, Main.rand.NextBool(2) ? 180 : 6, 0f, 0f, 100);
-                Dust dust = Main.dust[num653];
-                dust.velocity *= 1.6f;
-                Main.dust[num653].velocity.Y -= 1f;
-                dust = Main.dust[num653];
-                dust.velocity += -projectile.velocity * (Main.rand.NextFloat() * 2f - 1f) * 0.5f;
-                Main.dust[num653].scale = 2f;
-                Main.dust[num653].fadeIn = 0.5f;
-                Main.dust[num653].noGravity = true;
-            }
+            Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<TorchAoE>(), projectile.damage, 6f, projectile.owner, 1f);
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
