@@ -143,6 +143,7 @@ namespace OvermorrowMod.WardenClass
                     break;
                 case Runes.CorruptionRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CorruptionRuneCircle");
+                    ringTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/CorruptionCircle_Outer");
                     break;
                 case Runes.JungleRune:
                     symbolTexture = ModContent.GetTexture("OvermorrowMod/WardenClass/RuneCircles/JungleRuneCircle");

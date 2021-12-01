@@ -92,7 +92,6 @@ namespace OvermorrowMod
                 TestDetours.Load();
 
                 TrailManager = new TrailManager();
-                ModDetours.Load();
                 foreach (Type type in Code.GetTypes())
                 {
                     HexLoader.TryRegisteringHex(type);
@@ -333,7 +332,6 @@ namespace OvermorrowMod
             HexLoader.Load(true);
             Particle.Unload();
             TestDetours.Unload();
-            ModDetours.Unload();
 
 
             Souls = null;
