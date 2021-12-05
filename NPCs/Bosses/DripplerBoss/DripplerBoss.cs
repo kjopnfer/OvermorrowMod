@@ -53,8 +53,6 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/DripplerBoss");
             bossBag = ModContent.ItemType<DripplerBag>();
 
-            npc.buffImmune[BuffID.Bleeding] = true;
-            npc.buffImmune[ModContent.BuffType<Bleeding2>()] = true;
             npc.buffImmune[BuffID.OnFire] = true;
             npc.buffImmune[BuffID.Poisoned] = true;
             npc.buffImmune[BuffID.Frostburn] = true;
