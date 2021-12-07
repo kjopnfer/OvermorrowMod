@@ -24,6 +24,7 @@ namespace WardenClass
         public bool ObsidianShackle;
         public bool PoisonRune;
         public bool ReaperBook;
+        public bool SaintRing;
         public bool SoulRing;
 
         public bool HemoArmor;
@@ -113,6 +114,7 @@ namespace WardenClass
             ObsidianShackle = false;
             PoisonRune = false;
             ReaperBook = false;
+            SaintRing = false;
             SoulRing = false;
 
             Shattered = false;

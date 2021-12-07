@@ -37,13 +37,20 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
             soulResourceCost = 1;
         }
 
+        // May replace with a different recipe in 1.4
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.CrimtaneBar, 12);
-            recipe.AddIngredient(ItemID.Vertebrae, 4);
-            recipe.AddIngredient(ItemID.TissueSample, 10);
-            recipe.AddTile(TileID.DemonAltar);
+            recipe.AddIngredient(ItemID.PlatinumBar, 8);
+            recipe.AddIngredient(ItemID.Torch, 50);
+            recipe.AddTile(TileID.Anvils);
+            recipe.SetResult(this);
+            recipe.AddRecipe();
+
+            recipe = new ModRecipe(mod);
+            recipe.AddIngredient(ItemID.GoldBar, 8);
+            recipe.AddIngredient(ItemID.Torch, 50);
+            recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
         }

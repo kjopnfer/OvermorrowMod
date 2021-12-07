@@ -13,6 +13,8 @@ namespace WardenClass
 {
     public class SoulEssence : OrbitingProjectile, ITrailEntity
     {
+        public Color TrailColor(float progress) => Color.White;
+        public float TrailSize(float progress) => 3;
         public Type TrailType()
         {
             return typeof(SoulTrail);
@@ -121,6 +123,11 @@ namespace WardenClass
             float radius = 5;
             int numLocations = 3;
 
+            if (player.GetModPlayer<WardenDamagePlayer>().SaintRing && Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<DevouredSoul>(), 30, 0f, player.whoAmI);
+            }
+
             for (int i = 0; i < 3; i++)
             {
                 Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
@@ -128,6 +135,10 @@ namespace WardenClass
 
                 Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Color.Cyan, 1, 0.5f, MathHelper.ToRadians(360f / numLocations * i), 1f);
             }
+        }
+
+        public override void Attack()
+        {
         }
     }
 }
