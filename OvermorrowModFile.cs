@@ -46,7 +46,6 @@ namespace OvermorrowMod
         public Effect TrailShader;
         public Effect TextShader;
 
-        public static TrailManager TrailManager;
         public static List<Texture2D> TrailTextures;
         public OvermorrowModFile()
         {
@@ -90,8 +89,8 @@ namespace OvermorrowMod
                 HexLoader.Load(false);
                 Particle.Load();
                 TestDetours.Load();
+                Trail.Load();
 
-                TrailManager = new TrailManager();
                 foreach (Type type in Code.GetTypes())
                 {
                     HexLoader.TryRegisteringHex(type);
@@ -332,6 +331,7 @@ namespace OvermorrowMod
             HexLoader.Load(true);
             Particle.Unload();
             TestDetours.Unload();
+            Trail.Unload();
 
 
             Souls = null;
@@ -412,7 +412,6 @@ namespace OvermorrowMod
             if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
             {
                 Particle.UpdateParticles();
-                TrailManager.UpdateTrails();
             }
 
             for (int i = 0; i < Main.maxPlayers; i++)
@@ -455,6 +454,8 @@ namespace OvermorrowMod
                     }
                 }
             }
+
+            Trail.UpdateTrails();
         }
 
         public void AddSoul(Player owner, int soulEssence)

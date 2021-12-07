@@ -11,6 +11,8 @@ namespace OvermorrowMod.Projectiles.Accessory
 {
     class StoredDamage : ModProjectile, ITrailEntity
     {
+        public Color TrailColor(float progress) => Color.White;
+        public float TrailSize(float progress) => 3;
         public Type TrailType()
         {
             return typeof(SoulTrail);

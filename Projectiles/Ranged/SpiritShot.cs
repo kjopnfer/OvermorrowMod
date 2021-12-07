@@ -11,6 +11,8 @@ namespace OvermorrowMod.Projectiles.Ranged
 {
     public class SpiritShot : ModProjectile, ITrailEntity
     {
+        public Color TrailColor(float progress) => Color.White;
+        public float TrailSize(float progress) => 20;
         public Type TrailType()
         {
             return typeof(SixShooterTrail);

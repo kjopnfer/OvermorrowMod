@@ -15,6 +15,8 @@ namespace OvermorrowMod.Projectiles.Boss
         private Vector2 center;
         public int direction;
         public float Multiplier = 0.75f;
+        public Color TrailColor(float progress) => Color.Cyan;
+        public float TrailSize(float progress) => 48;
         public Type TrailType()
         {
             return typeof(LightningTrail);

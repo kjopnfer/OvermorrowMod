@@ -11,6 +11,8 @@ namespace OvermorrowMod.Projectiles.Piercing
 {
     public class BlazePiercerProjectile : PiercingProjectile, ITrailEntity
     {
+        public Color TrailColor(float progress) => Color.White;
+        public float TrailSize(float progress) => 40;
         public Type TrailType()
         {
             return typeof(FireTrail);

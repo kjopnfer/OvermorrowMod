@@ -14,6 +14,9 @@ namespace OvermorrowMod.Projectiles.Boss
         private bool getParent = false;
         private int speedUpCounter = 0;
         private float radius = 0;
+
+        public Color TrailColor(float progress) => Color.Cyan;
+        public float TrailSize(float progress) => 48;
         public Type TrailType()
         {
             return typeof(LightningTrail);

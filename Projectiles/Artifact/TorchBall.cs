@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
-using OvermorrowMod.Effects.Prim.Trails.TorchVariants;
 using OvermorrowMod.Particles;
 using OvermorrowMod.WardenClass;
 using System;
@@ -14,13 +13,16 @@ namespace OvermorrowMod.Projectiles.Artifact
 {
     public class TorchBall : ArtifactProjectile, ITrailEntity
     {
-        //public Color projectileColor = Main.DiscoColor;
+        // TODO: The system for the Torch Trails has changed where the color and width can be changed within the interface implementation
+        // Therefore, remake this projectile by returning Color types, referencing the previous GitHub commit for this for the colors
+
         public Color projectileColor = Main.DiscoColor;
         public int dustId = 64;
-
+        public Color TrailColor(float progress) => Main.DiscoColor;
+        public float TrailSize(float progress) => 40;
         public Type TrailType()
         {
-            if (projectile.ai[0] <= -1)
+            /*if (projectile.ai[0] <= -1)
             {
                 switch (projectile.ai[0])
                 {
@@ -49,7 +51,7 @@ namespace OvermorrowMod.Projectiles.Artifact
                     case -12:
                         return typeof(TorchTrail12);
                 }
-            }
+            }*/
 
             return typeof(TorchTrail);
 

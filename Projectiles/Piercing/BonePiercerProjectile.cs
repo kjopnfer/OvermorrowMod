@@ -10,6 +10,8 @@ namespace OvermorrowMod.Projectiles.Piercing
 {
     public class BonePiercerProjectile : PiercingProjectile, ITrailEntity
     {
+        public Color TrailColor(float progress) => Color.White;
+        public float TrailSize(float progress) => 20;
         public Type TrailType()
         {
             return typeof(SkullTrail);

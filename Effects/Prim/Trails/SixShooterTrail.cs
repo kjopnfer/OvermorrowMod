@@ -9,10 +9,8 @@ namespace OvermorrowMod.Effects.Prim.Trails
         private float Offset;
         public override void SetDefaults()
         {
-            Width = 10;
             Length = 20;
             Effect = OvermorrowModFile.Mod.TrailShader;
-            Color = Color.White;
         }
         public override void Update()
         {
@@ -29,12 +27,7 @@ namespace OvermorrowMod.Effects.Prim.Trails
             }
             Positions.RemoveAt(0);
         }
-        public override void PrepareEffect()
-        {
-            Effect.SafeSetParameter("WorldViewProjection", GetWVP());
-            Effect.SafeSetParameter("uImage0", OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail6"));
-            Effect.CurrentTechnique.Passes["Texturized"].Apply();
-        }
+       
         public override void PrepareTrail()
         {
             Color darkest = new Color(6, 106, 255);
@@ -47,8 +40,8 @@ namespace OvermorrowMod.Effects.Prim.Trails
                 float prog2 = (float)(i + 1) / (float)Length;
                 Vector2 pos1 = Positions[i];
                 Vector2 pos2 = Positions[i + 1];
-                Vector2 off1 = GetRotation(Positions.ToArray(), i) * Width * prog1;
-                Vector2 off2 = GetRotation(Positions.ToArray(), i + 1) * Width * prog2;
+                Vector2 off1 = PrimitiveHelper.GetRotation(Positions.ToArray(), i) * TrailEntity.TrailSize(prog1) * prog1;
+                Vector2 off2 = PrimitiveHelper.GetRotation(Positions.ToArray(), i + 1) * TrailEntity.TrailSize(prog2) * prog2;
                 Color col1 = Color.Lerp(darkest, lightest, prog1) * prog1;
                 Color col2 = Color.Lerp(darkest, lightest, prog2) * prog2;
                 AddVertex(pos1 + off1, col1, new Vector2(prog1 + Offset, 1));

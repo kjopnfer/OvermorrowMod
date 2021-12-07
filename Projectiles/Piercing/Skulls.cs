@@ -16,7 +16,8 @@ namespace OvermorrowMod.Projectiles.Piercing
         private float period = 30;
         private float amplitude = 10;
         private float previousR = 0;
-
+        public Color TrailColor(float progress) => Color.White;
+        public float TrailSize(float progress) => 20;
         public Type TrailType()
         {
             return typeof(SkullTrail);

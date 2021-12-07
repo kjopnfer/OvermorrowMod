@@ -8,10 +8,8 @@ namespace OvermorrowMod.Effects.Prim.Trails
     {
         public override void SetDefaults()
         {
-            Width = 48;
-            Length = 10;
+            Length = 40;
             Effect = OvermorrowModFile.Mod.TrailShader;
-            Color = Color.White;
         }
         float Offset;
         public override void Update()
@@ -29,12 +27,7 @@ namespace OvermorrowMod.Effects.Prim.Trails
             }
             Positions.RemoveAt(0);
         }
-        public override void PrepareEffect()
-        {
-            Effect.SafeSetParameter("WorldViewProjection", GetWVP());
-            Effect.SafeSetParameter("uImage0", OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail6"));
-            Effect.CurrentTechnique.Passes["Texturized"].Apply();
-        }
+       
         public override void PrepareTrail()
         {
             if (Positions.Count < 2) return;
@@ -44,10 +37,10 @@ namespace OvermorrowMod.Effects.Prim.Trails
                 float prog2 = (float)(i + 1) / (float)Length;
                 Vector2 pos1 = Positions[i];
                 Vector2 pos2 = Positions[i + 1];
-                Vector2 off1 = GetRotation(Positions.ToArray(), i) * Width * prog1;
-                Vector2 off2 = GetRotation(Positions.ToArray(), i + 1) * Width * prog2;
-                Color col1 = Color.Lerp(Color.Cyan, Color.LightCyan, prog1) * prog1;
-                Color col2 = Color.Lerp(Color.Cyan, Color.LightCyan, prog2) * prog2;
+                Vector2 off1 = PrimitiveHelper.GetRotation(Positions.ToArray(), i) * TrailEntity.TrailSize(prog1) * prog1;
+                Vector2 off2 = PrimitiveHelper.GetRotation(Positions.ToArray(), i + 1) * TrailEntity.TrailSize(prog2) * prog2;
+                Color col1 = TrailEntity.TrailColor(prog1);
+                Color col2 = TrailEntity.TrailColor(prog2);
                 AddVertex(pos1 + off1, col1, new Vector2(prog1 + Offset, 1));
                 AddVertex(pos1 - off1, col1, new Vector2(prog1 + Offset, 0));
                 AddVertex(pos2 + off2, col2, new Vector2(prog2 + Offset, 1));
@@ -59,6 +52,10 @@ namespace OvermorrowMod.Effects.Prim.Trails
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
+            Effect.SafeSetParameter("WorldViewProjection", PrimitiveHelper.GetMatrix());
+            Effect.SafeSetParameter("uImage0", OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail5"));
+            Effect.CurrentTechnique.Passes["Texturized"].Apply();
+
             if (Vertices.Count < 6) return;
             GraphicsDevice device = Main.graphics.GraphicsDevice;
             RasterizerState rasterizerState = new RasterizerState();

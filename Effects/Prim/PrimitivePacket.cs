@@ -130,7 +130,7 @@ namespace OvermorrowMod.Effects.Prim
                 rasterizerState.CullMode = CullMode.None;
                 device.RasterizerState = rasterizerState;
 
-                Effect.Parameters["WorldViewProjection"].SetValue(Trail.GetWVP());
+                Effect.Parameters["WorldViewProjection"].SetValue(PrimitiveHelper.GetMatrix());
                 Effect.CurrentTechnique.Passes[Pass].Apply();
 
                 device.DrawPrimitives(Type, 0, Count);
