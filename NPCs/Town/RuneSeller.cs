@@ -87,6 +87,9 @@ namespace OvermorrowMod.NPCs.Town
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<BeanSummon>());
             nextSlot++;
 
+            shop.item[nextSlot].SetDefaults(ModContent.ItemType<SaintRing>());
+            nextSlot++;
+
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<SoulPotion>());
             nextSlot++;
 
