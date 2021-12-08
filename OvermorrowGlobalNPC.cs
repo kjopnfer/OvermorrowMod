@@ -274,7 +274,7 @@ namespace OvermorrowMod
 
         public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
         {
-            if (target.GetModPlayer<OvermorrowModPlayer>().mirrorBuff && !npc.dontTakeDamage)
+            if (target.GetModPlayer<OvermorrowModPlayer>().mirrorBuff && !target.immune)
             {
                 if (damage < npc.life)
                 {

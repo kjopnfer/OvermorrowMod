@@ -138,14 +138,21 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                 {
                     case WardenRunePlayer.Runes.SkyRune:
                         player.AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
-                        Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, player.whoAmI, 0f, 0f);
+
+                        if (player.ownedProjectileCounts[ModContent.ProjectileType<GoldCloud>()] < 1)
+                        {
+                            Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, player.whoAmI, 0f, 0f);
+                        }
 
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
                             if (Main.player[i].team == player.team && player.team != 0)
                             {
                                 Main.player[i].AddBuff(ModContent.BuffType<LightningCloud>(), defBuffDuration);
-                                Projectile.NewProjectile(player.Center + new Vector2(0, -50), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                if (Main.player[i].ownedProjectileCounts[ModContent.ProjectileType<GoldCloud>()] < 1)
+                                {
+                                    Projectile.NewProjectile(player.Center + new Vector2(0, -50), Vector2.Zero, ModContent.ProjectileType<GoldCloud>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                }
                             }
                         }
                         break;
@@ -164,19 +171,15 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                         }
                         break;
                     case WardenRunePlayer.Runes.JungleRune:
-                        // Remove shroom summons
+                        // Remove mushroom summons if they are active, also removes from friendly teammates
+                        #region Mushroom Replacement
                         for (int i = 0; i < player.CountBuffs(); i++)
                         {
-                            if (player.buffType[i] == ModContent.BuffType<ShroomBuff>()) // Apply Resolve Debuff after Resolve expires
+                            if (player.buffType[i] == ModContent.BuffType<ShroomBuff>())
                             {
                                 player.DelBuff(i);
                             }
                         }
-
-                        player.AddBuff(ModContent.BuffType<VineBuff>(), defBuffDuration);
-                        Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 0f);
-                        Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, -1f);
-                        Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 1f);
 
                         if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
@@ -184,28 +187,58 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                             {
                                 if (Main.player[i].team == player.team && player.team != 0)
                                 {
-                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
-                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
-                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
+                                    for (int ii = 0; ii < player.CountBuffs(); ii++)
+                                    {
+                                        if (Main.player[i].buffType[ii] == ModContent.BuffType<ShroomBuff>())
+                                        {
+                                            Main.player[i].DelBuff(i);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
+
+                        #region Effect Application
+                        player.AddBuff(ModContent.BuffType<VineBuff>(), defBuffDuration);
+
+                        if (player.ownedProjectileCounts[ModContent.ProjectileType<StabberVine>()] < 3)
+                        {
+                            Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 0f);
+                            Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, -1f);
+                            Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, player.whoAmI, 0f, 1f);
+                        }
+
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                        {
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                if (Main.player[i].team == player.team && player.team != 0)
+                                {
+                                    if (Main.player[i].ownedProjectileCounts[ModContent.ProjectileType<StabberVine>()] < 3)
+                                    {
+
+                                        Projectile.NewProjectile(Main.player[i].Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                        Projectile.NewProjectile(Main.player[i].Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
+                                        Projectile.NewProjectile(Main.player[i].Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<StabberVine>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
+                                    }
+
                                     Main.player[i].AddBuff(ModContent.BuffType<VineBuff>(), defBuffDuration);
                                 }
                             }
                         }
+                        #endregion
                         break;
                     case WardenRunePlayer.Runes.MushroomRune:
-                        // Remove vine summons
+                        // Remove vine summons if they are active, also removes from friendly teammates
+                        #region Vine Replacement
                         for (int i = 0; i < player.CountBuffs(); i++)
                         {
-                            if (player.buffType[i] == ModContent.BuffType<VineBuff>()) // Apply Resolve Debuff after Resolve expires
+                            if (player.buffType[i] == ModContent.BuffType<VineBuff>())
                             {
                                 player.DelBuff(i);
                             }
                         }
-
-                        player.AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
-                        Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 0f);
-                        Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, -1f);
-                        Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 1f);
 
                         if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
@@ -213,13 +246,47 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
                             {
                                 if (Main.player[i].team == player.team && player.team != 0)
                                 {
-                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
-                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
-                                    Projectile.NewProjectile(Main.player[i].Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
+                                    for (int ii = 0; ii < player.CountBuffs(); ii++)
+                                    {
+                                        if (Main.player[i].buffType[ii] == ModContent.BuffType<VineBuff>())
+                                        {
+                                            Main.player[i].DelBuff(i);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
+
+                        #region Effect Application
+                        player.AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
+
+                        if (player.ownedProjectileCounts[ModContent.ProjectileType<FungiHead>()] < 3)
+                        {
+                            Projectile.NewProjectile(player.Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 0f);
+                            Projectile.NewProjectile(player.Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, -1f);
+                            Projectile.NewProjectile(player.Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, player.whoAmI, 0f, 1f);
+                        }
+
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                        {
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                if (Main.player[i].team == player.team && player.team != 0)
+                                {
+                                    if (Main.player[i].ownedProjectileCounts[ModContent.ProjectileType<FungiHead>()] < 3)
+                                    {
+
+                                        Projectile.NewProjectile(Main.player[i].Center + new Vector2(0, -100), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 0f);
+                                        Projectile.NewProjectile(Main.player[i].Center + new Vector2(-25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, -1f);
+                                        Projectile.NewProjectile(Main.player[i].Center + new Vector2(25, -50), Vector2.Zero, ModContent.ProjectileType<FungiHead>(), 20, 6f, Main.player[i].whoAmI, 0f, 1f);
+                                    }
+
                                     Main.player[i].AddBuff(ModContent.BuffType<ShroomBuff>(), defBuffDuration);
                                 }
                             }
                         }
+                        #endregion
                         break;
                     case WardenRunePlayer.Runes.BoneRune:
                         // This doesn't get called in the shoot hook for Support, so I put it in here again

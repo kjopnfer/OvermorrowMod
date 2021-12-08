@@ -162,5 +162,15 @@ namespace WardenClass
             // Set the state to initialization
             Proj_State = 4;
         }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (Proj_State == 1 || Proj_State == 2)
+            {
+                return false;
+            }
+
+            return base.CanHitNPC(target);
+        }
     }
 }
