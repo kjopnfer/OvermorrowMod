@@ -3,6 +3,7 @@ using OvermorrowMod.Buffs;
 using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Particles;
 using OvermorrowMod.Projectiles.Artifact;
+using OvermorrowMod.Projectiles.Artifact.DarkPortal;
 using OvermorrowMod.Projectiles.Misc;
 using OvermorrowMod.Projectiles.Piercing;
 using System;
@@ -393,7 +394,21 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
 
             if (item.type == ModContent.ItemType<DarkPearl>())
             {
+                // Kill projectile instance to allow only one at a time
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<DarkPortal>()] > 0)
+                {
+                    for (int i = 0; i < Main.maxProjectiles; i++)
+                    {
+                        if (Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI &&
+                            (Main.projectile[i].type == ModContent.ProjectileType<DarkPortal>()))
+                        {
+                            Main.projectile[i].Kill();
+                        }
+                    }
+                }
+
                 position = Main.MouseWorld;
+
                 int projectile = Projectile.NewProjectile(position, Vector2.Zero, type, 0, 0, player.whoAmI);
                 Main.projectile[projectile].spriteDirection = player.direction;
 
