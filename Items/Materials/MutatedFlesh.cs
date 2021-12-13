@@ -3,11 +3,11 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Materials
 {
-    public class DrippingFlesh : ModItem
+    public class MutatedFlesh : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dripping Flesh");
+            DisplayName.SetDefault("Mutated Flesh");
         }
 
         public override void SetDefaults()
