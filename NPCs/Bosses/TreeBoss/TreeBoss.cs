@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Projectiles.Boss;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -13,8 +15,16 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         private bool changedPhase2 = false;
         private bool introMessage = true;
         private int bufferCount = 0;
+        private Vector2 playerPos;
 
-        private enum spawnDirection { left, right }
+        public enum SpawnDirection { Left, Right }
+        public SpawnDirection Direction;
+
+        public enum SpikeAttacks { Wave = 0, Alternating = 1 }
+        public int SpikeAttack;
+        public int PreviousSpike = -1;
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void SetStaticDefaults()
         {
@@ -65,30 +75,97 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
         }
 
+        public float GetLerpValue(float from, float to, float t, bool clamped = false)
+        {
+            if (clamped)
+            {
+                if (from < to)
+                {
+                    if (t < from)
+                    {
+                        return 0f;
+                    }
+                    if (t > to)
+                    {
+                        return 1f;
+                    }
+                }
+                else
+                {
+                    if (t < to)
+                    {
+                        return 1f;
+                    }
+                    if (t > from)
+                    {
+                        return 0f;
+                    }
+                }
+            }
+            return (t - from) / (to - from);
+        }
+
+        public enum AIStates
+        {
+            Intro = -1,
+            Selector = 0,
+            Thorns = 1,
+            Seeds = 2,
+            MultiThorns = 3,
+            ThornWave = 4,
+            ThornWaveSegmented = 5
+        }
+
+        public ref float AICase => ref npc.ai[0];
+        public ref float GlobalCounter => ref npc.ai[1];
+        public ref float MiscCounter => ref npc.ai[2];
+        public ref float MiscCounter2 => ref npc.ai[3];
+
+
         public override void AI()
         {
+            // The cool plans that I write down and forget to remove in the final version of the reworks
+            // Iorich has three attack types indicated by his eyes
+            // 1. A thorns attack, that can fire in segments, diagonally, or in waves
+            // 2. A rune attack, that can fire in bursts or a spread
+            // 3. An energy attack, that will follow the player and shoot horizontally, or vertically at their position
+
+            // These coincide with phase 2 attacks that are essentially upgraded versions sans the thorns
+            // 1. A physical attack, which would involve various back-and-forth charges
+            // 2. A rune attack, which in this case would be the absorption-healing attack, it has two versions:
+            // 2a. If it absorbs enough energy, will summon projectiles that rain from the sky
+            // 2b. If it doesn't, will fire energy thorns in all directions in quick even-spread bursts
+            // 3. An energy attack, which would spawn lights that circle around before firing at their initial position after a full rotation
+
             if (!OvermorrowWorld.downedTree && introMessage)
             {
                 npc.dontTakeDamage = true;
                 npc.netUpdate = true;
-                npc.ai[3]++;
+                MiscCounter++;
+                npc.localAI[0]++;
 
-                if (npc.ai[3] == 180)
+                if (MiscCounter == 60)
+                {
+                    Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<IorichRune>(), 0, 0, Main.myPlayer, 1f);
+                    Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<IorichRune>(), 0, 0, Main.myPlayer, 0.5f);
+                }
+
+                if (MiscCounter == 180)
                 {
                     BossText("I heed thy call.");
                 }
 
-                if (npc.ai[3] == 360)
+                if (MiscCounter == 360)
                 {
                     BossText("Thou wishes to unlock the secrets of the Dryads?");
                 }
 
-                if (npc.ai[3] == 540)
+                if (MiscCounter == 540)
                 {
                     BossText("Very well, I shalt test thy resolve.");
                 }
 
-                if (npc.ai[3] <= 600)
+                if (MiscCounter <= 600)
                 {
                     return;
                 }
@@ -135,120 +212,116 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // EXPERT MODE:
             // Shoots a wave of thorns
 
+            GlobalCounter++;
 
-            switch (npc.ai[0])
+            switch (AICase)
             {
-                case 0: // General case
-                    // Do nothing
-                    if (npc.ai[1] == 30)
+                case (int)AIStates.Selector: // General case
+                    // Probably something to choose one of three attack versions
+                    if (GlobalCounter % 240 == 0)
                     {
-                        int randCeiling = npc.life <= npc.lifeMax * 0.5f ? 3 : 5;
-                        int waveChance = Main.expertMode ? Main.rand.Next(0, randCeiling) : -1;
-
-                        if (changedPhase2)
-                        {
-                            if (waveChance != -1) // Expert mode version
-                            {
-                                if (waveChance == 0)
-                                {
-                                    npc.ai[0] = 4;
-                                    npc.ai[1] = 0;
-                                }
-                                else
-                                {
-                                    npc.ai[0] = 2;
-                                    npc.ai[1] = 0;
-                                }
-                            }
-                            else // Default Non-expert mode version
-                            {
-                                npc.ai[0] = 2;
-                                npc.ai[1] = 0;
-                            }
-                        }
-                        else
-                        {
-                            if (waveChance != -1) // Expert mode version
-                            {
-                                if (waveChance == 0)
-                                {
-                                    npc.ai[0] = 4;
-                                    npc.ai[1] = 0;
-                                }
-                                else
-                                {
-                                    npc.ai[0] = 2;
-                                    npc.ai[1] = 0;
-                                }
-                            }
-                            else // Default Non-expert mode version
-                            {
-                                npc.ai[0] = 2;
-                                npc.ai[1] = 0;
-                            }
-                        }
+                        AICase = (int)AIStates.Thorns;
+                        GlobalCounter = 0;
+                        MiscCounter = 0;
+                        MiscCounter2 = 0;
                     }
+
                     break;
-                case 1: // Spawn thorns
-                    if (npc.ai[1] % 60 == 0 && npc.ai[1] < 240)
+                case (int)AIStates.Thorns: // Spawn thorns
+                    // First find whether the offset position is to the left or the right of the player
+                    if (MiscCounter2 == 0)
                     {
-                        // Get the ground beneath the player
-                        Vector2 playerPos = new Vector2(player.position.X / 16, player.position.Y / 16);
+                        // Various nondeterministic selections for this attack
+                        Direction = Main.rand.NextBool(2) ? SpawnDirection.Left : SpawnDirection.Right;
+                        SpikeAttack = (int)(Main.rand.NextBool(2) ? SpikeAttacks.Wave : SpikeAttacks.Alternating);
+
+                        // Check to see if the previous attack was the same
+                        while (PreviousSpike == SpikeAttack)
+                        {
+                            SpikeAttack = (int)(Main.rand.NextBool(2) ? SpikeAttacks.Wave : SpikeAttacks.Alternating);
+                        }
+
+                        Main.NewText(PreviousSpike);
+
+                        npc.netUpdate = true; // Multiplayer code stinky
+
+                        // Also get the player's position during this run so it doesn't get constantly offset while they move
+                        playerPos = new Vector2(player.position.X / 16, player.position.Y / 16);
                         Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                        while (!tile.active() || tile.type == TileID.Trees)
+
+                        // Get the ground beneath the player
+                        while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
                         {
                             playerPos.Y += 1;
                             tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
                         }
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 26, 2.5f, Main.myPlayer, 0f, 0f);
-                        }
                     }
 
-                    if (npc.ai[1] == 240)
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            // Get the ground beneath the player
-                            Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
-                            Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
-                            Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                            while (!tile.active() || tile.type == TileID.Trees)
-                            {
-                                playerPos.Y += 1;
-                                tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                            }
+                    int THORN_OFFSET = 120;
+                    int SPAWN_OFFSET = 950;
 
-                            Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                            while (!tile2.active() || tile2.type == TileID.Trees)
+                    switch (SpikeAttack)
+                    {
+                        case (int)SpikeAttacks.Wave:
+                            if (++MiscCounter % 15 == 0)
                             {
-                                playerPos2.Y += 1;
-                                tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                            }
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                if (i == 0)
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    Vector2 calculatedOffset = Direction == SpawnDirection.Left ? new Vector2(SPAWN_OFFSET + (THORN_OFFSET * -MiscCounter2), 0) : new Vector2(-SPAWN_OFFSET + (THORN_OFFSET * MiscCounter2), 0);
+                                    Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
                                 }
-                                else
+
+                                MiscCounter2++;
+                            }
+                            break;
+                        case (int)SpikeAttacks.Alternating:
+                            int AlternatingSpawnOffset = (SPAWN_OFFSET / 3) * 2; // It was too far away lol
+
+                            if (MiscCounter == 0)
+                            {
+                                for (int iterations = 0; iterations < 12; iterations++)
                                 {
-                                    Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
-                                    Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        Vector2 calculatedOffset = Direction == SpawnDirection.Left ? new Vector2(AlternatingSpawnOffset + (THORN_OFFSET * -iterations), 0) : new Vector2(-AlternatingSpawnOffset + (THORN_OFFSET * iterations), 0);
+                                        Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
+                                    }
                                 }
                             }
-                        }
+
+                            if (MiscCounter == 140)
+                            {
+                                AlternatingSpawnOffset -= THORN_OFFSET / 2; // Update the offsets to spawn inbetween the safe areas
+                                for (int iterations = 0; iterations < 12; iterations++)
+                                {
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        Vector2 calculatedOffset = Direction == SpawnDirection.Left ? new Vector2(AlternatingSpawnOffset + (THORN_OFFSET * -iterations), 0) : new Vector2(-AlternatingSpawnOffset + (THORN_OFFSET * iterations), 0);
+                                        Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
+                                    }
+                                }
+                            }
+
+                            MiscCounter++;
+                            MiscCounter2++;
+                            break;
                     }
 
-                    if (npc.ai[1] == 300)
+
+                    if (MiscCounter == 300)
                     {
-                        npc.ai[0] = 0;
-                        npc.ai[1] = 1;
+                        AICase = (int)AIStates.Selector;
+                        GlobalCounter = 0;
+                        MiscCounter = 0;
+                        MiscCounter2 = 0;
+
+                        // Store the current attack for next iteration
+                        PreviousSpike = SpikeAttack;
                     }
+
                     break;
-                case 2: // Shoot seeds
-                    if (npc.ai[1] % 75 == 0)
+                case (int)AIStates.Seeds: // Shoot seeds
+                    if (GlobalCounter % 75 == 0)
                     {
                         int numSeeds = npc.life <= npc.lifeMax * 0.25f ? 16 : 13;
                         float numberProjectiles = Main.rand.Next(7, numSeeds);
@@ -262,27 +335,27 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             for (int i = 0; i < numberProjectiles; i++)
                             {
                                 Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
+                                //Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
                             }
                         }
                     }
 
-                    if (npc.ai[1] == 300)
+                    if (GlobalCounter == 300)
                     {
                         if (changedPhase2)
                         {
-                            npc.ai[0] = 3;
-                            npc.ai[1] = 0;
+                            AICase = 3;
+                            GlobalCounter = 0;
                         }
                         else
                         {
-                            npc.ai[0] = 1;
-                            npc.ai[1] = 0;
+                            AICase = 1;
+                            GlobalCounter = 0;
                         }
                     }
                     break;
-                case 3: // Multiple thorns
-                    if (npc.ai[1] % 120 == 0)
+                case (int)AIStates.MultiThorns: // Multiple thorns
+                    if (GlobalCounter % 120 == 0)
                     {
                         int randChoice = Main.rand.Next(2);
                         npc.netUpdate = true;
@@ -294,7 +367,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
                                 Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
                                 Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                                while (!tile.active() || tile.type == TileID.Trees)
+                                while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
                                 {
                                     playerPos.Y += 1;
                                     tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
@@ -310,12 +383,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 {
                                     if (i == 0)
                                     {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
                                     }
                                     else
                                     {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
-                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
+                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
                                     }
                                 }
                             }
@@ -328,7 +401,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 Vector2 playerPos = new Vector2((player.position.X - 90 * i) / 16, (player.position.Y) / 16);
                                 Vector2 playerPos2 = new Vector2((player.position.X + 90 * i) / 16, (player.position.Y) / 16);
                                 Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                                while (!tile.active() || tile.type == TileID.Trees)
+                                while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
                                 {
                                     playerPos.Y += 1;
                                     tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
@@ -344,26 +417,26 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 {
                                     if (i == 0)
                                     {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
                                     }
                                     else
                                     {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
-                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
+                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
                                     }
                                 }
                             }
                         }
                     }
 
-                    if (npc.ai[1] == 320)
+                    if (GlobalCounter == 320)
                     {
-                        npc.ai[0] = 0;
-                        npc.ai[1] = 0;
+                        AICase = 0;
+                        GlobalCounter = 0;
                     }
                     break;
-                case 4: // Thorns wave
-                    if (npc.ai[1] % 15 == 0)
+                case (int)AIStates.ThornWave: // Thorns wave
+                    if (GlobalCounter % 15 == 0)
                     {
                         // Get the ground beneath the player
                         Vector2 npcPos = new Vector2((npc.position.X - 60 * bufferCount) / 16, npc.position.Y / 16);
@@ -385,29 +458,29 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                            Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 31, 2.5f, Main.myPlayer, 900f, 0f);
 
-                            Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                            Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 31, 2.5f, Main.myPlayer, 900f, 0f);
                             bufferCount++;
                         }
                     }
 
-                    if (npc.ai[1] == 180)
+                    if (GlobalCounter == 180)
                     {
-                        npc.ai[0] = 5;//2;
-                        npc.ai[1] = 0;
+                        AICase = (int)AIStates.ThornWaveSegmented;
+                        GlobalCounter = 0;
 
                         bufferCount = 0;
                     }
                     break;
-                case 5: // segmented thorns wave
+                case (int)AIStates.ThornWaveSegmented: // segmented thorns wave
                     {
-                        if (npc.ai[1] == 0)
+                        if (GlobalCounter == 0)
                         {
                             // Get the ground beneath the player
                             Vector2 npcPos = new Vector2((npc.position.X - /*60*/ 500 * bufferCount) / 16, npc.position.Y / 16);
                             Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                            while (!tile.active() || tile.type == TileID.Trees)
+                            while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
                             {
                                 npcPos.Y += 1;
                                 tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
@@ -424,25 +497,100 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                                Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 31, 2.5f, Main.myPlayer, 900f, 0f);
 
-                                Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                                Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 31, 2.5f, Main.myPlayer, 900f, 0f);
                                 bufferCount++;
                             }
                         }
 
-                        if (npc.ai[1] == 480)
+                        if (GlobalCounter == 480)
                         {
-                            npc.ai[0] = 2;
-                            npc.ai[1] = 0;
+                            AICase = (int)AIStates.Seeds;
+                            GlobalCounter = 0;
 
                             bufferCount = 0;
                         }
                     }
                     break;
             }
+        }
 
-            npc.ai[1]++;
+        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            Texture2D value71 = mod.GetTexture("NPCs/Bosses/TreeBoss/TreeBoss");
+            Vector2 vector59 = npc.Center - Main.screenPosition;
+            Rectangle frame8 = npc.frame;
+            Vector2 origin21 = new Vector2(70f, 127f);
+            origin21.Y += 8f;
+            Vector2 scale3 = new Vector2(npc.scale);
+            float num219 = npc.localAI[0];
+            if (num219 < 120f)
+            {
+                scale3 *= num219 / 240f + 0.5f;
+            }
+            Color alpha13 = npc.GetAlpha(npc.color);
+            float lerpValue2 = GetLerpValue(0f, 120f, num219, clamped: true);
+            float num220 = MathHelper.Lerp(32f, 0f, lerpValue2);
+            Color color45 = alpha13;
+            color45.A = (byte)MathHelper.Lerp((int)color45.A, 0f, lerpValue2);
+            color45 *= lerpValue2;
+            if (num219 >= 120f)
+            {
+                color45 = alpha13;
+            }
+            spriteBatch.Draw(value71, vector59, frame8, color45, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+
+            // AI Counter
+            float y2 = (((MiscCounter + 54f) % 180f - 120f) / 180f * 2f * ((float)Math.PI * 2f)).ToRotationVector2().Y;
+            if (num219 >= 120f)
+            {
+                num220 = y2 * 0f;
+                color45.A = (byte)((float)(int)color45.A * 0.5f);
+                color45 *= y2 / 2f + 0.5f;
+                float num221 = 1f;
+                for (float num222 = 0f; num222 < num221; num222 += 1f)
+                {
+                    spriteBatch.Draw(value71, vector59 + ((float)Math.PI * 2f / num221 * num222).ToRotationVector2() * num220, frame8, color45, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                }
+            }
+
+            // AI counter
+            float num223 = MiscCounter / 180f - 0.76f;
+            if (num223 < 0f)
+            {
+                num223 += 1f;
+            }
+            float num224 = 0f;
+            float num225 = 0f;
+            float num226 = 0.6f;
+            float num227 = 0.8f;
+            if (num223 >= num226 && num223 <= num227)
+            {
+                num224 = GetLerpValue(num226, num227, num223);
+                num225 = MathHelper.Lerp(0.75f, 0.85f, num224);
+            }
+            num226 = num227;
+            num227 = num226 + 0.13f;
+            if (num223 >= num226 && num223 <= num227)
+            {
+                num224 = 1f - GetLerpValue(num226, num227, num223);
+                num225 = MathHelper.Lerp(1.3f, 0.85f, num224);
+            }
+            int frameNumber = frame8.Y / frame8.Height;
+
+            if (num219 < 120f)
+            {
+                float num229 = (float)Math.PI * 2f * lerpValue2 * (float)Math.Pow(lerpValue2, 2.0) * 2f + lerpValue2;
+                color45.A = (byte)((float)(int)alpha13.A * (float)Math.Pow(lerpValue2, 2.0) * 0.5f);
+                float num230 = 3f;
+                for (float num231 = 0f; num231 < num230; num231 += 1f)
+                {
+                    spriteBatch.Draw(value71, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, color45, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                }
+            }
+
+            return base.PreDraw(spriteBatch, drawColor);
         }
 
         public override void FindFrame(int frameHeight)
