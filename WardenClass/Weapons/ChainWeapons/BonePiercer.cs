@@ -13,7 +13,7 @@ namespace OvermorrowMod.WardenClass.Weapons.ChainWeapons
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Grave Hook");
-            Tooltip.SetDefault("Attacks have a chance to inflict SoulFlame\n" +
+            Tooltip.SetDefault("Attacks have a chance to inflict Soulflame\n" +
                             "[c/09DBB8:{ Imbuement }]\n" +
                             "[c/800080:Right Click] to empower your Warden Artifacts on use\n" +
                             "[c/09DBB8:{ All }] Summons 6 Cursed Skulls on each Artifact use\n" +

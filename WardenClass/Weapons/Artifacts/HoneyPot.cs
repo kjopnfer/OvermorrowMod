@@ -36,7 +36,7 @@ namespace OvermorrowMod.WardenClass.Weapons.Artifacts
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.HoneyComb, 12);
+            recipe.AddIngredient(ItemID.BeeWax, 12);
             recipe.AddIngredient(ItemID.BottledHoney, 9);
             recipe.AddTile(TileID.WorkBenches);
             recipe.SetResult(this);

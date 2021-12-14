@@ -150,7 +150,7 @@ namespace OvermorrowMod
 
                     if (Main.rand.NextBool(3))
                     {
-                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrippingFlesh>(), Main.rand.Next(1, 3));
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MutatedFlesh>(), Main.rand.Next(1, 3));
                     }
                     break;
                 case NPCID.FungiBulb:

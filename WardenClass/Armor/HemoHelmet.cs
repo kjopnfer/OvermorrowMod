@@ -46,7 +46,7 @@ namespace OvermorrowMod.WardenClass.Armor
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 40);
+            recipe.AddIngredient(ModContent.ItemType<MutatedFlesh>(), 40);
             recipe.AddIngredient(ModContent.ItemType<BloodGem>(), 1);
             recipe.AddIngredient(ItemID.IronHelmet, 1);
             recipe.AddTile(TileID.Anvils);
@@ -54,7 +54,7 @@ namespace OvermorrowMod.WardenClass.Armor
             recipe.AddRecipe();
 
             recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<DrippingFlesh>(), 40);
+            recipe.AddIngredient(ModContent.ItemType<MutatedFlesh>(), 40);
             recipe.AddIngredient(ModContent.ItemType<BloodGem>(), 1);
             recipe.AddIngredient(ItemID.LeadHelmet, 1);
             recipe.AddTile(TileID.Anvils);
