@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Projectiles.Boss;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -24,6 +25,26 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int SpikeAttack;
         public int PreviousSpike = -1;
 
+        // Enums don't take floating point values :V
+        // Therefore these will be used to calculate in 45 degree increments according to the unit circle
+        public enum SpiritPoints
+        {
+            East = 0,
+            NorthEast = 1,
+            North = 2,
+            NorthWest = 3,
+            West = 4,
+            SouthWest = 5,
+            South = 6,
+            SouthEast = 7
+        }
+        List<SpiritPoints> SpawnDirections = new List<SpiritPoints>(new SpiritPoints[4]);
+        public enum SpiritAttacks { Randomized = 0, Circular = 1 }
+        public int SpiritAttack;
+        public int PreviousSpirit = -1;
+        public int RotationDirection;
+        public float RotationOffset;
+
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void SetStaticDefaults()
@@ -44,7 +65,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             npc.aiStyle = -1;
             //npc.damage = 31;
-            npc.damage = 0;
+            npc.damage = 17;
             npc.defense = 14;
             npc.lifeMax = 3300;
             npc.HitSound = SoundID.NPCHit1;
@@ -110,7 +131,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Intro = -1,
             Selector = 0,
             Thorns = 1,
-            Seeds = 2,
+            Spirit = 2,
             MultiThorns = 3,
             ThornWave = 4,
             ThornWaveSegmented = 5
@@ -203,31 +224,44 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 changedPhase2 = true;
             }
 
-            // General MOVESET:
-            // Shoot thorns from under the ground (50% thorns linger longer)
-            // Drop seeds that float down from above
-            // (50%) Shoot multiple thorns from under the ground that are close together at the player
-            // (25%) Shoot multiple seeds the float down from above
-
-            // EXPERT MODE:
-            // Shoots a wave of thorns
-
             GlobalCounter++;
 
             switch (AICase)
             {
                 case (int)AIStates.Selector: // General case
                     // Probably something to choose one of three attack versions
+
+                    // TODO: Turn these into NPCs that can be killed and make this Expert exclusive
+                    /*if (GlobalCounter % 75 == 0)
+                    {
+                        int numSeeds = npc.life <= npc.lifeMax * 0.25f ? 16 : 13;
+                        float numberProjectiles = Main.rand.Next(7, numSeeds);
+                        Vector2 position = npc.Center;
+                        int speedX = 1;
+                        int speedY = Main.rand.Next(-25, -15);
+                        float rotation = MathHelper.ToRadians(45);
+                        position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            for (int i = 0; i < numberProjectiles; i++)
+                            {
+                                Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
+                                //Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
+                            }
+                        }
+                    }*/
+
                     if (GlobalCounter % 240 == 0)
                     {
-                        AICase = (int)AIStates.Thorns;
+                        //AICase = (int)(Main.rand.NextBool(2) ? AIStates.Thorns : AIStates.Spirit);
+                        AICase = (int)AIStates.Spirit;
                         GlobalCounter = 0;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
                     }
 
                     break;
-                case (int)AIStates.Thorns: // Spawn thorns
+                case (int)AIStates.Thorns: // Spawn Thorns
                     // First find whether the offset position is to the left or the right of the player
                     if (MiscCounter2 == 0)
                     {
@@ -240,8 +274,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         {
                             SpikeAttack = (int)(Main.rand.NextBool(2) ? SpikeAttacks.Wave : SpikeAttacks.Alternating);
                         }
-
-                        Main.NewText(PreviousSpike);
 
                         npc.netUpdate = true; // Multiplayer code stinky
 
@@ -320,38 +352,87 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     }
 
                     break;
-                case (int)AIStates.Seeds: // Shoot seeds
-                    if (GlobalCounter % 75 == 0)
+                case (int)AIStates.Spirit: // Spirit Attack
+                    if (MiscCounter2 == 0)
                     {
-                        int numSeeds = npc.life <= npc.lifeMax * 0.25f ? 16 : 13;
-                        float numberProjectiles = Main.rand.Next(7, numSeeds);
-                        Vector2 position = npc.Center;
-                        int speedX = 1;
-                        int speedY = Main.rand.Next(-25, -15);
-                        float rotation = MathHelper.ToRadians(45);
-                        position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f; //this defines the distance of the projectiles form the player when the projectile spawns
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        // Various nondeterministic selections for this attack
+                        //SpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
+                        SpiritAttack = (int)SpiritAttacks.Circular;
+
+                        // Check to see if the previous attack was the same
+                        /*while (PreviousSpirit == SpiritAttack)
                         {
-                            for (int i = 0; i < numberProjectiles; i++)
-                            {
-                                Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
-                                //Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
-                            }
-                        }
+                            SpiritAttack = SpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
+                        }*/
+
+                        Main.NewText(PreviousSpike);
+
+                        npc.netUpdate = true; // Multiplayer code stinky
                     }
 
-                    if (GlobalCounter == 300)
+                    SpiritPoints[] values = (SpiritPoints[])Enum.GetValues(typeof(SpiritPoints));
+
+                    switch (SpiritAttack)
                     {
-                        if (changedPhase2)
-                        {
-                            AICase = 3;
-                            GlobalCounter = 0;
-                        }
-                        else
-                        {
-                            AICase = 1;
-                            GlobalCounter = 0;
-                        }
+                        case (int)SpiritAttacks.Randomized:
+                            if (MiscCounter++ == 0)
+                            {
+                                values = values.Shuffle();
+
+                                // Populate with 4 random values
+                                for (int i = 0; i < SpawnDirections.Count; i++)
+                                {
+                                    // Add a random value to the list from the shuffled enum array
+                                    SpawnDirections[i] = (SpiritPoints)values.GetValue(i);
+                                }
+                            }
+
+                            if (MiscCounter % 15 == 0)
+                            {
+                                float Rotation = (int)SpawnDirections[(int)MiscCounter2] * MathHelper.PiOver4;
+                                int RADIUS = 100;
+
+                                int proj = Projectile.NewProjectile(player.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation), Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation, RADIUS);
+                                ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = player;
+
+                                MiscCounter2++;
+                            }
+
+                            break;
+                        case (int)SpiritAttacks.Circular:
+                            // Determine the rotation direction and offset (where it starts spawning)
+                            if (MiscCounter++ == 0)
+                            {
+                                RotationDirection = Main.rand.NextBool(2) ? 1 : -1;
+                                RotationOffset = Main.rand.Next(4) * MathHelper.PiOver2;
+
+                                npc.netUpdate = true;
+                            }
+
+                            if (MiscCounter % 7 == 0)
+                            {
+                                int RADIUS = 135;
+
+                                float Rotation = RotationDirection * (int)values[(int)MiscCounter2] * MathHelper.PiOver4;
+                                Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(Rotation + RotationOffset);
+
+                                int proj = Projectile.NewProjectile(player.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation + RotationOffset, RADIUS);
+                                ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = player;
+
+                                MiscCounter2++;
+                            }
+                            break;
+                    }
+
+
+
+                    //MiscCounter++;
+                    if (MiscCounter == 60)
+                    {
+                        AICase = (int)AIStates.Selector;
+                        GlobalCounter = 0;
+                        MiscCounter = 0;
+                        MiscCounter2 = 0;
                     }
                     break;
                 case (int)AIStates.MultiThorns: // Multiple thorns
@@ -431,6 +512,26 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (GlobalCounter == 320)
                     {
+                        // First find whether the offset position is to the left or the right of the player
+                        if (MiscCounter2 == 0)
+                        {
+
+
+
+
+
+                            // Also get the player's position during this run so it doesn't get constantly offset while they move
+                            playerPos = new Vector2(player.position.X / 16, player.position.Y / 16);
+                            Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+
+                            // Get the ground beneath the player
+                            while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
+                            {
+                                playerPos.Y += 1;
+                                tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                            }
+                        }
+
                         AICase = 0;
                         GlobalCounter = 0;
                     }
@@ -506,7 +607,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                         if (GlobalCounter == 480)
                         {
-                            AICase = (int)AIStates.Seeds;
+                            //AICase = (int)AIStates.Seeds;
                             GlobalCounter = 0;
 
                             bufferCount = 0;

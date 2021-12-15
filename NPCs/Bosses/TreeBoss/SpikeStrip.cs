@@ -67,7 +67,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-                spriteBatch.Draw(texture, projectile.Center - new Vector2(0, 15) - Main.screenPosition, rect, Color.Lerp(Color.Red, Color.Transparent, (float)Math.Sin(projectile.ai[1] / 15f)), projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - new Vector2(0, 15) - Main.screenPosition, rect, Color.Lerp(new Color(0, 255, 191), Color.Transparent, (float)Math.Sin(projectile.ai[1] / 15f)), projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

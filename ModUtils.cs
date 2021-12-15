@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
 using WardenClass;
@@ -48,6 +49,25 @@ namespace OvermorrowMod
                 x4 * Math.Pow(t, 3)
                 );
         }
+
+        public static List<T> Shuffle<T>(this List<T> list)
+        {
+            int c = list.Count;
+            List<T> current = new List<T>();
+            for (int i = 0; i < c; i++)
+            {
+                int index = Main.rand.Next(list.Count);
+                current.Add(list[index]);
+                list.RemoveAt(index);
+            }
+            return current;
+        }
+
+        public static T[] Shuffle<T>(this T[] array)
+        {
+            return Shuffle<T>(new List<T>(array)).ToArray();
+        }
+
         public static Vector2 Bezier(Vector2 from, Vector2 to, Vector2 cp1, Vector2 cp2, float amount)
         {
             Vector2 output = new Vector2();
