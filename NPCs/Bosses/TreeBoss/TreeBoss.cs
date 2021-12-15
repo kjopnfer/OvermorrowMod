@@ -45,6 +45,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int RotationDirection;
         public float RotationOffset;
 
+        public int AbsorbedEnergies;
+        public int EnergyCount;
+
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void SetStaticDefaults()
@@ -132,9 +135,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Selector = 0,
             Thorns = 1,
             Spirit = 2,
-            MultiThorns = 3,
-            ThornWave = 4,
-            ThornWaveSegmented = 5
+            Runes = 3
         }
 
         public ref float AICase => ref npc.ai[0];
@@ -224,6 +225,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 changedPhase2 = true;
             }
 
+            if (npc.life >= npc.lifeMax) npc.life = npc.lifeMax;
+
             GlobalCounter++;
 
             switch (AICase)
@@ -254,7 +257,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     if (GlobalCounter % 240 == 0)
                     {
                         //AICase = (int)(Main.rand.NextBool(2) ? AIStates.Thorns : AIStates.Spirit);
-                        AICase = (int)AIStates.Spirit;
+                        AICase = (int)AIStates.Runes;
                         GlobalCounter = 0;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
@@ -356,16 +359,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     if (MiscCounter2 == 0)
                     {
                         // Various nondeterministic selections for this attack
-                        //SpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
-                        SpiritAttack = (int)SpiritAttacks.Circular;
+                        SpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
 
                         // Check to see if the previous attack was the same
-                        /*while (PreviousSpirit == SpiritAttack)
+                        while (PreviousSpirit == SpiritAttack)
                         {
                             SpiritAttack = SpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
-                        }*/
-
-                        Main.NewText(PreviousSpike);
+                        }
 
                         npc.netUpdate = true; // Multiplayer code stinky
                     }
@@ -424,194 +424,90 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             break;
                     }
 
-
-
-                    //MiscCounter++;
                     if (MiscCounter == 60)
                     {
                         AICase = (int)AIStates.Selector;
                         GlobalCounter = 0;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
+
+                        // Store the current attack for next iteration
+                        PreviousSpirit = SpiritAttack;
                     }
                     break;
-                case (int)AIStates.MultiThorns: // Multiple thorns
-                    if (GlobalCounter % 120 == 0)
+                case (int)AIStates.Runes: // Multiple thorns
+                    // The initializer for the spinny visuals
+                    if (MiscCounter == 0)
                     {
-                        int randChoice = Main.rand.Next(2);
-                        npc.netUpdate = true;
-                        if (randChoice == 0)
-                        {
-                            for (int i = 0; i < 3; i++)
-                            {
-                                // Get the ground beneath the player
-                                Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
-                                Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
-                                Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                                while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
-                                {
-                                    playerPos.Y += 1;
-                                    tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                                }
+                        int RADIUS = 300;
 
-                                Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                                while (!tile2.active() || tile2.type == TileID.Trees)
-                                {
-                                    playerPos2.Y += 1;
-                                    tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                                }
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    if (i == 0)
-                                    {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
-                                    }
-                                    else
-                                    {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
-                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
-                                    }
-                                }
-                            }
-                        }
-                        else
+                        for (int i = 0; i < 4; i++)
                         {
-                            for (int i = 0; i < 3; i++)
-                            {
-                                // Get the ground beneath the player
-                                Vector2 playerPos = new Vector2((player.position.X - 90 * i) / 16, (player.position.Y) / 16);
-                                Vector2 playerPos2 = new Vector2((player.position.X + 90 * i) / 16, (player.position.Y) / 16);
-                                Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                                while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
-                                {
-                                    playerPos.Y += 1;
-                                    tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                                }
+                            Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(MathHelper.PiOver2 * i);
 
-                                Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                                while (!tile2.active() || tile2.type == TileID.Trees)
-                                {
-                                    playerPos2.Y += 1;
-                                    tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                                }
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    if (i == 0)
-                                    {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
-                                    }
-                                    else
-                                    {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
-                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 28, 2.5f, Main.myPlayer, 900f, 0f);
-                                    }
-                                }
-                            }
+                            int proj = Projectile.NewProjectile(npc.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<RuneSpinner>(), npc.damage, 0f, Main.myPlayer, MathHelper.PiOver2 * i, RADIUS);
+                            ((RuneSpinner)Main.projectile[proj].modProjectile).RotationCenter = npc;
                         }
                     }
 
-                    if (GlobalCounter == 320)
+                    if (MiscCounter != 600)
                     {
-                        // First find whether the offset position is to the left or the right of the player
-                        if (MiscCounter2 == 0)
+                        npc.chaseable = false;
+                        npc.dontTakeDamage = true;
+
+                        // Spawning timeframe for the energies
+                        if (MiscCounter > 60 && MiscCounter < 480)
                         {
-
-
-
-
-
-                            // Also get the player's position during this run so it doesn't get constantly offset while they move
-                            playerPos = new Vector2(player.position.X / 16, player.position.Y / 16);
-                            Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-
-                            // Get the ground beneath the player
-                            while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
+                            // Spawns killable NPCs that heal the boss after 60 seconds
+                            if (MiscCounter % 40 == 0)
                             {
-                                playerPos.Y += 1;
-                                tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
+                                for (int i = 0; i < 6; i++)
+                                {
+                                    //float randPositionX = npc.Center.X + Main.rand.Next(-10, 10) * 800;
+                                    //float randPositionY = npc.Center.Y + Main.rand.Next(-10, 10) * 800;
+                                    float RandomRotation = Main.rand.NextFloat(0, MathHelper.Pi);
+                                    
+                                    // Generates in a half-arc 200 pixels below the NPC's center
+                                    Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(800, 0).RotatedBy(-RandomRotation);
+                                    npc.netUpdate = true;
+
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        NPC.NewNPC((int)RandomPosition.X, (int)RandomPosition.Y, ModContent.NPCType<AbsorbEnergy>(), 0, npc.whoAmI);
+                                    }
+                                }
                             }
                         }
 
-                        AICase = 0;
+                        if (MiscCounter > 540)
+                        {
+                            MiscCounter2++;
+                        }
+                    }
+
+                    EnergyCount = 0;
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<AbsorbEnergy>())
+                        {
+                            EnergyCount++;
+                        }
+                    }
+
+                    npc.localAI[0] += 0.04f; // Rotation code for the rune
+
+                    if (Utils.Clamp(++MiscCounter, 0, 600) == 600 && EnergyCount == 0)
+                    {
+                        Main.NewText("abosrbed energies: " + AbsorbedEnergies);
+                        AICase = (int)AIStates.Selector;
                         GlobalCounter = 0;
-                    }
-                    break;
-                case (int)AIStates.ThornWave: // Thorns wave
-                    if (GlobalCounter % 15 == 0)
-                    {
-                        // Get the ground beneath the player
-                        Vector2 npcPos = new Vector2((npc.position.X - 60 * bufferCount) / 16, npc.position.Y / 16);
-                        Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                        while (!tile.active() || tile.type == TileID.Trees)
-                        {
-                            npcPos.Y += 1;
-                            tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                        }
+                        MiscCounter = 0;
+                        MiscCounter2 = 0;
 
-                        // Same thing going right, I'm lazy
-                        Vector2 npcPos2 = new Vector2((npc.position.X + npc.width + (60 * bufferCount)) / 16, npc.position.Y / 16);
-                        Tile tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
-                        while (!tile2.active() || tile2.type == TileID.Trees)
-                        {
-                            npcPos2.Y += 1;
-                            tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
-                        }
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 31, 2.5f, Main.myPlayer, 900f, 0f);
-
-                            Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 31, 2.5f, Main.myPlayer, 900f, 0f);
-                            bufferCount++;
-                        }
-                    }
-
-                    if (GlobalCounter == 180)
-                    {
-                        AICase = (int)AIStates.ThornWaveSegmented;
-                        GlobalCounter = 0;
-
-                        bufferCount = 0;
-                    }
-                    break;
-                case (int)AIStates.ThornWaveSegmented: // segmented thorns wave
-                    {
-                        if (GlobalCounter == 0)
-                        {
-                            // Get the ground beneath the player
-                            Vector2 npcPos = new Vector2((npc.position.X - /*60*/ 500 * bufferCount) / 16, npc.position.Y / 16);
-                            Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                            while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
-                            {
-                                npcPos.Y += 1;
-                                tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                            }
-
-                            // Same thing going right, I'm lazy
-                            Vector2 npcPos2 = new Vector2((npc.position.X + npc.width + (/*60*/ 500 * bufferCount)) / 16, npc.position.Y / 16);
-                            Tile tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
-                            while (!tile2.active() || tile2.type == TileID.Trees)
-                            {
-                                npcPos2.Y += 1;
-                                tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
-                            }
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 31, 2.5f, Main.myPlayer, 900f, 0f);
-
-                                Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 31, 2.5f, Main.myPlayer, 900f, 0f);
-                                bufferCount++;
-                            }
-                        }
-
-                        if (GlobalCounter == 480)
-                        {
-                            //AICase = (int)AIStates.Seeds;
-                            GlobalCounter = 0;
-
-                            bufferCount = 0;
-                        }
+                        // Reset properties
+                        AbsorbedEnergies = 0;
+                        npc.chaseable = true;
+                        npc.dontTakeDamage = false;
                     }
                     break;
             }
@@ -689,6 +585,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 {
                     spriteBatch.Draw(value71, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, color45, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
                 }
+            }
+
+            if (AICase == (int)AIStates.Runes)
+            {
+                Texture2D RuneTexture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeRune");
+
+                Main.spriteBatch.Draw(RuneTexture, npc.Center - Main.screenPosition, null, Color.Lerp(new Color(0, 255, 191), Color.Transparent, Utils.Clamp(MiscCounter2, 0, 60) / 60f), npc.localAI[0], RuneTexture.Size() / 2, MathHelper.Lerp(0, 1.25f, Utils.Clamp(GlobalCounter, 0, 60) / 60f), SpriteEffects.None, 0f);
             }
 
             return base.PreDraw(spriteBatch, drawColor);

@@ -11,55 +11,48 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
-    public class GreenSpirit : ModProjectile, ITrailEntity
+    public class RuneSpinner : ModProjectile
     {
-        public Color TrailColor(float progress) => new Color(66, 245, 167);
-        public float TrailSize(float progress) => 20;
         private bool RunOnce = true;
         private float Radius;
-        public bool TrailActive()
-        {
-            return true;
-        }
-
-        public Type TrailType()
-        {
-            return typeof(SoulTrail);
-        }
-
-        public Player RotationCenter;
+        private int MAX_TIME = 600;
+       
+        public NPC RotationCenter;
         public Vector2 OldPosition;
-        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public override bool CanDamage() => false;
+        public override bool? CanCutTiles() => false;
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Spirit Blades");
+            DisplayName.SetDefault("Rune Spinner");
+            ProjectileID.Sets.TrailingMode[projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[projectile.type] = 25;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 24;
-            projectile.height = 24;
+            projectile.width = 22;
+            projectile.height = 42;
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.penetrate = -1;
             projectile.tileCollide = false;
-            projectile.alpha = 255;
             projectile.ignoreWater = true;
-            projectile.timeLeft = 180;
+            projectile.timeLeft = MAX_TIME;
         }
 
         public override void AI()
         {
+            projectile.rotation = projectile.DirectionTo(RotationCenter.Center).ToRotation() + (MathHelper.PiOver2 * 3);
+
             if (RunOnce)
             {
                 Radius = projectile.ai[1];
                 projectile.ai[1] = 0;
 
                 RunOnce = false;
-            }
 
-            if (projectile.ai[1] == 0)
-            {
+                #region Dust Code
                 Vector2 vector23 = projectile.Center + Vector2.One * -20f;
                 int num137 = 40;
                 int num138 = num137;
@@ -113,72 +106,47 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     dust = Main.dust[num146];
                     dust.velocity += projectile.DirectionTo(Main.dust[num146].position) * 3f;
                 }
+                #endregion
             }
 
-            if (!RotationCenter.active)
+            if (projectile.timeLeft < MAX_TIME - 60)
             {
-                projectile.Kill();
-            }
-
-            if (projectile.timeLeft > 80)
-            {
-                projectile.rotation = projectile.DirectionTo(RotationCenter.Center).ToRotation();
 
                 projectile.Center = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(projectile.ai[0]);
-                OldPosition = RotationCenter.Center;
+
+                projectile.ai[0] += MathHelper.Lerp(0, 0.065f, Utils.Clamp(projectile.ai[1], 0, 90f) / 90f);
+
+                projectile.ai[1]++;
+                projectile.localAI[0]++;
             }
-            else if (projectile.timeLeft == 60)
-            {
-                projectile.velocity = OldPosition - projectile.Center;
-            }
-
-
-
-            projectile.ai[1]++;
-            projectile.localAI[0]++;
-        }
-
-        public override bool? CanCutTiles()
-        {
-            return false;
-        }
-
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_644");
-            Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
-            Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
-
-            //spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(54, 255, 64), projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(MathHelper.Lerp(0.3f, 1f, (float)Math.Sin(projectile.localAI[0] / 10f)), 1f), SpriteEffects.None, 0);
-            //spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(54, 255, 64), projectile.rotation, drawOrigin, new Vector2(MathHelper.Lerp(0.3f, 1f, (float)Math.Sin(projectile.localAI[0] / 10f)), 1f), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(54, 255, 64) * 0.5f, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.4f, 2f), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(54, 255, 64) * 0.5f, projectile.rotation, drawOrigin, new Vector2(0.4f, 1f), SpriteEffects.None, 0);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.GetTexture("OvermorrowMod/Textures/Extra_89");
-
-            Main.spriteBatch.Draw(SoulTexture, projectile.Center - Main.screenPosition, null, new Color(0, 255, 191), projectile.rotation + MathHelper.PiOver2, SoulTexture.Size() / 2, new Vector2(0.5f, 1), SpriteEffects.None, 0f);
-
-            return false;
-        }
-
-        public override void Kill(int timeLeft)
-        {
-            Vector2 origin = projectile.Center;
-            float radius = 5;
-            int numLocations = 3;
-
-            for (int i = 0; i < 3; i++)
+            if (projectile.timeLeft < MAX_TIME - 60)
             {
-                Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                Vector2 dustvelocity = new Vector2(0f, 0.5f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * 2;
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/RuneSpinner_Trail");
 
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Color.Cyan, 1, 0.5f, MathHelper.ToRadians(360f / numLocations * i), 1f);
+                Color color = new Color(135, 255, 141);
+                int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+                int y2 = num154 * projectile.frame;
+                Rectangle drawRectangle = new Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
+
+                Vector2 origin2 = drawRectangle.Size() / 2f;
+                var off = new Vector2(projectile.width / 2f, projectile.height / 2f);
+
+
+                for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[projectile.type]; i++)
+                {
+                    Color color2 = color;
+                    color2 *= (float)(ProjectileID.Sets.TrailCacheLength[projectile.type] - i) / ProjectileID.Sets.TrailCacheLength[projectile.type];
+                    Vector2 value4 = projectile.oldPos[i];
+                    float num165 = projectile.oldRot[i];
+                    Main.spriteBatch.Draw(texture, projectile.oldPos[i] - Main.screenPosition + off, new Microsoft.Xna.Framework.Rectangle?(drawRectangle), Color.Lerp(Color.Transparent, color2, Utils.Clamp(projectile.timeLeft, 0, 60) / 60f), num165, origin2, projectile.scale, SpriteEffects.None, 0f);
+                }
             }
+
+            return base.PreDraw(spriteBatch, lightColor);
         }
-
-
     }
 }
