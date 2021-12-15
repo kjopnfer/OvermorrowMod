@@ -135,7 +135,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Selector = 0,
             Thorns = 1,
             Spirit = 2,
-            Runes = 3
+            Runes = 3,
+            Energy = 4
         }
 
         public ref float AICase => ref npc.ai[0];
@@ -225,6 +226,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 changedPhase2 = true;
             }
 
+            // This is here because the boss heals
             if (npc.life >= npc.lifeMax) npc.life = npc.lifeMax;
 
             GlobalCounter++;
@@ -459,16 +461,16 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         if (MiscCounter > 60 && MiscCounter < 480)
                         {
                             // Spawns killable NPCs that heal the boss after 60 seconds
-                            if (MiscCounter % 40 == 0)
+                            if (MiscCounter % 60 == 0)
                             {
                                 for (int i = 0; i < 6; i++)
                                 {
                                     //float randPositionX = npc.Center.X + Main.rand.Next(-10, 10) * 800;
                                     //float randPositionY = npc.Center.Y + Main.rand.Next(-10, 10) * 800;
                                     float RandomRotation = Main.rand.NextFloat(0, MathHelper.Pi);
-                                    
+
                                     // Generates in a half-arc 200 pixels below the NPC's center
-                                    Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(800, 0).RotatedBy(-RandomRotation);
+                                    Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(1200, 0).RotatedBy(-RandomRotation);
                                     npc.netUpdate = true;
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -505,10 +507,17 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         MiscCounter2 = 0;
 
                         // Reset properties
-                        AbsorbedEnergies = 0;
                         npc.chaseable = true;
                         npc.dontTakeDamage = false;
+
+                        if (AbsorbedEnergies > 20)
+                        {
+                            // Switch to the cool attack
+                            // AbsorbedEnergies = 0;
+                        }
                     }
+                    break;
+                case (int)AIStates.Energy:
                     break;
             }
         }
@@ -584,6 +593,41 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 for (float num231 = 0f; num231 < num230; num231 += 1f)
                 {
                     spriteBatch.Draw(value71, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, color45, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                }
+            }
+
+            if (AbsorbedEnergies > 14)
+            {
+                Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Pulse");
+
+
+                // this gets the npc's frame
+                int num178 = 60; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
+                int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
+
+
+                // default value
+                int num177 = 6; // ok i think this controls the number of afterimage frames
+                float num176 = 1f - (float)Math.Cos((GlobalCounter - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
+                num176 /= 3f;
+                float scaleFactor10 = 10f; // Change scale factor of the pulsing effect and how far it draws outwards
+
+                // ok this is the pulsing effect drawing
+                for (int num164 = 1; num164 < num177; num164++)
+                {
+                    // these assign the color of the pulsing
+                    Color spriteColor = Color.LightGreen;
+                    spriteColor = npc.GetAlpha(spriteColor);
+                    spriteColor *= 1f - num176; // num176 is put in here to effect the pulsing
+
+                    // num176 is used here too
+                    Vector2 vector45 = npc.Center + Utils.ToRotationVector2((float)num164 / (float)num177 * ((float)Math.PI * 2f) + npc.rotation) * scaleFactor10 * num176 - Main.screenPosition;
+                    vector45 -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[npc.type]) * npc.scale / 2f;
+                    vector45 += drawOrigin * npc.scale + new Vector2(0f, npc.gfxOffY);
+
+                    // the actual drawing of the pulsing effect
+                    spriteBatch.Draw(texture, vector45, npc.frame, spriteColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
             }
 
