@@ -22,6 +22,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.width = 10;
             npc.height = 10;
             npc.alpha = 255;
+            npc.damage = 17;
             npc.friendly = false;
             npc.noTileCollide = true;
         }
@@ -32,7 +33,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             NPC parent = Main.npc[(int)npc.ai[0]];
             Vector2 newMove = parent.Center - npc.Center;
             Vector2 move = newMove;
-            float launchSpeed = Main.expertMode ? 120 : 150f;
+            float launchSpeed = Main.expertMode ? 180f : 210f;
             npc.velocity = (move) / launchSpeed;
 
             for (int num1103 = 0; num1103 < 2; num1103++)

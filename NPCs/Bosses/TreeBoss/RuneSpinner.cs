@@ -43,7 +43,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void AI()
         {
-            projectile.rotation = projectile.DirectionTo(RotationCenter.Center).ToRotation() + (MathHelper.PiOver2 * 3);
+            //projectile.rotation = projectile.DirectionTo(RotationCenter.Center).ToRotation() + (MathHelper.PiOver2 * 3);
+            projectile.rotation += 0.64f;
 
             if (RunOnce)
             {
@@ -120,6 +121,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 projectile.localAI[0]++;
             }
         }
+
+        public override Color? GetAlpha(Color lightColor) => Color.White;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
