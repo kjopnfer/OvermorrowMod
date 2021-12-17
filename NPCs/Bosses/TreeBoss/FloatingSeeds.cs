@@ -20,6 +20,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             projectile.width = 36;
             projectile.height = 16;
             projectile.friendly = false;
+            projectile.hostile = true;
             projectile.tileCollide = false;
             projectile.timeLeft = 1200;
         }
