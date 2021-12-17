@@ -93,20 +93,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.defense = 17;
         }
 
-        private void BossText(string text) // boss messages
-        {
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                CombatText.NewText(npc.getRect(), new Color(0, 255, 191), text, true);
-                Main.NewText(text, new Color(0, 255, 191));
-            }
-            else if (Main.netMode == NetmodeID.Server)
-            {
-                CombatText.NewText(npc.getRect(), new Color(0, 255, 191), text, true);
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), new Color(0, 255, 191));
-            }
-        }
-
         public enum AIStates
         {
             Intro = -1,
@@ -122,7 +108,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public ref float MiscCounter => ref npc.ai[2];
         public ref float MiscCounter2 => ref npc.ai[3];
         public ref float VFXCounter => ref npc.localAI[1];
-
 
         public override void AI()
         {
@@ -151,12 +136,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.netUpdate = true;
                 MiscCounter++;
                 npc.localAI[0]++;
-
-                /*if (MiscCounter == 60)
-                {
-                    Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<IorichRune>(), 0, 0, Main.myPlayer, 1f);
-                    Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<IorichRune>(), 0, 0, Main.myPlayer, 0.5f);
-                }*/
 
                 /*
 
@@ -230,36 +209,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     EnergyAttack();
                     break;
             }
-        }
-
-        public float GetLerpValue(float from, float to, float t, bool clamped = false)
-        {
-            if (clamped)
-            {
-                if (from < to)
-                {
-                    if (t < from)
-                    {
-                        return 0f;
-                    }
-                    if (t > to)
-                    {
-                        return 1f;
-                    }
-                }
-                else
-                {
-                    if (t < to)
-                    {
-                        return 1f;
-                    }
-                    if (t > from)
-                    {
-                        return 0f;
-                    }
-                }
-            }
-            return (t - from) / (to - from);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
@@ -388,15 +337,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
+            // The glowmask
             if (npc.localAI[0] > 120)
             {
                 Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Glow");
                 spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 4), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             }
-
-            Texture2D texture2 = ModContent.GetTexture("OvermorrowMod/Textures/test2");
-            Rectangle rect2 = new Rectangle(0, 0, texture2.Width, texture2.Height);
-            Vector2 drawOrigin2 = new Vector2(texture2.Width / 2, texture2.Height / 2);
 
             int xOffset;
             int yOffset;
@@ -414,54 +360,21 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     xOffset = -1;
                     yOffset = -62 + frameOffset;
 
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-
-                    // Side and top flares
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(Color.Yellow, Color.White, (float)Math.Sin(VFXCounter / 5f)), MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(Color.Yellow, Color.White, (float)Math.Sin(VFXCounter / 5f)), 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
-
-                    // The center circle
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(Color.Yellow, Color.White, (float)Math.Sin(VFXCounter / 5f)), npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);
-
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                    EyeFlare(spriteBatch, xOffset, yOffset, Color.Yellow);
 
                     break;
                 case (int)AIStates.Spirit: // Right
                     xOffset = 12;
                     yOffset = -62 + frameOffset;
 
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-
-                    // Side and top flares
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(new Color(0, 255, 191), Color.White, (float)Math.Sin(VFXCounter / 5f)), MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(new Color(0, 255, 191), Color.White, (float)Math.Sin(VFXCounter / 5)), 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
-
-                    // The center circle
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(new Color(0, 255, 191), Color.White, (float)Math.Sin(VFXCounter / 5)), npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);
-                                                                                                                                                   
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                    EyeFlare(spriteBatch, xOffset, yOffset, new Color(0, 255, 191));
 
                     break;
                 case (int)AIStates.Runes: // Middle
                     xOffset = 5;
                     yOffset = -69 + frameOffset;
 
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-
-                    // Side and top flares
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
-
-                    // The center circle
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);
-
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                    EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
 
                     break;
             }
