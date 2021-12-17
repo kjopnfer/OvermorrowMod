@@ -13,8 +13,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     [AutoloadBossHead]
     public class TreeBoss : ModNPC
     {
-        private bool changedPhase2 = false;
-        private bool introMessage = true;
+        private bool introMessage = true; // CHANGE THIS BACK LOL
         private Vector2 playerPos;
 
         public enum SpawnDirection { Left, Right }
@@ -46,7 +45,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public int AbsorbedEnergies;
         public int EnergyCount;
-        public int ENERGY_THRESHOLD = 14;
+        public int ENERGY_THRESHOLD = 17;
 
         // Keeps track of attacks other than the rune attack
         // This is so we don't keep spamming the healing attack
@@ -54,6 +53,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int MINIMUM_ATTACKS = 3;
         public int ChosenAttack;
 
+        public bool RunAgain = false;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void SetStaticDefaults()
@@ -83,13 +83,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.noTileCollide = false;
             npc.boss = true;
             npc.npcSlots = 10f;
-            //music = MusicID.Boss5;
+            npc.alpha = 255;
             music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
-            npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
+            npc.lifeMax = (int)(npc.lifeMax * bossLifeScale * 0.75f);
             npc.defense = 17;
         }
 
@@ -107,36 +107,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
         }
 
-        public float GetLerpValue(float from, float to, float t, bool clamped = false)
-        {
-            if (clamped)
-            {
-                if (from < to)
-                {
-                    if (t < from)
-                    {
-                        return 0f;
-                    }
-                    if (t > to)
-                    {
-                        return 1f;
-                    }
-                }
-                else
-                {
-                    if (t < to)
-                    {
-                        return 1f;
-                    }
-                    if (t > from)
-                    {
-                        return 0f;
-                    }
-                }
-            }
-            return (t - from) / (to - from);
-        }
-
         public enum AIStates
         {
             Intro = -1,
@@ -151,6 +121,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public ref float GlobalCounter => ref npc.ai[1];
         public ref float MiscCounter => ref npc.ai[2];
         public ref float MiscCounter2 => ref npc.ai[3];
+        public ref float VFXCounter => ref npc.localAI[1];
 
 
         public override void AI()
@@ -175,11 +146,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 MiscCounter++;
                 npc.localAI[0]++;
 
-                if (MiscCounter == 60)
+                /*if (MiscCounter == 60)
                 {
                     Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<IorichRune>(), 0, 0, Main.myPlayer, 1f);
                     Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<IorichRune>(), 0, 0, Main.myPlayer, 0.5f);
-                }
+                }*/
+
+                /*
 
                 if (MiscCounter == 180)
                 {
@@ -194,7 +167,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 if (MiscCounter == 540)
                 {
                     BossText("Very well, I shalt test thy resolve.");
-                }
+                }*/
 
                 if (MiscCounter <= 600)
                 {
@@ -229,31 +202,23 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity.Y = 2000;
             }
 
-            if (npc.life <= npc.lifeMax * 0.5f)
-            {
-                changedPhase2 = true;
-            }
-
             // This is here because the boss heals
             if (npc.life >= npc.lifeMax) npc.life = npc.lifeMax;
 
             GlobalCounter++;
-            npc.localAI[1]++;
+            VFXCounter++;
 
             switch (AICase)
             {
                 case (int)AIStates.Selector: // General case
-                    // TODO: Turn these into NPCs that can be killed and make this Expert exclusive
+
                     if (MiscCounter % 75 == 0 && MiscCounter > 60 && Main.expertMode)
                     {
                         int numSeeds = npc.life <= npc.lifeMax * 0.25f ? 16 : 13;
                         float numberProjectiles = Main.rand.Next(7, numSeeds);
-                        Vector2 position = npc.Center;
                         int speedX = 1;
                         int speedY = Main.rand.Next(-25, -15);
                         float rotation = MathHelper.ToRadians(45);
-
-                        position += Vector2.Normalize(new Vector2(speedX, speedY)) * 45f;
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -268,11 +233,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     // Probably something to choose one of three attack versions
                     int[] Attacks = new int[] { (int)AIStates.Thorns, (int)AIStates.Spirit, (int)AIStates.Runes };
 
-                    if (MiscCounter++ == 0)
+                    if (MiscCounter++ == 120)
                     {
+                        Main.PlaySound(SoundID.Item4, npc.Center);
+
                         // Chooses the attack from the list
                         ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
-                        //ChosenAttack = (int)AIStates.Thorns;
+                        //ChosenAttack = (int)AIStates.Spirit;
 
                         // Makes sure the healing attack doesn't have a chance to be chosen unless conditions are met
                         while (ChosenAttack == (int)AIStates.Runes && RuneCounter < MINIMUM_ATTACKS)
@@ -289,15 +256,33 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (GlobalCounter % 300 == 0)
                     {
-                        // If the condition was satisfied and you DID choose the rune attack, now reset the counter
-                        if (ChosenAttack == (int)AIStates.Runes)
+                        switch (ChosenAttack)
                         {
-                            RuneCounter = 0;
+                            // This does various tweaks and settings for attack selections depending on npc status
+                            case (int)AIStates.Runes:
+                                // If the condition was satisfied and you DID choose the rune attack, now reset the counter
+                                RuneCounter = 0;
+                                break;
+                            case (int)AIStates.Spirit:
+                                // Makes it so the spirit attack runs twice if below 50% hp
+                                if (npc.life < npc.lifeMax * 0.5f)
+                                {
+                                    RunAgain = true;
+                                }
+                                break;
                         }
+
                         AICase = ChosenAttack;
+                        //AICase = (int)AIStates.Runes;
                         GlobalCounter = 0;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
+
+                        // Keep the eye visual for the runes attack, otherwise turn it off
+                        if (ChosenAttack != (int)AIStates.Runes)
+                        {
+                            ChosenAttack = 0;
+                        }
                     }
 
                     break;
@@ -340,7 +325,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     Vector2 calculatedOffset = Direction == SpawnDirection.Left ? new Vector2(SPAWN_OFFSET + (THORN_OFFSET * -MiscCounter2), 0) : new Vector2(-SPAWN_OFFSET + (THORN_OFFSET * MiscCounter2), 0);
-                                    Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
+                                    Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -5), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
                                 }
 
                                 MiscCounter2++;
@@ -356,7 +341,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
                                         Vector2 calculatedOffset = Direction == SpawnDirection.Left ? new Vector2(AlternatingSpawnOffset + (THORN_OFFSET * -iterations), 0) : new Vector2(-AlternatingSpawnOffset + (THORN_OFFSET * iterations), 0);
-                                        Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -10), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
+                                        Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -5), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
                                     }
                                 }
                             }
@@ -424,21 +409,40 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 }
                             }
 
-                            if (MiscCounter % 15 == 0)
+                            // If npc's life is below 50%, spawn them all at the same time. Otherwise, spawn them one-by-one.
+                            if (npc.life < npc.lifeMax * 0.5f)
                             {
-                                float Rotation = (int)SpawnDirections[(int)MiscCounter2] * MathHelper.PiOver4;
-                                int RADIUS = 100;
+                                if (MiscCounter == 45)
+                                {
+                                    for (int index = 0; index < 4; index++)
+                                    {
+                                        float Rotation = (int)SpawnDirections[index] * MathHelper.PiOver4;
+                                        int RADIUS = 100;
 
-                                int proj = Projectile.NewProjectile(player.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation), Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation, RADIUS);
-                                ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = player;
+                                        int proj = Projectile.NewProjectile(player.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation), Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation, RADIUS);
+                                        ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = player;
+                                    }
+                                }
+                            }
+                            else
+                            {
 
-                                MiscCounter2++;
+                                if (MiscCounter % 15 == 0)
+                                {
+                                    float Rotation = (int)SpawnDirections[(int)MiscCounter2] * MathHelper.PiOver4;
+                                    int RADIUS = 100;
+
+                                    int proj = Projectile.NewProjectile(player.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation), Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation, RADIUS);
+                                    ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = player;
+
+                                    MiscCounter2++;
+                                }
                             }
 
                             break;
                         case (int)SpiritAttacks.Circular:
                             // Determine the rotation direction and offset (where it starts spawning)
-                            if (MiscCounter++ == 0)
+                            if (MiscCounter == 0)
                             {
                                 RotationDirection = Main.rand.NextBool(2) ? 1 : -1;
                                 RotationOffset = Main.rand.Next(4) * MathHelper.PiOver2;
@@ -446,7 +450,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 npc.netUpdate = true;
                             }
 
-                            if (MiscCounter % 7 == 0)
+                            if (MiscCounter % 7 == 0 && MiscCounter <= 49)
                             {
                                 int RADIUS = 135;
 
@@ -458,12 +462,24 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                                 MiscCounter2++;
                             }
+
+                            MiscCounter++;
                             break;
                     }
 
-                    if (MiscCounter == 60)
+                    if (MiscCounter == (npc.life < npc.lifeMax * 0.5f ? 150 : 60))
                     {
-                        AICase = (int)AIStates.Selector;
+                        // Run the attack again but set it to false
+                        if (RunAgain)
+                        {
+                            AICase = (int)AIStates.Spirit;
+                            RunAgain = false;
+                        }
+                        else
+                        {
+                            AICase = (int)AIStates.Selector;
+                        }
+
                         GlobalCounter = 0;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
@@ -500,8 +516,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             {
                                 for (int i = 0; i < 6; i++)
                                 {
-                                    //float randPositionX = npc.Center.X + Main.rand.Next(-10, 10) * 800;
-                                    //float randPositionY = npc.Center.Y + Main.rand.Next(-10, 10) * 800;
+                                    // Randomized rotation in with Pi radians because spawning energy underground is literally impossible to kill
                                     float RandomRotation = Main.rand.NextFloat(0, MathHelper.Pi);
 
                                     // Generates in a half-arc 200 pixels below the NPC's center
@@ -514,12 +529,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                     }
                                 }
                             }
-                        }
-
-                        if (MiscCounter > 540)
-                        {
-                            MiscCounter2++;
-                        }
+                        }   
                     }
 
                     EnergyCount = 0;
@@ -544,6 +554,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         // Reset properties
                         npc.chaseable = true;
                         npc.dontTakeDamage = false;
+
+                        // Start despawn code for the spinners
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            if (Main.projectile[i].active && Main.projectile[i].type == ModContent.ProjectileType<RuneSpinner>())
+                            {
+                                ((RuneSpinner)Main.projectile[i].modProjectile).CanDespawn = true;
+                            }
+                        }
                     }
                     break;
                 case (int)AIStates.Energy:
@@ -559,9 +578,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                     }
 
+                    if (MiscCounter < 60)
+                    {
+                        MiscCounter2++;
+                    }
+
                     if (AbsorbedEnergies > ENERGY_THRESHOLD)
                     {
-                        if (MiscCounter % 30 == 0)
+                        // 1 second opening before he starts the attack
+                        if (MiscCounter > 60 && MiscCounter % 30 == 0)
                         {
                             for (int i = 0; i < Main.rand.Next(5, 9); i++)
                             {
@@ -575,9 +600,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     }
                     else
                     {
-                        if (MiscCounter % 30 == 0)
+                        if (MiscCounter > 60 && MiscCounter % 30 == 0)
                         {
-                            for (int i = 0; i < Main.rand.Next(5, 9); i++)
+                            // Increase the amount of stars spawned based on the absorbed energies
+                            int energyIncrementer = (int)MathHelper.Lerp(0, 3, AbsorbedEnergies / 17f);
+                            int maxIterations = Main.rand.Next(3 + energyIncrementer, 7 + energyIncrementer);
+                            for (int i = 0; i < maxIterations; i++)
                             {
                                 // Choose a position above the player with random x-axis offsets
                                 Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-18, 18) * 80, Main.rand.Next(-1600, -1200));
@@ -588,7 +616,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if (++MiscCounter == 600)
+                    if (++MiscCounter == 660)
                     {
                         AICase = (int)AIStates.Selector;
                         GlobalCounter = 0;
@@ -602,12 +630,44 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
         }
 
+        public float GetLerpValue(float from, float to, float t, bool clamped = false)
+        {
+            if (clamped)
+            {
+                if (from < to)
+                {
+                    if (t < from)
+                    {
+                        return 0f;
+                    }
+                    if (t > to)
+                    {
+                        return 1f;
+                    }
+                }
+                else
+                {
+                    if (t < to)
+                    {
+                        return 1f;
+                    }
+                    if (t > from)
+                    {
+                        return 0f;
+                    }
+                }
+            }
+            return (t - from) / (to - from);
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            Texture2D value71 = mod.GetTexture("NPCs/Bosses/TreeBoss/TreeBoss");
-            Vector2 vector59 = npc.Center - Main.screenPosition;
+            #region idk i tried smtn
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss");
+            Vector2 vector59 = npc.Center + new Vector2(0, 10) - Main.screenPosition;
             Rectangle frame8 = npc.frame;
-            Vector2 origin21 = new Vector2(70f, 127f);
+            //Vector2 origin21 = new Vector2(70f, 127f);
+            Vector2 origin21 = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
             origin21.Y += 8f;
             Vector2 scale3 = new Vector2(npc.scale);
             float num219 = npc.localAI[0];
@@ -615,72 +675,59 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 scale3 *= num219 / 240f + 0.5f;
             }
-            Color alpha13 = npc.GetAlpha(npc.color);
+
+            Color alpha13 = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
+
+            // This controls the speed that they rotate in as well as how it shifts forward
             float lerpValue2 = GetLerpValue(0f, 120f, num219, clamped: true);
-            float num220 = MathHelper.Lerp(32f, 0f, lerpValue2);
-            Color color45 = alpha13;
-            color45.A = (byte)MathHelper.Lerp((int)color45.A, 0f, lerpValue2);
-            color45 *= lerpValue2;
+
+            // This controls the initial distance away from the body before it converges to the center
+            float num220 = MathHelper.Lerp(64f/*32f*/, 0f, lerpValue2);
+
+            Color color = alpha13;
+            //color.A = (byte)MathHelper.Lerp(color.A, 0f, lerpValue2);
+            //color *= lerpValue2;
             if (num219 >= 120f)
             {
-                color45 = alpha13;
+                color = alpha13;
             }
-            spriteBatch.Draw(value71, vector59, frame8, color45, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, vector59, frame8, color, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
 
-            // AI Counter
-            float y2 = (((MiscCounter + 54f) % 180f - 120f) / 180f * 2f * ((float)Math.PI * 2f)).ToRotationVector2().Y;
+            // This just makes the final sprite supe bright for some reason
+            /*float y2 = (((MiscCounter2 + 54f) % 180f - 120f) / 180f * 2f * ((float)Math.PI * 2f)).ToRotationVector2().Y;
             if (num219 >= 120f)
             {
                 num220 = y2 * 0f;
-                color45.A = (byte)((float)(int)color45.A * 0.5f);
-                color45 *= y2 / 2f + 0.5f;
+                color.A = (byte)((float)(int)color.A * 0.5f);
+                color *= y2 / 2f + 0.5f;
+
+                // I have no idea what this does
                 float num221 = 1f;
                 for (float num222 = 0f; num222 < num221; num222 += 1f)
                 {
-                    spriteBatch.Draw(value71, vector59 + ((float)Math.PI * 2f / num221 * num222).ToRotationVector2() * num220, frame8, color45, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, vector59 + ((float)Math.PI * 2f / num221 * num222).ToRotationVector2() * num220, frame8, color, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
                 }
-            }
+            }*/
 
             // AI counter
-            float num223 = MiscCounter / 180f - 0.76f;
-            if (num223 < 0f)
-            {
-                num223 += 1f;
-            }
-            float num224 = 0f;
-            float num225 = 0f;
-            float num226 = 0.6f;
-            float num227 = 0.8f;
-            if (num223 >= num226 && num223 <= num227)
-            {
-                num224 = GetLerpValue(num226, num227, num223);
-                num225 = MathHelper.Lerp(0.75f, 0.85f, num224);
-            }
-            num226 = num227;
-            num227 = num226 + 0.13f;
-            if (num223 >= num226 && num223 <= num227)
-            {
-                num224 = 1f - GetLerpValue(num226, num227, num223);
-                num225 = MathHelper.Lerp(1.3f, 0.85f, num224);
-            }
-            int frameNumber = frame8.Y / frame8.Height;
-
             if (num219 < 120f)
             {
                 float num229 = (float)Math.PI * 2f * lerpValue2 * (float)Math.Pow(lerpValue2, 2.0) * 2f + lerpValue2;
-                color45.A = (byte)((float)(int)alpha13.A * (float)Math.Pow(lerpValue2, 2.0) * 0.5f);
-                float num230 = 3f;
+                //color.A = (byte)(alpha13.A * (float)Math.Pow(lerpValue2, 2.0) * 0.5f);
+
+                // This controls the number of afterimage frames the spiral around
+                float num230 = 3f/*3f*/;
                 for (float num231 = 0f; num231 < num230; num231 += 1f)
                 {
-                    spriteBatch.Draw(value71, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, color45, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, color * 0.5f, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
                 }
             }
+            #endregion
 
+            #region Pulse Drawcode
             if (AbsorbedEnergies > ENERGY_THRESHOLD)
             {
                 Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
-                Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Pulse");
-
 
                 // this gets the npc's frame
                 int num178 = 60; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
@@ -710,7 +757,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     spriteBatch.Draw(texture, vector45, npc.frame, spriteColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
             }
+            #endregion
 
+            #region Rune Drawcode
             if (AICase == (int)AIStates.Runes)
             {
                 Texture2D RuneTexture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeRune");
@@ -730,15 +779,18 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 Main.spriteBatch.Draw(RuneTexture, npc.Center - Main.screenPosition, null, Color.Lerp(new Color(0, 255, 191), Color.Transparent, Utils.Clamp(MiscCounter2, 0, 60) / 60f), npc.localAI[0], RuneTexture.Size() / 2, MathHelper.Lerp(0, 1.25f, Utils.Clamp(GlobalCounter, 0, 60) / 60f), SpriteEffects.None, 0f);
             }
+            #endregion
 
             return base.PreDraw(spriteBatch, drawColor);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_644");
-            Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
-            Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
+            if (npc.localAI[0] > 120)
+            {
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Glow");
+                spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 4), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            }
 
             Texture2D texture2 = ModContent.GetTexture("OvermorrowMod/Textures/test2");
             Rectangle rect2 = new Rectangle(0, 0, texture2.Width, texture2.Height);
@@ -757,37 +809,37 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             switch (ChosenAttack)
             {
                 case (int)AIStates.Thorns: // Left
-                    xOffset = 1;
-                    yOffset = -65 + frameOffset;
+                    xOffset = -1;
+                    yOffset = -62 + frameOffset;
 
                     Main.spriteBatch.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
                     // Side and top flares
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(npc.localAI[1] / 180f))), SpriteEffects.None, 0);
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(npc.localAI[1] / 180f))), SpriteEffects.None, 0);
+                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(Color.Yellow, Color.White, (float)Math.Sin(VFXCounter / 5f)), MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
+                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(Color.Yellow, Color.White, (float)Math.Sin(VFXCounter / 5f)), 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
 
                     // The center circle
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);
+                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(Color.Yellow, Color.White, (float)Math.Sin(VFXCounter / 5f)), npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);
 
                     Main.spriteBatch.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
                     break;
                 case (int)AIStates.Spirit: // Right
-                    xOffset = 11;
-                    yOffset = -65 + frameOffset;
+                    xOffset = 12;
+                    yOffset = -62 + frameOffset;
 
                     Main.spriteBatch.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
                     // Side and top flares
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(npc.localAI[1] / 180f))), SpriteEffects.None, 0);
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(npc.localAI[1] / 180f))), SpriteEffects.None, 0);
+                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(new Color(0, 255, 191), Color.White, (float)Math.Sin(VFXCounter / 5f)), MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
+                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(new Color(0, 255, 191), Color.White, (float)Math.Sin(VFXCounter / 5)), 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
 
                     // The center circle
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);
-
+                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Color.Lerp(new Color(0, 255, 191), Color.White, (float)Math.Sin(VFXCounter / 5)), npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);
+                                                                                                                                                   
                     Main.spriteBatch.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
@@ -800,8 +852,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
                     // Side and top flares
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(npc.localAI[1] / 180f))), SpriteEffects.None, 0);
-                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(npc.localAI[1] / 180f))), SpriteEffects.None, 0);
+                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
+                    spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
 
                     // The center circle
                     spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), Main.DiscoColor, npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);

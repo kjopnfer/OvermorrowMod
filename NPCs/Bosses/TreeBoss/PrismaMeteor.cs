@@ -12,43 +12,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public class PrismaMeteor : ModProjectile, ITrailEntity
     {
-        // TODO: The system for the Torch Trails has changed where the color and width can be changed within the interface implementation
-        // Therefore, remake this projectile by returning Color types, referencing the previous GitHub commit for this for the colors
         public Color TrailColor(float progress) => Main.DiscoColor;
         public float TrailSize(float progress) => 40;
         public Type TrailType()
         {
-            /*if (projectile.ai[0] <= -1)
-            {
-                switch (projectile.ai[0])
-                {
-                    case -1:
-                        return typeof(TorchTrail1);
-                    case -2:
-                        return typeof(TorchTrail2);
-                    case -3:
-                        return typeof(TorchTrail3);
-                    case -4:
-                        return typeof(TorchTrail4);
-                    case -5:
-                        return typeof(TorchTrail5);
-                    case -6:
-                        return typeof(TorchTrail6);
-                    case -7:
-                        return typeof(TorchTrail7);
-                    case -8:
-                        return typeof(TorchTrail8);
-                    case -9:
-                        return typeof(TorchTrail9);
-                    case -10:
-                        return typeof(TorchTrail10);
-                    case -11:
-                        return typeof(TorchTrail11);
-                    case -12:
-                        return typeof(TorchTrail12);
-                }
-            }*/
-
             return typeof(TorchTrail);
 
         }
@@ -80,6 +47,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<TreeWarning>(), 0, 1f, Main.myPlayer, 0, 1);
             }
+
+            projectile.tileCollide = projectile.ai[1] < 180 ? false : true;
 
             if (Main.rand.NextBool(5))
             {
@@ -178,6 +147,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<TreeWarning>(), 0, 1f, Main.myPlayer, 0, 1);
             }
+
+            projectile.tileCollide = projectile.ai[1] < 180 ? false : true;
 
             if (Main.rand.NextBool(8))
             {

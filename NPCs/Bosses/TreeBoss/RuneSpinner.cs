@@ -19,6 +19,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
        
         public NPC RotationCenter;
         public Vector2 OldPosition;
+        public bool CanDespawn = false;
         public override bool CanDamage() => false;
         public override bool? CanCutTiles() => false;
 
@@ -48,6 +49,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (RunOnce)
             {
+                Main.PlaySound(SoundID.Item46, projectile.Center);
+
                 Radius = projectile.ai[1];
                 projectile.ai[1] = 0;
 
@@ -110,8 +113,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 #endregion
             }
 
+            projectile.alpha = (int)MathHelper.Lerp(255, 0, Utils.Clamp(projectile.timeLeft, 0, 60) / 60f);
+
             if (projectile.timeLeft < MAX_TIME - 60)
             {
+                if (!CanDespawn && projectile.timeLeft < 60)
+                {
+                    projectile.timeLeft = 60;
+                }
 
                 projectile.Center = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(projectile.ai[0]);
 

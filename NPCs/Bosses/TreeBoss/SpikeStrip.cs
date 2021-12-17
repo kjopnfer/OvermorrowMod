@@ -9,7 +9,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public class SpikeStrip : ModProjectile
     {
+        public bool RunOnce = true;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override bool ShouldUpdatePosition() => false;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Spike Strip");
@@ -29,7 +32,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void AI()
         {
-            //Main.NewText(projectile.timeLeft + " alpha: " + projectile.alpha);
+            if (RunOnce)
+            {
+                Main.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, projectile.Center);
+                RunOnce = false;
+            }
 
             if (projectile.timeLeft > 20)
             {
@@ -40,7 +47,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 if (projectile.ai[1] > 90f && projectile.ai[1] < 90f + projectile.ai[0] / value)
                 {
                     float progress = 1f - (projectile.ai[1] - 90f) / (projectile.ai[0] / value);
-                    Projectile.NewProjectile(projectile.Center + projectile.velocity * (projectile.ai[1] - 90f) * value, Vector2.UnitX.RotatedBy(projectile.velocity.ToRotation() + Main.rand.NextFloat(-MathHelper.Pi / 4 * progress - 0.1f, MathHelper.Pi / 4 * progress + 0.1f)) * value, ModContent.ProjectileType<Spike>(), projectile.damage, 1f, Main.myPlayer, progress, projectile.whoAmI);
+                    Vector2 velocity = Vector2.UnitX.RotatedBy(projectile.velocity.ToRotation() + Main.rand.NextFloat(-MathHelper.Pi / 4 * progress - 0.1f, MathHelper.Pi / 4 * progress + 0.1f)) * value;
+                    
+                    // This makes it so the early thorns don't slam into your face at a 90 degree angle
+                    if (progress > 0.95)
+                    {
+                        velocity = Vector2.UnitX.RotatedBy(projectile.velocity.ToRotation() + Main.rand.NextFloat(-MathHelper.PiOver2 / 4 * progress - 0.1f, MathHelper.PiOver2 / 4 * progress - 0.1f)) * value;
+                    }
+
+                    Projectile.NewProjectile(projectile.Center + projectile.velocity * (projectile.ai[1] - 90f) * value, velocity, ModContent.ProjectileType<Spike>(), projectile.damage, 1f, Main.myPlayer, progress, projectile.whoAmI);
                 }
             }
             else
@@ -49,11 +64,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 if (projectile.alpha > 255) projectile.alpha = 255;
             }
-        }
-
-        public override bool ShouldUpdatePosition()
-        {
-            return false;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
@@ -67,7 +77,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-                spriteBatch.Draw(texture, projectile.Center - new Vector2(0, 15) - Main.screenPosition, rect, Color.Lerp(new Color(0, 255, 191), Color.Transparent, (float)Math.Sin(projectile.ai[1] / 15f)), projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - new Vector2(0, 15) - Main.screenPosition, rect, Color.Lerp(Color.Yellow, Color.Transparent, (float)Math.Sin(projectile.ai[1] / 15f)), projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

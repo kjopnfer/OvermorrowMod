@@ -15,8 +15,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     {
         public Color TrailColor(float progress) => new Color(66, 245, 167);
         public float TrailSize(float progress) => 20;
-        private bool RunOnce = true;
-        private float Radius;
+        
         public bool TrailActive()
         {
             return true;
@@ -27,6 +26,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             return typeof(SoulTrail);
         }
 
+        private bool RunOnce = true;
+        private float Radius;
         public Player RotationCenter;
         public Vector2 OldPosition;
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
@@ -45,7 +46,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             projectile.tileCollide = false;
             projectile.alpha = 255;
             projectile.ignoreWater = true;
-            projectile.timeLeft = 180;
+            projectile.timeLeft = 180 * 10;
+            projectile.extraUpdates = 10;
         }
 
         public override void AI()
@@ -58,8 +60,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 RunOnce = false;
             }
 
+            #region Dust Code
             if (projectile.ai[1] == 0)
             {
+                Main.PlaySound(SoundID.Item25, projectile.Center);
+
                 Vector2 vector23 = projectile.Center + Vector2.One * -20f;
                 int num137 = 40;
                 int num138 = num137;
@@ -114,22 +119,24 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     dust.velocity += projectile.DirectionTo(Main.dust[num146].position) * 3f;
                 }
             }
+            #endregion
 
             if (!RotationCenter.active)
             {
                 projectile.Kill();
             }
 
-            if (projectile.timeLeft > 80)
+            if (projectile.timeLeft > 80 * 10)
             {
                 projectile.rotation = projectile.DirectionTo(RotationCenter.Center).ToRotation();
 
                 projectile.Center = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(projectile.ai[0]);
                 OldPosition = RotationCenter.Center;
             }
-            else if (projectile.timeLeft == 60)
+            else if (projectile.timeLeft == 45 * 10)
             {
-                projectile.velocity = OldPosition - projectile.Center;
+                Main.PlaySound(SoundID.DD2_PhantomPhoenixShot, projectile.Center);
+                projectile.velocity = Vector2.Normalize(OldPosition - projectile.Center) * 12;
             }
 
 

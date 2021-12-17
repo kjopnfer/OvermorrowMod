@@ -9,7 +9,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public class AbsorbEnergy : ModNPC
     {
+        public bool RunOnce = true;
+        public Vector2 InitialDistance;
+        public float TravelDistance;
+        public int RandomStopping;
+        public bool HasStopped;
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void SetStaticDefaults()
         {
@@ -29,13 +35,39 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void AI()
         {
-            // Get the ID of the Parent NPC that was passed in via AI[1]
+            // Get the ID of the Parent NPC that was passed in via ai[0]
             NPC parent = Main.npc[(int)npc.ai[0]];
+
+            if (RunOnce)
+            {
+                // Grab the starting distance of when this NPC spawns
+                InitialDistance = npc.Center;
+                TravelDistance = Vector2.Distance(InitialDistance, parent.Center);
+                RandomStopping = Main.rand.Next(400, 600);
+
+                npc.netUpdate = true;
+            }
+
             Vector2 newMove = parent.Center - npc.Center;
             Vector2 move = newMove;
-            float launchSpeed = Main.expertMode ? 180f : 210f;
-            npc.velocity = (move) / launchSpeed;
+            float moveSpeed = Main.expertMode ? 180f : 210f;
 
+            //Main.NewText("hhhh " + TravelDistance / 2 + " a " + npc.Distance(parent.Center));
+
+            // Make the NPC stop midway from the initial spawnpoint to the boss for a few seconds
+            if (npc.ai[1] < 120 && parent.Distance(npc.Center) <= RandomStopping)
+            {
+                npc.velocity = Vector2.Zero;
+                npc.ai[1]++;
+
+                HasStopped = true;
+            }
+            else
+            {
+                npc.velocity = move / (moveSpeed + (HasStopped ? 100 : 0));
+            }
+
+            #region Dust Code
             for (int num1103 = 0; num1103 < 2; num1103++)
             {
                 int num1106 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.TerraBlade, npc.velocity.X, npc.velocity.Y, 50, default(Color), 0.4f);
@@ -53,6 +85,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Main.dust[num1106].noGravity = true;
                 Main.dust[num1106].fadeIn = 1f;
             }
+            #endregion
 
             if (npc.getRect().Intersects(parent.getRect()))
             {
@@ -60,7 +93,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 if (parent.life < parent.lifeMax)
                 {
-                    parent.life += 5;
+                    parent.life += Main.expertMode ? 20 : 10;
                 }
 
                 npc.life = 0;
@@ -129,22 +162,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             base.OnHitByProjectile(projectile, damage, knockback, crit);
         }
 
-        public override void NPCLoot()
-        {
-            // Get the ID of the Parent NPC that was passed in via AI[1]
-            /*NPC parent = Main.npc[(int)npc.ai[1]];
-            if (parent.life < parent.lifeMax && npc.ai[2] == 1)
-            {
-                parent.life += 5;
-            }
-            if (npc.ai[2] == 1)
-            {
-                ((TreeBossP2)Main.npc[(int)npc.ai[1]].modNPC).energiesAbsorbed += 1;
-            }
-            else
-            {
-                ((TreeBossP2)Main.npc[(int)npc.ai[1]].modNPC).energiesKilled += 1;
-            }*/
-        }
+
     }
 }
