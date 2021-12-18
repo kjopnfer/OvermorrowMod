@@ -30,6 +30,7 @@ namespace OvermorrowMod.Items.Consumable.Boss.TreeRune
         public int RADIUS = 300;
 
         public override string Texture => "OvermorrowMod/Items/Consumable/Boss/TreeRune/TreeRune";
+        public override bool? CanCutTiles() => false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Iorich Spawner");
@@ -102,6 +103,8 @@ namespace OvermorrowMod.Items.Consumable.Boss.TreeRune
 
                     if (ProjectileCounter == MAX_ROTATE_TIME)
                     {
+                        Main.PlaySound(SoundID.Item46, projectile.Center);
+
                         ProjectileCounter = 0;
                         projectile.ai[1] = 0;
                         States = (int)ProjectileStates.Rotating;
@@ -110,7 +113,7 @@ namespace OvermorrowMod.Items.Consumable.Boss.TreeRune
                 case (int)ProjectileStates.Rotating: // Rotate around the position that the player spawned, and also spawn Iorich
                     if (ProjectileCounter == 1)
                     {
-                        NPC.NewNPC((int)InitialPosition.X, (int)(InitialPosition.Y - 50f), ModContent.NPCType<TreeBoss>(), 0, 0f, 0f, 0f, 0f, 255);
+                        NPC.NewNPC((int)InitialPosition.X, (int)(InitialPosition.Y - 50f), ModContent.NPCType<TreeBoss>(), 0, -1f, 0f, 0f, 0f, 255);
                     }
 
                     projectile.rotation += 0.64f;

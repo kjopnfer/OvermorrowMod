@@ -22,6 +22,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.tileCollide = false;
+            projectile.ignoreWater = true;
             projectile.timeLeft = 1200;
         }
 

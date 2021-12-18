@@ -86,6 +86,20 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void AI()
         {
+            // The cool plans that I write down and forget to remove in the final version of the reworks
+            // Iorich has three attack types indicated by his eyes
+            // 1. A thorns attack, that can fire in segments, diagonally, or in waves
+            // 2. A rune attack, that can fire in bursts or a spread
+            // 3. An energy attack, that will follow the player and shoot horizontally, or vertically at their position
+
+            // These coincide with phase 2 attacks that are essentially upgraded versions sans the thorns
+            // 1. A physical attack, which would involve various back-and-forth charges
+            // 2. A rune attack, which in this case would be the absorption-healing attack, it has two versions:
+            // 2a. If it absorbs enough energy, will summon projectiles that rain from the sky
+            // 2b. If it doesn't, will fire energy thorns in all directions in quick even-spread bursts
+            // 3. An energy attack, which would spawn lights that circle around before firing at their initial position after a full rotation
+            // Also get the player's position during this run so it doesn't get constantly offset while they move
+
             // Death animation code
             if (npc.ai[3] > 0f)
             {

@@ -1,13 +1,113 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Particles;
 using System;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public partial class TreeBoss : ModNPC
     {
+        private void Buffer()
+        {
+            if (MiscCounter++ == 90)
+            {
+                AICase = (int)AIStates.Selector;
+                GlobalCounter = 0;
+                MiscCounter = 0;
+                MiscCounter2 = 0;
+
+                npc.dontTakeDamage = false;
+            }
+        }
+
+        private void Intro()
+        {
+            npc.dontTakeDamage = true;
+            npc.netUpdate = true;
+
+            // 1 second buffer before the animation begins
+            if (MiscCounter++ > 60)
+            {
+                // Start the fading in animation
+                if (MiscCounter2 < 120)
+                {
+                    MiscCounter2 += 0.5f;
+
+                    if (MiscCounter2 % 10 == 0)
+                    {
+                        for (int i = 0; i < 6; i++)
+                        {
+                            // Randomized rotation in with Pi radians because spawning energy underground is literally impossible to kill
+                            float RandomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+
+                            // Generates in a circle 200 pixels below the NPC's center
+                            Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(600, 0).RotatedBy(-RandomRotation);
+                            npc.netUpdate = true;
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<AbsorbEnergyCinematic>(), 0, 0f, Main.myPlayer, npc.whoAmI);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Show all three of the eyes
+                    if (MiscCounter2++ == 120)
+                    {
+                        Main.PlaySound(SoundID.Item4, npc.Center);
+                    }
+
+                    // Start the music earlier before the title card shows up
+                    if (MiscCounter2 == 150)
+                    {
+                        music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
+                    }
+
+                    if (MiscCounter2 == 180)
+                    {
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            if (npc.Distance(Main.player[i].Center) < 900)
+                            {
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 20f, 60f);
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().TitleID = 4; // Turn this into an enum one day omg this is so unreadable
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                            }
+                        }
+
+                        if (Main.netMode == NetmodeID.SinglePlayer)
+                        {
+                            Main.NewText("Iorich, the Guardian has awoken!", 175, 75, 255);
+                        }
+                        else if (Main.netMode == NetmodeID.Server)
+                        {
+                            NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich, the Guardian has awoken!"), new Color(175, 75, 255));
+                        }
+
+                        Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/IorichExplosion"), npc.Center);
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Lime, 1f, 6f);
+                    }
+                }
+            }
+
+
+            if (MiscCounter == 361)
+            {
+                AICase = (int)AIStates.Buffer;
+                GlobalCounter = 0;
+                MiscCounter = 0;
+                MiscCounter2 = 0;
+
+                npc.netUpdate = true;
+            }
+        }
+
         private void Selector()
         {
             if (MiscCounter % 75 == 0 && MiscCounter > 60 && Main.expertMode)
@@ -429,6 +529,70 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 // Reset properties
                 AbsorbedEnergies = 0;
+            }
+        }
+
+        private void Death()
+        {
+            int SPAWN_OFFSET = 116;
+            int DUST_OFFSET = 15;
+            int AlternatingSpawnOffset = (SPAWN_OFFSET / 3) * 2; // It was too far away lol
+
+            for (int iterations = 0; iterations < 26; iterations++)
+            {
+                Vector2 calculatedOffset = new Vector2(-AlternatingSpawnOffset + (DUST_OFFSET * iterations), 0);
+
+                // Alternate dust between green/brown
+                if (npc.localAI[2]++ > 3f)
+                {
+                    if (Main.rand.NextBool(2))
+                    {
+                        int dust = Dust.NewDust(npc.getRect().BottomLeft() + calculatedOffset, 28, 28, DustID.Dirt, 0, 0, 0, default, Main.rand.NextFloat(1, 1.84f));
+                        Main.dust[dust].noGravity = true;
+                    }
+                    else
+                    {
+                        int dust = Dust.NewDust(npc.getRect().BottomLeft() + calculatedOffset, 28, 28, DustID.Grass, 0, 0, 0, default, Main.rand.NextFloat(1, 1.84f));
+                        Main.dust[dust].noGravity = true;
+                    }
+                }
+            }
+
+            if (MiscCounter++ == 60)
+            {
+                BossText("this isnt even my FINAL form!!!!!");
+            }
+
+            if (MiscCounter > 60 && MiscCounter2 <= 180)
+            {
+                if (++MiscCounter2 % 60 == 0)
+                {
+                    Main.PlaySound(SoundID.Item4, npc.Center);
+                }
+            }
+
+            if (MiscCounter2 > 180)
+            {
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    if (npc.Distance(Main.player[i].Center) < 900)
+                    {
+                        Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 5;
+                    }
+                }
+            }
+
+            if (MiscCounter == 300)
+            {
+                for (int i = 0; i < 200; i++)
+                {
+                    Vector2 RandomVelocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(40, 60);
+                    Dust.NewDust(npc.Center, 2, 2, DustID.TerraBlade, RandomVelocity.X, RandomVelocity.Y);
+                }
+
+                CanDie = true;
+                npc.life = 0;
+                npc.checkDead();
             }
         }
     }

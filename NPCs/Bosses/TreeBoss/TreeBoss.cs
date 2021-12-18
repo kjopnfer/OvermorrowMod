@@ -15,7 +15,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     [AutoloadBossHead]
     public partial class TreeBoss : ModNPC
     {
-        private bool introMessage = true; // CHANGE THIS BACK LOL
         private Vector2 playerPos;
 
         public enum SpawnDirection { Left, Right }
@@ -56,6 +55,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int ChosenAttack;
 
         public bool RunAgain = false;
+        public bool CanDie = false;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void SetStaticDefaults()
@@ -86,7 +86,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.boss = true;
             npc.npcSlots = 10f;
             npc.alpha = 255;
-            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/Silence");
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
@@ -97,12 +97,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public enum AIStates
         {
+            Buffer = -2,
             Intro = -1,
             Selector = 0,
             Thorns = 1,
             Spirit = 2,
             Runes = 3,
-            Energy = 4
+            Energy = 4,
+            Death = 5
         }
 
         public ref float AICase => ref npc.ai[0];
@@ -113,119 +115,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void AI()
         {
-            // The cool plans that I write down and forget to remove in the final version of the reworks
-            // Iorich has three attack types indicated by his eyes
-            // 1. A thorns attack, that can fire in segments, diagonally, or in waves
-            // 2. A rune attack, that can fire in bursts or a spread
-            // 3. An energy attack, that will follow the player and shoot horizontally, or vertically at their position
-
-            // These coincide with phase 2 attacks that are essentially upgraded versions sans the thorns
-            // 1. A physical attack, which would involve various back-and-forth charges
-            // 2. A rune attack, which in this case would be the absorption-healing attack, it has two versions:
-            // 2a. If it absorbs enough energy, will summon projectiles that rain from the sky
-            // 2b. If it doesn't, will fire energy thorns in all directions in quick even-spread bursts
-            // 3. An energy attack, which would spawn lights that circle around before firing at their initial position after a full rotation
-            // Also get the player's position during this run so it doesn't get constantly offset while they move
-
             npc.velocity.Y += 40;
-            npc.alpha = npc.localAI[0] < 180 ? 255 : 0;
+            npc.alpha = AICase == (int)AIStates.Intro ? 255 : 0;
 
             GlobalCounter++;
             VFXCounter++;
 
             npc.TargetClosest();
             Player player = Main.player[npc.target];
-
-            if (!OvermorrowWorld.downedTree && introMessage)
-            {
-                npc.dontTakeDamage = true;
-                npc.netUpdate = true;
-
-                if (GlobalCounter > 60)
-                {
-                    // Start the fading in animation
-                    if (npc.localAI[0] < 120)
-                    {
-                        npc.localAI[0] += 0.5f;
-
-                        if (npc.localAI[0] % 10 == 0)
-                        {
-                            for (int i = 0; i < 6; i++)
-                            {
-                                // Randomized rotation in with Pi radians because spawning energy underground is literally impossible to kill
-                                float RandomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-
-                                // Generates in a circle 200 pixels below the NPC's center
-                                Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(600, 0).RotatedBy(-RandomRotation);
-                                npc.netUpdate = true;
-
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<AbsorbEnergyCinematic>(), 0, 0f, Main.myPlayer, npc.whoAmI);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Show all three of the eyes
-                        if (npc.localAI[0]++ == 120)
-                        {
-                            /*for (int i = 0; i < 120; i++)
-                            {
-                                Vector2 DustPosition = FlowerDrawing(npc.Center, MathHelper.Lerp(0, MathHelper.TwoPi * 2, i / 12f) / (MathHelper.TwoPi * 2));
-                                int dust = Dust.NewDust(new Vector2(npc.position.X + DustPosition.X, npc.position.Y + DustPosition.Y), npc.width, npc.height, DustID.TerraBlade, 0, 0, 50, default(Color), 0.4f);
-                                Main.dust[dust].noGravity = true;
-                            }*/
-
-                            Main.PlaySound(SoundID.Item4, npc.Center);
-                        }
-
-                        if (npc.localAI[0] == 180)
-                        {
-                            for (int i = 0; i < Main.maxPlayers; i++)
-                            {
-                                if (npc.Distance(Main.player[i].Center) < 900)
-                                {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
-                                }
-                            }
-
-                            player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 20f, 60f);
-                            player.GetModPlayer<OvermorrowModPlayer>().TitleID = 4; // Turn this into an enum one day omg this is so unreadable
-                            player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
-
-                            if (Main.netMode == NetmodeID.SinglePlayer)
-                            {
-                                Main.NewText("Iorich, the Guardian has awoken!", 175, 75, 255);
-                            }
-                            else if (Main.netMode == NetmodeID.Server)
-                            {
-                                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich, the Guardian has awoken!"), new Color(175, 75, 255));
-                            }
-
-                            Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/IorichExplosion"), npc.Center);
-                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Lime, 1f, 6f);
-                        }
-                    }
-                }
-
-
-                if (MiscCounter <= 200)
-                {
-                    return;
-                }
-                else
-                {
-                    GlobalCounter = 0;
-                    MiscCounter = 0;
-                    MiscCounter2 = 0;
-
-                    introMessage = false;
-                    npc.dontTakeDamage = false;
-                    npc.netUpdate = true;
-                }
-            }
 
             // Handles Despawning
             if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
@@ -251,6 +148,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             switch (AICase)
             {
+                case (int)AIStates.Buffer: // Does literally nothing for 90 seconds
+                    Buffer();
+                    break;
+                case (int)AIStates.Intro:
+                    Intro();
+                    break;
                 case (int)AIStates.Selector: // Attack Selector
                     Selector();
                     break;
@@ -266,6 +169,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 case (int)AIStates.Energy: // Meteor Attack
                     EnergyAttack();
                     break;
+                case (int)AIStates.Death:
+                    Death();
+                    break;
             }
         }
 
@@ -274,7 +180,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Pulse");
 
             #region Spawn Drawcode
-            if (GlobalCounter > 60 && introMessage)
+            if (MiscCounter > 60 && AICase == (int)AIStates.Intro)
             {
                 Vector2 vector59 = npc.Center + new Vector2(0, 10) - Main.screenPosition;
                 Rectangle frame8 = npc.frame;
@@ -282,7 +188,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Vector2 origin21 = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
                 //origin21.Y += 8f;
                 Vector2 scale3 = new Vector2(npc.scale);
-                float num219 = npc.localAI[0];
+                float num219 = MiscCounter2;
                 if (num219 < 120f)
                 {
                     scale3 *= num219 / 240f + 0.5f;
@@ -297,40 +203,22 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 float num220 = MathHelper.Lerp(32f/*32f*/, 0f, lerpValue2);
 
                 Color color = alpha13;
-                //color.A = (byte)MathHelper.Lerp(color.A, 0f, lerpValue2);
-                //color *= lerpValue2;
+
                 if (num219 >= 120f)
                 {
                     color = alpha13;
                 }
 
                 // Draw the NPC with the silhouette after it has rotated into existence
-                if (npc.localAI[0] > 120 && npc.localAI[0] < 180)
+                if (MiscCounter2 > 120 && MiscCounter2 < 180)
                 {
                     spriteBatch.Draw(texture, vector59, frame8, new Color(149, 252, 173) * 0.75f, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
                 }
-
-                // This just makes the final sprite supe bright for some reason
-                /*float y2 = (((MiscCounter2 + 54f) % 180f - 120f) / 180f * 2f * ((float)Math.PI * 2f)).ToRotationVector2().Y;
-                if (num219 >= 120f)
-                {
-                    num220 = y2 * 0f;
-                    color.A = (byte)((float)(int)color.A * 0.5f);
-                    color *= y2 / 2f + 0.5f;
-
-                    // I have no idea what this does
-                    float num221 = 1f;
-                    for (float num222 = 0f; num222 < num221; num222 += 1f)
-                    {
-                        spriteBatch.Draw(texture, vector59 + ((float)Math.PI * 2f / num221 * num222).ToRotationVector2() * num220, frame8, color, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
-                    }
-                }*/
 
                 // AI counter
                 if (num219 < 120f)
                 {
                     float num229 = (float)Math.PI * 2f * lerpValue2 * (float)Math.Pow(lerpValue2, 2.0) * 2f + lerpValue2;
-                    //color.A = (byte)(alpha13.A * (float)Math.Pow(lerpValue2, 2.0) * 0.5f);
 
                     // This controls the number of afterimage frames the spiral around
                     float num230 = 6f/*3f*/;
@@ -405,7 +293,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
             // Draw the glowmask after the spawn animation has been completed
-            if (npc.localAI[0] > 180)
+            if (AICase != (int)AIStates.Intro)
             {
                 Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Glow");
                 spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 4), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
@@ -447,7 +335,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
 
             // Makes all three eyes glow during the spawning phase
-            if (npc.localAI[0] > 120 && npc.localAI[0] < 180)
+            if (MiscCounter2 > 120 && MiscCounter2 < 180 && AICase == (int)AIStates.Intro)
             {
                 xOffset = -1;
                 yOffset = -62 + frameOffset;
@@ -463,6 +351,35 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 yOffset = -69 + frameOffset;
 
                 EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
+            }
+
+            if (AICase == (int)AIStates.Death && MiscCounter > 60)
+            {
+                if (MiscCounter2 > 60)
+                {
+                    xOffset = -1;
+                    yOffset = -62 + frameOffset;
+
+                    EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
+                }
+
+                if (MiscCounter2 > 120)
+                {
+
+                    xOffset = 12;
+                    yOffset = -62 + frameOffset;
+
+                    EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
+
+                }
+
+                if (MiscCounter2 > 180)
+                {
+                    xOffset = 5;
+                    yOffset = -69 + frameOffset;
+
+                    EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
+                }
             }
 
             base.PostDraw(spriteBatch, drawColor);
@@ -485,21 +402,38 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override bool CheckDead()
         {
             npc.boss = false;
-            return base.CheckDead();
+            if (!CanDie)
+            {
+                AICase = (int)AIStates.Death;
+                GlobalCounter = 0;
+                MiscCounter = 0;
+                MiscCounter2 = 0;
+
+                npc.damage = 0;
+                npc.life = npc.lifeMax;
+                npc.dontTakeDamage = true;
+                npc.netUpdate = true;
+
+                ChosenAttack = -1;
+
+                return false;
+            }
+
+            return true;
         }
 
         public override void NPCLoot()
         {
+            // Spawn 2nd Phase
             NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<TreeBossP2>(), 0, 0f, 0f, 0f, 0f);
 
-            // Spawn 2nd Phase
             if (Main.netMode == NetmodeID.SinglePlayer) // Singleplayer
             {
-                Main.NewText("Iorich has uprooted!", Color.Green);
+                Main.NewText("Iorich has uprooted!", new Color(175, 75, 255));
             }
             else if (Main.netMode == NetmodeID.Server) // Server
             {
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich has uprooted!"), Color.Green);
+                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich has uprooted!"), new Color(175, 75, 255));
             }
         }
     }
