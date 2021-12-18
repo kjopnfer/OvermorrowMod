@@ -31,13 +31,6 @@ namespace OvermorrowMod
         public int FungiTime;
         public int split;
 
-        public int RotationTimer = 0;
-        public int[] OrbitingProjectileCount = new int[5]; // Current upadted count of how many projectiles are active.
-        public Vector2[,] OrbitingProjectilePositions = new Vector2[5, 50];  // Used to store the desired positions for the projectiles.
-        public Projectile[,] OrbitingProjectile = new Projectile[5, 50]; // This stores all the projectiles that are currently beeing used. A projectiles ID is equal to the index in this array.
-
-        public Vector2[] PreviousVelocity = new Vector2[30];
-
         public override void ResetEffects(NPC npc)
         {
             FungiInfection = false;
@@ -62,42 +55,9 @@ namespace OvermorrowMod
                 spawnRate = 140;
             }
         }
-        public void GenerateProjectilePositions(NPC npc)
-        {
-            double period = 2f * Math.PI / 300f;
-            for (int i = 0; i < OrbitingProjectileCount[0]; i++)
-            {
-                // Radius 200.
-                OrbitingProjectilePositions[0, i] = npc.Center + new Vector2(100 * (float)Math.Cos(period * (RotationTimer + (300 / OrbitingProjectileCount[0] * i))), 200 * (float)Math.Sin(period * (RotationTimer + (300 / OrbitingProjectileCount[0] * i))));
-            }
-        }
-
-        public override void PostAI(NPC npc)
-        {
-            bool temp = false;
-            for (int i = 0; i < 5; i++)
-            {
-                if (OrbitingProjectileCount[i] > 0) temp = true;
-            }
-
-            if (temp)
-            {
-                // The resetting the timer every 300 is not necessary but makes the period of the timer more apperant. 
-                GenerateProjectilePositions(npc);
-                RotationTimer++;
-            }
-            else RotationTimer = 0;
-
-            base.PostAI(npc);
-        }
 
         public override void NPCLoot(NPC npc)
         {
-            for (int i = 0; i < OrbitingProjectileCount.Length; i++)
-            {
-                OrbitingProjectileCount[i] = 0;
-            }
-
             switch (npc.type)
             {
                 case NPCID.KingSlime:
