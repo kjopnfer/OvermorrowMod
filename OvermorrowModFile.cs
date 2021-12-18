@@ -189,6 +189,9 @@ namespace OvermorrowMod
             string BossTitle = "";
             Color titleColor = Color.White;
             Color nameColor = Color.White;
+
+            int SubtextOffset = 0;
+            int TitleOffset = 0;
             switch (BossID)
             {
                 case 1:
@@ -214,6 +217,9 @@ namespace OvermorrowMod
                     BossTitle = "The Guardian";
                     nameColor = Color.LimeGreen;
                     titleColor = Color.Green;
+
+                    TitleOffset = 15;
+                    SubtextOffset = 0;
                     break;
                 case 5:
                     BossName = "Gra-knight and Lady Apollo";//"Gra-knight and Apollus";
@@ -237,7 +243,7 @@ namespace OvermorrowMod
 			float alpha2 = 255;*/
 
             DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
+            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft + TitleOffset, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
         }
 
         public override void UpdateUI(GameTime gameTime)

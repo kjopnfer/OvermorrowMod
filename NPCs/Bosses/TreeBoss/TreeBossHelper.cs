@@ -23,6 +23,22 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), new Color(0, 255, 191));
             }
         }
+
+        private static float FlowerDrawing(float theta)
+        {
+            return (float)(Math.Sin(theta) + Math.Sin(5 * theta / 2));
+        }
+
+        private Vector2 FlowerDrawing(Vector2 origin, float theta)
+        {
+            Vector2 output = new Vector2();
+
+            output.X = (float)(FlowerDrawing(theta) * Math.Cos(theta));
+            output.Y = (float)(FlowerDrawing(theta) * Math.Sin(theta));
+
+            return output;
+        }
+
         public float GetLerpValue(float from, float to, float t, bool clamped = false)
         {
             if (clamped)

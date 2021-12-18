@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Consumable.Boss.TreeRune;
+using OvermorrowMod.Particles;
 using OvermorrowMod.Projectiles.Boss;
 using System;
 using System.Collections.Generic;
@@ -126,6 +128,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // Also get the player's position during this run so it doesn't get constantly offset while they move
 
             npc.velocity.Y += 40;
+            npc.alpha = npc.localAI[0] < 180 ? 255 : 0;
+
+            GlobalCounter++;
+            VFXCounter++;
 
             npc.TargetClosest();
             Player player = Main.player[npc.target];
@@ -134,32 +140,87 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 npc.dontTakeDamage = true;
                 npc.netUpdate = true;
-                MiscCounter++;
-                npc.localAI[0]++;
 
-                /*
-
-                if (MiscCounter == 180)
+                if (GlobalCounter > 60)
                 {
-                    BossText("I heed thy call.");
+                    // Start the fading in animation
+                    if (npc.localAI[0] < 120)
+                    {
+                        npc.localAI[0] += 0.5f;
+
+                        if (npc.localAI[0] % 10 == 0)
+                        {
+                            for (int i = 0; i < 6; i++)
+                            {
+                                // Randomized rotation in with Pi radians because spawning energy underground is literally impossible to kill
+                                float RandomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+
+                                // Generates in a circle 200 pixels below the NPC's center
+                                Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(600, 0).RotatedBy(-RandomRotation);
+                                npc.netUpdate = true;
+
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<AbsorbEnergyCinematic>(), 0, 0f, Main.myPlayer, npc.whoAmI);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Show all three of the eyes
+                        if (npc.localAI[0]++ == 120)
+                        {
+                            /*for (int i = 0; i < 120; i++)
+                            {
+                                Vector2 DustPosition = FlowerDrawing(npc.Center, MathHelper.Lerp(0, MathHelper.TwoPi * 2, i / 12f) / (MathHelper.TwoPi * 2));
+                                int dust = Dust.NewDust(new Vector2(npc.position.X + DustPosition.X, npc.position.Y + DustPosition.Y), npc.width, npc.height, DustID.TerraBlade, 0, 0, 50, default(Color), 0.4f);
+                                Main.dust[dust].noGravity = true;
+                            }*/
+
+                            Main.PlaySound(SoundID.Item4, npc.Center);
+                        }
+
+                        if (npc.localAI[0] == 180)
+                        {
+                            for (int i = 0; i < Main.maxPlayers; i++)
+                            {
+                                if (npc.Distance(Main.player[i].Center) < 900)
+                                {
+                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
+                                }
+                            }
+
+                            player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 20f, 60f);
+                            player.GetModPlayer<OvermorrowModPlayer>().TitleID = 4; // Turn this into an enum one day omg this is so unreadable
+                            player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+
+                            if (Main.netMode == NetmodeID.SinglePlayer)
+                            {
+                                Main.NewText("Iorich, the Guardian has awoken!", 175, 75, 255);
+                            }
+                            else if (Main.netMode == NetmodeID.Server)
+                            {
+                                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich, the Guardian has awoken!"), new Color(175, 75, 255));
+                            }
+
+                            Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/IorichExplosion"), npc.Center);
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Lime, 1f, 6f);
+                        }
+                    }
                 }
 
-                if (MiscCounter == 360)
-                {
-                    BossText("Thou wishes to unlock the secrets of the Dryads?");
-                }
 
-                if (MiscCounter == 540)
-                {
-                    BossText("Very well, I shalt test thy resolve.");
-                }*/
-
-                if (MiscCounter <= 600)
+                if (MiscCounter <= 200)
                 {
                     return;
                 }
                 else
                 {
+                    GlobalCounter = 0;
+                    MiscCounter = 0;
+                    MiscCounter2 = 0;
+
                     introMessage = false;
                     npc.dontTakeDamage = false;
                     npc.netUpdate = true;
@@ -188,9 +249,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // This is here because the boss heals
             if (npc.life >= npc.lifeMax) npc.life = npc.lifeMax;
 
-            GlobalCounter++;
-            VFXCounter++;
-
             switch (AICase)
             {
                 case (int)AIStates.Selector: // Attack Selector
@@ -213,64 +271,73 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            #region idk i tried smtn
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Pulse");
-            Vector2 vector59 = npc.Center + new Vector2(0, 10) - Main.screenPosition;
-            Rectangle frame8 = npc.frame;
-            //Vector2 origin21 = new Vector2(70f, 127f);
-            Vector2 origin21 = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
-            //origin21.Y += 8f;
-            Vector2 scale3 = new Vector2(npc.scale);
-            float num219 = npc.localAI[0];
-            if (num219 < 120f)
+
+            #region Spawn Drawcode
+            if (GlobalCounter > 60 && introMessage)
             {
-                scale3 *= num219 / 240f + 0.5f;
-            }
-
-            Color alpha13 = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
-
-            // This controls the speed that they rotate in as well as how it shifts forward
-            float lerpValue2 = GetLerpValue(0f, 120f, num219, clamped: true);
-
-            // This controls the initial distance away from the body before it converges to the center
-            float num220 = MathHelper.Lerp(32f/*32f*/, 0f, lerpValue2);
-
-            Color color = alpha13;
-            //color.A = (byte)MathHelper.Lerp(color.A, 0f, lerpValue2);
-            //color *= lerpValue2;
-            if (num219 >= 120f)
-            {
-                color = alpha13;
-            }
-            //spriteBatch.Draw(texture, vector59, frame8, color, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
-
-            // This just makes the final sprite supe bright for some reason
-            /*float y2 = (((MiscCounter2 + 54f) % 180f - 120f) / 180f * 2f * ((float)Math.PI * 2f)).ToRotationVector2().Y;
-            if (num219 >= 120f)
-            {
-                num220 = y2 * 0f;
-                color.A = (byte)((float)(int)color.A * 0.5f);
-                color *= y2 / 2f + 0.5f;
-
-                // I have no idea what this does
-                float num221 = 1f;
-                for (float num222 = 0f; num222 < num221; num222 += 1f)
+                Vector2 vector59 = npc.Center + new Vector2(0, 10) - Main.screenPosition;
+                Rectangle frame8 = npc.frame;
+                //Vector2 origin21 = new Vector2(70f, 127f);
+                Vector2 origin21 = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
+                //origin21.Y += 8f;
+                Vector2 scale3 = new Vector2(npc.scale);
+                float num219 = npc.localAI[0];
+                if (num219 < 120f)
                 {
-                    spriteBatch.Draw(texture, vector59 + ((float)Math.PI * 2f / num221 * num222).ToRotationVector2() * num220, frame8, color, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                    scale3 *= num219 / 240f + 0.5f;
                 }
-            }*/
 
-            // AI counter
-            if (num219 < 120f)
-            {
-                float num229 = (float)Math.PI * 2f * lerpValue2 * (float)Math.Pow(lerpValue2, 2.0) * 2f + lerpValue2;
-                //color.A = (byte)(alpha13.A * (float)Math.Pow(lerpValue2, 2.0) * 0.5f);
+                Color alpha13 = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
 
-                // This controls the number of afterimage frames the spiral around
-                float num230 = 6f/*3f*/;
-                for (float num231 = 0f; num231 < num230; num231 += 1f)
+                // This controls the speed that they rotate in as well as how it shifts forward
+                float lerpValue2 = GetLerpValue(0f, 120f, num219, clamped: true);
+
+                // This controls the initial distance away from the body before it converges to the center
+                float num220 = MathHelper.Lerp(32f/*32f*/, 0f, lerpValue2);
+
+                Color color = alpha13;
+                //color.A = (byte)MathHelper.Lerp(color.A, 0f, lerpValue2);
+                //color *= lerpValue2;
+                if (num219 >= 120f)
                 {
-                    spriteBatch.Draw(texture, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / num230) * 0.5f /*color * 0.5f*/, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                    color = alpha13;
+                }
+
+                // Draw the NPC with the silhouette after it has rotated into existence
+                if (npc.localAI[0] > 120 && npc.localAI[0] < 180)
+                {
+                    spriteBatch.Draw(texture, vector59, frame8, new Color(149, 252, 173) * 0.75f, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                }
+
+                // This just makes the final sprite supe bright for some reason
+                /*float y2 = (((MiscCounter2 + 54f) % 180f - 120f) / 180f * 2f * ((float)Math.PI * 2f)).ToRotationVector2().Y;
+                if (num219 >= 120f)
+                {
+                    num220 = y2 * 0f;
+                    color.A = (byte)((float)(int)color.A * 0.5f);
+                    color *= y2 / 2f + 0.5f;
+
+                    // I have no idea what this does
+                    float num221 = 1f;
+                    for (float num222 = 0f; num222 < num221; num222 += 1f)
+                    {
+                        spriteBatch.Draw(texture, vector59 + ((float)Math.PI * 2f / num221 * num222).ToRotationVector2() * num220, frame8, color, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                    }
+                }*/
+
+                // AI counter
+                if (num219 < 120f)
+                {
+                    float num229 = (float)Math.PI * 2f * lerpValue2 * (float)Math.Pow(lerpValue2, 2.0) * 2f + lerpValue2;
+                    //color.A = (byte)(alpha13.A * (float)Math.Pow(lerpValue2, 2.0) * 0.5f);
+
+                    // This controls the number of afterimage frames the spiral around
+                    float num230 = 6f/*3f*/;
+                    for (float num231 = 0f; num231 < num230; num231 += 1f)
+                    {
+                        spriteBatch.Draw(texture, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / num230) * 0.15f /*color * 0.5f*/, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                    }
                 }
             }
             #endregion
@@ -337,8 +404,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            // The glowmask
-            if (npc.localAI[0] > 120)
+            // Draw the glowmask after the spawn animation has been completed
+            if (npc.localAI[0] > 180)
             {
                 Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Glow");
                 spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 4), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
@@ -377,6 +444,25 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
 
                     break;
+            }
+
+            // Makes all three eyes glow during the spawning phase
+            if (npc.localAI[0] > 120 && npc.localAI[0] < 180)
+            {
+                xOffset = -1;
+                yOffset = -62 + frameOffset;
+
+                EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
+
+                xOffset = 12;
+                yOffset = -62 + frameOffset;
+
+                EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
+
+                xOffset = 5;
+                yOffset = -69 + frameOffset;
+
+                EyeFlare(spriteBatch, xOffset, yOffset, Color.White, true);
             }
 
             base.PostDraw(spriteBatch, drawColor);

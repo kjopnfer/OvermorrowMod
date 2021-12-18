@@ -5,7 +5,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Items.Consumable.Boss
+namespace OvermorrowMod.Items.Consumable.Boss.TreeRune
 {
     public class TreeRune : ModItem
     {
@@ -32,31 +32,16 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public override bool CanUseItem(Player player)
         {
             // Make sure that the boss doesn't already exist and player is in correct zone
-            return !NPC.AnyNPCs(ModContent.NPCType<TreeBoss>()) && !NPC.AnyNPCs(ModContent.NPCType<TreeBossP2>()) && Main.dayTime;
+            return !NPC.AnyNPCs(ModContent.NPCType<TreeBoss>()) && !NPC.AnyNPCs(ModContent.NPCType<TreeBossP2>());
         }
 
         public override bool UseItem(Player player)
         {
-            player.GetModPlayer<OvermorrowModPlayer>().TitleID = 4;
-            player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
-            player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+            Main.PlaySound(SoundID.Roar, player.position, 0);
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                {
-                    Main.NewText("Iorich, the Guardian has awoken!", 175, 75, 255);
-                }
-                else if (Main.netMode == NetmodeID.Server)
-                {
-                    NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich, the Guardian has awoken!"), new Color(175, 75, 255));
-                }
-
-                NPC.NewNPC((int)player.position.X, (int)(player.position.Y - 50f), ModContent.NPCType<TreeBoss>(), 0, 0f, 0f, 0f, 0f, 255);
-                Main.PlaySound(SoundID.Roar, player.position, 0);
-                return true;
-            }
-            return false;
+            int proj = Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<TreeSpawnAnimation>(), 0, 0, Main.myPlayer);
+            ((TreeSpawnAnimation)Main.projectile[proj].modProjectile).PlayerSummoner = player;
+            return true;
         }
 
         public override void AddRecipes()

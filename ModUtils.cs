@@ -50,6 +50,14 @@ namespace OvermorrowMod
                 );
         }
 
+        public static Vector2 Bezier(Vector2 from, Vector2 to, Vector2 cp1, Vector2 cp2, float amount)
+        {
+            Vector2 output = new Vector2();
+            output.X = Bezier(from.X, cp1.X, cp2.X, to.X, amount);
+            output.Y = Bezier(from.Y, cp1.Y, cp2.Y, to.Y, amount);
+            return output;
+        }
+
         public static List<T> Shuffle<T>(this List<T> list)
         {
             int c = list.Count;
@@ -67,14 +75,7 @@ namespace OvermorrowMod
         {
             return Shuffle<T>(new List<T>(array)).ToArray();
         }
-
-        public static Vector2 Bezier(Vector2 from, Vector2 to, Vector2 cp1, Vector2 cp2, float amount)
-        {
-            Vector2 output = new Vector2();
-            output.X = Bezier(from.X, cp1.X, cp2.X, to.X, amount);
-            output.Y = Bezier(from.Y, cp1.Y, cp2.Y, to.Y, amount);
-            return output;
-        }
+   
         public static Vector3 ToVector3(this Vector2 vec)
         {
             return new Vector3(vec.X, vec.Y, 0);
