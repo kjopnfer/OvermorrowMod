@@ -197,7 +197,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Color alpha13 = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
 
                 // This controls the speed that they rotate in as well as how it shifts forward
-                float lerpValue2 = GetLerpValue(0f, 120f, num219, clamped: true);
+                float lerpValue2 = ModUtils.GetLerpValue(0f, 120f, num219, clamped: true);
 
                 // This controls the initial distance away from the body before it converges to the center
                 float num220 = MathHelper.Lerp(32f/*32f*/, 0f, lerpValue2);

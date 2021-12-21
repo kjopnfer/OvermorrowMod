@@ -63,7 +63,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     }
 
                     // Start the music earlier before the title card shows up
-                    if (MiscCounter2 == 150)
+                    if (MiscCounter2 == 155)
                     {
                         music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
                     }
@@ -123,7 +123,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     for (int i = 0; i < numberProjectiles; i++)
                     {
                         Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f;
-                        Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), npc.damage, 1f, Main.myPlayer);
+                        Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), (int)(npc.damage / 2f), 1f, Main.myPlayer);
                     }
                 }
             }

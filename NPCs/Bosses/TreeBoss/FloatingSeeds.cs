@@ -7,9 +7,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public class FloatingSeeds : ModProjectile
     {
-        private bool canDescend = false;
-        private bool goLeft = true;
-        public override bool CanHitPlayer(Player target) => canDescend ? true : false;
+        private bool CanDescend = false;
+        private bool GoLeft = true;
+        public override bool CanHitPlayer(Player target) => CanDescend ? true : false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Floating Seed"); 
@@ -41,7 +41,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 }
             }
 
-            if (!canDescend)
+            if (!CanDescend)
             {
                 projectile.rotation += 1f;
 
@@ -49,16 +49,16 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 if (projectile.ai[0] % 180 == 0) // After 3 seconds, set velocity to zero
                 {
                     projectile.velocity = Vector2.Zero;
-                    canDescend = true;
+                    CanDescend = true;
 
                     if (Main.rand.NextBool(2)) // Go left
                     {
                         projectile.velocity.X = 5f;
-                        goLeft = true;
+                        GoLeft = true;
                     }
                     else // Go right
                     {
-                        goLeft = false;
+                        GoLeft = false;
                         projectile.velocity.X = -5f;
                     }
                 }
@@ -69,14 +69,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 projectile.velocity.Y = 4.5f;
 
                 // Float left and right
-                if (goLeft)
+                if (GoLeft)
                 {
                     projectile.rotation = projectile.velocity.X * 0.5f + (MathHelper.PiOver2 * 3);
 
                     projectile.velocity.X -= 0.25f;
                     if (projectile.velocity.X == 0)
                     {
-                        goLeft = false;
+                        GoLeft = false;
                         projectile.velocity.X = -5f;
                     }
                 }
@@ -87,7 +87,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     projectile.velocity.X += 0.25f;
                     if (projectile.velocity.X == 0)
                     {
-                        goLeft = true;
+                        GoLeft = true;
                         projectile.velocity.X = 5f;
                     }
                 }

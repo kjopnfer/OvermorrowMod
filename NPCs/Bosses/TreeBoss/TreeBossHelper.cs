@@ -39,36 +39,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             return output;
         }
 
-        public float GetLerpValue(float from, float to, float t, bool clamped = false)
-        {
-            if (clamped)
-            {
-                if (from < to)
-                {
-                    if (t < from)
-                    {
-                        return 0f;
-                    }
-                    if (t > to)
-                    {
-                        return 1f;
-                    }
-                }
-                else
-                {
-                    if (t < to)
-                    {
-                        return 1f;
-                    }
-                    if (t > from)
-                    {
-                        return 0f;
-                    }
-                }
-            }
-            return (t - from) / (to - from);
-        }
-
         private void EyeFlare(SpriteBatch spriteBatch, int xOffset, int yOffset, Color LerpColor, bool DiscoColor = false)
         {
             Texture2D texture2 = ModContent.GetTexture("OvermorrowMod/Textures/test2");

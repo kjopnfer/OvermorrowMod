@@ -152,9 +152,7 @@ namespace OvermorrowMod.Items.Consumable.Boss.TreeRune
                 {
                     // these assign the color of the pulsing
                     Color spriteColor = Color.LightGreen;
-                    //spriteColor = projectile.GetAlpha(spriteColor);
-                    //spriteColor *= 1f - num176; // num176 is put in here to effect the pulsing
-
+                 
                     // num176 is used here too
                     Vector2 vector45 = projectile.Center + Utils.ToRotationVector2((float)num164 / (float)num177 * ((float)Math.PI * 2f) + projectile.rotation) * scaleFactor10 * num176 - Main.screenPosition;
                     vector45 -= new Vector2(texture.Width, texture.Height) * projectile.scale / 2f;

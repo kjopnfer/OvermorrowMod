@@ -18,24 +18,23 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     [AutoloadBossHead]
-    public class TreeBossP2 : ModNPC
+    public partial class TreeBossP2 : ModNPC
     {
-        private bool changedPhase2 = false;
         public int energiesAbsorbed;
         public int energiesKilled;
+
+        public Vector2 InitialPosition;
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Iorich, Scythe of the Dryads");
             Main.npcFrameCount[npc.type] = 6;
+            NPCID.Sets.TrailCacheLength[npc.type] = 7;
+            NPCID.Sets.TrailingMode[npc.type] = 1;
         }
 
         public override void SetDefaults()
         {
-            // Afterimage effect
-            NPCID.Sets.TrailCacheLength[npc.type] = 7;
-            NPCID.Sets.TrailingMode[npc.type] = 1;
-
             // Reduced size
             npc.width = 368;
             npc.height = 338;
@@ -44,7 +43,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             //npc.width = 368;
             //npc.height = 338;
 
-            npc.aiStyle = -1;
             npc.damage = 20;
             npc.defense = 14;
             npc.lifeMax = 3300;
@@ -66,6 +64,22 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale * 0.65f);
             npc.defense = 17;
         }
+
+        public enum AIStates
+        {
+            Intro = -1,
+            Selector = 0,
+            Scythes = 1,
+            Spirit = 2,
+            Runes = 3,
+            Energy = 4,
+            Death = 5
+        }
+
+        public ref float AICase => ref npc.ai[0];
+        public ref float GlobalCounter => ref npc.ai[1];
+        public ref float MiscCounter => ref npc.ai[2];
+        public ref float MiscCounter2 => ref npc.ai[3];
 
         private void BossText(string text) // boss messages
         {
@@ -100,82 +114,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // 3. An energy attack, which would spawn lights that circle around before firing at their initial position after a full rotation
             // Also get the player's position during this run so it doesn't get constantly offset while they move
 
-            // Death animation code
-            if (npc.ai[3] > 0f)
-            {
-                npc.velocity = Vector2.Zero;
-
-                if (npc.ai[2] > 0)
-                {
-                    npc.ai[2]--;
-
-                    if (npc.ai[2] == 480)
-                    {
-                        BossText("I deem thee fit to inherit their powers.");
-                    }
-
-                    if (npc.ai[2] == 300)
-                    {
-                        BossText("Thou Dryad shalt guide thee.");
-                    }
-
-                    if (npc.ai[2] == 120)
-                    {
-                        BossText("Fare thee well.");
-                    }
-                }
-                else
-                {
-                    npc.dontTakeDamage = true;
-                    npc.ai[3]++; // Death timer
-                    npc.velocity.X *= 0.95f;
-
-                    if (npc.velocity.Y < 0.5f)
-                    {
-                        npc.velocity.Y = npc.velocity.Y + 0.01f;
-                    }
-
-                    if (npc.velocity.X > 0.5f)
-                    {
-                        npc.velocity.Y = npc.velocity.Y - 0.01f;
-                    }
-
-                    if (npc.ai[3] > 120f)
-                    {
-                        npc.Opacity = 1f - (npc.ai[3] - 120f) / 60f;
-                    }
-
-                    if (Main.rand.NextBool(5) && npc.ai[3] < 120f)
-                    {
-                        // This dust spawn adapted from the Pillar death code in vanilla.
-                        for (int dustNumber = 0; dustNumber < 6; dustNumber++)
-                        {
-                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, DustID.TerraBlade, 0f, 0f, 0, default(Color), 1f)];
-                            dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
-                            dust.velocity.X = 0f;
-                            dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;
-                            dust.noGravity = true;
-                            dust.fadeIn = 1f;
-                            dust.scale = 1f + Main.rand.NextFloat() + (float)dustNumber * 0.3f;
-                        }
-                    }
-
-                    if (npc.ai[3] % 30f == 1f)
-                    {
-                        //Main.PlaySound(4, npc.Center, 22);
-                        Main.PlaySound(SoundID.Item25, npc.Center); // every half second while dying, play a sound
-                    }
-
-                    if (npc.ai[3] >= 180f)
-                    {
-                        npc.life = 0;
-                        npc.HitEffect(0, 0);
-                        npc.checkDead(); // This will trigger ModNPC.CheckDead the second time, causing the real death.
-                    }
-                }
-                return;
-            }
-
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
 
@@ -205,8 +143,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.life = npc.lifeMax;
             }
 
-            npc.ai[1]++;
-
             // Moveset
             // Throw scythes
             // Throw a wall of scythes, repeat this and top twice
@@ -214,12 +150,108 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // Spawn nature waves in all directions
             // Move toward player slowly
 
-            if (npc.life <= npc.lifeMax * 0.5f)
+            switch (AICase)
             {
-                changedPhase2 = true;
+                case (int)AIStates.Selector:
+                    npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
+                    npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 5 : -5), 0.02f);
+
+                    if (MiscCounter++ == 60)
+                    {
+                        AICase = (int)AIStates.Scythes;
+                        MiscCounter = 0;
+                        MiscCounter2 = 120;
+                    }
+                    break;
+                case (int)AIStates.Scythes:
+                    npc.velocity = Vector2.Zero;
+
+                    // Spawn an entrance portal behind the boss
+                    if (MiscCounter++ == 0)
+                    {
+                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
+                    }
+
+                    if (MiscCounter2 > 0 && MiscCounter > 320)
+                    {
+                        npc.alpha = 255;
+                        MiscCounter2--;
+
+                        if (MiscCounter2 == 0)
+                        {
+                            npc.dontTakeDamage = true;
+                            npc.Center = player.Center - Vector2.UnitY * 6000f;
+
+                            Vector2 RandomCenter = player.Center + Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 400;
+                            npc.netUpdate = true;
+
+                            Projectile.NewProjectile(RandomCenter, Vector2.Zero, ModContent.ProjectileType<ExitPortal>(), 0, 0f, Main.myPlayer, 0f, npc.whoAmI);
+                            Projectile.NewProjectile(RandomCenter, Vector2.Zero, ModContent.ProjectileType<TrackingWarning>(), 0, 1f, Main.myPlayer, player.whoAmI, 1);
+
+                        }
+                    }
+
+
+
+
+                    // Spawn an exit portal that follows the player around
+                    /*float MovementTimer;
+                    switch ((int)MiscCounter2)
+                    {
+                        case 0:
+                            MovementTimer = 25f;
+                            if (MiscCounter == 0)
+                            {
+                                InitialPosition = npc.Center;
+                            }
+
+                            npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + (Vector2.UnitX * 400), MiscCounter / MovementTimer);
+
+                            if (MiscCounter == MovementTimer)
+                            {
+                                InitialPosition = npc.Center;
+                                MiscCounter = 0;
+                                MiscCounter2 = 1;
+                            }
+                            break;
+                        case 1:
+                            MovementTimer = 15f;
+                            npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + new Vector2(-500, 400), MiscCounter / MovementTimer);
+
+                            if (MiscCounter == MovementTimer)
+                            {
+                                InitialPosition = npc.Center;
+                                MiscCounter = 0;
+                                MiscCounter2 = 2;
+                            }
+                            break;
+                        case 2:
+                            MovementTimer = 60f;
+                            npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + new Vector2(600, -800), MiscCounter / MovementTimer);
+
+                            if (GlobalCounter++ % 20 == 0)
+                            {
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    Projectile.NewProjectile(npc.Center, Vector2.UnitX * -20f, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                                }
+                            }
+
+                            if (MiscCounter == MovementTimer)
+                            {
+                                AICase = (int)AIStates.Selector;
+                                MiscCounter = 0;
+                                MiscCounter2 = 0;
+                            }
+                            break;
+                    }*/
+
+                    MiscCounter++;
+
+                    break;
             }
 
-            switch (npc.ai[0])
+            /*switch (npc.ai[0])
             {
                 case -1: // case switching
                     {
@@ -414,12 +446,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         }
                         break;
                     }
-            }
+            }*/
         }
 
         public override void FindFrame(int frameHeight)
         {
-
             npc.rotation = npc.velocity.X * 0.015f;
 
             npc.frameCounter++;
@@ -436,16 +467,118 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
-            for (int k = 0; k < npc.oldPos.Length; k++)
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_Trail");
+
+            if (AICase == (int)AIStates.Scythes)
             {
-                // Adjust drawPos if the hitbox does not match sprite dimension
-                Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin;
-                Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.Green : Color.LightGreen;
-                Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
-                spriteBatch.Draw(Main.npcTexture[npc.type], drawPos, npc.frame, color, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
+                for (int k = 0; k < npc.oldPos.Length; k++)
+                {
+                    // Adjust drawPos if the hitbox does not match sprite dimension
+                    Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin;
+                    Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.Green : Color.LightGreen;
+                    Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
+                    //spriteBatch.Draw(texture, drawPos, npc.frame, color, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                }
             }
+
+            // Teleportation animation
+            if (AICase == (int)AIStates.Scythes)
+            {
+                Vector2 vector59 = npc.Center + new Vector2(0, 10) - Main.screenPosition;
+                Rectangle frame8 = npc.frame;
+                //Vector2 origin21 = new Vector2(70f, 127f);
+                Vector2 origin21 = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
+                //origin21.Y += 8f;
+                Vector2 scale3 = new Vector2(npc.scale);
+                float num219 = MiscCounter2;
+                if (num219 < 120f)
+                {
+                    scale3 *= num219 / 120f;
+                }
+
+                Color alpha13 = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
+
+                // This controls the speed that they rotate in as well as how it shifts forward
+                float lerpValue2 = ModUtils.GetLerpValue(0f, 120f, num219, clamped: true);
+
+                // This controls the initial distance away from the body before it converges to the center
+                float num220 = MathHelper.Lerp(32f/*32f*/, 0f, lerpValue2);
+
+                Color color = alpha13;
+
+                if (num219 >= 120f)
+                {
+                    color = alpha13;
+                }
+
+                // Draw the NPC with the silhouette after it has rotated into existence
+                if (MiscCounter2 > 120 && MiscCounter2 < 180)
+                {
+                    spriteBatch.Draw(texture, vector59, frame8, new Color(149, 252, 173) * 0.75f, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                }
+
+                // AI counter
+                if (num219 < 120f)
+                {
+                    float num229 = (float)Math.PI * 2f * lerpValue2 * (float)Math.Pow(lerpValue2, 2.0) * 2f + lerpValue2;
+
+                    // This controls the number of afterimage frames the spiral around
+                    float num230 = 6f/*3f*/;
+                    for (float num231 = 0f; num231 < num230; num231 += 1f)
+                    {
+                        spriteBatch.Draw(texture, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / num230) * 0.15f /*color * 0.5f*/, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
+                    }
+                }
+            }
+
+            /*
+                Vector2 origin = npc.Center + new Vector2(0, 10) - Main.screenPosition;
+                Rectangle frame = npc.frame;
+                Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
+                Vector2 scale = new Vector2(npc.scale);
+
+                if (MiscCounter2 < 120f)
+                {
+                    scale *= MiscCounter2 / 240f + 0.5f;
+                }
+
+                // This controls the speed that they rotate in as well as how it shifts forward
+                float lerpValue2 = ModUtils.GetLerpValue(0f, 120f, MiscCounter2, clamped: true);
+
+                // This controls the initial distance away from the body before it converges to the center
+                float distance = MathHelper.Lerp(32f, 0f, lerpValue2);
+
+                // Draw the NPC with the silhouette after it has rotated into existence
+                if (MiscCounter2 > 120 && MiscCounter2 < 180)
+                {
+                    spriteBatch.Draw(texture, origin, frame, new Color(149, 252, 173) * 0.75f, npc.rotation, drawOrigin, scale, SpriteEffects.None, 0f);
+                }
+
+                // AI counter
+                if (MiscCounter2 < 120f)
+                {
+                    float num229 = (float)Math.PI * 2f * lerpValue2 * (float)Math.Pow(lerpValue2, 2.0) * 2f + lerpValue2;
+
+                    // This controls the number of afterimage frames the spiral around
+                    float numFrames = 6f;
+                    for (float num231 = 0f; num231 < numFrames; num231 += 1f)
+                    {
+                        spriteBatch.Draw(texture, origin + (num229 + (float)Math.PI * 2f / numFrames * num231).ToRotationVector2() * distance, frame, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / numFrames) * 0.15f, npc.rotation, drawOrigin, scale, SpriteEffects.None, 0f);
+                    }
+                }
+             */
             return base.PreDraw(spriteBatch, drawColor);
+        }
+
+        public override bool CheckActive()
+        {
+            if (AICase == (int)AIStates.Scythes)
+            {
+                return true;
+            }
+
+            return base.CheckActive();
         }
 
         public override bool CheckDead()

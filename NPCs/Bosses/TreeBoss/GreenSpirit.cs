@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
 using OvermorrowMod.Particles;
-using OvermorrowMod.WardenClass;
 using System;
 using Terraria;
 using Terraria.ID;
