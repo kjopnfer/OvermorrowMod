@@ -103,6 +103,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int MAX_TAILS = 8;
         public float TailDistance = 1f;
 
+        public Player TrackPlayer = null;
+
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public override bool CanDamage() => false;
         public override bool? CanCutTiles() => false;
@@ -128,6 +130,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         {
             if (RunOnce)
             {
+                // This is to determine if the portal follows the player or not
+                if (projectile.ai[0] != -1)
+                {
+                    TrackPlayer = Main.player[(int)projectile.ai[0]];
+                }
+
+                // Reset the ai counter afterwards
+                projectile.ai[0] = 0;
+
                 int RADIUS = 20;
 
                 for (int i = 0; i < 4; i++)
@@ -153,6 +164,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Main.npc[(int)projectile.ai[1]].Center = projectile.Center;
                 Main.npc[(int)projectile.ai[1]].dontTakeDamage = false;
                 Main.npc[(int)projectile.ai[1]].alpha = 0;
+
+                if (TrackPlayer != null)
+                {
+                    ((TreeBossP2)Main.npc[(int)projectile.ai[1]].modNPC).PortalLaunched = true;
+                    Main.npc[(int)projectile.ai[1]].velocity = Vector2.UnitY * 28;
+                }
 
                 for (int i = 0; i < 200; i++)
                 {

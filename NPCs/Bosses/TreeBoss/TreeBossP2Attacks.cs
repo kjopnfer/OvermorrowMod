@@ -97,5 +97,202 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 return;
             }
         }
+
+        /*switch (npc.ai[0])
+           {
+               case -1: // case switching
+                   {
+                       if (movement == true)
+                       {
+                           if (changedPhase2 == true) { RandomCeiling = 4; }
+                           else { RandomCeiling = 3; }
+                           while (RandomCase == LastCase)
+                           {
+                               RandomCase = Main.rand.Next(1, RandomCeiling);
+                           }
+                           LastCase = RandomCase;
+                           movement = false;
+                           npc.ai[0] = RandomCase;
+                       }
+                       else
+                       {
+                           movement = true;
+                           npc.ai[0] = 0;
+                       }
+                   }
+                   break;
+               case 0: // Follow player
+                   if (npc.ai[0] == 0)
+                   {
+                       Vector2 moveTo = player.Center;
+                       var move = moveTo - npc.Center;
+                       var speed = 5;
+
+                       float length = move.Length();
+                       if (length > speed)
+                       {
+                           move *= speed / length;
+                       }
+                       var turnResistance = 45;
+                       move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                       length = move.Length();
+                       if (length > 10)
+                       {
+                           move *= speed / length;
+                       }
+                       npc.velocity.X = move.X;
+                       npc.velocity.Y = move.Y * .98f;
+
+                       if (npc.ai[1] > (changedPhase2 ? 90 : 120))
+                       {
+                           npc.ai[0] = -1;
+                           npc.ai[1] = 0;
+                       }
+                   }
+                   break;
+               case 1: // Shoot scythes
+                   if (npc.ai[0] == 1)
+                   {
+                       Vector2 moveTo = player.Center;
+                       var move = moveTo - npc.Center;
+                       var speed = 5;
+
+                       float length = move.Length();
+                       if (length > speed)
+                       {
+                           move *= speed / length;
+                       }
+                       var turnResistance = 45;
+                       move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                       length = move.Length();
+                       if (length > 10)
+                       {
+                           move *= speed / length;
+                       }
+                       npc.velocity.X = move.X;
+                       npc.velocity.Y = move.Y * .98f;
+
+                       if (npc.ai[1] % 90 == 0)
+                       {
+                           int shootSpeed = Main.rand.Next(8, 12);
+                           Vector2 position = npc.Center;
+                           Vector2 targetPosition = Main.player[npc.target].Center;
+                           Vector2 direction = targetPosition - position;
+                           direction.Normalize();
+                           if (Main.netMode != NetmodeID.MultiplayerClient)
+                           {
+                               Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                           }
+                       }
+
+                       if (npc.ai[1] > 600)
+                       {
+                           npc.ai[0] = -1;
+                           npc.ai[1] = 0;
+                       }
+                   }
+                   break;
+               case 2: // Absorb energy
+                   npc.velocity = Vector2.Zero;
+
+                   // Summon projectiles from off-screen that move towards the boss
+                   if (npc.ai[1] % 20 == 0 && (energiesAbsorbed + energiesKilled) < 33 && npc.ai[1] <= 660)
+                   {
+                       for (int i = 0; i < 6; i++)
+                       {
+                           float randPositionX = npc.Center.X + Main.rand.Next(-10, 10) * 600;
+                           float randPositionY = npc.Center.Y + Main.rand.Next(-10, 10) * 600;
+                           npc.netUpdate = true;
+                           if (Main.netMode != NetmodeID.MultiplayerClient)
+                           {
+                               NPC.NewNPC((int)randPositionX, (int)randPositionY, ModContent.NPCType<AbsorbEnergy>(), 0, 0f, npc.whoAmI, 0, npc.damage / 3, Main.myPlayer);
+                           }
+                       }
+                   }
+
+                   if (energiesKilled <= 5 && npc.ai[1] > 660) // punish
+                   {
+                       npc.ai[2] = 1;
+                       Main.NewText("u suk");
+                   }
+                   else if (npc.ai[1] > 660) // else
+                   {
+                       npc.ai[2] = 1;
+                   }
+
+                   if (npc.ai[1] > 660 && npc.ai[3] == 1)
+                   {
+                       energiesAbsorbed = 0;
+                       energiesKilled = 0;
+                       npc.ai[0] = 4;
+                       npc.ai[1] = 0;
+                       npc.ai[2] = 0;
+                   }
+                   break;
+               case 4: // Shoot nature blasts
+                   npc.velocity = Vector2.Zero;
+
+                   if (npc.ai[1] == 120)
+                   {
+                       int projectiles = Main.rand.Next((changedPhase2 ? 13 : 9), (changedPhase2 ? 18 : 13));
+                       npc.netUpdate = true;
+
+                       for (int i = 0; i < projectiles; i++)
+                       {
+                           if (Main.netMode != NetmodeID.MultiplayerClient)
+                           {
+                               Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<NatureBlast>(), 19, 2, Main.myPlayer);
+                           }
+                       }
+                   }
+
+                   if (npc.ai[1] > 240)
+                   {
+                       npc.ai[0] = -1;
+                       npc.ai[1] = 0;
+                   }
+                   break;
+               case 3: // scythes
+                   {
+                       Vector2 moveTo = player.Center;
+                       moveTo.X += 50 * (npc.Center.X < moveTo.X ? -1 : 1);
+                       var move = moveTo - npc.Center;
+                       var speed = 1;
+
+                       float length = move.Length();
+                       if (length > speed)
+                       {
+                           move *= speed / length;
+                       }
+                       var turnResistance = 45;
+                       move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                       length = move.Length();
+                       if (length > 10)
+                       {
+                           move *= speed / length;
+                       }
+                       npc.velocity.X = move.X;
+                       npc.velocity.Y = move.Y * .98f;
+
+
+                       if (npc.ai[1] == 180)
+                       {
+                           for (int i = -2; i < 3; i++)
+                           {
+                               if (Main.netMode != NetmodeID.MultiplayerClient)
+                               {
+                                   Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y - 200), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                   Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y + 200), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                               }
+                           }
+                       }
+                       if (npc.ai[1] > 540)
+                       {
+                           npc.ai[0] = 0;
+                           npc.ai[1] = 0;
+                       }
+                       break;
+                   }
+           }*/
     }
 }

@@ -35,10 +35,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     public class TrackingWarning : Deathray
     {
 
-        public bool RunOnce;
+        public bool RunOnce = true;
         public Player Target;
+        public NPC ParentNPC;
         public override string Texture => "OvermorrowMod/Textures/LaserWarning";
-        public TrackingWarning() : base(230f, 3000f, 0f, Main.DiscoColor, "NPCs/Bosses/StormDrake/LaserWarning") { }
+        public TrackingWarning() : base(230f, 3000f, 0f, new Color(88, 237, 128), "NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
@@ -47,23 +48,30 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 Target = Main.player[(int)projectile.ai[0]];
                 projectile.ai[0] = 0;
+                RunOnce = false;
             }
 
-            laserColor = Color.Lerp(Main.DiscoColor, Color.White, (float)Math.Sin(projectile.ai[1] / 5));
+            laserColor = Color.Lerp(new Color(88, 237, 128), Color.White, (float)Math.Sin(projectile.ai[1] / 5));
             projectile.ai[1]++;
 
-            //Player target = Main.player[(int)projectile.ai[0]];
+            float CalculateAccuracy = MathHelper.Lerp(0, 120f, Utils.Clamp(projectile.ai[1], 0, 230f) / 230f);
 
-            //projectile.rotation = projectile.DirectionTo(Main.player[parentNPC.target].Center + Main.player[parentNPC.target].velocity * 15f).ToRotation() + MathHelper.ToRadians(135f);
-            /*if (Target.active)
+            int TimeDelay = Main.expertMode ? 30 : 60;
+            if (projectile.ai[1] < MaxTime - TimeDelay)
             {
-                projectile.ai[0] = projectile.DirectionTo(Target.Center).ToRotation();
-            }*/
+                projectile.velocity = projectile.DirectionTo(Target.Center + Target.velocity * CalculateAccuracy).ToRotation().ToRotationVector2();
+            }
+            //projectile.velocity = projectile.DirectionTo(Target.Center + Target.velocity * 120).ToRotation().ToRotationVector2();
 
-            //rotation =
-            projectile.velocity = projectile.DirectionTo(Target.Center).ToRotation().ToRotationVector2();
 
             projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.1f;
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            // Pass back the final velocity to the boss
+            ParentNPC.velocity = Vector2.Normalize(projectile.velocity) * 40;
+            ((TreeBossP2)ParentNPC.modNPC).PortalLaunched = true;
         }
     }
 }
