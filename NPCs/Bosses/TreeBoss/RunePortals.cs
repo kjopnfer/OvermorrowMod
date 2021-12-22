@@ -104,6 +104,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public float TailDistance = 1f;
 
         public Player TrackPlayer = null;
+        public bool AbovePlayer = false;
+        public bool VerticalPortal = false;
 
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public override bool CanDamage() => false;
@@ -130,10 +132,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         {
             if (RunOnce)
             {
-                // This is to determine if the portal follows the player or not
-                if (projectile.ai[0] != -1)
+                // This is to determine if the portal is above the player or not
+                if (projectile.ai[0] == 1 || projectile.ai[0] == 2)
                 {
-                    TrackPlayer = Main.player[(int)projectile.ai[0]];
+                    VerticalPortal = true;
+                    AbovePlayer = projectile.ai[0] == 1 ? true : false;
                 }
 
                 // Reset the ai counter afterwards
@@ -165,10 +168,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Main.npc[(int)projectile.ai[1]].dontTakeDamage = false;
                 Main.npc[(int)projectile.ai[1]].alpha = 0;
 
-                if (TrackPlayer != null)
+                // Conditional for whether the NPC flies out vertically otherwise the Laser sets the velocity
+                if (VerticalPortal)
                 {
+                    int TreeVelocity = AbovePlayer ? 28 : -28;
+
                     ((TreeBossP2)Main.npc[(int)projectile.ai[1]].modNPC).PortalLaunched = true;
-                    Main.npc[(int)projectile.ai[1]].velocity = Vector2.UnitY * 28;
+                    Main.npc[(int)projectile.ai[1]].velocity = Vector2.UnitY * TreeVelocity;
                 }
 
                 for (int i = 0; i < 200; i++)

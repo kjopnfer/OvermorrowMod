@@ -19,6 +19,355 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public partial class TreeBossP2 : ModNPC
     {
+        private void Teleport_Attacks(Player player)
+        {
+            // Spawn an entrance portal behind the boss
+            if (MiscCounter++ == 0)
+            {
+                npc.velocity = Vector2.Zero;
+                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
+            }
+
+            if (MiscCounter2 > 0 && MiscCounter > 320)
+            {
+                npc.alpha = 255;
+                MiscCounter2--; // Decrement the counter to cause the boss to fade out
+
+                // Spawn the exit portal near the player
+                if (MiscCounter2 == 0)
+                {
+                    npc.dontTakeDamage = true;
+                    npc.Center = player.Center - Vector2.UnitY * 6000f;
+
+
+                    if (ChosenPortal == (int)PortalAttacks.Scythes)
+                    {
+                        if (Main.rand.NextBool(2))
+                        {
+                            Projectile.NewProjectile(player.Center - Vector2.UnitY * 500, Vector2.Zero, ModContent.ProjectileType<ExitPortal>(), 0, 0f, Main.myPlayer, 1, npc.whoAmI);
+                        }
+                        else
+                        {
+                            Projectile.NewProjectile(player.Center + Vector2.UnitY * 500, Vector2.Zero, ModContent.ProjectileType<ExitPortal>(), 0, 0f, Main.myPlayer, 2, npc.whoAmI);
+                        }
+                    }
+                    else
+                    {
+                        Vector2 RandomCenter = player.Center + Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 400;
+                        npc.netUpdate = true;
+
+                        Projectile.NewProjectile(RandomCenter, Vector2.Zero, ModContent.ProjectileType<ExitPortal>(), 0, 0f, Main.myPlayer, -1, npc.whoAmI);
+                        int tracking = Projectile.NewProjectile(RandomCenter, Vector2.Zero, ModContent.ProjectileType<TrackingWarning>(), 0, 1f, Main.myPlayer, player.whoAmI, 1);
+                        ((TrackingWarning)Main.projectile[tracking].modProjectile).ParentNPC = npc;
+                    }
+                }
+            }
+
+            if (PortalLaunched)
+            {
+                if (ChosenPortal == (int)PortalAttacks.Scythes)
+                {
+                    if (GlobalCounter % 10 == 0)
+                    {
+                        Projectile.NewProjectile(npc.Center, Vector2.UnitX * 20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
+                        Projectile.NewProjectile(npc.Center, Vector2.UnitX * -20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
+                    }
+                }
+
+                if (GlobalCounter++ == 50)
+                {
+                    PortalLaunched = false;
+                    npc.velocity = Vector2.Zero;
+
+                    if (PortalRuns < 3)
+                    {
+                        AICase = (int)AIStates.Teleport;
+                        GlobalCounter = 0;
+                        MiscCounter = 0;
+                        MiscCounter2 = 120;
+
+                        ChosenPortal = Main.rand.Next(1, 3);
+
+                        // I don't know why this doesn't spawn if it repeats the attack cycle again?
+                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
+                    }
+                    else
+                    {
+                        AICase = (int)AIStates.Selector;
+                        GlobalCounter = 0;
+                        MiscCounter = 0;
+                        MiscCounter2 = 0;
+
+                        PortalRuns = 0;
+                    }
+                }
+
+            }
+
+            // I don't know why I put a second counter here but I guess everything is twice as fast
+            // And I'm too lazy to remove to and recondition the code
+            MiscCounter++;
+        }
+
+        private void Spirit(Player player)
+        {
+            if (MiscCounter2 == 0)
+            {
+                // Various nondeterministic selections for this attack
+                ChosenSpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
+
+                // Check to see if the previous attack was the same
+                while (PreviousSpirit == ChosenSpiritAttack)
+                {
+                    ChosenSpiritAttack = ChosenSpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
+                }
+
+                npc.netUpdate = true; // Multiplayer code stinky
+            }
+
+            SpiritPoints[] values = (SpiritPoints[])Enum.GetValues(typeof(SpiritPoints));
+
+            switch (ChosenSpiritAttack)
+            {
+                case (int)SpiritAttacks.Randomized:
+                    if (MiscCounter++ == 0)
+                    {
+                        values = values.Shuffle();
+
+                        // Populate with 4 random values
+                        for (int i = 0; i < SpawnDirections.Count; i++)
+                        {
+                            // Add a random value to the list from the shuffled enum array
+                            SpawnDirections[i] = (SpiritPoints)values.GetValue(i);
+                        }
+                    }
+
+                    // If npc's life is below 50%, spawn them all at the same time. Otherwise, spawn them one-by-one.
+                    if (npc.life < npc.lifeMax * 0.5f)
+                    {
+                        if (MiscCounter == 45)
+                        {
+                            for (int index = 0; index < 4; index++)
+                            {
+                                float Rotation = (int)SpawnDirections[index] * MathHelper.PiOver4;
+                                int RADIUS = 100;
+
+                                int proj = Projectile.NewProjectile(player.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation), Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation, RADIUS);
+                                ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = player;
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                        if (MiscCounter % 15 == 0)
+                        {
+                            float Rotation = (int)SpawnDirections[(int)MiscCounter2] * MathHelper.PiOver4;
+                            int RADIUS = 100;
+
+                            int proj = Projectile.NewProjectile(player.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation), Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation, RADIUS);
+                            ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = player;
+
+                            MiscCounter2++;
+                        }
+                    }
+
+                    break;
+                case (int)SpiritAttacks.Circular:
+                    // Determine the rotation direction and offset (where it starts spawning)
+                    if (MiscCounter == 0)
+                    {
+                        RotationDirection = Main.rand.NextBool(2) ? 1 : -1;
+                        RotationOffset = Main.rand.Next(4) * MathHelper.PiOver2;
+
+                        npc.netUpdate = true;
+                    }
+
+                    if (MiscCounter % 7 == 0 && MiscCounter <= 49)
+                    {
+                        int RADIUS = 135;
+
+                        float Rotation = RotationDirection * (int)values[(int)MiscCounter2] * MathHelper.PiOver4;
+                        Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(Rotation + RotationOffset);
+
+                        int proj = Projectile.NewProjectile(player.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation + RotationOffset, RADIUS);
+                        ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = player;
+
+                        MiscCounter2++;
+                    }
+
+                    MiscCounter++;
+                    break;
+            }
+
+            if (MiscCounter == (npc.life < npc.lifeMax * 0.5f ? 150 : 60))
+            {
+                // Run the attack again but set it to false
+                if (RunAgain)
+                {
+                    AICase = (int)AIStates.Spirit;
+                    RunAgain = false;
+                }
+                else
+                {
+                    AICase = (int)AIStates.Selector;
+                }
+
+                GlobalCounter = 0;
+                MiscCounter = 0;
+                MiscCounter2 = 0;
+
+                // Store the current attack for next iteration
+                PreviousSpirit = ChosenSpiritAttack;
+            }
+        }
+
+        private void RuneAttack()
+        {
+            GlobalCounter++;
+
+            npc.velocity = Vector2.Zero;
+
+            // The initializer for the spinny visuals
+            if (MiscCounter == 0)
+            {
+                int RADIUS = 300;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(MathHelper.PiOver2 * i);
+
+                    int proj = Projectile.NewProjectile(npc.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<RuneSpinner>(), npc.damage, 0f, Main.myPlayer, MathHelper.PiOver2 * i, RADIUS);
+                    ((RuneSpinner)Main.projectile[proj].modProjectile).RotationCenter = npc;
+                }
+            }
+
+            if (MiscCounter != 600)
+            {
+                npc.chaseable = false;
+                npc.dontTakeDamage = true;
+
+                // Spawning timeframe for the energies
+                if (MiscCounter > 60 && MiscCounter < 480)
+                {
+                    // Spawns killable NPCs that heal the boss after 60 seconds
+                    if (MiscCounter % 60 == 0)
+                    {
+                        for (int i = 0; i < 6; i++)
+                        {
+                            // Randomized rotation in with Pi radians because spawning energy underground is literally impossible to kill
+                            float RandomRotation = Main.rand.NextFloat(0, MathHelper.Pi);
+
+                            // Generates in a half-arc 200 pixels below the NPC's center
+                            Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(1200, 0).RotatedBy(-RandomRotation);
+                            npc.netUpdate = true;
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                NPC.NewNPC((int)RandomPosition.X, (int)RandomPosition.Y, ModContent.NPCType<AbsorbEnergyP2>(), 0, npc.whoAmI);
+                            }
+                        }
+                    }
+                }
+            }
+
+            EnergyCount = 0;
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<AbsorbEnergyP2>())
+                {
+                    EnergyCount++;
+                }
+            }
+
+            npc.localAI[0] += 0.04f; // Rotation code for the rune
+
+            if (Utils.Clamp(++MiscCounter, 0, 600) == 600 && EnergyCount == 0)
+            {
+                AICase = (int)AIStates.Energy;
+                GlobalCounter = 0;
+                MiscCounter = 0;
+                MiscCounter2 = 0;
+
+                // Reset properties
+                npc.chaseable = true;
+                npc.dontTakeDamage = false;
+
+                // Start despawn code for the spinners
+                for (int i = 0; i < Main.maxProjectiles; i++)
+                {
+                    if (Main.projectile[i].active && Main.projectile[i].type == ModContent.ProjectileType<RuneSpinner>())
+                    {
+                        ((RuneSpinner)Main.projectile[i].modProjectile).CanDespawn = true;
+                    }
+                }
+            }
+        }
+
+        private void EnergyAttack()
+        {
+            if (MiscCounter == 0)
+            {
+                if (AbsorbedEnergies > ENERGY_THRESHOLD)
+                {
+                    BossText("Vis Inberux");
+                }
+                else
+                {
+                    BossText("Mis Inberux");
+                }
+            }
+
+            if (MiscCounter < 60)
+            {
+                MiscCounter2++;
+            }
+
+            if (AbsorbedEnergies > ENERGY_THRESHOLD)
+            {
+                // 1 second opening before he starts the attack
+                if (MiscCounter > 60 && MiscCounter % 30 == 0)
+                {
+                    for (int i = 0; i < Main.rand.Next(5, 9); i++)
+                    {
+                        // Choose a position above the player with random x-axis offsets
+                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-18, 18) * 80, Main.rand.Next(-1600, -1200));
+                        npc.netUpdate = true;
+
+                        Projectile.NewProjectile(RandomPosition, new Vector2(0, Main.rand.Next(3, 6) * 2), ModContent.ProjectileType<PrismaMeteor>(), npc.damage * 2, 5f, Main.myPlayer, Main.rand.NextFloat(0.04f, 0.085f));
+                    }
+                }
+            }
+            else
+            {
+                if (MiscCounter > 60 && MiscCounter % 30 == 0)
+                {
+                    // Increase the amount of stars spawned based on the absorbed energies
+                    int energyIncrementer = (int)MathHelper.Lerp(0, 3, AbsorbedEnergies / 17f);
+                    int maxIterations = Main.rand.Next(3 + energyIncrementer, 7 + energyIncrementer);
+                    for (int i = 0; i < maxIterations; i++)
+                    {
+                        // Choose a position above the player with random x-axis offsets
+                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-18, 18) * 80, Main.rand.Next(-1600, -1200));
+                        npc.netUpdate = true;
+
+                        Projectile.NewProjectile(RandomPosition, new Vector2(0, Main.rand.Next(3, 6) * 2), ModContent.ProjectileType<LesserPrismaMeteor>(), npc.damage, 5f, Main.myPlayer, Main.rand.NextFloat(0.04f, 0.085f));
+                    }
+                }
+            }
+
+            if (++MiscCounter == 660)
+            {
+                AICase = (int)AIStates.Selector;
+                GlobalCounter = 0;
+                MiscCounter = 0;
+                MiscCounter2 = 0;
+
+                // Reset properties
+                AbsorbedEnergies = 0;
+            }
+        }
+
         private void Death()
         {
             // Death animation code

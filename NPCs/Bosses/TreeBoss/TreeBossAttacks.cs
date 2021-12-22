@@ -447,7 +447,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (Utils.Clamp(++MiscCounter, 0, 600) == 600 && EnergyCount == 0)
             {
-                Main.NewText("abosrbed energies: " + AbsorbedEnergies);
                 AICase = (int)AIStates.Energy;
                 GlobalCounter = 0;
                 MiscCounter = 0;

@@ -10,6 +10,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -24,9 +25,32 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public bool PortalLaunched;
         public int PortalRuns = 0;
-
         public enum PortalAttacks { Charge = 1, Scythes = 2 }
         public int ChosenPortal;
+
+        public enum SpiritPoints
+        {
+            East = 0,
+            NorthEast = 1,
+            North = 2,
+            NorthWest = 3,
+            West = 4,
+            SouthWest = 5,
+            South = 6,
+            SouthEast = 7
+        }
+        List<SpiritPoints> SpawnDirections = new List<SpiritPoints>(new SpiritPoints[4]);
+        public enum SpiritAttacks { Randomized = 0, Circular = 1 }
+        public int ChosenSpiritAttack;
+        public int PreviousSpirit = -1;
+        public int RotationDirection;
+        public float RotationOffset;
+
+        public bool RunAgain = false;
+
+        public int AbsorbedEnergies;
+        public int EnergyCount;
+        public int ENERGY_THRESHOLD = 17;
 
         public override void SetStaticDefaults()
         {
@@ -68,11 +92,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Intro = -1,
             Selector = 0,
             Teleport = 1,
-            Scythes = 2,
-            Spirit = 3,
-            Runes = 4,
-            Energy = 5,
-            Death = 6
+            Spirit = 2,
+            Runes = 3,
+            Energy = 4,
+            Death = 5
         }
 
         public ref float AICase => ref npc.ai[0];
@@ -107,6 +130,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // 2b. If it doesn't, will fire energy thorns in all directions in quick even-spread bursts
             // 3. An energy attack, which would spawn lights that circle around before firing at their initial position after a full rotation
             // Also get the player's position during this run so it doesn't get constantly offset while they move
+
+            npc.localAI[1]++;
 
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
@@ -145,155 +170,28 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (MiscCounter++ == 60)
                     {
-                        AICase = (int)AIStates.Teleport;
-                        MiscCounter = 0;
-                        MiscCounter2 = 120;
-
-                        ChosenPortal = Main.rand.Next(1, 3);
-                    }
-                    break;
-                case (int)AIStates.Teleport:
-                    // Spawn an entrance portal behind the boss
-                    if (MiscCounter++ == 0)
-                    {
-                        npc.velocity = Vector2.Zero;
-                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
-                    }
-
-                    if (MiscCounter2 > 0 && MiscCounter > 320)
-                    {
-                        npc.alpha = 255;
-                        MiscCounter2--;
-
-                        // Spawn the exit portal near the player
-                        if (MiscCounter2 == 0)
-                        {
-                            npc.dontTakeDamage = true;
-                            npc.Center = player.Center - Vector2.UnitY * 6000f;
-
-                            
-                            if (ChosenPortal == (int)PortalAttacks.Scythes)
-                            {
-                                Projectile.NewProjectile(player.Center - Vector2.UnitY * 500, Vector2.Zero, ModContent.ProjectileType<ExitPortal>(), 0, 0f, Main.myPlayer, player.whoAmI, npc.whoAmI);
-                            }
-                            else
-                            {
-                                Vector2 RandomCenter = player.Center + Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 400;
-                                npc.netUpdate = true;
-
-                                Projectile.NewProjectile(RandomCenter, Vector2.Zero, ModContent.ProjectileType<ExitPortal>(), 0, 0f, Main.myPlayer, -1, npc.whoAmI);
-                                int tracking = Projectile.NewProjectile(RandomCenter, Vector2.Zero, ModContent.ProjectileType<TrackingWarning>(), 0, 1f, Main.myPlayer, player.whoAmI, 1);
-                                ((TrackingWarning)Main.projectile[tracking].modProjectile).ParentNPC = npc;
-                            }
-                        }
-                    }
-
-                    if (PortalLaunched)
-                    {
-                        if (ChosenPortal == (int)PortalAttacks.Scythes)
-                        {
-                            if (GlobalCounter % 10 == 0)
-                            {
-                                Projectile.NewProjectile(npc.Center, Vector2.UnitX * 20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
-                                Projectile.NewProjectile(npc.Center, Vector2.UnitX * -20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
-                            }
-                        }
-
-                        if (GlobalCounter++ == 50)
-                        {
-                            PortalLaunched = false;
-                            npc.velocity = Vector2.Zero;
-
-                            if (PortalRuns < 3)
-                            {
-                                AICase = (int)AIStates.Teleport;
-                                GlobalCounter = 0;
-                                MiscCounter = 0;
-                                MiscCounter2 = 120;
-
-                                ChosenPortal = Main.rand.Next(1, 3);
-
-                                // I don't know why this doesn't spawn if it repeats the attack cycle again?
-                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
-                            }
-                            else
-                            {
-                                AICase = (int)AIStates.Selector;
-                                GlobalCounter = 0;
-                                MiscCounter = 0;
-                                MiscCounter2 = 0;
-
-                                PortalRuns = 0;
-                            }
-                        }
-
-                    }
-
-                    // I don't know why I put a second counter here but I guess everything is twice as fast
-                    // And I'm too lazy to remove to and recondition the code
-                    MiscCounter++;
-
-                    break;
-                case (int)AIStates.Scythes:
-                    if (MiscCounter++ == 0)
-                    {
-                        npc.velocity = Vector2.Zero;
-                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
-                    }
-
-                    if (MiscCounter2 > 0 && MiscCounter > 320)
-                    {
-                        Projectile.NewProjectile(npc.Center, Vector2.UnitX * 20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
-                        Projectile.NewProjectile(npc.Center, Vector2.UnitX * -20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
-                    }
-
-
-                    /*if (MiscCounter == 120)
-                    {
-                        Projectile.NewProjectile(player.Center - Vector2.UnitY * 500, Vector2.Zero, ModContent.ProjectileType<ExitPortal>(), 0, 0f, Main.myPlayer, player.whoAmI, npc.whoAmI);
-                    }
-
-                    if (MiscCounter2 > 0 && MiscCounter > 320)
-                    {
-                        npc.alpha = 255;
-                        MiscCounter2--;
-
-                        // Spawn the exit portal near the player
-                        if (MiscCounter2 == 0)
-                        {
-                            npc.dontTakeDamage = true;
-                            npc.Center = player.Center - Vector2.UnitY * 6000f;
-
-                            Vector2 RandomCenter = player.Center + Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 400;
-                            npc.netUpdate = true;
-
-                            Projectile.NewProjectile(RandomCenter, Vector2.Zero, ModContent.ProjectileType<ExitPortal>(), 0, 0f, Main.myPlayer, -1, npc.whoAmI);
-                            int tracking = Projectile.NewProjectile(RandomCenter, Vector2.Zero, ModContent.ProjectileType<TrackingWarning>(), 0, 1f, Main.myPlayer, player.whoAmI, 1);
-                            ((TrackingWarning)Main.projectile[tracking].modProjectile).ParentNPC = npc;
-                        }
-                    }
-
-
-                    if (MiscCounter > 350)
-                    {
-                        if (MiscCounter2++ % 10 == 0)
-                        {
-                            Projectile.NewProjectile(npc.Center, Vector2.UnitX * 20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
-                            Projectile.NewProjectile(npc.Center, Vector2.UnitX * -20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
-                        }
-                    }
-
-                    if (MiscCounter == 400)
-                    {
-                        npc.velocity = Vector2.Zero;
-
-                        AICase = (int)AIStates.Selector;
-                        GlobalCounter = 0;
+                        AICase = (int)AIStates.Runes;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
 
-                        PortalRuns = 0;
-                    }*/
+                        if (AICase == (int)AIStates.Teleport)
+                        {
+                            MiscCounter2 = 120;
+                            ChosenPortal = Main.rand.Next(1, 3);
+                        }
+                    }
+                    break;
+                case (int)AIStates.Teleport:
+                    Teleport_Attacks(player);
+                    break;
+                case (int)AIStates.Spirit:
+                    Spirit(player);
+                    break;
+                case (int)AIStates.Runes:
+                    RuneAttack();
+                    break;
+                case (int)AIStates.Energy:
+                    EnergyAttack();
                     break;
             }
         }
@@ -318,7 +216,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         {
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_Trail");
 
-            if ((AICase == (int)AIStates.Teleport && PortalLaunched) || (AICase == (int)AIStates.Scythes && PortalLaunched))
+            #region Teleportation Drawcode
+            if (AICase == (int)AIStates.Teleport && PortalLaunched)
             {
                 Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
                 for (int k = 0; k < npc.oldPos.Length; k++)
@@ -332,64 +231,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
 
             // Teleportation animation
-            if (AICase == (int)AIStates.Teleport || AICase == (int)AIStates.Scythes)
+            if (AICase == (int)AIStates.Teleport)
             {
-                Vector2 vector59 = npc.Center + new Vector2(0, 10) - Main.screenPosition;
-                Rectangle frame8 = npc.frame;
-                //Vector2 origin21 = new Vector2(70f, 127f);
-                Vector2 origin21 = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
-                //origin21.Y += 8f;
-                Vector2 scale3 = new Vector2(npc.scale);
-                float num219 = MiscCounter2;
-                if (num219 < 120f)
-                {
-                    scale3 *= num219 / 120f;
-                }
-
-                Color alpha13 = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
-
-                // This controls the speed that they rotate in as well as how it shifts forward
-                float lerpValue2 = ModUtils.GetLerpValue(0f, 120f, num219, clamped: true);
-
-                // This controls the initial distance away from the body before it converges to the center
-                float num220 = MathHelper.Lerp(32f/*32f*/, 0f, lerpValue2);
-
-                Color color = alpha13;
-
-                if (num219 >= 120f)
-                {
-                    color = alpha13;
-                }
-
-                // Draw the NPC with the silhouette after it has rotated into existence
-                if (MiscCounter2 > 120 && MiscCounter2 < 180)
-                {
-                    spriteBatch.Draw(texture, vector59, frame8, new Color(149, 252, 173) * 0.75f, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
-                }
-
-                // AI counter
-                if (num219 < 120f)
-                {
-                    float num229 = (float)Math.PI * 2f * lerpValue2 * (float)Math.Pow(lerpValue2, 2.0) * 2f + lerpValue2;
-
-                    // This controls the number of afterimage frames the spiral around
-                    float num230 = 6f/*3f*/;
-                    for (float num231 = 0f; num231 < num230; num231 += 1f)
-                    {
-                        spriteBatch.Draw(texture, vector59 + (num229 + (float)Math.PI * 2f / num230 * num231).ToRotationVector2() * num220, frame8, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / num230) * 0.15f /*color * 0.5f*/, npc.rotation, origin21, scale3, SpriteEffects.None, 0f);
-                    }
-                }
-            }
-
-            /*
                 Vector2 origin = npc.Center + new Vector2(0, 10) - Main.screenPosition;
                 Rectangle frame = npc.frame;
                 Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
                 Vector2 scale = new Vector2(npc.scale);
-
                 if (MiscCounter2 < 120f)
                 {
-                    scale *= MiscCounter2 / 240f + 0.5f;
+                    scale *= MiscCounter2 / 120f;
                 }
 
                 // This controls the speed that they rotate in as well as how it shifts forward
@@ -413,10 +263,68 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     float numFrames = 6f;
                     for (float num231 = 0f; num231 < numFrames; num231 += 1f)
                     {
-                        spriteBatch.Draw(texture, origin + (num229 + (float)Math.PI * 2f / numFrames * num231).ToRotationVector2() * distance, frame, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / numFrames) * 0.15f, npc.rotation, drawOrigin, scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(texture, origin + (num229 + (float)Math.PI * 2f / numFrames * num231).ToRotationVector2() * distance, frame, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / numFrames) * 0.15f /*color * 0.5f*/, npc.rotation, drawOrigin, scale, SpriteEffects.None, 0f);
                     }
                 }
-             */
+            }
+            #endregion
+
+            #region Pulse Drawcode
+            if (AbsorbedEnergies > ENERGY_THRESHOLD)
+            {
+                Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
+
+                // this gets the npc's frame
+                int num178 = 60; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
+                int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
+
+
+                // default value
+                int num177 = 6; // ok i think this controls the number of afterimage frames
+                float num176 = 1f - (float)Math.Cos((npc.localAI[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
+                num176 /= 3f;
+                float scaleFactor = 10f; // Change scale factor of the pulsing effect and how far it draws outwards
+
+                // ok this is the pulsing effect drawing
+                for (int num164 = 1; num164 < num177; num164++)
+                {
+                    // these assign the color of the pulsing
+                    Color spriteColor = Color.LightGreen;
+                    spriteColor = npc.GetAlpha(spriteColor);
+                    spriteColor *= 1f - num176; // num176 is put in here to effect the pulsing
+
+                    // num176 is used here too
+                    Vector2 position = npc.Center + Utils.ToRotationVector2((float)num164 / (float)num177 * ((float)Math.PI * 2f) + npc.rotation) * scaleFactor * num176 - Main.screenPosition;
+                    position -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[npc.type]) * npc.scale / 2f;
+                    position += drawOrigin * npc.scale + new Vector2(0f, 5 + npc.gfxOffY);
+
+                    // the actual drawing of the pulsing effect
+                    spriteBatch.Draw(texture, position, npc.frame, spriteColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                }
+            }
+            #endregion
+
+            #region Rune Drawcode
+            if (AICase == (int)AIStates.Runes)
+            {
+                Texture2D RuneTexture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeRune");
+                Texture2D RuneTextureGlow = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeRune_Glow");
+
+                // Draw the glow texture when it is night-time because it is gross as fuck during the day
+                if (!Main.dayTime)
+                {
+                    Main.spriteBatch.End();
+                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+                    Main.spriteBatch.Draw(RuneTextureGlow, npc.Center - Main.screenPosition, null, Color.Lerp(new Color(0, 255, 191) * 0.75f, Color.Transparent, Utils.Clamp(MiscCounter2, 0, 60) / 60f), npc.localAI[0], RuneTextureGlow.Size() / 2, MathHelper.Lerp(0, 1.25f, Utils.Clamp(GlobalCounter, 0, 60) / 60f), SpriteEffects.None, 0f);
+
+                    Main.spriteBatch.End();
+                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                }
+
+                Main.spriteBatch.Draw(RuneTexture, npc.Center - Main.screenPosition, null, Color.Lerp(new Color(0, 255, 191), Color.Transparent, Utils.Clamp(MiscCounter2, 0, 60) / 60f), npc.localAI[0], RuneTexture.Size() / 2, MathHelper.Lerp(0, 1.25f, Utils.Clamp(GlobalCounter, 0, 60) / 60f), SpriteEffects.None, 0f);
+            }
+            #endregion
             return base.PreDraw(spriteBatch, drawColor);
         }
 
