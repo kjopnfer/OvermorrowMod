@@ -256,7 +256,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         for (int i = 0; i < 6; i++)
                         {
                             // Randomized rotation in with Pi radians because spawning energy underground is literally impossible to kill
-                            float RandomRotation = Main.rand.NextFloat(0, MathHelper.Pi);
+                            float RandomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
 
                             // Generates in a half-arc 200 pixels below the NPC's center
                             Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(1200, 0).RotatedBy(-RandomRotation);

@@ -1,7 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.TreeBoss;
 using OvermorrowMod.Particles;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,7 +10,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     {
         public bool RunOnce = true;
         public Vector2 InitialDistance;
-        public float TravelDistance;
         public int RandomStopping;
         public bool HasStopped;
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
@@ -43,7 +40,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 // Grab the starting distance of when this NPC spawns
                 InitialDistance = npc.Center;
-                TravelDistance = Vector2.Distance(InitialDistance, parent.Center);
                 RandomStopping = Main.rand.Next(400, 600);
 
                 npc.netUpdate = true;
@@ -167,7 +163,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     {
         public bool RunOnce = true;
         public Vector2 InitialDistance;
-        public float TravelDistance;
         public int RandomStopping;
         public bool HasStopped;
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
@@ -198,7 +193,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 // Grab the starting distance of when this NPC spawns
                 InitialDistance = npc.Center;
-                TravelDistance = Vector2.Distance(InitialDistance, parent.Center);
                 RandomStopping = Main.rand.Next(400, 600);
 
                 npc.netUpdate = true;
@@ -219,6 +213,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             else
             {
                 npc.velocity = move / (moveSpeed + (HasStopped ? 100 : 0));
+                npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(45f));
             }
 
             #region Dust Code

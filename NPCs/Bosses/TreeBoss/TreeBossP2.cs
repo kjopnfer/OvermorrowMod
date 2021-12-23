@@ -7,6 +7,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.Particles;
 using OvermorrowMod.Projectiles.Boss;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using System;
@@ -51,6 +52,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int AbsorbedEnergies;
         public int EnergyCount;
         public int ENERGY_THRESHOLD = 17;
+
+        public Vector2 FlyDistance;
+        public Player MeteorTarget;
 
         public override void SetStaticDefaults()
         {
@@ -139,7 +143,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.spriteDirection = npc.direction;
 
             // Handles Despawning
-            if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
+            /*if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
             {
                 npc.TargetClosest(false);
                 npc.direction = 1;
@@ -155,7 +159,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 npc.TargetClosest(false);
                 npc.velocity.Y = -2000;
-            }
+            }*/
 
             if (npc.life > npc.lifeMax)
             {
@@ -170,7 +174,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (MiscCounter++ == 60)
                     {
-                        AICase = (int)AIStates.Runes;
+                        AICase = (int)AIStates.Energy;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
 
@@ -191,7 +195,83 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     RuneAttack();
                     break;
                 case (int)AIStates.Energy:
-                    EnergyAttack();
+                    if (MiscCounter++ == 0)
+                    {
+                        npc.alpha = 255;
+                        npc.velocity = Vector2.Zero;
+                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<MeteoricBurst>(), npc.damage * 3, 60f, Main.myPlayer, npc.whoAmI);
+                    }
+
+                    // Nudge the boss in a random direction
+                    if (MiscCounter == 60)
+                    {
+                        FlyDistance = npc.Center - Vector2.UnitY * 2250;
+
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            if (npc.Distance(Main.player[i].Center) < 800)
+                            {
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 5;
+                            }
+                        }
+
+                        npc.velocity = Vector2.One.RotatedByRandom(-MathHelper.PiOver4) * 15;
+                    }
+
+                    if (MiscCounter > 60 && MiscCounter < 180)
+                    {
+                        npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(2f));
+                    }
+
+                    if (MiscCounter > 180 && MiscCounter < 420)
+                    {
+                        if (MiscCounter == 180)
+                        {
+                            float radius = 60;
+                            int numLocations = 6;
+
+                            for (int i = 0; i < 6; i++)
+                            {
+                                Vector2 position = npc.Center + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                                Vector2 dustvelocity = new Vector2(0f, 12f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+
+                                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Main.DiscoColor, 1, 4f, MathHelper.ToRadians(360f / numLocations * i), 1f);
+                            }
+
+
+                        }
+
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            if (npc.Distance(Main.player[i].Center) < 1600)
+                            {
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
+                            }
+                        }
+
+                        Vector2 direction = FlyDistance - npc.Center;
+                        float distanceTo = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
+
+                        direction.SafeNormalize(Vector2.Zero);
+                        float launchSpeed = distanceTo < 400 ? 0.0125f : 0.025f;
+                        direction *= launchSpeed;
+
+                        float inertia = distanceTo < 400 ? 20f : 150f;
+                        npc.velocity = (npc.velocity * (inertia - 1) + direction) / inertia;
+                    }
+
+                    if (MiscCounter > 420)
+                    {
+                        if (MiscCounter == 481)
+                        {
+                            npc.velocity = Vector2.Zero;
+
+                            Main.NewText("tracking        AHHHHHHH");
+                            int tracking = Projectile.NewProjectile(npc.Center, Vector2.UnitY * 20, ModContent.ProjectileType<MeteorWarning>(), 0, 0f, Main.myPlayer, player.whoAmI);
+                            ((MeteorWarning)Main.projectile[tracking].modProjectile).ParentNPC = npc;
+                        }
+                    }
+
                     break;
             }
         }
@@ -325,12 +405,17 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Main.spriteBatch.Draw(RuneTexture, npc.Center - Main.screenPosition, null, Color.Lerp(new Color(0, 255, 191), Color.Transparent, Utils.Clamp(MiscCounter2, 0, 60) / 60f), npc.localAI[0], RuneTexture.Size() / 2, MathHelper.Lerp(0, 1.25f, Utils.Clamp(GlobalCounter, 0, 60) / 60f), SpriteEffects.None, 0f);
             }
             #endregion
+
+            if (AICase == (int)AIStates.Energy)
+            {
+                spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 5), npc.frame, Main.DiscoColor, npc.rotation, npc.frame.Size() / 2f, MathHelper.Lerp(npc.scale, 0, Utils.Clamp(MiscCounter, 0, 30) / 30f), npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            }
             return base.PreDraw(spriteBatch, drawColor);
         }
 
         public override bool CheckActive()
         {
-            if (AICase == (int)AIStates.Teleport)
+            if (AICase == (int)AIStates.Teleport || AICase == (int)AIStates.Energy)
             {
                 return true;
             }
