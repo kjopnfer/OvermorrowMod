@@ -24,23 +24,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             projectile.hostile = true;
             projectile.tileCollide = false;
             projectile.penetrate = -1;
-            projectile.timeLeft = 900;
+            projectile.timeLeft = 240;
             projectile.alpha = 200;
-
-            //drawOriginOffsetY = 480;
         }
 
         public override void AI()
         {
-            //projectile.velocity = projectile.velocity.RotatedBy(MathHelper.ToRadians(1f));
             projectile.rotation = MathHelper.ToRadians(projectile.ai[0]);
-            /*if (projectile.ai[0]++ % 2 == 0)
-            {
-                Dust dust = Terraria.Dust.NewDustPerfect(projectile.Center, 107, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
-            }*/
         }
-
-        //public override Color? GetAlpha(Color lightColor) => Main.DiscoColor * ((255 - projectile.alpha) / 255f);
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
@@ -52,7 +43,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, drawRectangle, Main.DiscoColor, projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), projectile.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, drawRectangle, Color.Lerp(Color.Transparent, Main.DiscoColor, Utils.Clamp(projectile.timeLeft, 0, 60) / 60f), projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), projectile.scale, SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -77,23 +68,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             projectile.hostile = true;
             projectile.tileCollide = false;
             projectile.penetrate = -1;
-            projectile.timeLeft = 900;
+            projectile.timeLeft = 240/*180*/; // 3 seconds for all projectiles to converge, additional second to fade out
             projectile.alpha = 200;
-
-            //drawOriginOffsetY = 480;
         }
 
         public override void AI()
         {
-            //projectile.velocity = projectile.velocity.RotatedBy(MathHelper.ToRadians(1f));
-            projectile.rotation = MathHelper.ToRadians(projectile.ai[0]);
-            /*if (projectile.ai[0]++ % 2 == 0)
-            {
-                Dust dust = Terraria.Dust.NewDustPerfect(projectile.Center, 107, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
-            }*/
+            projectile.rotation = MathHelper.ToRadians(projectile.ai[0]);     
         }
-
-        //public override Color? GetAlpha(Color lightColor) => Main.DiscoColor * ((255 - projectile.alpha) / 255f);
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
@@ -105,7 +87,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, drawRectangle, Main.DiscoColor, projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), projectile.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, drawRectangle, Color.Lerp(Color.Transparent, Main.DiscoColor, Utils.Clamp(projectile.timeLeft, 0, 60) / 60f), projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), projectile.scale, SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

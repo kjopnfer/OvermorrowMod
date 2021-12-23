@@ -51,10 +51,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public int AbsorbedEnergies;
         public int EnergyCount;
-        public int ENERGY_THRESHOLD = 17;
+        public int ENERGY_THRESHOLD = 12;
 
         public Vector2 FlyDistance;
-        public Player MeteorTarget;
+        public bool MeteorLanded;
+        public int RepeatMeteors = 0;
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => AICase != (int)AIStates.Energy && AICase != (int)AIStates.Runes;
 
         public override void SetStaticDefaults()
         {
@@ -174,7 +177,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (MiscCounter++ == 60)
                     {
-                        AICase = (int)AIStates.Energy;
+                        AICase = (int)AIStates.Runes;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
 
@@ -197,6 +200,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 case (int)AIStates.Energy:
                     if (MiscCounter++ == 0)
                     {
+                        AbsorbedEnergies = 0;
+
                         npc.alpha = 255;
                         npc.velocity = Vector2.Zero;
                         Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<MeteoricBurst>(), npc.damage * 3, 60f, Main.myPlayer, npc.whoAmI);
@@ -223,7 +228,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(2f));
                     }
 
-                    if (MiscCounter > 180 && MiscCounter < 420)
+                    if (MiscCounter > 180 && MiscCounter < 360)
                     {
                         if (MiscCounter == 180)
                         {
@@ -260,15 +265,28 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         npc.velocity = (npc.velocity * (inertia - 1) + direction) / inertia;
                     }
 
-                    if (MiscCounter > 420)
+                    if (MiscCounter > 360)
                     {
-                        if (MiscCounter == 481)
+                        if (MiscCounter == 361)
                         {
                             npc.velocity = Vector2.Zero;
 
-                            Main.NewText("tracking        AHHHHHHH");
                             int tracking = Projectile.NewProjectile(npc.Center, Vector2.UnitY * 20, ModContent.ProjectileType<MeteorWarning>(), 0, 0f, Main.myPlayer, player.whoAmI);
                             ((MeteorWarning)Main.projectile[tracking].modProjectile).ParentNPC = npc;
+                        }
+                    }
+
+                    if (MeteorLanded)
+                    {
+                        if (MiscCounter2++ == 240)
+                        {
+                            // Repeat the meteor attack again for each 12 absorbed energies
+                            AICase = RepeatMeteors-- != 0 ? (int)AIStates.Energy : (int)AIStates.Selector;
+                            GlobalCounter = 0;
+                            MiscCounter = 0;
+                            MiscCounter2 = 0;
+
+                            MeteorLanded = false;
                         }
                     }
 
@@ -356,6 +374,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 // this gets the npc's frame
                 int num178 = 60; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
+                if (AbsorbedEnergies > 36)
+                {
+                    num178 = 15;
+                }
+                else if (AbsorbedEnergies > 24)
+                {
+                    num178 = 30;
+                }
+
                 int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
 
 
@@ -369,7 +396,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 for (int num164 = 1; num164 < num177; num164++)
                 {
                     // these assign the color of the pulsing
-                    Color spriteColor = Color.LightGreen;
+
+                    Color spriteColor = Main.DiscoColor;
+
                     spriteColor = npc.GetAlpha(spriteColor);
                     spriteColor *= 1f - num176; // num176 is put in here to effect the pulsing
 

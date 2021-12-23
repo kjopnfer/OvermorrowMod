@@ -223,7 +223,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             projectile.hostile = true;
             projectile.tileCollide = false;
             projectile.penetrate = 1;
-            projectile.timeLeft = 900;
+            projectile.timeLeft = 360;
             projectile.extraUpdates = 1;
         }
 
@@ -308,7 +308,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             projectile.hostile = true;
             projectile.penetrate = -1;
             projectile.tileCollide = false;
-            projectile.timeLeft = 900;
+            projectile.timeLeft = 300;
             projectile.extraUpdates = 1;
         }
 
@@ -380,13 +380,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             ParentNPC.Center = projectile.Center;
             ParentNPC.alpha = 0;
             ParentNPC.velocity = Vector2.Zero;
+            ((TreeBossP2)ParentNPC.modNPC).MeteorLanded = true;
 
-            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 1, 5f, 0, 1f);
+            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 1, 8f, 0, 1f);
 
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
-                if (distance <= 1050)
+                if (distance <= 2000)
                 {
                     Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
                 }

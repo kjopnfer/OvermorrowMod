@@ -99,7 +99,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             float CalculateAccuracy = MathHelper.Lerp(0, 120f, Utils.Clamp(projectile.ai[1], 0, 230f) / 230f);
 
-            int TimeDelay = 60;
+            int TimeDelay = 75;
             if (projectile.ai[1] < MaxTime - TimeDelay)
             {
                 //projectile.velocity = projectile.DirectionTo(Target.Center + Target.velocity * CalculateAccuracy).ToRotation().ToRotationVector2();

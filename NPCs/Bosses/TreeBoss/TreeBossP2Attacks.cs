@@ -284,6 +284,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (Utils.Clamp(++MiscCounter, 0, 600) == 600 && EnergyCount == 0)
             {
+                RepeatMeteors = AbsorbedEnergies / 12;
+
                 AICase = (int)AIStates.Energy;
                 GlobalCounter = 0;
                 MiscCounter = 0;
@@ -308,14 +310,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         {
             if (MiscCounter == 0)
             {
-                if (AbsorbedEnergies > ENERGY_THRESHOLD)
-                {
-                    BossText("Vis Inberux");
-                }
-                else
-                {
-                    BossText("Mis Inberux");
-                }
+                BossText(">:D");
+                
             }
 
             if (MiscCounter < 60)
