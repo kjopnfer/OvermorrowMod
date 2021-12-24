@@ -139,6 +139,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (!player.active || player.dead)
             {
+                npc.noTileCollide = true;
                 npc.TargetClosest(false);
                 npc.velocity.Y = 2000;
             }

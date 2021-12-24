@@ -43,11 +43,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         List<SpiritPoints> SpawnDirections = new List<SpiritPoints>(new SpiritPoints[4]);
         public enum SpiritAttacks { Randomized = 0, Circular = 1 }
         public int ChosenSpiritAttack;
-        public int PreviousSpirit = -1;
         public int RotationDirection;
         public float RotationOffset;
 
-        public bool RunAgain = false;
+        public bool RunAgain = true;
 
         public int AbsorbedEnergies;
         public int EnergyCount;
@@ -56,6 +55,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public Vector2 FlyDistance;
         public bool MeteorLanded;
         public int RepeatMeteors = 0;
+
+        public int RuneCounter;
+        public int MINIMUM_ATTACKS = 3;
+        public int ChosenAttack;
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => AICase != (int)AIStates.Energy && AICase != (int)AIStates.Runes;
 
@@ -146,23 +149,26 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.spriteDirection = npc.direction;
 
             // Handles Despawning
-            /*if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
+            if (AICase != (int)AIStates.Teleport && AICase != (int)AIStates.Energy)
             {
-                npc.TargetClosest(false);
-                npc.direction = 1;
-                npc.velocity.Y = npc.velocity.Y - 0.1f;
-                if (npc.timeLeft > 20)
+                if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
                 {
-                    npc.timeLeft = 20;
-                    return;
+                    npc.TargetClosest(false);
+                    npc.direction = 1;
+                    npc.velocity.Y = npc.velocity.Y - 0.1f;
+                    if (npc.timeLeft > 20)
+                    {
+                        npc.timeLeft = 20;
+                        return;
+                    }
+                }
+
+                if (!player.active || player.dead)
+                {
+                    npc.TargetClosest(false);
+                    npc.velocity.Y = -2000;
                 }
             }
-
-            if (!player.active || player.dead)
-            {
-                npc.TargetClosest(false);
-                npc.velocity.Y = -2000;
-            }*/
 
             if (npc.life > npc.lifeMax)
             {
@@ -175,9 +181,51 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
                     npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 5 : -5), 0.02f);
 
-                    if (MiscCounter++ == 60)
+                    int[] Attacks = new int[] { (int)AIStates.Teleport, (int)AIStates.Spirit, (int)AIStates.Runes };
+
+                    if (MiscCounter++ == 120)
                     {
-                        AICase = (int)AIStates.Runes;
+                        Main.PlaySound(SoundID.Item4, npc.Center);
+
+                        // Chooses the attack from the list
+                        ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
+
+                        // Makes sure the healing attack doesn't have a chance to be chosen unless conditions are met
+                        while (ChosenAttack == (int)AIStates.Runes && RuneCounter < MINIMUM_ATTACKS)
+                        {
+                            ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
+                        }
+
+                        // Increment the non-healing attack counter
+                        if (ChosenAttack != (int)AIStates.Runes)
+                        {
+                            RuneCounter++;
+                        }
+                    }
+
+                    if (MiscCounter % 100 == 0)
+                    {
+                        int ShootSpeed = Main.rand.Next(8, 12);
+                        Vector2 PlayerDistance = player.Center - npc.Center;
+                        PlayerDistance.Normalize();
+
+                        npc.netUpdate = true;
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            Projectile.NewProjectile(npc.Center, PlayerDistance * ShootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                        }
+                    }
+
+                    if (MiscCounter == 600)
+                    {
+                        // If the condition was satisfied and you DID choose the rune attack, now reset the counter
+                        if (ChosenAttack == (int)AIStates.Runes)
+                        {
+                            RuneCounter = 0;
+                        }
+
+                        AICase = ChosenAttack;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
 
@@ -185,6 +233,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         {
                             MiscCounter2 = 120;
                             ChosenPortal = Main.rand.Next(1, 3);
+                        }
+
+                        // Keep the eye visual for the runes attack, otherwise turn it off
+                        if (ChosenAttack != (int)AIStates.Runes)
+                        {
+                            ChosenAttack = 0;
                         }
                     }
                     break;
@@ -198,98 +252,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     RuneAttack();
                     break;
                 case (int)AIStates.Energy:
-                    if (MiscCounter++ == 0)
-                    {
-                        AbsorbedEnergies = 0;
-
-                        npc.alpha = 255;
-                        npc.velocity = Vector2.Zero;
-                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<MeteoricBurst>(), npc.damage * 3, 60f, Main.myPlayer, npc.whoAmI);
-                    }
-
-                    // Nudge the boss in a random direction
-                    if (MiscCounter == 60)
-                    {
-                        FlyDistance = npc.Center - Vector2.UnitY * 2250;
-
-                        for (int i = 0; i < Main.maxPlayers; i++)
-                        {
-                            if (npc.Distance(Main.player[i].Center) < 800)
-                            {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 5;
-                            }
-                        }
-
-                        npc.velocity = Vector2.One.RotatedByRandom(-MathHelper.PiOver4) * 15;
-                    }
-
-                    if (MiscCounter > 60 && MiscCounter < 180)
-                    {
-                        npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(2f));
-                    }
-
-                    if (MiscCounter > 180 && MiscCounter < 360)
-                    {
-                        if (MiscCounter == 180)
-                        {
-                            float radius = 60;
-                            int numLocations = 6;
-
-                            for (int i = 0; i < 6; i++)
-                            {
-                                Vector2 position = npc.Center + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                                Vector2 dustvelocity = new Vector2(0f, 12f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
-
-                                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Main.DiscoColor, 1, 4f, MathHelper.ToRadians(360f / numLocations * i), 1f);
-                            }
-
-
-                        }
-
-                        for (int i = 0; i < Main.maxPlayers; i++)
-                        {
-                            if (npc.Distance(Main.player[i].Center) < 1600)
-                            {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
-                            }
-                        }
-
-                        Vector2 direction = FlyDistance - npc.Center;
-                        float distanceTo = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
-
-                        direction.SafeNormalize(Vector2.Zero);
-                        float launchSpeed = distanceTo < 400 ? 0.0125f : 0.025f;
-                        direction *= launchSpeed;
-
-                        float inertia = distanceTo < 400 ? 20f : 150f;
-                        npc.velocity = (npc.velocity * (inertia - 1) + direction) / inertia;
-                    }
-
-                    if (MiscCounter > 360)
-                    {
-                        if (MiscCounter == 361)
-                        {
-                            npc.velocity = Vector2.Zero;
-
-                            int tracking = Projectile.NewProjectile(npc.Center, Vector2.UnitY * 20, ModContent.ProjectileType<MeteorWarning>(), 0, 0f, Main.myPlayer, player.whoAmI);
-                            ((MeteorWarning)Main.projectile[tracking].modProjectile).ParentNPC = npc;
-                        }
-                    }
-
-                    if (MeteorLanded)
-                    {
-                        if (MiscCounter2++ == 240)
-                        {
-                            // Repeat the meteor attack again for each 12 absorbed energies
-                            AICase = RepeatMeteors-- != 0 ? (int)AIStates.Energy : (int)AIStates.Selector;
-                            GlobalCounter = 0;
-                            MiscCounter = 0;
-                            MiscCounter2 = 0;
-
-                            MeteorLanded = false;
-                        }
-                    }
-
+                    EnergyAttack(player);
                     break;
             }
         }
@@ -384,7 +347,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 }
 
                 int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
-
+                if (AbsorbedEnergies > 36)
+                {
+                    num179 = 15;
+                }
+                else if (AbsorbedEnergies > 24)
+                {
+                    num179 = 30;
+                }
 
                 // default value
                 int num177 = 6; // ok i think this controls the number of afterimage frames
@@ -396,7 +366,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 for (int num164 = 1; num164 < num177; num164++)
                 {
                     // these assign the color of the pulsing
-
                     Color spriteColor = Main.DiscoColor;
 
                     spriteColor = npc.GetAlpha(spriteColor);
@@ -439,7 +408,19 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 5), npc.frame, Main.DiscoColor, npc.rotation, npc.frame.Size() / 2f, MathHelper.Lerp(npc.scale, 0, Utils.Clamp(MiscCounter, 0, 30) / 30f), npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             }
+
             return base.PreDraw(spriteBatch, drawColor);
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            if (AICase != (int)AIStates.Energy)
+            {
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_Glow");
+                spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 5), npc.frame, Color.White * npc.Opacity, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            }
+
+            base.PostDraw(spriteBatch, drawColor);
         }
 
         public override bool CheckActive()
