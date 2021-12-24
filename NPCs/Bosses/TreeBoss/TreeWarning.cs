@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -72,6 +73,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // Pass back the final velocity to the boss
             ParentNPC.velocity = Vector2.Normalize(projectile.velocity) * 40;
             ((TreeBossP2)ParentNPC.modNPC).PortalLaunched = true;
+            ((TreeBossP2)ParentNPC.modNPC).PortalRuns++;
         }
     }
 
@@ -114,8 +116,40 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override void Kill(int timeLeft)
         {
             // Pass back the final velocity to the boss
-            ParentNPC.velocity = Vector2.Normalize(projectile.velocity) * 40;
+            if (((TreeBossP2)ParentNPC.modNPC).AbsorbedEnergies > 12)
+            {
+                ParentNPC.velocity = Vector2.Normalize(projectile.velocity) * 60;
+            }
+            else
+            {
+                ParentNPC.velocity = Vector2.Normalize(projectile.velocity) * 40;
+            }
             //((TreeBossP2)ParentNPC.modNPC).PortalLaunched = true;
+        }
+    }
+
+    public class ScytheWarning : Deathray
+    {
+        public override string Texture => "OvermorrowMod/NPCs/Bosses/TreeBoss/ScytheWarning";
+        public ScytheWarning() : base(60 * 7, 10000f, 0f, Color.LightGreen, "NPCs/Bosses/TreeBoss/ScytheWarning") { }
+        public override bool CanHitPlayer(Player target) => false;
+        public override bool? CanHitNPC(NPC target) => false;
+
+        // This doesn't work lol
+        public override void DrawBehind(int index, List<int> drawCacheProjsBehindNPCsAndTiles, List<int> drawCacheProjsBehindNPCs, List<int> drawCacheProjsBehindProjectiles, List<int> drawCacheProjsOverWiresUI)
+        {
+            drawCacheProjsBehindProjectiles.Add(index);
+            drawCacheProjsBehindNPCs.Add(index);
+        }
+
+        public override void AI()
+        {
+            if (projectile.ai[1]++ > 60 * 6)
+            {
+                projectile.localAI[1]++;
+            }
+
+            laserColor = Color.Lerp(Color.LightGreen, Color.Transparent, Utils.Clamp(projectile.localAI[1], 0, 60f) / 60);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             SouthEast = 7
         }
         List<SpiritPoints> SpawnDirections = new List<SpiritPoints>(new SpiritPoints[4]);
-        public enum SpiritAttacks { Randomized = 0, Circular = 1 }
+        public enum SpiritAttacks { Randomized = 0, Circular = 1, Combined = 2 }
         public int ChosenSpiritAttack;
         public int RotationDirection;
         public float RotationOffset;
@@ -75,7 +75,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.width = 368;
             npc.height = 338;
             npc.damage = 20;
-            npc.defense = 14;
+            npc.defense = 19;
             npc.lifeMax = 3300;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.Item25;
@@ -117,30 +117,18 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
             {
-                Main.NewText(text, Color.Green);
+                CombatText.NewText(npc.getRect(), new Color(0, 255, 191), text, true);
+                Main.NewText(text, new Color(0, 255, 191));
             }
             else if (Main.netMode == NetmodeID.Server)
             {
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Green);
+                CombatText.NewText(npc.getRect(), new Color(0, 255, 191), text, true);
+                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), new Color(0, 255, 191));
             }
         }
 
         public override void AI()
         {
-            // The cool plans that I write down and forget to remove in the final version of the reworks
-            // Iorich has three attack types indicated by his eyes
-            // 1. A thorns attack, that can fire in segments, diagonally, or in waves
-            // 2. A rune attack, that can fire in bursts or a spread
-            // 3. An energy attack, that will follow the player and shoot horizontally, or vertically at their position
-
-            // These coincide with phase 2 attacks that are essentially upgraded versions sans the thorns
-            // 1. A physical attack, which would involve various back-and-forth charges
-            // 2. A rune attack, which in this case would be the absorption-healing attack, it has two versions:
-            // 2a. If it absorbs enough energy, will summon projectiles that rain from the sky
-            // 2b. If it doesn't, will fire energy thorns in all directions in quick even-spread bursts
-            // 3. An energy attack, which would spawn lights that circle around before firing at their initial position after a full rotation
-            // Also get the player's position during this run so it doesn't get constantly offset while they move
-
             npc.localAI[1]++;
 
             npc.TargetClosest(true);
@@ -170,6 +158,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 }
             }
 
+            // Increase the npc's defense during the teleportation attacks since he is vulnerable for so long
+            npc.defense = AICase == (int)AIStates.Teleport ? 26 : 19;
+
             if (npc.life > npc.lifeMax)
             {
                 npc.life = npc.lifeMax;
@@ -179,7 +170,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 case (int)AIStates.Selector:
                     npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
-                    npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 5 : -5), 0.02f);
+                    npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
 
                     int[] Attacks = new int[] { (int)AIStates.Teleport, (int)AIStates.Spirit, (int)AIStates.Runes };
 
@@ -187,8 +178,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     {
                         Main.PlaySound(SoundID.Item4, npc.Center);
 
-                        // Chooses the attack from the list
-                        ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
+                        // Chooses the attack from the list, guaranteed meteor attack after 5 attacks
+                        if (RuneCounter == 5)
+                        {
+                            ChosenAttack = (int)AIStates.Runes;
+                        }
+                        else
+                        {
+                            ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
+                        }
 
                         // Makes sure the healing attack doesn't have a chance to be chosen unless conditions are met
                         while (ChosenAttack == (int)AIStates.Runes && RuneCounter < MINIMUM_ATTACKS)
@@ -225,14 +223,21 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             RuneCounter = 0;
                         }
 
-                        AICase = ChosenAttack;
+                        //AICase = ChosenAttack;
+                        AICase = (int)AIStates.Teleport;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
 
-                        if (AICase == (int)AIStates.Teleport)
+                        switch (AICase)
                         {
-                            MiscCounter2 = 120;
-                            ChosenPortal = Main.rand.Next(1, 3);
+                            case (int)AIStates.Teleport:
+                                MiscCounter2 = 120;
+                                ChosenPortal = Main.rand.Next(1, 3);
+                                break;
+                            case (int)AIStates.Spirit:
+                                if (!RunAgain) RunAgain = true;
+
+                                break;
                         }
 
                         // Keep the eye visual for the runes attack, otherwise turn it off
@@ -285,7 +290,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 {
                     // Adjust drawPos if the hitbox does not match sprite dimension
                     Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + drawOrigin;
-                    Color afterImageColor = npc.life <= npc.lifeMax * 0.5 ? Color.Green : Color.LightGreen;
+                    Color afterImageColor = Color.LightGreen;
                     Color color = npc.GetAlpha(afterImageColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
                     spriteBatch.Draw(texture, drawPos, npc.frame, color, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
@@ -331,7 +336,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             #endregion
 
             #region Pulse Drawcode
-            if (AbsorbedEnergies > ENERGY_THRESHOLD)
+            if (AbsorbedEnergies > ENERGY_THRESHOLD && AICase == (int)AIStates.Runes)
             {
                 Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
 

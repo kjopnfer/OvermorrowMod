@@ -66,10 +66,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (PortalLaunched)
             {
+
                 if (ChosenPortal == (int)PortalAttacks.Scythes)
                 {
                     if (GlobalCounter % 10 == 0)
                     {
+                        Projectile.NewProjectile(npc.Center - Vector2.UnitX * 5000, Vector2.UnitX * 20, ModContent.ProjectileType<ScytheWarning>(), npc.damage, 0, Main.myPlayer);
+                        //Projectile.NewProjectile(npc.Center, Vector2.UnitX * -20, ModContent.ProjectileType<ScytheWarning>(), npc.damage, 0, Main.myPlayer);
+
                         Projectile.NewProjectile(npc.Center, Vector2.UnitX * 20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
                         Projectile.NewProjectile(npc.Center, Vector2.UnitX * -20, ModContent.ProjectileType<NatureScythe>(), npc.damage, 0, Main.myPlayer);
                     }
@@ -80,7 +84,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     PortalLaunched = false;
                     npc.velocity = Vector2.Zero;
 
-                    if (PortalRuns++ < 1)
+                    int RepeatRuns = Main.expertMode ? 2 : 1;
+                    if (PortalRuns < RepeatRuns)
                     {
                         AICase = (int)AIStates.Teleport;
                         GlobalCounter = 0;
@@ -118,7 +123,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (MiscCounter == 0)
             {
                 // Various nondeterministic selections for this attack
-                ChosenSpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
+                int[] Attacks = new int[] { (int)SpiritAttacks.Circular, (int)SpiritAttacks.Randomized, (int)SpiritAttacks.Combined };
+
+                // Chooses the attack from the list
+                ChosenSpiritAttack = Attacks[Main.rand.Next(Attacks.Length)];
+
+                //ChosenSpiritAttack = (int)(Main.rand.NextBool(2) ? SpiritAttacks.Circular : SpiritAttacks.Randomized);
 
                 npc.netUpdate = true; // Multiplayer code stinky
             }
@@ -148,7 +158,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             float Rotation = (int)SpawnDirections[(int)MiscCounter2] * MathHelper.PiOver4;
                             int RADIUS = 100 + ((int)MiscCounter2 * 50);
 
-                            for(int i = 0; i < 4; i++)
+                            for (int i = 0; i < 4; i++)
                             {
                                 Rotation += MathHelper.PiOver2 * i;
 
@@ -209,6 +219,82 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     }
 
                     MiscCounter++;
+                    break;
+                case (int)SpiritAttacks.Combined:
+                    if (MiscCounter++ == 0)
+                    {
+                        values = values.Shuffle();
+
+                        // Populate with 4 random values
+                        for (int i = 0; i < SpawnDirections.Count; i++)
+                        {
+                            // Add a random value to the list from the shuffled enum array
+                            SpawnDirections[i] = (SpiritPoints)values.GetValue(i);
+                        }
+
+                        RotationDirection = Main.rand.NextBool(2) ? 1 : -1;
+                        RotationOffset = Main.rand.Next(4) * MathHelper.PiOver2;
+
+                        npc.netUpdate = true;
+                    }
+
+                    if (MiscCounter == 7)
+                    {
+                        float RandomOffset = Main.rand.Next(0, 10) * 40; // Random number between 0 and 360 with 40 degree increments
+                        for (int i = 0; i < values.Length; i++)
+                        {
+                            int RADIUS = 175;
+
+                            float Rotation = RotationDirection * (int)values[(int)i] * MathHelper.PiOver4;
+                            Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(Rotation + RotationOffset);
+
+                            int proj = Projectile.NewProjectile(player.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<GreenSpiritP2Circle>(), npc.damage, RandomOffset, Main.myPlayer, Rotation + RotationOffset, RADIUS);
+                            ((GreenSpiritP2Circle)Main.projectile[proj].modProjectile).RotationCenter = player;
+                            ((GreenSpiritP2Circle)Main.projectile[proj].modProjectile).RandomOffset = RandomOffset;
+                        }
+                    }
+
+                    if (npc.life < npc.lifeMax * 0.5f)
+                    {
+                        if (MiscCounter == 30)
+                        {
+                            float Rotation = (int)SpawnDirections[(int)MiscCounter2] * MathHelper.PiOver4;
+                            int RADIUS = 100 + ((int)MiscCounter2 * 50);
+
+                            for (int i = 0; i < 4; i++)
+                            {
+                                Rotation += MathHelper.PiOver2 * i;
+
+                                int proj = Projectile.NewProjectile(player.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation), Vector2.Zero, ModContent.ProjectileType<GreenSpiritP2>(), npc.damage, 0f, Main.myPlayer, Rotation, RADIUS);
+                                ((GreenSpiritP2)Main.projectile[proj].modProjectile).RotationCenter = player;
+                                ((GreenSpiritP2)Main.projectile[proj].modProjectile).Converge = true;
+                            }
+
+                            MiscCounter2++;
+                        }
+                    }
+                    else
+                    {
+                        if (MiscCounter == 30)
+                        {
+                            float Rotation = (int)SpawnDirections[(int)MiscCounter2] * MathHelper.PiOver4;
+                            int RADIUS = 100 + ((int)MiscCounter2 * 50);
+
+                            for (int i = 0; i < 2; i++)
+                            {
+                                Rotation += MathHelper.Pi * i;
+
+                                int proj = Projectile.NewProjectile(player.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation), Vector2.Zero, ModContent.ProjectileType<GreenSpiritP2>(), npc.damage, 0f, Main.myPlayer, Rotation, RADIUS);
+                                ((GreenSpiritP2)Main.projectile[proj].modProjectile).RotationCenter = player;
+                                ((GreenSpiritP2)Main.projectile[proj].modProjectile).Converge = true;
+                                ((GreenSpiritP2)Main.projectile[proj].modProjectile).Converge = true;
+                            }
+
+                            MiscCounter2++;
+                        }
+                    }
+
+
                     break;
             }
 
@@ -320,15 +406,19 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         {
             if (MiscCounter++ == 0)
             {
-                AbsorbedEnergies = 0;
+                BossText("Meteoric Burst!");
 
-                npc.alpha = 255;
                 npc.velocity = Vector2.Zero;
+            }
+
+            if (MiscCounter == 120)
+            {
+                npc.alpha = 255;
                 Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<MeteoricBurst>(), npc.damage * 3, 60f, Main.myPlayer, npc.whoAmI);
             }
 
             // Nudge the boss in a random direction
-            if (MiscCounter == 60)
+            if (MiscCounter == 180)
             {
                 FlyDistance = npc.Center - Vector2.UnitY * 2250;
 
@@ -343,14 +433,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity = Vector2.One.RotatedByRandom(-MathHelper.PiOver4) * 15;
             }
 
-            if (MiscCounter > 60 && MiscCounter < 180)
+            if (MiscCounter > 180 && MiscCounter < 300)
             {
                 npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(2f));
             }
 
-            if (MiscCounter > 180 && MiscCounter < 360)
+            if (MiscCounter > 300 && MiscCounter < 480)
             {
-                if (MiscCounter == 180)
+                if (MiscCounter == 240)
                 {
                     float radius = 60;
                     int numLocations = 6;
@@ -385,9 +475,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity = (npc.velocity * (inertia - 1) + direction) / inertia;
             }
 
-            if (MiscCounter > 360)
+            if (MiscCounter > 480)
             {
-                if (MiscCounter == 361)
+                if (MiscCounter == 481)
                 {
                     npc.velocity = Vector2.Zero;
 
@@ -401,6 +491,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 if (MiscCounter2++ == 240)
                 {
                     // Repeat the meteor attack again for each 12 absorbed energies
+                    if (RepeatMeteors == 0)
+                    {
+                        AbsorbedEnergies = 0;
+                    }
+
                     AICase = RepeatMeteors-- != 0 ? (int)AIStates.Energy : (int)AIStates.Selector;
                     GlobalCounter = 0;
                     MiscCounter = 0;

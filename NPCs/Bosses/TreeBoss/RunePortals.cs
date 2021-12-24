@@ -174,7 +174,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     int TreeVelocity = AbovePlayer ? 28 : -28;
 
                     ((TreeBossP2)Main.npc[(int)projectile.ai[1]].modNPC).PortalLaunched = true;
+                    ((TreeBossP2)Main.npc[(int)projectile.ai[1]].modNPC).PortalRuns++;
                     Main.npc[(int)projectile.ai[1]].velocity = Vector2.UnitY * TreeVelocity;
+                    
                 }
 
                 for (int i = 0; i < 200; i++)
