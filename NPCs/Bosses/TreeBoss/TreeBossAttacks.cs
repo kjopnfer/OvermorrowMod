@@ -65,7 +65,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     // Start the music earlier before the title card shows up
                     if (MiscCounter2 == 155)
                     {
-                        music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
+                        music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/Iorich");
                     }
 
                     if (MiscCounter2 == 180)
@@ -75,7 +75,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             if (npc.Distance(Main.player[i].Center) < 900)
                             {
                                 Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 60f, 20f);
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 10f, 20f);
                                 Main.player[i].GetModPlayer<OvermorrowModPlayer>().TitleID = (int)OvermorrowModFile.TitleID.Iorich; // Turn this into an enum one day omg this is so unreadable
                             }
                         }

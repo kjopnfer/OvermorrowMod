@@ -61,6 +61,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int MINIMUM_ATTACKS = 3;
         public int ChosenAttack;
 
+        public bool CanDie = false;
+
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => AICase != (int)AIStates.Energy && AICase != (int)AIStates.Runes;
 
         public override void SetStaticDefaults()
@@ -88,7 +90,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.value = Item.buyPrice(gold: 3);
             npc.npcSlots = 10f;
             //music = MusicID.Boss5;
-            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/IorichP2");
             bossBag = ModContent.ItemType<TreeBag>();
         }
 
@@ -177,7 +179,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             if (npc.Distance(Main.player[i].Center) < 900)
                             {
                                 Main.player[i].GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 60f, 20f);
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().TitleID = (int)OvermorrowModFile.TitleID.Iorich; // Turn this into an enum one day omg this is so unreadable
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().TitleID = (int)OvermorrowModFile.TitleID.IorichP2; // Turn this into an enum one day omg this is so unreadable
                                 //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ShowText = true;
                             }
                         }
@@ -287,6 +289,71 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 case (int)AIStates.Energy:
                     EnergyAttack(player);
                     break;
+                case (int)AIStates.Death:
+                    npc.velocity = Vector2.Zero;
+
+                    string[] Texts = new string[]
+                    {
+                        "wow ur strong",
+                        "now u get to use the resonance altar!!",
+                        "too bad its not released yet lol",
+                        "u can have this dad joke instead",
+                        "do you know what genre of music national anthems are?",
+                        "...country music"
+                    };
+
+                    if (MiscCounter++ % 180 == 0 && GlobalCounter < 6)
+                    {
+                        if (GlobalCounter < 6)
+                        {
+                            BossText(Texts[(int)GlobalCounter]);
+                        }
+
+                        GlobalCounter++;
+                    }
+
+                    if (GlobalCounter == 6 && MiscCounter > 1200)
+                    {
+                        if (MiscCounter == 1201)
+                        {
+                            Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
+                        }
+
+                        if (MiscCounter > 1340)
+                        {
+                            npc.alpha = 255;
+
+                            MiscCounter2--;
+
+                            if (MiscCounter2 % 10 == 0)
+                            {
+                                for (int i = 0; i < 6; i++)
+                                {
+                                    // Randomized rotation in with Pi radians because spawning energy underground is literally impossible to kill
+                                    float RandomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+
+                                    // Generates in a circle 200 pixels below the NPC's center
+                                    Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(600, 0).RotatedBy(-RandomRotation);
+                                    npc.netUpdate = true;
+
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    {
+                                        Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<AbsorbEnergyCinematic>(), 0, 0f, Main.myPlayer, npc.whoAmI, 1);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (MiscCounter2 == 0)
+                        {
+                            npc.life = 0;
+                            npc.HitEffect(0, 0);
+                            CanDie = true;
+                            npc.checkDead();
+                        }
+
+                    }
+                    break;
             }
         }
 
@@ -325,7 +392,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
 
             // Teleportation animation
-            if (AICase == (int)AIStates.Teleport)
+            if (AICase == (int)AIStates.Teleport || (AICase == (int)AIStates.Death && GlobalCounter == 6))
             {
                 Vector2 origin = npc.Center + new Vector2(0, 10) - Main.screenPosition;
                 Rectangle frame = npc.frame;
@@ -345,7 +412,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 // Draw the NPC with the silhouette after it has rotated into existence
                 if (MiscCounter2 > 120 && MiscCounter2 < 180)
                 {
-                    spriteBatch.Draw(texture, origin, frame, new Color(149, 252, 173) * 0.75f, npc.rotation, drawOrigin, scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, origin, frame, new Color(149, 252, 173) * 0.75f, npc.rotation, drawOrigin, scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
 
                 // AI counter
@@ -357,7 +424,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     float numFrames = 6f;
                     for (float num231 = 0f; num231 < numFrames; num231 += 1f)
                     {
-                        spriteBatch.Draw(texture, origin + (num229 + (float)Math.PI * 2f / numFrames * num231).ToRotationVector2() * distance, frame, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / numFrames) * 0.15f /*color * 0.5f*/, npc.rotation, drawOrigin, scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(texture, origin + (num229 + (float)Math.PI * 2f / numFrames * num231).ToRotationVector2() * distance, frame, Color.Lerp(new Color(204, 252, 149), new Color(149, 252, 173), num231 / numFrames) * 0.15f /*color * 0.5f*/, npc.rotation, drawOrigin, scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                     }
                 }
             }
@@ -486,16 +553,24 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override bool CheckDead()
         {
-            if (npc.ai[3] == 0f)
+            npc.boss = false;
+            if (!CanDie)
             {
-                npc.ai[2] = OvermorrowWorld.downedTree ? 0 : 540;
-                npc.ai[3] = 1f;
+                AICase = (int)AIStates.Death;
+                GlobalCounter = 0;
+                MiscCounter = 0;
+                MiscCounter2 = 120;
+
                 npc.damage = 0;
                 npc.life = npc.lifeMax;
                 npc.dontTakeDamage = true;
                 npc.netUpdate = true;
+
+                ChosenAttack = -1;
+
                 return false;
             }
+
             return true;
         }
 

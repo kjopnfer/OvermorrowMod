@@ -407,7 +407,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 AICase = (int)AIStates.Death;
                 GlobalCounter = 0;
                 MiscCounter = 0;
-                MiscCounter2 = 0;
+                MiscCounter2 = 120;
 
                 npc.damage = 0;
                 npc.life = npc.lifeMax;

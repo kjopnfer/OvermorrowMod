@@ -349,6 +349,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             float launchSpeed = 30f;
             projectile.velocity = (move) / launchSpeed;
 
+            // Allows the projectile to rotate in
+            if (projectile.ai[1] == 1)
+            {
+                projectile.velocity = projectile.velocity.RotatedBy(MathHelper.ToRadians(15f));
+            }
+
             for (int num1103 = 0; num1103 < 2; num1103++)
             {
                 int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 107, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
@@ -370,7 +376,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (projectile.getRect().Intersects(parent.getRect()))
             {
                 Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, new Color(195, 255, 154), 0.5f, 0.25f);
-                projectile.Kill();  
+                projectile.Kill();
             }
         }
     }
