@@ -39,20 +39,20 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             return output;
         }
 
-        private void EyeFlare(SpriteBatch spriteBatch, int xOffset, int yOffset, Color LerpColor, bool DiscoColor = false)
+        public void EyeFlare(SpriteBatch spriteBatch, int xOffset, int yOffset, Color LerpColor, bool DiscoColor = false)
         {
             Texture2D texture2 = ModContent.GetTexture("OvermorrowMod/Textures/test2");
             Rectangle rect2 = new Rectangle(0, 0, texture2.Width, texture2.Height);
             Vector2 drawOrigin2 = new Vector2(texture2.Width / 2, texture2.Height / 2);
 
-            Color color = DiscoColor ? Main.DiscoColor : Color.Lerp(LerpColor, Color.White, (float)Math.Sin(VFXCounter / 5f));
+            Color color = DiscoColor ? Main.DiscoColor : Color.Lerp(LerpColor, Color.White, (float)Math.Sin(npc.localAI[1] / 5f));
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
             // Side and top flares
-            spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), color, MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), color, 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(VFXCounter / 180f))), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), color, MathHelper.PiOver2, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(4, 5, (float)Math.Sin(npc.localAI[1] / 180f))), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), color, 0, drawOrigin2, new Vector2(0.125f, MathHelper.Lerp(0.75f, 1f, (float)Math.Sin(npc.localAI[1] / 180f))), SpriteEffects.None, 0);
 
             // The center circle
             spriteBatch.Draw(texture2, npc.Center + new Vector2(xOffset, yOffset) - Main.screenPosition, new Rectangle?(rect2), color, npc.rotation, drawOrigin2, 0.3f, SpriteEffects.None, 0);

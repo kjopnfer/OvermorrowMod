@@ -77,9 +77,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.aiStyle = -1;
             //npc.damage = 31;
             npc.damage = 17;
-            npc.defense = 14;
+            npc.defense = 22;
             npc.lifeMax = 3300;
-            npc.HitSound = SoundID.NPCHit1;
+            npc.HitSound = SoundID.NPCHit7;
             npc.knockBackResist = 0f;
             npc.noGravity = false;
             npc.noTileCollide = false;
@@ -92,7 +92,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale * 0.75f);
-            npc.defense = 17;
+            npc.defense = 26;
         }
 
         public enum AIStates
@@ -111,7 +111,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public ref float GlobalCounter => ref npc.ai[1];
         public ref float MiscCounter => ref npc.ai[2];
         public ref float MiscCounter2 => ref npc.ai[3];
-        public ref float VFXCounter => ref npc.localAI[1];
 
         public override void AI()
         {
@@ -119,7 +118,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.alpha = AICase == (int)AIStates.Intro ? 255 : 0;
 
             GlobalCounter++;
-            VFXCounter++;
+            npc.localAI[1]++;
 
             npc.TargetClosest();
             Player player = Main.player[npc.target];
@@ -426,7 +425,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override void NPCLoot()
         {
             // Spawn 2nd Phase
-            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<TreeBossP2>(), 0, 0f, 0f, 0f, 0f);
+            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<TreeBossP2>(), 0, -1f, 0f, 0f, 0f);
 
             if (Main.netMode == NetmodeID.SinglePlayer) // Singleplayer
             {

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Items.BossBags;
+using OvermorrowMod.Items.Consumable.Boss.TreeRune;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
@@ -75,9 +76,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             npc.width = 368;
             npc.height = 338;
             npc.damage = 20;
-            npc.defense = 19;
+            npc.defense = 26;
             npc.lifeMax = 3300;
-            npc.HitSound = SoundID.NPCHit1;
+            npc.HitSound = SoundID.NPCHit7;
             npc.DeathSound = SoundID.Item25;
             npc.knockBackResist = 0f;
             npc.noGravity = true;
@@ -94,7 +95,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
             npc.lifeMax = (int)(npc.lifeMax * bossLifeScale * 0.65f);
-            npc.defense = 17;
+            npc.defense = 30;
         }
 
         public enum AIStates
@@ -159,7 +160,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
 
             // Increase the npc's defense during the teleportation attacks since he is vulnerable for so long
-            npc.defense = AICase == (int)AIStates.Teleport ? 26 : 19;
+            npc.defense = AICase == (int)AIStates.Teleport ? 40 : Main.expertMode ? 30 : 26;
 
             if (npc.life > npc.lifeMax)
             {
@@ -168,6 +169,33 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             switch (AICase)
             {
+                case (int)AIStates.Intro:
+                    if (MiscCounter++ == 0)
+                    {
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            if (npc.Distance(Main.player[i].Center) < 900)
+                            {
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 60f, 20f);
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().TitleID = (int)OvermorrowModFile.TitleID.Iorich; // Turn this into an enum one day omg this is so unreadable
+                                //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                            }
+                        }
+                    }
+
+                    if (MiscCounter % 100 == 0)
+                    {
+                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<TreeRune_Pulse>(), 0, 0f, Main.myPlayer, 1);
+                    }
+
+                    if (MiscCounter == 300)
+                    {
+                        AICase = (int)AIStates.Selector;
+                        GlobalCounter = 0;
+                        MiscCounter = 0;
+                        MiscCounter2 = 0;
+                    }
+                    break;
                 case (int)AIStates.Selector:
                     npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
                     npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
@@ -223,8 +251,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             RuneCounter = 0;
                         }
 
-                        //AICase = ChosenAttack;
-                        AICase = (int)AIStates.Teleport;
+                        AICase = ChosenAttack;
+                        //AICase = (int)AIStates.Teleport;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
 
@@ -240,7 +268,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 break;
                         }
 
-                        // Keep the eye visual for the runes attack, otherwise turn it off
+                        // Keep the scythe visual for the runes attack, otherwise turn it off
                         if (ChosenAttack != (int)AIStates.Runes)
                         {
                             ChosenAttack = 0;
@@ -422,7 +450,25 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (AICase != (int)AIStates.Energy)
             {
                 Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_Glow");
-                spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 5), npc.frame, Color.White * npc.Opacity, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+
+                Color DrawColor = Color.White;
+                switch (ChosenAttack)
+                {
+                    case (int)AIStates.Teleport: // Left
+                        texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_GlowChange");
+                        DrawColor = new Color(6, 255, 47);
+                        break;
+                    case (int)AIStates.Spirit: // Right
+                        texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_GlowChange");
+                        DrawColor = Color.Cyan;
+                        break;
+                    case (int)AIStates.Runes: // Middle
+                        texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_GlowChange");
+                        DrawColor = Main.DiscoColor;
+                        break;
+                }
+
+                spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 5), npc.frame, DrawColor * npc.Opacity, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             }
 
             base.PostDraw(spriteBatch, drawColor);

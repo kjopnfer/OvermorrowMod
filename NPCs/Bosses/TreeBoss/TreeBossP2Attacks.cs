@@ -407,18 +407,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (MiscCounter++ == 0)
             {
                 BossText("Meteoric Burst!");
+                npc.alpha = 255;
 
+                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<MeteoricBurst>(), npc.damage * 3, 60f, Main.myPlayer, npc.whoAmI);
                 npc.velocity = Vector2.Zero;
             }
 
-            if (MiscCounter == 120)
-            {
-                npc.alpha = 255;
-                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<MeteoricBurst>(), npc.damage * 3, 60f, Main.myPlayer, npc.whoAmI);
-            }
-
             // Nudge the boss in a random direction
-            if (MiscCounter == 180)
+            if (MiscCounter == 60)
             {
                 FlyDistance = npc.Center - Vector2.UnitY * 2250;
 
@@ -433,12 +429,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity = Vector2.One.RotatedByRandom(-MathHelper.PiOver4) * 15;
             }
 
-            if (MiscCounter > 180 && MiscCounter < 300)
+            if (MiscCounter > 60 && MiscCounter < 180)
             {
                 npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(2f));
             }
 
-            if (MiscCounter > 300 && MiscCounter < 480)
+            if (MiscCounter > 180 && MiscCounter < 360)
             {
                 if (MiscCounter == 240)
                 {
@@ -475,9 +471,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity = (npc.velocity * (inertia - 1) + direction) / inertia;
             }
 
-            if (MiscCounter > 480)
+            if (MiscCounter > 360)
             {
-                if (MiscCounter == 481)
+                if (MiscCounter == 361)
                 {
                     npc.velocity = Vector2.Zero;
 
@@ -488,6 +484,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (MeteorLanded)
             {
+                // Turn off the scythe indicators
+                ChosenAttack = 0;
+
                 if (MiscCounter2++ == 240)
                 {
                     // Repeat the meteor attack again for each 12 absorbed energies

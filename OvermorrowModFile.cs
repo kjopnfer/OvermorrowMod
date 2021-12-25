@@ -181,70 +181,7 @@ namespace OvermorrowMod
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(ItemID.JellyfishNecklace);
             recipe.AddRecipe();
-        }
-
-        internal void BossTitle(int BossID)
-        {
-            string BossName = "";
-            string BossTitle = "";
-            Color titleColor = Color.White;
-            Color nameColor = Color.White;
-
-            int SubtextOffset = 0;
-            int TitleOffset = 0;
-            switch (BossID)
-            {
-                case 1:
-                    BossName = "Dharuud";
-                    BossTitle = "The Sandstorm";
-                    nameColor = Color.LightGoldenrodYellow;
-                    titleColor = Color.Yellow;
-                    break;
-                case 2:
-                    BossName = "The Storm Drake";
-                    BossTitle = "Apex Predator";
-                    nameColor = Color.Cyan;
-                    titleColor = Color.DarkCyan;
-                    break;
-                case 3:
-                    BossName = "Dripplord";
-                    BossTitle = "Bloody Assimilator";
-                    nameColor = Color.Red;
-                    titleColor = Color.DarkRed;
-                    break;
-                case 4:
-                    BossName = "Iorich";
-                    BossTitle = "The Guardian";
-                    nameColor = Color.LimeGreen;
-                    titleColor = Color.Green;
-
-                    TitleOffset = 15;
-                    SubtextOffset = 0;
-                    break;
-                case 5:
-                    BossName = "Gra-knight and Lady Apollo";//"Gra-knight and Apollus";
-                    BossTitle = "The Super Stoner Buds";//"The Super Stoner Bros"; /*The Super Biome Brothers*/
-                    nameColor = new Color(230, 228, 216);
-                    titleColor = new Color(64, 80, 89);
-                    break;
-                default:
-                    BossName = "snoop dogg";
-                    BossTitle = "high king";
-                    nameColor = Color.LimeGreen;
-                    titleColor = Color.Green;
-                    break;
-
-            }
-            Vector2 textSize = Main.fontDeathText.MeasureString(BossName);
-            Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
-            float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
-            float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
-            /*float alpha = 255;
-			float alpha2 = 255;*/
-
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft + TitleOffset, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
-        }
+        }   
 
         public override void UpdateUI(GameTime gameTime)
         {
@@ -258,6 +195,86 @@ namespace OvermorrowMod
             {
                 AltarUI.Update(gameTime);
             }
+        }
+
+        public enum TitleID
+        {
+            Stoners = 1,
+            Dharuud = 2,
+            Iorich = 3,
+            IorichP2 = 4,
+            Dripplord = 5,
+            Drake = 6
+        }
+
+        internal void BossTitle(int BossID)
+        {
+            string BossName = "";
+            string BossTitle = "";
+            Color titleColor = Color.White;
+            Color nameColor = Color.White;
+
+            int SubtextOffset = 0;
+            int TitleOffset = 0;
+            switch (BossID)
+            {
+                case (int)TitleID.Stoners:
+                    BossName = "Gra-knight and Lady Apollo";//"Gra-knight and Apollus";
+                    BossTitle = "The Super Stoner Buds";//"The Super Stoner Bros"; /*The Super Biome Brothers*/
+                    nameColor = new Color(230, 228, 216);
+                    titleColor = new Color(64, 80, 89);
+                    break;
+                case (int)TitleID.Dharuud:
+                    BossName = "Dharuud";
+                    BossTitle = "The Sandstorm";
+                    nameColor = Color.LightGoldenrodYellow;
+                    titleColor = Color.Yellow;
+                    break;
+                case (int)TitleID.Iorich:
+                    BossName = "Iorich";
+                    BossTitle = "The Guardian";
+                    nameColor = Color.LightGreen;
+                    titleColor = Color.Lime;
+
+                    TitleOffset = 15;
+                    SubtextOffset = 0;
+                    break;
+                case (int)TitleID.IorichP2:
+                    BossName = "Iorich";
+                    BossTitle = "Scythe of the Dryads";
+                    nameColor = Color.LightGreen;
+                    titleColor = Color.Lime;
+
+                    TitleOffset = 15;
+                    SubtextOffset = 0;
+                    break;
+                case (int)TitleID.Dripplord:
+                    BossName = "Dripplord";
+                    BossTitle = "Bloody Assimilator";
+                    nameColor = Color.Red;
+                    titleColor = Color.DarkRed;
+                    break;
+                case (int)TitleID.Drake:
+                    BossName = "The Storm Drake";
+                    BossTitle = "Apex Predator";
+                    nameColor = Color.Cyan;
+                    titleColor = Color.DarkCyan;
+                    break;
+                default:
+                    BossName = "snoop dogg";
+                    BossTitle = "high king";
+                    nameColor = Color.LimeGreen;
+                    titleColor = Color.Green;
+                    break;
+
+            }
+            Vector2 textSize = Main.fontDeathText.MeasureString(BossName);
+            Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
+            float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
+            float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
+
+            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
+            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft + TitleOffset, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)

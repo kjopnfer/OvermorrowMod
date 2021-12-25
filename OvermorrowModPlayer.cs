@@ -640,8 +640,11 @@ namespace OvermorrowMod
                         Main.screenPosition = screenPositionStore;
                         holdCounter++;
 
+                        ShowText = true;
+
                         if (holdCounter == holdCameraLength)
                         {
+                            ShowText = false;
                             holdCounter = 0;
                             holdPosition = false;
                         }

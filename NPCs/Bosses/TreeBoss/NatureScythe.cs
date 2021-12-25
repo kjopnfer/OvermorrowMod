@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Boss
+namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public class NatureScythe : ModProjectile
     {
@@ -13,7 +13,7 @@ namespace OvermorrowMod.Projectiles.Boss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Nature Scythe");
-            ProjectileID.Sets.TrailCacheLength[projectile.type] = 6;    //The length of old position to be recorded
+            ProjectileID.Sets.TrailCacheLength[projectile.type] = 8;    //The length of old position to be recorded
             ProjectileID.Sets.TrailingMode[projectile.type] = 2;        //The recording mode, this tracks rotation
         }
 
@@ -96,8 +96,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Color color26 = Color.GreenYellow;
-            Texture2D texture2D16 = mod.GetTexture("Projectiles/Boss/NatureScythe");
+            Texture2D texture2D16 = mod.GetTexture("NPCs/Bosses/TreeBoss/NatureScythe_Trail");
 
             int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
             int y2 = num154 * projectile.frame;
@@ -107,7 +106,7 @@ namespace OvermorrowMod.Projectiles.Boss
 
             for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[projectile.type]; i++)
             {
-                Color color27 = color26;
+                Color color27 = new Color(144, 255, 0);
                 color27 *= (float)(ProjectileID.Sets.TrailCacheLength[projectile.type] - i) / ProjectileID.Sets.TrailCacheLength[projectile.type];
                 Vector2 value4 = projectile.oldPos[i];
                 float num165 = projectile.oldRot[i];

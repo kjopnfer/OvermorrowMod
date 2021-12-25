@@ -75,9 +75,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             if (npc.Distance(Main.player[i].Center) < 900)
                             {
                                 Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 15;
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 20f, 60f);
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().TitleID = 4; // Turn this into an enum one day omg this is so unreadable
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 60f, 20f);
+                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().TitleID = (int)OvermorrowModFile.TitleID.Iorich; // Turn this into an enum one day omg this is so unreadable
                             }
                         }
 

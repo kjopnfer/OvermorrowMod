@@ -93,7 +93,7 @@ namespace OvermorrowMod.Items.Consumable.Boss.TreeRune
 
                     if (ProjectileCounter % 180 == 0)
                     {
-                        Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<TreeRune_Pulse>(), 0, 0f, Main.myPlayer, projectile.whoAmI);
+                        Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<TreeRune_Pulse>(), 0, 0f, Main.myPlayer, 0);
 
                         BossText(Texts[(int)projectile.ai[1]]);
                         projectile.ai[1]++;
