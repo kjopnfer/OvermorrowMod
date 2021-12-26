@@ -56,6 +56,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public bool RunAgain = false;
         public bool CanDie = false;
+
+        public float LightValue = 0;
+
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void SetStaticDefaults()

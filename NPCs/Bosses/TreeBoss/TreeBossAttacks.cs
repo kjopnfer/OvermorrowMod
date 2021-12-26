@@ -109,6 +109,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         private void Selector()
         {
+            if (LightValue > 0)
+            {
+                LightValue = Utils.Clamp(MiscCounter2--, 0, 60) / 60f;
+            }
+
             if (MiscCounter % 75 == 0 && MiscCounter > 60 && Main.expertMode)
             {
                 int numSeeds = npc.life <= npc.lifeMax * 0.25f ? 16 : 13;
@@ -169,8 +174,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         break;
                 }
 
-                AICase = ChosenAttack;
-                //AICase = (int)AIStates.Runes;
+                //AICase = ChosenAttack;
+                AICase = (int)AIStates.Runes;
                 GlobalCounter = 0;
                 MiscCounter = 0;
                 MiscCounter2 = 0;
@@ -482,6 +487,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (MiscCounter < 60)
             {
+                LightValue = Utils.Clamp(MiscCounter, 0, 60) / 60f;
                 MiscCounter2++;
             }
 
@@ -523,7 +529,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 AICase = (int)AIStates.Selector;
                 GlobalCounter = 0;
                 MiscCounter = 0;
-                MiscCounter2 = 0;
+
+                // This is to return the brightness back to normal
+                MiscCounter2 = 60;
 
                 // Reset properties
                 AbsorbedEnergies = 0;

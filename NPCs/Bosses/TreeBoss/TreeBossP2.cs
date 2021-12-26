@@ -62,6 +62,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int ChosenAttack;
 
         public bool CanDie = false;
+        public float LightValue = 0;
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => AICase != (int)AIStates.Energy && AICase != (int)AIStates.Runes;
 
@@ -202,6 +203,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
                     npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
 
+                    if (LightValue > 0)
+                    {
+                        LightValue = Utils.Clamp(MiscCounter2--, 0, 60) / 60f;
+                    }
+
                     int[] Attacks = new int[] { (int)AIStates.Teleport, (int)AIStates.Spirit, (int)AIStates.Runes };
 
                     if (MiscCounter++ == 120)
@@ -325,7 +331,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                             MiscCounter2--;
 
-                            if (MiscCounter2 % 10 == 0)
+                            if (MiscCounter2 % 10 == 0 && MiscCounter2 > 20)
                             {
                                 for (int i = 0; i < 6; i++)
                                 {
@@ -341,6 +347,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                         Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<AbsorbEnergyCinematic>(), 0, 0f, Main.myPlayer, npc.whoAmI, 1);
                                     }
                                 }
+                            }
+
+                            if (MiscCounter2 == 20)
+                            {
+                                Particle.CreateParticle(Particle.ParticleType<ReverseShockwave2>(), npc.Center, Vector2.Zero, Color.Lime, 1, 16f);
                             }
                         }
 
@@ -514,10 +525,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_Glow");
+            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 5), npc.frame, Color.White * npc.Opacity, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+
             if (AICase != (int)AIStates.Energy)
             {
-                Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_Glow");
-
                 Color DrawColor = Color.White;
                 switch (ChosenAttack)
                 {

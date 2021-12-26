@@ -16,6 +16,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using WardenClass;
 using System;
+using OvermorrowMod.NPCs.Bosses.TreeBoss;
 
 namespace OvermorrowMod
 {
@@ -50,6 +51,56 @@ namespace OvermorrowMod
         public OvermorrowModFile()
         {
             Mod = this;
+        }
+
+        public override void ModifyLightingBrightness(ref float scale)
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.type == ModContent.NPCType<TreeBoss>() && npc.active && Main.dayTime)
+                {
+                    float BrightnessValue = ((TreeBoss)npc.modNPC).LightValue;
+                    scale *= MathHelper.Lerp(1f, .75f, Utils.Clamp(BrightnessValue, 0f, 60f) / 60f);
+                }
+            }
+
+            base.ModifyLightingBrightness(ref scale);
+        }
+
+        public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.type == ModContent.NPCType<TreeBoss>() && npc.active && Main.dayTime)
+                {
+                    float BrightnessValue = ((TreeBoss)npc.modNPC).LightValue;
+
+                    // Higher decimal point values leads to lower brightness up to 1
+                    int r = Main.bgColor.R - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.R / 255f));
+                    int g = Main.bgColor.G - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.G / 255f));
+                    int b = Main.bgColor.B - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.B / 255f));
+
+                    Main.bgColor.R = (byte)r;
+                    Main.bgColor.G = (byte)g;
+                    Main.bgColor.B = (byte)b;
+                }
+
+                if (npc.type == ModContent.NPCType<TreeBossP2>() && npc.active && Main.dayTime)
+                {
+                    float BrightnessValue = ((TreeBossP2)npc.modNPC).LightValue;
+
+                    // Higher decimal point values leads to lower brightness up to 1
+                    int r = Main.bgColor.R - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.R / 255f));
+                    int g = Main.bgColor.G - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.G / 255f));
+                    int b = Main.bgColor.B - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.B / 255f));
+
+                    Main.bgColor.R = (byte)r;
+                    Main.bgColor.G = (byte)g;
+                    Main.bgColor.B = (byte)b;
+                }
+            }
         }
 
         public override void UpdateMusic(ref int music, ref MusicPriority priority)
@@ -181,7 +232,7 @@ namespace OvermorrowMod
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(ItemID.JellyfishNecklace);
             recipe.AddRecipe();
-        }   
+        }
 
         public override void UpdateUI(GameTime gameTime)
         {
@@ -348,7 +399,7 @@ namespace OvermorrowMod
             Shockwave = null;
             TrailShader = null;
             TextShader = null;
-            
+
             TrailTextures = null;
             ModUtils.Load(true);
             HexLoader.Load(true);

@@ -413,6 +413,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity = Vector2.Zero;
             }
 
+            if (MiscCounter < 60 && LightValue < 60)
+            {
+                LightValue = Utils.Clamp(MiscCounter, 0, 60) / 60f;
+            }
+
             // Nudge the boss in a random direction
             if (MiscCounter == 60)
             {
@@ -495,10 +500,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         AbsorbedEnergies = 0;
                     }
 
-                    AICase = RepeatMeteors-- != 0 ? (int)AIStates.Energy : (int)AIStates.Selector;
+                    AICase = RepeatMeteors-- > 0 ? (int)AIStates.Energy : (int)AIStates.Selector;
                     GlobalCounter = 0;
                     MiscCounter = 0;
-                    MiscCounter2 = 0;
+
+                    // Set the progression value for the lighting to return to normal if going back to the selector
+                    MiscCounter2 = RepeatMeteors-- != 0 ? 0 : 60;
 
                     MeteorLanded = false;
                 }
