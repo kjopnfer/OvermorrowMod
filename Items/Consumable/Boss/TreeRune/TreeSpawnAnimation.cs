@@ -252,12 +252,12 @@ namespace OvermorrowMod.Items.Consumable.Boss.TreeRune
             if (Main.netMode == NetmodeID.SinglePlayer)
             {
                 CombatText.NewText(projectile.getRect(), new Color(0, 255, 191), text, true);
-                Main.NewText(text, new Color(0, 255, 191));
+                Main.NewText("[c/00ffbf:<Iorich>] " + text);
             }
             else if (Main.netMode == NetmodeID.Server)
             {
                 CombatText.NewText(projectile.getRect(), new Color(0, 255, 191), text, true);
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), new Color(0, 255, 191));
+                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("[c/00ffbf:<Iorich>] " + text), new Color(0, 255, 191));
             }
         }
     }

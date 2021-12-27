@@ -15,28 +15,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (Main.netMode == NetmodeID.SinglePlayer)
             {
                 CombatText.NewText(npc.getRect(), new Color(0, 255, 191), text, true);
-                Main.NewText(text, new Color(0, 255, 191));
+                Main.NewText("[c/00ffbf:<Iorich>] " + text);
             }
             else if (Main.netMode == NetmodeID.Server)
             {
                 CombatText.NewText(npc.getRect(), new Color(0, 255, 191), text, true);
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), new Color(0, 255, 191));
+                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("[c/00ffbf:<Iorich>] " + text), new Color(0, 255, 191));
             }
-        }
-
-        private static float FlowerDrawing(float theta)
-        {
-            return (float)(Math.Sin(theta) + Math.Sin(5 * theta / 2));
-        }
-
-        private Vector2 FlowerDrawing(Vector2 origin, float theta)
-        {
-            Vector2 output = new Vector2();
-
-            output.X = (float)(FlowerDrawing(theta) * Math.Cos(theta));
-            output.Y = (float)(FlowerDrawing(theta) * Math.Sin(theta));
-
-            return output;
         }
 
         public void EyeFlare(SpriteBatch spriteBatch, int xOffset, int yOffset, Color LerpColor, bool DiscoColor = false)
