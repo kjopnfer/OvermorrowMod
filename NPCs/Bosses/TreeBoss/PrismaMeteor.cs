@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
 using OvermorrowMod.Particles;
+using OvermorrowMod.Projectiles.Misc;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -377,6 +378,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void Kill(int timeLeft)
         {
+            Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/IorichLand"), projectile.Center);
+            Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<ShockwaveExplosion>(), 0, 0f, Main.myPlayer);
+
             ParentNPC.Center = projectile.Center;
             ParentNPC.alpha = 0;
             ParentNPC.velocity = Vector2.Zero;

@@ -85,9 +85,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (npc.getRect().Intersects(parent.getRect()))
             {
                 ((TreeBoss)Main.npc[parent.whoAmI].modNPC).AbsorbedEnergies += 1;
+                Particle.CreateParticle(Particle.ParticleType<Shockwave>(), npc.Center, Vector2.Zero, new Color(195, 255, 154), 0.5f, 0.25f);
 
                 if (parent.life < parent.lifeMax)
                 {
+                    Main.PlaySound(SoundID.DD2_DarkMageHealImpact);
+                    parent.HealEffect(Main.expertMode ? 20 : 10);
                     parent.life += Main.expertMode ? 20 : 10;
                 }
 
@@ -240,8 +243,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 ((TreeBossP2)Main.npc[parent.whoAmI].modNPC).AbsorbedEnergies += 1;
 
+                Particle.CreateParticle(Particle.ParticleType<Shockwave>(), npc.Center, Vector2.Zero, new Color(195, 255, 154), 0.5f, 0.25f);
+
                 if (parent.life < parent.lifeMax)
                 {
+                    Main.PlaySound(SoundID.DD2_DarkMageHealImpact);
+                    parent.HealEffect(Main.expertMode ? 20 : 10);
                     parent.life += Main.expertMode ? 20 : 10;
                 }
 

@@ -22,6 +22,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         private float Radius;
         public Player RotationCenter;
         public Vector2 OldPosition;
+        public Color ProjectileColor = new Color(54, 255, 64);
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
@@ -127,7 +128,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
             else 
             {
-                if (projectile.timeLeft == 45 * 10)
+                if (projectile.timeLeft == 25 * 10)
                 {
                     Main.PlaySound(SoundID.DD2_PhantomPhoenixShot, projectile.Center);
                     projectile.velocity = Vector2.Normalize(OldPosition - projectile.Center) * 12;
@@ -150,15 +151,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             //spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(54, 255, 64), projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(MathHelper.Lerp(0.3f, 1f, (float)Math.Sin(projectile.localAI[0] / 10f)), 1f), SpriteEffects.None, 0);
             //spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(54, 255, 64), projectile.rotation, drawOrigin, new Vector2(MathHelper.Lerp(0.3f, 1f, (float)Math.Sin(projectile.localAI[0] / 10f)), 1f), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(54, 255, 64) * 0.5f, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.4f, 2f), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), new Color(54, 255, 64) * 0.5f, projectile.rotation, drawOrigin, new Vector2(0.4f, 1f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor * 0.5f, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.4f, 2f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor * 0.5f, projectile.rotation, drawOrigin, new Vector2(0.4f, 1f), SpriteEffects.None, 0);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             Texture2D SoulTexture = ModContent.GetTexture("OvermorrowMod/Textures/Extra_89");
 
-            Main.spriteBatch.Draw(SoulTexture, projectile.Center - Main.screenPosition, null, new Color(0, 255, 191), projectile.rotation + MathHelper.PiOver2, SoulTexture.Size() / 2, new Vector2(0.5f, 1), SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(SoulTexture, projectile.Center - Main.screenPosition, null, ProjectileColor, projectile.rotation + MathHelper.PiOver2, SoulTexture.Size() / 2, new Vector2(0.5f, 1), SpriteEffects.None, 0f);
 
             return false;
         }

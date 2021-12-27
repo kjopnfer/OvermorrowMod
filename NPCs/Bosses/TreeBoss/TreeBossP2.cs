@@ -58,11 +58,16 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int RepeatMeteors = 0;
 
         public int RuneCounter;
+        public int SpiritCounter;
+        public int TeleportCounter;
+
         public int MINIMUM_ATTACKS = 3;
+        public bool HealthRune = false;
         public int ChosenAttack;
 
         public bool CanDie = false;
         public float LightValue = 0;
+        public bool MeteorLight = false; // The repeating meteor attacks are being annoying and keep changing the light
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => AICase != (int)AIStates.Energy && AICase != (int)AIStates.Runes;
 
@@ -165,123 +170,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // Increase the npc's defense during the teleportation attacks since he is vulnerable for so long
             npc.defense = AICase == (int)AIStates.Teleport ? 40 : Main.expertMode ? 30 : 26;
 
-            if (npc.life > npc.lifeMax)
-            {
-                npc.life = npc.lifeMax;
-            }
+            if (npc.life > npc.lifeMax) npc.life = npc.lifeMax;
 
             switch (AICase)
             {
                 case (int)AIStates.Intro:
-                    if (MiscCounter++ == 0)
-                    {
-                        for (int i = 0; i < Main.maxPlayers; i++)
-                        {
-                            if (npc.Distance(Main.player[i].Center) < 900)
-                            {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(npc.Center, 90, 60f, 20f);
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().TitleID = (int)OvermorrowModFile.TitleID.IorichP2; // Turn this into an enum one day omg this is so unreadable
-                                //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ShowText = true;
-                            }
-                        }
-                    }
-
-                    if (MiscCounter % 100 == 0)
-                    {
-                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<TreeRune_Pulse>(), 0, 0f, Main.myPlayer, 1);
-                    }
-
-                    if (MiscCounter == 300)
-                    {
-                        AICase = (int)AIStates.Selector;
-                        GlobalCounter = 0;
-                        MiscCounter = 0;
-                        MiscCounter2 = 0;
-                    }
+                    Intro();
                     break;
                 case (int)AIStates.Selector:
-                    npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
-                    npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
-
-                    if (LightValue > 0)
-                    {
-                        LightValue = Utils.Clamp(MiscCounter2--, 0, 60) / 60f;
-                    }
-
-                    int[] Attacks = new int[] { (int)AIStates.Teleport, (int)AIStates.Spirit, (int)AIStates.Runes };
-
-                    if (MiscCounter++ == 120)
-                    {
-                        Main.PlaySound(SoundID.Item4, npc.Center);
-
-                        // Chooses the attack from the list, guaranteed meteor attack after 5 attacks
-                        if (RuneCounter == 5)
-                        {
-                            ChosenAttack = (int)AIStates.Runes;
-                        }
-                        else
-                        {
-                            ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
-                        }
-
-                        // Makes sure the healing attack doesn't have a chance to be chosen unless conditions are met
-                        while (ChosenAttack == (int)AIStates.Runes && RuneCounter < MINIMUM_ATTACKS)
-                        {
-                            ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
-                        }
-
-                        // Increment the non-healing attack counter
-                        if (ChosenAttack != (int)AIStates.Runes)
-                        {
-                            RuneCounter++;
-                        }
-                    }
-
-                    if (MiscCounter % 100 == 0)
-                    {
-                        int ShootSpeed = Main.rand.Next(8, 12);
-                        Vector2 PlayerDistance = player.Center - npc.Center;
-                        PlayerDistance.Normalize();
-
-                        npc.netUpdate = true;
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Projectile.NewProjectile(npc.Center, PlayerDistance * ShootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
-                        }
-                    }
-
-                    if (MiscCounter == 600)
-                    {
-                        // If the condition was satisfied and you DID choose the rune attack, now reset the counter
-                        if (ChosenAttack == (int)AIStates.Runes)
-                        {
-                            RuneCounter = 0;
-                        }
-
-                        AICase = ChosenAttack;
-                        //AICase = (int)AIStates.Teleport;
-                        MiscCounter = 0;
-                        MiscCounter2 = 0;
-
-                        switch (AICase)
-                        {
-                            case (int)AIStates.Teleport:
-                                MiscCounter2 = 120;
-                                ChosenPortal = Main.rand.Next(1, 3);
-                                break;
-                            case (int)AIStates.Spirit:
-                                if (!RunAgain) RunAgain = true;
-
-                                break;
-                        }
-
-                        // Keep the scythe visual for the runes attack, otherwise turn it off
-                        if (ChosenAttack != (int)AIStates.Runes)
-                        {
-                            ChosenAttack = 0;
-                        }
-                    }
+                    Selector(player);
                     break;
                 case (int)AIStates.Teleport:
                     Teleport_Attacks(player);
@@ -296,74 +193,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     EnergyAttack(player);
                     break;
                 case (int)AIStates.Death:
-                    npc.velocity = Vector2.Zero;
-
-                    string[] Texts = new string[]
-                    {
-                        "wow ur strong",
-                        "now u get to use the resonance altar!!",
-                        "too bad its not released yet lol",
-                        "u can have this dad joke instead",
-                        "do you know what genre of music national anthems are?",
-                        "...country music"
-                    };
-
-                    if (MiscCounter++ % 180 == 0 && GlobalCounter < 6)
-                    {
-                        if (GlobalCounter < 6)
-                        {
-                            BossText(Texts[(int)GlobalCounter]);
-                        }
-
-                        GlobalCounter++;
-                    }
-
-                    if (GlobalCounter == 6 && MiscCounter > 1200)
-                    {
-                        if (MiscCounter == 1201)
-                        {
-                            Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
-                        }
-
-                        if (MiscCounter > 1340)
-                        {
-                            npc.alpha = 255;
-
-                            MiscCounter2--;
-
-                            if (MiscCounter2 % 10 == 0 && MiscCounter2 > 20)
-                            {
-                                for (int i = 0; i < 6; i++)
-                                {
-                                    // Randomized rotation in with Pi radians because spawning energy underground is literally impossible to kill
-                                    float RandomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-
-                                    // Generates in a circle 200 pixels below the NPC's center
-                                    Vector2 RandomPosition = npc.Center + new Vector2(0, 200) + new Vector2(600, 0).RotatedBy(-RandomRotation);
-                                    npc.netUpdate = true;
-
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<AbsorbEnergyCinematic>(), 0, 0f, Main.myPlayer, npc.whoAmI, 1);
-                                    }
-                                }
-                            }
-
-                            if (MiscCounter2 == 20)
-                            {
-                                Particle.CreateParticle(Particle.ParticleType<ReverseShockwave2>(), npc.Center, Vector2.Zero, Color.Lime, 1, 16f);
-                            }
-                        }
-
-                        if (MiscCounter2 == 0)
-                        {
-                            npc.life = 0;
-                            npc.HitEffect(0, 0);
-                            CanDie = true;
-                            npc.checkDead();
-                        }
-
-                    }
+                    Death();
                     break;
             }
         }
@@ -597,29 +427,26 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             else
             {
                 int choice = Main.rand.Next(5);
-                // Always drops one of:
-                if (choice == 0) // Warden
+                switch (choice)
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EarthCrystal>());
-                }
-                else if (choice == 1) // Mage
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichStaff>());
-                }
-                if (choice == 2) // Warrior
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichHarvester>());
-                }
-                else if (choice == 3) // Ranger
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichBow>());
-                }
-                else if (choice == 4) // Summoner
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichWand>());
+                    case 0:
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EarthCrystal>());
+                        break;
+                    case 1:
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichStaff>());
+                        break;
+                    case 2:
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichHarvester>());
+                        break;
+                    case 3:
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichBow>());
+                        break;
+                    case 4:
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichWand>());
+                        break;
                 }
 
-                if (Main.rand.Next(10) == 0) // Trophy Dropchance
+                if (Main.rand.NextBool(20)) // Trophy Dropchance
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TreeTrophy>());
                 }

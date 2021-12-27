@@ -17,6 +17,7 @@ using Terraria.UI;
 using WardenClass;
 using System;
 using OvermorrowMod.NPCs.Bosses.TreeBoss;
+using Terraria.Graphics.Effects;
 
 namespace OvermorrowMod
 {
@@ -44,6 +45,7 @@ namespace OvermorrowMod
 
         public static OvermorrowModFile Mod { get; set; }
         public Effect Shockwave;
+        public Effect Shockwave2;
         public Effect TrailShader;
         public Effect TextShader;
 
@@ -126,21 +128,29 @@ namespace OvermorrowMod
             {
                 // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
+                Shockwave2 = GetEffect("Effects/ShockwaveEffect");
                 TrailShader = GetEffect("Effects/Trail");
                 TextShader = GetEffect("Effects/TextShader");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
+                Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
+
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
+                Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
+
                 TrailTextures = new List<Texture2D>();
                 for (int i = 0; i < 7; i++)
                 {
                     TrailTextures.Add(GetTexture("Effects/TrailTextures/Trail" + i));
                 }
+
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 Particle.Load();
                 TestDetours.Load();
                 Trail.Load();
+
+                Filters.Scene["Shockwave"].Load();
 
                 foreach (Type type in Code.GetTypes())
                 {

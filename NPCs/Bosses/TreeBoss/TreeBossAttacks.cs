@@ -10,6 +10,21 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public partial class TreeBoss : ModNPC
     {
+        private void Despawn()
+        {
+            npc.alpha = 255;
+
+            if (MiscCounter2-- == 120)
+            {
+                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<EntrancePortal>(), 0, 0f, Main.myPlayer);
+            }
+
+            if (MiscCounter2 <= 0)
+            {
+                npc.active = false;
+            }
+        }
+
         private void Buffer()
         {
             if (MiscCounter++ == 90)
@@ -141,6 +156,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 // Chooses the attack from the list
                 ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
+
+                // Debugging thing:
                 //ChosenAttack = (int)AIStates.Spirit;
 
                 // Makes sure the healing attack doesn't have a chance to be chosen unless conditions are met
@@ -149,10 +166,51 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
                 }
 
-                // Increment the non-healing attack counter
-                if (ChosenAttack != (int)AIStates.Runes)
+                // If the boss is below 50%, make them do the Rune attack at least once
+                if (npc.life <= npc.lifeMax * 0.5f && !HealthRune)
                 {
-                    RuneCounter++;
+                    ChosenAttack = (int)AIStates.Runes;
+                    RuneCounter = 0;
+                    HealthRune = true;
+                }
+
+                // This prevents an attack from running multiple times in a row by forcing it to be the other attack
+                switch (ChosenAttack)
+                {
+                    case (int)AIStates.Thorns:
+                        // If the attack has repeated twice in a row, force it to the other attack
+                        if (ThornCounter >= 2)
+                        {
+                            ChosenAttack = (int)AIStates.Spirit;
+                            ThornCounter = 0;
+                            SpiritCounter = 0;
+                        }
+                        else
+                        {
+                            // Otherwise, reset the other attack since it's no longer consecutive
+                            SpiritCounter = 0;
+                            ThornCounter++;
+                        }
+
+                        // Increment the non-healing attack counter
+                        RuneCounter++;
+                        break;
+                    case (int)AIStates.Spirit:
+                        if (ThornCounter >= 2)
+                        {
+                            ChosenAttack = (int)AIStates.Thorns;
+                            SpiritCounter = 0;
+                            ThornCounter = 0;
+                        }
+                        else
+                        {
+                            ThornCounter = 0;
+                            SpiritCounter++;
+                        }
+
+                        // Increment the non-healing attack counter
+                        RuneCounter++;
+                        break;
                 }
             }
 
@@ -167,24 +225,21 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         break;
                     case (int)AIStates.Spirit:
                         // Makes it so the spirit attack runs twice if below 50% hp
-                        if (npc.life < npc.lifeMax * 0.5f)
-                        {
-                            RunAgain = true;
-                        }
+                        if (npc.life < npc.lifeMax * 0.5f) RunAgain = true;
+
+                        SpiritCounter++;
+                        RuneCounter++;
                         break;
                 }
 
-                //AICase = ChosenAttack;
-                AICase = (int)AIStates.Runes;
+                AICase = ChosenAttack;
+                //AICase = (int)AIStates.Runes;
                 GlobalCounter = 0;
                 MiscCounter = 0;
                 MiscCounter2 = 0;
 
                 // Keep the eye visual for the runes attack, otherwise turn it off
-                if (ChosenAttack != (int)AIStates.Runes)
-                {
-                    ChosenAttack = 0;
-                }
+                if (ChosenAttack != (int)AIStates.Runes) ChosenAttack = 0;
             }
         }
 
@@ -356,15 +411,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (MiscCounter % 7 == 0 && MiscCounter <= 49)
                     {
-                        int RADIUS = 135;
+                        int RADIUS = 155;
 
-                        float Rotation = RotationDirection * (int)values[(int)MiscCounter2] * MathHelper.PiOver4;
+                        float Rotation = RotationDirection * (int)values[(int)MiscCounter2++] * MathHelper.PiOver4;
                         Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(Rotation + RotationOffset);
 
                         int proj = Projectile.NewProjectile(target.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<GreenSpirit>(), npc.damage, 0f, Main.myPlayer, Rotation + RotationOffset, RADIUS);
                         ((GreenSpirit)Main.projectile[proj].modProjectile).RotationCenter = target;
-
-                        MiscCounter2++;
+                        ((GreenSpirit)Main.projectile[proj].modProjectile).ProjectileColor = RotationDirection == -1 ? Color.Pink : new Color(54, 255, 64);
+                        //MiscCounter2++;
                     }
 
                     MiscCounter++;

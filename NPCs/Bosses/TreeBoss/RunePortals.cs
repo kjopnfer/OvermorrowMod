@@ -94,6 +94,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 dust.scale += 1f;
             }*/
         }
+
+        public override void Kill(int timeLeft)
+        {
+            Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/IorichExplosion"), projectile.Center);
+        }
     }
 
     public class ExitPortal : ModProjectile
@@ -164,6 +169,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (TailDistance == 22 && projectile.timeLeft == 30)
             {
+                Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/IorichExplosion"), projectile.Center);
+
                 Main.npc[(int)projectile.ai[1]].Center = projectile.Center;
                 Main.npc[(int)projectile.ai[1]].dontTakeDamage = false;
                 Main.npc[(int)projectile.ai[1]].alpha = 0;

@@ -51,7 +51,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         // Keeps track of attacks other than the rune attack
         // This is so we don't keep spamming the healing attack
         public int RuneCounter;
+        public int SpiritCounter;
+        public int ThornCounter;
+
         public int MINIMUM_ATTACKS = 3;
+        public bool HealthRune = false;
         public int ChosenAttack;
 
         public bool RunAgain = false;
@@ -81,7 +85,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             //npc.damage = 31;
             npc.damage = 17;
             npc.defense = 22;
-            npc.lifeMax = 3300;
+            npc.lifeMax = 3000;
             npc.HitSound = SoundID.NPCHit7;
             npc.knockBackResist = 0f;
             npc.noGravity = false;
@@ -100,6 +104,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public enum AIStates
         {
+            Despawn = -3,
             Buffer = -2,
             Intro = -1,
             Selector = 0,
@@ -130,20 +135,25 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
             {
                 npc.TargetClosest(false);
-                npc.direction = 1;
-                npc.velocity.Y = npc.velocity.Y - 0.1f;
-                if (npc.timeLeft > 20)
+                player = Main.player[npc.target];
+                if (!player.active || player.dead)
                 {
-                    npc.timeLeft = 20;
-                    return;
-                }
-            }
+                    if (AICase != (int)AIStates.Despawn)
+                    {
+                        AICase = (int)AIStates.Despawn;
+                        //npc.active = false;
+                        MiscCounter2 = 120;
 
-            if (!player.active || player.dead)
-            {
-                npc.noTileCollide = true;
-                npc.TargetClosest(false);
-                npc.velocity.Y = 2000;
+                        // Start despawn code for the spinners
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            if (Main.projectile[i].active && Main.projectile[i].type == ModContent.ProjectileType<RuneSpinner>())
+                            {
+                                ((RuneSpinner)Main.projectile[i].modProjectile).CanDespawn = true;
+                            }
+                        }
+                    }
+                }
             }
 
             // This is here because the boss heals
@@ -151,6 +161,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             switch (AICase)
             {
+                case (int)AIStates.Despawn:
+                    Despawn();
+                    break;
                 case (int)AIStates.Buffer: // Does literally nothing for 90 seconds
                     Buffer();
                     break;
@@ -183,7 +196,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBoss_Pulse");
 
             #region Spawn Drawcode
-            if (MiscCounter > 60 && AICase == (int)AIStates.Intro)
+            if ((MiscCounter > 60 && AICase == (int)AIStates.Intro) || AICase == (int)AIStates.Despawn)
             {
                 Vector2 vector59 = npc.Center + new Vector2(0, 10) - Main.screenPosition;
                 Rectangle frame8 = npc.frame;

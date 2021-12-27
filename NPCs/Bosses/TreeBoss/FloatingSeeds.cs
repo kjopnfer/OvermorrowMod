@@ -12,7 +12,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override bool CanHitPlayer(Player target) => CanDescend ? true : false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Floating Seed"); 
+            DisplayName.SetDefault("Drifting Leaf"); 
         }
 
         public override void SetDefaults()
