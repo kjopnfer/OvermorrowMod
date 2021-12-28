@@ -16,14 +16,14 @@ namespace OvermorrowMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Eater Boomerang");
-            ProjectileID.Sets.TrailCacheLength[projectile.type] = 3;
+            ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[projectile.type] = 0;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 22;
-            projectile.height = 22;
+            projectile.width = 50;
+            projectile.height = 50;
             projectile.timeLeft = 100;
             projectile.penetrate = -1;
             projectile.hostile = false;
@@ -79,33 +79,39 @@ namespace OvermorrowMod.Projectiles.Melee
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
-            Vector2 eee = projectile.Center;
-            Main.PlaySound(SoundID.Item54, (int)eee.X, (int)eee.Y);
-            {
-                ComingBack = true;
-            }
+            ComingBack = true;
+            
             return false;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
+            Texture2D texture = mod.GetTexture("Projectiles/Melee/BloodyEye_Trail");
 
-            Texture2D texture = mod.GetTexture("Projectiles/Melee/BloodyEye");
+            Color color = Color.Red;
+            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
+            int y2 = num154 * projectile.frame;
+            Rectangle drawRectangle = new Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
 
-            Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
-            for (int k = 0; k < projectile.oldPos.Length; k++)
+            Vector2 origin2 = drawRectangle.Size() / 2f;
+            var off = new Vector2(projectile.width / 2f, projectile.height / 2f);
+
+
+            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[projectile.type]; i++)
             {
-                Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin;
-                Color color = projectile.GetAlpha(Color.White) * ((float)(projectile.oldPos.Length - k) / (float)projectile.oldPos.Length);
-                spriteBatch.Draw(texture, drawPos, new Rectangle?(), color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
+                Color color2 = color;
+                color2 *= (float)(ProjectileID.Sets.TrailCacheLength[projectile.type] - i) / ProjectileID.Sets.TrailCacheLength[projectile.type];
+                Vector2 value4 = projectile.oldPos[i];
+                float num165 = projectile.oldRot[i];
+
+                float scale = projectile.scale * (ProjectileID.Sets.TrailCacheLength[projectile.type] - i) / ProjectileID.Sets.TrailCacheLength[projectile.type];
+                Main.spriteBatch.Draw(texture, projectile.oldPos[i] - Main.screenPosition + off, new Microsoft.Xna.Framework.Rectangle?(drawRectangle), color2, num165, origin2, scale, SpriteEffects.None, 0f);
             }
             return true;
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Vector2 eeee = projectile.Center;
-            Main.PlaySound(SoundID.Item54, (int)eeee.X, (int)eeee.Y);
             ComingBack = true;
         }
     }

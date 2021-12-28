@@ -155,6 +155,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
+                    Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
                     Projectile.NewProjectile(npc.Center, PlayerDistance * ShootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
                 }
             }
@@ -740,7 +741,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                     if (MiscCounter2 == 20)
                     {
-                        Particle.CreateParticle(Particle.ParticleType<ReverseShockwave2>(), npc.Center, Vector2.Zero, Color.Lime, 1, 16f);
+                        //Particle.CreateParticle(Particle.ParticleType<ReverseShockwave2>(), npc.Center, Vector2.Zero, Color.Lime, 1, 16f);
                     }
                 }
 

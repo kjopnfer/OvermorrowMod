@@ -127,7 +127,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             if (Main.netMode == NetmodeID.SinglePlayer)
             {
                 CombatText.NewText(npc.getRect(), new Color(0, 255, 191), text, true);
-                Main.NewText("[c/00ffbf:<Iorich>] " + text, new Color(0, 255, 191));
+                Main.NewText("[c/00ffbf:<Iorich>] " + text);
             }
             else if (Main.netMode == NetmodeID.Server)
             {
@@ -403,6 +403,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 MiscCounter = 0;
                 MiscCounter2 = 120;
 
+                npc.alpha = 0;
                 npc.damage = 0;
                 npc.life = npc.lifeMax;
                 npc.dontTakeDamage = true;

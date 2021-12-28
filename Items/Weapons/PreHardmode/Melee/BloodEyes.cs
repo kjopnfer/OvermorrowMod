@@ -8,6 +8,12 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
     public class BloodEyes : ModItem
     {
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Bloody Eyes");
+            Tooltip.SetDefault("Three Boomerangs that shoot out together");
+        }
+
         public override void SetDefaults()
         {
             item.melee = true;
@@ -25,21 +31,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.shoot = ModContent.ProjectileType<BloodyEye>();
             item.shootSpeed = 15f;
             item.value = Item.sellPrice(0, 1, 0, 0);
-        }
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Bloody Eyes");
-            Tooltip.SetDefault("Three Boomerangs that shoot out together");
-        }
-
-        public override void AddRecipes()
-        {
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(ItemID.CrimtaneBar, 8);
-            recipe1.AddTile(TileID.Anvils);
-            recipe1.SetResult(this);
-            recipe1.AddRecipe();
         }
 
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
@@ -61,6 +52,15 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             {
                 return player.ownedProjectileCounts[ModContent.ProjectileType<BloodyEye>()] < 1;
             }
+        }
+
+        public override void AddRecipes()
+        {
+            ModRecipe recipe1 = new ModRecipe(mod);
+            recipe1.AddIngredient(ItemID.CrimtaneBar, 8);
+            recipe1.AddTile(TileID.Anvils);
+            recipe1.SetResult(this);
+            recipe1.AddRecipe();
         }
     }
 }

@@ -382,6 +382,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (projectile.getRect().Intersects(parent.getRect()))
             {
+                Main.PlaySound(SoundID.DD2_DarkMageHealImpact);
+
                 Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, new Color(195, 255, 154), 0.5f, 0.25f);
                 projectile.Kill();
             }

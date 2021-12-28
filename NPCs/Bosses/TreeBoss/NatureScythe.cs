@@ -30,6 +30,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void AI()
         {
+            // Spawning dust
             if (projectile.ai[1] < 15)
             {
                 Vector2 origin = projectile.Center;
