@@ -17,7 +17,7 @@ namespace OvermorrowMod.Projectiles.Melee
         {
             DisplayName.SetDefault("Eater Boomerang");
             ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[projectile.type] = 0;
+            ProjectileID.Sets.TrailingMode[projectile.type] = 2;
         }
 
         public override void SetDefaults()
@@ -40,7 +40,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 SavedDMG = projectile.damage;
             }
 
-            projectile.rotation += 0.36f;
+            projectile.rotation += .55f;
 
             if (projectile.timeLeft < 65)
             {

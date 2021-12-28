@@ -57,18 +57,24 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         private void Selector(Player player)
         {
             // Reset values from other attacks
+            #region Reset
             npc.dontTakeDamage = false;
             MeteorLight = false;
             if (AbsorbedEnergies > 0) AbsorbedEnergies = 0;
-
-            npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
-            npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
 
             if (LightValue > 0)
             {
                 LightValue = Utils.Clamp(MiscCounter2--, 0, 60) / 60f;
             }
+            #endregion
 
+            #region Movement
+            npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
+            npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
+            #endregion
+            
+
+            #region Attack Selection
             int[] Attacks = new int[] { (int)AIStates.Teleport, (int)AIStates.Spirit, (int)AIStates.Runes };
 
             if (MiscCounter++ == 120)
@@ -144,6 +150,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     RuneCounter++;
                 }
             }
+            #endregion
 
             if (MiscCounter % 100 == 0)
             {
