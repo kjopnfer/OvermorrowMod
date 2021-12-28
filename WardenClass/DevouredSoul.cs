@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace WardenClass
 {
-    public class DevouredSoul : OrbitingProjectileNPC, ITrailEntity
+    public class DevouredSoul : OrbitingProjectile, ITrailEntity
     {
         public Color TrailColor(float progress) => Color.Red;
         public float TrailSize(float progress) => 3;
@@ -19,6 +19,11 @@ namespace WardenClass
         {
             return typeof(SoulTrail);
         }
+
+        public DevouredSoul() : base(0)
+        {
+        }
+
 
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         private bool reductionCheck = false;
@@ -38,7 +43,6 @@ namespace WardenClass
             projectile.ignoreWater = true;
             projectile.timeLeft = 60 * 20;
 
-            ProjectileSlot = 1;
             Period = 300;
             PeriodFast = 100;
             ProjectileSpeed = 8;
@@ -48,21 +52,22 @@ namespace WardenClass
 
         public override void AI()
         {
-            if (Proj_State != 0)
+            if (ProjState != OrbitingProjectileState.Initializing && entity != null)
             {
-                if (!npc.active)
+                if (!entity.active)
                 {
                     projectile.Kill();
+                    return;
                 }
 
                 if (!reductionCheck)
                 {
-                    npc.damage -= 4;
+                    ((NPC)entity).damage -= 4;
                     reductionCheck = true;
                 }
 
-                RelativeVelocity = npc.velocity;
-                OrbitCenter = npc.Center;
+                RelativeVelocity = entity.velocity;
+                OrbitCenter = entity.Center;
             }
 
             Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
@@ -91,14 +96,14 @@ namespace WardenClass
 
         public override void Kill(int timeLeft)
         {
-            if (Proj_State == 1 || Proj_State == 2)
+            if (ProjState == OrbitingProjectileState.Spawning || ProjState == OrbitingProjectileState.Moving)
             {
                 GeneratePositionsAfterKill();
             }
 
-            if (reductionCheck && npc != null)
+            if (reductionCheck && entity != null)
             {
-                npc.damage += 4;
+                ((NPC)entity).damage += 4;
             }
 
             Vector2 origin = projectile.Center;
@@ -144,28 +149,29 @@ namespace WardenClass
                         target = true;
                     }
                 }
+            }
 
-                if (target)
-                {
-                    AdjustMagnitude(ref move);
-                    projectile.velocity = (20 * projectile.velocity + move) / 11f;
-                    AdjustMagnitude(ref projectile.velocity);
-                }
+            if (target)
+            {
+                AdjustMagnitude(ref move);
+                projectile.velocity = (20 * projectile.velocity + move) / 11f;
+                AdjustMagnitude(ref projectile.velocity);
             }
         }
 
         // Set the orbiting position to the NPC that was just hit
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            npc = target;
+            entity = target;
+            OrbitCenter = target.Center;
 
             // Set the state to initialization
-            Proj_State = 4;
+            ProjState = OrbitingProjectileState.Initializing;
         }
 
         public override bool? CanHitNPC(NPC target)
         {
-            if (Proj_State == 1 || Proj_State == 2)
+            if (ProjState == OrbitingProjectileState.Spawning || ProjState == OrbitingProjectileState.Moving)
             {
                 return false;
             }
