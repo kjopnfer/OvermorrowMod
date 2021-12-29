@@ -23,7 +23,7 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.NPCs.Bosses.StormDrake
 {
     [AutoloadBossHead]
-    public class StormDrake2 : ModNPC, ITrailEntity
+    public class StormDrake2 : ModNPC
     {
         private bool halfHealth = false;
         private bool Phase2Switched = false;
