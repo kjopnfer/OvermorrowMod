@@ -7,120 +7,150 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.WardenClass
 {
-    abstract public class OrbitingProjectile : ModProjectile
+    public enum OrbitingProjectileState
+    {
+        Initializing = 0, // This is used for initilizing all values.
+        Spawning = 1,     
+        Moving = 2,       // This is the state in which the projectiles moves on the circle with the fast period.
+        Cycling = 3,      // Unused but might be needed for better control over how the projectile moves when a new radius is set.
+        Attacking = 4,    // Abstract state used to give the projectile Attacking behaviour or any other things like getting fired at a enemy.
+        Empty = 5
+    }
+
+    public abstract class OrbitingProjectile : ModProjectile
     {
         // The following code is an adaption of the Orbiting Projectile Code from Trinitarian
         // Credit to Marven, who gave permission to use this class
 
-        private const int State_Initializing = 0;       // This is used for initilizing all values.
-        private const int State_Spawning = 1;
-        private const int State_Moving = 2;             // This is the state in which the projectiles moves on the circle with the fast period.
-        private const int State_Cycling = 3;            // Unused but might be needed for better control over how the projectile moves when a new radius is set.
-        private const int State_Attacking = 4;          // Abstract state used to give the projectile Attacking behaviour or any other things like getting fired at a enemy.
-        private const int State_Empty = 5;
 
-        // This player is not neccesarily the target that gets orbited. We do need a player instance to make sure we have a suitable positions and projectile array we can use.
-        public Player player;
+        public int ProjectileSlot { get; }
 
-        // This ProjectileSlot refers to which array we use to store our projectiles every weapon/projectile that wants to be independent of other orbiting projectiles has to choose a new ProjectileSlot that is not yet used.
-        public int ProjectileSlot;
+        protected OrbitingProjectile(int projectileSlot)
+        {
+            ProjectileSlot = projectileSlot;
+        }
+
+        // This entity is not neccesarily the target that gets orbited. We do need an entity instance to make sure we have a suitable positions and projectile array we can use.
+        protected Entity entity;
 
         // The radius at which the projectile orbits. This is set per projectile this means that every projectile can theoretically have a different orbiting radius.
-        public float OrbitingRadius;
+        protected float OrbitingRadius;
 
         // This is how many frames have to pass before the projectiles completes a full rotation.
-        public float Period;
+        protected float Period;
 
         // This is the same as Period but for the rotation used to realign the projectiles. This should be significantly lower than Period.
-        public float PeriodFast;
+        protected float PeriodFast;
 
         // The speed that the projectile uses to get into position when it spawns or has to adjust the radius.
-        public float ProjectileSpeed;
+        protected float ProjectileSpeed;
 
         // The position that the projectiles orbit around.
-        public Vector2 OrbitCenter;
+        protected Vector2 OrbitCenter;
 
         // The velocity of the position the projectiles are orbiting around.
-        public Vector2 RelativeVelocity;
+        protected Vector2 RelativeVelocity;
 
-        public int TimerStart = 0;
-        public double angle = 0;
-        public float CurrentOrbitingRadius = 0;
+        protected int TimerStart = 0;
+        protected double angle = 0;
+        protected float CurrentOrbitingRadius = 0;
 
-        public float ProjID
+        protected OrbitEntityContainer GetOrbitContainer()
         {
-            get => projectile.localAI[0];
+            if (entity is Player player)
+            {
+                return player.GetModPlayer<OrbitPlayer>().Container;
+            }
+            else if (entity is NPC npc)
+            {
+                return npc.GetGlobalNPC<OrbitNPC>().Container;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public int ProjIndex
+        {
+            get => (int)projectile.localAI[0];
             set => projectile.localAI[0] = value;
         }
-        public float Proj_State
+        protected OrbitingProjectileState ProjState
         {
-            get => projectile.localAI[1];
-            set => projectile.localAI[1] = value;
+            get => (OrbitingProjectileState)projectile.localAI[1];
+            set => projectile.localAI[1] = (float)value;
         }
 
         public override void AI()
         {
-            OrbitPlayer modplayer = player.GetModPlayer<OrbitPlayer>();
-            Vector2 ProjectileVelocity = Vector2.Zero;
-            // Update the position array.
-            GenerateProjectilePositions();
-
             // This state can be used to keep the projectiles from updating.
-            if (Proj_State == State_Empty)
+            if (ProjState == OrbitingProjectileState.Empty)
             {
                 return;
             }
 
-            // This handles the spawning of the projectiles. 
-            if (Proj_State == State_Initializing)
+            var container = GetOrbitContainer();
+            // If there is no target entity, enter attack mode
+            if (container == null || ProjState == OrbitingProjectileState.Attacking)
             {
-                ProjID = modplayer.OrbitingProjectileCount[ProjectileSlot];
-                modplayer.OrbitingProjectile[ProjectileSlot, modplayer.OrbitingProjectileCount[ProjectileSlot]] = projectile;
-                modplayer.OrbitingProjectileCount[ProjectileSlot]++;
-                // Make sure to update the array whenever the ProjectileSlot of projectiles changes.
-                GenerateProjectilePositions();
-                Proj_State = State_Spawning;
+                ProjState = OrbitingProjectileState.Attacking;
+                Attack();
+                return;
             }
+
+            Vector2 velocityChange;
+
+            // This handles the spawning of the projectiles. 
+            if (ProjState == OrbitingProjectileState.Initializing)
+            {
+                ProjIndex = container.RegisterNewProjectile(ProjectileSlot, projectile);
+                // Make sure to update the array whenever the ProjectileSlot of projectiles changes.
+                ProjState = OrbitingProjectileState.Spawning;
+            }
+
+            GenerateProjectilePositions(container);
 
             // Despawn distance since server despawned projectiles don't call the Kill hook.
             // This is important since Kill is where we do the calculations to reorder the projectiles once one dies.
             if (projectile.DistanceSQ(OrbitCenter) > 2000 * 2000)
             {
                 projectile.Kill();
+                return;
             }
 
             // Movement section
-            if (Proj_State == State_Spawning || Proj_State == State_Moving)
+            if (ProjState == OrbitingProjectileState.Spawning || ProjState == OrbitingProjectileState.Moving)
             {
                 // We make all the movement of the projectiles relative to the player to make sure the orbiting around the player works properly.
                 projectile.velocity = RelativeVelocity;
-                int ProjNumber = modplayer.OrbitingProjectileCount[ProjectileSlot];
+                int numProjectilesOfType = container.OrbitingProjectileCount[ProjectileSlot];
                 // Here we assign the projectile its position on the circle the positions are assigned from front to back to make sure that the projectiles rotate in the correct direction.
                 // The positions are stored in the array that is stored on the modplayer instance. 
 
-                Vector2 WantedPosition = modplayer.OrbitingProjectilePositions[ProjectileSlot, ProjNumber - (int)ProjID - 1];
+                Vector2 wantedPosition = container.OrbitingProjectilePositions[ProjectileSlot, numProjectilesOfType - ProjIndex - 1];
                 // Snapping distance of 20 meaning that once the projectile gets within 20 pixels of the ideal position it just snapps there and stays.
                 // !!!!Make sure this ProjectileSlot is never smaller than the rotational velocity of the cirlce (the fast one)!!!!            
-                if (projectile.DistanceSQ(WantedPosition) < 20 * 20)
+                if (projectile.DistanceSQ(wantedPosition) < 20 * 20)
                 {
-                    projectile.Center = WantedPosition;
+                    projectile.Center = wantedPosition;
                     // Once spawning is done aka we reached the correct OrbitingRadius. We can switch to using the radial movement.
-                    Proj_State = State_Moving;
+                    ProjState = OrbitingProjectileState.Moving;
                     TimerStart = 0;
                     CurrentOrbitingRadius = OrbitingRadius;
                 }
                 else
                 {
                     // This just moves straight to the wanted position. This does work for getting to the positions after just spawning it does look somewhat wierd tho since it doesn't move along the OrbitingRadius of the circle.
-                    if (Proj_State == State_Spawning || CurrentOrbitingRadius != OrbitingRadius)
+                    if (ProjState == OrbitingProjectileState.Spawning || CurrentOrbitingRadius != OrbitingRadius)
                     {
-                        ProjectileVelocity = WantedPosition - projectile.Center;
-                        if (ProjectileVelocity != Vector2.Zero)
+                        velocityChange = wantedPosition - projectile.Center;
+                        if (velocityChange != Vector2.Zero)
                         {
-                            ProjectileVelocity.Normalize();
+                            velocityChange.Normalize();
                         }
-                        ProjectileVelocity *= ProjectileSpeed;
-                        projectile.velocity += ProjectileVelocity;
+                        velocityChange *= ProjectileSpeed;
+                        projectile.velocity += velocityChange;
                     }
 
                     // This is our main way of movement. We initialze the TimerStart here and calculate the current angle towards the player. These 2 variables allow us to get a starting position for the movement.
@@ -139,18 +169,19 @@ namespace OvermorrowMod.WardenClass
                         if (TimerStart == 0)
                         {
                             //Get the initial conditions and with that also the current starting location for the movement.
-                            angle = Math.Atan2(projectile.Center.Y - player.Center.Y, projectile.Center.X - player.Center.X);
-                            TimerStart = modplayer.RotationTimer;
+                            angle = Math.Atan2(projectile.Center.Y - entity.Center.Y, projectile.Center.X - entity.Center.X);
+                            TimerStart = container.RotationTimer;
                         }
                         //This period determines how fast the projectiles move along the radial path.
                         double period = 2 * Math.PI / PeriodFast;
-                        projectile.Center = OrbitCenter + new Vector2(OrbitingRadius * (float)Math.Cos(period * (modplayer.RotationTimer - TimerStart) + angle), OrbitingRadius * (float)Math.Sin(period * (modplayer.RotationTimer - TimerStart) + angle));
+                        projectile.Center = 
+                            OrbitCenter 
+                            + new Vector2(
+                                OrbitingRadius * (float)Math.Cos(period * (container.RotationTimer - TimerStart) + angle),
+                                OrbitingRadius * (float)Math.Sin(period * (container.RotationTimer - TimerStart) + angle)
+                            );
                     }
                 }
-            }
-            else if (Proj_State == State_Attacking) // Here the abstract attacking behaviour gets called. T oacces just override Attack().
-            {
-                Attack();
             }
         }
 
@@ -166,43 +197,48 @@ namespace OvermorrowMod.WardenClass
         // Its also important to uptade the positions array whenever the ProjectileSlot of projectiles changes.
         public void GeneratePositionsAfterKill()
         {
-            Player player = Main.player[projectile.owner];
-            OrbitPlayer modplayer = player.GetModPlayer<OrbitPlayer>();
-            modplayer.OrbitingProjectileCount[ProjectileSlot]--;
-            int ProjNumber = modplayer.OrbitingProjectileCount[ProjectileSlot];
+            var container = GetOrbitContainer();
+            // If count is 0, then the entity owner has been killed, and we shouldn't do anything else.
+            if (container.OrbitingProjectileCount[ProjectileSlot] <= 0) return;
+
+            container.OrbitingProjectileCount[ProjectileSlot]--;
+            int ProjNumber = container.OrbitingProjectileCount[ProjectileSlot];
             // This reorders the Projectile array that has all the currently active projectiles.
-            if (ProjNumber > 0 && ProjID != 0)
+            if (ProjNumber > 0 && ProjIndex != 0)
             {
-                for (int i = (int)ProjID; i < ProjNumber; i++)
+                for (int i = ProjIndex; i < ProjNumber; i++)
                 {
-                    modplayer.OrbitingProjectile[ProjectileSlot, i] = modplayer.OrbitingProjectile[ProjectileSlot, i + 1];
+                    container.OrbitingProjectile[ProjectileSlot, i] = container.OrbitingProjectile[ProjectileSlot, i + 1];
                 }
-                modplayer.OrbitingProjectile[ProjectileSlot, ProjNumber] = modplayer.OrbitingProjectile[ProjectileSlot, 0];
+                container.OrbitingProjectile[ProjectileSlot, ProjNumber] = container.OrbitingProjectile[ProjectileSlot, 0];
             }
 
 
             for (int j = 0; j < ProjNumber; j++)
             {
-                modplayer.OrbitingProjectile[ProjectileSlot, j] = modplayer.OrbitingProjectile[ProjectileSlot, j + 1];
+                container.OrbitingProjectile[ProjectileSlot, j] = container.OrbitingProjectile[ProjectileSlot, j + 1];
             }
 
             // This assigns the projectile IDs
             for (int k = 0; k < ProjNumber; k++)
             {
-                modplayer.OrbitingProjectile[ProjectileSlot, k].localAI[0] = k;
+                container.OrbitingProjectile[ProjectileSlot, k].localAI[0] = k;
             }
 
             // Here we update the positions.
-            GenerateProjectilePositions();
+            GenerateProjectilePositions(container);
         }
 
         // This is the function that generates the positions.
-        public void GenerateProjectilePositions()
+        public void GenerateProjectilePositions(OrbitEntityContainer container)
         {
-            OrbitPlayer modplayer = player.GetModPlayer<OrbitPlayer>();
-            for (int i = 0; i < modplayer.OrbitingProjectileCount[ProjectileSlot]; i++)
+            int projectileCount = container.OrbitingProjectileCount[ProjectileSlot];
+            for (int i = 0; i < projectileCount; i++)
             {
-                modplayer.OrbitingProjectilePositions[ProjectileSlot, i] = OrbitCenter + new Vector2(OrbitingRadius * (float)Math.Cos(2 * Math.PI / Period * modplayer.RotationTimer + (2 * Math.PI / modplayer.OrbitingProjectileCount[ProjectileSlot] * i)), OrbitingRadius * (float)Math.Sin(2 * Math.PI / Period * modplayer.RotationTimer + (2 * Math.PI / modplayer.OrbitingProjectileCount[ProjectileSlot] * i)));
+                container.OrbitingProjectilePositions[ProjectileSlot, i] =
+                    OrbitCenter
+                    + new Vector2(OrbitingRadius * (float)Math.Cos(2 * Math.PI / Period * container.RotationTimer + (2 * Math.PI / projectileCount * i)),
+                    OrbitingRadius * (float)Math.Sin(2 * Math.PI / Period * container.RotationTimer + (2 * Math.PI / projectileCount * i)));
             }
         }
 
