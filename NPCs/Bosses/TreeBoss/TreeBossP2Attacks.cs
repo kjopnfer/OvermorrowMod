@@ -69,10 +69,21 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             #endregion
 
             #region Movement
+
+#           // Randomly select three movement patterns
+
+            // Pausing briefly before aiming a spread of three scythes towards the player
+            // Two point movement where they dash upwards at an angle before moving downwards and shooting scythes in the corresponding direction
+            // Moving a bezier curve over/under the player towards where the player is heading before dashing towards where they were
+
+            /*if (MiscCounter % 100 == 0)
+            {
+                npc.velocity = 8 * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
+            }*/
             npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
             npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
             #endregion
-            
+
 
             #region Attack Selection
             int[] Attacks = new int[] { (int)AIStates.Teleport, (int)AIStates.Spirit, (int)AIStates.Runes };
