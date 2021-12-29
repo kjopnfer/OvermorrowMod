@@ -66,10 +66,5 @@ namespace OvermorrowMod.Projectiles.Ranged
                 projectile.Kill();
             }
         }
-
-        public override void Kill(int timeLeft)
-        {
-            base.Kill(timeLeft);
-        }
     }
 }

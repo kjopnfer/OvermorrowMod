@@ -11,12 +11,14 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Greatwood Longbow");
-            Tooltip.SetDefault("Fires two arrows for each arrow");
+            Tooltip.SetDefault("Hold down shoot to charge up the bow\n" +
+                "Releases a volley of arrows when reaching maximum charge\n" +
+                "Additionally, restore 5 life to the player during the volley");
         }
 
         public override void SetDefaults()
         {
-            item.damage = 20;
+            item.damage = 26;
             item.noMelee = true;
             item.ranged = true;
             item.rare = ItemRarityID.Orange;

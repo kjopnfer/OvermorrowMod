@@ -70,7 +70,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             #region Movement
 
-#           // Randomly select three movement patterns
+            // Randomly select three movement patterns
 
             // Pausing briefly before aiming a spread of three scythes towards the player
             // Two point movement where they dash upwards at an angle before moving downwards and shooting scythes in the corresponding direction

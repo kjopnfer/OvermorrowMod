@@ -189,7 +189,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public Vector2 OldPosition;
         public bool Converge = false;
 
-
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
@@ -364,7 +363,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             {
                 projectile.rotation = projectile.DirectionTo(RotationCenter.Center).ToRotation();
 
-                double RotationCounter = MathHelper.Lerp(StartingRotation, StartingRotation + (MathHelper.TwoPi + MathHelper.ToRadians(RandomOffset)), Utils.Clamp(projectile.ai[0]++, 0, 100f) / (100f));
+                double RotationCounter = MathHelper.Lerp(StartingRotation, StartingRotation + (MathHelper.TwoPi + MathHelper.ToRadians(RandomOffset)), Utils.Clamp(projectile.ai[0]++, 0, 100f) / 100f);
                 projectile.Center = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(RotationCounter);
                 OldPosition = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(RotationCounter);
             }

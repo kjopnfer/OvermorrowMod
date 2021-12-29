@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
@@ -10,7 +11,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Iorich's Sorrow");
-            Tooltip.SetDefault("Shoots a bolt infused with the energies of nature\n" +
+            Tooltip.SetDefault("Right click on enemies on lock onto them\n" +
+                "Holding down shoot while locked onto enemies will create Spirit Daggers around them\n" +
+                "Converges towards the center after creating 8 Spirit Daggers\n" +
                 "'The veil of darkness did little to hide the inferno that devoured his people'");
             Item.staff[item.type] = true;
         }
@@ -23,7 +26,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.UseSound = SoundID.Item8;
             item.noMelee = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 21;
+            item.damage = 30;
             item.useTurn = false;
             item.useAnimation = 32;
             item.useTime = 32;
@@ -33,7 +36,31 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.shootSpeed = 9f;
             item.knockBack = 3f;
             item.magic = true;
+            item.channel = true;
             item.value = Item.sellPrice(gold: 1, silver: 75);
+        }
+
+        public override bool CanUseItem(Player player)
+        {
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<NatureSpike>()] < 8)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            return false;
+        }
+
+        public override void HoldItem(Player player)
+        {
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<NatureBolt>()] <= 0)
+            {
+                Projectile.NewProjectile(Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<NatureBolt>(), item.damage, 0f, player.whoAmI);
+            }
         }
     }
 }
