@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,25 +16,28 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
 
         public override void SetDefaults()
         {
-            //item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
-            item.UseSound = SoundID.Item5;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
             item.damage = 20;
-            item.useAnimation = 25;
-            item.useTime = 25;
-            item.width = 32;
-            item.height = 62;
-            item.shoot = AmmoID.Arrow;
+            item.noMelee = true;
+            item.ranged = true;
+            item.rare = ItemRarityID.Orange;
+            item.UseSound = null;
+            item.useStyle = ItemUseStyleID.HoldingOut;
+            item.channel = true;
+            item.noUseGraphic = true;
+            item.useAnimation = 10;
+            item.useTime = 10;
+            item.reuseDelay = 5;
+            item.width = 28;
+            item.height = 72;
+            item.shoot = ModContent.ProjectileType<IorichBowHoldout>()/*AmmoID.Arrow*/;
             item.shootSpeed = 8f;
             item.knockBack = 10f;
-            item.ranged = true;
             item.value = Item.sellPrice(gold: 1);
-            item.useAmmo = AmmoID.Arrow;
+            //item.useAmmo = AmmoID.Arrow;
         }
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[item.shoot] <= 0;
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        /*public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             float numberProjectiles = 2;
             float rotation = MathHelper.ToRadians(30);
@@ -45,7 +49,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
                 Projectile.NewProjectile(position.X + perturbedSpeed.X, position.Y + perturbedSpeed.Y, speedX, speedY, type, damage, knockBack, player.whoAmI);
             }
             return false;
-        }
+        }*/
 
         public override Vector2? HoldoutOffset()
         {

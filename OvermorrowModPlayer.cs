@@ -93,6 +93,7 @@ namespace OvermorrowMod
         public bool windBuff;
 
         // Misc
+        public int BowEnergyCount = 0;
         public Vector2 AltarCoordinates;
         public int ScreenShake;
         public bool BossRoar;
