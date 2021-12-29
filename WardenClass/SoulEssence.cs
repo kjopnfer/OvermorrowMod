@@ -20,6 +20,10 @@ namespace WardenClass
             return typeof(SoulTrail);
         }
 
+        public SoulEssence() : base(0)
+        {
+        }
+
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
@@ -37,7 +41,6 @@ namespace WardenClass
             projectile.ignoreWater = true;
             projectile.timeLeft = 2;
 
-            ProjectileSlot = 1;
             Period = 300;
             PeriodFast = 100;
             ProjectileSpeed = 8;
@@ -48,12 +51,12 @@ namespace WardenClass
         public override void AI()
         {
             //Making player variable "p" set as the projectile's owner
-            player = Main.player[projectile.owner];
+            entity = Main.player[projectile.owner];
 
-            RelativeVelocity = player.velocity;
-            OrbitCenter = player.Center;
+            RelativeVelocity = entity.velocity;
+            OrbitCenter = entity.Center;
 
-            var modPlayer = WardenDamagePlayer.ModPlayer(player);
+            var modPlayer = WardenDamagePlayer.ModPlayer((Player)entity);
 
             // Make sure the projectile does not naturally expire while active
             if (modPlayer.soulList.Count > 0)
@@ -61,7 +64,7 @@ namespace WardenClass
                 projectile.timeLeft = 2;
             }
 
-            if (player.dead)
+            if (((Player)entity).dead)
             {
                 projectile.Kill();
                 return;
@@ -114,7 +117,7 @@ namespace WardenClass
 
         public override void Kill(int timeLeft)
         {
-            if (Proj_State == 1 || Proj_State == 2)
+            if (ProjState == OrbitingProjectileState.Spawning || ProjState == OrbitingProjectileState.Moving)
             {
                 GeneratePositionsAfterKill();
             }
@@ -122,6 +125,8 @@ namespace WardenClass
             Vector2 origin = projectile.Center;
             float radius = 5;
             int numLocations = 3;
+
+            var player = (Player)entity;
 
             if (player.GetModPlayer<WardenDamagePlayer>().SaintRing && Main.netMode != NetmodeID.MultiplayerClient)
             {
