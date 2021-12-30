@@ -94,6 +94,8 @@ namespace OvermorrowMod
 
         // Misc
         public int BowEnergyCount = 0;
+        public int ScytheHitCount = 0;
+
         public Vector2 AltarCoordinates;
         public int ScreenShake;
         public bool BossRoar;

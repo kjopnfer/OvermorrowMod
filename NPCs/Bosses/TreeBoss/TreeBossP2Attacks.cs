@@ -75,6 +75,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             // Pausing briefly before aiming a spread of three scythes towards the player
             // Two point movement where they dash upwards at an angle before moving downwards and shooting scythes in the corresponding direction
             // Moving a bezier curve over/under the player towards where the player is heading before dashing towards where they were
+            // They lunge underneath the player before flying upwards
 
             /*if (MiscCounter % 100 == 0)
             {
