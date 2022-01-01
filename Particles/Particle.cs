@@ -69,7 +69,7 @@ namespace OvermorrowMod.Particles
         }
         public static void Draw(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)
         {
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, null, null, null, Main.UIScaleMatrix); 
             DrawParticles(Main.spriteBatch);
             Main.spriteBatch.End();
             orig(self, time);
