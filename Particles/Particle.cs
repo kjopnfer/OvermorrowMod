@@ -60,7 +60,7 @@ namespace OvermorrowMod.Particles
         {
             NextIndex = -1;
             ActiveParticles = -1;
-            //MaxParticleCount = -1;
+            MaxParticleCount = -1;
             On.Terraria.Main.DrawInterface -= Draw;
             particles = null;
             ParticleTypes = null;
@@ -70,7 +70,7 @@ namespace OvermorrowMod.Particles
         }
         public static void Draw(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)
         {
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, null, null, null, Main.UIScaleMatrix); 
             DrawParticles(Main.spriteBatch);
             Main.spriteBatch.End();
             orig(self, time);
