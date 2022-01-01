@@ -60,7 +60,6 @@ namespace OvermorrowMod.Particles
         {
             NextIndex = -1;
             ActiveParticles = -1;
-            MaxParticleCount = -1;
             On.Terraria.Main.DrawInterface -= Draw;
             particles = null;
             ParticleTypes = null;
