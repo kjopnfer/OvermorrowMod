@@ -15,7 +15,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     [AutoloadBossHead]
     public partial class TreeBoss : ModNPC
     {
-        private Vector2 playerPos;
+        public Vector2 playerPos;
 
         public enum SpawnDirection { Left, Right }
         public SpawnDirection Direction;

@@ -23,7 +23,13 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     [AutoloadBossHead]
     public partial class TreeBossP2 : ModNPC
     {
+        public enum SelectorAttacks { Charge = 1, Bezier = 2, Spread = 3, Scythes = 4 }
+        public int[] SelectedAttacks = new int[3];
+
         public Vector2 InitialPosition;
+        public Vector2 PlayerPosition;
+        public int MoveDirection;
+        public bool DrawAfterimage = false;
 
         public bool PortalLaunched;
         public int PortalRuns = 0;
@@ -69,7 +75,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public float LightValue = 0;
         public bool MeteorLight = false; // The repeating meteor attacks are being annoying and keep changing the light
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => AICase != (int)AIStates.Energy && AICase != (int)AIStates.Runes;
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => AICase != (int)AIStates.Energy && AICase != (int)AIStates.Runes && AICase != (int)AIStates.Buffer;
 
         public override void SetStaticDefaults()
         {
@@ -108,6 +114,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public enum AIStates
         {
+            Buffer = -2,
             Intro = -1,
             Selector = 0,
             Teleport = 1,
@@ -174,6 +181,16 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             switch (AICase)
             {
+                case (int)AIStates.Buffer:
+                    npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
+                    npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, player.Center.Y > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+
+                    if (GlobalCounter++ == 180)
+                    {
+                        AICase = (int)AIStates.Selector;
+                        GlobalCounter = 0;
+                    }
+                    break;
                 case (int)AIStates.Intro:
                     Intro();
                     break;
@@ -219,7 +236,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/TreeBoss/TreeBossP2_Trail");
 
             #region Teleportation Drawcode
-            if (AICase == (int)AIStates.Teleport && PortalLaunched)
+            if ((AICase == (int)AIStates.Teleport && PortalLaunched) || DrawAfterimage)
             {
                 Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
                 for (int k = 0; k < npc.oldPos.Length; k++)

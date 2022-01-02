@@ -45,7 +45,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (MiscCounter == 300)
             {
-                AICase = (int)AIStates.Selector;
+                AICase = (int)AIStates.Buffer;
                 GlobalCounter = 0;
                 MiscCounter = 0;
                 MiscCounter2 = 0;
@@ -69,145 +69,377 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             #endregion
 
             #region Movement
-
-            // Randomly select three movement patterns
-
-            // Pausing briefly before aiming a spread of three scythes towards the player
-            // Two point movement where they dash upwards at an angle before moving downwards and shooting scythes in the corresponding direction
-            // Moving a bezier curve over/under the player towards where the player is heading before dashing towards where they were
-            // They lunge underneath the player before flying upwards
-
-            /*if (MiscCounter % 100 == 0)
+            if (MiscCounter2 == 0 && GlobalCounter == 0)
             {
-                npc.velocity = 8 * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
-            }*/
-            npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
-            npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
-            #endregion
+                SelectorAttacks[] attacks = (SelectorAttacks[])Enum.GetValues(typeof(SelectorAttacks));
+                attacks.Shuffle();
 
-
-            #region Attack Selection
-            int[] Attacks = new int[] { (int)AIStates.Teleport, (int)AIStates.Spirit, (int)AIStates.Runes };
-
-            if (MiscCounter++ == 120)
-            {
-                Main.PlaySound(SoundID.Item4, npc.Center);
-
-                // Chooses the attack from the list, guaranteed meteor attack after 4 attacks
-                if (RuneCounter == 4)
+                int NumSelected = npc.life <= npc.lifeMax * 0.5f ? 3 : 2;
+                for (int i = 0; i < NumSelected; i++)
                 {
-                    ChosenAttack = (int)AIStates.Runes;
-                }
-                else
-                {
-                    ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
-                }
-
-                // Makes sure the healing attack doesn't have a chance to be chosen unless conditions are met
-                while (ChosenAttack == (int)AIStates.Runes && RuneCounter < MINIMUM_ATTACKS)
-                {
-                    ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
-                }
-
-                // If the boss is below 50%, make them do the Rune attack at least once
-                if (npc.life <= npc.lifeMax * 0.5f && !HealthRune)
-                {
-                    ChosenAttack = (int)AIStates.Runes;
-                    RuneCounter = 0;
-                    HealthRune = true;
-                }
-
-                // This prevents an attack from running multiple times in a row by forcing it to be the other attack
-                switch (ChosenAttack)
-                {
-                    case (int)AIStates.Teleport:
-                        // If the attack has repeated twice in a row, force it to the other attack
-                        if (TeleportCounter >= 2)
-                        {
-                            ChosenAttack = (int)AIStates.Spirit;
-                            TeleportCounter = 0;
-                            SpiritCounter = 0;
-                        }
-                        else
-                        {
-                            // Otherwise, reset the other attack since it's no longer consecutive
-                            SpiritCounter = 0;
-                            TeleportCounter++;
-                        }
-
-                        // Increment the non-healing attack counter
-                        RuneCounter++;
-                        break;
-                    case (int)AIStates.Spirit:
-                        if (TeleportCounter >= 2)
-                        {
-                            ChosenAttack = (int)AIStates.Teleport;
-                            SpiritCounter = 0;
-                            TeleportCounter = 0;
-                        }
-                        else
-                        {
-                            TeleportCounter = 0;
-                            SpiritCounter++;
-                        }
-
-                        // Increment the non-healing attack counter
-                        RuneCounter++;
-                        break;
-                }
-
-                // Increment the non-healing attack counter
-                if (ChosenAttack != (int)AIStates.Runes)
-                {
-                    RuneCounter++;
-                }
-            }
-            #endregion
-
-            if (MiscCounter % 100 == 0)
-            {
-                int ShootSpeed = Main.rand.Next(8, 12);
-                Vector2 PlayerDistance = player.Center - npc.Center;
-                PlayerDistance.Normalize();
-
-                npc.netUpdate = true;
-
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
-                    Projectile.NewProjectile(npc.Center, PlayerDistance * ShootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                    SelectedAttacks[i] = (int)attacks[i];
                 }
             }
 
-            if (MiscCounter == 600)
+            if (MiscCounter2 <= (npc.life <= npc.lifeMax * 0.5f ? 2 : 1))
             {
-                // If the condition was satisfied and you DID choose the rune attack, now reset the counter
-                if (ChosenAttack == (int)AIStates.Runes)
+                switch (SelectedAttacks[(int)MiscCounter2])
                 {
-                    RuneCounter = 0;
+                    case (int)SelectorAttacks.Charge:
+                        if (GlobalCounter < 40)
+                        {
+                            if (GlobalCounter == 0)
+                            {
+                                PlayerPosition = player.Center;
+                            }
+
+                            if (GlobalCounter % 2 == 0)
+                            {
+                                float RADIUS = 90;
+                                int NUM_LOCATIONS = 30;
+                                for (int i = 0; i < NUM_LOCATIONS; i++)
+                                {
+                                    Vector2 position = npc.Center + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i)) * RADIUS;
+                                    Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i));
+                                    int dust = Dust.NewDust(position, 2, 2, DustID.TerraBlade, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                    Main.dust[dust].noGravity = true;
+                                }
+                            }
+
+                            npc.velocity = Vector2.Zero;
+
+                            InitialPosition = npc.Center;
+                            MoveDirection = npc.direction;
+
+                            npc.rotation = npc.DirectionTo(player.Center).ToRotation();
+                        }
+
+                        if (GlobalCounter == 40)
+                        {
+                            DrawAfterimage = true;
+
+                            npc.velocity = npc.DirectionTo(PlayerPosition) * 36;
+                        }
+
+                        if (GlobalCounter > 70)
+                        {
+                            if (MiscCounter < 20)
+                            {
+                                npc.velocity = Vector2.SmoothStep(npc.velocity, Vector2.Zero, MiscCounter++ / 20f);
+                            }
+                            else
+                            {
+                                AICase = (int)AIStates.Buffer;
+                                GlobalCounter = 0;
+                                MiscCounter = 0;
+                                MiscCounter2++;
+
+                                DrawAfterimage = false;
+                            }
+                        }
+                        break;
+                    case (int)SelectorAttacks.Bezier:
+                        if (GlobalCounter < 60)
+                        {
+                            if (GlobalCounter == 0)
+                            {
+                                float RADIUS = 90;
+                                int NUM_LOCATIONS = 30;
+                                for (int i = 0; i < NUM_LOCATIONS; i++)
+                                {
+                                    for (int ii = 0; ii < 3; ii++)
+                                    {
+                                        Vector2 position = npc.Center + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i)) * RADIUS;
+                                        Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i));
+                                        int dust = Dust.NewDust(position, 2, 2, DustID.TerraBlade, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                        Main.dust[dust].noGravity = true;
+                                    }
+                                }
+
+                                PlayerPosition = player.Center;
+                                InitialPosition = npc.Center;
+                                MoveDirection = npc.direction;
+                            }
+
+                            DrawAfterimage = true;
+
+                            Vector2 cp1 = PlayerPosition - Vector2.UnitY * 700;
+                            npc.Center = ModUtils.Bezier(InitialPosition, PlayerPosition + Vector2.UnitX * (1500 * MoveDirection), cp1, cp1, Utils.Clamp(GlobalCounter, 0, 60) / 60f);
+
+                            if (GlobalCounter >= 10 && GlobalCounter <= 60 && GlobalCounter % 10 == 0)
+                            {
+                                Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
+                                Projectile.NewProjectile(npc.Center, Vector2.UnitY * 8, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                            }
+                        }
+                        else
+                        {
+                            AICase = (int)AIStates.Buffer;
+                            GlobalCounter = 0;
+                            MiscCounter = 0;
+                            MiscCounter2++;
+
+                            DrawAfterimage = false;
+                        }
+                        break;
+                    case (int)SelectorAttacks.Spread:
+                        npc.velocity = Vector2.Zero;
+
+                        if (GlobalCounter == 30 || GlobalCounter == 60)
+                        {
+                            float numberProjectiles = 3;
+                            float rotation = MathHelper.ToRadians(GlobalCounter == 30 ? 30 : 15);
+                            Vector2 delta = player.Center - npc.Center;
+                            float magnitude = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
+                            if (magnitude > 0)
+                            {
+                                delta *= 5f / magnitude;
+                            }
+                            else
+                            {
+                                delta = new Vector2(0f, 5f);
+                            }
+
+                            npc.netUpdate = true;
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
+                                for (int i = 0; i < numberProjectiles; i++)
+                                {
+                                    Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1)));
+                                    Projectile.NewProjectile(npc.Center, perturbedSpeed * 4, ModContent.ProjectileType<NatureScythe>(), npc.damage, 2f, Main.myPlayer, 0f, 0f);
+                                    int warning = Projectile.NewProjectile(npc.Center, perturbedSpeed, ModContent.ProjectileType<TreeWarning>(), 0, 0f, Main.myPlayer);
+                                    ((TreeWarning)Main.projectile[warning].modProjectile).DrawColor = Color.LightGreen;
+                                }
+                            }
+
+                            if (GlobalCounter == 60)
+                            {
+                                AICase = (int)AIStates.Buffer;
+                                GlobalCounter = 0;
+                                MiscCounter = 0;
+                                MiscCounter2++;
+                            }
+                        }
+                        break;
+                    case (int)SelectorAttacks.Scythes:
+                        DrawAfterimage = true;
+                        switch (MiscCounter)
+                        {
+                            case 0:
+                                if (GlobalCounter == 0)
+                                {
+                                    float RADIUS = 90;
+                                    int NUM_LOCATIONS = 30;
+                                    for (int i = 0; i < NUM_LOCATIONS; i++)
+                                    {
+                                        for (int ii = 0; ii < 3; ii++)
+                                        {
+                                            Vector2 position = npc.Center + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i)) * RADIUS;
+                                            Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i));
+                                            int dust = Dust.NewDust(position, 2, 2, DustID.TerraBlade, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                            Main.dust[dust].noGravity = true;
+                                        }
+                                    }
+
+                                    MoveDirection = -npc.direction;
+                                    InitialPosition = npc.Center;
+                                }
+
+                                if (GlobalCounter < 20)
+                                {
+                                    npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + Vector2.UnitX * (900 * MoveDirection), GlobalCounter / 20f);
+                                }
+                                else
+                                {
+                                    GlobalCounter = 0;
+                                    MiscCounter++;
+
+                                    InitialPosition = npc.Center;
+
+                                    float RADIUS = 90;
+                                    int NUM_LOCATIONS = 30;
+                                    for (int i = 0; i < NUM_LOCATIONS; i++)
+                                    {
+                                        for (int ii = 0; ii < 3; ii++)
+                                        {
+                                            Vector2 position = npc.Center + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i)) * RADIUS;
+                                            Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i));
+                                            int dust = Dust.NewDust(position, 2, 2, DustID.TerraBlade, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                            Main.dust[dust].noGravity = true;
+                                        }
+                                    }
+                                }
+                                break;
+                            case 1:
+                                if (GlobalCounter < 10)
+                                {
+                                    npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + new Vector2(-400 * MoveDirection, -500), GlobalCounter / 10f);
+                                }
+                                else
+                                {
+                                    GlobalCounter = 0;
+                                    MiscCounter++;
+
+                                    InitialPosition = npc.Center;
+
+                                    float RADIUS = 90;
+                                    int NUM_LOCATIONS = 30;
+                                    for (int i = 0; i < NUM_LOCATIONS; i++)
+                                    {
+                                        for (int ii = 0; ii < 3; ii++)
+                                        {
+                                            Vector2 position = npc.Center + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i)) * RADIUS;
+                                            Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / NUM_LOCATIONS * i));
+                                            int dust = Dust.NewDust(position, 2, 2, DustID.TerraBlade, dustvelocity.X, dustvelocity.Y, 0, default, 2);
+                                            Main.dust[dust].noGravity = true;
+                                        }
+                                    }
+                                }
+                                break;
+                            case 2:
+                                if (GlobalCounter % 10 == 0)
+                                {
+                                    Projectile.NewProjectile(npc.Center, Vector2.UnitX * (-12 * MoveDirection), ModContent.ProjectileType<NatureScythe>(), npc.damage, 2f, Main.myPlayer, 0f, 0f);
+                                }
+
+                                if (GlobalCounter < 30)
+                                {
+                                    npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + new Vector2(-300 * MoveDirection, 800), GlobalCounter / 30f);
+
+                                }
+                                else
+                                {
+                                    AICase = (int)AIStates.Buffer;
+                                    GlobalCounter = 0;
+                                    MiscCounter = 0;
+                                    MiscCounter2++;
+
+                                    DrawAfterimage = false;
+                                }
+                                break;
+                        }
+                        break;
                 }
 
-                AICase = ChosenAttack;
-                //AICase = (int)AIStates.Teleport;
-                MiscCounter = 0;
-                MiscCounter2 = 0;
+                GlobalCounter++;
+                #endregion
+            }
+            else
+            {
+                npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 3, 0.05f);
+                npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y > npc.Center.Y ? 2.5f : -2.5f), 0.02f);
 
-                switch (AICase)
+                #region Attack Selection
+                int[] Attacks = new int[] { (int)AIStates.Teleport, (int)AIStates.Spirit, (int)AIStates.Runes };
+
+                if (GlobalCounter++ == 120)
                 {
-                    case (int)AIStates.Teleport:
-                        MiscCounter2 = 120;
-                        ChosenPortal = Main.rand.Next(1, 3);
-                        break;
-                    case (int)AIStates.Spirit:
-                        if (!RunAgain) RunAgain = true;
+                    Main.PlaySound(SoundID.Item4, npc.Center);
 
-                        break;
+                    // Chooses the attack from the list, guaranteed meteor attack after 4 attacks
+                    if (RuneCounter == 4)
+                    {
+                        ChosenAttack = (int)AIStates.Runes;
+                    }
+                    else
+                    {
+                        ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
+                    }
+
+                    // Makes sure the healing attack doesn't have a chance to be chosen unless conditions are met
+                    while (ChosenAttack == (int)AIStates.Runes && RuneCounter < MINIMUM_ATTACKS)
+                    {
+                        ChosenAttack = Attacks[Main.rand.Next(Attacks.Length)];
+                    }
+
+                    // If the boss is below 50%, make them do the Rune attack at least once
+                    if (npc.life <= npc.lifeMax * 0.5f && !HealthRune)
+                    {
+                        ChosenAttack = (int)AIStates.Runes;
+                        RuneCounter = 0;
+                        HealthRune = true;
+                    }
+
+                    // This prevents an attack from running multiple times in a row by forcing it to be the other attack
+                    switch (ChosenAttack)
+                    {
+                        case (int)AIStates.Teleport:
+                            // If the attack has repeated twice in a row, force it to the other attack
+                            if (TeleportCounter >= 2)
+                            {
+                                ChosenAttack = (int)AIStates.Spirit;
+                                TeleportCounter = 0;
+                                SpiritCounter = 0;
+                            }
+                            else
+                            {
+                                // Otherwise, reset the other attack since it's no longer consecutive
+                                SpiritCounter = 0;
+                                TeleportCounter++;
+                            }
+
+                            // Increment the non-healing attack counter
+                            RuneCounter++;
+                            break;
+                        case (int)AIStates.Spirit:
+                            if (TeleportCounter >= 2)
+                            {
+                                ChosenAttack = (int)AIStates.Teleport;
+                                SpiritCounter = 0;
+                                TeleportCounter = 0;
+                            }
+                            else
+                            {
+                                TeleportCounter = 0;
+                                SpiritCounter++;
+                            }
+
+                            // Increment the non-healing attack counter
+                            RuneCounter++;
+                            break;
+                    }
+
+                    // Increment the non-healing attack counter
+                    if (ChosenAttack != (int)AIStates.Runes)
+                    {
+                        RuneCounter++;
+                    }
                 }
+                #endregion
 
-                // Keep the scythe visual for the runes attack, otherwise turn it off
-                if (ChosenAttack != (int)AIStates.Runes)
+                if (GlobalCounter >= 300)
                 {
-                    ChosenAttack = 0;
+                    // If the condition was satisfied and you DID choose the rune attack, now reset the counter
+                    if (ChosenAttack == (int)AIStates.Runes)
+                    {
+                        RuneCounter = 0;
+                    }
+
+                    AICase = ChosenAttack;
+                    //AICase = (int)AIStates.Buffer;
+                    GlobalCounter = 0;
+                    MiscCounter = 0;
+                    MiscCounter2 = 0;
+
+                    switch (AICase)
+                    {
+                        case (int)AIStates.Teleport:
+                            MiscCounter2 = 120;
+                            ChosenPortal = Main.rand.Next(1, 3);
+                            break;
+                        case (int)AIStates.Spirit:
+                            if (!RunAgain) RunAgain = true;
+
+                            break;
+                    }
+
+                    // Keep the scythe visual for the runes attack, otherwise turn it off
+                    if (ChosenAttack != (int)AIStates.Runes)
+                    {
+                        ChosenAttack = 0;
+                    }
                 }
             }
         }
@@ -291,7 +523,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     }
                     else
                     {
-                        AICase = (int)AIStates.Selector;
+                        AICase = (int)AIStates.Buffer;
                         GlobalCounter = 0;
                         MiscCounter = 0;
                         MiscCounter2 = 0;
@@ -309,7 +541,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         private void Spirit(Player player)
         {
-            npc.velocity.X = MathHelper.Lerp(npc.velocity.X, player.Center.X > npc.Center.X ? 2 : -2, 0.025f);
+            npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 4, 0.05f);
             npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, player.Center.Y > npc.Center.Y ? 2.5f : -2.5f, 0.01f);
 
             if (MiscCounter == 0)
@@ -500,7 +732,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 }
                 else
                 {
-                    AICase = (int)AIStates.Selector;
+                    AICase = (int)AIStates.Buffer;
                 }
 
                 GlobalCounter = 0;
@@ -690,7 +922,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                 if (MiscCounter2++ == 240)
                 {
-                    AICase = RepeatMeteors-- > 0 ? (int)AIStates.Energy : (int)AIStates.Selector;
+                    AICase = RepeatMeteors-- > 0 ? (int)AIStates.Energy : (int)AIStates.Buffer;
                     GlobalCounter = 0;
                     MiscCounter = 0;
 

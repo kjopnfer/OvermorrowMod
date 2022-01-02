@@ -68,12 +68,23 @@ namespace OvermorrowMod
                 current.Add(list[index]);
                 list.RemoveAt(index);
             }
+
             return current;
         }
 
         public static T[] Shuffle<T>(this T[] array)
         {
-            return Shuffle<T>(new List<T>(array)).ToArray();
+            int n = array.Length;
+            while (n > 1)
+            {
+                int k = Main.rand.Next(n--);
+                T temp = array[n];
+                array[n] = array[k];
+                array[k] = temp;
+            }
+
+            return array;
+            //return Shuffle<T>(new List<T>(array)).ToArray();
         }
    
         public static Vector3 ToVector3(this Vector2 vec)
