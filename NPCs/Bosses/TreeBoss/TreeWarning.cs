@@ -9,6 +9,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     public class TreeWarning : Deathray
     {
         public Color DrawColor = Main.DiscoColor;
+        public bool CastRay = true;
+        public float Length = 3000;
         public override string Texture => "OvermorrowMod/Textures/LaserWarning";
         public TreeWarning() : base(60, 3000f, 0f, Main.DiscoColor, "NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
@@ -19,7 +21,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             projectile.ai[1]++;
 
             projectile.scale = MathHelper.Clamp((float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2, 0, 1) * 0.1f;
-            LaserLength = TRay.CastLength(projectile.Center, projectile.velocity, 3000f);
+
+            if (CastRay)
+            {
+                LaserLength = TRay.CastLength(projectile.Center, projectile.velocity, Length);
+            }
+            else
+            {
+                LaserLength = Length;
+            }
         }
     }
 
@@ -122,6 +132,31 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     {
         public override string Texture => "OvermorrowMod/NPCs/Bosses/TreeBoss/ScytheWarning";
         public ScytheWarning() : base(60 * 7, 10000f, 0f, Color.LightGreen, "NPCs/Bosses/TreeBoss/ScytheWarning") { }
+        public override bool CanHitPlayer(Player target) => false;
+        public override bool? CanHitNPC(NPC target) => false;
+
+        // This doesn't work lol
+        public override void DrawBehind(int index, List<int> drawCacheProjsBehindNPCsAndTiles, List<int> drawCacheProjsBehindNPCs, List<int> drawCacheProjsBehindProjectiles, List<int> drawCacheProjsOverWiresUI)
+        {
+            drawCacheProjsBehindProjectiles.Add(index);
+            drawCacheProjsBehindNPCs.Add(index);
+        }
+
+        public override void AI()
+        {
+            if (projectile.ai[1]++ > 60 * 6)
+            {
+                projectile.localAI[1]++;
+            }
+
+            laserColor = Color.Lerp(Color.LightGreen, Color.Transparent, Utils.Clamp(projectile.localAI[1], 0, 60f) / 60);
+        }
+    }
+
+    public class BodyWarning : Deathray
+    {
+        public override string Texture => "OvermorrowMod/NPCs/Bosses/TreeBoss/BodyWarning";
+        public BodyWarning() : base(90, 10000f, 0f, Color.LightGreen, "NPCs/Bosses/TreeBoss/BodyWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
 

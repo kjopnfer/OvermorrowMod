@@ -71,7 +71,7 @@ namespace OvermorrowMod.Projectiles.Magic
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
                     NPC npc = Main.npc[i];
-                    if (npc.getRect().Intersects(projectile.getRect()))
+                    if (npc.active && !npc.friendly && npc.getRect().Intersects(projectile.getRect()))
                     {
                         target = npc;
                         return;

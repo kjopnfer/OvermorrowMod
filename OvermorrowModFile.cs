@@ -147,7 +147,6 @@ namespace OvermorrowMod
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 Particle.Load();
-                TestDetours.Load();
                 Trail.Load();
 
                 Filters.Scene["Shockwave"].Load();
@@ -414,7 +413,6 @@ namespace OvermorrowMod
             ModUtils.Load(true);
             HexLoader.Load(true);
             Particle.Unload();
-            TestDetours.Unload();
             Trail.Unload();
 
 
@@ -539,6 +537,7 @@ namespace OvermorrowMod
                 }
             }
 
+            Particle.UpdateParticles();
             Trail.UpdateTrails();
         }
 

@@ -56,18 +56,6 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         private void Selector(Player player)
         {
-            // Reset values from other attacks
-            #region Reset
-            npc.dontTakeDamage = false;
-            MeteorLight = false;
-            if (AbsorbedEnergies > 0) AbsorbedEnergies = 0;
-
-            if (LightValue > 0)
-            {
-                LightValue = Utils.Clamp(MiscCounter2--, 0, 60) / 60f;
-            }
-            #endregion
-
             #region Movement
             if (MiscCounter2 == 0 && GlobalCounter == 0)
             {
@@ -91,6 +79,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             if (GlobalCounter == 0)
                             {
                                 PlayerPosition = player.Center;
+                                //Projectile.NewProjectile(npc.Center, npc.DirectionTo(PlayerPosition), ModContent.ProjectileType<BodyWarning>(), npc.damage, 0, Main.myPlayer);
+
+                                int warning = Projectile.NewProjectile(npc.Center, npc.DirectionTo(PlayerPosition), ModContent.ProjectileType<TreeWarning>(), 0, 0f, Main.myPlayer);
+                                ((TreeWarning)Main.projectile[warning].modProjectile).DrawColor = Color.LightGreen;
+                                ((TreeWarning)Main.projectile[warning].modProjectile).Length = 1280;
+                                ((TreeWarning)Main.projectile[warning].modProjectile).CastRay = false;
                             }
 
                             if (GlobalCounter % 2 == 0)
@@ -170,6 +164,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             {
                                 Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
                                 Projectile.NewProjectile(npc.Center, Vector2.UnitY * 8, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                                Projectile.NewProjectile(npc.Center - (Vector2.UnitY * 2500), Vector2.UnitY, ModContent.ProjectileType<ScytheWarning>(), npc.damage, 0, Main.myPlayer);
                             }
                         }
                         else
@@ -209,8 +204,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                                 {
                                     Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1)));
                                     Projectile.NewProjectile(npc.Center, perturbedSpeed * 4, ModContent.ProjectileType<NatureScythe>(), npc.damage, 2f, Main.myPlayer, 0f, 0f);
-                                    int warning = Projectile.NewProjectile(npc.Center, perturbedSpeed, ModContent.ProjectileType<TreeWarning>(), 0, 0f, Main.myPlayer);
-                                    ((TreeWarning)Main.projectile[warning].modProjectile).DrawColor = Color.LightGreen;
+                                    //int warning = Projectile.NewProjectile(npc.Center, perturbedSpeed, ModContent.ProjectileType<TreeWarning>(), 0, 0f, Main.myPlayer);
+                                    //((TreeWarning)Main.projectile[warning].modProjectile).DrawColor = Color.LightGreen;
+
+                                    Projectile.NewProjectile(npc.Center, perturbedSpeed * 4, ModContent.ProjectileType<ScytheWarning>(), npc.damage, 0, Main.myPlayer);
                                 }
                             }
 
@@ -245,11 +242,12 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                                     MoveDirection = -npc.direction;
                                     InitialPosition = npc.Center;
+                                    PlayerPosition = player.Center;
                                 }
 
                                 if (GlobalCounter < 20)
                                 {
-                                    npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + Vector2.UnitX * (900 * MoveDirection), GlobalCounter / 20f);
+                                    npc.Center = Vector2.Lerp(InitialPosition, PlayerPosition + Vector2.UnitX * (900 * MoveDirection), GlobalCounter / 20f);
                                 }
                                 else
                                 {
@@ -301,7 +299,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             case 2:
                                 if (GlobalCounter % 10 == 0)
                                 {
-                                    Projectile.NewProjectile(npc.Center, Vector2.UnitX * (-12 * MoveDirection), ModContent.ProjectileType<NatureScythe>(), npc.damage, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center, Vector2.UnitX * (-15 * MoveDirection), ModContent.ProjectileType<NatureScythe>(), npc.damage, 2f, Main.myPlayer, 0f, 0f);
+                                    Projectile.NewProjectile(npc.Center - (Vector2.UnitX * 5000 * -MoveDirection), Vector2.UnitX * (-12 * MoveDirection), ModContent.ProjectileType<ScytheWarning>(), npc.damage, 0, Main.myPlayer);
                                 }
 
                                 if (GlobalCounter < 30)
