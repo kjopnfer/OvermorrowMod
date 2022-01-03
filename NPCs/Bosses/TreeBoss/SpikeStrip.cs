@@ -10,6 +10,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     public class SpikeStrip : ModProjectile
     {
         public bool RunOnce = true;
+        public bool Rainbow = false;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
         public override bool ShouldUpdatePosition() => false;
 
@@ -48,14 +49,26 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 {
                     float progress = 1f - (projectile.ai[1] - 90f) / (projectile.ai[0] / value);
                     Vector2 velocity = Vector2.UnitX.RotatedBy(projectile.velocity.ToRotation() + Main.rand.NextFloat(-MathHelper.Pi / 4 * progress - 0.1f, MathHelper.Pi / 4 * progress + 0.1f)) * value;
-                    
+
                     // This makes it so the early thorns don't slam into your face at a 90 degree angle
                     if (progress > 0.95)
                     {
                         velocity = Vector2.UnitX.RotatedBy(projectile.velocity.ToRotation() + Main.rand.NextFloat(-MathHelper.PiOver2 / 4 * progress - 0.1f, MathHelper.PiOver2 / 4 * progress - 0.1f)) * value;
                     }
 
-                    Projectile.NewProjectile(projectile.Center + projectile.velocity * (projectile.ai[1] - 90f) * value, velocity, ModContent.ProjectileType<Spike>(), projectile.damage, 1f, Main.myPlayer, progress, projectile.whoAmI);
+                    // Based on the sheer amount of projectiles that spawn I cannot do the following: 
+                    //int proj = Projectile.NewProjectile(projectile.Center + projectile.velocity * (projectile.ai[1] - 90f) * value, velocity, ModContent.ProjectileType<Spike>(), projectile.damage, 1f, Main.myPlayer, progress, projectile.whoAmI);
+                    //((Spike)Main.projectile[proj].modProjectile).Rainbow = Rainbow;
+
+                    // Therefore I need to spawn another version that is literally the exact same except on how it draws
+                    if (Rainbow)
+                    {
+                        Projectile.NewProjectile(projectile.Center + projectile.velocity * (projectile.ai[1] - 90f) * value, velocity, ModContent.ProjectileType<Spike_Rainbow>(), projectile.damage, 1f, Main.myPlayer, progress, projectile.whoAmI);
+                    }
+                    else
+                    {
+                        Projectile.NewProjectile(projectile.Center + projectile.velocity * (projectile.ai[1] - 90f) * value, velocity, ModContent.ProjectileType<Spike>(), projectile.damage, 1f, Main.myPlayer, progress, projectile.whoAmI);
+                    }
                 }
             }
             else
@@ -71,13 +84,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Extra_60");
             Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
+            Color color = Rainbow ? Main.DiscoColor : Color.Yellow;
 
             if (projectile.timeLeft > 20)
             {
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-                spriteBatch.Draw(texture, projectile.Center - new Vector2(0, 15) - Main.screenPosition, rect, Color.Lerp(Color.Yellow, Color.Transparent, (float)Math.Sin(projectile.ai[1] / 15f)), projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, projectile.Center - new Vector2(0, 15) - Main.screenPosition, rect, Color.Lerp(color, Color.Transparent, (float)Math.Sin(projectile.ai[1] / 15f)), projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

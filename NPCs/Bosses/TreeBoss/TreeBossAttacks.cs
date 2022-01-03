@@ -283,7 +283,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 calculatedOffset = Direction == SpawnDirection.Left ? new Vector2(SPAWN_OFFSET + (THORN_OFFSET * -MiscCounter2), 0) : new Vector2(-SPAWN_OFFSET + (THORN_OFFSET * MiscCounter2), 0);
-                            Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -5), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
+                            Projectile.NewProjectile(playerPos * 16 + calculatedOffset, new Vector2(0, -5), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 1800f, 0f);
                         }
 
                         MiscCounter2++;

@@ -10,9 +10,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     {
         public Color DrawColor = Main.DiscoColor;
         public bool CastRay = true;
-        public float Length = 3000;
+        public float Length = 6000;
         public override string Texture => "OvermorrowMod/Textures/LaserWarning";
-        public TreeWarning() : base(60, 3000f, 0f, Main.DiscoColor, "NPCs/Bosses/StormDrake/LaserWarning") { }
+        public TreeWarning() : base(60, 6000f, 0f, Main.DiscoColor, "NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
@@ -107,6 +107,18 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 //projectile.velocity = projectile.DirectionTo(Target.Center + Target.velocity * CalculateAccuracy).ToRotation().ToRotationVector2();
 
                 projectile.velocity = projectile.DirectionTo(Target.Center).ToRotation().ToRotationVector2();
+
+                if (projectile.ai[1] % 50 == 0)
+                {
+                    for (int i = 0; i < Main.rand.Next(5, 9); i++)
+                    {
+                        // Choose a position above the player with random x-axis offsets
+                        Vector2 RandomPosition = projectile.Center + new Vector2(Main.rand.Next(-9, 9) * 60, Main.rand.Next(0, 400));
+                        projectile.netUpdate = true;
+
+                        Projectile.NewProjectile(RandomPosition, projectile.velocity * Main.rand.Next(8, 13), ModContent.ProjectileType<PrismaMeteor>(), projectile.damage / 2, 5f, Main.myPlayer, Main.rand.NextFloat(0.04f, 0.085f));
+                    }
+                }
             }
 
             LaserLength = TRay.CastLength(projectile.Center, projectile.velocity, 6000f);
@@ -131,7 +143,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
     public class ScytheWarning : Deathray
     {
         public override string Texture => "OvermorrowMod/NPCs/Bosses/TreeBoss/ScytheWarning";
-        public ScytheWarning() : base(60 * 7, 10000f, 0f, Color.LightGreen, "NPCs/Bosses/TreeBoss/ScytheWarning") { }
+        public ScytheWarning() : base(360, 10000f, 0f, Color.LightGreen, "NPCs/Bosses/TreeBoss/ScytheWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
 
@@ -144,7 +156,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void AI()
         {
-            if (projectile.ai[1]++ > 60 * 6)
+            if (projectile.ai[1]++ > 300)
             {
                 projectile.localAI[1]++;
             }

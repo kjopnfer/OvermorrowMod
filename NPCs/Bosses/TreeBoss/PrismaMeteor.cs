@@ -295,7 +295,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public Color projectileColor = Main.DiscoColor;
         public NPC ParentNPC;
-
+        private Vector2 SpawnPosition;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Meteoric Burst");
@@ -335,9 +335,33 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                     Projectile.NewProjectile(projectile.Center, ProjectileVelocity, ModContent.ProjectileType<RotatingPrismaMeteor>(), projectile.damage / 3, 5f, Main.myPlayer, Main.rand.NextFloat(0.04f, 0.085f), 1);
                     Projectile.NewProjectile(projectile.Center, ProjectileVelocity * 2, ModContent.ProjectileType<RotatingPrismaMeteor>(), projectile.damage / 3, 5f, Main.myPlayer, Main.rand.NextFloat(0.04f, 0.085f), 1);
 
-                    Projectile.NewProjectile(projectile.Center + new Vector2(-4,  480).RotatedBy(MathHelper.ToRadians(360 / MAX_PROJECTILES) * i), Vector2.Zero, ModContent.ProjectileType<CurvedTelegraph>(), 0, 0f, Main.myPlayer, (360 / MAX_PROJECTILES) * i);
+                    Projectile.NewProjectile(projectile.Center + new Vector2(-4, 480).RotatedBy(MathHelper.ToRadians(360 / MAX_PROJECTILES) * i), Vector2.Zero, ModContent.ProjectileType<CurvedTelegraph>(), 0, 0f, Main.myPlayer, (360 / MAX_PROJECTILES) * i);
                     Projectile.NewProjectile(projectile.Center + new Vector2(-4, 976).RotatedBy(MathHelper.ToRadians(360 / MAX_PROJECTILES) * i), Vector2.Zero, ModContent.ProjectileType<CurvedTelegraph2>(), 0, 0f, Main.myPlayer, (360 / MAX_PROJECTILES) * i);
+     
+                }
 
+                for (int iterations = 0; iterations < 16; iterations++)
+                {
+                    int THORN_OFFSET = 240;
+                    int SPAWN_OFFSET = 2000;
+
+                    // Also get the target's position during this run so it doesn't get constantly offset while they move
+                    SpawnPosition = new Vector2(projectile.position.X / 16, projectile.position.Y / 16);
+                    Tile tile = Framing.GetTileSafely((int)SpawnPosition.X, (int)SpawnPosition.Y);
+
+                    // Get the ground beneath the target
+                    while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
+                    {
+                        SpawnPosition.Y += 1;
+                        tile = Framing.GetTileSafely((int)SpawnPosition.X, (int)SpawnPosition.Y);
+                    }
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        Vector2 calculatedOffset = new Vector2(SPAWN_OFFSET + (THORN_OFFSET * -iterations), 0);
+                        int proj = Projectile.NewProjectile(SpawnPosition * 16 + calculatedOffset, new Vector2(0, -5), ModContent.ProjectileType<SpikeStrip>(), 26, 2.5f, Main.myPlayer, 900f, 0f);
+                        ((SpikeStrip)Main.projectile[proj].modProjectile).Rainbow = true;
+                    }
                 }
 
                 projectile.Kill();
@@ -407,6 +431,104 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Vector2 dustvelocity = new Vector2(0f, 12f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * 8;
 
                 Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Main.DiscoColor, 1, 3, MathHelper.ToRadians(360f / numLocations * i), 1f);
+            }
+
+            Main.PlaySound(SoundID.Item14);
+        }
+    }
+
+    public class RotatingPrismaMeteor2 : ModProjectile, ITrailEntity
+    {
+        public Color TrailColor(float progress) => Main.DiscoColor;
+        public float TrailSize(float progress) => 40;
+        public Type TrailType()
+        {
+            return typeof(TorchTrail);
+        }
+
+        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public Color projectileColor = Main.DiscoColor;
+        private Vector2 InitialPosition;
+        public int RotationDirection = 1;
+        public float Multiplier = 0.5f;
+        public float RadiusMultiplier = 1;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Prism Burst");
+        }
+
+        public override void SetDefaults()
+        {
+            projectile.width = 32;
+            projectile.height = 32;
+            projectile.friendly = false;
+            projectile.hostile = true;
+            projectile.tileCollide = false;
+            projectile.penetrate = 1;
+            projectile.timeLeft = 720;
+        }
+        public ref float Radius => ref projectile.ai[0];
+        public ref float Rotation => ref projectile.ai[1];
+
+        public override void AI()
+        {
+            if (projectile.ai[0] == 0)
+            {
+                InitialPosition = projectile.Center;
+            }
+
+            projectile.rotation += 0.04f;
+
+            projectile.position = InitialPosition + new Vector2(Radius, 0).RotatedBy(MathHelper.ToRadians(Rotation * RotationDirection));
+            projectile.position -= new Vector2(projectile.width / 2, projectile.height / 2);
+
+            Radius += 6.5f * RadiusMultiplier;
+            Rotation += 1.125f * Multiplier;
+
+
+            if (Main.rand.NextBool(8))
+            {
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(3, 6), Main.DiscoColor, 1, 0.25f, 0, 1f);
+            }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/test2");
+
+            Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
+            Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            return false;
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 1, 0.5f, 0, 1f);
+
+            Vector2 origin = projectile.Center;
+            float radius = 15;
+            int numLocations = 6;
+
+            for (int i = 0; i < 6; i++)
+            {
+                Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                Vector2 dustvelocity = new Vector2(0f, 3f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
+
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Main.DiscoColor, 1, 0.5f, MathHelper.ToRadians(360f / numLocations * i), 1f);
             }
 
             Main.PlaySound(SoundID.Item14);

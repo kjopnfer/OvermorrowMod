@@ -416,8 +416,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         RuneCounter = 0;
                     }
 
-                    AICase = ChosenAttack;
-                    //AICase = (int)AIStates.Buffer;
+                    //AICase = ChosenAttack;
+                    AICase = (int)AIStates.Energy;
                     GlobalCounter = 0;
                     MiscCounter = 0;
                     MiscCounter2 = 0;
@@ -903,13 +903,14 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity = (npc.velocity * (inertia - 1) + direction) / inertia;
             }
 
+            // Hover aiming part of the code
             if (MiscCounter > 360)
             {
                 if (MiscCounter == 361)
                 {
                     npc.velocity = Vector2.Zero;
 
-                    int tracking = Projectile.NewProjectile(npc.Center, Vector2.UnitY * 20, ModContent.ProjectileType<MeteorWarning>(), 0, 0f, Main.myPlayer, player.whoAmI);
+                    int tracking = Projectile.NewProjectile(npc.Center, Vector2.UnitY * 20, ModContent.ProjectileType<MeteorWarning>(), npc.damage, 0f, Main.myPlayer, player.whoAmI);
                     ((MeteorWarning)Main.projectile[tracking].modProjectile).ParentNPC = npc;
                 }
             }
