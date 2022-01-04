@@ -21,6 +21,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public partial class TreeBossP2 : ModNPC
     {
+        public bool phaseState = true;
         private void Intro()
         {
             npc.dontTakeDamage = true;
@@ -158,7 +159,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             DrawAfterimage = true;
 
                             Vector2 cp1 = PlayerPosition - Vector2.UnitY * 700;
-                            npc.Center = ModUtils.Bezier(InitialPosition, PlayerPosition + Vector2.UnitX * (1500 * MoveDirection), cp1, cp1, Utils.Clamp(GlobalCounter, 0, 60) / 60f);
+                            npc.Center = ModUtils.Bezier(InitialPosition, PlayerPosition + Vector2.UnitX * (/*1500*/ /*900*/ 700 * MoveDirection), cp1, cp1, Utils.Clamp(GlobalCounter, 0, 60) / 60f);
 
                             if (GlobalCounter >= 10 && GlobalCounter <= 60 && GlobalCounter % 10 == 0)
                             {
@@ -838,6 +839,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity = Vector2.Zero;
 
                 Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/IorichMeteor"), npc.Center);
+                phaseState = Main.rand.NextBool();
             }
 
             if (MiscCounter < 60 && !MeteorLight)
@@ -863,7 +865,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (MiscCounter > 60 && MiscCounter < 180)
             {
-                npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(2f));
+                npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(phaseState ? 2f : -2f/*2f*/));
             }
 
             if (MiscCounter > 180 && MiscCounter < 360)
