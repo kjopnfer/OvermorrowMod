@@ -37,12 +37,6 @@ namespace OvermorrowMod
                         Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<MeatMissile>());
                     }
 
-                    // Jungle Trees
-                    if (type == TileID.Trees && (Main.tile[i, j + 1].type == TileID.Mud || Main.tile[i, j + 1].type == TileID.JungleGrass))
-                    {
-                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<JungleSapper>());
-                    }
-
                     // Palm Trees
                     if (type == TileID.PalmTree && Main.tile[i, j + 1].type == TileID.Sand)
                     {

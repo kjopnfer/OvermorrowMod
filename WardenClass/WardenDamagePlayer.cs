@@ -67,9 +67,6 @@ namespace WardenClass
             {
                 soulResourceMax2 += 1;
             }
-            Main.NewText(AncientCrystal.ToString());
-            Main.NewText(soulResourceMax2.ToString());
-            Main.NewText(soulResourceCurrent.ToString());
         }
 
         public override void UpdateLifeRegen()
@@ -216,12 +213,9 @@ namespace WardenClass
 
             if (soulPercentage >= 100 && !soulMeterMax)
             {
-                //player.GetModPlayer<WardenSoulMeter>().frame = 0;
                 soulPercentage = 100;
                 soulMeterMax = true;
             }
-
-            // soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
         }
 
         public float modifyShootSpeed()
