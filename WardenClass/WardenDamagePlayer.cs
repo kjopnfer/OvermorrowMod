@@ -205,27 +205,17 @@ namespace WardenClass
 
         private void UpdateResource()
         {
+            if (soulResourceCurrent > soulResourceMax2) {
+                ConsumeSouls(soulResourceCurrent-soulResourceMax2, player);
+            }
+
             bool meterMax = soulResourceCurrent == soulResourceMax2;
 
             if (soulPercentage >= 100 && !soulMeterMax)
             {
-                //player.GetModPlayer<WardenSoulMeter>().frame = 0;
                 soulPercentage = 100;
                 soulMeterMax = true;
             }
-
-            // bool meterMax = soulResourceCurrent == soulResourceMax2;
-
-
-            // if (meterMax) {
-            //     soulPercentage = 100;
-            // }
-
-            // var chargePlayer = player.GetModPlayer<WardenSoulMeter>();
-            // chargePlayer.chargeProgress = player.GetModPlayer<WardenDamagePlayer>().soulPercentage;
-
-
-            soulResourceCurrent = Utils.Clamp(soulResourceCurrent, 0, soulResourceMax2);
         }
 
         public float modifyShootSpeed()
