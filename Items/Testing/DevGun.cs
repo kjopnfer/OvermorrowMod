@@ -1,4 +1,5 @@
-﻿using Terraria.ID;
+﻿using OvermorrowMod.NPCs.Bosses.TreeBoss;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Testing
@@ -23,7 +24,7 @@ namespace OvermorrowMod.Items.Testing
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.autoReuse = true;
             item.knockBack = 0;
-            item.shoot = mod.ProjectileType("GraniteLaser");
+            item.shoot = ModContent.ProjectileType<Shiro>();
             item.shootSpeed = 11f;
             item.channel = true;
         }

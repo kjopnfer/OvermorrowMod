@@ -60,6 +60,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         public int ENERGY_THRESHOLD = 12;
 
         public Vector2 FlyDistance;
+        public int MeteorDirection;
         public bool MeteorLanded;
         public int RepeatMeteors = 0;
 
@@ -182,29 +183,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             switch (AICase)
             {
                 case (int)AIStates.Buffer:
-                    // Reset values from other attacks
-                    #region Reset
-                    npc.dontTakeDamage = false;
-                    MeteorLight = false;
-                    if (AbsorbedEnergies > 0) AbsorbedEnergies = 0;
-
-                    if (LightValue > 0)
-                    {
-                        //LightValue = Utils.Clamp(MiscCounter2--, 0, 60) / 60f;
-                        LightValue = 0;
-                        MiscCounter2 = 0;
-                    }
-                    #endregion
-
-                    npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
-                    npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, player.Center.Y > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
-
-                    if (GlobalCounter++ == 180)
-                    {
-                        AICase = (int)AIStates.Selector;
-                        GlobalCounter = 0;
-                        MiscCounter = 0;
-                    }
+                    Buffer(player);
                     break;
                 case (int)AIStates.Intro:
                     Intro();

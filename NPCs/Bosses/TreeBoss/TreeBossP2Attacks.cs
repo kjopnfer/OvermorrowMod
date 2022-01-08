@@ -21,7 +21,33 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public partial class TreeBossP2 : ModNPC
     {
-        public bool phaseState = true;
+        private void Buffer(Player player)
+        {
+            // Reset values from other attacks
+            #region Reset
+            npc.dontTakeDamage = false;
+            MeteorLight = false;
+            if (AbsorbedEnergies > 0) AbsorbedEnergies = 0;
+
+            if (LightValue > 0)
+            {
+                //LightValue = Utils.Clamp(MiscCounter2--, 0, 60) / 60f;
+                LightValue = 0;
+                MiscCounter2 = 0;
+            }
+            #endregion
+
+            npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
+            npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, player.Center.Y > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+
+            if (GlobalCounter++ == 180)
+            {
+                AICase = (int)AIStates.Selector;
+                GlobalCounter = 0;
+                MiscCounter = 0;
+            }
+        }
+
         private void Intro()
         {
             npc.dontTakeDamage = true;
@@ -200,9 +226,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
                                 for (int i = 0; i < numberProjectiles; i++)
                                 {
+                                    Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
+
                                     Vector2 perturbedSpeed = new Vector2(delta.X, delta.Y).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1)));
                                     Projectile.NewProjectile(npc.Center, perturbedSpeed * 4, ModContent.ProjectileType<NatureScythe>(), npc.damage, 2f, Main.myPlayer, 0f, 0f);
                                     //int warning = Projectile.NewProjectile(npc.Center, perturbedSpeed, ModContent.ProjectileType<TreeWarning>(), 0, 0f, Main.myPlayer);
@@ -300,6 +327,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                             case 2:
                                 if (GlobalCounter % 10 == 0)
                                 {
+                                    Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
+
                                     Projectile.NewProjectile(npc.Center, Vector2.UnitX * (-15 * MoveDirection), ModContent.ProjectileType<NatureScythe>(), npc.damage, 2f, Main.myPlayer, 0f, 0f);
                                     Projectile.NewProjectile(npc.Center - (Vector2.UnitX * 5000 * -MoveDirection), Vector2.UnitX * (-12 * MoveDirection), ModContent.ProjectileType<ScytheWarning>(), npc.damage, 0, Main.myPlayer);
                                 }
@@ -417,8 +446,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                         RuneCounter = 0;
                     }
 
-                    //AICase = ChosenAttack;
-                    AICase = (int)AIStates.Energy;
+                    AICase = ChosenAttack;
+                    //AICase = (int)AIStates.Energy;
                     GlobalCounter = 0;
                     MiscCounter = 0;
                     MiscCounter2 = 0;
@@ -495,6 +524,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 {
                     if (GlobalCounter % 10 == 0)
                     {
+                        Main.PlaySound(SoundID.DD2_DrakinShot, npc.Center);
+
                         Projectile.NewProjectile(npc.Center - Vector2.UnitX * 5000, Vector2.UnitX * 20, ModContent.ProjectileType<ScytheWarning>(), npc.damage, 0, Main.myPlayer);
                         //Projectile.NewProjectile(npc.Center, Vector2.UnitX * -20, ModContent.ProjectileType<ScytheWarning>(), npc.damage, 0, Main.myPlayer);
 
@@ -839,7 +870,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 npc.velocity = Vector2.Zero;
 
                 Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/IorichMeteor"), npc.Center);
-                phaseState = Main.rand.NextBool();
+                MeteorDirection = Main.rand.NextBool() ? 2 : -2;
             }
 
             if (MiscCounter < 60 && !MeteorLight)
@@ -865,7 +896,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (MiscCounter > 60 && MiscCounter < 180)
             {
-                npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(phaseState ? 2f : -2f/*2f*/));
+                npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(MeteorDirection));
             }
 
             if (MiscCounter > 180 && MiscCounter < 360)
