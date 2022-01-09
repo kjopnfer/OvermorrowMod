@@ -119,6 +119,32 @@ namespace OvermorrowMod
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<FungiPiercer>());
                     }
                     break;
+                case NPCID.Zombie:
+                case NPCID.BigRainZombie:
+                case NPCID.BigSlimedZombie:
+                case NPCID.SlimedZombie: 
+                case NPCID.SmallSkeleton:
+                case NPCID.BigSkeleton:
+                case NPCID.SmallHeadacheSkeleton:
+                case NPCID.BigHeadacheSkeleton:
+                case NPCID.SmallMisassembledSkeleton:
+                case NPCID.BigMisassembledSkeleton:
+                case NPCID.SmallPantlessSkeleton:
+                case NPCID.BigPantlessSkeleton:
+                case NPCID.GoblinArcher:
+                case NPCID.Skeleton:
+                case NPCID.GoblinPeon:
+                case NPCID.GoblinSorcerer:
+                case NPCID.GoblinThief:
+                case NPCID.GoblinWarrior:
+                case NPCID.GoblinSummoner:
+                case NPCID.ZombieEskimo:
+                case NPCID.ZombieRaincoat:
+                    if (Main.rand.NextBool(100))
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StaleBread>());
+                    }
+                    break;
             }
 
 
@@ -127,14 +153,6 @@ namespace OvermorrowMod
                 if (Main.rand.Next(200) < 4)
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MegaBuster>());
-                }
-            }
-
-            if (npc.type == NPCID.Zombie || npc.type == NPCID.BigRainZombie || npc.type == NPCID.BigSlimedZombie ||npc.type == NPCID.SlimedZombie || npc.type == NPCID.SmallSkeleton || npc.type == NPCID.BigSkeleton || npc.type == NPCID.SmallHeadacheSkeleton || npc.type == NPCID.BigHeadacheSkeleton || npc.type == NPCID.SmallMisassembledSkeleton || npc.type == NPCID.BigMisassembledSkeleton || npc.type == NPCID.SmallPantlessSkeleton || npc.type == NPCID.BigPantlessSkeleton || npc.type == NPCID.GoblinArcher || npc.type == NPCID.Skeleton || npc.type == NPCID.GoblinPeon || npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.GoblinThief || npc.type == NPCID.GoblinWarrior || npc.type == NPCID.GoblinSummoner || npc.type == NPCID.ZombieEskimo || npc.type == NPCID.ZombieRaincoat)
-            {
-                if (Main.rand.NextBool(01)) //Should be 1% drop chance...not sure
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StaleBread>());
                 }
             }
 

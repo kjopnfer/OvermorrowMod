@@ -221,5 +221,4 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }*/
         }
     }
-
 }

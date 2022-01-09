@@ -186,7 +186,20 @@ namespace OvermorrowMod.Effects.Prim
             NPCTarget = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 2, Main.screenHeight / 2);
             ProjTarget = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 2, Main.screenHeight / 2);
         }
+        public Vector2 GetRotation(int index)
+        {
+            if (Positions.Count == 1)
+                return Positions[0];
 
+            if (index == 0)
+            {
+                return Vector2.Normalize(Positions[1] - Positions[0]).RotatedBy(MathHelper.Pi / 2);
+            }
+
+            return (index == Positions.Count - 1
+                ? Vector2.Normalize(Positions[index] - Positions[index - 1])
+                : Vector2.Normalize(Positions[index + 1] - Positions[index - 1])).RotatedBy(MathHelper.Pi / 2);
+        }
         public static void Load()
         {
             trails = new List<Trail>();
