@@ -22,7 +22,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         }
 
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
-        public Color projectileColor = Main.DiscoColor;
+        public Color ProjectileColor = Main.DiscoColor;
 
         public override void SetStaticDefaults()
         {
@@ -120,7 +120,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         }
 
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
-        public Color projectileColor = Main.DiscoColor;
+        public Color ProjectileColor = Main.DiscoColor;
 
         public override void SetStaticDefaults()
         {
@@ -151,7 +151,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (Main.rand.NextBool(8))
             {
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(3, 6), Main.DiscoColor, 1, 0.25f, 0, 1f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(3, 6), ProjectileColor, 1, 0.25f, 0, 1f);
             }
         }
 
@@ -167,11 +167,11 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -181,7 +181,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void Kill(int timeLeft)
         {
-            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 1, 0.5f, 0, 1f);
+            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, ProjectileColor, 1, 0.5f, 0, 1f);
 
             Vector2 origin = projectile.Center;
             float radius = 15;
@@ -192,7 +192,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                 Vector2 dustvelocity = new Vector2(0f, 3f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
 
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Main.DiscoColor, 1, 0.5f, MathHelper.ToRadians(360f / numLocations * i), 1f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, ProjectileColor, 1, 0.5f, MathHelper.ToRadians(360f / numLocations * i), 1f);
             }
 
             Main.PlaySound(SoundID.Item14);
@@ -209,7 +209,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         }
 
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
-        public Color projectileColor = Main.DiscoColor;
+        public Color ProjectileColor = Main.DiscoColor;
 
         public override void SetStaticDefaults()
         {
@@ -293,7 +293,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         }
 
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
-        public Color projectileColor = Main.DiscoColor;
+        public Color ProjectileColor = Main.DiscoColor;
         public NPC ParentNPC;
         private Vector2 SpawnPosition;
         public override void SetStaticDefaults()
@@ -447,7 +447,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
         }
 
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
-        public Color projectileColor = Main.DiscoColor;
+        public Color ProjectileColor = Main.DiscoColor;
         private Vector2 InitialPosition;
         public int RotationDirection = 1;
         public float Multiplier = 0.5f;

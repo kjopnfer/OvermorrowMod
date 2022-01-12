@@ -8,11 +8,6 @@ namespace OvermorrowMod.Projectiles.Ranged
 {
     public class IorichBowEnergy : ModProjectile
     {
-        public bool RunOnce = true;
-        public Vector2 InitialDistance;
-        public float TravelDistance;
-        public int RandomStopping;
-        public bool HasStopped;
         public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
         public override bool CanDamage() => false;
         public override void SetStaticDefaults()
@@ -61,6 +56,7 @@ namespace OvermorrowMod.Projectiles.Ranged
             {
                 Main.PlaySound(SoundID.DD2_DarkMageHealImpact);
                 Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, new Color(195, 255, 154), 0.5f, 0.25f);
+
                 parent.GetModPlayer<OvermorrowModPlayer>().BowEnergyCount++;
 
                 projectile.Kill();

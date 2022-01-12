@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod
 {
-    public class OvermorrowModPlayer : ModPlayer
+    public partial class OvermorrowModPlayer : ModPlayer
     {
         //sadness
         Vector2 screenPositionStore;
@@ -82,6 +82,7 @@ namespace OvermorrowMod
         public bool explosionBuff;
         public bool graniteSpearBuff;
         public bool goldWind;
+        public bool iorichGuardianShield;
         public bool lightningCloud;
         public bool mirrorBuff;
         public bool moonBuff;
@@ -94,6 +95,7 @@ namespace OvermorrowMod
 
         // Misc
         public int BowEnergyCount = 0;
+        public int IorichGuardianEnergy = 0;
         public int ScytheHitCount = 0;
 
         public Vector2 AltarCoordinates;
@@ -137,6 +139,7 @@ namespace OvermorrowMod
             explosionBuff = false;
             graniteSpearBuff = false;
             goldWind = false;
+            iorichGuardianShield = false;
             lightningCloud = false;
             mirrorBuff = false;
             moonBuff = false;
@@ -348,6 +351,11 @@ namespace OvermorrowMod
             {
                 damage /= 2;
             }
+        }
+
+        public override void PostUpdateMiscEffects()
+        {
+            IorichGuardianEnergy = Utils.Clamp(IorichGuardianEnergy, 0, 100);
         }
 
         public override void PostUpdate()

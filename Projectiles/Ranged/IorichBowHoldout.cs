@@ -100,7 +100,7 @@ namespace OvermorrowMod.Projectiles.Ranged
                     {
                         if (projectile.ai[1] == 0)
                         {
-
+                            Projectile.NewProjectile(projectile.Center, ProjectileVelocity * 4, player.HeldItem.ammo, projectile.damage, projectile.knockBack, projectile.owner);
                         }
                     }
 

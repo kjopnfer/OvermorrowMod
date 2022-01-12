@@ -52,7 +52,14 @@ namespace OvermorrowMod.Projectiles.Magic
             Player player = Main.player[projectile.owner];
             if (Main.LocalPlayer != player) return;
 
-            projectile.Center = target != null ? target.Center : Main.MouseWorld;
+            if (target == null)
+            {
+                if (Main.myPlayer == projectile.owner) projectile.Center = Main.MouseWorld;
+            }
+            else
+            {
+                projectile.Center = target.Center;
+            }
 
             Lighting.AddLight(projectile.Center, 0f, 1f, 0f);
             projectile.localAI[0] += 4; // Rotation counter

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,14 +28,15 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useTime = 14;
             item.width = 28;
             item.height = 32;
-            item.shoot = mod.ProjectileType("BoltStreamBolt");
+            item.shoot = ModContent.ProjectileType<LightningCursor>();
             item.shootSpeed = 18f;
             item.knockBack = 1f;
             item.magic = true;
             item.value = Item.sellPrice(gold: 1);
+            item.channel = true;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        /*public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
             float numberProjectiles = 3;
             float rotation = MathHelper.ToRadians(45);
@@ -47,6 +49,24 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             }
 
             return false;
+        }*/
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<LightningCursor>()] <= 0)
+            {
+                Projectile.NewProjectile(Main.MouseWorld, new Vector2(speedX, speedY), ModContent.ProjectileType<LightningCursor>(), item.damage, 0f, player.whoAmI);
+            }
+
+            return false;
         }
+
+        /*public override void HoldItem(Player player)
+        {
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<LightningCursor>()] <= 0)
+            {
+                Projectile.NewProjectile(Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<LightningCursor>(), item.damage, 0f, player.whoAmI);
+            }
+        }*/
     }
 }

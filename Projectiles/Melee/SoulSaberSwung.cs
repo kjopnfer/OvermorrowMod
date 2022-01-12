@@ -47,6 +47,7 @@ namespace OvermorrowMod.Projectiles.Melee
                 {
                     if (projectile.localAI[0]++ == 240)
                     {
+                        Main.PlaySound(SoundID.DD2_BetsyFlameBreath, player.Center);
                         Projectile.NewProjectile(player.Center, Vector2.Normalize(player.DirectionTo(Main.MouseWorld)) * 4, ModContent.ProjectileType<SoulFlameRing>(), projectile.damage, projectile.knockBack, projectile.owner, 0, -1f);
                         projectile.localAI[0] = 0;
                     }

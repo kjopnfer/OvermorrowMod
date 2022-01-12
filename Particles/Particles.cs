@@ -323,7 +323,7 @@ namespace OvermorrowMod.Particles
         {
             particle.velocity = Vector2.Zero;
             float progress = (float)particle.activeTime / maxTime;
-            particle.scale = MathHelper.Lerp(particle.scale, maxSize, progress);
+            particle.scale = MathHelper.Lerp(0, maxSize, progress);
             particle.alpha = MathHelper.Lerp(particle.alpha, 0, progress);
             Color col = new Color(particle.customData[1], particle.customData[2], particle.customData[3]);
             particle.color = Color.Lerp(particle.color, col, progress);
@@ -361,20 +361,20 @@ namespace OvermorrowMod.Particles
     {
         public override string Texture => "OvermorrowMod/Textures/Perlin";
         public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
-        float maxTime = 60f;
+        float maxTime = 360;
         public override void OnSpawn()
         {
             if (particle.customData[1] == 0) particle.customData[1] = 1;
             if (particle.customData[2] == 0) particle.customData[2] = 1;
             if (particle.customData[3] == 0) particle.customData[3] = 1;
             maxSize = particle.scale;
-            particle.scale = 0f;
+            //particle.scale = 0f;
         }
         public override void Update()
         {
             particle.velocity = Vector2.Zero;
             float progress = (float)particle.activeTime / maxTime;
-            particle.scale = MathHelper.Lerp(6, 0, progress);
+            //particle.scale = MathHelper.Lerp(0, maxSize, progress);
             particle.alpha = MathHelper.Lerp(particle.alpha, 0, progress);
             Color col = new Color(particle.customData[1], particle.customData[2], particle.customData[3]);
             particle.color = Color.Lerp(particle.color, col, progress);
@@ -382,8 +382,7 @@ namespace OvermorrowMod.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            // 1.5 X scale cuz the vanilla shader halves X size
-            Vector2 scale = new Vector2(particle.scale * 1.5f, particle.scale);
+            Vector2 scale = new Vector2(particle.scale, particle.scale);
             // restart spritebatch
             spriteBatch.Reload(SpriteSortMode.Immediate);
             Texture2D texture = Particle.ParticleTextures[particle.type];

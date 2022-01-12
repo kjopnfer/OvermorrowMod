@@ -35,6 +35,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.shootSpeed = 8f;
             item.knockBack = 10f;
             item.value = Item.sellPrice(gold: 1);
+            item.ammo = AmmoID.Arrow;
             //item.useAmmo = AmmoID.Arrow;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[item.shoot] <= 0;

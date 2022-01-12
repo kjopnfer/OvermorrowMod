@@ -14,6 +14,8 @@ namespace OvermorrowMod.Projectiles.Ranged
     {
         public Color TrailColor(float progress) => Main.DiscoColor;
         public float TrailSize(float progress) => 10;
+        //public float TrailSize(float progress) => 20;
+
         public Type TrailType() => typeof(TorchTrail);
    
         public override void SetStaticDefaults()
@@ -33,6 +35,8 @@ namespace OvermorrowMod.Projectiles.Ranged
             projectile.tileCollide = true;
             projectile.ranged = true;
             projectile.extraUpdates = 10;
+            projectile.usesLocalNPCImmunity = true;
+            projectile.localNPCHitCooldown = 60;
         }
 
         public override void AI()
@@ -40,7 +44,7 @@ namespace OvermorrowMod.Projectiles.Ranged
             if (Main.rand.NextBool(5))
             {
                 Vector2 velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(3, 6);
-                Dust dust = Terraria.Dust.NewDustDirect(projectile.Center, 2, 2, 267, velocity.X, velocity.Y, 0, Main.DiscoColor, 1f);
+                Dust dust = Terraria.Dust.NewDustDirect(projectile.Center, 2, 2, DustID.RainbowMk2, velocity.X, velocity.Y, 0, Main.DiscoColor, 1f);
                 dust.noGravity = true;
             }
 

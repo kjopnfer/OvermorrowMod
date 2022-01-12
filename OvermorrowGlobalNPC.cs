@@ -27,13 +27,16 @@ namespace OvermorrowMod
         public override bool InstancePerEntity => true;
 
         public bool Homingdie;
+
         public bool FungiInfection;
+        public bool LightningMarked;
         public int FungiTime;
         public int split;
 
         public override void ResetEffects(NPC npc)
         {
             FungiInfection = false;
+            LightningMarked = false;
         }
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
@@ -67,12 +70,12 @@ namespace OvermorrowMod
                     }
                     break;
                 case NPCID.AngryBones:
-                case NPCID.AngryBonesBig: 
+                case NPCID.AngryBonesBig:
                 case NPCID.AngryBonesBigHelmet:
                 case NPCID.AngryBonesBigMuscle:
                 case NPCID.DarkCaster:
                 case NPCID.CursedSkull:
-                    if (Main.rand.NextBool(100)) 
+                    if (Main.rand.NextBool(100))
                     {
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFragment>());
                     }
@@ -122,7 +125,7 @@ namespace OvermorrowMod
                 case NPCID.Zombie:
                 case NPCID.BigRainZombie:
                 case NPCID.BigSlimedZombie:
-                case NPCID.SlimedZombie: 
+                case NPCID.SlimedZombie:
                 case NPCID.SmallSkeleton:
                 case NPCID.BigSkeleton:
                 case NPCID.SmallHeadacheSkeleton:
@@ -307,7 +310,7 @@ namespace OvermorrowMod
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-                if (FungiInfection)
+            if (FungiInfection)
             {
                 if (Main.rand.NextBool(10))
                 {
@@ -325,6 +328,11 @@ namespace OvermorrowMod
             if (npc.HasHex(Hex.HexType<LesserIchor>()))
             {
                 drawColor = Color.Yellow;
+            }
+
+            if (LightningMarked)
+            {
+                Dust.NewDust(npc.Center, 2, 2, DustID.Electric, 0, 0, 0, default, 0.5f);
             }
         }
     }
