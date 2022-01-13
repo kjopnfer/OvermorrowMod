@@ -382,6 +382,14 @@ namespace OvermorrowMod
         }
         public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
         {
+            if (player.talkNPC == -1)
+            {
+                // Reset the quest dialogue thing
+                ModDetours.ClickedButton = false;
+                ModDetours.AcceptButton = false;
+                ModDetours.DialogueCounter = 0;
+            }
+
             if (DripplerEye)
             {
                 player.rangedCrit += dripplerStack;
