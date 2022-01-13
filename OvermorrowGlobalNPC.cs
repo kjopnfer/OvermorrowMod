@@ -67,12 +67,12 @@ namespace OvermorrowMod
                     }
                     break;
                 case NPCID.AngryBones:
-                case NPCID.AngryBonesBig: 
+                case NPCID.AngryBonesBig:
                 case NPCID.AngryBonesBigHelmet:
                 case NPCID.AngryBonesBigMuscle:
                 case NPCID.DarkCaster:
                 case NPCID.CursedSkull:
-                    if (Main.rand.NextBool(100)) 
+                    if (Main.rand.NextBool(100))
                     {
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFragment>());
                     }
@@ -282,7 +282,7 @@ namespace OvermorrowMod
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-                if (FungiInfection)
+            if (FungiInfection)
             {
                 if (Main.rand.NextBool(10))
                 {
@@ -300,6 +300,40 @@ namespace OvermorrowMod
             if (npc.HasHex(Hex.HexType<LesserIchor>()))
             {
                 drawColor = Color.Yellow;
+            }
+        }
+
+        public override bool PreChatButtonClicked(NPC npc, bool firstButton)
+        {
+            if (npc.type == NPCID.Guide)
+            {
+                if (firstButton)
+                {
+                    return false;
+                }
+            }
+
+            return base.PreChatButtonClicked(npc, firstButton);
+        }
+
+        public override void GetChat(NPC npc, ref string chat)
+        {
+            if (npc.type == NPCID.Guide)
+            {
+                List<string> dialogue = new List<string>
+                {
+                    "dialogue1",
+                    "dialogue2",
+                    "dialogue3",
+                    "dialogue4",
+                    "dialogue5",
+                    "dialogue6",
+                    "dialogue7",
+                    "dialogue8",
+                    "dialogue9",
+                };
+
+                chat = Main.rand.Next(dialogue);
             }
         }
     }

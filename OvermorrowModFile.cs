@@ -85,6 +85,8 @@ namespace OvermorrowMod
                 {
                     TrailTextures.Add(GetTexture("Effects/TrailTextures/Trail" + i));
                 }
+
+                ModDetours.Load();
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 Particle.Load();
@@ -327,6 +329,7 @@ namespace OvermorrowMod
             TextShader = null;
             
             TrailTextures = null;
+            ModDetours.Unload();
             ModUtils.Load(true);
             HexLoader.Load(true);
             Particle.Unload();
