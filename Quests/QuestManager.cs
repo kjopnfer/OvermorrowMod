@@ -6,28 +6,33 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Quests
 {
-    // Couldn't extend Mod, can only have one class extending mod :pepehands:
-    public static class QuestManager
+    public class QuestManager : ModWorld
     {
-        public static List<Quest> ActiveQuests = new List<Quest>();
-        public static List<Quest> QuestList = new List<Quest>();
-        public static void Load()
+        public void AddNPCQuest(int ID, Quest QuestType)
         {
-            foreach (Type type in OvermorrowModFile.Mod.Code.GetTypes())
+            if (QuestType.QuestGiver() == ID)
             {
-                if (type.IsSubclassOf(typeof(Quest)) && !type.IsAbstract && type != typeof(Quest))
-                {
-                    Quest quest = (Quest)Activator.CreateInstance(type);
-                    QuestList.Add(quest);
-                }
-            }
 
+            }
         }
 
-        public static void Unload()
+        public override void PostUpdate()
         {
-            ActiveQuests = null;
-            QuestList = null;
+            // Add stuff here to have a chance to randomly assign Quests to NPCs
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.active && npc.type == NPCID.Guide && npc.GetGlobalNPC<QuestNPC>().CurrentQuest == null)
+                {
+                    foreach (Quest Quest in OvermorrowModFile.QuestList)
+                    {
+                        if (Quest.QuestGiver() == npc.type && !OvermorrowModFile.CompletedQuests.Contains(Quest))
+                        {
+                            npc.GetGlobalNPC<QuestNPC>().CurrentQuest = Quest;
+                        }
+                    }
+                }
+            }
         }
     }
 }

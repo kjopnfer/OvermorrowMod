@@ -49,11 +49,13 @@ namespace OvermorrowMod
 
         public static List<Texture2D> TrailTextures;
 
-        public static List<Quest> ActiveQuests = new List<Quest>();
         public static List<Quest> QuestList = new List<Quest>();
+        public static List<Quest> ActiveQuests = new List<Quest>();
+        public static List<Quest> CompletedQuests = new List<Quest>();
+
         public static void LoadQuests()
         {
-            foreach (Type type in OvermorrowModFile.Mod.Code.GetTypes())
+            foreach (Type type in Mod.Code.GetTypes())
             {
                 if (type.IsSubclassOf(typeof(Quest)) && !type.IsAbstract && type != typeof(Quest))
                 {
@@ -154,7 +156,6 @@ namespace OvermorrowMod
             ModUtils.Load(true);
             HexLoader.Load(true);
             Particle.Unload();
-            QuestManager.Unload();
             TestDetours.Unload();
             Trail.Unload();
 
