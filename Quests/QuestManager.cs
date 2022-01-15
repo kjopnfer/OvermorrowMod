@@ -1,3 +1,4 @@
+using OvermorrowMod.Quests.ModQuests;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -19,7 +20,7 @@ namespace OvermorrowMod.Quests
         public override void PostUpdate()
         {
             // Add stuff here to have a chance to randomly assign Quests to NPCs
-            for (int i = 0; i < Main.maxNPCs; i++)
+            /*for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
                 if (npc.active && npc.type == NPCID.Guide && npc.GetGlobalNPC<QuestNPC>().CurrentQuest == null)
@@ -29,6 +30,27 @@ namespace OvermorrowMod.Quests
                         if (Quest.QuestGiver() == npc.type && !OvermorrowModFile.CompletedQuests.Contains(Quest))
                         {
                             npc.GetGlobalNPC<QuestNPC>().CurrentQuest = Quest;
+                        }
+                    }
+                }
+            }*/
+
+            
+        }
+
+        public override void Initialize()
+        {
+            // Temporary to run Quests without constantly readding
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.active && npc.type == NPCID.Guide && npc.GetGlobalNPC<QuestNPC>().CurrentQuest == null)
+                {
+                    foreach (KeyValuePair<int, Quest> entry in QuestLoader.QuestList)
+                    {
+                        if (entry.Value.QuestGiver() == npc.type && !OvermorrowModFile.CompletedQuests.Contains(entry.Value))
+                        {
+                            npc.GetGlobalNPC<QuestNPC>().CurrentQuest = entry.Value;
                         }
                     }
                 }

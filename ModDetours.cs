@@ -28,7 +28,7 @@ namespace OvermorrowMod
         }
 
         public static bool HoverButton = false;
-        public static bool ClickedButton = false;
+        public static bool NextButton = false;
         public static bool AcceptButton = false;
         public static int DialogueCounter = 0;
         private static void DrawNPCChatButtons(On.Terraria.Main.orig_DrawNPCChatButtons orig, int superColor, Color chatColor, int numLines, string focusText, string focusText3)
@@ -36,32 +36,25 @@ namespace OvermorrowMod
             if (Main.LocalPlayer.talkNPC != -1)
             {
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                Player player = Main.LocalPlayer;
+                QuestPlayer modPlayer = player.GetModPlayer<QuestPlayer>();
 
-                if (npc.type == NPCID.Guide)
-                {
-                    //focusText = "test123";
-                    //focusText3 = "obamna";
-                }
-
-                // Get the list of Quests from this npc
-                /*List<Quest> NPCQuests = OvermorrowModFile.QuestList;
-                Quest CurrentQuest = null;
-                foreach (Quest NPCQuest in NPCQuests)
-                {
-                    if (NPCQuest.QuestGiver() == npc.type)
-                    {
-                        CurrentQuest = NPCQuest;
-                    }
-                }*/
+                // Get the Quest that has been assigned to the NPC
                 Quest CurrentQuest = npc.GetGlobalNPC<QuestNPC>().CurrentQuest;
-                //Main.NewText(CurrentQuest == null);
+
                 // Text changes for the Quest button
                 string Text = "";
-                if (!ClickedButton)
+                if (!NextButton)
                 {
+                    // Check if the NPC has a Quest, if they have a Quest run through the dialogue
                     if (CurrentQuest != null)
                     {
-                        if (CurrentQuest.IsCompleted)
+                        Text = "Quest";
+                    }
+                    else // Otherwise, the NPC has given the Quest to the player
+                    {
+                        // Check the Quest's completion
+                        if (modPlayer.CurrentQuest.QuestGiver() == npc.type && modPlayer.CurrentQuest.CheckCompleted(player))
                         {
                             Text = "Turn In";
                         }
@@ -70,6 +63,18 @@ namespace OvermorrowMod
                             Text = "Quest";
                         }
                     }
+
+                    /*if (CurrentQuest != null)
+                    {
+                        if (CurrentQuest.CheckCompleted(player) && CurrentQuest == player.GetModPlayer<QuestPlayer>().CurrentQuest)
+                        {
+                            Text = "Turn In";
+                        }
+                        else
+                        {
+                            Text = "Quest";
+                        }
+                    }*/
                 }
                 else
                 {
@@ -124,51 +129,77 @@ namespace OvermorrowMod
 
                         TextScale *= 1.1f;
 
+                        // Player clicks on the button
                         if (Main.mouseLeft && Main.mouseLeftRelease)
                         {
                             // Remove the Quest from the NPC if it is completed
-                            if (CurrentQuest.IsCompleted)
+                            if (/*CurrentQuest.IsCompleted*/CurrentQuest.CheckCompleted(player))
                             {
                                 Main.PlaySound(OvermorrowModFile.Mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestTurnIn"), npc.Center);
-
                                 Main.NewText("COMPLETED QUEST: " + CurrentQuest.QuestName(), Color.Yellow);
+
+                                /*(int, int)[] Rewards = CurrentQuest.QuestRewards();
+                                foreach ((int, int) Reward in Rewards)
+                                {
+                                    Main.LocalPlayer.QuickSpawnItem(Reward.Item1, Reward.Item2);
+                                }*/
+
+                                // Do reward shenanigans
+                                CurrentQuest.GiveRewards(Main.LocalPlayer);
 
                                 OvermorrowModFile.CompletedQuests.Add(CurrentQuest);
                                 OvermorrowModFile.ActiveQuests.Remove(CurrentQuest);
                                 npc.GetGlobalNPC<QuestNPC>().CurrentQuest = null;
 
                                 Main.LocalPlayer.talkNPC = -1;
-
-                                // Do reward shenanigans
                             }
-                            else
+                            else // Quest is not complete
                             {
-                                // This changes it to the 'Next' button
-                                ClickedButton = true;
-
-                                if (!AcceptButton)
+                                // Dialogue for when a Quest is accepted, but not yet complete
+                                if (/*OvermorrowModFile.ActiveQuests.Contains(CurrentQuest)*/player.GetModPlayer<QuestPlayer>().CurrentQuest.QuestGiver() == npc.type)
                                 {
                                     // Loop through the Quest's dialogue options
-                                    if (DialogueCounter < CurrentQuest.QuestDialogue.Count)
+                                    if (DialogueCounter < CurrentQuest.HintDialogue.Count)
                                     {
                                         Main.PlaySound(SoundID.MenuTick);
-                                        Main.npcChatText = CurrentQuest.GetDialogue(DialogueCounter++);
-
-                                        if (DialogueCounter == CurrentQuest.QuestDialogue.Count)
-                                        {
-                                            AcceptButton = true;
-                                        }
+                                        Main.npcChatText = CurrentQuest.GetHint(DialogueCounter++);
                                     }
                                 }
-                                else
+                                else // Quest is not yet accepted
                                 {
-                                    // Add the thing to the player's list of Quests
-                                    OvermorrowModFile.ActiveQuests.Add(CurrentQuest);
-                                    Main.PlaySound(OvermorrowModFile.Mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestAccept"), npc.Center);
+                                    // This changes it to the 'Next' button
+                                    NextButton = true;
 
-                                    // Run the Quest Accepted UI
-                                    Main.NewText("ACCEPTED QUEST: " + CurrentQuest.QuestName(), Color.Yellow);
-                                    Main.LocalPlayer.talkNPC = -1;
+                                    // Before the button is changed to 'Accept,' scroll through the dialogue
+                                    if (!AcceptButton)
+                                    {
+                                        // Loop through the Quest's dialogue options
+                                        if (DialogueCounter < CurrentQuest.QuestDialogue.Count)
+                                        {
+                                            Main.PlaySound(SoundID.MenuTick);
+                                            Main.npcChatText = CurrentQuest.GetDialogue(DialogueCounter++);
+
+                                            if (DialogueCounter == CurrentQuest.QuestDialogue.Count)
+                                            {
+                                                AcceptButton = true;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Add the thing to the player's list of Quests
+                                        //OvermorrowModFile.ActiveQuests.Add(CurrentQuest);
+                                        player.GetModPlayer<QuestPlayer>().SetQuest(CurrentQuest);
+
+                                        Main.PlaySound(OvermorrowModFile.Mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestAccept"), npc.Center);
+
+                                        // Remove the Quest from the NPC
+                                        npc.GetGlobalNPC<QuestNPC>().CurrentQuest = null;
+
+                                        // Run the Quest Accepted UI
+                                        Main.NewText("ACCEPTED QUEST: " + CurrentQuest.QuestName(), Color.Yellow);
+                                        Main.LocalPlayer.talkNPC = -1;
+                                    }
                                 }
                             }
                         }
@@ -182,8 +213,6 @@ namespace OvermorrowMod
                             HoverButton = false;
                         }
                     }
-
-                    
                 }
 
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, font, Text, TextPosition + new Vector2(16f, 14f), TextColor, 0f,
