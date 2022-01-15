@@ -302,6 +302,47 @@ namespace OvermorrowMod
             {
                 drawColor = Color.Yellow;
             }
-        } 
+        }
+
+        public override bool PreChatButtonClicked(NPC npc, bool firstButton)
+        {
+            if (npc.type == NPCID.Guide)
+            {
+                if (firstButton)
+                {
+                    return false;
+                }
+            }
+
+            return base.PreChatButtonClicked(npc, firstButton);
+        }
+
+        public override void GetChat(NPC npc, ref string chat)
+        {
+            if (npc.type == NPCID.Guide)
+            {
+                if (npc.GetGlobalNPC<QuestNPC>().CurrentQuest != null && npc.GetGlobalNPC<QuestNPC>().CurrentQuest.IsCompleted)
+                {
+                    chat = "whoa task done";
+                }
+                else
+                {
+                    List<string> dialogue = new List<string>
+                    {
+                        "dialogue1",
+                        "dialogue2",
+                        "dialogue3",
+                        "dialogue4",
+                        "dialogue5",
+                        "dialogue6",
+                        "dialogue7",
+                        "dialogue8",
+                        "dialogue9",
+                    };
+
+                    chat = Main.rand.Next(dialogue);
+                }
+            }
+        }
     }
 }

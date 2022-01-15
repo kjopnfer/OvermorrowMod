@@ -110,7 +110,7 @@ namespace OvermorrowMod
                     TrailTextures.Add(GetTexture("Effects/TrailTextures/Trail" + i));
                 }
 
-                //LoadQuests();
+                LoadQuests();
                 ModDetours.Load();
                 ModUtils.Load(false);
                 HexLoader.Load(false);
@@ -123,7 +123,6 @@ namespace OvermorrowMod
                 {
                     HexLoader.TryRegisteringHex(type);
                     Particle.TryRegisteringParticle(type);
-                    QuestLoader.TryRegisteringQuest(type);
                 }
 
                 AltarUI = new UserInterface();
@@ -151,13 +150,12 @@ namespace OvermorrowMod
             TrailShader = null;
             TextShader = null;
 
-            //UnloadQuests();
+            UnloadQuests();
             TrailTextures = null;
             ModDetours.Unload();
             ModUtils.Load(true);
             HexLoader.Load(true);
             Particle.Unload();
-            QuestLoader.Unload();
             TestDetours.Unload();
             Trail.Unload();
 

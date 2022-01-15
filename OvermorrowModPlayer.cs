@@ -385,7 +385,7 @@ namespace OvermorrowMod
             if (player.talkNPC == -1)
             {
                 // Reset the quest dialogue thing
-                ModDetours.NextButton = false;
+                ModDetours.ClickedButton = false;
                 ModDetours.AcceptButton = false;
                 ModDetours.DialogueCounter = 0;
             }
