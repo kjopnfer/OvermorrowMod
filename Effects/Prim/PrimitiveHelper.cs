@@ -1,7 +1,7 @@
 using Terraria;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.ModLoader;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Effects.Prim
 {
@@ -37,16 +37,16 @@ namespace OvermorrowMod.Effects.Prim
 		{
 			return new Vector3(vec.X, vec.Y, 0);
 		}
-        public static Vector2 GetRotation(Vector2[] oldPos, int index)
+        public static Vector2 GetRotation(IReadOnlyList<Vector2> oldPos, int index)
 		{
-			if (oldPos.Length == 1)
+			if (oldPos.Count == 1)
 				return oldPos[0];
                 
 			if (index == 0) {
 				return Vector2.Normalize(oldPos[1] - oldPos[0]).RotatedBy(MathHelper.Pi / 2);
 			}
 
-			return (index == oldPos.Length - 1
+			return (index == oldPos.Count - 1
 				? Vector2.Normalize(oldPos[index] - oldPos[index - 1])
 				: Vector2.Normalize(oldPos[index + 1] - oldPos[index - 1])).RotatedBy(MathHelper.Pi / 2);
 		}
