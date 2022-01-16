@@ -34,22 +34,22 @@ namespace OvermorrowMod.Effects.Prim
             return View * Projection;
         }
         public static Vector3 ToVector3(this Vector2 vec)
-		{
-			return new Vector3(vec.X, vec.Y, 0);
-		}
+        {
+            return new Vector3(vec.X, vec.Y, 0);
+        }
         public static Vector2 GetRotation(IReadOnlyList<Vector2> oldPos, int index)
-		{
-			if (oldPos.Count == 1)
-				return oldPos[0];
+        {
+            if (oldPos.Count == 1)
+                return oldPos[0];
                 
-			if (index == 0) {
-				return Vector2.Normalize(oldPos[1] - oldPos[0]).RotatedBy(MathHelper.Pi / 2);
-			}
+            if (index == 0) {
+                return Vector2.Normalize(oldPos[1] - oldPos[0]).RotatedBy(MathHelper.Pi / 2);
+            }
 
-			return (index == oldPos.Count - 1
-				? Vector2.Normalize(oldPos[index] - oldPos[index - 1])
-				: Vector2.Normalize(oldPos[index + 1] - oldPos[index - 1])).RotatedBy(MathHelper.Pi / 2);
-		}
+            return (index == oldPos.Count - 1
+                ? Vector2.Normalize(oldPos[index] - oldPos[index - 1])
+                : Vector2.Normalize(oldPos[index + 1] - oldPos[index - 1])).RotatedBy(MathHelper.Pi / 2);
+        }
         public static void SetBasicEffectParameters(this Effect effect)
         {
             effect.Parameters["WVP"].SetValue(GetMatrix());
