@@ -28,7 +28,7 @@ namespace OvermorrowMod
         }
 
         public static bool HoverButton = false;
-        public static bool ClickedButton = false;
+        public static bool NextButton = false;
         public static bool AcceptButton = false;
         public static int DialogueCounter = 0;
         private static void DrawNPCChatButtons(On.Terraria.Main.orig_DrawNPCChatButtons orig, int superColor, Color chatColor, int numLines, string focusText, string focusText3)
@@ -36,6 +36,7 @@ namespace OvermorrowMod
             if (Main.LocalPlayer.talkNPC != -1)
             {
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                Player player = Main.LocalPlayer;
 
                 if (npc.type == NPCID.Guide)
                 {
@@ -57,7 +58,7 @@ namespace OvermorrowMod
                 //Main.NewText(CurrentQuest == null);
                 // Text changes for the Quest button
                 string Text = "";
-                if (!ClickedButton)
+                if (!NextButton)
                 {
                     if (CurrentQuest != null)
                     {
@@ -130,21 +131,20 @@ namespace OvermorrowMod
                             if (CurrentQuest.IsCompleted)
                             {
                                 Main.PlaySound(OvermorrowModFile.Mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestTurnIn"), npc.Center);
-
                                 Main.NewText("COMPLETED QUEST: " + CurrentQuest.QuestName(), Color.Yellow);
 
+                                // Do reward shenanigans
+                                CurrentQuest.GiveRewards(player);
                                 OvermorrowModFile.CompletedQuests.Add(CurrentQuest);
                                 OvermorrowModFile.ActiveQuests.Remove(CurrentQuest);
                                 npc.GetGlobalNPC<QuestNPC>().CurrentQuest = null;
 
                                 Main.LocalPlayer.talkNPC = -1;
-
-                                // Do reward shenanigans
                             }
                             else
                             {
                                 // This changes it to the 'Next' button
-                                ClickedButton = true;
+                                NextButton = true;
 
                                 if (!AcceptButton)
                                 {
@@ -168,7 +168,11 @@ namespace OvermorrowMod
 
                                     // Run the Quest Accepted UI
                                     Main.NewText("ACCEPTED QUEST: " + CurrentQuest.QuestName(), Color.Yellow);
+                                    npc.GetGlobalNPC<QuestNPC>().CurrentQuest = null;
+
                                     Main.LocalPlayer.talkNPC = -1;
+
+                                    
                                 }
                             }
                         }
@@ -182,8 +186,10 @@ namespace OvermorrowMod
                             HoverButton = false;
                         }
                     }
+                }
+                else
+                {
 
-                    
                 }
 
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, font, Text, TextPosition + new Vector2(16f, 14f), TextColor, 0f,

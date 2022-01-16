@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -6,14 +7,7 @@ namespace OvermorrowMod.Quests
 {
     public class QuestPlayer : ModPlayer
     {
-        public override void ResetEffects()
-        {
-            // This resets the Quest's condition if the player no longer satisfies it so they can't turn it in once it is no longer satisfied
-            foreach (Quest ActiveQuest in OvermorrowModFile.ActiveQuests)
-            {
-                ActiveQuest.IsCompleted = false;
-            }
-        }
+        public List<Quest> QuestList = null;
 
         // Loops through the Quests and checks if their condition is true
         public override void PostUpdateMiscEffects()
