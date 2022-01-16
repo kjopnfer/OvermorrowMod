@@ -4,65 +4,10 @@ using Terraria;
 
 namespace OvermorrowMod.Effects.Prim.Trails
 {
-    public class SoulTrail : Trail
+    public class SoulTrail : SimpleTrail
     {
-        public SoulTrail() : base(30)
+        public SoulTrail() : base(30, OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail1"))
         {
-        }
-
-        public override void SetDefaults()
-        {
-            Effect = OvermorrowModFile.Mod.TrailShader;
-        }
-        public override void Update()
-        {
-            Positions.PushBack(Entity.Center);
-        }
-        public override void UpdateDead()
-        {
-            if (Positions.Count < 2)
-            {
-                Dead = true;
-                return;
-            }
-            Positions.PopFront();
-        }
-       
-        public override void PrepareTrail()
-        {
-            if (Positions.Count < 2) return;
-            for (int i = 0; i < Positions.Count - 1; i++)
-            {
-                float prog1 = (float)(i) / (float)Positions.Capacity;
-                float prog2 = (float)(i + 1) / (float)Positions.Capacity;
-                Vector2 pos1 = Positions[i];
-                Vector2 pos2 = Positions[i + 1];
-
-                if (pos1 == pos2) continue;
-
-                Vector2 off1 = PrimitiveHelper.GetRotation(Positions, i) * TrailEntity.TrailSize(prog1) * prog1;
-                Vector2 off2 = PrimitiveHelper.GetRotation(Positions, i + 1) * TrailEntity.TrailSize(prog2) * prog2;
-                Color col1 = Color.Lerp(new Color(74, 43, 100), new Color(120, 141, 239), prog1) * prog1;
-                Color col2 = Color.Lerp(new Color(74, 43, 100), new Color(120, 141, 239), prog2) * prog2;
-                                
-                AddVertex(pos1 + off1, col1, new Vector2(prog1, 1));
-                AddVertex(pos1 - off1, col1, new Vector2(prog1, 0));
-                AddVertex(pos2 + off2, col2, new Vector2(prog2, 1));
-
-                AddVertex(pos2 + off2, col2, new Vector2(prog2, 1));
-                AddVertex(pos2 - off2, col2, new Vector2(prog2, 0));
-                AddVertex(pos1 - off1, col1, new Vector2(prog1, 0));
-            }
-        }
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            if (Vertices.Count < 6) return;
-            GraphicsDevice device = Main.graphics.GraphicsDevice;
-            RasterizerState rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
-            device.RasterizerState = rasterizerState;
-
-            device.DrawUserPrimitives(PrimitiveType.TriangleList, Vertices.ToArray(), 0, Vertices.Count / 3);
         }
     }
 }
