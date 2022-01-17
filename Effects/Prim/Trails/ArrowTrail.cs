@@ -4,7 +4,7 @@ using Terraria;
 
 namespace OvermorrowMod.Effects.Prim.Trails
 {
-    public class ArrowTrail : Trail
+    /*public class ArrowTrail : Trail
     {
         private float Offset;
         public override void SetDefaults()
@@ -37,8 +37,8 @@ namespace OvermorrowMod.Effects.Prim.Trails
                 float prog2 = 1f - (float)(i + 1) / (float)Positions.Count;
                 Vector2 pos1 = Positions[i];
                 Vector2 pos2 = Positions[i + 1];
-                Vector2 off1 = PrimitiveHelper.GetRotation(Positions.ToArray(), i) * TrailEntity.TrailSize(prog1) /** prog1*/;
-                Vector2 off2 = PrimitiveHelper.GetRotation(Positions.ToArray(), i + 1) * TrailEntity.TrailSize(prog2) /** prog2*/;
+                Vector2 off1 = PrimitiveHelper.GetRotation(Positions.ToArray(), i) * TrailEntity.TrailSize(prog1) /** prog1;
+                Vector2 off2 = PrimitiveHelper.GetRotation(Positions.ToArray(), i + 1) * TrailEntity.TrailSize(prog2) * prog2;
                 Color col1 = TrailEntity.TrailColor(prog1);
                 Color col2 = TrailEntity.TrailColor(prog2);
                 AddVertex(pos1 + off1, col1, new Vector2(prog1 + Offset, 1));
@@ -64,5 +64,5 @@ namespace OvermorrowMod.Effects.Prim.Trails
 
             device.DrawUserPrimitives(PrimitiveType.TriangleList, Vertices.ToArray(), 0, Vertices.Count / 3);
         }
-    }
+    }*/
 }

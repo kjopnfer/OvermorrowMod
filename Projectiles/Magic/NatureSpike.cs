@@ -16,7 +16,7 @@ namespace OvermorrowMod.Projectiles.Magic
         public Color TrailColor(float progress) => new Color(66, 245, 167);
         public float TrailSize(float progress) => 20;
         public bool TrailActive() => true;
-        public Type TrailType() => typeof(SoulTrail);
+        public Type TrailType() => typeof(SpikeTrail);
 
         private bool RunOnce = true;
         private float Radius;
