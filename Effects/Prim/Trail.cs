@@ -61,7 +61,6 @@ namespace OvermorrowMod.Effects.Prim
             {
                 ITrailEntity entity = npc.modNPC as ITrailEntity;
                 Trail trail = (Trail)Activator.CreateInstance(entity.TrailType());
-                trail.SetDefaults();
                 trail.DrawType = DrawType.NPC;
                 trail.Entity = npc;
                 trail.EntityID = npc.whoAmI;
@@ -74,11 +73,9 @@ namespace OvermorrowMod.Effects.Prim
         {
             int p = orig(X, Y, SpeedX, SpeedY, type, damage, Knockback, owner, ai0, ai1);
             Projectile projectile = Main.projectile[p];
-            if (projectile.modProjectile != null && projectile.modProjectile is ITrailEntity)
+            if (projectile.modProjectile is ITrailEntity entity)
             {
-                ITrailEntity entity = projectile.modProjectile as ITrailEntity;
                 Trail trail = (Trail)Activator.CreateInstance(entity.TrailType());
-                trail.SetDefaults();
                 trail.DrawType = DrawType.Projectile;
                 trail.Entity = projectile;
                 trail.EntityID = projectile.whoAmI;
@@ -166,7 +163,7 @@ namespace OvermorrowMod.Effects.Prim
         }
         public static void DrawProjectileTrails(On.Terraria.Main.orig_DrawProjectiles orig, Main self)
         {
-            foreach(Trail trail in trails)
+            foreach (Trail trail in trails)
             {
                 if (trail.DrawType == DrawType.Projectile && !trail.Pixelated)
                 {
@@ -224,10 +221,10 @@ namespace OvermorrowMod.Effects.Prim
             NPCTarget = null;
             ProjTarget = null;
         }
-        public Effect Effect = OvermorrowModFile.Mod.TrailShader;
-        public List<VertexPositionColorTexture> Vertices = new List<VertexPositionColorTexture>();
-        public List<Vector2> Positions = new List<Vector2>();
-        public int Length = 10;
+        protected Effect Effect { get; } 
+        protected List<VertexPositionColorTexture> Vertices { get; } = new List<VertexPositionColorTexture>();
+        protected Texture2D Texture { get; }
+        protected TrailPositionBuffer Positions { get; }
         public bool Dying = false;
         public bool Dead = false;
         public int EntityID = -1;
@@ -235,6 +232,14 @@ namespace OvermorrowMod.Effects.Prim
         public ITrailEntity TrailEntity;
         public DrawType DrawType = DrawType.Projectile;
         public bool Pixelated = false;
+
+        protected Trail(int length, Texture2D texture, Effect effect = null)
+        {
+            Positions = new TrailPositionBuffer(length);
+            Texture = texture;
+            Effect = effect ?? OvermorrowModFile.Mod.TrailShader;
+        }
+
         public void AddVertex(Vector2 pos, Color color, Vector2 texCoord)
         {
             if (!Pixelated)
@@ -247,32 +252,10 @@ namespace OvermorrowMod.Effects.Prim
             }
             Vertices.Add(new VertexPositionColorTexture(new Vector3(pos.X, pos.Y, 0), color, texCoord));
         }
-        public void TrimToLength()
-        {
-            if (Positions.Count > Length)
-            {
-                Positions.RemoveAt(0);
-            }
-        }
-        public virtual void SetDefaults()
-        {
 
-        }
-        public virtual void Update()
-        {
-
-        }
-        public virtual void PrepareTrail()
-        {
-
-        }
-        public virtual void Draw(SpriteBatch spriteBatch)
-        {
-
-        }
-        public virtual void UpdateDead()
-        {
-
-        }
+        public abstract void Update();
+        public abstract void PrepareTrail();
+        public abstract void Draw(SpriteBatch spriteBatch);
+        public abstract void UpdateDead();
     }
 }
