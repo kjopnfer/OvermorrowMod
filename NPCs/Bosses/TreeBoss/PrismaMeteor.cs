@@ -13,7 +13,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 {
     public class PrismaMeteor : ModProjectile, ITrailEntity
     {
-        public Color TrailColor(float progress) => Main.DiscoColor;
+        public Color TrailColor(float progress) => ProjectileColor;
         public float TrailSize(float progress) => 40;
         public Type TrailType()
         {
@@ -46,14 +46,15 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (projectile.ai[1]++ == 0)
             {
-                Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<TreeWarning>(), 0, 1f, Main.myPlayer, 0, 1);
+                int warning = Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<TreeWarning>(), 0, 1f, Main.myPlayer, 0, 1);
+                ((TreeWarning)Main.projectile[warning].modProjectile).DrawColor = ProjectileColor;
             }
 
             projectile.tileCollide = projectile.ai[1] < 180 ? false : true;
 
             if (Main.rand.NextBool(5))
             {
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(3, 6), Main.DiscoColor, 1, 1, 0, 1f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(3, 6), ProjectileColor, 1, 1, 0, 1f);
             }
         }
 
@@ -69,10 +70,10 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, projectile.scale * 0.8f, SpriteEffects.None, 0);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.3f, 2f), SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -82,7 +83,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
         public override void Kill(int timeLeft)
         {
-            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 1, 1, 0, 1f);
+            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, ProjectileColor, 1, 1, 0, 1f);
 
 
             for (int i = 0; i < Main.maxPlayers; i++)
@@ -103,7 +104,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                 Vector2 dustvelocity = new Vector2(0f, 3f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * 2;
 
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Main.DiscoColor, 1, 1, MathHelper.ToRadians(360f / numLocations * i), 1f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, ProjectileColor, 1, 1, MathHelper.ToRadians(360f / numLocations * i), 1f);
             }
 
             Main.PlaySound(SoundID.Item14);
@@ -112,7 +113,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
     public class LesserPrismaMeteor : ModProjectile, ITrailEntity
     {
-        public Color TrailColor(float progress) => Main.DiscoColor;
+        public Color TrailColor(float progress) => ProjectileColor;
         public float TrailSize(float progress) => 40;
         public Type TrailType()
         {
@@ -144,7 +145,8 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (projectile.ai[1]++ == 0)
             {
-                Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<TreeWarning>(), 0, 1f, Main.myPlayer, 0, 1);
+                int warning = Projectile.NewProjectile(projectile.Center, projectile.velocity, ModContent.ProjectileType<TreeWarning>(), 0, 1f, Main.myPlayer, 0, 1);
+                ((TreeWarning)Main.projectile[warning].modProjectile).DrawColor = ProjectileColor;
             }
 
             projectile.tileCollide = projectile.ai[1] < 180 ? false : true;
@@ -284,7 +286,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
     public class MeteoricBurst : ModProjectile, ITrailEntity
     {
-        public Color TrailColor(float progress) => Main.DiscoColor;
+        public Color TrailColor(float progress) => ProjectileColor;
         public float TrailSize(float progress) => 240;
         public Type TrailType()
         {
@@ -369,7 +371,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
 
             if (Main.rand.NextBool(5))
             {
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(6, 12), Main.DiscoColor, 1, 2, 0, 1f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(6, 12), ProjectileColor, 1, 2, 0, 1f);
             }
         }
 
@@ -383,16 +385,16 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, MathHelper.Lerp(0, 4, Utils.Clamp(projectile.ai[1], 0, 60) / 60f), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, MathHelper.Lerp(0, 4, Utils.Clamp(projectile.ai[1], 0, 60) / 60f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, MathHelper.Lerp(0, 4, Utils.Clamp(projectile.ai[1], 0, 60) / 60f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, MathHelper.Lerp(0, 4, Utils.Clamp(projectile.ai[1], 0, 60) / 60f), SpriteEffects.None, 0);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(MathHelper.Lerp(0, 1.2f, Utils.Clamp(projectile.ai[1], 0, 60) / 60f)/*0.3f*/, MathHelper.Lerp(0, 8, Utils.Clamp(projectile.ai[1], 0, 60) / 60f)/*2f*/), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(MathHelper.Lerp(0, 1.2f, Utils.Clamp(projectile.ai[1], 0, 60) / 60f)/*0.3f*/, MathHelper.Lerp(0, 8, Utils.Clamp(projectile.ai[1], 0, 60) / 60f)/*2f*/), SpriteEffects.None, 0);
 
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, MathHelper.Lerp(0, 4, Utils.Clamp(projectile.ai[1], 0, 60) / 60f), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation, drawOrigin, MathHelper.Lerp(0, 4, Utils.Clamp(projectile.ai[1], 0, 60) / 60f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, MathHelper.Lerp(0, 4, Utils.Clamp(projectile.ai[1], 0, 60) / 60f), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation, drawOrigin, MathHelper.Lerp(0, 4, Utils.Clamp(projectile.ai[1], 0, 60) / 60f), SpriteEffects.None, 0);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), Main.DiscoColor, projectile.rotation + MathHelper.Pi, drawOrigin, new Vector2(MathHelper.Lerp(0, 1.2f, Utils.Clamp(projectile.ai[1], 0, 60) / 60f)/*0.3f*/, MathHelper.Lerp(0, 8, Utils.Clamp(projectile.ai[1], 0, 60) / 60f)/*2f*/), SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor, projectile.rotation + MathHelper.Pi, drawOrigin, new Vector2(MathHelper.Lerp(0, 1.2f, Utils.Clamp(projectile.ai[1], 0, 60) / 60f)/*0.3f*/, MathHelper.Lerp(0, 8, Utils.Clamp(projectile.ai[1], 0, 60) / 60f)/*2f*/), SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -410,7 +412,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             ParentNPC.velocity = Vector2.Zero;
             ((TreeBossP2)ParentNPC.modNPC).MeteorLanded = true;
 
-            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 1, 8f, 0, 1f);
+            Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), projectile.Center, Vector2.Zero, ProjectileColor, 1, 8f, 0, 1f);
 
             for (int i = 0; i < Main.maxPlayers; i++)
             {
@@ -430,7 +432,7 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
                 Vector2 position = origin + Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                 Vector2 dustvelocity = new Vector2(0f, 12f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * 8;
 
-                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, Main.DiscoColor, 1, 3, MathHelper.ToRadians(360f / numLocations * i), 1f);
+                Particle.CreateParticle(Particle.ParticleType<Glow>(), position, dustvelocity, ProjectileColor, 1, 3, MathHelper.ToRadians(360f / numLocations * i), 1f);
             }
 
             Main.PlaySound(SoundID.Item14);
