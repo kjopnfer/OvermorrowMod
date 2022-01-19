@@ -37,38 +37,32 @@ namespace OvermorrowMod
             {
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                 Player player = Main.LocalPlayer;
-
-                if (npc.type == NPCID.Guide)
-                {
-                    //focusText = "test123";
-                    //focusText3 = "obamna";
-                }
-
-                // Get the list of Quests from this npc
-                /*List<Quest> NPCQuests = OvermorrowModFile.QuestList;
-                Quest CurrentQuest = null;
-                foreach (Quest NPCQuest in NPCQuests)
-                {
-                    if (NPCQuest.QuestGiver() == npc.type)
-                    {
-                        CurrentQuest = NPCQuest;
-                    }
-                }*/
+                QuestPlayer modPlayer = player.GetModPlayer<QuestPlayer>();
                 Quest CurrentQuest = npc.GetGlobalNPC<QuestNPC>().CurrentQuest;
-                //Main.NewText(CurrentQuest == null);
+
                 // Text changes for the Quest button
                 string Text = "";
                 if (!NextButton)
                 {
                     if (CurrentQuest != null)
                     {
-                        if (CurrentQuest.IsCompleted)
+                        Text = "Quest";
+                    }
+                    else
+                    {
+                        foreach (Quest quest in modPlayer.QuestList)
                         {
-                            Text = "Turn In";
-                        }
-                        else
-                        {
-                            Text = "Quest";
+                            if (quest.QuestGiver() == npc.type)
+                            {
+                                if (quest.IsCompleted)
+                                {
+                                    Text = "Turn In";
+                                }
+                                else
+                                {
+                                    Text = "Quest";
+                                }
+                            }
                         }
                     }
                 }
@@ -84,13 +78,14 @@ namespace OvermorrowMod
                     }
                 }
 
+                #region Text
                 DynamicSpriteFont font = Main.fontMouseText;
                 Color TextColor = new Color(superColor, (int)(superColor / 1.1), superColor / 2, superColor);
                 Vector2 TextScale = new Vector2(0.9f);
                 Vector2 StringSize = ChatManager.GetStringSize(font, Text, TextScale);
                 Vector2 TextPosition = new Vector2((180 + Main.screenWidth / 2) + StringSize.X - 50f, 130 + numLines * 30);
-
                 Vector2 MouseCursor = new Vector2(Main.mouseX, Main.mouseY);
+                #endregion
 
                 // Check for Help button
                 if (Main.npcChatFocus2 && Main.mouseLeft && Main.mouseLeftRelease)
@@ -127,53 +122,34 @@ namespace OvermorrowMod
 
                         if (Main.mouseLeft && Main.mouseLeftRelease)
                         {
-                            // Remove the Quest from the NPC if it is completed
-                            if (CurrentQuest.IsCompleted)
+                            // This changes it to the 'Next' button
+                            NextButton = true;
+
+                            if (!AcceptButton)
                             {
-                                Main.PlaySound(OvermorrowModFile.Mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestTurnIn"), npc.Center);
-                                Main.NewText("COMPLETED QUEST: " + CurrentQuest.QuestName(), Color.Yellow);
+                                // Loop through the Quest's dialogue options
+                                if (DialogueCounter < CurrentQuest.QuestDialogue.Count)
+                                {
+                                    Main.PlaySound(SoundID.MenuTick);
+                                    Main.npcChatText = CurrentQuest.GetDialogue(DialogueCounter++);
 
-                                // Do reward shenanigans
-                                CurrentQuest.GiveRewards(player);
-                                OvermorrowModFile.CompletedQuests.Add(CurrentQuest);
-                                OvermorrowModFile.ActiveQuests.Remove(CurrentQuest);
-                                npc.GetGlobalNPC<QuestNPC>().CurrentQuest = null;
-
-                                Main.LocalPlayer.talkNPC = -1;
+                                    if (DialogueCounter == CurrentQuest.QuestDialogue.Count)
+                                    {
+                                        AcceptButton = true;
+                                    }
+                                }
                             }
                             else
                             {
-                                // This changes it to the 'Next' button
-                                NextButton = true;
+                                // Add the thing to the player's list of Quests
+                                modPlayer.QuestList.Add(CurrentQuest);
+                                Main.PlaySound(OvermorrowModFile.Mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestAccept"), npc.Center);
 
-                                if (!AcceptButton)
-                                {
-                                    // Loop through the Quest's dialogue options
-                                    if (DialogueCounter < CurrentQuest.QuestDialogue.Count)
-                                    {
-                                        Main.PlaySound(SoundID.MenuTick);
-                                        Main.npcChatText = CurrentQuest.GetDialogue(DialogueCounter++);
+                                // Run the Quest Accepted UI
+                                Main.NewText("ACCEPTED QUEST: " + CurrentQuest.QuestName(), Color.Yellow);
+                                npc.GetGlobalNPC<QuestNPC>().CurrentQuest = null;
 
-                                        if (DialogueCounter == CurrentQuest.QuestDialogue.Count)
-                                        {
-                                            AcceptButton = true;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    // Add the thing to the player's list of Quests
-                                    OvermorrowModFile.ActiveQuests.Add(CurrentQuest);
-                                    Main.PlaySound(OvermorrowModFile.Mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestAccept"), npc.Center);
-
-                                    // Run the Quest Accepted UI
-                                    Main.NewText("ACCEPTED QUEST: " + CurrentQuest.QuestName(), Color.Yellow);
-                                    npc.GetGlobalNPC<QuestNPC>().CurrentQuest = null;
-
-                                    Main.LocalPlayer.talkNPC = -1;
-
-                                    
-                                }
+                                Main.LocalPlayer.talkNPC = -1;
                             }
                         }
                     }
@@ -189,7 +165,59 @@ namespace OvermorrowMod
                 }
                 else
                 {
+                    if (MouseCursor.Between(TextPosition, TextPosition + StringSize * TextScale) && !PlayerInput.IgnoreMouseInterface)
+                    {
+                        Main.LocalPlayer.mouseInterface = true;
+                        Main.LocalPlayer.releaseUseItem = true;
 
+                        // Plays the sound once
+                        if (!HoverButton)
+                        {
+                            Main.PlaySound(SoundID.MenuTick);
+                            HoverButton = true;
+                        }
+
+                        TextScale *= 1.1f;
+
+                        if (Main.mouseLeft && Main.mouseLeftRelease)
+                        {
+                            foreach (Quest quest in modPlayer.QuestList)
+                            {
+                                if (quest.QuestGiver() == npc.type)
+                                {
+                                    if (quest.IsCompleted) // Completion dialogue
+                                    {
+                                        Main.PlaySound(OvermorrowModFile.Mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestTurnIn"), npc.Center);
+                                        Main.NewText("COMPLETED QUEST: " + quest.QuestName(), Color.Yellow);
+
+                                        // Do reward shenanigans
+                                        quest.GiveRewards(player);
+                                        OvermorrowModFile.CompletedQuests.Add(quest);
+                                        //modPlayer.QuestList.Remove(CurrentQuest);
+
+                                        Main.LocalPlayer.talkNPC = -1;
+                                    }
+                                    else // Hint dialogue
+                                    {
+                                        if (DialogueCounter < quest.HintDialogue.Count)
+                                        {
+                                            Main.PlaySound(SoundID.MenuTick);
+                                            Main.npcChatText = quest.GetHint(DialogueCounter++);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Plays the sound once
+                        if (HoverButton)
+                        {
+                            Main.PlaySound(SoundID.MenuTick);
+                            HoverButton = false;
+                        }
+                    }                 
                 }
 
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, font, Text, TextPosition + new Vector2(16f, 14f), TextColor, 0f,

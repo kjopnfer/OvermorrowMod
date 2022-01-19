@@ -60,6 +60,7 @@ namespace OvermorrowMod
                 if (type.IsSubclassOf(typeof(Quest)) && !type.IsAbstract && type != typeof(Quest))
                 {
                     Quest quest = (Quest)Activator.CreateInstance(type);
+                    quest.SetDefaults();
                     QuestList.Add(quest);
                 }
             }

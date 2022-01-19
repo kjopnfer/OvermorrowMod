@@ -7,12 +7,16 @@ namespace OvermorrowMod.Quests
 {
     public class QuestPlayer : ModPlayer
     {
-        public List<Quest> QuestList = null;
+        public List<Quest> QuestList = new List<Quest>();
 
         // Loops through the Quests and checks if their condition is true
         public override void PostUpdateMiscEffects()
         {
-            foreach (Quest ActiveQuest in OvermorrowModFile.ActiveQuests)
+            foreach (Quest ActiveQuest in QuestList)
+            {
+                ActiveQuest.IsCompleted = ActiveQuest.CheckCompleted(player);
+            }
+            /*foreach (Quest ActiveQuest in OvermorrowModFile.ActiveQuests)
             {
                 switch (ActiveQuest.QuestID())
                 {
@@ -26,7 +30,7 @@ namespace OvermorrowMod.Quests
                         }
                         break;
                 }
-            }
+            }*/
         }
     }
 }
