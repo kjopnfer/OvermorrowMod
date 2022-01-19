@@ -41,9 +41,31 @@ namespace OvermorrowMod.Quests
         {
             if (npc.type == NPCID.Guide)
             {
-                if (npc.GetGlobalNPC<QuestNPC>().CurrentQuest != null && npc.GetGlobalNPC<QuestNPC>().CurrentQuest.IsCompleted)
+                if (npc.GetGlobalNPC<QuestNPC>().CurrentQuest != null)
                 {
-                    chat = "whoa task done";
+                    chat = "hi i have a quest for u";
+                }
+                else if (npc.GetGlobalNPC<QuestNPC>().CurrentQuest == null)
+                {
+                    foreach (Quest quest in Main.LocalPlayer.GetModPlayer<QuestPlayer>().QuestList)
+                    {
+                        if (quest.QuestGiver() == npc.type)
+                        {
+                            if (quest.IsCompleted) // Completion dialogue
+                            {
+                                switch (quest.QuestID())
+                                {
+                                    case (int)Quest.ID.TutorialGuideQuest:
+                                        chat = "Nice job! Here, have this, its… (To be expanded once the reward is decided)";
+                                        break;
+                                    case (int)Quest.ID.GuideHouseQuest:
+                                        chat = "Well done! This house is pretty comfy! Well I think you're pretty ready now. I'd suggest you start exploring the world and the underground. There's a lot to find which will help you with your journey";
+                                        break;
+                                }
+                            }
+                            
+                        }
+                    }
                 }
                 else
                 {

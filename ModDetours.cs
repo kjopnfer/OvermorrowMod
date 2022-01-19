@@ -102,25 +102,24 @@ namespace OvermorrowMod
                     Main.npcChatText = Main.rand.Next(HelpDialogue);
                 }
 
-                // Check if the NPC has a quest instance
-                if (CurrentQuest != null)
+                #region Quest Button/Dialogue
+                if (MouseCursor.Between(TextPosition, TextPosition + StringSize * TextScale) && !PlayerInput.IgnoreMouseInterface)
                 {
-                    // Check for Quest Button
-                    if (MouseCursor.Between(TextPosition, TextPosition + StringSize * TextScale) && !PlayerInput.IgnoreMouseInterface)
+                    Main.LocalPlayer.mouseInterface = true;
+                    Main.LocalPlayer.releaseUseItem = true;
+
+                    // Plays the sound once
+                    if (!HoverButton)
                     {
-                        Main.LocalPlayer.mouseInterface = true;
-                        Main.LocalPlayer.releaseUseItem = true;
+                        Main.PlaySound(SoundID.MenuTick);
+                        HoverButton = true;
+                    }
 
-                        // Plays the sound once
-                        if (!HoverButton)
-                        {
-                            Main.PlaySound(SoundID.MenuTick);
-                            HoverButton = true;
-                        }
+                    TextScale *= 1.1f;
 
-                        TextScale *= 1.1f;
-
-                        if (Main.mouseLeft && Main.mouseLeftRelease)
+                    if (Main.mouseLeft && Main.mouseLeftRelease)
+                    {
+                        if (CurrentQuest != null)
                         {
                             // This changes it to the 'Next' button
                             NextButton = true;
@@ -152,34 +151,7 @@ namespace OvermorrowMod
                                 Main.LocalPlayer.talkNPC = -1;
                             }
                         }
-                    }
-                    else
-                    {
-                        // Plays the sound once
-                        if (HoverButton)
-                        {
-                            Main.PlaySound(SoundID.MenuTick);
-                            HoverButton = false;
-                        }
-                    }
-                }
-                else
-                {
-                    if (MouseCursor.Between(TextPosition, TextPosition + StringSize * TextScale) && !PlayerInput.IgnoreMouseInterface)
-                    {
-                        Main.LocalPlayer.mouseInterface = true;
-                        Main.LocalPlayer.releaseUseItem = true;
-
-                        // Plays the sound once
-                        if (!HoverButton)
-                        {
-                            Main.PlaySound(SoundID.MenuTick);
-                            HoverButton = true;
-                        }
-
-                        TextScale *= 1.1f;
-
-                        if (Main.mouseLeft && Main.mouseLeftRelease)
+                        else
                         {
                             foreach (Quest quest in modPlayer.QuestList)
                             {
@@ -192,8 +164,19 @@ namespace OvermorrowMod
 
                                         // Do reward shenanigans
                                         quest.GiveRewards(player);
+                                        if (quest.QuestID() == (int)Quest.ID.TutorialGuideQuest)
+                                        {
+                                            foreach (Quest newQuest in OvermorrowModFile.QuestList)
+                                            {
+                                                if (newQuest.QuestID() == (int)Quest.ID.GuideHouseQuest)
+                                                {
+                                                    npc.GetGlobalNPC<QuestNPC>().CurrentQuest = newQuest;
+                                                }
+                                            }
+                                        }
+
                                         OvermorrowModFile.CompletedQuests.Add(quest);
-                                        //modPlayer.QuestList.Remove(CurrentQuest);
+                                        modPlayer.QuestList.Remove(quest);
 
                                         Main.LocalPlayer.talkNPC = -1;
                                     }
@@ -209,16 +192,17 @@ namespace OvermorrowMod
                             }
                         }
                     }
-                    else
-                    {
-                        // Plays the sound once
-                        if (HoverButton)
-                        {
-                            Main.PlaySound(SoundID.MenuTick);
-                            HoverButton = false;
-                        }
-                    }                 
                 }
+                else
+                {
+                    // Plays the sound once
+                    if (HoverButton)
+                    {
+                        Main.PlaySound(SoundID.MenuTick);
+                        HoverButton = false;
+                    }
+                }
+                #endregion
 
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, font, Text, TextPosition + new Vector2(16f, 14f), TextColor, 0f,
                       StringSize * 0.5f, TextScale * new Vector2(1f));

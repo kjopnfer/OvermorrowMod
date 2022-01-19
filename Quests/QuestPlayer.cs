@@ -14,7 +14,7 @@ namespace OvermorrowMod.Quests
         {
             foreach (Quest ActiveQuest in QuestList)
             {
-                ActiveQuest.IsCompleted = ActiveQuest.CheckCompleted(player);
+                ActiveQuest.IsCompleted = ActiveQuest.CheckCompleted(player, ActiveQuest.QuestID());
             }
             /*foreach (Quest ActiveQuest in OvermorrowModFile.ActiveQuests)
             {
