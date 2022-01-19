@@ -63,22 +63,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
 
             #region Dust Code
-            for (int num1103 = 0; num1103 < 2; num1103++)
+            if (Main.rand.NextBool())
             {
-                int num1106 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.TerraBlade, npc.velocity.X, npc.velocity.Y, 50, default(Color), 0.4f);
-                switch (num1103)
-                {
-                    case 0:
-                        Main.dust[num1106].position = (Main.dust[num1106].position + npc.Center * 5f) / 6f;
-                        break;
-                    case 1:
-                        Main.dust[num1106].position = (Main.dust[num1106].position + (npc.Center + npc.velocity / 2f) * 5f) / 6f;
-                        break;
-                }
-                Dust dust81 = Main.dust[num1106];
-                dust81.velocity *= 0.1f;
-                Main.dust[num1106].noGravity = true;
-                Main.dust[num1106].fadeIn = 1f;
+                Dust dust = Terraria.Dust.NewDustPerfect(npc.Center, 107, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
             }
             #endregion
 
@@ -220,22 +207,9 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
 
             #region Dust Code
-            for (int num1103 = 0; num1103 < 2; num1103++)
+            if (Main.rand.NextBool())
             {
-                int num1106 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.TerraBlade, npc.velocity.X, npc.velocity.Y, 50, default(Color), 0.4f);
-                switch (num1103)
-                {
-                    case 0:
-                        Main.dust[num1106].position = (Main.dust[num1106].position + npc.Center * 5f) / 6f;
-                        break;
-                    case 1:
-                        Main.dust[num1106].position = (Main.dust[num1106].position + (npc.Center + npc.velocity / 2f) * 5f) / 6f;
-                        break;
-                }
-                Dust dust81 = Main.dust[num1106];
-                dust81.velocity *= 0.1f;
-                Main.dust[num1106].noGravity = true;
-                Main.dust[num1106].fadeIn = 1f;
+                Dust dust = Terraria.Dust.NewDustPerfect(npc.Center, 107, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
             }
             #endregion
 

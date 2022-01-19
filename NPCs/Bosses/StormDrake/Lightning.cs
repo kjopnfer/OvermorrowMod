@@ -180,7 +180,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             //if (Positions == default || Positions == null) return false;
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            //Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Circle");
             for (int i = 0; i < Positions.Count - 1; i++)
             {
                 var seg1 = Positions[i];

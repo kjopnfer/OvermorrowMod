@@ -12,7 +12,7 @@ namespace OvermorrowMod.Projectiles.Melee
 {
     public class SoulSpin : ModProjectile, ITrailEntity
     {
-        public Color TrailColor(float progress) => Color.Cyan;
+        public Color TrailColor(float progress) => Color.Lerp(Color.Blue, Color.Cyan, progress) * progress;
         public float TrailSize(float progress) => 80;
         public Type TrailType()
         {
