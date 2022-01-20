@@ -121,6 +121,7 @@ namespace OvermorrowMod
                     {
                         if (CurrentQuest != null)
                         {
+                            #region Quest Available
                             // This changes it to the 'Next' button
                             NextButton = true;
 
@@ -150,10 +151,13 @@ namespace OvermorrowMod
 
                                 Main.LocalPlayer.talkNPC = -1;
                             }
+                            #endregion
                         }
                         else
                         {
-                            foreach (Quest quest in modPlayer.QuestList)
+                            #region Quest Accepted
+                            // Convert the list to prevent collection modification error
+                            foreach (Quest quest in modPlayer.QuestList.ToList())
                             {
                                 if (quest.QuestGiver() == npc.type)
                                 {
@@ -190,6 +194,7 @@ namespace OvermorrowMod
                                     }
                                 }
                             }
+                            #endregion
                         }
                     }
                 }
