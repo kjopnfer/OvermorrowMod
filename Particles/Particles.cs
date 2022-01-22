@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using OvermorrowMod.Effects;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
+using OvermorrowMod.Effects.Prim;
 
 namespace OvermorrowMod.Particles
 {
@@ -201,14 +202,30 @@ namespace OvermorrowMod.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            PrimitivePacket packet = new PrimitivePacket();
-            packet.Type = PrimitiveType.TriangleStrip;
-            packet.Pass = "Basic";
             Vector2 pos2 = (particle.rotation + MathHelper.Pi / 2).ToRotationVector2() * 5f * particle.scale;
-            packet.Add(particle.position + particle.rotation.ToRotationVector2() * 10f * particle.scale, particle.color, Vector2.Zero);
-            packet.Add(particle.position + pos2, particle.color, Vector2.Zero);
-            packet.Add(particle.position - pos2, particle.color, Vector2.Zero);
-            packet.Add(particle.position - particle.rotation.ToRotationVector2() * 10f * particle.scale, particle.color, Vector2.Zero);
+            PrimitivePacket packet = new PrimitivePacket(
+                new[]
+                {
+                    PrimitiveHelper.AsVertex(
+                        particle.position + particle.rotation.ToRotationVector2() * 10f * particle.scale,
+                        particle.color,
+                        Vector2.Zero),
+                    PrimitiveHelper.AsVertex(
+                        particle.position + pos2,
+                        particle.color,
+                        Vector2.Zero),
+                    PrimitiveHelper.AsVertex(
+                        particle.position - pos2,
+                        particle.color,
+                        Vector2.Zero),
+                    PrimitiveHelper.AsVertex(
+                        particle.position - particle.rotation.ToRotationVector2() * 10f * particle.scale,
+                        particle.color,
+                        Vector2.Zero)
+                },
+                PrimitiveType.TriangleStrip,
+                4);
+
             packet.Send();
         }
     }
