@@ -41,9 +41,27 @@ namespace OvermorrowMod.Effects.Prim
             Vector3 pos2 = new Vector3(pos.X, pos.Y, 0f);
             Vertices.Add(new VertexPositionColorTexture(pos2, color, TexCoord));
         }
+        public void Add2(Vector2 pos, Color color, Vector2 TexCoord)
+        {
+            Vertices.Add(new VertexPositionColorTexture(new Vector3(pos.X, pos.Y, 0), color, TexCoord));
+        }
+        public void AddStrip(Vector2 pos1, Vector2 pos2, float size1, float size2, float progress1, float progress2, Color color1, Color color2)
+        {
+            Vector2 dir = (pos2 - pos1).SafeNormalize(Vector2.Zero).RotatedBy(Math.PI / 2);
+            Vector2 offset1 = dir * size1;
+            Vector2 offset2 = dir * size2;
+            Add(pos1 + offset1, color1, new Vector2(progress1, 1));
+            Add(pos1 - offset1, color1, new Vector2(progress1, 0));
+            Add(pos2 + offset2, color2, new Vector2(progress2, 1));
+
+            Add(pos2 - offset2, color2, new Vector2(progress2, 0));
+            Add(pos2 + offset2, color2, new Vector2(progress2, 1));
+            Add(pos1 - offset1, color1, new Vector2(progress1, 0));
+        }
         public static void SetTexture(int index, Texture2D texture)
         {
             Main.graphics.GraphicsDevice.Textures[index] = texture;
+            Main.graphics.GraphicsDevice.SamplerStates[index] = SamplerState.PointWrap;
         }
 
         public short[] GetIndices()
@@ -130,7 +148,7 @@ namespace OvermorrowMod.Effects.Prim
                 rasterizerState.CullMode = CullMode.None;
                 device.RasterizerState = rasterizerState;
 
-                Effect.Parameters["WorldViewProjection"].SetValue(PrimitiveHelper.GetMatrix());
+                Effect.Parameters["WVP"].SetValue(PrimitiveHelper.GetMatrix());
                 Effect.CurrentTechnique.Passes[Pass].Apply();
 
                 device.DrawPrimitives(Type, 0, Count);

@@ -10,6 +10,7 @@ namespace OvermorrowMod
     {
         public override bool InstancePerEntity => true;
 
+        public bool RetractSlow = false;
         private bool spawnedBlood = false;
         public bool slowedTime = false;
 
@@ -75,6 +76,16 @@ namespace OvermorrowMod
                     spawnedBlood = true;
                 }
             }
+        }
+
+        public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
+        {
+            if (RetractSlow)
+            {
+                speed = 4;
+            }
+
+            base.GrappleRetreatSpeed(projectile, player, ref speed);
         }
     }
 }
