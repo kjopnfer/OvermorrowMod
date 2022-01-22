@@ -50,7 +50,6 @@ namespace OvermorrowMod
         public static List<Texture2D> TrailTextures;
 
         public static List<Quest> QuestList = new List<Quest>();
-        public static List<Quest> ActiveQuests = new List<Quest>();
         public static List<Quest> CompletedQuests = new List<Quest>();
 
         public static void LoadQuests()
@@ -68,7 +67,6 @@ namespace OvermorrowMod
 
         public static void UnloadQuests()
         {
-            ActiveQuests = null;
             QuestList = null;
         }
 
