@@ -1,3 +1,4 @@
+using OvermorrowMod.Projectiles.Magic.CreepingD;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,7 +27,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useTime = 35;
             item.width = 48;
             item.height = 48;
-            item.shoot = mod.ProjectileType("IronBloodCircle");
+            item.shoot = ModContent.ProjectileType<IronBloodCircle>();
             item.shootSpeed = 0f;
             item.knockBack = 4.5f;
             item.magic = true;
