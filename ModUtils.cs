@@ -4,6 +4,8 @@ using OvermorrowMod.Effects.Prim;
 using System;
 using System.Reflection;
 using Terraria;
+using Terraria.GameContent.Events;
+using Terraria.ID;
 using WardenClass;
 
 namespace OvermorrowMod
@@ -25,6 +27,14 @@ namespace OvermorrowMod
                 stopRain = typeof(Main).GetMethod("StopRain", BindingFlags.Static | BindingFlags.NonPublic);
             }
         }
+        public static void SandstormStuff()
+        {
+            Sandstorm.IntendedSeverity = 20; //0.4f;
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+            NetMessage.SendData(MessageID.WorldData, -1, -1, null, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+        }
+
         public static void StartRain()
         {
             startRain.Invoke(null, null);

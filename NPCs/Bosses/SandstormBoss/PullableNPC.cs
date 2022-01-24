@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
-    public class PullabeNPC : ModNPC
+    public class PullableNPC : ModNPC
     {
         protected bool Grappled = false;
         protected Projectile GrappleProjectile = null;
@@ -49,14 +49,14 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 Projectile projectile = Main.projectile[i];
                 if (projectile.active && projectile.aiStyle == 7 && npc.Hitbox.Intersects(projectile.Hitbox))
                 {
-                    if (!Grappled)
+                    if (!Grappled && !projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>().RetractSlow)
                     {
                         for (int j = 0; j < 18; j++)
                         {
                             Particle.CreateParticle(Particle.ParticleType<Spark>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(4, 6), Color.Yellow);
                         }
 
-                        Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Yellow, 1, 0.5f);
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Yellow, 0.5f, 0.5f);
 
                         projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>().RetractSlow = true;
                         projectile.ai[0] = 1;
