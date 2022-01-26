@@ -6,10 +6,12 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Projectiles.Magic.Gems
 {
-    public class TopazProj : ModProjectile
+    public class ExplosionTestProj : ModProjectile
     {
         private int timer = 0;
         Vector2 targetPosition;
+
+        private CircularExplosionGenerator generator;
 
         public override void SetDefaults()
         {
@@ -22,6 +24,17 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
             projectile.magic = true;
             projectile.tileCollide = true;
             projectile.ignoreWater = true;
+
+            generator = new CircularExplosionGenerator(1, 20, Color.Red, 600);
+            ExplosionManager.AddGenerator(generator);
+        }
+        public override void Kill(int timeLeft)
+        {
+            ExplosionManager.CreateExplosion(0, 60, Color.Yellow, projectile.Center);
+
+            generator.Finished = true;
+            generator.Color = new Color(timer, 255, 255, 255);
+            base.Kill(timeLeft);
         }
 
         public override void AI()
@@ -40,12 +53,10 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
                 projectile.velocity += direction * 1.5f;
             }
 
-            int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Smoke, projectile.velocity.X, projectile.velocity.Y, 75, Color.Yellow, 1.2f);
-            Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
-            Main.dust[num1110].noGravity = true;
-            Dust dust81 = Main.dust[num1110];
-            dust81.velocity *= 0.5f;
-
+            if (timer % 1 == 0)
+            {
+                ExplosionManager.CreateExplosion(generator, projectile.Center);
+            }
         }
     }
 }
