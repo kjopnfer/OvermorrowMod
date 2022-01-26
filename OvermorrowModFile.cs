@@ -16,6 +16,8 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using WardenClass;
 using System;
+using MonoMod.Cil;
+using Mono.Cecil.Cil;
 
 namespace OvermorrowMod
 {
@@ -50,6 +52,11 @@ namespace OvermorrowMod
         public OvermorrowModFile()
         {
             Mod = this;
+        }  
+
+        public override void PostSetupContent()
+        {
+            //Main.add(new Manipulator(TitleMusic));
         }
 
         public override void UpdateMusic(ref int music, ref MusicPriority priority)
@@ -85,6 +92,8 @@ namespace OvermorrowMod
                 {
                     TrailTextures.Add(GetTexture("Effects/TrailTextures/Trail" + i));
                 }
+
+                ILEdits.Load();
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 Particle.Load();
@@ -325,7 +334,7 @@ namespace OvermorrowMod
             Shockwave = null;
             TrailShader = null;
             TextShader = null;
-            
+
             TrailTextures = null;
             ModUtils.Load(true);
             HexLoader.Load(true);
@@ -333,6 +342,7 @@ namespace OvermorrowMod
             TestDetours.Unload();
             Trail.Unload();
 
+            ILEdits.Unload();
 
             Souls = null;
             Altar = null;
@@ -340,6 +350,22 @@ namespace OvermorrowMod
             AmuletKey = null;
             ToggleUI = null;
 
+        }
+
+        public override void Close()
+        {
+            var slots = new int[] {
+                GetSoundSlot(SoundType.Music, "Sounds/Music/SandstormBoss"),
+            };
+            foreach (var slot in slots) // Other mods crashing during loading can leave Main.music in a weird state.
+            {
+                if (Main.music.IndexInRange(slot) && Main.music[slot]?.IsPlaying == true)
+                {
+                    Main.music[slot].Stop(Microsoft.Xna.Framework.Audio.AudioStopOptions.Immediate);
+                }
+            }
+
+            base.Close();
         }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
@@ -499,6 +525,6 @@ namespace OvermorrowMod
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, player.soulList[i]);
             }
-        }
+        }   
     }
 }
