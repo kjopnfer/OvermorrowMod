@@ -97,6 +97,10 @@ namespace OvermorrowMod
         {
             if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
         }
+        public static void SafeSetParameter(this Effect effect, string name, Vector2 value)
+        {
+            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
+        }
         public static void Reload(this SpriteBatch spriteBatch, SpriteSortMode sortMode = SpriteSortMode.Deferred)
         {
             if (spriteBatch.HasBegun())

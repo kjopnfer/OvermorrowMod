@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Effects.Explosions;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,6 +10,8 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
     {
         private int timer = 0;
         Vector2 targetPosition;
+
+        CircularExplosionGenerator generator = new CircularExplosionGenerator(1, 20, Color.Red, 120);
 
         public override void SetDefaults()
         {
@@ -21,7 +24,17 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
             projectile.magic = true;
             projectile.tileCollide = true;
             projectile.ignoreWater = true;
+
+            ExplosionManager.AddGenerator(generator);
         }
+        public override void Kill(int timeLeft)
+        {
+            ExplosionManager.CreateExplosion(generator, projectile.Center);
+
+            generator.Finished = true;
+            base.Kill(timeLeft);
+        }
+
         public override void AI()
         {
             projectile.rotation = projectile.velocity.ToRotation();
@@ -37,14 +50,17 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
                 direction.Normalize();
                 projectile.velocity += direction * 1.5f;
             }
+
+            if (timer % 1 == 0)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Smoke, projectile.velocity.X, projectile.velocity.Y, 75, Color.Yellow, 1.2f);
-                Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
-                Main.dust[num1110].noGravity = true;
-                Dust dust81 = Main.dust[num1110];
-                dust81.velocity *= 0.5f;
+                ExplosionManager.CreateExplosion(generator, projectile.Center);
             }
 
+            int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Smoke, projectile.velocity.X, projectile.velocity.Y, 75, Color.Yellow, 1.2f);
+            Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
+            Main.dust[num1110].noGravity = true;
+            Dust dust81 = Main.dust[num1110];
+            dust81.velocity *= 0.5f;
 
         }
     }

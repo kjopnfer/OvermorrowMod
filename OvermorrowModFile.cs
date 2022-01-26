@@ -16,6 +16,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using WardenClass;
 using System;
+using OvermorrowMod.Effects.Explosions;
 
 namespace OvermorrowMod
 {
@@ -47,6 +48,7 @@ namespace OvermorrowMod
         public Effect TextShader;
 
         public static List<Texture2D> TrailTextures;
+
         public OvermorrowModFile()
         {
             Mod = this;
@@ -90,6 +92,7 @@ namespace OvermorrowMod
                 Particle.Load();
                 TestDetours.Load();
                 Trail.Load();
+                ExplosionManager.Load(this);
 
                 foreach (Type type in Code.GetTypes())
                 {
@@ -332,6 +335,7 @@ namespace OvermorrowMod
             Particle.Unload();
             TestDetours.Unload();
             Trail.Unload();
+            ExplosionManager.Unload();
 
 
             Souls = null;
@@ -339,7 +343,6 @@ namespace OvermorrowMod
             SandModeKey = null;
             AmuletKey = null;
             ToggleUI = null;
-
         }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
@@ -456,6 +459,7 @@ namespace OvermorrowMod
             }
 
             Trail.UpdateTrails();
+            ExplosionManager.Update();
         }
 
         public void AddSoul(Player owner, int soulEssence)
