@@ -11,7 +11,7 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
         private int timer = 0;
         Vector2 targetPosition;
 
-        CircularExplosionGenerator generator = new CircularExplosionGenerator(1, 20, Color.Red, 120);
+        private CircularExplosionGenerator generator;
 
         public override void SetDefaults()
         {
@@ -25,13 +25,15 @@ namespace OvermorrowMod.Projectiles.Magic.Gems
             projectile.tileCollide = true;
             projectile.ignoreWater = true;
 
+            generator = new CircularExplosionGenerator(1, 20, Color.Red, 600);
             ExplosionManager.AddGenerator(generator);
         }
         public override void Kill(int timeLeft)
         {
-            ExplosionManager.CreateExplosion(generator, projectile.Center);
+            ExplosionManager.CreateExplosion(0, 60, Color.Yellow, projectile.Center);
 
             generator.Finished = true;
+            generator.Color = new Color(timer, 255, 255, 255);
             base.Kill(timeLeft);
         }
 

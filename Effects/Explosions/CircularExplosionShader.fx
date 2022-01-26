@@ -15,9 +15,8 @@ struct PSInput
 matrix WVP;
 sampler img0 : register(s0);
 float2 screenPosition;
+float4 color;
 int tick;
-int tickSize;
-float degPerTick;
 int texWidth;
 float radius;
 
@@ -40,46 +39,7 @@ float4 MainPS(PSInput input) : COLOR
     
     float4 sample = tex2D(img0, float2(pTick, 1.0f - len));
     
-    return float4(sample.r, sample.r, sample.r, sample.r);
-    
-    // return sample;
-    
-    // return tex2D(img0, coords);
-    
-    // return float4(len, pTick, 0, 1.0f);
-    
-    // float4 sample = tex2D(img0, float2(pTick, len));
-    // return float4(pTick, 0, 0, 1.0f);
-    // return float4(tex2D(img0, float2(pTick, len)).r, 0, 0, 1.0f);
-    // return float4(sample.r, 0, 0, 1.0f);
-    
-    // if (len > 1.0f) return float4(0, 0, 1.0f, 1.0f);
-    // if (pTick > 1.0f) return float4(0, 1.0f, 0, 1.0f);
-    
-    // if (sample.r > 0) {
-    //    return float4(1.0f, 0, 0, 1.0f);
-    //}
-    // return float4(0, 0, 0, 0);
-    
-    // if (len < pTick) {
-    //     return float4(1.0f, 0, 0, 1.0f);
-    // }
-    // else {
-    //     return float4(0, 0, 0, 0);
-    // }
-}
-
-float4 TestPS(PSInput input) : COLOR
-{
-    // if (input.Center.x > input.PixelPosition.x) {
-    //     return float4(1.0f, 0, 0, 1.0f);
-    // }
-    // else {
-    //    return float4(0, 1.0f, 0, 1.0f);
-    // }
-
-    float len = abs(length(input.PixelPosition - input.Center));
-    return float4((input.PixelPosition - input.Center) / radius, 0, 1.0f);
+    return float4(sample.r, sample.r, sample.r, sample.r) * color;
 }
 
 Technique technique1

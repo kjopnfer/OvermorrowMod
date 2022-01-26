@@ -87,7 +87,7 @@ namespace OvermorrowMod
         }
         public static void SafeSetParameter(this Effect effect, string name, Color value)
         {
-            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value.ToVector3());
+            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value.ToVector4());
         }
         public static void SafeSetParameter(this Effect effect, string name, Texture2D value)
         {
