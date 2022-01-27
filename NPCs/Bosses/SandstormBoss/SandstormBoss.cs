@@ -23,13 +23,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dharuud, the Sandstorm");
-            Main.npcFrameCount[npc.type] = 4;
+            //Main.npcFrameCount[npc.type] = 4;
         }
 
         public override void SetDefaults()
         {
-            npc.width = 168;
-            npc.height = 130;
+            npc.width = 114;
+            npc.height = 102;
             npc.aiStyle = -1;
             npc.damage = 21;
             npc.defense = 12;
@@ -54,8 +54,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Buffer = -2,
             Intro = -1,
             Selector = 0,
-            Teleport = 1,
-            Spirit = 2,
+            Shards = 1,
+            Tornado = 2,
             Runes = 3,
             Energy = 4,
             Death = 5
@@ -100,41 +100,65 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             switch (AICase)
             {
                 case (int)AIStates.Selector:
-                    if (MiscCounter++ < 300)
+                    if (MiscCounter++ <= 180)
                     {
                         npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
-                        npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, player.Center.Y > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+                        npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y) > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+                    }
+                    else if (MiscCounter > 180 && MiscCounter < 300)
+                    {
+                        npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
+                        npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y - 250) > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
                     }
 
                     // Chooses a random active minion to perform their attack
                     if (MiscCounter == 300)
                     {
                         npc.velocity = Vector2.Zero;
+                        int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
+                        ValidNPC.Shuffle();
 
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
-                            int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
-
                             NPC npc = Main.npc[i];
-                            if (npc.active && ValidNPC.Contains(npc.type))
+                            if (npc.active && npc.type == ValidNPC[0])
                             {
                                 ((DharuudMinion)npc.modNPC).ExecuteAttack = true;
+                                break;
                             }
                         }
                     }
 
                     if (MiscCounter == 540)
                     {
+                        AICase = (int)AIStates.Shards;
                         MiscCounter = 0;
                     }
 
+                    break;
+                case (int)AIStates.Shards:
+
+                    if (++MiscCounter % 120 == 0)
+                    {
+                        for (int i = 0; i < Main.rand.Next(4, 7); i++)
+                        {
+                            Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-300, -250));
+                            Projectile.NewProjectile(player.Center + RandomPosition, Vector2.UnitY * 8, ModContent.ProjectileType<Fragment>(), npc.damage, 3f, Main.myPlayer);
+                        }
+                    }
+
+                    if (MiscCounter == 360)
+                    {
+                        AICase = (int)AIStates.Selector;
+                        MiscCounter = 0;
+                    }
                     break;
             }
         }
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frameCounter++;
+            /*npc.frameCounter++;
 
             if (npc.frameCounter % 12f == 11f) // Ticks per frame
             {
@@ -144,7 +168,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             if (npc.frame.Y >= frameHeight * 4) // 6 is max # of frames
             {
                 npc.frame.Y = 0; // Reset back to default
-            }
+            }*/
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
@@ -180,7 +204,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     vector45 += drawOrigin * npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
 
                     // the actual drawing of the pulsing effect
-                    spriteBatch.Draw(texture2D16, vector45, npc.frame, spriteColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                    //spriteBatch.Draw(texture2D16, vector45, npc.frame, spriteColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
                 }
             }
 
