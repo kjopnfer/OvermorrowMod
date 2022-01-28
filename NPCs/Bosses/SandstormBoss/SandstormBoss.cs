@@ -55,7 +55,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Intro = -1,
             Selector = 0,
             Shards = 1,
-            Tornado = 2,
+            Vortex = 2,
             Runes = 3,
             Energy = 4,
             Death = 5
@@ -115,7 +115,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     if (MiscCounter == 300)
                     {
                         npc.velocity = Vector2.Zero;
-                        int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
+                        //int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
+                        int[] ValidNPC = { ModContent.NPCType<BlasterMinion>() };
                         ValidNPC.Shuffle();
 
                         for (int i = 0; i < Main.maxNPCs; i++)
@@ -131,7 +132,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (MiscCounter == 540)
                     {
-                        AICase = (int)AIStates.Shards;
+                        AICase = (int)AIStates.Vortex;
                         MiscCounter = 0;
                     }
 
@@ -145,6 +146,19 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-300, -250));
                             Projectile.NewProjectile(player.Center + RandomPosition, Vector2.UnitY * 8, ModContent.ProjectileType<Fragment>(), npc.damage, 3f, Main.myPlayer);
                         }
+                    }
+
+                    if (MiscCounter == 360)
+                    {
+                        AICase = (int)AIStates.Selector;
+                        MiscCounter = 0;
+                    }
+                    break;
+                case (int)AIStates.Vortex:
+                    if (++MiscCounter == 0)
+                    {
+                        Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-300, -250));
+                        Projectile.NewProjectile(player.Center + RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
                     }
 
                     if (MiscCounter == 360)

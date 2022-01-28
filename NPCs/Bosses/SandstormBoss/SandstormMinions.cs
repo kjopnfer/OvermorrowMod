@@ -314,9 +314,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 }
 
                 // Fire at the cross hairs
-                if (GlobalCounter++ >= 120 && GlobalCounter <= 280)
+                if (GlobalCounter++ >= 120 && GlobalCounter <= 190)
                 {
-                    if (AttackCounter++ == 40)
+                    if (AttackCounter++ == 20)
                     {
                         for (int i = 0; i < Main.maxProjectiles; i++)
                         {
@@ -333,7 +333,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                                 Vector2 ShootPosition = npc.DirectionTo(projectile.Center).ToRotation().ToRotationVector2();
                                 Projectile.NewProjectile(npc.Center, npc.DirectionTo(projectile.Center).ToRotation().ToRotationVector2(), ModContent.ProjectileType<ForbiddenBurst>(), 60, 6f, Main.myPlayer, projectile.whoAmI);
-                                npc.velocity = -Vector2.Normalize(ShootPosition) * 2;
+                                npc.velocity = -Vector2.Normalize(ShootPosition) * 4;
                                 AttackCounter = 0;
 
                                 projectile.Kill();
@@ -342,24 +342,24 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (AttackCounter >= 20)
+                    if (AttackCounter >= 10)
                     {
-                        if (AttackCounter == 20)
+                        if (AttackCounter == 10)
                         {
                             npc.velocity = Vector2.Zero;
                             RecoilPosition = npc.Center;
                         }
 
-                        npc.Center = Vector2.Lerp(RecoilPosition, InitialPosition, (AttackCounter - 20) / 20f);
+                        npc.Center = Vector2.Lerp(RecoilPosition, InitialPosition, (AttackCounter - 10) / 10f);
                     }
                 }
 
 
-                if (GlobalCounter > 280 && GlobalCounter <= 400)
+                if (GlobalCounter > 190 && GlobalCounter <= 310)
                 {
-                    npc.Center = Vector2.Lerp(InitialPosition, IdlePosition, Utils.Clamp(GlobalCounter - 280, 0, 120) / 120f);
+                    npc.Center = Vector2.Lerp(InitialPosition, IdlePosition, Utils.Clamp(GlobalCounter - 190, 0, 120) / 120f);
 
-                    if (GlobalCounter == 400)
+                    if (GlobalCounter == 310)
                     {
                         GlobalCounter = 0;
                         AttackCounter = 0;
