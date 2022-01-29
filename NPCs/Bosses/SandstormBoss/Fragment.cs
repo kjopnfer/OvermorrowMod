@@ -28,7 +28,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             projectile.hostile = true;
             projectile.ignoreWater = true;
             projectile.tileCollide = true;
-            projectile.timeLeft = 420;
+            projectile.timeLeft = 600;
             projectile.penetrate = -1;
             projectile.hide = true;
             projectile.extraUpdates = 1;
@@ -56,7 +56,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool ShouldUpdatePosition()
         {
-            if (projectile.ai[0] < 90)
+            if (projectile.ai[0] < projectile.ai[1])
             {
                 return false;
             }

@@ -115,8 +115,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     if (MiscCounter == 300)
                     {
                         npc.velocity = Vector2.Zero;
-                        //int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
-                        int[] ValidNPC = { ModContent.NPCType<BlasterMinion>() };
+                        int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
+                        //int[] ValidNPC = { ModContent.NPCType<BlasterMinion>() };
                         ValidNPC.Shuffle();
 
                         for (int i = 0; i < Main.maxNPCs; i++)
@@ -141,10 +141,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (++MiscCounter % 120 == 0)
                     {
-                        for (int i = 0; i < Main.rand.Next(4, 7); i++)
+                        for (int i = 0; i < Main.rand.Next(5, 8); i++)
                         {
-                            Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-300, -250));
-                            Projectile.NewProjectile(player.Center + RandomPosition, Vector2.UnitY * 8, ModContent.ProjectileType<Fragment>(), npc.damage, 3f, Main.myPlayer);
+                            Vector2 RandomPosition = new Vector2(Main.rand.Next(-10, 10) * 30, Main.rand.Next(-300, -250));
+                            Projectile.NewProjectile(player.Center + RandomPosition, Vector2.UnitY * 8, ModContent.ProjectileType<Fragment>(), npc.damage, 3f, Main.myPlayer, 0f, Main.rand.Next(90, 120));
                         }
                     }
 
@@ -155,15 +155,15 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     }
                     break;
                 case (int)AIStates.Vortex:
-                    if (++MiscCounter == 0)
+                    if (MiscCounter++ == 0)
                     {
-                        Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-300, -250));
+                        Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-150, -100));
                         Projectile.NewProjectile(player.Center + RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
                     }
 
-                    if (MiscCounter == 360)
+                    if (MiscCounter == 120)
                     {
-                        AICase = (int)AIStates.Selector;
+                        AICase = (int)AIStates.Shards;
                         MiscCounter = 0;
                     }
                     break;
@@ -187,46 +187,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            if (npc.ai[0] != 2 && npc.ai[0] != 3)
-            {
-                Vector2 drawOrigin = new Vector2(Main.npcTexture[npc.type].Width * 0.5f, npc.height * 0.5f);
-                Texture2D texture2D16 = mod.GetTexture("NPCs/Bosses/SandstormBoss/SandstormBoss_Afterimage");
-
-
-                // this gets the npc's frame
-                int num178 = 120; // i think this controls the distance of the pulse, maybe color too, if we make it high: it is weaker
-                int num179 = 60; // changing this value makes the pulsing effect rapid when lower, and slower when higher
-
-
-                // default value
-                int num177 = 6; // ok i think this controls the number of afterimage frames
-                float num176 = 1f - (float)Math.Cos((npc.ai[1] - (float)num178) / (float)num179 * ((float)Math.PI * 2f));  // this controls pulsing effect
-                num176 /= 3f;
-                float scaleFactor10 = 7f; // Change scale factor of the pulsing effect and how far it draws outwards
-
-                // ok this is the pulsing effect drawing
-                for (int num164 = 1; num164 < num177; num164++)
-                {
-                    // these assign the color of the pulsing
-                    Color spriteColor = (npc.ai[0] == 0.5) ? Color.OrangeRed : Color.Yellow;
-                    spriteColor = npc.GetAlpha(spriteColor);
-                    spriteColor *= 1f - num176; // num176 is put in here to effect the pulsing
-
-                    // num176 is used here too
-                    Vector2 vector45 = ((Entity)((ModNPC)this).npc).Center + Terraria.Utils.ToRotationVector2((float)num164 / (float)num177 * ((float)Math.PI * 2f) + ((ModNPC)this).npc.rotation) * scaleFactor10 * num176 - Main.screenPosition;
-                    vector45 -= new Vector2(texture2D16.Width, texture2D16.Height / Main.npcFrameCount[((ModNPC)this).npc.type]) * ((ModNPC)this).npc.scale / 2f;
-                    vector45 += drawOrigin * npc.scale + new Vector2(0f, 4f + ((ModNPC)this).npc.gfxOffY);
-
-                    // the actual drawing of the pulsing effect
-                    //spriteBatch.Draw(texture2D16, vector45, npc.frame, spriteColor, npc.rotation, drawOrigin, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
-                }
-            }
-
-            if (npc.ai[0] == 2 || npc.ai[0] == 3)
-            {
-                return false;
-            }
-
             return base.PreDraw(spriteBatch, drawColor);
         }
 

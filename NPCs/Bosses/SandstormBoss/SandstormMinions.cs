@@ -333,6 +333,12 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                                 Vector2 ShootPosition = npc.DirectionTo(projectile.Center).ToRotation().ToRotationVector2();
                                 Projectile.NewProjectile(npc.Center, npc.DirectionTo(projectile.Center).ToRotation().ToRotationVector2(), ModContent.ProjectileType<ForbiddenBurst>(), 60, 6f, Main.myPlayer, projectile.whoAmI);
+
+                                if (Main.expertMode)
+                                {
+                                    Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<HeatCircle>(), 60, 0f, Main.myPlayer);
+                                }
+
                                 npc.velocity = -Vector2.Normalize(ShootPosition) * 4;
                                 AttackCounter = 0;
 
