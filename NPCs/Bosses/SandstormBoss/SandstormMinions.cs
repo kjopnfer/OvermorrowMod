@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Buffs;
 using OvermorrowMod.Particles;
 using System;
 using Terraria;
@@ -13,6 +14,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
     public class DharuudMinion : PullableNPC
     {
         public NPC ParentNPC = null;
+        public Player ParentPlayer = null;
 
         protected Vector2 InitialPosition;
         protected Vector2 IdlePosition;
@@ -22,6 +24,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         protected bool ReturnIdle = false;
 
         public bool IsDisabled = false;
+        public bool PickedUp = false;
 
         public ref float ParentID => ref npc.ai[0];
         public ref float GlobalCounter => ref npc.ai[1];
@@ -38,8 +41,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             IdlePosition = ParentNPC.Center + new Vector2(100, 0).RotatedBy(MathHelper.ToRadians(RotationCounter += 2f));
 
+            // Code to rotate around the boss and allow grappling
             if (!IsDisabled)
             {
+                npc.dontTakeDamage = false;
+
                 // Run this before the grapple projetile check in the parent class lol
                 if (GrappleProjectile != null)
                 {
@@ -73,23 +79,63 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             }
             else
             {
-                if (AttackCounter < 60)
+                // Collision detection
+                for (int i = 0; i < Main.maxPlayers; i++)
                 {
-                    npc.velocity = -Vector2.UnitY;
-                }
-                else
-                {
-                    npc.velocity = Vector2.UnitY * 2;
+                    Player player = Main.player[i];
+                    if (player.active && !PickedUp && npc.Hitbox.Intersects(player.Hitbox) && !player.HasBuff(ModContent.BuffType<Steal>()))
+                    {
+                        ParentPlayer = player;
+                        player.AddBuff(ModContent.BuffType<Steal>(), 540);
+
+
+                        npc.noTileCollide = true;
+                        PickedUp = true;
+
+                        Rectangle rectangle = new Rectangle((int)player.Center.X, player.Hitbox.Top - 5, 2, 2);
+                        CombatText.NewText(rectangle, Color.Yellow, "Picked up Artifact!", true);
+                        Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<PlayerCrosshair>(), 0, 0f, player.whoAmI);
+                    }
                 }
 
-                if (AttackCounter++ == 300)
+                if (PickedUp) // The object has been picked up and is orbiting the player
                 {
                     npc.velocity = Vector2.Zero;
 
-                    AttackCounter = 0;
-                    InitialPosition = npc.Center;
-                    IsDisabled = false;
-                    ReturnIdle = true;
+                    npc.Center = ParentPlayer.Center + new Vector2(100, 0).RotatedBy(MathHelper.ToRadians(RotationCounter));
+
+                    if (AttackCounter++ == 600)
+                    {
+                        AttackCounter = 0;
+                        InitialPosition = npc.Center;
+                        IsDisabled = false;
+                        ReturnIdle = true;
+
+                        npc.noTileCollide = true;
+                    }
+                }
+                else // The object is on the ground and waiting to be picked up, returns after 5 seconds
+                {
+                    if (AttackCounter < 60)
+                    {
+                        npc.velocity = -Vector2.UnitY;
+                    }
+                    else
+                    {
+                        npc.velocity = Vector2.UnitY * 2;
+                    }
+
+                    if (AttackCounter++ == 300)
+                    {
+                        npc.velocity = Vector2.Zero;
+
+                        AttackCounter = 0;
+                        InitialPosition = npc.Center;
+                        IsDisabled = false;
+                        ReturnIdle = true;
+
+                        npc.noTileCollide = true;
+                    }
                 }
             }
         }
@@ -105,6 +151,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 IsDisabled = true;
             }
 
+            AttackCounter = 0;
+
             npc.life = npc.lifeMax;
             npc.dontTakeDamage = true;
             npc.netUpdate = true;
@@ -114,9 +162,23 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
-            if (ReturnIdle) return true;
+            return ReturnIdle && projectile.friendly;
+        }
 
-            return false;
+        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            if (IsDisabled && !PickedUp)
+            {
+                Texture2D texture = Main.npcTexture[npc.type];
+                Color color = Color.Yellow;
+                float mult = (0.55f + (float)Math.Sin(Main.GlobalTime * 2) * 0.1f);
+                float scale = npc.scale * 2.5f * mult;
+
+                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation, new Vector2(texture.Width, texture.Height) / 2, scale, SpriteEffects.None, 0f);
+
+            }
+
+            return base.PreDraw(spriteBatch, drawColor);
         }
     }
 
@@ -125,7 +187,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Artifact");
+            DisplayName.SetDefault("Forbidden Laser Artifact");
         }
 
         public override void SetDefaults()
@@ -191,6 +253,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             if (!IsDisabled)
             {
                 Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
+
+                Color color = Color.Yellow;
+                if (ReturnIdle)
+                {
+                    color = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(npc.localAI[0]++ / 15f));
+                }
+
                 DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
                     npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
                     new Rectangle(0, 0, npc.width, npc.height),
@@ -200,7 +269,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     scale,
                     SpriteEffects.None, 0);
 
-                GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
+                GameShaders.Misc["ForceField"].UseColor(color);
                 GameShaders.Misc["ForceField"].Apply(drawData);
 
                 drawData.Draw(spriteBatch);
@@ -216,7 +285,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Artifact");
+            DisplayName.SetDefault("Forbidden Beam Artifact");
         }
 
         public override void SetDefaults()
@@ -289,6 +358,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             if (!IsDisabled)
             {
                 Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
+
+                Color color = Color.Yellow;
+                if (ReturnIdle)
+                {
+                    color = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(npc.localAI[0]++ / 15f));
+                }
+
                 DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
                     npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
                     new Rectangle(0, 0, npc.width, npc.height),
@@ -298,7 +374,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     scale,
                     SpriteEffects.None, 0);
 
-                GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
+                GameShaders.Misc["ForceField"].UseColor(color);
                 GameShaders.Misc["ForceField"].Apply(drawData);
 
                 drawData.Draw(spriteBatch);
@@ -332,7 +408,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Artifact");
+            DisplayName.SetDefault("Forbidden Blaster Artifact");
         }
 
         public override void SetDefaults()
@@ -395,7 +471,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             {
                                 for (int ii = 0; ii < Main.maxPlayers; ii++)
                                 {
-                                    if (npc.Distance(Main.player[ii].Center) < 1000)
+                                    if (projectile.Distance(Main.player[ii].Center) < 1000)
                                     {
                                         Main.player[ii].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 5;
                                     }
@@ -455,6 +531,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             if (!IsDisabled)
             {
                 Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
+
+                Color color = Color.Yellow;
+                if (ReturnIdle)
+                {
+                    color = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(npc.localAI[0]++ / 15f));
+                }
+
                 DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
                     npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
                     new Rectangle(0, 0, npc.width, npc.height),
@@ -464,7 +547,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     scale,
                     SpriteEffects.None, 0);
 
-                GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
+                GameShaders.Misc["ForceField"].UseColor(color);
                 GameShaders.Misc["ForceField"].Apply(drawData);
 
                 drawData.Draw(spriteBatch);

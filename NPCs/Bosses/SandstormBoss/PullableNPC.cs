@@ -26,6 +26,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.lifeMax = 100;
             npc.noGravity = true;
             npc.knockBackResist = 0f;
+            npc.dontTakeDamageFromHostiles = true;
             npc.friendly = false;
             npc.chaseable = false;
         }

@@ -104,6 +104,7 @@ namespace OvermorrowMod
         public bool ShowText;
         public int TitleID;
         public bool UIToggled = false;
+        public bool StoleArtifact = false;
 
         // Biome
         public bool ZoneWaterCave = false;
@@ -145,6 +146,7 @@ namespace OvermorrowMod
             vineBuff = false;
             windBuff = false;
             MouseLampPlay = false;
+            StoleArtifact = false;
 
             minionCounts = 0;
 
@@ -676,6 +678,16 @@ namespace OvermorrowMod
                     ScreenShake--;
                 }
             }
+        }
+
+        public override bool PreItemCheck()
+        {
+            if (StoleArtifact)
+            {
+                return false;
+            }
+
+            return base.PreItemCheck();
         }
 
         public void DashMovement()

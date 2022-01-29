@@ -113,30 +113,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     if (MiscCounter == 300)
                     {
                         npc.velocity = Vector2.Zero;
-                        int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
-                        //int[] ValidNPC = { ModContent.NPCType<BlasterMinion>() };
-                        ValidNPC.Shuffle();
 
-                        /*foreach (int type in ValidNPC)
-                        {
-                            for (int i = 0; i < Main.maxNPCs; i++)
-                            {
-                                NPC npc = Main.npc[i];
-                                if (npc.active && npc.type == ValidNPC[type])
-                                {
-                                    if (!((DharuudMinion)npc.modNPC).IsDisabled || !((DharuudMinion)npc.modNPC).Grappled)
-                                    {
-                                        ((DharuudMinion)npc.modNPC).ExecuteAttack = true;
-                                    }
-                                    else
-                                    {
-                                        continue;
-                                    }
-
-                                    break;
-                                }
-                            }
-                        }*/
                         AttackHandler();
                     }
 
