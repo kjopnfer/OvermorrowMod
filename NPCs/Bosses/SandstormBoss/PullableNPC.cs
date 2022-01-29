@@ -9,7 +9,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
     public class PullableNPC : ModNPC
     {
-        protected bool Grappled = false;
+        public bool Grappled = false;
+        protected bool CanBeGrappled = true;
         protected Projectile GrappleProjectile = null;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
@@ -26,6 +27,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.noGravity = true;
             npc.knockBackResist = 0f;
             npc.friendly = false;
+            npc.chaseable = false;
         }
 
         public override void AI()
@@ -44,26 +46,28 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 npc.Center = GrappleProjectile.Center;
             }
 
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            if (CanBeGrappled)
             {
-                Projectile projectile = Main.projectile[i];
-                if (projectile.active && projectile.aiStyle == 7 && npc.Hitbox.Intersects(projectile.Hitbox))
+                for (int i = 0; i < Main.maxProjectiles; i++)
                 {
-                    if (!Grappled && !projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>().RetractSlow)
+                    Projectile projectile = Main.projectile[i];
+                    if (projectile.active && projectile.aiStyle == 7 && npc.Hitbox.Intersects(projectile.Hitbox))
                     {
-                        for (int j = 0; j < 18; j++)
+                        if (!Grappled && !projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>().RetractSlow)
                         {
-                            Particle.CreateParticle(Particle.ParticleType<Spark>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(4, 6), Color.Yellow);
+                            for (int j = 0; j < 18; j++)
+                            {
+                                Particle.CreateParticle(Particle.ParticleType<Spark>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(4, 6), Color.Yellow);
+                            }
+
+                            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Yellow, 0.5f, 0.5f);
+
+                            projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>().RetractSlow = true;
+                            projectile.ai[0] = 1;
+
+                            GrappleProjectile = projectile;
+                            Grappled = true;
                         }
-
-                        Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Yellow, 0.5f, 0.5f);
-
-                        projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>().RetractSlow = true;
-                        projectile.ai[0] = 1;
-
-                        GrappleProjectile = projectile;
-                        Grappled = true;
-                        Main.NewText("grapple collision");
                     }
                 }
             }
@@ -81,7 +85,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
-
             return false;
         }
     }

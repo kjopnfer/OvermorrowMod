@@ -13,14 +13,111 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
     public class DharuudMinion : PullableNPC
     {
         public NPC ParentNPC = null;
-        public bool ExecuteAttack = false;
+
         protected Vector2 InitialPosition;
+        protected Vector2 IdlePosition;
+
+        public bool ExecuteAttack = false;
         protected bool RunOnce = true;
+        protected bool ReturnIdle = false;
+
+        public bool IsDisabled = false;
 
         public ref float ParentID => ref npc.ai[0];
         public ref float GlobalCounter => ref npc.ai[1];
         public ref float RotationCounter => ref npc.ai[2];
         public ref float AttackCounter => ref npc.ai[3];
+
+        public override void AI()
+        {
+            if (RunOnce)
+            {
+                ParentNPC = Main.npc[(int)npc.ai[0]];
+                RunOnce = false;
+            }
+
+            IdlePosition = ParentNPC.Center + new Vector2(100, 0).RotatedBy(MathHelper.ToRadians(RotationCounter += 2f));
+
+            if (!IsDisabled)
+            {
+                // Run this before the grapple projetile check in the parent class lol
+                if (GrappleProjectile != null)
+                {
+                    if (!GrappleProjectile.active)
+                    {
+                        ReturnIdle = true;
+                        InitialPosition = npc.Center;
+                    }
+                }
+
+                // Grappling handling
+                base.AI();
+
+                if (!Grappled && !ExecuteAttack && !ReturnIdle)
+                {
+                    npc.Center = IdlePosition;
+                }
+
+                if (ReturnIdle)
+                {
+                    CanBeGrappled = false;
+                    npc.Center = Vector2.Lerp(InitialPosition, IdlePosition, Utils.Clamp(AttackCounter++, 0, 180) / 180f);
+
+                    if (AttackCounter == 180)
+                    {
+                        AttackCounter = 0;
+                        ReturnIdle = false;
+                        CanBeGrappled = true;
+                    }
+                }
+            }
+            else
+            {
+                if (AttackCounter < 60)
+                {
+                    npc.velocity = -Vector2.UnitY;
+                }
+                else
+                {
+                    npc.velocity = Vector2.UnitY * 2;
+                }
+
+                if (AttackCounter++ == 300)
+                {
+                    npc.velocity = Vector2.Zero;
+
+                    AttackCounter = 0;
+                    InitialPosition = npc.Center;
+                    IsDisabled = false;
+                    ReturnIdle = true;
+                }
+            }
+        }
+
+        public override bool CheckDead()
+        {
+            if (!IsDisabled)
+            {
+                Main.NewText("I AM DEAD AMEN");
+                InitialPosition = npc.Center;
+
+                npc.noTileCollide = false;
+                IsDisabled = true;
+            }
+
+            npc.life = npc.lifeMax;
+            npc.dontTakeDamage = true;
+            npc.netUpdate = true;
+
+            return false;
+        }
+
+        public override bool? CanBeHitByProjectile(Projectile projectile)
+        {
+            if (ReturnIdle) return true;
+
+            return false;
+        }
     }
 
     public class LaserMinion : DharuudMinion
@@ -46,21 +143,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             base.AI();
 
-            if (RunOnce)
-            {
-                ParentNPC = Main.npc[(int)npc.ai[0]];
-                RunOnce = false;
-            }
-
-            Vector2 IdlePosition = ParentNPC.Center + new Vector2(100, 0).RotatedBy(MathHelper.ToRadians(npc.ai[2] += 2f));
-            if (!Grappled && !ExecuteAttack)
-            {
-                npc.Center = IdlePosition;
-            }
-
             // Positions itself above the boss, before firing a beam in a wide arc
             if (ExecuteAttack)
             {
+                CanBeGrappled = false;
                 npc.TargetClosest(true);
                 Player player = Main.player[npc.target];
 
@@ -91,6 +177,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     {
                         AttackCounter = 0;
                         ExecuteAttack = false;
+                        CanBeGrappled = true;
                     }
                 }
             }
@@ -101,21 +188,23 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
 
-            Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
-            DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
-                npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
-                new Rectangle(0, 0, npc.width, npc.height),
-                Color.Yellow,
-                npc.rotation,
-                npc.Size,
-                scale,
-                SpriteEffects.None, 0);
+            if (!IsDisabled)
+            {
+                Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
+                DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
+                    npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
+                    new Rectangle(0, 0, npc.width, npc.height),
+                    Color.Yellow,
+                    npc.rotation,
+                    npc.Size,
+                    scale,
+                    SpriteEffects.None, 0);
 
-            GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
-            GameShaders.Misc["ForceField"].Apply(drawData);
+                GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
+                GameShaders.Misc["ForceField"].Apply(drawData);
 
-            drawData.Draw(spriteBatch);
-
+                drawData.Draw(spriteBatch);
+            }
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.instance.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
         }
@@ -145,22 +234,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             base.AI();
 
-            if (RunOnce)
-            {
-                ParentNPC = Main.npc[(int)npc.ai[0]];
-                RunOnce = false;
-            }
-
-            Vector2 IdlePosition = ParentNPC.Center + new Vector2(100, 0).RotatedBy(MathHelper.ToRadians(npc.ai[2] += 2f));
-            if (!Grappled && !ExecuteAttack)
-            {
-                npc.Center = IdlePosition;
-            }
-
             // Positions itself near the player, before glowing brightly
             // Afterwards, creates a giant wall of light and while moving slowly towards the player
             if (ExecuteAttack)
             {
+                CanBeGrappled = false;
                 npc.TargetClosest(true);
                 Player player = Main.player[npc.target];
 
@@ -197,6 +275,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     {
                         AttackCounter = 0;
                         ExecuteAttack = false;
+                        CanBeGrappled = true;
                     }
                 }
             }
@@ -207,20 +286,23 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
 
-            Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
-            DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
-                npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
-                new Rectangle(0, 0, npc.width, npc.height),
-                Color.Yellow,
-                npc.rotation,
-                npc.Size,
-                scale,
-                SpriteEffects.None, 0);
+            if (!IsDisabled)
+            {
+                Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
+                DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
+                    npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
+                    new Rectangle(0, 0, npc.width, npc.height),
+                    Color.Yellow,
+                    npc.rotation,
+                    npc.Size,
+                    scale,
+                    SpriteEffects.None, 0);
 
-            GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
-            GameShaders.Misc["ForceField"].Apply(drawData);
+                GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
+                GameShaders.Misc["ForceField"].Apply(drawData);
 
-            drawData.Draw(spriteBatch);
+                drawData.Draw(spriteBatch);
+            }
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.instance.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
@@ -246,7 +328,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
     public class BlasterMinion : DharuudMinion
     {
-        private Vector2 ShootingPosition;
         private Vector2 RecoilPosition;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
         public override void SetStaticDefaults()
@@ -269,22 +350,12 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             base.AI();
 
-            if (RunOnce)
-            {
-                ParentNPC = Main.npc[(int)npc.ai[0]];
-                RunOnce = false;
-            }
-
-            Vector2 IdlePosition = ParentNPC.Center + new Vector2(100, 0).RotatedBy(MathHelper.ToRadians(npc.ai[2] += 2f));
-            if (!Grappled && !ExecuteAttack)
-            {
-                npc.Center = IdlePosition;
-            }
-
             // Shoot three random invisible projectiles, when they collide with a tile they become visible
             // The NPC then fires beams at the projectiles, creating a small circle of light
             if (ExecuteAttack)
             {
+                CanBeGrappled = false;
+
                 npc.TargetClosest(true);
                 Player player = Main.player[npc.target];
 
@@ -293,7 +364,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     if (GlobalCounter == 0)
                     {
                         InitialPosition = npc.Center;
-                        ShootingPosition = new Vector2(Main.rand.Next(200, 250) * ParentNPC.direction, Main.rand.Next(-100, -50));
                         npc.netUpdate = true;
 
                         npc.velocity = Vector2.Zero;
@@ -370,6 +440,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         GlobalCounter = 0;
                         AttackCounter = 0;
                         ExecuteAttack = false;
+
+                        CanBeGrappled = true;
                     }
                 }
             }
@@ -380,20 +452,23 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
 
-            Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
-            DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
-                npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
-                new Rectangle(0, 0, npc.width, npc.height),
-                Color.Yellow,
-                npc.rotation,
-                npc.Size,
-                scale,
-                SpriteEffects.None, 0);
+            if (!IsDisabled)
+            {
+                Vector2 scale = new Vector2(3 * 1.5f, 3 * 1f);
+                DrawData drawData = new DrawData(ModContent.GetTexture("Terraria/Misc/Perlin"),
+                    npc.Center - Main.screenPosition + npc.Size * scale * 0.5f,
+                    new Rectangle(0, 0, npc.width, npc.height),
+                    Color.Yellow,
+                    npc.rotation,
+                    npc.Size,
+                    scale,
+                    SpriteEffects.None, 0);
 
-            GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
-            GameShaders.Misc["ForceField"].Apply(drawData);
+                GameShaders.Misc["ForceField"].UseColor(Color.Yellow);
+                GameShaders.Misc["ForceField"].Apply(drawData);
 
-            drawData.Draw(spriteBatch);
+                drawData.Draw(spriteBatch);
+            }
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.instance.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

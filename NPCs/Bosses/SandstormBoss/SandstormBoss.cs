@@ -75,8 +75,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     int RADIUS = 100;
                     Vector2 SpawnRotation = npc.Center + new Vector2(RADIUS, 0).RotatedBy(120 * i);
 
-                    Main.NewText(MathHelper.TwoPi / 3 * i);
-
                     int NPCType = -1;
                     switch (i)
                     {
@@ -119,15 +117,27 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         //int[] ValidNPC = { ModContent.NPCType<BlasterMinion>() };
                         ValidNPC.Shuffle();
 
-                        for (int i = 0; i < Main.maxNPCs; i++)
+                        /*foreach (int type in ValidNPC)
                         {
-                            NPC npc = Main.npc[i];
-                            if (npc.active && npc.type == ValidNPC[0])
+                            for (int i = 0; i < Main.maxNPCs; i++)
                             {
-                                ((DharuudMinion)npc.modNPC).ExecuteAttack = true;
-                                break;
+                                NPC npc = Main.npc[i];
+                                if (npc.active && npc.type == ValidNPC[type])
+                                {
+                                    if (!((DharuudMinion)npc.modNPC).IsDisabled || !((DharuudMinion)npc.modNPC).Grappled)
+                                    {
+                                        ((DharuudMinion)npc.modNPC).ExecuteAttack = true;
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+
+                                    break;
+                                }
                             }
-                        }
+                        }*/
+                        AttackHandler();
                     }
 
                     if (MiscCounter == 540)
@@ -157,11 +167,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 case (int)AIStates.Vortex:
                     if (MiscCounter++ == 0)
                     {
-                        Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-150, -100));
+                        Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-100, -50));
                         Projectile.NewProjectile(player.Center + RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
                     }
 
-                    if (MiscCounter == 120)
+                    if (MiscCounter == 60)
                     {
                         AICase = (int)AIStates.Shards;
                         MiscCounter = 0;
@@ -169,6 +179,33 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     break;
             }
         }
+
+        private void AttackHandler()
+        {
+            //int[] ValidNPC = { ModContent.NPCType<BlasterMinion>() };
+            int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
+            ValidNPC.Shuffle();
+
+            for(int index = 0; index < ValidNPC.Length; index++)
+            {
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    NPC npc = Main.npc[i];
+                    if (npc.active && npc.type == ValidNPC[index])
+                    {
+                        if (!((DharuudMinion)npc.modNPC).IsDisabled && !((DharuudMinion)npc.modNPC).Grappled)
+                        {
+                            ((DharuudMinion)npc.modNPC).ExecuteAttack = true;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        public override bool? CanBeHitByItem(Player player, Item item) => false;
+
+        public override bool? CanBeHitByProjectile(Projectile projectile) => false;
 
         public override void FindFrame(int frameHeight)
         {
