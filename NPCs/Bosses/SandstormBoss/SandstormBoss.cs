@@ -163,7 +163,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             int[] ValidNPC = { ModContent.NPCType<LaserMinion>(), ModContent.NPCType<BeamMinion>(), ModContent.NPCType<BlasterMinion>() };
             ValidNPC.Shuffle();
 
-            for(int index = 0; index < ValidNPC.Length; index++)
+            for (int index = 0; index < ValidNPC.Length; index++)
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
@@ -199,9 +199,25 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             }*/
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        int frame = 0;
+        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            return base.PreDraw(spriteBatch, drawColor);
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/SandstormBoss_Arms");
+            const int TextureHeight = 60;
+
+            npc.frameCounter++;
+            if (npc.frameCounter % 12f == 11f)
+            {
+                frame += 1;
+            }
+
+            if (frame >= 4)
+            {
+                frame = 0;
+            }
+
+            var DrawRectangle = new Rectangle(0, TextureHeight * frame, texture.Width, 60);
+            Main.spriteBatch.Draw(texture, npc.Center + new Vector2(1, (npc.width / 2) + 64) - Main.screenPosition, DrawRectangle, Color.White, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }
 
         public override void NPCLoot()
