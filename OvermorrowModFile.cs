@@ -47,6 +47,7 @@ namespace OvermorrowMod
         public Effect Shockwave;
         public Effect TrailShader;
         public Effect TextShader;
+        public Effect Whiteout;
 
         public static List<Texture2D> TrailTextures;
         public OvermorrowModFile()
@@ -84,9 +85,14 @@ namespace OvermorrowMod
                 Shockwave = GetEffect("Effects/Shockwave1");
                 TrailShader = GetEffect("Effects/Trail");
                 TextShader = GetEffect("Effects/TextShader");
+                Whiteout = GetEffect("Effects/Whiteout");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
+
+                //Ref<Effect> WhiteShader = new Ref<Effect>(GetEffect("Effects/Whiteout"));
+                //GameShaders.Misc["Whiteout"] = new MiscShaderData(WhiteShader, "Whiteout");
+
                 TrailTextures = new List<Texture2D>();
                 for (int i = 0; i < 7; i++)
                 {
@@ -334,6 +340,7 @@ namespace OvermorrowMod
             Shockwave = null;
             TrailShader = null;
             TextShader = null;
+            Whiteout = null;
 
             TrailTextures = null;
             ModUtils.Load(true);

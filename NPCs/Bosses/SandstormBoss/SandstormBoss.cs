@@ -170,7 +170,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     NPC npc = Main.npc[i];
                     if (npc.active && npc.type == ValidNPC[index])
                     {
-                        if (!((DharuudMinion)npc.modNPC).IsDisabled && !((DharuudMinion)npc.modNPC).Grappled)
+                        if (!((DharuudMinion)npc.modNPC).IsDisabled && !((DharuudMinion)npc.modNPC).Grappled && !((DharuudMinion)npc.modNPC).ReturnIdle)
                         {
                             ((DharuudMinion)npc.modNPC).ExecuteAttack = true;
                             return;

@@ -21,7 +21,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public bool ExecuteAttack = false;
         protected bool RunOnce = true;
-        protected bool ReturnIdle = false;
+        public bool ReturnIdle = false;
 
         public bool IsDisabled = false;
         public bool PickedUp = false;

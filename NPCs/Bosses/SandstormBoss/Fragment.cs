@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -94,7 +95,20 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             spriteBatch.Draw(texture, projectile.Center + new Vector2(0, 10) - Main.screenPosition, drawRectangle, color, projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), scale, SpriteEffects.None, 0f);
 
-            return base.PreDraw(spriteBatch, lightColor);
+            spriteBatch.Reload(SpriteSortMode.Immediate);
+
+            Effect effect = OvermorrowModFile.Mod.Whiteout;
+            float progress = Utils.Clamp(projectile.localAI[0]++, 0, 15f) / 15f;
+            effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
+            effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+            texture = Main.projectileTexture[projectile.type];
+            spriteBatch.Draw(texture, projectile.Center + new Vector2(0, 10) - Main.screenPosition, null, Color.White, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
+
+            spriteBatch.Reload(SpriteSortMode.Deferred);
+
+            return false;
         }
 
         public override void Kill(int timeLeft)
