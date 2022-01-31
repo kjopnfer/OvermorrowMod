@@ -73,6 +73,9 @@ namespace OvermorrowMod
 
             if (!Main.dedServ)
             {
+                Main.logoTexture = Mod.GetTexture("logo");
+                Main.logo2Texture = Mod.GetTexture("logo");
+
                 // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
                 TrailShader = GetEffect("Effects/Trail");
@@ -111,6 +114,22 @@ namespace OvermorrowMod
                 if (Main.hardMode)
                 {
                     //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");
+                }
+            }
+        }
+
+        public override void PostSetupContent()
+        {
+            if (Main.gameMenu && Main.menuMode >= 0)
+            {
+                if (Main.LogoB <= 255)
+                {
+                    Main.logoTexture = Mod.GetTexture("logo");
+                }
+
+                if (Main.LogoB < 10 || (!Main.dayTime && Main.LogoA <= 255))
+                {
+                    Main.logo2Texture = Mod.GetTexture("logo");
                 }
             }
         }
@@ -325,7 +344,7 @@ namespace OvermorrowMod
             Shockwave = null;
             TrailShader = null;
             TextShader = null;
-            
+
             TrailTextures = null;
             ModUtils.Load(true);
             HexLoader.Load(true);
@@ -333,6 +352,8 @@ namespace OvermorrowMod
             TestDetours.Unload();
             Trail.Unload();
 
+            Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
+            Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
 
             Souls = null;
             Altar = null;
