@@ -9,11 +9,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
     public class ForbiddenBeam : ModProjectile
     {
-        private bool RunOnce = true;
-        private int RotationDirection = 1;
+        protected bool RunOnce = true;
+        protected int RotationDirection = 1;
         public Player Target;
 
-        private const float MAX_TIME = 240;
+        protected const float MAX_TIME = 240;
 
         public override string Texture => "OvermorrowMod/Textures/Empty";
         public override void SetStaticDefaults()
@@ -152,6 +152,41 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             DelegateMethods.v3_1 = new Color(240, 231, 113).ToVector3();
             Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000), projectile.width * projectile.scale, new Terraria.Utils.PerLinePoint(DelegateMethods.CastLight));
+        }
+    }
+
+    public class ForbiddenBeamFriendly : ForbiddenBeam
+    {
+        public Vector2 CrossHairTarget;
+        public override void SetDefaults()
+        {
+            projectile.width = 25;
+            projectile.height = 5000;
+            projectile.friendly = true;
+            projectile.hostile = false;
+            projectile.ignoreWater = true;
+            projectile.tileCollide = false;
+            projectile.timeLeft = (int)MAX_TIME;
+            projectile.penetrate = -1;
+            projectile.usesLocalNPCImmunity = true;
+            projectile.localNPCHitCooldown = 10;
+        }
+
+        public override void AI()
+        {
+            if (RunOnce)
+            {
+                CrossHairTarget = new Vector2(projectile.ai[0], projectile.ai[1]);
+                RunOnce = false;
+            }
+
+            Vector2 end = projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000);
+            RotationDirection = isLeft(projectile.Center, end, CrossHairTarget) ? 1 : -1;
+
+            projectile.velocity = projectile.velocity.SafeNormalize(-Vector2.UnitY).RotatedBy(MathHelper.ToRadians(MathHelper.SmoothStep(0.5f, 0, projectile.timeLeft / MAX_TIME)) * RotationDirection);
+
+            float progress = Utils.InverseLerp(0, MAX_TIME, projectile.timeLeft);
+            projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
         }
     }
 
@@ -335,6 +370,12 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
+            if (projectile.ai[1] == 1)
+            {
+                projectile.friendly = true;
+                projectile.hostile = false;
+            }
+
             if (RunOnce)
             {
                 Target = Main.projectile[(int)projectile.ai[0]];
@@ -468,6 +509,12 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
+            if (projectile.ai[1] == 1)
+            {
+                projectile.friendly = true;
+                projectile.hostile = false;
+            }
+
             if (RunOnce)
             {
                 ParentNPC = Main.npc[(int)projectile.ai[0]];

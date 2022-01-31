@@ -145,7 +145,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     if (MiscCounter++ == 0)
                     {
                         Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-100, -50));
-                        Projectile.NewProjectile(player.Center + RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
+                        //Projectile.NewProjectile(player.Center + RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
                     }
 
                     if (MiscCounter == 60)
@@ -182,7 +182,19 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool? CanBeHitByItem(Player player, Item item) => false;
 
-        public override bool? CanBeHitByProjectile(Projectile projectile) => false;
+        public override bool? CanBeHitByProjectile(Projectile projectile)
+        {
+            int[] Whitelist = { ModContent.ProjectileType<ForbiddenBeamFriendly>(), ModContent.ProjectileType<GiantBeam>(), ModContent.ProjectileType<ForbiddenBurst>() };
+            if (projectile.friendly)
+            {
+                if (Whitelist.Contains(projectile.type))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public override void FindFrame(int frameHeight)
         {

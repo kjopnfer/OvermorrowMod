@@ -31,7 +31,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
-            if (projectile.velocity != Vector2.Zero && projectile.ai[0]++ == 1200)
+            if (projectile.velocity != Vector2.Zero && projectile.ai[0]++ == projectile.ai[1])
             {
                 projectile.velocity = Vector2.Zero;
             }
@@ -65,6 +65,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
     public class PlayerCrosshair : ModProjectile
     {
+        protected NPC ParentNPC;
+        private bool MouseFired = false;
         public override bool CanDamage() => false;
         public override string Texture => "OvermorrowMod/NPCs/Bosses/SandstormBoss/Crosshair";
         public override void SetStaticDefaults()
@@ -88,6 +90,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
+            ParentNPC = Main.npc[(int)projectile.ai[0]];
 
             if (!player.active || player.dead)
             {
@@ -102,12 +105,19 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             if (player == Main.LocalPlayer)
             {
-                projectile.Center = Main.MouseWorld;
-
-                if (Main.mouseLeft)
+                if (!MouseFired)
                 {
-                    Main.NewText("fired");
-                    player.ClearBuff(ModContent.BuffType<Steal>());
+                    projectile.Center = Main.MouseWorld;
+
+                    if (Main.mouseLeft)
+                    {
+                        Main.NewText("fire artifact");
+
+                        MouseFired = true;
+                        ((DharuudMinion)ParentNPC.modNPC).FiredArtifact = true;
+                        ((DharuudMinion)ParentNPC.modNPC).ShootPosition = projectile.Center;
+                        ParentNPC.ai[3] = 0;
+                    }
                 }
             }
         }
