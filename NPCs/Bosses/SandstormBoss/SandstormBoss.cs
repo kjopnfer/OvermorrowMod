@@ -217,7 +217,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             }
 
             var DrawRectangle = new Rectangle(0, TextureHeight * frame, texture.Width, 60);
-            Main.spriteBatch.Draw(texture, npc.Center + new Vector2(1, (npc.width / 2) + 64) - Main.screenPosition, DrawRectangle, Color.White, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
+            Main.spriteBatch.Draw(texture, npc.Center + new Vector2(1, (npc.width / 2) + 64) - Main.screenPosition, DrawRectangle, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }
 
         public override void NPCLoot()

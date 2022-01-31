@@ -110,6 +110,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         InitialPosition = npc.Center;
                         IsDisabled = false;
                         ReturnIdle = true;
+                        PickedUp = false;
+                        ParentPlayer = null;
 
                         npc.noTileCollide = true;
                     }

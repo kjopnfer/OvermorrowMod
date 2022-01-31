@@ -107,6 +107,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 if (Main.mouseLeft)
                 {
                     Main.NewText("fired");
+                    player.ClearBuff(ModContent.BuffType<Steal>());
                 }
             }
         }
@@ -128,13 +129,5 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             return base.PreDraw(spriteBatch, lightColor);
         }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            projectile.extraUpdates = 0;
-            projectile.velocity = Vector2.Zero;
-            return false;
-        }
     }
-
 }
