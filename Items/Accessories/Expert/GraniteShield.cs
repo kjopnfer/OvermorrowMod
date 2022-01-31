@@ -24,7 +24,7 @@ namespace OvermorrowMod.Items.Accessories.Expert
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.AddBuff(ModContent.BuffType<SpiderWebBuff>(), 2);
+            player.AddBuff(ModContent.BuffType<GraniteShieldBuff>(), 2);
             if ((int)player.ownedProjectileCounts[ModContent.ProjectileType<Projectiles.Accessory.GraniteShield>()] >= 1)
             {
                 return;

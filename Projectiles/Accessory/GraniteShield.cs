@@ -30,13 +30,13 @@ namespace OvermorrowMod.Projectiles.Accessory
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
-            if (player.HasBuff(ModContent.BuffType<SpiderWebBuff>()))
+            if (player.HasBuff(ModContent.BuffType<GraniteShieldBuff>()))
             {
                 projectile.timeLeft = 2;
             }
 
             // Determines the maximum damage stored within the shield before it breaks
-            float maxStored = 10;
+            int maxStored = 10;
             if (NPC.downedPlantBoss)
             {
                 maxStored = 40;
@@ -55,9 +55,13 @@ namespace OvermorrowMod.Projectiles.Accessory
                 projectile.localAI[0] = 0;
             }
 
+            if (projectile.alpha > 0 && projectile.alpha < 255)
+            {
+                projectile.alpha -= 10;
+            }
+
             if (projectile.ai[1] > 0)
             {
-                projectile.alpha--;
                 projectile.ai[1]--;
             }
             else
@@ -66,6 +70,7 @@ namespace OvermorrowMod.Projectiles.Accessory
                 {
                     Main.PlaySound(SoundID.Item70);
                     projectile.ai[0] = 0;
+                    projectile.alpha = 250;
                 }
             }
 
