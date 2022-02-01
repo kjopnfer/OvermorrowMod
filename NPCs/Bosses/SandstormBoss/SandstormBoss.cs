@@ -20,6 +20,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
     public class SandstormBoss : ModNPC
     {
         private bool RunOnce = true;
+        private bool ArmorImmune = false;
+
+        private int RandomDirection;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dharuud, the Sandstorm");
@@ -57,8 +60,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Selector = 0,
             Shards = 1,
             Vortex = 2,
-            Runes = 3,
-            Energy = 4,
+            Spin = 3,
+            Wall = 4,
             Death = 5
         }
 
@@ -105,7 +108,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     if (MiscCounter++ <= 180)
                     {
                         npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
-                        npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y) > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+                        npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y - 50) > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
                     }
                     else if (MiscCounter > 180 && MiscCounter < 300)
                     {
@@ -123,7 +126,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (MiscCounter == 540)
                     {
-                        AICase = (int)AIStates.Vortex;
+                        AICase = (int)AIStates.Spin;
                         MiscCounter = 0;
                     }
 
@@ -139,7 +142,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter == 360)
+                    if (MiscCounter == 240)
                     {
                         AICase = (int)AIStates.Selector;
                         MiscCounter = 0;
@@ -149,7 +152,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     if (MiscCounter++ == 0)
                     {
                         Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-100, -50));
-                        //Projectile.NewProjectile(player.Center + RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
+                        Projectile.NewProjectile(player.Center + RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
                     }
 
                     if (MiscCounter == 60)
@@ -158,6 +161,47 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         MiscCounter = 0;
                     }
                     break;
+                case (int)AIStates.Spin:
+                    if (MiscCounter++ == 60)
+                    {
+                        Projectile.NewProjectile(npc.Center, Vector2.Normalize(npc.DirectionTo(player.Center)), ModContent.ProjectileType<FragmentCenter>(), npc.damage, 3f, Main.myPlayer);
+                    }
+
+                    if (MiscCounter == 90)
+                    {
+                        AICase = (int)AIStates.Wall;
+                        MiscCounter = 0;
+                    }
+                    break;
+                case (int)AIStates.Wall:
+                    if (MiscCounter == 0)
+                    {
+                        RandomDirection = Main.rand.NextBool() ? -1 : 1;
+                        npc.netUpdate = true;
+                    }
+
+                    if (MiscCounter % 20 == 0)
+                    {
+                        Vector2 RandomPosition = new Vector2(Main.rand.Next(700, 800) * RandomDirection, Main.rand.Next(-8, 8) * 30);
+                        Projectile.NewProjectile(player.Center + RandomPosition, Vector2.UnitX * Main.rand.Next(3, 6) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), npc.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 90));
+                    }
+
+                    if (MiscCounter++ == 240)
+                    {
+                        AICase = (int)AIStates.Shards;
+                        MiscCounter = 0;
+                    }
+                    break;
+            }
+
+            ArmorImmune = false;
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC ArmorNPC = Main.npc[i];
+                if (ArmorNPC.active && ArmorNPC.type == ModContent.NPCType<SandstormBoss_Chest>())
+                {
+                    ArmorImmune = true;
+                }
             }
         }
 
@@ -189,7 +233,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
             int[] Whitelist = { ModContent.ProjectileType<ForbiddenBeamFriendly>(), ModContent.ProjectileType<GiantBeam>(), ModContent.ProjectileType<ForbiddenBurst>() };
-            if (projectile.friendly)
+            if (projectile.friendly && !ArmorImmune)
             {
                 if (Whitelist.Contains(projectile.type))
                 {

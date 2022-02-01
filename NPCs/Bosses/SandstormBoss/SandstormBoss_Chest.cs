@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
 using OvermorrowMod.Particles;
 using System;
+using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
@@ -29,6 +30,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.noGravity = true;
             npc.noTileCollide = true;
             npc.knockBackResist = 0f;
+            npc.chaseable = false;
             npc.HitSound = SoundID.NPCHit4;
             npc.friendly = false;
         }
@@ -43,12 +45,21 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool? CanBeHitByItem(Player player, Item item)
         {
-            return true;
+            return false;
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
-            return true;
+            int[] Whitelist = { ModContent.ProjectileType<ForbiddenBeamFriendly>(), ModContent.ProjectileType<GiantBeam>(), ModContent.ProjectileType<ForbiddenBurst>() };
+            if (projectile.friendly)
+            {
+                if (Whitelist.Contains(projectile.type))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public override void DrawBehind(int index)

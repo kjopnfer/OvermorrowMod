@@ -46,6 +46,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 RunOnce = false;
             }
 
+            if (!ParentNPC.active)
+            {
+                npc.active = false;
+            }
+
             IdlePosition = ParentNPC.Center + new Vector2(100, 0).RotatedBy(MathHelper.ToRadians(RotationCounter += 2f));
 
             // Code to rotate around the boss and allow grappling
