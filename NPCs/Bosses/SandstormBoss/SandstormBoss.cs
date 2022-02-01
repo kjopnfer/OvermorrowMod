@@ -40,6 +40,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.noGravity = true;
             npc.noTileCollide = true;
             npc.boss = true;
+            npc.chaseable = false;
             npc.npcSlots = 10f;
             music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/SandstormBoss");
             bossBag = ModContent.ItemType<SandstormBag>();
@@ -91,6 +92,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     NPC.NewNPC((int)SpawnRotation.X, (int)SpawnRotation.Y, NPCType, 0, npc.whoAmI, 0f, 120 * i);
                 }
+
+                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SandstormBoss_Chest>(), 0, npc.whoAmI);
+
 
                 RunOnce = false;
             }
@@ -231,6 +235,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             var DrawRectangle = new Rectangle(0, TextureHeight * frame, texture.Width, 60);
             Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
             Main.spriteBatch.Draw(texture, npc.Center + new Vector2(1, (npc.width / 2) + 64) - Main.screenPosition, DrawRectangle, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+
+            //texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/DharuudArmor");
+            //Main.spriteBatch.Draw(texture, npc.Center + new Vector2(-2, 2) - Main.screenPosition, null, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+
         }
 
         public override void NPCLoot()

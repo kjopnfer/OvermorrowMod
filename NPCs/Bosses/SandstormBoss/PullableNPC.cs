@@ -21,9 +21,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            npc.width = npc.height = 64;
             npc.aiStyle = -1;
-            npc.lifeMax = 100;
             npc.noGravity = true;
             npc.knockBackResist = 0f;
             npc.dontTakeDamageFromHostiles = true;

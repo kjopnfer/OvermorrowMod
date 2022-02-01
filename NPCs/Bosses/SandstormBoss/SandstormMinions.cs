@@ -33,6 +33,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public ref float RotationCounter => ref npc.ai[2];
         public ref float AttackCounter => ref npc.ai[3];
 
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+        }
+
         public override void AI()
         {
             if (RunOnce)
@@ -199,13 +204,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             npc.width = npc.height = 24;
-            npc.aiStyle = -1;
             npc.lifeMax = 100;
-            npc.noGravity = true;
             npc.noTileCollide = true;
-            npc.knockBackResist = 0f;
-            npc.friendly = false;
         }
 
         public override void AI()
@@ -347,13 +350,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             npc.width = npc.height = 24;
-            npc.aiStyle = -1;
             npc.lifeMax = 100;
-            npc.noGravity = true;
             npc.noTileCollide = true;
-            npc.knockBackResist = 0f;
-            npc.friendly = false;
         }
 
         public override void AI()
@@ -525,13 +526,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             npc.width = npc.height = 24;
-            npc.aiStyle = -1;
             npc.lifeMax = 100;
-            npc.noGravity = true;
             npc.noTileCollide = true;
-            npc.knockBackResist = 0f;
-            npc.friendly = false;
         }
 
         public override void AI()
