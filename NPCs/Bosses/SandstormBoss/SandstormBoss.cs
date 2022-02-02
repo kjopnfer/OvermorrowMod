@@ -23,6 +23,17 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         private bool ArmorImmune = false;
 
         private int RandomDirection;
+
+        private enum AttackTypes
+        {
+            Shards = 1,
+            Vortex = 2,
+            Spin = 3,
+            Wall = 4
+        }
+        private int[] AttackQueue = new int[2];
+        private int AttackCounter = 0;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dharuud, the Sandstorm");
@@ -55,7 +66,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public enum AIStates
         {
-            Buffer = -2,
+            PhaseTransition = -2,
             Intro = -1,
             Selector = 0,
             Shards = 1,
@@ -126,7 +137,20 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (MiscCounter == 540)
                     {
-                        AICase = (int)AIStates.Spin;
+                        AttackTypes[] values = (AttackTypes[])Enum.GetValues(typeof(AttackTypes));
+                        values = values.Shuffle();
+
+                        for (int i = 0; i < AttackQueue.Length; i++)
+                        {
+                            AttackQueue[i] = (int)values[i];
+                        }
+
+                        AttackCounter = 0;
+
+                        //AICase = (int)AIStates.Spin;
+                        AICase = AttackQueue[AttackCounter];
+
+                        AttackCounter++;
                         MiscCounter = 0;
                     }
 
@@ -144,7 +168,17 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (MiscCounter == 240)
                     {
-                        AICase = (int)AIStates.Selector;
+                        if (AttackCounter == 2)
+                        {
+                            AICase = (int)AIStates.Selector;
+                            AttackCounter = 0;
+                        }
+                        else
+                        {
+                            AICase = AttackQueue[1];
+                            AttackCounter++;
+                        }
+
                         MiscCounter = 0;
                     }
                     break;
@@ -157,7 +191,18 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (MiscCounter == 60)
                     {
-                        AICase = (int)AIStates.Shards;
+                        //AICase = (int)AIStates.Shards;
+                        if (AttackCounter == 2)
+                        {
+                            AICase = (int)AIStates.Selector;
+                            AttackCounter = 0;
+                        }
+                        else
+                        {
+                            AICase = AttackQueue[1];
+                            AttackCounter++;
+                        }
+
                         MiscCounter = 0;
                     }
                     break;
@@ -169,7 +214,18 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (MiscCounter == 90)
                     {
-                        AICase = (int)AIStates.Wall;
+                        //AICase = (int)AIStates.Wall;
+                        if (AttackCounter == 2)
+                        {
+                            AICase = (int)AIStates.Selector;
+                            AttackCounter = 0;
+                        }
+                        else
+                        {
+                            AICase = AttackQueue[1];
+                            AttackCounter++;
+                        }
+
                         MiscCounter = 0;
                     }
                     break;
@@ -188,7 +244,18 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     if (MiscCounter++ == 240)
                     {
-                        AICase = (int)AIStates.Shards;
+                        //AICase = (int)AIStates.Shards;
+                        if (AttackCounter == 2)
+                        {
+                            AICase = (int)AIStates.Selector;
+                            AttackCounter = 0;
+                        }
+                        else
+                        {
+                            AICase = AttackQueue[1];
+                            AttackCounter++;
+                        }
+
                         MiscCounter = 0;
                     }
                     break;
@@ -257,6 +324,23 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             {
                 npc.frame.Y = 0; // Reset back to default
             }*/
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            //for(int i = 0; i < 9; i++)
+            //{
+            //    Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Rays");
+            //    Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(npc.localAI[0] += 0.5f) + MathHelper.ToRadians(i * (360 / 9)), new Vector2(texture.Width / 2, texture.Height) / 2, new Vector2(3f, 1f), SpriteEffects.None, 0f);
+            //}
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            return base.PreDraw(spriteBatch, drawColor);
         }
 
         int frame = 0;
