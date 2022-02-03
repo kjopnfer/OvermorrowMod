@@ -85,6 +85,13 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             if (RunOnce)
             {
+                if (!Sandstorm.Happening)
+                {
+                    Sandstorm.Happening = true;
+                    Sandstorm.TimeLeft = (int)(3600.0 * (8.0 + (double)Main.rand.NextFloat() * 16.0));
+                    ModUtils.SandstormStuff();
+                }
+
                 for (int i = 0; i < 3; i++)
                 {
                     int RADIUS = 100;

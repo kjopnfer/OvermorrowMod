@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Events;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -76,6 +77,16 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Main.spriteBatch.Draw(texture, npc.Center + new Vector2(DirectionOffset, 2) - Main.screenPosition, null, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 
             return false;
+        }
+
+        public override void NPCLoot()
+        {
+            if (Sandstorm.Happening)
+            {
+                Sandstorm.Happening = false;
+                Sandstorm.TimeLeft = 120;
+                ModUtils.SandstormStuff();
+            }
         }
     }
 }
