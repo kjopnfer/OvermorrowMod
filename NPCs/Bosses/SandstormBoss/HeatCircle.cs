@@ -9,13 +9,12 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
     public class HeatCircle : ModProjectile
     {
-        private const int RADIUS = 204;
-        private const int WIDTH = 40;
+        private const int RADIUS = 102;
 
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Crosshair");
+            DisplayName.SetDefault("Heat Circle");
         }
 
         public override void SetDefaults()
@@ -42,12 +41,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             for (int i = 0; i < Main.maxPlayers; i++)
             {
-                
                 float dist = (Main.player[i].Center - projectile.Center).Length();
-                return dist <= RADIUS && dist >= RADIUS - WIDTH;
+                return dist <= RADIUS;
             }
 
-            return base.CanDamage();
+            return false;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
@@ -56,7 +54,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/PulseCircle");
-            Color color = Color.Lerp(Color.Orange, Color.Red, (float)Math.Sin(Main.GlobalTime * 2));
+            Color color = Color.Lerp(Color.Transparent, Color.Lerp(Color.Orange, Color.Red, (float)Math.Sin(Main.GlobalTime * 2)), Utils.Clamp(projectile.timeLeft, 0, 120) / 120f);
 
             spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, color, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, 0.5f, SpriteEffects.None, 0f);
 
