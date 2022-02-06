@@ -8,7 +8,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Hamber")
+            DisplayName.SetDefault("Hamber");
             Tooltip.SetDefault("you all are lazy fucks");
         }
 
