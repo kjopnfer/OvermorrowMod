@@ -138,11 +138,20 @@ namespace OvermorrowMod
                 }
             }
 
-             if (npc.type == NPCID.MotherSlime)
+            if (npc.type == NPCID.MotherSlime)
             {
                 if (Main.rand.NextFloat() < .07f)
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Hammer>());
+                }
+            }
+             
+             
+            if (npc.type == NPCID.BoneSerphant)
+            {
+                if (Main.rand.NextFloat() < .02f) //2% percent drop 
+                {
+                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SearingSaber>());
                 }
             }
 
