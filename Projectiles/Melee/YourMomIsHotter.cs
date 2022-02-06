@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Overmorrow.Projectiles.Melee
+namespace OvermorrowMod.Projectiles.Melee
 {
     class YourMomIsHotter : ModProjectile
     {
