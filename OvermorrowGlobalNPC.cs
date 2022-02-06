@@ -147,7 +147,7 @@ namespace OvermorrowMod
             }
              
              
-            if (npc.type == NPCID.BoneSerphant)
+            if (npc.type == NPCID.BoneSerphantHead)
             {
                 if (Main.rand.NextFloat() < .02f) //2% percent drop 
                 {
