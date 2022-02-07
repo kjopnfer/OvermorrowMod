@@ -220,6 +220,22 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             base.AI();
 
+            if (AttackCounter >= 60 && AttackCounter <= 90)
+            {
+                if (Main.rand.NextBool(3))
+                {
+                    for (int _ = 0; _ < 3; _++)
+                    {
+                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(125, 200), 0).RotatedByRandom(MathHelper.TwoPi);
+                        Vector2 Direction = Vector2.Normalize(npc.Center - RandomPosition);
+
+                        int DustSpeed = 10;
+
+                        Particle.CreateParticle(Particle.ParticleType<Orb>(), RandomPosition, Direction * DustSpeed, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
+                    }
+                }
+            }
+
             // Positions itself above the boss, before firing a beam in a wide arc
             if (ExecuteAttack)
             {
@@ -365,6 +381,22 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override void AI()
         {
             base.AI();
+
+            if (AttackCounter >= 60 && AttackCounter <= 90)
+            {
+                if (Main.rand.NextBool(3))
+                {
+                    for (int _ = 0; _ < 3; _++)
+                    {
+                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(125, 200), 0).RotatedByRandom(MathHelper.TwoPi);
+                        Vector2 Direction = Vector2.Normalize(npc.Center - RandomPosition);
+
+                        int DustSpeed = 10;
+
+                        Particle.CreateParticle(Particle.ParticleType<Orb>(), RandomPosition, Direction * DustSpeed, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
+                    }
+                }
+            }
 
             // Positions itself near the player, before glowing brightly
             // Afterwards, creates a giant wall of light and while moving slowly towards the player
@@ -542,6 +574,22 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             base.AI();
 
+            if (GlobalCounter >= 60 && GlobalCounter <= 90)
+            {
+                if (Main.rand.NextBool(3))
+                {
+                    for (int _ = 0; _ < 3; _++)
+                    {
+                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(125, 200), 0).RotatedByRandom(MathHelper.TwoPi);
+                        Vector2 Direction = Vector2.Normalize(npc.Center - RandomPosition);
+
+                        int DustSpeed = 10;
+
+                        Particle.CreateParticle(Particle.ParticleType<Orb>(), RandomPosition, Direction * DustSpeed, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
+                    }
+                }
+            }
+
             // Shoot three random invisible projectiles, when they collide with a tile they become visible
             // The NPC then fires beams at the projectiles, creating a small circle of light
             if (ExecuteAttack)
@@ -561,18 +609,18 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         npc.velocity = Vector2.Zero;
                     }
 
-                    npc.Center = Vector2.Lerp(InitialPosition, ParentNPC.Center - new Vector2(0, 250), GlobalCounter / 60f);
-                }
-
-                // Place crosshairs
-                if (GlobalCounter == 60)
-                {
-                    InitialPosition = npc.Center;
-                    for (int i = 0; i < 3; i++)
+                    // Place crosshairs
+                    if (GlobalCounter == 60)
                     {
-                        Vector2 Velocity = Vector2.Normalize(npc.DirectionTo(player.Center).RotatedByRandom(MathHelper.PiOver4));
-                        Projectile.NewProjectile(npc.Center, Velocity, ModContent.ProjectileType<Crosshair>(), 60, 6f, Main.myPlayer, 0, 1200);
+                        InitialPosition = npc.Center;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Vector2 Velocity = Vector2.Normalize(npc.DirectionTo(player.Center).RotatedByRandom(MathHelper.PiOver4));
+                            Projectile.NewProjectile(npc.Center, Velocity, ModContent.ProjectileType<Crosshair>(), 60, 6f, Main.myPlayer, 0, 1200);
+                        }
                     }
+
+                    npc.Center = Vector2.Lerp(InitialPosition, ParentNPC.Center - new Vector2(0, 250), GlobalCounter / 60f);
                 }
 
                 // Fire at the cross hairs
@@ -652,18 +700,18 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         npc.velocity = Vector2.Zero;
                     }
 
-                    npc.Center = Vector2.Lerp(InitialPosition, ParentPlayer.Center - new Vector2(0, 250), GlobalCounter / 60f);
-                }
-
-                // Place crosshairs
-                if (GlobalCounter == 60)
-                {
-                    InitialPosition = npc.Center;
-                    for (int i = 0; i < 3; i++)
+                    // Place crosshairs
+                    if (GlobalCounter == 60)
                     {
-                        Vector2 Velocity = Vector2.Normalize(npc.DirectionTo(ShootPosition).RotatedByRandom(MathHelper.ToRadians(15)));
-                        Projectile.NewProjectile(npc.Center, Velocity, ModContent.ProjectileType<Crosshair>(), 60, 6f, Main.myPlayer, 0, 600);
+                        InitialPosition = npc.Center;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Vector2 Velocity = Vector2.Normalize(npc.DirectionTo(ShootPosition).RotatedByRandom(MathHelper.ToRadians(15)));
+                            Projectile.NewProjectile(npc.Center, Velocity, ModContent.ProjectileType<Crosshair>(), 60, 6f, Main.myPlayer, 0, 600);
+                        }
                     }
+
+                    npc.Center = Vector2.Lerp(InitialPosition, ParentPlayer.Center - new Vector2(0, 250), GlobalCounter / 60f);
                 }
 
                 // Fire at the cross hairs

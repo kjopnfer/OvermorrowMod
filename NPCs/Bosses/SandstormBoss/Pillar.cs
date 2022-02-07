@@ -40,6 +40,12 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
     public class PillarSpawner : ModProjectile
     {
+        private bool RunOnce = true;
+
+        private Vector2 StartPosition;
+        private Vector2 EndPosition;
+        private Vector2 MidPoint1;
+        private Vector2 MidPoint2;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
@@ -51,11 +57,30 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             projectile.width = projectile.height = 16;
             projectile.penetrate = -1;
             projectile.friendly = false;
-            projectile.timeLeft = 120;
+            projectile.timeLeft = 270;
         }
 
         public override void AI()
         {
+            if (RunOnce)
+            {
+                StartPosition = projectile.Center;
+                EndPosition = new Vector2(projectile.ai[0], projectile.ai[1]);
+
+                MidPoint1 = StartPosition + new Vector2(Main.rand.Next(-100, 100), Main.rand.Next(-100, 100));
+                MidPoint2 = MidPoint1 + new Vector2(Main.rand.Next(-100, 100), Main.rand.Next(-100, 100));
+
+                projectile.ai[0] = 0;
+                projectile.ai[1] = 0;
+
+                RunOnce = false;
+            }
+
+            if (projectile.timeLeft > 90)
+            {
+                projectile.Center = ModUtils.Bezier(StartPosition, EndPosition, MidPoint2, MidPoint1, Utils.Clamp(projectile.ai[0]++, 0, 180) / 180f);
+            }
+
             if (projectile.timeLeft == 60)
             {
                 Projectile.NewProjectile(projectile.Center, Vector2.UnitY, ModContent.ProjectileType<AncientElectricitiy>(), 20, 5f, Main.myPlayer);
@@ -79,6 +104,19 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/PillarSpawner");
+            //float mult = (0.55f + (float)Math.Sin(Main.GlobalTime) * 0.1f);
+            //float scale = projectile.scale * 2 * mult;
+
+            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Gold, 0, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, 0, new Vector2(texture.Width, texture.Height) / 2, 0.5f, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
             return false;
         }
     }
@@ -101,6 +139,14 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.knockBackResist = 0f;
             npc.chaseable = false;
             npc.noTileCollide = false;
+        }
+
+        public override void AI()
+        {
+            if (npc.ai[0]++ == 0)
+            {
+                npc.spriteDirection = Main.rand.NextBool() ? 1 : -1;
+            }
         }
 
         private bool PillarLoop = false;

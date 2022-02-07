@@ -7,6 +7,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Projectiles.Boss;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
@@ -26,10 +27,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         private enum AttackTypes
         {
-            Shards = 1,
-            Vortex = 2,
-            Spin = 3,
-            Wall = 4
+            //Shards = 1,
+            //Vortex = 2,
+            //Spin = 3,
+            Wall = 4,
+            Pillars = 5
         }
         private int[] AttackQueue = new int[2];
         private int AttackCounter = 0;
@@ -73,7 +75,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Vortex = 2,
             Spin = 3,
             Wall = 4,
-            Death = 5
+            Pillars = 5
         }
 
         public override void AI()
@@ -85,13 +87,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             if (RunOnce)
             {
-                if (!Sandstorm.Happening)
-                {
-                    Sandstorm.Happening = true;
-                    Sandstorm.TimeLeft = (int)(3600.0 * (8.0 + (double)Main.rand.NextFloat() * 16.0));
-                    ModUtils.SandstormStuff();
-                }
-
                 for (int i = 0; i < 3; i++)
                 {
                     int RADIUS = 100;
@@ -266,6 +261,35 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         MiscCounter = 0;
                     }
                     break;
+                case (int)AIStates.Pillars:
+                    if (MiscCounter++ == 60)
+                    {
+                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-5, 5) * 100, Main.rand.Next(-150, -100));
+                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarSpawner>(), npc.damage, 3f, Main.myPlayer, RandomPosition.X, RandomPosition.Y);
+
+                        for (int i = -1; i <= 1; i += 2)
+                        {
+                            Vector2 RandomPositionSides = RandomPosition + new Vector2(Main.rand.Next(100, 450) * i, Main.rand.Next(-20, 20));
+                            Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarSpawner>(), npc.damage, 3f, Main.myPlayer, RandomPositionSides.X, RandomPositionSides.Y);
+                        }
+                    }
+
+                    if (MiscCounter == 120)
+                    {
+                        if (AttackCounter == 2)
+                        {
+                            AICase = (int)AIStates.Selector;
+                            AttackCounter = 0;
+                        }
+                        else
+                        {
+                            AICase = AttackQueue[1];
+                            AttackCounter++;
+                        }
+
+                        MiscCounter = 0;
+                    }
+                    break;
             }
 
             ArmorImmune = false;
@@ -351,10 +375,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         }
 
         int frame = 0;
+        const int MAX_FRAMES = 11;
+        const int TextureHeight = 50;
         public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
         {
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/SandstormBoss_Arms");
-            const int TextureHeight = 60;
 
             npc.frameCounter++;
             if (npc.frameCounter % 12f == 11f)
@@ -362,14 +387,14 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 frame += 1;
             }
 
-            if (frame >= 4)
+            if (frame >= MAX_FRAMES)
             {
                 frame = 0;
             }
 
-            var DrawRectangle = new Rectangle(0, TextureHeight * frame, texture.Width, 60);
+            var DrawRectangle = new Rectangle(0, TextureHeight * frame, texture.Width, TextureHeight);
             Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
-            Main.spriteBatch.Draw(texture, npc.Center + new Vector2(1, (npc.width / 2) + 64) - Main.screenPosition, DrawRectangle, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(texture, npc.Center + new Vector2(1, (npc.width / 2) + 224) - Main.screenPosition, DrawRectangle, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 
             //texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/DharuudArmor");
             //Main.spriteBatch.Draw(texture, npc.Center + new Vector2(-2, 2) - Main.screenPosition, null, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
