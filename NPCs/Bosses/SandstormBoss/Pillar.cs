@@ -131,7 +131,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            npc.width = 82;
+            npc.width = 42;
             npc.height = 100;
             npc.lifeMax = 360;
             npc.defense = 20;
@@ -146,6 +146,51 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             if (npc.ai[0]++ == 0)
             {
                 npc.spriteDirection = Main.rand.NextBool() ? 1 : -1;
+            }
+
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                Player player = Main.player[i];
+                if (player.active && !player.dead)
+                {
+                    Rectangle PlayerBottom = new Rectangle((int)player.position.X, (int)player.position.Y + player.height, player.width, 1);
+                    Rectangle PlayerLeft = new Rectangle((int)player.position.X, (int)player.position.Y, 1, player.height);
+                    Rectangle PlayerRight = new Rectangle((int)player.position.X + player.width, (int)player.position.Y, 1, player.height);
+
+                    Rectangle NPCTop = new Rectangle((int)npc.position.X, (int)npc.position.Y - (int)npc.velocity.Y, npc.width, 8 + (int)Math.Max(player.velocity.Y, 0));
+                    Rectangle NPCRight = new Rectangle((int)npc.position.X + npc.width, (int)npc.position.Y, 8 + (int)Math.Max(player.velocity.X, 0), npc.height);
+                    Rectangle NPCLeft = new Rectangle((int)npc.position.X, (int)npc.position.Y, 8 - (int)Math.Max(player.velocity.X, 0), npc.height);
+
+                    if (PlayerBottom.Intersects(NPCTop))
+                    {
+                        if (player.position.Y <= npc.position.Y && !player.justJumped && player.velocity.Y >= 0)
+                        {
+                            player.gfxOffY = npc.gfxOffY;
+                            player.position.Y = npc.position.Y - player.height + 4;
+                            player.position += npc.velocity;
+                            player.velocity.Y = 0;
+                            player.fallStart = (int)(player.position.Y / 16f);
+                        }
+                    }
+
+                    if (PlayerLeft.Intersects(NPCRight))
+                    {
+                        if (player.position.X >= npc.position.X + npc.width && player.velocity.X <= 0)
+                        {
+                            player.velocity.X = 0;
+                            player.position.X = (npc.position.X + npc.width) + 4;
+                        }
+                    }
+
+                    if (PlayerRight.Intersects(NPCLeft))
+                    {
+                        if (player.position.X <= npc.position.X && player.velocity.X >= 0)
+                        {
+                            player.velocity.X = 0;
+                            player.position.X = npc.position.X - player.width;
+                        }
+                    }               
+                }
             }
         }
 
