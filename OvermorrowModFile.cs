@@ -16,6 +16,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using WardenClass;
 using System;
+using OvermorrowMod.Quests;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
 
@@ -50,15 +51,32 @@ namespace OvermorrowMod
         public Effect Whiteout;
 
         public static List<Texture2D> TrailTextures;
+
+        public static List<Quest> QuestList = new List<Quest>();
+        public static List<Quest> CompletedQuests = new List<Quest>();
+
+        public static void LoadQuests()
+        {
+            foreach (Type type in Mod.Code.GetTypes())
+            {
+                if (type.IsSubclassOf(typeof(Quest)) && !type.IsAbstract && type != typeof(Quest))
+                {
+                    Quest quest = (Quest)Activator.CreateInstance(type);
+                    quest.SetDefaults();
+                    QuestList.Add(quest);
+                }
+            }
+        }
+
+        public static void UnloadQuests()
+        {
+            QuestList = null;
+        }
+
         public OvermorrowModFile()
         {
             Mod = this;
         }  
-
-        public override void PostSetupContent()
-        {
-            //Main.add(new Manipulator(TitleMusic));
-        }
 
         public override void UpdateMusic(ref int music, ref MusicPriority priority)
         {
@@ -100,9 +118,13 @@ namespace OvermorrowMod
                 }
 
                 ILEdits.Load();
+
+                LoadQuests();
+                ModDetours.Load();
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 Particle.Load();
+                //QuestManager.Load();
                 TestDetours.Load();
                 Trail.Load();
 
@@ -128,6 +150,38 @@ namespace OvermorrowMod
                     //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");
                 }
             }
+        }
+
+        public override void Unload()
+        {
+            Mod = null;
+            Shockwave = null;
+            TrailShader = null;
+            TextShader = null;
+
+            UnloadQuests();
+            TrailTextures = null;
+            ModDetours.Unload();
+            ModUtils.Load(true);
+            HexLoader.Load(true);
+            ILEdits.Unload();
+            Particle.Unload();
+            TestDetours.Unload();
+            Trail.Unload();
+
+
+
+            Souls = null;
+            Altar = null;
+            SandModeKey = null;
+            AmuletKey = null;
+            ToggleUI = null;
+
+            Mod = null;
+            Shockwave = null;
+            TrailShader = null;
+            TextShader = null;
+            Whiteout = null;
         }
 
         public override void AddRecipes()
@@ -332,31 +386,6 @@ namespace OvermorrowMod
         internal void HideMyUI()
         {
             MyInterface?.SetState(null);
-        }
-
-        public override void Unload()
-        {
-            Mod = null;
-            Shockwave = null;
-            TrailShader = null;
-            TextShader = null;
-            Whiteout = null;
-
-            TrailTextures = null;
-            ModUtils.Load(true);
-            HexLoader.Load(true);
-            Particle.Unload();
-            TestDetours.Unload();
-            Trail.Unload();
-
-            ILEdits.Unload();
-
-            Souls = null;
-            Altar = null;
-            SandModeKey = null;
-            AmuletKey = null;
-            ToggleUI = null;
-
         }
 
         public override void Close()

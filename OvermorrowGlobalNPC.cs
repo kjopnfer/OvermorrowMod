@@ -10,6 +10,7 @@ using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Hexes;
 using OvermorrowMod.Projectiles.Melee;
+using OvermorrowMod.Quests;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
@@ -67,12 +68,12 @@ namespace OvermorrowMod
                     }
                     break;
                 case NPCID.AngryBones:
-                case NPCID.AngryBonesBig: 
+                case NPCID.AngryBonesBig:
                 case NPCID.AngryBonesBigHelmet:
                 case NPCID.AngryBonesBigMuscle:
                 case NPCID.DarkCaster:
                 case NPCID.CursedSkull:
-                    if (Main.rand.NextBool(100)) 
+                    if (Main.rand.NextBool(100))
                     {
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFragment>());
                     }
@@ -289,7 +290,7 @@ namespace OvermorrowMod
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-                if (FungiInfection)
+            if (FungiInfection)
             {
                 if (Main.rand.NextBool(10))
                 {
