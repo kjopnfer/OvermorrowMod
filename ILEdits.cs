@@ -1,5 +1,9 @@
+using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using OvermorrowMod.NPCs;
 using System;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,12 +15,14 @@ namespace OvermorrowMod
         {
             IL.Terraria.Main.UpdateAudio += TitleMusic;
             IL.Terraria.Main.UpdateAudio += TitleDisable;
+            IL.Terraria.Projectile.VanillaAI += GrappleCollision;
         }
 
         public static void Unload()
         {
             IL.Terraria.Main.UpdateAudio -= TitleMusic;
             IL.Terraria.Main.UpdateAudio -= TitleDisable;
+            IL.Terraria.Projectile.VanillaAI -= GrappleCollision;
         }
 
         private static void TitleMusic(ILContext il)
@@ -47,6 +53,74 @@ namespace OvermorrowMod
             }
             c.Index++;
             c.EmitDelegate<Func<int, int>>(TitleDisableDelegate);
+        }
+
+        // This works in tandem with setting ai[0] = 2f in the AI in order to enter the pull check upon hitbox intersection
+        public static void GrappleCollision(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.TryGotoNext(i => i.MatchLdfld<Projectile>("aiStyle"), i => i.MatchLdcI4(7));
+            c.TryGotoNext(i => i.MatchLdfld<Projectile>("ai"), i => i.MatchLdcI4(0), i => i.MatchLdelemR4(), i => i.MatchLdcR4(2));
+            c.TryGotoNext(i => i.MatchLdloc(143)); //flag2 in source code
+            c.Index++;
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<GrappleDelegate>(EmitGrappleDelegate);
+            c.TryGotoNext(i => i.MatchStfld<Player>("grapCount"));
+            c.Index++;
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<UngrappleDelegate>(EmitUngrappleDelegate);
+        }
+
+        private delegate bool GrappleDelegate(bool fail, Projectile proj);
+        private static bool EmitGrappleDelegate(bool fail, Projectile proj)
+        {
+            Main.NewText("check");
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.active && npc.modNPC is CollideableNPC && npc.Hitbox.Intersects(proj.Hitbox))
+                {
+                    Main.NewText("test");
+
+                    proj.velocity = Vector2.Zero;
+                    proj.tileCollide = true;
+                    proj.position += npc.velocity;
+
+                    return false;
+                }
+            }
+
+            return fail;
+        }
+
+        private delegate void UngrappleDelegate(Projectile proj);
+        private static void EmitUngrappleDelegate(Projectile proj)
+        {
+            Player player = Main.player[proj.owner];
+            int numHooks = 3;
+
+            switch (proj.type)
+            {
+                case 165:
+                    numHooks = 8;
+                    break;
+                case 256:
+                case 372:
+                    numHooks = 2;
+                    break;
+                case 652:
+                    numHooks = 1;
+                    break;
+                case 646:
+                case 647:
+                case 648:
+                case 649:
+                    numHooks = 4;
+                    break;
+            }
+
+            ProjectileLoader.NumGrappleHooks(proj, player, ref numHooks);
+            if (player.grapCount > numHooks) Main.projectile[player.grappling.OrderBy(n => (Main.projectile[n].active ? 0 : 999999) + Main.projectile[n].timeLeft).ToArray()[0]].Kill();
         }
     }
 }

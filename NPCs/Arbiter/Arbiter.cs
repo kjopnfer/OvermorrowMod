@@ -120,7 +120,7 @@ namespace OvermorrowMod.NPCs.Arbiter
 		}  
     }
 
-	public abstract class Worm : ModNPC
+	public abstract class Worm : CollideableNPC
 	{
 		/* ai[0] = follower
 		 * ai[1] = following
@@ -141,6 +141,8 @@ namespace OvermorrowMod.NPCs.Arbiter
 
 		public override void AI()
 		{
+			base.AI();
+
 			// Initializes once
 			if (npc.localAI[1] == 0f)
 			{

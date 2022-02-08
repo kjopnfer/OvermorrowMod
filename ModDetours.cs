@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.NPCs;
+using OvermorrowMod.NPCs.Bosses.SandstormBoss;
 using OvermorrowMod.Quests;
 using ReLogic.Graphics;
 using System;
@@ -7,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,11 +23,13 @@ namespace OvermorrowMod
         public static void Load()
         {
             On.Terraria.Main.DrawNPCChatButtons += DrawNPCChatButtons;
+            On.Terraria.Player.Update_NPCCollision += UpdateNPCCollision;
         }
 
         public static void Unload()
         {
             On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
+            On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
         }
 
         public static bool HoverButton = false;
@@ -214,6 +219,77 @@ namespace OvermorrowMod
             }
 
             orig(superColor, chatColor, numLines, focusText, focusText3);
+        }
+
+        private static void UpdateNPCCollision(On.Terraria.Player.orig_Update_NPCCollision orig, Player self)
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.modNPC is CollideableNPC && npc.active && npc.modNPC != null)
+                {
+                    Rectangle PlayerBottom = new Rectangle((int)self.position.X, (int)self.position.Y + self.height, self.width, 1);
+                    Rectangle NPCTop = new Rectangle((int)npc.position.X, (int)npc.position.Y - (int)npc.velocity.Y, npc.width, 8 + (int)Math.Max(self.velocity.Y, 0));
+
+                    if (PlayerBottom.Intersects(NPCTop))
+                    {
+                        if (self.position.Y <= npc.position.Y && !self.justJumped && self.velocity.Y >= 0)
+                        {
+                            self.gfxOffY = npc.gfxOffY;
+                            self.position.Y = npc.position.Y - self.height + 4;
+                            self.position += npc.velocity;
+                            self.velocity.Y = 0;
+                            self.fallStart = (int)(self.position.Y / 16f);
+
+                            if (self == Main.LocalPlayer)
+                                NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
+
+                            if (npc.type == ModContent.NPCType<Pillar>())
+                            {
+                                self.Hurt(PlayerDeathReason.ByCustomReason(self.name + " had an obelisk stuck up their ass"), 20, -1);
+                            }
+
+                            orig(self);
+                        }
+                    }
+
+                    Rectangle PlayerLeft = new Rectangle((int)self.position.X, (int)self.position.Y, 1, self.height);
+                    Rectangle PlayerRight = new Rectangle((int)self.position.X + self.width, (int)self.position.Y, 1, self.height);
+
+                    Rectangle NPCRight = new Rectangle((int)npc.position.X + npc.width, (int)npc.position.Y, 8 + (int)Math.Max(self.velocity.X, 0), npc.height);
+                    Rectangle NPCLeft = new Rectangle((int)npc.position.X, (int)npc.position.Y, 8 - (int)Math.Max(self.velocity.X, 0), npc.height);
+
+                    if (PlayerLeft.Intersects(NPCRight))
+                    {
+                        if (self.position.X >= npc.position.X + npc.width && self.velocity.X <= 0)
+                        {
+                            self.velocity.X = 0;
+                            self.position.X = (npc.position.X + npc.width) + 4;
+
+                            if (self == Main.LocalPlayer)
+                                NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
+
+                            //orig(self);
+                        }
+                    }
+
+                    if (PlayerRight.Intersects(NPCLeft))
+                    {
+                        if (self.position.X <= npc.position.X && self.velocity.X >= 0)
+                        {
+                            self.velocity.X = 0;
+                            self.position.X = npc.position.X - self.width;
+
+                            if (self == Main.LocalPlayer)
+                                NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
+
+                            //orig(self);
+                        }
+                    }
+                }
+            }
+
+            orig(self);
         }
     }
 }

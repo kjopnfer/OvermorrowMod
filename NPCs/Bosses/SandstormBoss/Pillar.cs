@@ -121,7 +121,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         }
     }
 
-    public class Pillar : ModNPC
+    public class Pillar : CollideableNPC
     {
         public override void SetStaticDefaults()
         {
@@ -143,12 +143,14 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
+            base.AI();
+
             if (npc.ai[0]++ == 0)
             {
                 npc.spriteDirection = Main.rand.NextBool() ? 1 : -1;
             }
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            /*for (int i = 0; i < Main.maxPlayers; i++)
             {
                 Player player = Main.player[i];
                 if (player.active && !player.dead)
@@ -191,7 +193,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         }
                     }               
                 }
-            }
+            }*/
         }
 
         private bool PillarLoop = false;

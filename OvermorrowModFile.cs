@@ -117,16 +117,17 @@ namespace OvermorrowMod
                     TrailTextures.Add(GetTexture("Effects/TrailTextures/Trail" + i));
                 }
 
-                ILEdits.Load();
 
                 LoadQuests();
-                ModDetours.Load();
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 Particle.Load();
                 //QuestManager.Load();
                 TestDetours.Load();
+                ILEdits.Load();
+                ModDetours.Load();
                 Trail.Load();
+                
 
                 foreach (Type type in Code.GetTypes())
                 {
