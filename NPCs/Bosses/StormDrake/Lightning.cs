@@ -143,6 +143,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         public List<LightningSegment> Positions = new List<LightningSegment>();
         public float Length;
         public bool Sine;
+        public Color Color1 = Color.LightBlue;
+        public Color Color2 = Color.Cyan;
         public virtual void SafeSetDefaults() { }
         public sealed override void SetDefaults()
         {
@@ -179,8 +181,13 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
             //if (Positions == default || Positions == null) return false;
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Circle");
+            //Texture2D texture2 = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+
             for (int i = 0; i < Positions.Count - 1; i++)
             {
                 var seg1 = Positions[i];
@@ -192,9 +199,13 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Vector2 pos = Vector2.Lerp(seg1.Position, seg2.Position, progress);
                     float alpha = MathHelper.Lerp(seg1.Alpha, seg2.Alpha, progress);
                     float scale = MathHelper.Lerp(seg1.Size, seg2.Size, progress) / texture.Width;
-                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(Color.LightBlue, Color.Cyan, alpha) * alpha, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(/*Color.LightBlue, Color.Cyan,*/Color1, Color2, alpha) * (alpha / 2f), 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 3, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White * alpha, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 0.5f, SpriteEffects.None, 0f);
                 }
             }
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             return false;
         }
         public override bool ShouldUpdatePosition() => false;
@@ -376,10 +387,10 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
     }
 
-    public abstract class GoldLightning : ModProjectile
+    public abstract class GoldLightning : Lightning
     {
-        public delegate float Size(float progress);
-        public static (List<LightningSegment>, List<float>) CreateLightning(Vector2 from, Vector2 to, Size size, float lengthDiv = 8, float Sway = 80f)
+        //public delegate float Size(float progress);
+        /*public static (List<LightningSegment>, List<float>) CreateLightning(Vector2 from, Vector2 to, Size size, float lengthDiv = 8, float Sway = 80f)
         {
             if (lengthDiv < 1) lengthDiv = 1;
             List<LightningSegment> segments = new List<LightningSegment>();
@@ -413,8 +424,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 prevPlacement = displace;
             }
             return (segments, lengths);
-        }
-        public static List<LightningSegment> CreateLightning(Vector2 from, Vector2 to, float thickness, float Sway = 80f, float lengthDivider = 8f, bool sine = false)
+        }*/
+        /*public static List<LightningSegment> CreateLightning(Vector2 from, Vector2 to, float thickness, float Sway = 80f, float lengthDivider = 8f, bool sine = false)
         {
             var positions = new List<LightningSegment>();
             Vector2 direction = to - from;
@@ -451,9 +462,9 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
 
             return positions;
-        }
+        }*/
 
-        public static List<LightningSegment> CreateLightning(Vector2 from, Vector2 to, float thickness, bool sine)
+        /*public static List<LightningSegment> CreateLightning(Vector2 from, Vector2 to, float thickness, bool sine)
         {
             var positions = new List<LightningSegment>();
             Vector2 direction = to - from;
@@ -492,21 +503,21 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
 
             return positions;
-        }
+        }*/
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulHostile;
-        public List<LightningSegment> Positions = new List<LightningSegment>();
-        public float Length;
-        public bool Sine;
-        public virtual void SafeSetDefaults() { }
-        public sealed override void SetDefaults()
+        //public List<LightningSegment> Positions = new List<LightningSegment>();
+        //public float Length;
+        //public bool Sine;
+        //public virtual void SafeSetDefaults() { }
+        /*public sealed override void SetDefaults()
         {
             SafeSetDefaults();
             projectile.velocity = projectile.velocity.SafeNormalize(Vector2.UnitY);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
+            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine);
             projectile.tileCollide = false;
             projectile.ignoreWater = true;
             projectile.penetrate = -1;
-        }
+        }*/
         private bool Startup;
         public override bool PreAI()
         {
@@ -531,7 +542,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
             return false;
         }
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        /*public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             //if (Positions == default || Positions == null) return false;
             Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
@@ -550,7 +561,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                 }
             }
             return false;
-        }
+        }*/
         public override bool ShouldUpdatePosition() => false;
     }
 

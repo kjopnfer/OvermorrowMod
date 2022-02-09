@@ -14,7 +14,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public float maxTime = 15;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Energy");
+            DisplayName.SetDefault("Ancient Electricity");
         }
         public override void SafeSetDefaults()
         {
@@ -23,6 +23,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
+            Color1 = Color.LightYellow;
+            Color2 = Color.Gold;
         }
 
         public override void AI()
