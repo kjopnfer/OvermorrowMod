@@ -25,7 +25,7 @@ namespace OvermorrowMod.Projectiles.Ranged.Ammo
 
         public override void AI()
         {
-            projectile.velocity.Y += 0.2f;
+            projectile.velocity.Y += 0.1f;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(135f);
 
             if (projectile.velocity.Y > 6)

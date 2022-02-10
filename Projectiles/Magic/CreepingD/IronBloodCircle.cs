@@ -5,6 +5,9 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
 {
     public class IronBloodCircle : ModProjectile
     {
+        const int radius = 204;
+        const int width = 40;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Iron Blood Circle");
@@ -12,8 +15,8 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
 
         public override void SetDefaults()
         {
-            projectile.width = 408; // from 200
-            projectile.height = 408;
+            projectile.width = radius * 2; // from 200
+            projectile.height = radius * 2;
             projectile.friendly = true;
             projectile.tileCollide = false;
             projectile.penetrate = -1;
@@ -31,6 +34,12 @@ namespace OvermorrowMod.Projectiles.Magic.CreepingD
             projectile.scale = projectile.scale - 0.002f;
             projectile.rotation = projectile.rotation + 1;
             projectile.alpha = projectile.alpha + 5;
+        }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            float dist = (target.Center - projectile.Center).Length();
+            return dist <= radius && dist >= radius - width;
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)

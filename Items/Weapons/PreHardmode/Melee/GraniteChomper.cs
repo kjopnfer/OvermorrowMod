@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using OvermorrowMod.Projectiles.Melee.GraniteGrabber;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,24 +25,22 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.autoReuse = true;
             item.knockBack = 0;
-            item.shoot = mod.ProjectileType("GraniteGrabber");
+            item.shoot = ModContent.ProjectileType<GraniteGrabber>();
             item.shootSpeed = 11f;
             item.channel = true;
         }
 
         public override void HoldItem(Player player)
         {
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<GraniteGrabber>()] < 1)
             {
-                if (player.ownedProjectileCounts[mod.ProjectileType("GraniteGrabber")] < 1)
-                {
-                    item.shoot = mod.ProjectileType("GraniteGrabber");
-                    item.UseSound = SoundID.Item71;
-                }
-                else
-                {
-                    item.shoot = ProjectileID.MoonlordTurretLaser;
-                    item.UseSound = SoundID.Item120;
-                }
+                item.shoot = ModContent.ProjectileType<GraniteGrabber>();
+                item.UseSound = SoundID.Item71;
+            }
+            else
+            {
+                item.shoot = ProjectileID.MoonlordTurretLaser;
+                item.UseSound = SoundID.Item120;
             }
         }
     }

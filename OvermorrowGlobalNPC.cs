@@ -133,9 +133,26 @@ namespace OvermorrowMod
 
             if (npc.type == NPCID.Zombie || npc.type == NPCID.BigRainZombie || npc.type == NPCID.BigSlimedZombie ||npc.type == NPCID.SlimedZombie || npc.type == NPCID.SmallSkeleton || npc.type == NPCID.BigSkeleton || npc.type == NPCID.SmallHeadacheSkeleton || npc.type == NPCID.BigHeadacheSkeleton || npc.type == NPCID.SmallMisassembledSkeleton || npc.type == NPCID.BigMisassembledSkeleton || npc.type == NPCID.SmallPantlessSkeleton || npc.type == NPCID.BigPantlessSkeleton || npc.type == NPCID.GoblinArcher || npc.type == NPCID.Skeleton || npc.type == NPCID.GoblinPeon || npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.GoblinThief || npc.type == NPCID.GoblinWarrior || npc.type == NPCID.GoblinSummoner || npc.type == NPCID.ZombieEskimo || npc.type == NPCID.ZombieRaincoat)
             {
-                if (Main.rand.NextBool(01)) //Should be 1% drop chance...not sure
+                if (Main.rand.NextFloat() < .01f) //Should be 1% drop chance...not sure
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StaleBread>());
+                }
+            }
+
+            if (npc.type == NPCID.MotherSlime)
+            {
+                if (Main.rand.NextFloat() < .07f)
+                {
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Hammer>());
+                }
+            }
+             
+             
+            if (npc.type == NPCID.BoneSerpentHead)
+            {
+                if (Main.rand.NextBool(50)) //2% percent drop 
+                {
+                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SearingSaber>());
                 }
             }
 
