@@ -52,6 +52,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         private Vector2 MidPoint1;
         private Vector2 MidPoint2;
 
+        private int RandomStart;
         private int RandomDelay;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
@@ -80,7 +81,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 projectile.ai[0] = 0;
                 projectile.ai[1] = 0;
 
-                RandomDelay = Main.rand.Next(7, 12) * 5;
+                RandomStart = Main.rand.Next(8, 11) * 10;
+                RandomDelay = Main.rand.Next(6, 13) * 5;
                 RunOnce = false;
             }
 
@@ -90,16 +92,18 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 Particle.CreateParticle(Particle.ParticleType<Orb>(), projectile.Center, RandomDirection, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
             }
 
+            // Moves to the position
             if (projectile.timeLeft > 110)
             {
                 projectile.Center = ModUtils.Bezier(StartPosition, EndPosition, MidPoint2, MidPoint1, Utils.Clamp(projectile.ai[0]++, 0, 160) / 160f);
             }
 
-            if (projectile.timeLeft <= 90 && projectile.timeLeft > RandomDelay)
+            // Bounces up and down
+            if (projectile.timeLeft <= RandomStart && projectile.timeLeft > RandomDelay)
             {
-                float time = 90 - RandomDelay;
+                float time = RandomStart - RandomDelay;
 
-                if (projectile.timeLeft == 90)
+                if (projectile.timeLeft == RandomStart)
                 {
                     projectile.ai[0] = 0;
 
