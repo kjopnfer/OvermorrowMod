@@ -18,7 +18,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         }
         public override void SafeSetDefaults()
         {
-            projectile.width = 10;
+            projectile.width = 20;
             projectile.friendly = false;
             projectile.timeLeft = (int)maxTime;
             Length = 1f;
@@ -30,7 +30,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override void AI()
         {
             Length = TRay.CastLength(projectile.Center, projectile.velocity, 2000f);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
+            float sway = 80f;
+            float divider = 16f;
+            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, sway, divider);
+
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
@@ -48,6 +51,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         private Vector2 EndPosition;
         private Vector2 MidPoint1;
         private Vector2 MidPoint2;
+
+        private int RandomDelay;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
@@ -75,15 +80,39 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 projectile.ai[0] = 0;
                 projectile.ai[1] = 0;
 
+                RandomDelay = Main.rand.Next(7, 12) * 5;
                 RunOnce = false;
             }
 
-            if (projectile.timeLeft > 90)
+            if (Main.rand.NextBool(3))
             {
-                projectile.Center = ModUtils.Bezier(StartPosition, EndPosition, MidPoint2, MidPoint1, Utils.Clamp(projectile.ai[0]++, 0, 180) / 180f);
+                Vector2 RandomDirection = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 2;
+                Particle.CreateParticle(Particle.ParticleType<Orb>(), projectile.Center, RandomDirection, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
             }
 
-            if (projectile.timeLeft == 60)
+            if (projectile.timeLeft > 110)
+            {
+                projectile.Center = ModUtils.Bezier(StartPosition, EndPosition, MidPoint2, MidPoint1, Utils.Clamp(projectile.ai[0]++, 0, 160) / 160f);
+            }
+
+            if (projectile.timeLeft <= 90 && projectile.timeLeft > RandomDelay)
+            {
+                float time = 90 - RandomDelay;
+
+                if (projectile.timeLeft == 90)
+                {
+                    projectile.ai[0] = 0;
+
+                    StartPosition = projectile.Center;
+                    EndPosition = projectile.Center;
+
+                    MidPoint1 = StartPosition + new Vector2(0, -100);
+                }
+
+                projectile.Center = ModUtils.Bezier(StartPosition, EndPosition, MidPoint1, MidPoint1, Utils.Clamp(projectile.ai[0]++, 0, time) / time);
+            }
+
+            if (projectile.timeLeft == RandomDelay)
             {
                 Projectile.NewProjectile(projectile.Center, Vector2.UnitY, ModContent.ProjectileType<AncientElectricitiy>(), 20, 5f, Main.myPlayer);
 
