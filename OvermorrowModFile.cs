@@ -99,9 +99,6 @@ namespace OvermorrowMod
 
             if (!Main.dedServ)
             {
-                Main.logoTexture = Mod.GetTexture("logo");
-                Main.logo2Texture = Mod.GetTexture("logo");
-
                 // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
                 TrailShader = GetEffect("Effects/Trail");
@@ -173,8 +170,7 @@ namespace OvermorrowMod
             TestDetours.Unload();
             Trail.Unload();
 
-            Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
-            Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
+
 
             Souls = null;
             Altar = null;
@@ -187,22 +183,6 @@ namespace OvermorrowMod
             TrailShader = null;
             TextShader = null;
             Whiteout = null;
-        }
-
-        public override void PostSetupContent()
-        {
-            if (Main.gameMenu && Main.menuMode >= 0)
-            {
-                if (Main.LogoB <= 255)
-                {
-                    Main.logoTexture = Mod.GetTexture("logo");
-                }
-
-                if (Main.LogoB < 10 || (!Main.dayTime && Main.LogoA <= 255))
-                {
-                    Main.logo2Texture = Mod.GetTexture("logo");
-                }
-            }
         }
 
         public override void AddRecipes()
@@ -421,6 +401,8 @@ namespace OvermorrowMod
                     Main.music[slot].Stop(Microsoft.Xna.Framework.Audio.AudioStopOptions.Immediate);
                 }
             }
+
+            base.Close();
         }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)

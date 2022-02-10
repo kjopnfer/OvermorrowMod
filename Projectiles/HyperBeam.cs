@@ -33,20 +33,17 @@ namespace OvermorrowMod.Projectiles
         }
         public override bool ShouldUpdatePosition() => false;
         public override bool CanDamage() => projectile.scale == 1f;
-
-        private readonly int primCount = 200;
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            var vertices = new VertexPositionColorTexture[primCount * 3];
-
+            PrimitivePacket packet = new PrimitivePacket();
             float range = 1000f;
             Vector2 start = projectile.Center;
             Vector2 end = projectile.Center + projectile.velocity * range;
             float baseSize = projectile.width;
-            for (int i = 0; i < primCount; i++)
+            for (float i = 0; i < 99; i += 0.5f)
             {
-                float progress1 = (float)i / (float)primCount;
-                float progress2 = (float)(i + 1) / (float)primCount;
+                float progress1 = (float)i / (float)100;
+                float progress2 = (float)(i + 1) / (float)100;
                 Vector2 pos1 = Vector2.Lerp(start, end, progress1);
                 Vector2 pos2 = Vector2.Lerp(start, end, progress2);
                 float size1 = Size(baseSize, progress1) * projectile.scale;
@@ -59,17 +56,13 @@ namespace OvermorrowMod.Projectiles
                 packet.Add(pos1 - offset1, color1, new Vector2(progress1 + Main.GlobalTime, 0));
                 packet.Add(pos2 + offset2, color2, new Vector2(progress2 + Main.GlobalTime, 1));*/
 
-                vertices[i * 3] = PrimitiveHelper.AsVertex(pos2 + offset2, color2, new Vector2(progress2 + Main.GlobalTime, 1));
-                vertices[i * 3 + 1] = PrimitiveHelper.AsVertex(pos2 - offset2, color2, new Vector2(progress2 + Main.GlobalTime, 0));
-                vertices[i * 3 + 2] = PrimitiveHelper.AsVertex(pos1 - offset1, color1, new Vector2(progress1 + Main.GlobalTime, 0));
+                packet.Add(pos2 + offset2, color2, new Vector2(progress2 + Main.GlobalTime, 1));
+                packet.Add(pos2 - offset2, color2, new Vector2(progress2 + Main.GlobalTime, 0));
+                packet.Add(pos1 - offset1, color1, new Vector2(progress1 + Main.GlobalTime, 0));
             }
-
-            var packet = new IndexedPrimitivePacket(vertices, PrimitiveType.TriangleList, vertices.Length);
-            PrimitiveHelper.SetTexture(0, Main.projectileTexture[projectile.type]);
-            
+            PrimitivePacket.SetTexture(0, Main.projectileTexture[projectile.type]);
             packet.Pass = "Texturized";
             packet.Send();
-
             return false;
         }
         public Color ColorFunction(float progress)

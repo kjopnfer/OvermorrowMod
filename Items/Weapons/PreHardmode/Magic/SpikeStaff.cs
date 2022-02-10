@@ -16,6 +16,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
         }
         public override void SetDefaults()
         {
+
             item.width = 54;
             item.height = 54;
             item.damage = 6;
@@ -29,10 +30,9 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
             item.useAnimation = 33;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.autoReuse = true;
-            item.useTurn = false;
             item.knockBack = 0;
             item.shoot = ModContent.ProjectileType<CircleMagic>();
-            item.shootSpeed = 1f;
+            item.shootSpeed = 0f;
         }
 
         public override void AddRecipes()

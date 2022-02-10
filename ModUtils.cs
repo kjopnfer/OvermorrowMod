@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Effects.Prim;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
@@ -197,6 +196,20 @@ namespace OvermorrowMod
                 if (isLeft(a, b, c) < 0) result = false;
             }
             return result;
+        }
+
+        public static void DrawShape(Vector2[] args)
+        {
+            PrimitivePacket packet = new PrimitivePacket();
+            packet.Type = PrimitiveType.LineList;
+            for (int i = 0; i < args.Length; i++)
+            {
+                int i1 = i;
+                int i2 = (i + 1) % args.Length;
+                packet.Add(args[i1], Color.White, Vector2.Zero);
+                packet.Add(args[i2], Color.White, Vector2.Zero);
+            }
+            packet.Send();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace OvermorrowMod.Effects.Prim.Trails
             this.useOffset = useOffset;
         }
 
-        public override void Draw()
+        public override void Draw(SpriteBatch spriteBatch)
         {
             if (Vertices.Count < 6) return;
 

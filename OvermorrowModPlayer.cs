@@ -7,7 +7,6 @@ using OvermorrowMod.Projectiles.Piercing;
 using System;
 using System.IO;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -368,14 +367,6 @@ namespace OvermorrowMod
                     {
                         player.statLife = player.statLife - ManaDMG;
                         CombatText.NewText(player.getRect(), Color.Red, ManaDMG);
-
-                        if (player.statLife < 0)
-                        {
-                            player.Hurt(
-                                PlayerDeathReason.ByCustomReason($"{player.name} drank too deply from the blood mana ring."),
-                                0,
-                                0);
-                        }
                     }
 
 

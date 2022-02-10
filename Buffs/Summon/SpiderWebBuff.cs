@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Buffs.Summon
 {
-    class GraniteShieldBuff : ModBuff
+    class SpiderWebBuff : ModBuff
     {
         public override void SetDefaults()
         {
