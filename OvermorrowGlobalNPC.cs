@@ -147,9 +147,9 @@ namespace OvermorrowMod
             }
              
              
-            if (npc.type == NPCID.BoneSerphantHead)
+            if (npc.type == NPCID.BoneSerpentHead)
             {
-                if (Main.rand.NextFloat() < .02f) //2% percent drop 
+                if (Main.rand.NextBool(50)) //2% percent drop 
                 {
                      Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SearingSaber>());
                 }
