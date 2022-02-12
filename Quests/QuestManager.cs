@@ -19,7 +19,7 @@ namespace OvermorrowMod.Quests
                     NPC npc = Main.npc[i];
                     if (npc.active && npc.type == NPCID.Guide && npc.GetGlobalNPC<QuestNPC>().CurrentQuest == null)
                     {
-                        Main.NewText("new guide quest");
+                        //Main.NewText("new guide quest");
                         /*foreach (Quest quest in OvermorrowModFile.QuestList)
                         {
                             if (quest.QuestGiver() == npc.type && !OvermorrowModFile.CompletedQuests.Contains(quest))

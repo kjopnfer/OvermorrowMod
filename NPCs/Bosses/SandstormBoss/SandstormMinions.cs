@@ -89,7 +89,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     }
                 }
             }
-            else
+            else // Artifact is not orbiting the boss
             {
                 // Collision detection
                 for (int i = 0; i < Main.maxPlayers; i++)
@@ -175,6 +175,11 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.netUpdate = true;
 
             return false;
+        }
+
+        public override bool? CanBeHitByItem(Player player, Item item)
+        {
+            return ReturnIdle;
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
