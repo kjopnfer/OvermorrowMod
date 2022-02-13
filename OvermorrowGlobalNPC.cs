@@ -139,23 +139,6 @@ namespace OvermorrowMod
                 }
             }
 
-            if (npc.type == NPCID.MotherSlime)
-            {
-                if (Main.rand.NextFloat() < .07f)
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Hammer>());
-                }
-            }
-             
-             
-            if (npc.type == NPCID.BoneSerpentHead)
-            {
-                if (Main.rand.NextBool(50)) //2% percent drop 
-                {
-                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SearingSaber>());
-                }
-            }
-
             if (Homingdie)
             {
                 Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, ModContent.ProjectileType<HeroHoming>(), npc.damage * 3, 2, Main.player[npc.target].whoAmI);
