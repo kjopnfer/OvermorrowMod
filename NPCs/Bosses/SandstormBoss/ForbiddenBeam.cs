@@ -34,7 +34,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             projectile.localNPCHitCooldown = 10;
         }
 
-
         // Cross Product: Where a = line point 1; b = line point 2; c = point to check against.
         public bool isLeft(Vector2 a, Vector2 b, Vector2 c)
         {
@@ -87,7 +86,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
 
             //float scale = projectile.scale * 2 * mult;
-            PrimitivePacket packet = new PrimitivePacket();
+            BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
             Vector2 start = projectile.Center;
             Vector2 end = projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000);
@@ -96,7 +95,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             BeamColor = new Color(240, 231, 113);
-            PrimitivePacket.SetTexture(0, TrailTexture1);
+            BeamPacket.SetTexture(0, TrailTexture1);
             float off = -Main.GlobalTime % 1;
             // draw the flame part of the beam
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
@@ -109,9 +108,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             packet.Send();
 
             BeamColor = new Color(240, 231, 113);
-            PrimitivePacket packet2 = new PrimitivePacket();
+            BeamPacket packet2 = new BeamPacket();
             packet2.Pass = "Texture";
-            PrimitivePacket.SetTexture(0, TrailTexture2);
+            BeamPacket.SetTexture(0, TrailTexture2);
             packet2.Add(start + offset * 2 * mult, BeamColor, new Vector2(0 + off, 0));
             packet2.Add(start - offset * 2 * mult, BeamColor, new Vector2(0 + off, 1));
             packet2.Add(end + offset * 2 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -122,9 +121,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             packet2.Send();
 
             BeamColor = Color.White;
-            PrimitivePacket packet3 = new PrimitivePacket();
+            BeamPacket packet3 = new BeamPacket();
             packet3.Pass = "Texture";
-            PrimitivePacket.SetTexture(0, TrailTexture3);
+            BeamPacket.SetTexture(0, TrailTexture3);
             float alpha = 1f;
             packet3.Add(start + offset * mult, BeamColor * alpha, new Vector2(0 + -off, 0));
             packet3.Add(start - offset * mult, BeamColor * alpha, new Vector2(0 + -off, 1));
@@ -249,7 +248,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/PulseCircle");
             Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
 
-            PrimitivePacket packet = new PrimitivePacket();
+            BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
             Vector2 start = projectile.Center;
             Vector2 end = Target.Center;
@@ -258,7 +257,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             BeamColor = new Color(240, 231, 113);
-            PrimitivePacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail0"));
+            BeamPacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail0"));
             float off = -Main.GlobalTime % 1;
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
             packet.Add(start - offset * 3 * mult, BeamColor, new Vector2(0 + off, 1));
@@ -270,9 +269,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             packet.Send();
 
             BeamColor = new Color(240, 231, 113);
-            PrimitivePacket packet2 = new PrimitivePacket();
+            BeamPacket packet2 = new BeamPacket();
             packet2.Pass = "Texture";
-            PrimitivePacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail7"));
+            BeamPacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail7"));
             packet2.Add(start + offset * 2 * mult, BeamColor, new Vector2(0 + off, 0));
             packet2.Add(start - offset * 2 * mult, BeamColor, new Vector2(0 + off, 1));
             packet2.Add(end + offset * 2 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -283,9 +282,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             packet2.Send();
 
             BeamColor = Color.White;
-            PrimitivePacket packet3 = new PrimitivePacket();
+            BeamPacket packet3 = new BeamPacket();
             packet3.Pass = "Texture";
-            PrimitivePacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail1"));
+            BeamPacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail1"));
             float alpha = 1f;
             packet3.Add(start + offset * mult, BeamColor * alpha, new Vector2(0 + -off, 0));
             packet3.Add(start - offset * mult, BeamColor * alpha, new Vector2(0 + -off, 1));
@@ -373,7 +372,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/PulseCircle");
             Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
 
-            PrimitivePacket packet = new PrimitivePacket();
+            BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
             Vector2 start = projectile.Center;
             Vector2 end = projectile.Center + projectile.velocity * projectile.height;
@@ -381,7 +380,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             BeamColor = new Color(240, 231, 113);
-            PrimitivePacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail0v2"));
+            BeamPacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail0v2"));
             float off = -Main.GlobalTime % 1;
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
             packet.Add(start - offset * 3 * mult, BeamColor, new Vector2(0 + off, 1));
@@ -393,9 +392,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             packet.Send();
 
             BeamColor = new Color(240, 231, 113);
-            PrimitivePacket packet2 = new PrimitivePacket();
+            BeamPacket packet2 = new BeamPacket();
             packet2.Pass = "Texture";
-            PrimitivePacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail7"));
+            BeamPacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail7"));
             packet2.Add(start + offset * 2 * mult, BeamColor, new Vector2(0 + off, 0));
             packet2.Add(start - offset * 2 * mult, BeamColor, new Vector2(0 + off, 1));
             packet2.Add(end + offset * 2 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -406,9 +405,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             packet2.Send();
 
             BeamColor = Color.White;
-            PrimitivePacket packet3 = new PrimitivePacket();
+            BeamPacket packet3 = new BeamPacket();
             packet3.Pass = "Texture";
-            PrimitivePacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail1"));
+            BeamPacket.SetTexture(0, ModContent.GetTexture("OvermorrowMod/Effects/TrailTextures/Trail1"));
             float alpha = 1f;
             packet3.Add(start + offset * mult, BeamColor * alpha, new Vector2(0 + -off, 0));
             packet3.Add(start - offset * mult, BeamColor * alpha, new Vector2(0 + -off, 1));

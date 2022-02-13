@@ -6,11 +6,11 @@ using Terraria;
 
 namespace OvermorrowMod.Effects.Prim
 {
-    public class PrimitivePacket
+    public class BeamPacket
     {
         public List<VertexPositionColorTexture> Vertices = new List<VertexPositionColorTexture>();
         public PrimitiveType Type = PrimitiveType.TriangleList;
-        public Effect Effect = OvermorrowModFile.Mod.TrailShader;
+        public Effect Effect = OvermorrowModFile.Mod.BeamShader;
         public string Pass = "Basic";
         public int Count
         {

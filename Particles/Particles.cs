@@ -354,7 +354,7 @@ namespace OvermorrowMod.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            PrimitivePacket packet = new PrimitivePacket();
+            BeamPacket packet = new BeamPacket();
             packet.Type = PrimitiveType.TriangleStrip;
             packet.Pass = "Basic";
             Vector2 pos2 = (particle.rotation + MathHelper.Pi / 2).ToRotationVector2() * 5f * particle.scale;

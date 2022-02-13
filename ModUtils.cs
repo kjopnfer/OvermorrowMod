@@ -200,7 +200,7 @@ namespace OvermorrowMod
 
         public static void DrawShape(Vector2[] args)
         {
-            PrimitivePacket packet = new PrimitivePacket();
+            BeamPacket packet = new BeamPacket();
             packet.Type = PrimitiveType.LineList;
             for (int i = 0; i < args.Length; i++)
             {

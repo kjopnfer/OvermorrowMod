@@ -46,7 +46,7 @@ namespace OvermorrowMod
 
         public static OvermorrowModFile Mod { get; set; }
         public Effect Shockwave;
-        public Effect TrailShader;
+        public Effect BeamShader;
         public Effect TextShader;
         public Effect Whiteout;
 
@@ -101,7 +101,7 @@ namespace OvermorrowMod
             {
                 // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
-                TrailShader = GetEffect("Effects/Trail");
+                BeamShader = GetEffect("Effects/Trail");
                 TextShader = GetEffect("Effects/TextShader");
                 Whiteout = GetEffect("Effects/Whiteout");
 
@@ -157,7 +157,7 @@ namespace OvermorrowMod
         {
             Mod = null;
             Shockwave = null;
-            TrailShader = null;
+            BeamShader = null;
             TextShader = null;
 
             UnloadQuests();
@@ -180,7 +180,7 @@ namespace OvermorrowMod
 
             Mod = null;
             Shockwave = null;
-            TrailShader = null;
+            BeamShader = null;
             TextShader = null;
             Whiteout = null;
         }
