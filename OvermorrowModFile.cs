@@ -48,6 +48,7 @@ namespace OvermorrowMod
         public Effect Shockwave;
         public Effect BeamShader;
         public Effect TextShader;
+        public Effect TrailShader;
         public Effect Whiteout;
 
         public static List<Texture2D> TrailTextures;
@@ -101,8 +102,9 @@ namespace OvermorrowMod
             {
                 // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
-                BeamShader = GetEffect("Effects/Trail");
+                BeamShader = GetEffect("Effects/Beam");
                 TextShader = GetEffect("Effects/TextShader");
+                TrailShader = GetEffect("Effects/Trail");
                 Whiteout = GetEffect("Effects/Whiteout");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);

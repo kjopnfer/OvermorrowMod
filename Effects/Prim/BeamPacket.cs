@@ -148,7 +148,7 @@ namespace OvermorrowMod.Effects.Prim
                 rasterizerState.CullMode = CullMode.None;
                 device.RasterizerState = rasterizerState;
 
-                Effect.Parameters["WVP"].SetValue(PrimitiveHelper.GetMatrix());
+                Effect.Parameters["WVP"].SetValue(BeamHelper.GetMatrix());
                 Effect.CurrentTechnique.Passes[Pass].Apply();
 
                 device.DrawPrimitives(Type, 0, Count);

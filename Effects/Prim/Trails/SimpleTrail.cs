@@ -19,11 +19,11 @@ namespace OvermorrowMod.Effects.Prim.Trails
             this.useOffset = useOffset;
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw()
         {
             if (Vertices.Count < 6) return;
 
-            Effect.SafeSetParameter("WorldViewProjection", PrimitiveHelper.GetMatrix());
+            Effect.SafeSetParameter("WorldViewProjection", BeamHelper.GetMatrix());
             Effect.SafeSetParameter("uImage0", Texture);
             Effect.CurrentTechnique.Passes["Texturized"].Apply();
 
@@ -47,8 +47,8 @@ namespace OvermorrowMod.Effects.Prim.Trails
 
                 if (pos1 == pos2) continue;
 
-                Vector2 off1 = PrimitiveHelper.GetRotation(Positions, i) * TrailEntity.TrailSize(prog1) * prog1;
-                Vector2 off2 = PrimitiveHelper.GetRotation(Positions, i + 1) * TrailEntity.TrailSize(prog2) * prog2;
+                Vector2 off1 = BeamHelper.GetRotation(Positions, i) * TrailEntity.TrailSize(prog1) * prog1;
+                Vector2 off2 = BeamHelper.GetRotation(Positions, i + 1) * TrailEntity.TrailSize(prog2) * prog2;
                 Color col1 = TrailEntity.TrailColor(prog1);
                 Color col2 = TrailEntity.TrailColor(prog2);
 
