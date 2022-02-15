@@ -6,12 +6,10 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs
 {
-    public abstract class CollideableNPC : ModNPC
+    public abstract class PushableNPC : CollideableNPC
     {
-        public bool Grappled = false;
         public override void AI()
         {
-            Grappled = false;
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
                 Projectile projectile = Main.projectile[i];
@@ -19,10 +17,8 @@ namespace OvermorrowMod.NPCs
                 {
                     projectile.ai[0] = 2f;
                     projectile.position += npc.velocity;
-                    Grappled = true;
-                    //Main.NewText("a");
                 }
-            }  
+            }
         }
     }
 }

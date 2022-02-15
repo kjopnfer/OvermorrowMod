@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
+namespace OvermorrowMod.NPCs
 {
     public class PullableNPC : ModNPC
     {

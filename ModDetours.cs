@@ -257,33 +257,62 @@ namespace OvermorrowMod
                     Rectangle PlayerRight = new Rectangle((int)self.position.X + self.width, (int)self.position.Y, 1, self.height);
 
                     Rectangle NPCRight = new Rectangle((int)npc.position.X + npc.width, (int)npc.position.Y, 8 + (int)Math.Max(self.velocity.X, 0), npc.height);
-                    Rectangle NPCLeft = new Rectangle((int)npc.position.X, (int)npc.position.Y, 8 - (int)Math.Max(self.velocity.X, 0), npc.height);
+                    Rectangle NPCLeft = new Rectangle((int)npc.position.X, (int)npc.position.Y, 10 - (int)Math.Max(self.velocity.X, 0), npc.height);
 
                     if (PlayerLeft.Intersects(NPCRight))
                     {
                         if (self.position.X >= npc.position.X + npc.width && self.velocity.X <= 0)
                         {
+                            int offset = npc.modNPC is PushableNPC ? 7 : 2;
                             self.velocity.X = 0;
-                            self.position.X = (npc.position.X + npc.width) + 4;
+                            self.position.X = npc.position.X + npc.width + offset;
 
                             if (self == Main.LocalPlayer)
                                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
 
                             //orig(self);
                         }
+                        
+                        if (npc.modNPC is PushableNPC)
+                        {
+                            npc.position.X -= 1;
+                        } 
                     }
 
                     if (PlayerRight.Intersects(NPCLeft))
                     {
+                        if (npc.modNPC is PushableNPC)
+                        {
+                            npc.position.X += 1;
+                        }
+
                         if (self.position.X <= npc.position.X && self.velocity.X >= 0)
                         {
+                            int offset = npc.modNPC is PushableNPC ? 2 : 0;
+
                             self.velocity.X = 0;
-                            self.position.X = npc.position.X - self.width;
+                            self.position.X = npc.position.X - self.width - offset;
 
                             if (self == Main.LocalPlayer)
                                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
 
                             //orig(self);
+                        }        
+                    }
+
+                    Rectangle PlayerTop = new Rectangle((int)self.position.X, (int)self.position.Y, self.width, 1);
+                    Rectangle NPCBottom = new Rectangle((int)npc.position.X, (int)npc.position.Y + npc.height + (int)npc.velocity.Y, npc.width, 8 + (int)Math.Max(self.velocity.Y, 0));
+                    if (PlayerTop.Intersects(NPCBottom))
+                    {
+                        if (self.position.Y <= npc.position.X && self.velocity.Y <= 0)
+                        {
+                            self.gfxOffY = npc.gfxOffY;
+                            self.position.Y = npc.position.Y + npc.height + 4;
+                            self.position += npc.velocity;
+                            self.velocity.Y = 0;
+
+                            if (self == Main.LocalPlayer)
+                                NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
                         }
                     }
                 }

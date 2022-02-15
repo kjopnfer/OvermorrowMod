@@ -74,7 +74,6 @@ namespace OvermorrowMod
         private delegate bool GrappleDelegate(bool fail, Projectile proj);
         private static bool EmitGrappleDelegate(bool fail, Projectile proj)
         {
-            Main.NewText("check");
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
@@ -84,7 +83,7 @@ namespace OvermorrowMod
 
                     proj.velocity = Vector2.Zero;
                     proj.tileCollide = true;
-                    proj.position += npc.velocity;
+                    //proj.position += npc.velocity;
 
                     return false;
                 }
