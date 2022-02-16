@@ -14,7 +14,7 @@ namespace OvermorrowMod
     {
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
-            int DesertIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Pyramids"));
+            int DesertIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (DesertIndex != -1)
             {
                 tasks.Insert(DesertIndex + 1, new PassLegacy("Desert Temple", GenerateTemple));

@@ -145,7 +145,18 @@ namespace OvermorrowMod
             c.EmitDelegate<Func<int, Liquid, int>>((value, Liquid) =>
             {
                 Tile tile = Main.tile[Liquid.x, Liquid.y];
-                if (tile.wall == ModContent.WallType<GlowWall>()) value = -value;
+                if (tile.wall == ModContent.WallType<GlowWall>())
+                {
+                    Tile tile2 = Framing.GetTileSafely(Liquid.x, Liquid.y + 1);
+                    if (tile2.wall == ModContent.WallType<GlowWall>())
+                    {
+                        value = -value;
+                    }
+                    else
+                    {
+                        value = 0;
+                    }
+                }
                 return value;
             });
 
@@ -160,7 +171,18 @@ namespace OvermorrowMod
             c.EmitDelegate<Func<int, Liquid, int>>((value, Liquid) =>
             {
                 Tile tile = Main.tile[Liquid.x, Liquid.y];
-                if (tile.wall == ModContent.WallType<GlowWall>()) value = -value;
+                if (tile.wall == ModContent.WallType<GlowWall>())
+                {
+                    Tile tile2 = Framing.GetTileSafely(Liquid.x, Liquid.y + 1);
+                    if (tile2.wall == ModContent.WallType<GlowWall>())
+                    {
+                        value = -value;
+                    }
+                    else
+                    {
+                        value = 0;
+                    }
+                }
                 return value;
             });
         }
