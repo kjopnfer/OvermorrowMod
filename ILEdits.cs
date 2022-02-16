@@ -2,9 +2,11 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using OvermorrowMod.NPCs;
+using OvermorrowMod.Tiles;
 using System;
 using System.Linq;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod
@@ -16,6 +18,7 @@ namespace OvermorrowMod
             IL.Terraria.Main.UpdateAudio += TitleMusic;
             IL.Terraria.Main.UpdateAudio += TitleDisable;
             IL.Terraria.Projectile.VanillaAI += GrappleCollision;
+            IL.Terraria.Liquid.Update += UpdateWater;
         }
 
         public static void Unload()
@@ -23,6 +26,7 @@ namespace OvermorrowMod
             IL.Terraria.Main.UpdateAudio -= TitleMusic;
             IL.Terraria.Main.UpdateAudio -= TitleDisable;
             IL.Terraria.Projectile.VanillaAI -= GrappleCollision;
+            IL.Terraria.Liquid.Update -= UpdateWater;
         }
 
         private static void TitleMusic(ILContext il)
@@ -120,6 +124,45 @@ namespace OvermorrowMod
 
             ProjectileLoader.NumGrappleHooks(proj, player, ref numHooks);
             if (player.grapCount > numHooks) Main.projectile[player.grappling.OrderBy(n => (Main.projectile[n].active ? 0 : 999999) + Main.projectile[n].timeLeft).ToArray()[0]].Kill();
+        }
+
+        public static void UpdateWater(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
+                {
+                    OvermorrowModFile.Mod.Logger.Error("Failed to patch water shit");
+                    return;
+                }
+            }
+
+            c.Index++;
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<int, Liquid, int>>((value, Liquid) =>
+            {
+                Tile tile = Main.tile[Liquid.x, Liquid.y];
+                if (tile.wall == ModContent.WallType<GlowWall>()) value = -value;
+                return value;
+            });
+
+            if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
+            {
+                OvermorrowModFile.Mod.Logger.Error("Failed to patch water shit");
+                return;
+            }
+
+            c.Index++;
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<int, Liquid, int>>((value, Liquid) =>
+            {
+                Tile tile = Main.tile[Liquid.x, Liquid.y];
+                if (tile.wall == ModContent.WallType<GlowWall>()) value = -value;
+                return value;
+            });
         }
     }
 }
