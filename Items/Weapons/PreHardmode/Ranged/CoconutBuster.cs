@@ -16,7 +16,6 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Blue;
             item.damage = 13;
             item.ranged = true;
             item.width = 40;
@@ -24,9 +23,10 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.useTime = 20;
             item.useAnimation = 60;
             item.useStyle = ItemUseStyleID.HoldingOut;
+            item.rare = ItemRarityID.Blue;
             item.noMelee = true;
             item.knockBack = 0.2f;
-            item.value = 10000;
+            item.value = Item.sellPrice(0, 0, 2, 0);
             item.scale = 0.8f;
             item.UseSound = SoundID.Item17;
             item.shoot = ProjectileType<Coconut>();
