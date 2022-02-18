@@ -44,19 +44,19 @@ namespace OvermorrowMod.Items.Consumable.Boss
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    Vector2 position = projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 1000;//500;
+                    Vector2 position = projectile.Center + (Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 1000);//500;
                     Projectile.NewProjectile(position, projectile.DirectionFrom(position) * /*12*/ 16, ModContent.ProjectileType<DriplordAnimDrips>(), 0, 0f, Main.myPlayer, 0, projectile.whoAmI);
                 }
                 projectile.ai[1]++;
             }
             if (dripsdead == 33)
             {
-                Vector2 origin = new Vector2((int)projectile.Center.X, (int)projectile.Center.Y - /*50*/ projectile.height / 4);
-                float radius = 333;//250;
-                int numLocations = 200;
+                Vector2 origin = new Vector2((int)projectile.Center.X, (int)projectile.Center.Y - (projectile.height / 4));
+                const float radius = 333;//250;
+                const int numLocations = 200;
                 for (int i = 0; i < 200; i++)
                 {
-                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                    Vector2 position = origin + (Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius);
                     Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
                     int dust = Dust.NewDust(position, 2, 2, DustID.HeartCrystal, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                     Main.dust[dust].noGravity = true;

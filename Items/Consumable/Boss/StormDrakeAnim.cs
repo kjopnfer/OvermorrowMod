@@ -47,7 +47,6 @@ namespace OvermorrowMod.Items.Consumable.Boss
                             Projectile.NewProjectile(projectile.Center, (Vector2.UnitY * -1).RotatedBy(MathHelper.ToRadians(20)), ModContent.ProjectileType<TestLightning4>(), projectile.damage, 2, Main.myPlayer, 0, projectile.whoAmI);
                         }
 
-
                         if (projectile.ai[1] == 260)
                         {
                             Player player = Main.player[projectile.owner];

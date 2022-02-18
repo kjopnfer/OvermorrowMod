@@ -28,7 +28,7 @@ namespace OvermorrowMod.Projectiles.Melee
         public override Color? GetAlpha(Color lightColor)
         {
             return Color.Red; //Filler till Grass or someone else does funny sprite
-            return new Color(255, 255, 255, 0) * (1f - (float)projectile.alpha / 255f);
+            //return new Color(255, 255, 255, 0) * (1 - (float)(projectile.alpha / 255));
         }
         public override void AI()
         {
@@ -72,11 +72,11 @@ namespace OvermorrowMod.Projectiles.Melee
                     projectile.Kill();
                 }
             }
-            Vector2 vector9 = projectile.Center + projectile.velocity * 3f;
+            Vector2 vector9 = projectile.Center + (projectile.velocity * 3f);
             Lighting.AddLight(vector9, 0.8f, 0.8f, 0.8f);
             if (Main.rand.Next(3) == 0)
             {
-                int num34 = Dust.NewDust(vector9 - projectile.Size / 2f, projectile.width, projectile.height, DustID.WhiteTorch, projectile.velocity.X, projectile.velocity.Y, 100, default(Color), 2f);
+                int num34 = Dust.NewDust(vector9 - (projectile.Size / 2f), projectile.width, projectile.height, DustID.WhiteTorch, projectile.velocity.X, projectile.velocity.Y, 100, default, 2f);
                 Main.dust[num34].noGravity = true;
                 Main.dust[num34].position -= projectile.velocity;
             }

@@ -25,7 +25,7 @@ namespace OvermorrowMod.Items.Accessories.Expert
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<OvermorrowModPlayer>().StormScale = true;
-            player.statDefense += 1;
+            player.statDefense++;
         }
     }
 }

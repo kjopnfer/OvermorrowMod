@@ -145,8 +145,11 @@ namespace OvermorrowMod
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Hammer>());
                 }
             }
+<<<<<<< Updated upstream
              
              
+=======
+>>>>>>> Stashed changes
             if (npc.type == NPCID.BoneSerpentHead)
             {
                 if (Main.rand.NextBool(50)) //2% percent drop 
