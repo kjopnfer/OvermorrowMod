@@ -1,10 +1,8 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Buffs;
 using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Materials;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
@@ -13,7 +11,6 @@ using OvermorrowMod.Projectiles.Melee;
 using OvermorrowMod.WardenClass.Accessories;
 using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
-using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -43,8 +40,6 @@ namespace OvermorrowMod
             {
                 pool.Clear();
                 pool.Add(ModContent.NPCType<CaveFish>(), .10f);
-                pool.Add(ModContent.NPCType<SnapDragon>(), .15f);
-                pool.Add(ModContent.NPCType<SalamanderHunter>(), .25f);
             }
         }
 
@@ -89,12 +84,6 @@ namespace OvermorrowMod
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SerpentTooth>());
                     }
                     break;
-                case NPCID.EaterofSouls:
-                    if (Main.rand.NextBool(75))
-                    {
-                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EatersBlade>());
-                    }
-                    break;
                 case NPCID.Harpy:
                     if (Main.rand.NextBool(10)) // 10% drop chance
                     {
@@ -120,36 +109,7 @@ namespace OvermorrowMod
                     }
                     break;
             }
-
-
-            if (npc.type == NPCID.CaveBat || npc.type == NPCID.SmallSkeleton || npc.type == NPCID.BigSkeleton || npc.type == NPCID.SmallHeadacheSkeleton || npc.type == NPCID.BigHeadacheSkeleton || npc.type == NPCID.SmallMisassembledSkeleton || npc.type == NPCID.BigMisassembledSkeleton || npc.type == NPCID.SmallPantlessSkeleton || npc.type == NPCID.BigPantlessSkeleton || npc.type == NPCID.MotherSlime || npc.type == NPCID.Skeleton || npc.type == NPCID.GiantWormHead || npc.type == NPCID.RedSlime || npc.type == NPCID.UndeadMiner || npc.type == NPCID.Harpy || npc.type == NPCID.ManEater || npc.type == NPCID.SnowFlinx || npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.GreekSkeleton || npc.type == NPCID.GraniteGolem || npc.type == NPCID.GraniteFlyer || npc.type == NPCID.Salamander)
-            {
-                if (Main.rand.Next(200) < 4)
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MegaBuster>());
-                }
-            }
-
-            if (npc.type == NPCID.Zombie || npc.type == NPCID.BigRainZombie || npc.type == NPCID.BigSlimedZombie ||npc.type == NPCID.SlimedZombie || npc.type == NPCID.SmallSkeleton || npc.type == NPCID.BigSkeleton || npc.type == NPCID.SmallHeadacheSkeleton || npc.type == NPCID.BigHeadacheSkeleton || npc.type == NPCID.SmallMisassembledSkeleton || npc.type == NPCID.BigMisassembledSkeleton || npc.type == NPCID.SmallPantlessSkeleton || npc.type == NPCID.BigPantlessSkeleton || npc.type == NPCID.GoblinArcher || npc.type == NPCID.Skeleton || npc.type == NPCID.GoblinPeon || npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.GoblinThief || npc.type == NPCID.GoblinWarrior || npc.type == NPCID.GoblinSummoner || npc.type == NPCID.ZombieEskimo || npc.type == NPCID.ZombieRaincoat)
-            {
-                if (Main.rand.NextFloat() < .01f) //Should be 1% drop chance...not sure
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StaleBread>());
-                }
-            }
-
-            if (npc.type == NPCID.MotherSlime)
-            {
-                if (Main.rand.NextFloat() < .07f)
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Hammer>());
-                }
-            }
-<<<<<<< Updated upstream
-             
-             
-=======
->>>>>>> Stashed changes
+            
             if (npc.type == NPCID.BoneSerpentHead)
             {
                 if (Main.rand.NextBool(50)) //2% percent drop 
