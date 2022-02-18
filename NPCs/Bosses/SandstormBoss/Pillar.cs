@@ -154,6 +154,75 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         }
     }
 
+    public class PillarShot : ModProjectile
+    {
+        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Ancient Bolt");
+        }
+
+        public override void SetDefaults()
+        {
+            projectile.width = projectile.height = 16;
+            projectile.penetrate = -1;
+            projectile.friendly = false;
+            projectile.hostile = true;
+            projectile.tileCollide = false;
+            projectile.timeLeft = 290;
+            projectile.scale = 0;
+        }
+
+        public override void AI()
+        {
+            if (projectile.scale < 1f)
+            {
+                projectile.scale += 0.01f;
+            }
+
+            if (projectile.ai[0]++ == 270)
+            {
+                for (int i = 0; i < 18; i++)
+                {
+                    Vector2 Velocity = Vector2.One.RotatedBy(MathHelper.ToRadians(360 / 18 * i)) * 4;
+                    Particle.CreateParticle(Particle.ParticleType<Spark>(), projectile.Center, Velocity, Color.Yellow, 0.5f, 1.25f, 0, 1);
+                }
+            }
+
+            if (Main.rand.NextBool(3))
+            {
+                for (int _ = 0; _ < 3; _++)
+                {
+                    Vector2 RandomPosition = projectile.Center + new Vector2(Main.rand.Next(125, 200), 0).RotatedByRandom(MathHelper.TwoPi);
+                    Vector2 Direction = Vector2.Normalize(projectile.Center - RandomPosition);
+
+                    int DustSpeed = 8;
+
+                    Particle.CreateParticle(Particle.ParticleType<Orb>(), RandomPosition, Direction * DustSpeed, Color.Orange, 1, Main.rand.NextFloat(0.1f, 0.22f), 0, 25);
+                }
+            }
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            if (projectile.ai[0] <= 270)
+            {
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/PillarSpawner");
+                float mult = (0.55f + (float)Math.Sin(Main.GlobalTime) * 0.1f);
+                float scale = projectile.scale * 2 * mult;
+
+                Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Gold, 0, new Vector2(texture.Width, texture.Height) / 2, scale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
+            }
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+    }
+
     public class Pillar : CollideableNPC
     {
         public override void SetStaticDefaults()
@@ -183,7 +252,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 npc.spriteDirection = Main.rand.NextBool() ? 1 : -1;
             }
 
-            
+            if (npc.ai[0] == 60)
+            {
+                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarShot>(), 40, 0f, Main.myPlayer);
+            }
         }
 
         private bool PillarLoop = false;

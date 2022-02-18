@@ -290,12 +290,17 @@ namespace OvermorrowMod.Particles
             particle.rotation = particle.velocity.ToRotation();
             particle.alpha = (maxTime - particle.activeTime) / maxTime;
             particle.scale = MathHelper.Lerp(0, particle.scale, particle.alpha);
-            particle.velocity += Vector2.UnitY * 0.5f;
+
+            if (particle.customData[0] == 0)
+            {
+                particle.velocity += Vector2.UnitY * 0.5f;
+            }
+
             if (particle.activeTime > maxTime) particle.Kill();
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = Particle.GetTexture(particle.type);
+            Texture2D texture = /*Particle.GetTexture(particle.type)*/ModContent.GetTexture("OvermorrowMod/Particles/Orb");
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height), new Vector2(particle.scale, 0.05f), SpriteEffects.None, 0f);
         }
     }

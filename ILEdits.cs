@@ -19,6 +19,7 @@ namespace OvermorrowMod
             IL.Terraria.Main.UpdateAudio += TitleDisable;
             IL.Terraria.Projectile.VanillaAI += GrappleCollision;
             IL.Terraria.Liquid.Update += UpdateWater;
+            //IL.Terraria.Liquid.QuickWater += QuickWater;
         }
 
         public static void Unload()
@@ -27,6 +28,7 @@ namespace OvermorrowMod
             IL.Terraria.Main.UpdateAudio -= TitleDisable;
             IL.Terraria.Projectile.VanillaAI -= GrappleCollision;
             IL.Terraria.Liquid.Update -= UpdateWater;
+            //IL.Terraria.Liquid.QuickWater -= QuickWater;
         }
 
         private static void TitleMusic(ILContext il)
@@ -134,7 +136,7 @@ namespace OvermorrowMod
             {
                 if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
                 {
-                    OvermorrowModFile.Mod.Logger.Error("Failed to patch water shit");
+                    OvermorrowModFile.Mod.Logger.Error("Failed to patch update water shit");
                     return;
                 }
             }
@@ -162,7 +164,7 @@ namespace OvermorrowMod
 
             if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
             {
-                OvermorrowModFile.Mod.Logger.Error("Failed to patch water shit");
+                OvermorrowModFile.Mod.Logger.Error("Failed to patch update water shit");
                 return;
             }
 
@@ -185,6 +187,44 @@ namespace OvermorrowMod
                 }
                 return value;
             });
+        }
+
+        public static int Inverse(int value, int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            if (tile.wall == WallID.LunarBrickWall) value = -value;
+            return value;
+        }
+
+        public static void QuickWater(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            // 11 ones before the one we want
+            // 10 == b
+            for (int j = 0; j < 10; j++)
+            {
+                if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
+                {
+                    OvermorrowModFile.Mod.Logger.Error("Failed to patch quick water shit");
+                    return;
+                }
+            }
+
+            for (int j = 0; j < 9; j++)
+            {
+                if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
+                {
+                    OvermorrowModFile.Mod.Logger.Error("Failed to patch quick water shit");
+                    return;
+                }
+                c.Index++;
+                // right after inputting one
+                c.Emit(OpCodes.Ldloc_S, 13);
+                c.Emit(OpCodes.Ldloc_S, 14);
+                // takes the existing value, the x and the y
+                c.EmitDelegate<Func<int, int, int, int>>(Inverse);
+            }
+            // 9 times
         }
     }
 }
