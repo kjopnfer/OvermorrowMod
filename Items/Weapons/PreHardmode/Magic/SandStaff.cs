@@ -43,7 +43,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
                 // The target for the projectile to move towards
                 Vector2 target = Main.MouseWorld;
                 position += Vector2.Normalize(new Vector2(speedX, speedY));
-                float speed = (float)(3.0 + (double)(Main.rand.NextFloat() * 6.0));
+                float speed = (float)(3.0 + (double)Main.rand.NextFloat() * 6.0);
                 Vector2 start = Vector2.UnitY.RotatedByRandom(6.32);
                 Projectile.NewProjectile(position.X, position.Y, start.X * speed, start.Y * speed, type, damage, knockBack, player.whoAmI, target.X, target.Y);
             }

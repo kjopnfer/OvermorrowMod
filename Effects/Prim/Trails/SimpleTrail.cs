@@ -28,10 +28,8 @@ namespace OvermorrowMod.Effects.Prim.Trails
             Effect.CurrentTechnique.Passes["Texturized"].Apply();
 
             GraphicsDevice device = Main.graphics.GraphicsDevice;
-            RasterizerState rasterizerState = new RasterizerState
-            {
-                CullMode = CullMode.None
-            };
+            RasterizerState rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.None;
             device.RasterizerState = rasterizerState;
 
             device.DrawUserPrimitives(PrimitiveType.TriangleList, Vertices.ToArray(), 0, Vertices.Count / 3);

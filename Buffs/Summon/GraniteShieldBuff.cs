@@ -14,6 +14,7 @@ namespace OvermorrowMod.Buffs.Summon
             Main.buffNoTimeDisplay[Type] = true;
         }
 
+
         public override void Update(Player player, ref int buffIndex)
         {
             if (player.ownedProjectileCounts[ModContent.ProjectileType<GraniteShield>()] > 0)

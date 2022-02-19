@@ -44,14 +44,18 @@ namespace OvermorrowMod.Items.Consumable.Boss
                 player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
                 player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
                 int npc = NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y), ModContent.NPCType<SandstormBoss>(), 0, 0f, 0f, 0f, 0f, 255);
-                Projectile.NewProjectile(projectile.Center + new Vector2(950, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
-                Projectile.NewProjectile(projectile.Center + new Vector2(-950, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
+                int proj1 = Projectile.NewProjectile(projectile.Center + new Vector2(950, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
+                int proj2 = Projectile.NewProjectile(projectile.Center + new Vector2(-950, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
+                //bool random = Main.rand.NextBool();
+                //((SafetyZone)Main.projectile[proj1].modProjectile).hide = random;
+                //((SafetyZone)Main.projectile[proj2].modProjectile).hide = !random;
+                //Main.PlaySound(SoundID.Roar, player.position, 0);
                 Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
-                const float radius = 100;
-                const int numLocations = 200;
+                float radius = 100;
+                int numLocations = 200;
                 for (int i = 0; i < 200; i++)
                 {
-                    Vector2 position = origin + (Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius);
+                    Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
                     Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
                     int dust = Dust.NewDust(position, 2, 2, DustID.Sand, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                     Main.dust[dust].noGravity = true;

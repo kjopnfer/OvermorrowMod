@@ -94,6 +94,7 @@ namespace OvermorrowMod.Effects.Prim
                         }
                         return indexes;
                     }
+                    
                 case PrimitiveType.LineStrip:
                     {
                         var indexes = new short[count];
@@ -108,6 +109,7 @@ namespace OvermorrowMod.Effects.Prim
                         return indexes;
                     }
                 default: return new short[0];
+                    
             }
         }
         public void Send()
@@ -130,10 +132,8 @@ namespace OvermorrowMod.Effects.Prim
                 device.SetVertexBuffer(buffer);
                 device.Indices = index;
 
-                RasterizerState rasterizerState = new RasterizerState
-                {
-                    CullMode = CullMode.None
-                };
+                RasterizerState rasterizerState = new RasterizerState();
+                rasterizerState.CullMode = CullMode.None;
                 device.RasterizerState = rasterizerState;
 
                 Effect.Parameters["WorldViewProjection"].SetValue(PrimitiveHelper.GetMatrix());

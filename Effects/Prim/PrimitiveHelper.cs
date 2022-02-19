@@ -44,6 +44,7 @@ namespace OvermorrowMod.Effects.Prim
                     * Matrix.CreateScale(zoom.X, zoom.Y, 1f);
                 projection = Matrix.CreateOrthographic(width, height, 0, 1000);
             }
+            
             return view * projection;
         }
 
@@ -65,6 +66,7 @@ namespace OvermorrowMod.Effects.Prim
         {
             if (oldPos.Count == 1)
                 return oldPos[0];
+                
             if (index == 0) {
                 return Vector2.Normalize(oldPos[1] - oldPos[0]).RotatedBy(MathHelper.Pi / 2);
             }
