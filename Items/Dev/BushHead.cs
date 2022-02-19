@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Dev
 {
+
     [AutoloadEquip(EquipType.Head)]
     public class BushHead : ModItem
     {

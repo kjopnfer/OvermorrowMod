@@ -11,7 +11,7 @@ namespace OvermorrowMod.NPCs.Bosses
     {
         ///<param name="MaxTime"> Duration of the laser beam <param/>
         ///<param name="LaserLenght"> Lenght of the laser <param/>
-        ///<param name="rotation"> Amount the laser rotates per tick <param/>
+        ///<param name="rotation"> Amount the laser rotates per tick <param/> 
         ///<param name="laserColor"> Self explanatory <param/>
         protected Deathray(float MaxTime, float LaserLength, float rotation, Color laserColor, string texture)
         {
@@ -41,11 +41,11 @@ namespace OvermorrowMod.NPCs.Bosses
         public float LaserLength = 1000; // laser lenght
         public float timer { get { return projectile.localAI[0]; } set { projectile.localAI[0] = value; } }
         public float MaxTime = 0; // time the laser lasts
-        public void DrawLaser(SpriteBatch spriteBatch, float scale)
+        public void DrawLaser(SpriteBatch spriteBatch, Color beamColor, float scale)
         {
             spriteBatch.Draw(LaserBeginTexture, projectile.Center - Main.screenPosition, null, laserColor * projectile.Opacity, projectile.rotation, new Vector2(LaserBeginTexture.Width * scale, LaserBeginTexture.Height) / 2, new Vector2(scale, 1f), SpriteEffects.None, 0f);
             float middleLaserLength = LaserLength;
-            middleLaserLength -= (LaserBeginTexture.Height / 2) + LaserEndTexture.Height;
+            middleLaserLength -= (LaserBeginTexture.Height / 2 + LaserEndTexture.Height);
             Vector2 centerOnLaser = projectile.Center;
             centerOnLaser += projectile.velocity * LaserBeginTexture.Height / 2f;
 
@@ -92,22 +92,22 @@ namespace OvermorrowMod.NPCs.Bosses
         public override void CutTiles()
         {
             DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
-            Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + (projectile.velocity * LaserLength), projectile.Size.Length() * projectile.scale, DelegateMethods.CutTiles);
+            Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + projectile.velocity * LaserLength, projectile.Size.Length() * projectile.scale, DelegateMethods.CutTiles);
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            DrawLaser(spriteBatch, projectile.scale);
+            DrawLaser(spriteBatch, laserColor, projectile.scale);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float _ = 0f;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, projectile.Center + (projectile.velocity * LaserLength), projectile.Size.Length() * projectile.scale, ref _);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, projectile.Center + projectile.velocity * LaserLength, projectile.Size.Length() * projectile.scale, ref _);
         }
         private void CastLights()
         {
             DelegateMethods.v3_1 = laserColor.ToVector3();
-            Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + (projectile.velocity * LaserLength), projectile.width * projectile.scale, new Terraria.Utils.PerLinePoint(DelegateMethods.CastLight));
+            Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + projectile.velocity * LaserLength, projectile.width * projectile.scale, new Terraria.Utils.PerLinePoint(DelegateMethods.CastLight));
         }
         public override bool ShouldUpdatePosition() => false;
     }

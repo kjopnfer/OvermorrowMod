@@ -13,7 +13,7 @@ namespace OvermorrowMod.Effects.Prim
         NPC,
         Projectile
     }
-
+   
     public abstract class Trail
     {
         public static List<Trail> trails;
@@ -33,9 +33,7 @@ namespace OvermorrowMod.Effects.Prim
                     continue;
                 }
                 if (!trail.Dying)
-                {
-                    trail.Update();
-                }
+                trail.Update();
                 else
                 {
                     trail.UpdateDead();
@@ -121,6 +119,7 @@ namespace OvermorrowMod.Effects.Prim
             orig(self);
         }
 
+
         public static void Load()
         {
             trails = new List<Trail>();
@@ -145,7 +144,7 @@ namespace OvermorrowMod.Effects.Prim
             On.Terraria.NPC.NewNPC -= CreateNPCTrail;
             trails = null;
         }
-        protected Effect Effect { get; }
+        protected Effect Effect { get; } 
         protected List<VertexPositionColorTexture> Vertices { get; } = new List<VertexPositionColorTexture>();
         protected Texture2D Texture { get; }
         protected TrailPositionBuffer Positions { get; }

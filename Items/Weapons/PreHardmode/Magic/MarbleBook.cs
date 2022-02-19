@@ -102,7 +102,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Magic
              }*/
             for (int i = 0; i < 3; i++)
             {
-                Vector2 randPos = new Vector2(player.Center.X + (Main.rand.Next(-7, 7) * 10), player.Center.Y + (Main.rand.Next(-7, 7) * 10));
+                Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-7, 7) * 10, player.Center.Y + Main.rand.Next(-7, 7) * 10);
                 if (!Main.tile[(int)randPos.X / 16, (int)randPos.Y / 16].active())
                 {
                     Projectile.NewProjectile(randPos, new Vector2(speedX, speedY), type, damage, knockBack, player.whoAmI);

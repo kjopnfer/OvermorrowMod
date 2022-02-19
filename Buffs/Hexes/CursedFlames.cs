@@ -12,8 +12,9 @@ namespace OvermorrowMod.Buffs.Hexes
             if (Main.rand.NextBool(5))
             {
                 Vector2 position = npc.Center + new Vector2(Main.rand.Next(-npc.width / 2, npc.width / 2), Main.rand.Next(-npc.height / 2, npc.height / 2));
-                Dust.NewDustPerfect(position, 75, new Vector2(0f, -5.526316f), 0, new Color(255, 255, 255), 1f);
+                Dust dust = Terraria.Dust.NewDustPerfect(position, 75, new Vector2(0f, -5.526316f), 0, new Color(255, 255, 255), 1f);
             }
+
         }
         public override void UpdateLifeRegen(ref int damage)
         {
