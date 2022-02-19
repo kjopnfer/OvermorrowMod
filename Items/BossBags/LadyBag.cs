@@ -54,7 +54,6 @@ namespace OvermorrowMod.Items.BossBags
                 player.QuickSpawnItem(ModContent.ItemType<MarbleBook>());
             }
 
-
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
                 player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());

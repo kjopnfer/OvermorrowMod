@@ -6,8 +6,6 @@ namespace OvermorrowMod.Items.Armor.Marble
 {
     public class PlayerMoveWave : ModProjectile
     {
-
-
         private int timer = 0;
 
         public override void SetDefaults()
@@ -23,12 +21,11 @@ namespace OvermorrowMod.Items.Armor.Marble
             projectile.ignoreWater = true;
             projectile.tileCollide = false;
             projectile.extraUpdates = 1;
-
         }
         public override void AI()
         {
             timer++;
-            projectile.alpha = projectile.alpha + 2;
+            projectile.alpha += 2;
             if (timer == 1)
             {
                 projectile.alpha = 255;

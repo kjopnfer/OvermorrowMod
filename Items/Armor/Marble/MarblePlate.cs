@@ -4,7 +4,6 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Armor.Marble
 {
-
     [AutoloadEquip(EquipType.Body)]
     public class MarblePlate : ModItem
     {

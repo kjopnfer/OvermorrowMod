@@ -4,7 +4,6 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Dev
 {
-
     [AutoloadEquip(EquipType.Legs)]
     public class BushLegs : ModItem
     {

@@ -14,7 +14,6 @@ namespace OvermorrowMod.Items.Dev
         }
         public override void SetDefaults()
         {
-
             item.damage = 0;
             item.useStyle = ItemUseStyleID.SwingThrow;
             item.width = 22;

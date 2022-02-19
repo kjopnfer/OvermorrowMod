@@ -93,10 +93,6 @@ namespace OvermorrowMod.Projectiles.Ranged
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            int frameHeight = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-            int startY = frameHeight * projectile.frame;
-            Rectangle sourceRectangle = new Rectangle(0, startY, SoulTexture.Width, frameHeight);
-            Vector2 origin = sourceRectangle.Size() / 2f;
 
             Main.spriteBatch.Draw(SoulTexture,
                 projectile.Center - Main.screenPosition,
@@ -106,11 +102,11 @@ namespace OvermorrowMod.Projectiles.Ranged
         public override void Kill(int timeLeft)
         {
             Vector2 origin = projectile.Center;
-            float radius = 15;
-            int numLocations = 30;
+            const float radius = 15;
+            const int numLocations = 30;
             for (int i = 0; i < 30; i++)
             {
-                Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
+                Vector2 position = origin + (Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius);
                 Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
                 int dust = Dust.NewDust(position, 2, 2, DustID.MagnetSphere, dustvelocity.X, dustvelocity.Y, 0, default, 1.5f);
                 Main.dust[dust].noGravity = true;

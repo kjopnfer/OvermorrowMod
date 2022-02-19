@@ -28,22 +28,24 @@ namespace OvermorrowMod.Buffs.Hexes
             }
             return false;
         }
-        public static void AddHex(this NPC npc, int type, int time, bool sync = false)
+        public static void AddHex(this NPC npc, int type, int time)
         {
             ModHex modHex = ModHex.ModHexes[type];
-            Hex hex = new Hex();
-            hex.type = type;
-            hex.modHex = (ModHex)Activator.CreateInstance(modHex.GetType());
+            Hex hex = new Hex
+            {
+                type = type,
+                modHex = (ModHex)Activator.CreateInstance(modHex.GetType()),
+                npc = npc,
+                time = time
+            };
             hex.modHex.hex = hex;
-            hex.npc = npc;
-            hex.time = time;
             var modNpc = npc.GetGlobalNPC<HexNPC>();
             // TODO: add multiplayer synchronization when adding hexes
             if (!npc.HasHex(type) && modHex.OnTryAdd())
                 modNpc.Hexes.Add(hex);
         }
     }
-    public class HexLoader
+    public static class HexLoader
     {
         public static void Load(bool unload)
         {

@@ -38,7 +38,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         {
             if (player.ZoneDesert)
             {
-                Projectile.NewProjectile(player.Center + Vector2.UnitY * -5, Vector2.Zero, ModContent.ProjectileType<DharuudAnim>(), 0, 0, Main.myPlayer, 0, 0);
+                Projectile.NewProjectile(player.Center + (Vector2.UnitY * -5), Vector2.Zero, ModContent.ProjectileType<DharuudAnim>(), 0, 0, Main.myPlayer, 0, 0);
                 //player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
                 //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
                 //player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;

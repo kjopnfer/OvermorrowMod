@@ -10,7 +10,7 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Spruce Sprayer");
-            Tooltip.SetDefault("'This wasn't what I meant by wanting to spruce up things'");
+            Tooltip.SetDefault("'This wasn't what I meant by wanting to spruce things up'");
         }
         public override void SetDefaults()
         {

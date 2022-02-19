@@ -2,7 +2,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using GlowBlockBlock = OvermorrowMod.Tiles.GlowBlock;
 
-
 namespace OvermorrowMod.Items.Placeable.Tiles
 {
     public class GlowBlock : ModItem
@@ -26,5 +25,4 @@ namespace OvermorrowMod.Items.Placeable.Tiles
             item.createTile = ModContent.TileType<GlowBlockBlock>();
         }
     }
-
 }

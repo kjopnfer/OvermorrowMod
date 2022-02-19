@@ -35,7 +35,7 @@ namespace OvermorrowMod.Items.Accessories.Expert
             {
                 hotkey = key;
             }
-            string sandMode = "";
+            string sandMode;
 
             foreach (TooltipLine line in tooltips)
             {

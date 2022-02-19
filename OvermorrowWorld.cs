@@ -1,8 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.NPCs.Bosses.Goblin;
 using OvermorrowMod.Projectiles.Ranged.Ammo;
 using OvermorrowMod.Tiles;
 using OvermorrowMod.Tiles.Ambient.WaterCave;
@@ -50,7 +47,6 @@ namespace OvermorrowMod
         private bool placedBook = false;
         private bool placedGranite = false;
         private bool placedPearl = false;
-        private bool placedtele = false;
         private bool placedclaw = false;
 
         public override void Initialize()
@@ -260,173 +256,7 @@ namespace OvermorrowMod
                         }
                     }
                 }
-
-                int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
-                int itemsToPlaceInGranChestsChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 50 * 36)
-                {
-                    if (!placedGranite) // Guarantees at least one book in a Dungeon Chest
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (inventoryIndex == 1)
-                            {
-                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInGranChests[itemsToPlaceInGranChestsChoice]);
-                                itemsToPlaceInGranChestsChoice = (itemsToPlaceInGranChestsChoice + 1) % itemsToPlaceInGranChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                break;
-                            }
-                        }
-                        placedGranite = true;
-                    }
-                    else
-                    {
-                        if (Main.rand.Next(3) == 1)
-                        {
-                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                            {
-                                if (inventoryIndex == 1)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInGranChests[itemsToPlaceInGranChestsChoice]);
-                                    itemsToPlaceInGranChestsChoice = (itemsToPlaceInGranChestsChoice + 1) % itemsToPlaceInGranChests.Length;
-                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-
-
-
-                int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
-                int itemsToPlaceInGranMarbleChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 51 * 36)
-                {
-                    if (!placedtele) // Guarantees at least one book in a Dungeon Chest
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (inventoryIndex == 1)
-                            {
-                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInMarbChests[itemsToPlaceInGranMarbleChoice]);
-                                itemsToPlaceInGranMarbleChoice = (itemsToPlaceInGranMarbleChoice + 1) % itemsToPlaceInMarbChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                break;
-                            }
-                        }
-                        placedtele = true;
-                    }
-                    else
-                    {
-                        if (Main.rand.Next(2) == 1)
-                        {
-                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                            {
-                                if (inventoryIndex == 1)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInMarbChests[itemsToPlaceInGranMarbleChoice]);
-                                    itemsToPlaceInGranMarbleChoice = (itemsToPlaceInGranMarbleChoice + 1) % itemsToPlaceInMarbChests.Length;
-                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                int[] itemsToPlaceInSteamChests = { 953 };
-                int itemsToPlaceInSteampunkChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 30 * 36)
-                {
-                    if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (inventoryIndex == 1)
-                            {
-                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSteamChests[itemsToPlaceInSteampunkChoice]);
-                                itemsToPlaceInSteampunkChoice = (itemsToPlaceInSteampunkChoice + 1) % itemsToPlaceInSteamChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                break;
-                            }
-                        }
-                        placedclaw = true;
-                    }
-                    else
-                    {
-                        if (Main.rand.Next(2) == 1)
-                        {
-                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                            {
-                                if (inventoryIndex == 1)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSteamChests[itemsToPlaceInSteampunkChoice]);
-                                    itemsToPlaceInSteampunkChoice = (itemsToPlaceInSteampunkChoice + 1) % itemsToPlaceInSteamChests.Length;
-                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                int[] itemsToPlaceInSkyChests = { ModContent.ItemType<FeatherArrowAmmo>() };
-                int itemsToPlaceInSkyChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 28 * 36)
-                {
-                    if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (inventoryIndex == 1)
-                            {
-                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSkyChests[itemsToPlaceInSkyChoice]);
-                                itemsToPlaceInSkyChoice = (itemsToPlaceInSkyChoice + 1) % itemsToPlaceInSkyChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                break;
-                            }
-                        }
-                        placedclaw = true;
-                    }
-                    else
-                    {
-
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (inventoryIndex == 1)
-                            {
-                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSkyChests[itemsToPlaceInSkyChoice]);
-                                itemsToPlaceInSkyChoice = (itemsToPlaceInSkyChoice + 1) % itemsToPlaceInSkyChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                break;
-                            }
-                        }
-                        StackSkyChest1(Main.chest[chestIndex].item);
-                    }
-                }
             }
-        }
-
-        void StackSkyChest1(Item[] ChestInventory)
-        {
-            ChestInventory[1].stack = Main.rand.Next(6, 49);
-        }
-
-        // Worldgen Debugging
-        public static bool JustPressed(Keys key)
-        {
-            return Main.keyState.IsKeyDown(key) && !Main.oldKeyState.IsKeyDown(key);
-        }
-
-        public override void PostUpdate()
-        {
-            /*if (JustPressed(Keys.D1))
-            {
-                TestMethod((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
-            }*/
         }
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
@@ -444,102 +274,12 @@ namespace OvermorrowMod
                 tasks.Insert(WetJungle + 1, new PassLegacy("WaterCaveGeneration", WaterCaveFinder));
             }
 
-
-
-            int TowerS = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
-            if (TowerS != -1)
-            {
-                tasks.Insert(TowerS + 1, new PassLegacy("NONONONO", TowerStart));
-            }
-
-            int Iceeeee = tasks.FindIndex(genpass => genpass.Name.Equals("Lihzahrd Altars"));
-            if (Iceeeee != -1)
-            {
-                tasks.Insert(Iceeeee + 1, new PassLegacy("dsdwrv", IceStart));
-            }
-
             int TempleS = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (TempleS != -1)
             {
                 tasks.Insert(TempleS + 1, new PassLegacy("Mddd", TempleStart));
             }
 
-        }
-
-
-
-
-        private void IceStart(GenerationProgress progress)
-        {
-
-            int iceH = Main.rand.Next(3, 6);
-            int iceY = Main.rand.Next(7, 9);
-            int iceX = Main.rand.Next(9, 16);
-
-
-            progress.Message = "Generating Ice Temples";
-            for (int k = 0; k < (int)(Main.maxTilesX * Main.maxTilesY) * 0.008; k++)
-            {
-                int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = WorldGen.genRand.Next(0, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
-
-                Tile tile = Framing.GetTileSafely(x, y);
-                if (tile.active() && tile.type == 162)
-                {
-
-
-                    //clear + wires
-                    for (int j = 0; j < iceY + iceH; j++)
-                    {
-                        for (int i = 0; i < iceX; i++)
-                        {
-                            WorldGen.KillTile(x + i, y - j);
-                            Main.tile[x + i, y - j].wire(true);
-                        }
-                    }
-
-
-                    //Stilts
-                    for (int j = 0; j < iceX - 2; j++)
-                    {
-                        for (int i = 0; i < iceH; i++)
-                        {
-                            WorldGen.PlaceWall(x + 1 + j, y - i, 150);
-                        }
-                    }
-
-                    //bottom
-                    for (int i = 0; i < iceX; i++)
-                    {
-                        WorldGen.PlaceTile(x + i, y - iceH, 206);
-                    }
-
-
-                    //sides
-                    for (int i = 0; i < iceY; i++)
-                    {
-                        WorldGen.PlaceTile(x, y - i - iceH, 206);
-                        WorldGen.PlaceTile(x + iceX, y - i - iceH, 206);
-                    }
-
-
-                    //top
-                    for (int i = 0; i < iceX; i++)
-                    {
-                        WorldGen.PlaceTile(x + i, y - iceY - iceH, 206);
-                    }
-
-                    //trap
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceH - 1, 135, style: 4);
-                    WorldGen.PlaceTile(x + Main.rand.Next(2, iceX - 1), y - iceH - 1, 21, style: 22);
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
-                    WorldGen.PlaceTile(x + Main.rand.Next(1, iceX - 1), y - iceY - iceH + 1, ModContent.TileType<ExampleStatue>());
-
-                }
-            }
         }
 
         private void TempleStart(GenerationProgress progress)
@@ -926,165 +666,6 @@ namespace OvermorrowMod
 
 
         }
-
-        bool TowerPlaced = false;
-
-        private void TowerStart(GenerationProgress progress)
-        {
-
-            int randY = Main.rand.Next(10, 20);
-            int randX = Main.rand.Next(14, 15);
-
-            for (int k = 0; k < (int)(Main.maxTilesX * Main.maxTilesY); k++)
-            {
-                if (!TowerPlaced)
-                {
-                    int x = WorldGen.genRand.Next(380, Main.maxTilesX - 380);
-                    int y = WorldGen.genRand.Next(0, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
-
-                    // Strength controls size
-                    // Steps control interations
-                    Tile tile = Framing.GetTileSafely(x, y);
-                    if (tile.active() && tile.type == 27 || tile.active() && tile.type == 80)
-                    {
-
-                        for (int j = 0; j < randY + 22; j++)
-                        {
-                            for (int i = 0; i < 39; i++)
-                            {
-                                WorldGen.KillTile(x - 19 + i, y - randY - j);
-                            }
-                        }
-
-
-                        WorldGen.PlaceTile(x - 3, y - 3, 325);
-                        WorldGen.PlaceTile(x + 3, y - 3, 325);
-                        WorldGen.PlaceTile(x - 3, y - 2, 325);
-                        WorldGen.PlaceTile(x + 3, y - 2, 325);
-                        WorldGen.PlaceTile(x - 3, y - 1, 325);
-                        WorldGen.PlaceTile(x + 3, y - 1, 325);
-
-                        NPC.NewNPC(x * 16, (y - randY - 8) * 16, ModContent.NPCType<WarningBossG>());
-
-                        for (int j = 0; j < 5; j++)
-                        {
-                            for (int i = 0; i < randY + 6; i++)
-                            {
-                                WorldGen.PlaceWall(x + j - 2, y - i - 4, 4);
-                            }
-                        }
-
-
-                        for (int i = 0; i < randY + 1; i++)
-                        {
-                            WorldGen.PlaceTile(x + 3, y - randY + i - 4, 325);
-                            WorldGen.PlaceTile(x - 3, y - randY + i - 4, 325);
-                        }
-
-
-                        for (int i = 0; i < randX; i++)
-                        {
-                            WorldGen.PlaceTile(x + i + 3, y - randY - 4, 325);
-                            WorldGen.PlaceTile(x - i - 3, y - randY - 4, 325);
-                        }
-
-                        for (int i = 0; i < 16; i++)
-                        {
-                            WorldGen.PlaceTile(x + randX + 3, y - i - randY - 4, 325);
-                            WorldGen.PlaceTile(x - randX - 3, y - i - randY - 4, 325);
-                        }
-
-
-                        for (int i = 0; i < 6; i++)
-                        {
-                            WorldGen.PlaceTile(x - 3 + i, y - randY - 4, 19);
-                        }
-
-                        for (int i = 0; i < 6; i++)
-                        {
-                            WorldGen.PlaceTile(x - 3 + i, y - randY + 1, 19);
-                        }
-
-
-
-
-                        WorldGen.PlaceTile(x, y - randY, 21, style: 30);
-
-
-
-                        for (int i = 0; i < 7; i++)
-                        {
-                            WorldGen.PlaceTile(x + randX + 3 - i, y - randY - 20 - i, 325);
-                            WorldGen.PlaceTile(x - randX - 3 + i, y - randY - 20 - i, 325);
-
-                            WorldGen.PlaceTile(x + randX + 2 - i, y - randY - 20 - i, 325);
-                            WorldGen.PlaceTile(x - randX - 2 + i, y - randY - 20 - i, 325);
-
-                        }
-
-                        for (int i = 0; i < 10; i++)
-                        {
-                            WorldGen.PlaceTile(x - i, y - randY - 26, 19);
-                            WorldGen.PlaceTile(x + i, y - randY - 26, 19);
-                        }
-
-                        for (int j = 0; j < 15; j++)
-                        {
-                            for (int i = 0; i < 33; i++)
-                            {
-                                WorldGen.PlaceWall(x - randX - 2 + i, y - randY - 5 - j, 4);
-                            }
-                        }
-
-
-
-
-
-                        for (int i = 0; i < 33 - 2; i++)
-                        {
-                            WorldGen.PlaceWall(x - randX + i - 1, y - randY - 20, 4);
-                        }
-
-                        for (int i = 0; i < 31 - 2; i++)
-                        {
-                            WorldGen.PlaceWall(x - randX + i - 0, y - randY - 21, 4);
-                        }
-
-
-                        for (int i = 0; i < 29 - 2; i++)
-                        {
-                            WorldGen.PlaceWall(x - randX + i + 1, y - randY - 22, 4);
-                        }
-
-                        for (int i = 0; i < 27 - 2; i++)
-                        {
-                            WorldGen.PlaceWall(x - randX + i + 2, y - randY - 23, 4);
-                        }
-
-                        for (int i = 0; i < 25 - 2; i++)
-                        {
-                            WorldGen.PlaceWall(x - randX + i + 3, y - randY - 24, 4);
-                        }
-
-                        for (int i = 0; i < 23 - 2; i++)
-                        {
-                            WorldGen.PlaceWall(x - randX + i + 4, y - randY - 25, 4);
-                        }
-                        TowerPlaced = true;
-                    }
-                }
-            }
-        }
-
-
-
-
-
-
-
-
-
-
         int randSize = Main.rand.Next(140, 150);
         bool notInvalid = true;
         bool notNear = true;
@@ -1495,17 +1076,6 @@ namespace OvermorrowMod
                 int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY);
 
                 WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 4), WorldGen.genRand.Next(2, 6), ModContent.TileType<EruditeTile>());
-            }
-
-            for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.0014); k++)
-            {
-                // The inside of this for loop corresponds to one single splotch of our Ore.
-                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
-                int x = WorldGen.genRand.Next(0, Main.maxTilesX / 6);
-                int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, Main.maxTilesY); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
-
-                // Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
-                WorldGen.PlaceTile(x, y, ModContent.TileType<HerosAltar>());
             }
 
             // Fake Ores
