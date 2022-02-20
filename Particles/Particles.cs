@@ -140,7 +140,7 @@ namespace OvermorrowMod.Particles
         float maxTime = 120;
         public override void OnSpawn()
         {
-            particle.color = new Color(19, 20, 20)/*Color.Lerp(Color.Purple, Color.Violet, particle.scale)*/;
+            //particle.color = new Color(19, 20, 20);
             particle.customData[0] = Main.rand.Next(3, 6);
             if (Main.rand.NextBool(3))
             {

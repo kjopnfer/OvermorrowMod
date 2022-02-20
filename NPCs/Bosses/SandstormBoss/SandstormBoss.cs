@@ -117,6 +117,25 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             switch (AICase)
             {
+                case (int)AIStates.Intro:
+                    if (MiscCounter++ == 0)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-8, 8) * 60, 0);
+
+                            int RuinType = mod.ProjectileType("Ruin" + Main.rand.Next(1, 4));
+                            Projectile.NewProjectile(RandomPosition, Vector2.Zero, RuinType, 50, 6f, Main.myPlayer);
+                        }
+                    }
+
+                    if (MiscCounter == 120)
+                    {
+                        AICase = (int)AIStates.Selector;
+                        MiscCounter = 0;
+                    }
+
+                    break;
                 case (int)AIStates.Selector:
                     if (MiscCounter++ <= 180)
                     {
@@ -158,7 +177,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                     break;
                 case (int)AIStates.Shards:
-
                     if (++MiscCounter % 120 == 0)
                     {
                         for (int i = 0; i < Main.rand.Next(5, 8); i++)

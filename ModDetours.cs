@@ -19,17 +19,18 @@ namespace OvermorrowMod
 {
     public static class ModDetours
     {
-
         public static void Load()
         {
             On.Terraria.Main.DrawNPCChatButtons += DrawNPCChatButtons;
             On.Terraria.Player.Update_NPCCollision += UpdateNPCCollision;
+            On.Terraria.Main.DrawBlack += DrawBlack;
         }
 
         public static void Unload()
         {
             On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
             On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
+            On.Terraria.Main.DrawBlack -= DrawBlack;
         }
 
         public static bool HoverButton = false;
@@ -272,11 +273,11 @@ namespace OvermorrowMod
 
                             //orig(self);
                         }
-                        
+
                         if (npc.modNPC is PushableNPC)
                         {
                             npc.position.X -= 1;
-                        } 
+                        }
                     }
 
                     if (PlayerRight.Intersects(NPCLeft))
@@ -297,7 +298,7 @@ namespace OvermorrowMod
                                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
 
                             //orig(self);
-                        }        
+                        }
                     }
 
                     Rectangle PlayerTop = new Rectangle((int)self.position.X, (int)self.position.Y, self.width, 1);
@@ -319,6 +320,23 @@ namespace OvermorrowMod
             }
 
             orig(self);
+        }
+
+
+
+        private static void DrawBlack(On.Terraria.Main.orig_DrawBlack orig, global::Terraria.Main self, bool force)
+        {
+            /*for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile projectile = Main.projectile[i];
+                if (projectile.active && projectile.hide)
+                {
+
+                }
+            }*/
+            force = true;
+
+            orig(self, force);
         }
     }
 }

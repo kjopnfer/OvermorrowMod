@@ -52,7 +52,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
                 player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
                 player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
                 player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
-                int npc = NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y), ModContent.NPCType<SandstormBoss>(), 0, 0f, 0f, 0f, 0f, 255);
+                int npc = NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y), ModContent.NPCType<SandstormBoss>(), 0, -1f, 0f, 0f, 0f, 255);
                 
                 Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
                 float radius = 100;
