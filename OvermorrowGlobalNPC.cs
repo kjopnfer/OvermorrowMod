@@ -121,7 +121,7 @@ namespace OvermorrowMod
                     }
                     break;
                 case NPCID.Piranha:
-                    if (Main.rand.NextBool(20)
+                    if (Main.rand.NextBool(50)
                     {
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Blackfish>());
                     }
