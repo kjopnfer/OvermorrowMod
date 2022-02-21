@@ -22,8 +22,8 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.useTime = 5;
             item.useAnimation = 5;
             item.useAmmo = AmmoID.Bullet;
-            item.damage = 11;
-            item.crit = 3;
+            item.damage = 6;
+            item.crit = 8;
             item.useStyle = 5;
             item.shootSpeed = 5f;
             item.noMelee = true;
@@ -32,5 +32,12 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Ranged
             item.UseSound = SoundID.Item11;
         }
 
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+		{
+			Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(20));
+			speedX = perturbedSpeed.X;
+			speedY = perturbedSpeed.Y;
+			return true;
+		}
     }
 }
