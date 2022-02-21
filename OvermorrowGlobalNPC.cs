@@ -6,6 +6,7 @@ using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
+using OvermorriwMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Hexes;
@@ -117,6 +118,12 @@ namespace OvermorrowMod
                     if (Main.rand.NextBool(6)) // 8.33% drop chance
                     {
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<FungiPiercer>());
+                    }
+                    break;
+                case NPCID.Piranha:
+                    if (Main.rand.NextBool(20)
+                    {
+                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Blackfish>());
                     }
                     break;
             }
