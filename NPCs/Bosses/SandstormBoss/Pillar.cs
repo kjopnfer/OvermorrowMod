@@ -30,9 +30,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         public override void AI()
         {
             Length = TRay.CastLength(projectile.Center, projectile.velocity, 2000f);
-            float sway = 80f;
+            float sway = 40f;
             float divider = 16f;
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, sway, divider);
+            Positions = CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, sway, divider);
 
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);

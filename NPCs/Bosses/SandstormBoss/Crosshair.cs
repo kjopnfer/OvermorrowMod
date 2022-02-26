@@ -27,6 +27,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             projectile.timeLeft = 69420;
             projectile.penetrate = -1;
             projectile.extraUpdates = 200;
+            projectile.scale = 0.3f;
         }
 
         public override void AI()
@@ -39,18 +40,15 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/Crosshair");
-            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-            int y2 = num154 * projectile.frame;
-            Rectangle drawRectangle = new Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
-
+            //Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/Crosshair");
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Crosshair");
             projectile.rotation += 0.06f;
 
             float mult = (0.55f + (float)Math.Sin(Main.GlobalTime * 2) * 0.1f);
-            float scale = projectile.scale * 3 * mult;
+            float scale = projectile.scale * 2 * mult;
 
             Color color = projectile.velocity == Vector2.Zero ? Color.Yellow : Color.Transparent;
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, drawRectangle, color, projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, color, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, scale, SpriteEffects.None, 0f);
 
             return base.PreDraw(spriteBatch, lightColor);
         }
@@ -85,6 +83,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             projectile.alpha = 255;
             projectile.timeLeft = 5;
             projectile.penetrate = -1;
+            projectile.scale = 0.3f;
         }
 
         public override void AI()
@@ -124,18 +123,15 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/Crosshair");
-            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-            int y2 = num154 * projectile.frame;
-            Rectangle drawRectangle = new Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
-
+            //Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/Crosshair");
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Crosshair");
             projectile.rotation += 0.06f;
 
             float mult = (0.55f + (float)Math.Sin(Main.GlobalTime * 2) * 0.1f);
-            float scale = projectile.scale * 3 * mult;
+            float scale = projectile.scale * 2 * mult;
             Color color = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(projectile.localAI[0]++ / 5f));
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, drawRectangle, color, projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, color, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, scale, SpriteEffects.None, 0f);
 
             return base.PreDraw(spriteBatch, lightColor);
         }
