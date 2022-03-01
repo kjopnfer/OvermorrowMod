@@ -10,11 +10,14 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
-    public abstract class Ruin : ModProjectile
+    public abstract class Ruin : ModNPC
     {
-        private Vector2 SpawnPosition;
         protected Vector2 InitialPosition;
-        public override bool CanDamage() => projectile.ai[0] > 120;
+        protected float InitialRotation;
+
+        public bool CanFall = false;
+        private bool Collided = false;
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => npc.ai[0] > 120;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Buried Ruin");
@@ -22,35 +25,34 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            projectile.tileCollide = false;
-            projectile.hide = true;
-            projectile.hostile = true;
-            projectile.friendly = false;
-        }
-
-        public override void DrawBehind(int index, List<int> drawCacheProjsBehindNPCsAndTiles, List<int> drawCacheProjsBehindNPCs, List<int> drawCacheProjsBehindProjectiles, List<int> drawCacheProjsOverWiresUI)
-        {
-            drawCacheProjsBehindNPCsAndTiles.Add(index);
+            npc.noTileCollide = true;
+            npc.noGravity = true;
+            npc.knockBackResist = 0f;
+            npc.aiStyle = -1;
+            npc.friendly = false;
+            npc.lifeMax = 100;
+            npc.behindTiles = true;
+            npc.alpha = 255;
         }
 
         public override void AI()
         {
-            if (projectile.ai[0] == 0)
+            if (npc.ai[0] == 0)
             {
-                //SpawnPosition = projectile.Center;
+                InitialRotation = MathHelper.ToRadians(Main.rand.Next(0, 9) * 20);
 
-                Tile tile = Framing.GetTileSafely((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16);
+                Tile tile = Framing.GetTileSafely((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
 
                 while (!tile.active() || tile.collisionType != 1)
                 {
-                    projectile.position.Y += 1;
-                    tile = Framing.GetTileSafely((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16);
+                    npc.position.Y += 1;
+                    tile = Framing.GetTileSafely((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
                 }
 
-                projectile.position.Y += Main.rand.Next(4, 8) * 20;
+                npc.position.Y += Main.rand.Next(4, 8) * 20;
             }
 
-            /*if (!Collision.CanHit(projectile.Center, projectile.width, projectile.height, projectile.Center + Vector2.UnitY, 2, 2))
+            /*if (!Collision.CanHit(npc.Center, npc.width, npc.height, npc.Center + Vector2.UnitY, 2, 2))
             {
                 if (Main.rand.NextBool(3))
                 {
@@ -59,24 +61,58 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     while (!tile.active() || tile.collisionType != 1)
                     {
                         SpawnPosition.Y += 1;
-                        tile = Framing.GetTileSafely((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16);
+                        tile = Framing.GetTileSafely((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
                     }
 
                     Particle.CreateParticle(Particle.ParticleType<Smoke2>(), SpawnPosition * 16, Vector2.One.RotatedByRandom(MathHelper.TwoPi), new Color(182, 128, 70));
                 }
             }*/
 
-            if (projectile.ai[0]++ < 240)
+            if (!CanFall)
             {
-                projectile.Center -= Vector2.UnitY;
-                InitialPosition = projectile.Center;
+                if (npc.ai[0]++ < 320)
+                {
+                    npc.alpha = 0;
+
+                    npc.Center -= Vector2.UnitY * 2;
+                    InitialPosition = npc.Center;
+                }
+                else
+                {
+                    npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + Vector2.UnitY * 50, (float)Math.Sin(npc.localAI[0]++ / 120f));
+                }
+
+                npc.rotation = MathHelper.Lerp(InitialRotation, InitialRotation + MathHelper.PiOver4, (float)Math.Sin(npc.localAI[0] / 240));
             }
             else
             {
-                projectile.Center = Vector2.Lerp(InitialPosition, InitialPosition + Vector2.UnitY * 50, (float)Math.Sin(projectile.localAI[0]++ / 120f));
+                npc.noGravity = false;
+
+                npc.velocity.Y = 5;
+                if (!Collision.CanHit(npc.Center, npc.width, npc.height, npc.Center + Vector2.UnitY, 2, 2))
+                {
+                    Main.NewText("collision");
+                    npc.velocity.Y = 0;
+                }
+                else
+                {
+                    Collided = true;
+                    npc.velocity.Y = 0;
+                }
+            }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        {
+            if (CanFall)
+            {
+                float mult = (0.55f + (float)Math.Sin(Main.GlobalTime) * 0.1f);
+                float scale = npc.scale * 2 * mult;
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/circle_05");
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
             }
 
-            projectile.rotation = MathHelper.Lerp(0, MathHelper.PiOver4, (float)Math.Sin(projectile.localAI[0] / 240));
+            return base.PreDraw(spriteBatch, drawColor);
         }
     }
 
@@ -86,9 +122,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             base.SetDefaults();
 
-            projectile.width = 94;
-            projectile.height = 102;
-            projectile.timeLeft = 1200;
+            npc.width = 94;
+            npc.height = 102;
+            npc.timeLeft = 1200;
         }
     }
 
@@ -98,9 +134,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             base.SetDefaults();
 
-            projectile.width = 142;
-            projectile.height = 132;
-            projectile.timeLeft = 1200;
+            npc.width = 142;
+            npc.height = 132;
+            npc.timeLeft = 1200;
         }
     }
 
@@ -110,9 +146,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
         {
             base.SetDefaults();
 
-            projectile.width = 60;
-            projectile.height = 60;
-            projectile.timeLeft = 1200;
+            npc.width = 60;
+            npc.height = 60;
+            npc.timeLeft = 1200;
         }
     }
 }

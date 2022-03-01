@@ -118,18 +118,36 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             switch (AICase)
             {
                 case (int)AIStates.Intro:
-                    if (MiscCounter++ == 0)
+                    /*if (MiscCounter++ % 60 == 0)
                     {
                         for (int i = 0; i < 3; i++)
                         {
-                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-8, 8) * 60, 0);
+                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-9, 9) * 75, 0);
 
-                            int RuinType = mod.ProjectileType("Ruin" + Main.rand.Next(1, 4));
-                            Projectile.NewProjectile(RandomPosition, Vector2.Zero, RuinType, 50, 6f, Main.myPlayer);
+                            int RuinType = mod.NPCType("Ruin" + Main.rand.Next(1, 4));
+                            NPC.NewNPC((int)RandomPosition.X, (int)RandomPosition.Y, RuinType);
                         }
                     }
 
-                    if (MiscCounter == 120)
+                    if (MiscCounter == 1200)
+                    {
+                        AICase = (int)AIStates.Selector;
+                        MiscCounter = 0;
+                    }*/
+
+                    if (MiscCounter == 600)
+                    {
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            NPC RuinNPC = Main.npc[i];
+                            if (RuinNPC.active && RuinNPC.modNPC is Ruin)
+                            {
+                                ((Ruin)RuinNPC.modNPC).CanFall = true;
+                            }
+                        }
+                    }
+
+                    if (MiscCounter++ == 1200)
                     {
                         AICase = (int)AIStates.Selector;
                         MiscCounter = 0;

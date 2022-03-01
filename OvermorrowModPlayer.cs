@@ -95,7 +95,6 @@ namespace OvermorrowMod
         // Misc
         public int BowEnergyCount = 0;
         public Vector2 AltarCoordinates;
-        public int ScreenShake;
         public bool BossRoar;
         public int shakeTimer = 0;
         public bool FocusBoss;
@@ -624,6 +623,11 @@ namespace OvermorrowMod
             canFocus = true;
         }
 
+        // Controls the length of time the screen shakes
+        public int ScreenShake;
+
+        // Controls how violently the screen shakes
+        public int ShakeOffset = 0;
         public override void ModifyScreenPosition()
         {
             if (FocusBoss)
@@ -682,7 +686,7 @@ namespace OvermorrowMod
             {
                 if (ScreenShake > 0)
                 {
-                    Main.screenPosition += new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20));
+                    Main.screenPosition += new Vector2(Main.rand.Next(-1 - ShakeOffset, 1 + ShakeOffset), Main.rand.Next(-1, 1));
                     ScreenShake--;
                 }
             }
