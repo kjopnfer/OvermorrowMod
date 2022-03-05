@@ -135,7 +135,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         MiscCounter = 0;
                     }*/
 
-                    if (MiscCounter == 600)
+                    if (MiscCounter == 360)
                     {
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
@@ -143,6 +143,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                             if (RuinNPC.active && RuinNPC.modNPC is Ruin)
                             {
                                 ((Ruin)RuinNPC.modNPC).CanFall = true;
+                                RuinNPC.velocity.Y = Main.rand.Next(3, 6);
+                                RuinNPC.noGravity = false;
                             }
                         }
                     }
