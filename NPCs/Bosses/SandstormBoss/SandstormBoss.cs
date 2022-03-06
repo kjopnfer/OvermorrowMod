@@ -149,7 +149,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter++ == 1200)
+                    if (MiscCounter++ == 600)
                     {
                         AICase = (int)AIStates.Selector;
                         MiscCounter = 0;
@@ -405,6 +405,19 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             //    Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Rays");
             //    Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(npc.localAI[0] += 0.5f) + MathHelper.ToRadians(i * (360 / 9)), new Vector2(texture.Width / 2, texture.Height) / 2, new Vector2(3f, 1f), SpriteEffects.None, 0f);
             //}
+
+            if (AICase == (int)AIStates.Wall)
+            {
+                
+            }
+
+            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/magic_01");
+            Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
+
+            Main.spriteBatch.Draw(texture, npc.Center - new Vector2(2, 0) - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(npc.localAI[0] += 0.5f), origin, 1f, SpriteEffects.None, 0f);
+
+            texture = ModContent.GetTexture("OvermorrowMod/Textures/magic_02");
+            Main.spriteBatch.Draw(texture, npc.Center -  Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(npc.localAI[1] += 0.75f), origin, 1.5f, SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

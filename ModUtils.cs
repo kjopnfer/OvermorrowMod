@@ -36,6 +36,11 @@ namespace OvermorrowMod
             NetMessage.SendData(MessageID.WorldData, -1, -1, null, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
         }
 
+        public static Vector2 GetInventoryPosition(Vector2 position, Rectangle frame, Vector2 origin, float scale)
+        {
+            return position + (((frame.Size() / 2f) - origin) * scale * Main.inventoryScale) + new Vector2(1.5f, 1.5f);
+        }
+
         public static List<T> Shuffle<T>(this List<T> list)
         {
             int c = list.Count;

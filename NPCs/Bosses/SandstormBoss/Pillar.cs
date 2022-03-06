@@ -122,18 +122,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                 Vector2 end = projectile.Center + (Vector2.UnitY * TRay.CastLength(projectile.Center, Vector2.UnitY, 5000));
                 NPC.NewNPC((int)(end.X), (int)(end.Y), ModContent.NPCType<Pillar>());
-
-                /*Vector2 ProjectilePosition = new Vector2(projectile.Center.X / 16, projectile.Center.Y / 16);
-                Tile tile = Framing.GetTileSafely((int)ProjectilePosition.X, (int)ProjectilePosition.Y);
-
-                // Get the ground beneath the target
-                while (!tile.active() || tile.type == TileID.Trees || tile.collisionType != 1)
-                {
-                    ProjectilePosition.Y += 1;
-                    tile = Framing.GetTileSafely((int)ProjectilePosition.X, (int)ProjectilePosition.Y);
-                }
-
-                NPC.NewNPC((int)(ProjectilePosition.X * 16), (int)(ProjectilePosition.Y * 16), ModContent.NPCType<Pillar>());*/
             }
         }
 
@@ -169,7 +157,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.tileCollide = false;
-            projectile.timeLeft = 290;
+            projectile.timeLeft = 420;
             projectile.scale = 0;
         }
 
@@ -180,6 +168,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 projectile.scale += 0.01f;
             }
 
+            // When the thing launches into the air
             if (projectile.ai[0]++ == 270)
             {
                 for (int i = 0; i < 18; i++)
@@ -187,6 +176,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     Vector2 Velocity = Vector2.One.RotatedBy(MathHelper.ToRadians(360 / 18 * i)) * 4;
                     Particle.CreateParticle(Particle.ParticleType<Spark>(), projectile.Center, Velocity, Color.Yellow, 0.5f, 1.25f, 0, 1);
                 }
+
+                projectile.velocity = -Vector2.UnitY * 6;
             }
 
             if (Main.rand.NextBool(3))
@@ -216,6 +207,12 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
                 Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Gold, 0, new Vector2(texture.Width, texture.Height) / 2, scale, SpriteEffects.None, 0f);
                 Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/Fragment");
+                
+                Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.velocity.ToRotation(), new Vector2(texture.Width, texture.Height) / 2, 1f, SpriteEffects.None, 0f);
             }
 
             Main.spriteBatch.End();

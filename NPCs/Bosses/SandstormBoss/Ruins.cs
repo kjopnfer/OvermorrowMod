@@ -30,7 +30,6 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.knockBackResist = 0f;
             npc.aiStyle = -1;
             npc.friendly = false;
-            npc.lifeMax = 100;
             npc.behindTiles = true;
             npc.alpha = 255;
         }
@@ -112,7 +111,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                     Collided = true;
                 }
 
-                if (npc.ai[1] == 240)
+                if (npc.ai[1] >= 240)
                 {
                     npc.active = false;
                 }
@@ -129,7 +128,8 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
             }
 
-            // We do this because we don't want vanilla's stupid drawing shenanigans that forces the NPC to become black upon entering inside a tile
+            // I tried to do this because I didn't want vanilla's stupid drawing shenanigans that forces the NPC to become black upon entering inside a tile
+            // Unfortunately that didn't work out so this is just doing it manually I guess
             if (Collided)
             {
                 Texture2D texture = Main.npcTexture[npc.type];
@@ -166,6 +166,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.width = 94;
             npc.height = 102;
             npc.timeLeft = 1200;
+            npc.lifeMax = 200;
         }
     }
 
@@ -178,6 +179,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.width = 142;
             npc.height = 132;
             npc.timeLeft = 1200;
+            npc.lifeMax = 400;
         }
     }
 
@@ -190,6 +192,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.width = 60;
             npc.height = 60;
             npc.timeLeft = 1200;
+            npc.lifeMax = 100;
         }
     }
 }
