@@ -14,8 +14,8 @@ namespace OvermorrowMod.Projectiles.Melee
             DisplayName.SetDefault("Harvester of Iorich");
 
             // Afterimage effect
-            ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;    //The length of old position to be recorded
-            ProjectileID.Sets.TrailingMode[projectile.type] = 2;        //The recording mode, this tracks rotation
+            ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
+            ProjectileID.Sets.TrailingMode[projectile.type] = 2;     
         }
         public override void SetDefaults()
         {

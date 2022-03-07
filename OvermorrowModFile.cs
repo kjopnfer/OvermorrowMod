@@ -120,7 +120,7 @@ namespace OvermorrowMod
                 }
 
 
-                LoadQuests();
+                //LoadQuests();
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 Particle.Load();
@@ -162,7 +162,7 @@ namespace OvermorrowMod
             BeamShader = null;
             TextShader = null;
 
-            UnloadQuests();
+            //UnloadQuests();
             TrailTextures = null;
             ModDetours.Unload();
             ModUtils.Load(true);
