@@ -259,15 +259,41 @@ namespace OvermorrowMod.Particles
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Reload(BlendState.Additive);
 
             Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale / 2, SpriteEffects.None, 0f);
 
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+    }
+
+    public class Glow1 : CustomParticle
+    {
+        public override string Texture => "OvermorrowMod/Textures/Spotlight";
+        public override void Update()
+        {
+            particle.velocity.X += Main.windSpeed;
+            particle.velocity.Y -= 0.4f;
+            float progress = Utils.InverseLerp(0, particle.customData[0], particle.activeTime);
+            if (progress > 0.8f)
+                particle.alpha = (progress - 0.5f) * 2;
+            if (particle.activeTime > particle.customData[0])
+                particle.Kill();
+        }
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Texture2D texture = Particle.ParticleTextures[particle.type];
+            //Texture2D texture2 = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            spriteBatch.Reload(BlendState.Additive);
+            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, 0f, texture.Size() / 2, particle.scale / 4, SpriteEffects.None, 0f);
+            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.8f, 0f, texture.Size() / 2, particle.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.5f, 0f, texture.Size() / 2, particle.scale * 1, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.2f, 0f, texture.Size() / 2, particle.scale * 3, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.01f, 0f, texture.Size() / 2, particle.scale * 7, SpriteEffects.None, 0f);
+            //spriteBatch.Draw(texture2, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.5f, 0f, texture2.Size() / 2, particle.scale / 4, SpriteEffects.None, 0f);
+            spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
 
