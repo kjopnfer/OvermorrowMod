@@ -6,7 +6,14 @@ namespace OvermorrowMod.Effects.Prim.Trails
 {
     public class TorchTrail : SimpleTrail
     {
-        public TorchTrail() : base(22, OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail3"), true)
+        public TorchTrail() : base(32, OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail1"), true)
+        {
+        }
+    }
+
+    public class MeteorTrail : SimpleTrail
+    {
+        public MeteorTrail() : base(64, OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail1"), true)
         {
         }
     }

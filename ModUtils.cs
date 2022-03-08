@@ -41,6 +41,38 @@ namespace OvermorrowMod
             return position + (((frame.Size() / 2f) - origin) * scale * Main.inventoryScale) + new Vector2(1.5f, 1.5f);
         }
 
+        public static void StartRain()
+        {
+            startRain.Invoke(null, null);
+        }
+        public static void StopRain()
+        {
+            stopRain.Invoke(null, null);
+        }
+        public static Vector2 NearestPoint(this Vector2 vec, Rectangle rect)
+        {
+            float nearX = vec.X > rect.Right ? rect.Right : vec.X < rect.Left ? rect.Left : vec.X;
+            float nearY = vec.Y > rect.Bottom ? rect.Bottom : vec.Y < rect.Top ? rect.Top : vec.Y;
+            return new Vector2(nearX, nearY);
+        }
+        private static float Bezier(float x1, float x2, float x3, float x4, float t)
+        {
+            return (float)(
+                x1 * Math.Pow(1 - t, 3) +
+                x2 * 3 * t * Math.Pow(1 - t, 2) +
+                x3 * 3 * Math.Pow(t, 2) * (1 - t) +
+                x4 * Math.Pow(t, 3)
+                );
+        }
+
+        public static Vector2 Bezier(Vector2 from, Vector2 to, Vector2 cp1, Vector2 cp2, float amount)
+        {
+            Vector2 output = new Vector2();
+            output.X = Bezier(from.X, cp1.X, cp2.X, to.X, amount);
+            output.Y = Bezier(from.Y, cp1.Y, cp2.Y, to.Y, amount);
+            return output;
+        }
+
         public static List<T> Shuffle<T>(this List<T> list)
         {
             int c = list.Count;
@@ -69,37 +101,7 @@ namespace OvermorrowMod
             return array;
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
-
-        public static void StartRain()
-        {
-            startRain.Invoke(null, null);
-        }
-        public static void StopRain()
-        {
-            stopRain.Invoke(null, null);
-        }
-        public static Vector2 NearestPoint(this Vector2 vec, Rectangle rect)
-        {
-            float nearX = vec.X > rect.Right ? rect.Right : vec.X < rect.Left ? rect.Left : vec.X;
-            float nearY = vec.Y > rect.Bottom ? rect.Bottom : vec.Y < rect.Top ? rect.Top : vec.Y;
-            return new Vector2(nearX, nearY);
-        }
-        private static float Bezier(float x1, float x2, float x3, float x4, float t)
-        {
-            return (float)(
-                x1 * Math.Pow(1 - t, 3) +
-                x2 * 3 * t * Math.Pow(1 - t, 2) +
-                x3 * 3 * Math.Pow(t, 2) * (1 - t) +
-                x4 * Math.Pow(t, 3)
-                );
-        }
-        public static Vector2 Bezier(Vector2 from, Vector2 to, Vector2 cp1, Vector2 cp2, float amount)
-        {
-            Vector2 output = new Vector2();
-            output.X = Bezier(from.X, cp1.X, cp2.X, to.X, amount);
-            output.Y = Bezier(from.Y, cp1.Y, cp2.Y, to.Y, amount);
-            return output;
-        }
+   
         public static Vector3 ToVector3(this Vector2 vec)
         {
             return new Vector3(vec.X, vec.Y, 0);
@@ -215,6 +217,36 @@ namespace OvermorrowMod
                 packet.Add(args[i2], Color.White, Vector2.Zero);
             }
             packet.Send();
+        }
+
+        public static float GetLerpValue(float from, float to, float t, bool clamped = false)
+        {
+            if (clamped)
+            {
+                if (from < to)
+                {
+                    if (t < from)
+                    {
+                        return 0f;
+                    }
+                    if (t > to)
+                    {
+                        return 1f;
+                    }
+                }
+                else
+                {
+                    if (t < to)
+                    {
+                        return 1f;
+                    }
+                    if (t > from)
+                    {
+                        return 0f;
+                    }
+                }
+            }
+            return (t - from) / (to - from);
         }
     }
 }

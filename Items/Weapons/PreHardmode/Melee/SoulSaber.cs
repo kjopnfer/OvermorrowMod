@@ -3,7 +3,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Projectiles.Melee;
-using static Terraria.ModLoader.ModContent;
+using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
 {
@@ -11,28 +11,43 @@ namespace OvermorrowMod.Items.Weapons.PreHardmode.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Soul Saber");
-            Tooltip.SetDefault("Shoots a lost, homing soul.");
+            DisplayName.SetDefault("Soulflame Igniters");
+            Tooltip.SetDefault("Spins a double-edged spear around the player, inflicting SoulFlame\n" +
+                "Right click while spinning to charge up the weapon\n" +
+                "Shoots a ring of fire when ready, inflicting Greater SoulFlame on all enemies inside\n" +
+                "'I am the bone of my spear'");
         }
 
         public override void SetDefaults()
         {
-            item.damage = 29;
+            item.width = 32;
+            item.height = 32;
+            item.damage = 32;
             item.melee = true;
-            item.width = 40;
-            item.height = 40;
-            item.useTime = 21;
-            item.useAnimation = 21;
+            item.noMelee = true;
+            item.useTime = 12;
+            item.useAnimation = 12;
             item.useStyle = ItemUseStyleID.SwingThrow;
-            item.knockBack = 3;
-            item.value = Item.sellPrice(0, 2, 0, 0);
-            item.rare = ItemRarityID.Orange;
-            item.UseSound = SoundID.Item1;
-            item.autoReuse = false;
-            item.shoot = ModContent.ProjectileType<Skull>();
-            item.shootSpeed = 10; //Feel free to change ig
+            item.autoReuse = true;
+            item.knockBack = 0;
+            item.shoot = ModContent.ProjectileType<SoulSpin>();
+            item.shootSpeed = 11f;
+            item.channel = true;
+            item.noUseGraphic = true;
+            item.rare = ItemRarityID.Green;
 
         }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            if (player.ownedProjectileCounts[type] < 2)
+            {
+                Projectile.NewProjectile(player.Center, Vector2.Zero, type, damage, knockBack, player.whoAmI, 0f, 1);
+            }
+
+            return false;
+        }
+
         public override void AddRecipes() //prolly needs a change
         {
             ModRecipe recipe = new ModRecipe(mod);

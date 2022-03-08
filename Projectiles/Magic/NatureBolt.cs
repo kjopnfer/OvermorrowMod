@@ -1,4 +1,6 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,8 +9,26 @@ namespace OvermorrowMod.Projectiles.Magic
 {
     public class NatureBolt : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public enum SpiritPoints
+        {
+            East = 0,
+            NorthEast = 1,
+            North = 2,
+            NorthWest = 3,
+            West = 4,
+            SouthWest = 5,
+            South = 6,
+            SouthEast = 7
+        }
+        private int RotationDirection;
+        private float RotationOffset;
+        private float RandomOffset;
+        private int ReadyCount = 0;
 
+        private NPC target = null;
+
+        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override bool CanDamage() => false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Nature Bolt");
@@ -16,77 +36,130 @@ namespace OvermorrowMod.Projectiles.Magic
 
         public override void SetDefaults()
         {
-            projectile.width = 18;
-            projectile.height = 18;
+            projectile.width = 10;
+            projectile.height = 10;
             projectile.friendly = true;
             projectile.hostile = false;
-            projectile.penetrate = 2;
+            projectile.penetrate = -1;
             projectile.timeLeft = 420;
             projectile.alpha = 255;
-            projectile.tileCollide = true;
+            projectile.tileCollide = false;
             projectile.magic = true;
         }
 
         public override void AI()
         {
+            Player player = Main.player[projectile.owner];
+            if (Main.LocalPlayer != player) return;
+
+            if (target == null)
+            {
+                if (Main.myPlayer == projectile.owner) projectile.Center = Main.MouseWorld;
+            }
+            else
+            {
+                projectile.Center = target.Center;
+            }
+
             Lighting.AddLight(projectile.Center, 0f, 1f, 0f);
-            projectile.ai[0] += 4;
-            projectile.ai[1] = 15; // Defines the radius
+            projectile.localAI[0] += 4; // Rotation counter
+            int DUST_RADIUS = 15;
 
-            /*for (int num1101 = 0; num1101 < 3; num1101++)
+            if (player.HeldItem.type == ModContent.ItemType<IorichStaff>())
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 107, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1.2f);
-                Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
-                Main.dust[num1110].noGravity = true;
-                Dust dust81 = Main.dust[num1110];
-                dust81.velocity *= 0.5f;
-            }*/
+                projectile.timeLeft = 5;
+            }
 
-            for (int num1103 = 0; num1103 < 2; num1103++)
+            Dust dust = Terraria.Dust.NewDustPerfect(projectile.Center, 107, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
+            dust.noGravity = true;
+
+            if (Main.mouseRight && target == null)
             {
-                int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.TerraBlade, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
-                switch (num1103)
+                for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    case 0:
-                        Main.dust[num1106].position = (Main.dust[num1106].position + projectile.Center * 5f) / 6f;
-                        break;
-                    case 1:
-                        Main.dust[num1106].position = (Main.dust[num1106].position + (projectile.Center + projectile.velocity / 2f) * 5f) / 6f;
-                        break;
-                }
-                Dust dust81 = Main.dust[num1106];
-                dust81.velocity *= 0.1f;
-                Main.dust[num1106].noGravity = true;
-                Main.dust[num1106].fadeIn = 1f;
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                Vector2 dustPos = projectile.Center + new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[0]));
-                Dust dust = Dust.NewDustPerfect(dustPos, 107, Vector2.Zero, 0, default, 1f);
-                dust.noGravity = true;
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                Vector2 dustPos = projectile.Center - new Vector2(projectile.ai[1], 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[0]));
-                Dust dust = Dust.NewDustPerfect(dustPos, 107, Vector2.Zero, 0, default, 1f);
-                dust.noGravity = true;
-            }
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            int projectiles = 8;
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                for (int i = 0; i < projectiles; i++)
-                {
-                    Projectile.NewProjectile(projectile.Center + Terraria.Utils.RotatedBy(new Vector2(40f, 0f), MathHelper.ToRadians(i * 45)), Vector2.Zero, ModContent.ProjectileType<NatureDust>(), projectile.damage / 2, 2, Main.myPlayer);
-                    //Dust.NewDustPerfect(projectile.Center + Utils.RotatedBy(new Vector2(80f, 0f), MathHelper.ToRadians(i * 20)), 107, Vector2.Zero, 0, default, 1);
+                    NPC npc = Main.npc[i];
+                    if (npc.active && !npc.friendly && npc.getRect().Intersects(projectile.getRect()))
+                    {
+                        target = npc;
+                        return;
+                    }
                 }
             }
-            projectile.Kill();
+
+            if (target != null)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 dustPos = projectile.Center + new Vector2(DUST_RADIUS, 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.localAI[0]));
+                    Dust dust2 = Dust.NewDustPerfect(dustPos, 107, Vector2.Zero, 0, default, 1f);
+                    dust2.noGravity = true;
+                }
+
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 dustPos = projectile.Center - new Vector2(DUST_RADIUS, 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.localAI[0]));
+                    Dust dust2 = Dust.NewDustPerfect(dustPos, 107, Vector2.Zero, 0, default, 1f);
+                    dust2.noGravity = true;
+                }
+
+                if (player.channel && projectile.ai[0] < 8)
+                {
+                    if (projectile.ai[1]++ == 0)
+                    {
+                        RotationDirection = Main.rand.NextBool(2) ? 1 : -1;
+                        RotationOffset = Main.rand.Next(4) * MathHelper.PiOver2;
+
+                        projectile.netUpdate = true;
+                        RandomOffset = Main.rand.Next(0, 10) * 40; // Random number between 0 and 360 with 40 degree increments
+                    }
+
+                    SpiritPoints[] values = (SpiritPoints[])Enum.GetValues(typeof(SpiritPoints));
+                    if (projectile.ai[1] % 20 == 0)
+                    {
+                        int RADIUS = target.width + 155;
+
+                        float Rotation = RotationDirection * (int)values[(int)projectile.ai[0]++] * MathHelper.PiOver4;
+                        Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(Rotation + RotationOffset);
+
+                        int proj = Projectile.NewProjectile(target.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<NatureSpike>(), projectile.damage, 0f, projectile.owner, Rotation + RotationOffset, RADIUS);
+                        ((NatureSpike)Main.projectile[proj].modProjectile).RotationCenter = target;
+                        ((NatureSpike)Main.projectile[proj].modProjectile).RandomOffset = RandomOffset;
+                    }
+                }
+            }
+
+            if (projectile.ai[0] == 8)
+            {
+                // Check if all the projectiles are in position
+                ReadyCount = 0;
+                for (int i = 0; i < Main.maxProjectiles; i++)
+                {
+                    Projectile proj = Main.projectile[i];
+                    if (proj.active && proj.type == ModContent.ProjectileType<NatureSpike>() && proj.owner == player.whoAmI)
+                    {
+                        if (((NatureSpike)proj.modProjectile).Ready)
+                        {
+                            ReadyCount++;
+                        }
+                    }
+                }
+
+                // All projectiles are ready and can fire
+                if (ReadyCount == 8)
+                {
+                    for (int i = 0; i < Main.maxProjectiles; i++)
+                    {
+                        Projectile proj = Main.projectile[i];
+                        if (proj.active && proj.type == ModContent.ProjectileType<NatureSpike>() && proj.owner == player.whoAmI)
+                        {
+                            ((NatureSpike)proj.modProjectile).Converge = true;
+
+                        }
+                    }
+
+                    projectile.Kill();
+                }
+            }
         }
     }
 }

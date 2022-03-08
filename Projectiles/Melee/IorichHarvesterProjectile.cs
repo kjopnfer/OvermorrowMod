@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -9,6 +10,15 @@ namespace OvermorrowMod.Projectiles.Melee
 {
     public class IorichHarvesterProjectile : ModProjectile
     {
+        private float LaunchLength;
+        private Vector2 AimDirection;
+        private int RotationDirection = 1;
+        private bool HitTile = false;
+        private bool ReverseMovement;
+        private bool RunOnce = true;
+
+        private const int OFFSET = 50; // This is to try to make it move ontop the cursor and not from it
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Harvester of Iorich");
@@ -19,10 +29,8 @@ namespace OvermorrowMod.Projectiles.Melee
         }
         public override void SetDefaults()
         {
-            //projectile.CloneDefaults(ProjectileID.PaladinsHammerFriendly);
-            projectile.width = 36;
-            projectile.height = 36;
-            //projectile.aiStyle = 3;
+            projectile.width = 52;
+            projectile.height = 52;
             projectile.friendly = true;
             projectile.melee = true;
             projectile.penetrate = -1;
@@ -35,100 +43,69 @@ namespace OvermorrowMod.Projectiles.Melee
         public override void AI()
         {
             Lighting.AddLight(projectile.Center, 0f, 1f, 0f);
-            if (projectile.soundDelay == 0)
+            if (projectile.soundDelay == 0 && projectile.ai[1] > 10)
             {
-                projectile.soundDelay = 8;
+                projectile.soundDelay = 16;
                 Main.PlaySound(SoundID.Item7, projectile.position);
             }
 
-            if (projectile.ai[0] == 0f)
+            Player player = Main.player[projectile.owner];
+            player.itemAnimation = 10;
+            player.itemTime = 10;
+
+            if (RunOnce)
             {
-                if (projectile.ai[1] <= 5)
+                if (projectile.ai[1] == 1)
                 {
-                    projectile.width = 4;
-                    projectile.height = 4;
+                    ReverseMovement = true;
                 }
-                else
+
+                projectile.spriteDirection = player.direction;
+                RotationDirection = projectile.spriteDirection;
+
+                projectile.ai[1] = 0;
+                LaunchLength = Vector2.Distance(Main.MouseWorld, player.Center);
+                AimDirection = Vector2.Normalize(Main.MouseWorld - player.Center);
+
+                if (LaunchLength > 500)
                 {
-                    projectile.width = 36;
-                    projectile.height = 36;
+                    LaunchLength = 500;
                 }
-                projectile.ai[1] += 1f;
-                if (projectile.ai[1] >= 30f) // Return back code
-                {
-                    projectile.ai[0] = 1f;
-                    projectile.ai[1] = 0f;
-                    projectile.netUpdate = true;
-                }
+
+                RunOnce = false;
+            }
+
+            if (!HitTile)
+            {
+                Vector2 cp1 = player.Center + new Vector2(LaunchLength + OFFSET, 300).RotatedBy(AimDirection.ToRotation());
+                Vector2 cp2 = player.Center + new Vector2(LaunchLength + OFFSET, -300).RotatedBy(AimDirection.ToRotation());
+                projectile.position = ModUtils.Bezier(player.Center, player.Center, cp1, cp2, Utils.Clamp(ReverseMovement ? projectile.ai[0]-- : projectile.ai[0]++, 0, 120) / 120f); ;
             }
             else
             {
-                // Projectile is returning
-                projectile.tileCollide = false;
-                float num149 = 16f;
-                float num150 = 1.2f;
-                num149 = 15f;
-                num150 = 3f;
+                projectile.position = Vector2.Lerp(projectile.position, player.Center, projectile.ai[0]++ / 30f);
+            }
 
+            projectile.timeLeft = 5;
 
-                Vector2 vector163 = new Vector2(projectile.position.X + (float)projectile.width * 0.5f, projectile.position.Y + (float)projectile.height * 0.5f);
-                float num152 = Main.player[projectile.owner].position.X + (float)(Main.player[projectile.owner].width / 2) - vector163.X;
-                float num154 = Main.player[projectile.owner].position.Y + (float)(Main.player[projectile.owner].height / 2) - vector163.Y;
-                float num155 = (float)Math.Sqrt(num152 * num152 + num154 * num154);
+            projectile.rotation += 0.37f * RotationDirection;
 
-                // Maximum distance
-                if (num155 > 3000f)
+            if (projectile.ai[1]++ >= 60f || HitTile)
+            {
+                if (projectile.getRect().Intersects(player.getRect()))
                 {
                     projectile.Kill();
                 }
-                num155 = num149 / num155;
-                num152 *= num155;
-                num154 *= num155;
-                if (projectile.velocity.X < num152)
-                {
-                    projectile.velocity.X = projectile.velocity.X + num150;
-                    if (projectile.velocity.X < 0f && num152 > 0f)
-                    {
-                        projectile.velocity.X = projectile.velocity.X + num150;
-                    }
-                }
-                else if (projectile.velocity.X > num152)
-                {
-                    projectile.velocity.X = projectile.velocity.X - num150;
-                    if (projectile.velocity.X > 0f && num152 < 0f)
-                    {
-                        projectile.velocity.X = projectile.velocity.X - num150;
-                    }
-                }
-                if (projectile.velocity.Y < num154)
-                {
-                    projectile.velocity.Y = projectile.velocity.Y + num150;
-                    if (projectile.velocity.Y < 0f && num154 > 0f)
-                    {
-                        projectile.velocity.Y = projectile.velocity.Y + num150;
-                    }
-                }
-                else if (projectile.velocity.Y > num154)
-                {
-                    projectile.velocity.Y = projectile.velocity.Y - num150;
-                    if (projectile.velocity.Y > 0f && num154 < 0f)
-                    {
-                        projectile.velocity.Y = projectile.velocity.Y - num150;
-                    }
-                }
-
-                if (Main.myPlayer == projectile.owner)
-                {
-                    Rectangle rectangle = new Rectangle((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height);
-                    Rectangle value99 = new Rectangle((int)Main.player[projectile.owner].position.X, (int)Main.player[projectile.owner].position.Y, Main.player[projectile.owner].width, Main.player[projectile.owner].height);
-                    if (rectangle.Intersects(value99))
-                    {
-                        projectile.Kill();
-                    }
-                }
             }
+        }
 
-            projectile.rotation += 0.35f;
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            Player player = Main.player[projectile.owner];
+            if (target.type != ModContent.NPCType<IorichHarvesterCrystal>())
+            {
+                player.GetModPlayer<OvermorrowModPlayer>().ScytheHitCount++;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
@@ -157,10 +134,12 @@ namespace OvermorrowMod.Projectiles.Melee
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
-            projectile.ai[0] = 1f;
-            projectile.velocity.X = 0f - projectile.velocity.X;
-            projectile.velocity.Y = 0f - projectile.velocity.Y;
+
+            if (!HitTile) projectile.ai[0] = 0;
+
+            HitTile = true;
             projectile.netUpdate = true;
+
             Main.PlaySound(SoundID.Dig, (int)projectile.position.X, (int)projectile.position.Y);
             return false;
         }

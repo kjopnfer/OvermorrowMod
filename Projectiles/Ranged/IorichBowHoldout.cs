@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
+using OvermorrowMod.Items.Consumable.Boss.TreeRune;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -35,7 +35,7 @@ namespace OvermorrowMod.Projectiles.Ranged
             Vector2 RotationPoint = player.RotatedRelativePoint(player.MountedCenter, true);
 
             projectile.Center = RotationPoint;
-            projectile.rotation = Main.MouseWorld.X < player.Center.X ? projectile.velocity.ToRotation() + MathHelper.Pi: projectile.velocity.ToRotation();
+            projectile.rotation = Main.MouseWorld.X < player.Center.X ? projectile.velocity.ToRotation() + MathHelper.Pi : projectile.velocity.ToRotation();
             projectile.spriteDirection = Main.MouseWorld.X < player.Center.X ? -1 : 1;
 
             player.ChangeDir(projectile.direction);
@@ -46,13 +46,15 @@ namespace OvermorrowMod.Projectiles.Ranged
             if (projectile.owner == Main.myPlayer)
             {
                 Vector2 AimDirection = Vector2.Normalize(Main.MouseWorld - RotationPoint);
+                if (AimDirection.HasNaNs()) AimDirection = -Vector2.UnitY;
+
+                AimDirection = Vector2.Normalize(Vector2.Lerp(Vector2.Normalize(projectile.velocity), AimDirection, 0.75f));
+
+                if (AimDirection != projectile.velocity) projectile.netUpdate = true;
+                projectile.velocity = AimDirection;
 
                 if (player.channel && !player.noItems && !player.CCed && player.GetModPlayer<OvermorrowModPlayer>().BowEnergyCount < 6)
                 {
-                    if (AimDirection.HasNaNs()) AimDirection = -Vector2.UnitY;
-
-                    AimDirection = Vector2.Normalize(Vector2.Lerp(Vector2.Normalize(projectile.velocity), AimDirection, 0.75f));
-
                     if (projectile.ai[1]++ % 20 == 0 && EnergySpawnCounter < 6)
                     {
                         float RandomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
@@ -65,9 +67,10 @@ namespace OvermorrowMod.Projectiles.Ranged
                         EnergySpawnCounter++;
                     }
 
-                    if (AimDirection != projectile.velocity) projectile.netUpdate = true;
-                    projectile.velocity = AimDirection;
-
+                    if (EnergySpawnCounter == 6)
+                    {
+                        projectile.ai[1] = 0;
+                    }
                 }
                 else
                 {
@@ -79,17 +82,35 @@ namespace OvermorrowMod.Projectiles.Ranged
 
                     if (player.GetModPlayer<OvermorrowModPlayer>().BowEnergyCount == 6)
                     {
-                        player.statLife += 5;
-                        player.HealEffect(5);
+                        if (projectile.ai[1] == 0)
+                        {
+                            Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<TreeRune_Pulse>(), 0, 0f, Main.myPlayer);
 
-                        //Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<TreeRune_Pulse>())
-                        Projectile.NewProjectile(projectile.Center, ProjectileVelocity, ModContent.ProjectileType<StormBolt2>(), projectile.damage, projectile.knockBack, projectile.owner);
+                            player.statLife += 5;
+                            player.HealEffect(5);
+                        }
+
+                        if (projectile.ai[1] % 5 == 0)
+                        {
+                            Main.PlaySound(SoundID.DD2_PhantomPhoenixShot, projectile.Center);
+                            Projectile.NewProjectile(projectile.Center, ProjectileVelocity * 4, ModContent.ProjectileType<IorichBowArrow>(), projectile.damage, projectile.knockBack, projectile.owner);
+                        }
+                    }
+                    else
+                    {
+                        if (projectile.ai[1] == 0)
+                        {
+                            Projectile.NewProjectile(projectile.Center, ProjectileVelocity * 4, player.HeldItem.ammo, projectile.damage, projectile.knockBack, projectile.owner);
+                        }
                     }
 
-                    player.GetModPlayer<OvermorrowModPlayer>().BowEnergyCount = 0;
                     projectile.netUpdate = true;
 
-                    projectile.Kill();
+                    if (projectile.ai[1]++ > 15)
+                    {
+                        player.GetModPlayer<OvermorrowModPlayer>().BowEnergyCount = 0;
+                        projectile.Kill();
+                    }
                 }
             }
 

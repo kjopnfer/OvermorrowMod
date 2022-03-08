@@ -1,4 +1,6 @@
-﻿using Terraria.ID;
+﻿using OvermorrowMod.NPCs.Bosses.TreeBoss;
+using OvermorrowMod.Projectiles.Melee;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Items.Testing
@@ -23,9 +25,10 @@ namespace OvermorrowMod.Items.Testing
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.autoReuse = true;
             item.knockBack = 0;
-            item.shoot = mod.ProjectileType("GraniteLaser");
+            item.shoot = ModContent.ProjectileType<SoulSpin>();
             item.shootSpeed = 11f;
             item.channel = true;
+            item.noUseGraphic = false;
         }
     }
 }

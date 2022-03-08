@@ -152,7 +152,7 @@ namespace OvermorrowMod.WardenClass
 
                 if (projectile.type == ChainType["Bone"])
                 {
-                    target.AddHex(Hex.HexType<SoulFlame>(), 60 * 10);
+                    //target.AddHex(Hex.HexType<SoulFlame>(), 60 * 10);
                 }
             }
 

@@ -16,6 +16,8 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using WardenClass;
 using System;
+using OvermorrowMod.NPCs.Bosses.TreeBoss;
+using Terraria.Graphics.Effects;
 using OvermorrowMod.Quests;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
@@ -47,8 +49,9 @@ namespace OvermorrowMod
         public static OvermorrowModFile Mod { get; set; }
         public Effect Shockwave;
         public Effect BeamShader;
-        public Effect TextShader;
+        public Effect Shockwave2;
         public Effect TrailShader;
+        public Effect TextShader;
         public Effect Whiteout;
 
         public static List<Texture2D> TrailTextures;
@@ -79,6 +82,56 @@ namespace OvermorrowMod
             Mod = this;
         }  
 
+        public override void ModifyLightingBrightness(ref float scale)
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.type == ModContent.NPCType<TreeBoss>() && npc.active && Main.dayTime)
+                {
+                    float BrightnessValue = ((TreeBoss)npc.modNPC).LightValue;
+                    scale *= MathHelper.Lerp(1f, .75f, Utils.Clamp(BrightnessValue, 0f, 60f) / 60f);
+                }
+            }
+
+            base.ModifyLightingBrightness(ref scale);
+        }
+
+        public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.type == ModContent.NPCType<TreeBoss>() && npc.active && Main.dayTime)
+                {
+                    float BrightnessValue = ((TreeBoss)npc.modNPC).LightValue;
+
+                    // Higher decimal point values leads to lower brightness up to 1
+                    int r = Main.bgColor.R - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.R / 255f));
+                    int g = Main.bgColor.G - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.G / 255f));
+                    int b = Main.bgColor.B - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.B / 255f));
+
+                    Main.bgColor.R = (byte)r;
+                    Main.bgColor.G = (byte)g;
+                    Main.bgColor.B = (byte)b;
+                }
+
+                if (npc.type == ModContent.NPCType<TreeBossP2>() && npc.active && Main.dayTime)
+                {
+                    float BrightnessValue = ((TreeBossP2)npc.modNPC).LightValue;
+
+                    // Higher decimal point values leads to lower brightness up to 1
+                    int r = Main.bgColor.R - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.R / 255f));
+                    int g = Main.bgColor.G - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.G / 255f));
+                    int b = Main.bgColor.B - (int)(250f / 1.14f * BrightnessValue * (Main.bgColor.B / 255f));
+
+                    Main.bgColor.R = (byte)r;
+                    Main.bgColor.G = (byte)g;
+                    Main.bgColor.B = (byte)b;
+                }
+            }
+        }
+
         public override void UpdateMusic(ref int music, ref MusicPriority priority)
         {
             if (Main.myPlayer != -1 && !Main.gameMenu)
@@ -102,16 +155,21 @@ namespace OvermorrowMod
             {
                 // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
+                Shockwave2 = GetEffect("Effects/ShockwaveEffect");
                 BeamShader = GetEffect("Effects/Beam");
                 TextShader = GetEffect("Effects/TextShader");
                 TrailShader = GetEffect("Effects/Trail");
                 Whiteout = GetEffect("Effects/Whiteout");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
+                Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
+
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 //Ref<Effect> WhiteShader = new Ref<Effect>(GetEffect("Effects/Whiteout"));
                 //GameShaders.Misc["Whiteout"] = new MiscShaderData(WhiteShader, "Whiteout");
+
+                Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
 
                 TrailTextures = new List<Texture2D>();
                 for (int i = 0; i < 7; i++)
@@ -129,7 +187,8 @@ namespace OvermorrowMod
                 ILEdits.Load();
                 ModDetours.Load();
                 Trail.Load();
-                
+
+                Filters.Scene["Shockwave"].Load();
 
                 foreach (Type type in Code.GetTypes())
                 {
@@ -159,6 +218,7 @@ namespace OvermorrowMod
         {
             Mod = null;
             Shockwave = null;
+            TrailShader = null;
             BeamShader = null;
             TextShader = null;
 
@@ -255,43 +315,82 @@ namespace OvermorrowMod
             recipe.AddRecipe();
         }
 
+        public override void UpdateUI(GameTime gameTime)
+        {
+            _lastUpdateUiGameTime = gameTime;
+            if (MyInterface?.CurrentState != null && !Main.gameMenu)
+            {
+                MyInterface.Update(gameTime);
+            }
+
+            if (AltarUI?.CurrentState != null && !Main.gameMenu)
+            {
+                AltarUI.Update(gameTime);
+            }
+        }
+
+        public enum TitleID
+        {
+            Stoners = 1,
+            Dharuud = 2,
+            Iorich = 3,
+            IorichP2 = 4,
+            Dripplord = 5,
+            Drake = 6
+        }
+
         internal void BossTitle(int BossID)
         {
             string BossName = "";
             string BossTitle = "";
             Color titleColor = Color.White;
             Color nameColor = Color.White;
+
+            int SubtextOffset = 0;
+            int TitleOffset = 0;
             switch (BossID)
             {
-                case 1:
+                case (int)TitleID.Stoners:
+                    BossName = "Gra-knight and Lady Apollo";//"Gra-knight and Apollus";
+                    BossTitle = "The Super Stoner Buds";//"The Super Stoner Bros"; /*The Super Biome Brothers*/
+                    nameColor = new Color(230, 228, 216);
+                    titleColor = new Color(64, 80, 89);
+                    break;
+                case (int)TitleID.Dharuud:
                     BossName = "Dharuud";
                     BossTitle = "The Sandstorm";
                     nameColor = Color.LightGoldenrodYellow;
                     titleColor = Color.Yellow;
                     break;
-                case 2:
-                    BossName = "The Storm Drake";
-                    BossTitle = "Apex Predator";
-                    nameColor = Color.Cyan;
-                    titleColor = Color.DarkCyan;
+                case (int)TitleID.Iorich:
+                    BossName = "Iorich";
+                    BossTitle = "The Guardian";
+                    nameColor = Color.LightGreen;
+                    titleColor = Color.Lime;
+
+                    TitleOffset = 15;
+                    SubtextOffset = 0;
                     break;
-                case 3:
+                case (int)TitleID.IorichP2:
+                    BossName = "Iorich";
+                    BossTitle = "Scythe of the Dryads";
+                    nameColor = Color.LightGreen;
+                    titleColor = Color.Lime;
+
+                    TitleOffset = 15;
+                    SubtextOffset = 0;
+                    break;
+                case (int)TitleID.Dripplord:
                     BossName = "Dripplord";
                     BossTitle = "Bloody Assimilator";
                     nameColor = Color.Red;
                     titleColor = Color.DarkRed;
                     break;
-                case 4:
-                    BossName = "Iorich";
-                    BossTitle = "The Guardian";
-                    nameColor = Color.LimeGreen;
-                    titleColor = Color.Green;
-                    break;
-                case 5:
-                    BossName = "Gra-knight and Lady Apollo";//"Gra-knight and Apollus";
-                    BossTitle = "The Super Stoner Buds";//"The Super Stoner Bros"; /*The Super Biome Brothers*/
-                    nameColor = new Color(230, 228, 216);
-                    titleColor = new Color(64, 80, 89);
+                case (int)TitleID.Drake:
+                    BossName = "The Storm Drake";
+                    BossTitle = "Apex Predator";
+                    nameColor = Color.Cyan;
+                    titleColor = Color.DarkCyan;
                     break;
                 default:
                     BossName = "snoop dogg";
@@ -305,25 +404,9 @@ namespace OvermorrowMod
             Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
             float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
             float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
-            /*float alpha = 255;
-			float alpha2 = 255;*/
 
             DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
-        }
-
-        public override void UpdateUI(GameTime gameTime)
-        {
-            _lastUpdateUiGameTime = gameTime;
-            if (MyInterface?.CurrentState != null && !Main.gameMenu)
-            {
-                MyInterface.Update(gameTime);
-            }
-
-            if (AltarUI?.CurrentState != null && !Main.gameMenu)
-            {
-                AltarUI.Update(gameTime);
-            }
+            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft + TitleOffset, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -403,10 +486,9 @@ namespace OvermorrowMod
                     Main.music[slot].Stop(Microsoft.Xna.Framework.Audio.AudioStopOptions.Immediate);
                 }
             }
-
-            base.Close();
         }
 
+        
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             Message msg = (Message)reader.ReadByte();
@@ -520,6 +602,7 @@ namespace OvermorrowMod
                 }
             }
 
+            Particle.UpdateParticles();
             Trail.UpdateTrails();
         }
 

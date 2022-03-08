@@ -15,7 +15,7 @@ namespace OvermorrowMod.Buffs.Hexes
         public override void UpdateLifeRegen(ref int damage)
         {
             if (npc.lifeRegen > 0) npc.lifeRegen = 0;
-            npc.lifeRegen -= 16;
+            npc.lifeRegen -= 32;
         }
     }
 }

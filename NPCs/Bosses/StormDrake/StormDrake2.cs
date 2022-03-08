@@ -50,6 +50,8 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         private bool firstRunThru;
         private bool hitBoxOff;
 
+        public Color TrailColor(float progress) => Color.White;
+        public float TrailSize(float progress) => 20;
         public Type TrailType()
         {
             return typeof(LightningTrail);

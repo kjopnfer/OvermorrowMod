@@ -181,8 +181,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Reload(BlendState.Additive);
 
             //if (Positions == default || Positions == null) return false;
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Circle");
@@ -199,13 +198,13 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
                     Vector2 pos = Vector2.Lerp(seg1.Position, seg2.Position, progress);
                     float alpha = MathHelper.Lerp(seg1.Alpha, seg2.Alpha, progress);
                     float scale = MathHelper.Lerp(seg1.Size, seg2.Size, progress) / texture.Width;
-                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(/*Color.LightBlue, Color.Cyan,*/Color1, Color2, alpha) * (alpha / 2f), 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 3, SpriteEffects.None, 0f);
-                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White * alpha, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 0.5f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(Color1, Color2, alpha) * 0.5f, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 3, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 0.5f, SpriteEffects.None, 0f);
                 }
             }
 
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Reload(BlendState.AlphaBlend);
+
             return false;
         }
         public override bool ShouldUpdatePosition() => false;
