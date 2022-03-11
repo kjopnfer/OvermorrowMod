@@ -167,6 +167,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
             return true;
         }
+
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float a = 0f;
@@ -179,6 +180,7 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
             return false;
         }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             spriteBatch.Reload(BlendState.Additive);

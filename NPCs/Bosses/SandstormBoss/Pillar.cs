@@ -86,11 +86,9 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 RunOnce = false;
             }
 
-            if (Main.rand.NextBool(3))
-            {
-                Vector2 RandomDirection = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 2;
-                Particle.CreateParticle(Particle.ParticleType<Orb>(), projectile.Center, RandomDirection, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
-            }
+            Vector2 RandomDirection = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 2;
+            Particle.CreateParticle(Particle.ParticleType<Orb>(), projectile.Center, RandomDirection, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
+
 
             // Moves to the position
             if (projectile.timeLeft > 110)
@@ -211,7 +209,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             else
             {
                 Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/Fragment");
-                
+
                 Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.velocity.ToRotation(), new Vector2(texture.Width, texture.Height) / 2, 1f, SpriteEffects.None, 0f);
             }
 

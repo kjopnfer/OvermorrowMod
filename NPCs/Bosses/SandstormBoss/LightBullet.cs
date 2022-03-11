@@ -7,17 +7,10 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 {
-    public class LightBullet : ModProjectile
+    public class LightBullet : ModNPC
     {
         private bool RunOnce = true;
-
-        private Vector2 StartPosition;
-        private Vector2 EndPosition;
-        private Vector2 MidPoint1;
-        private Vector2 MidPoint2;
-
-        private int RandomStart;
-        private int RandomDelay;
+        private NPC ParentNPC;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
@@ -26,67 +19,64 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            projectile.width = projectile.height = 16;
-            projectile.penetrate = -1;
-            projectile.friendly = false;
-            projectile.timeLeft = 270;
+            npc.width = npc.height = 16;
+            npc.friendly = false;
+            npc.timeLeft = 5;
+            npc.aiStyle = -1;
+            npc.noTileCollide = true;
         }
+
+        private ref float Direction => ref npc.ai[0];
+        private ref float InitialRotation => ref npc.ai[1];
+        private ref float MiscCounter => ref npc.ai[2];
+        private ref float Angle => ref npc.ai[3];
 
         public override void AI()
         {
             if (RunOnce)
             {
-                StartPosition = projectile.Center;
-                EndPosition = new Vector2(projectile.ai[0], projectile.ai[1]);
+                ParentNPC = Main.npc[(int)npc.ai[0]];
 
-                MidPoint1 = StartPosition + new Vector2(Main.rand.Next(-100, 100), Main.rand.Next(-100, 100));
-                MidPoint2 = MidPoint1 + new Vector2(Main.rand.Next(-100, 100), Main.rand.Next(-100, 100));
+                int RotationDirection = Main.rand.NextBool() ? 1 : -1;
+                int RotationAngle = Main.rand.Next(6, 10);
 
-                projectile.ai[0] = 0;
-                projectile.ai[1] = 0;
+                npc.ai[0] = RotationDirection;
+                npc.ai[3] = RotationAngle;
 
-                RandomStart = Main.rand.Next(8, 11) * 10;
-                RandomDelay = Main.rand.Next(6, 13) * 5;
+
                 RunOnce = false;
             }
 
-            if (Main.rand.NextBool(3))
+            if (ParentNPC.active)
             {
-                Vector2 RandomDirection = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 2;
-                Particle.CreateParticle(Particle.ParticleType<Orb>(), projectile.Center, RandomDirection, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
+                npc.timeLeft = 5;
             }
 
-            // Moves to the position
-            if (projectile.timeLeft > 110)
+            if (MiscCounter++ > 240)
             {
-                projectile.Center = ModUtils.Bezier(StartPosition, EndPosition, MidPoint2, MidPoint1, Utils.Clamp(projectile.ai[0]++, 0, 160) / 160f);
-            }
+                Main.NewText("run");
 
-            // Bounces up and down
-            if (projectile.timeLeft <= RandomStart && projectile.timeLeft > RandomDelay)
-            {
-                float time = RandomStart - RandomDelay;
-
-                if (projectile.timeLeft == RandomStart)
+                for (int i = 0; i < Main.maxPlayers; i++)
                 {
-                    projectile.ai[0] = 0;
+                    Player player = Main.player[i];
+                    if (player.active && npc.Distance(player.Center) < 2000)
+                    {
+                        Vector2 Target = npc.Center - player.Center;
+                        npc.velocity = Vector2.Lerp(npc.velocity, Target.SafeNormalize(Vector2.UnitX) * -6, 0.1f);
+                        npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(Angle * Direction));
 
-                    StartPosition = projectile.Center;
-                    EndPosition = projectile.Center;
-
-                    MidPoint1 = StartPosition + new Vector2(0, -100);
+                        break;
+                    }
                 }
-
-                projectile.Center = ModUtils.Bezier(StartPosition, EndPosition, MidPoint1, MidPoint1, Utils.Clamp(projectile.ai[0]++, 0, time) / time);
             }
-
-            if (projectile.timeLeft == RandomDelay)
+            else
             {
-                Projectile.NewProjectile(projectile.Center, Vector2.UnitY, ModContent.ProjectileType<AncientElectricitiy>(), 20, 5f, Main.myPlayer);
-
-                Vector2 end = projectile.Center + (Vector2.UnitY * TRay.CastLength(projectile.Center, Vector2.UnitY, 5000));
-                NPC.NewNPC((int)(end.X), (int)(end.Y), ModContent.NPCType<Pillar>());
+                npc.Center = ParentNPC.Center + new Vector2(206, 0).RotatedBy(MathHelper.ToRadians(InitialRotation + ParentNPC.ai[1]));
             }
+
+            Vector2 RandomDirection = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 2;
+            Particle.CreateParticle(Particle.ParticleType<Orb>(), npc.Center, RandomDirection, Color.Orange, 1, Main.rand.NextFloat(0.25f, 0.4f), 0, 25);
+
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
@@ -96,10 +86,10 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/NPCs/Bosses/SandstormBoss/PillarSpawner");
             //float mult = (0.55f + (float)Math.Sin(Main.GlobalTime) * 0.1f);
-            //float scale = projectile.scale * 2 * mult;
+            //float scale = npc.scale * 2 * mult;
 
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Gold, 0, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, 0, new Vector2(texture.Width, texture.Height) / 2, 0.5f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Gold, 0, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.White, 0, new Vector2(texture.Width, texture.Height) / 2, 0.5f, SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

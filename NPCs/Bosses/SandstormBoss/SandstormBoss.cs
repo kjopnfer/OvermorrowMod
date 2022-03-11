@@ -408,16 +408,31 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             if (AICase == (int)AIStates.Wall)
             {
-                
+
             }
+
+            if (npc.localAI[0]++ == 0)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    Vector2 SpawnPosition = npc.Center + new Vector2(206, 0).RotatedBy(MathHelper.ToRadians(360 / 8 * i));
+                    NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<LightBullet>(), 0, npc.whoAmI, 360 / 8 * i);
+                }
+            }
+
+            // Main.windSpeedSet lets the wind speed gradually increase
+            // Main.windSpeed is instantaneous
+            // windSpeed affects how strong the sandstorm will push the player
 
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/star_05");
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
 
-            Main.spriteBatch.Draw(texture, npc.Center - new Vector2(2, 0) - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(npc.localAI[0] += 0.5f), origin, 1f, SpriteEffects.None, 0f);
+            if (!Main.gamePaused) GlobalCounter -= 0.5f;
+
+            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(GlobalCounter), origin, 1f, SpriteEffects.None, 0f);
 
             texture = ModContent.GetTexture("OvermorrowMod/Textures/magic_02");
-            Main.spriteBatch.Draw(texture, npc.Center -  Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(npc.localAI[0]), origin, 1.5f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(GlobalCounter), origin, 1.5f, SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
