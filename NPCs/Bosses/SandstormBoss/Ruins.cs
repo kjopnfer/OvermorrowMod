@@ -30,8 +30,14 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             npc.knockBackResist = 0f;
             npc.aiStyle = -1;
             npc.friendly = false;
-            npc.behindTiles = true;
-            npc.alpha = 255;
+            //npc.behindTiles = true;
+            npc.hide = true;
+            //npc.alpha = 255;
+        }
+
+        public override void DrawBehind(int index)
+        {
+            Main.instance.DrawCacheNPCsMoonMoon.Add(index);
         }
 
         public override void AI()
@@ -71,7 +77,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
             {
                 if (npc.ai[0]++ < 320)
                 {
-                    npc.alpha = 0;
+                    //npc.alpha = 0;
 
                     npc.Center -= Vector2.UnitY * 2;
                     InitialPosition = npc.Center;
@@ -130,7 +136,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
 
             // I tried to do this because I didn't want vanilla's stupid drawing shenanigans that forces the NPC to become black upon entering inside a tile
             // Unfortunately that didn't work out so this is just doing it manually I guess
-            if (Collided)
+            /*if (Collided)
             {
                 Texture2D texture = Main.npcTexture[npc.type];
                 Color color = Lighting.GetColor((int)InitialPosition.X / 16, (int)(InitialPosition.Y / 16f));
@@ -151,7 +157,7 @@ namespace OvermorrowMod.NPCs.Bosses.SandstormBoss
                 }
 
                 return false;
-            }
+            }*/
 
             return base.PreDraw(spriteBatch, drawColor);
         }
