@@ -6,7 +6,7 @@ using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorriwMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Hexes;
@@ -121,7 +121,7 @@ namespace OvermorrowMod
                     }
                     break;
                 case NPCID.Piranha:
-                    if (Main.rand.NextBool(50)
+                    if (Main.rand.NextBool(50))
                     {
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<Blackfish>());
                     }
