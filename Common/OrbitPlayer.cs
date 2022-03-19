@@ -1,10 +1,7 @@
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using System;
 
-namespace OvermorrowMod.WardenClass
+namespace OvermorrowMod.Common
 {
     public class OrbitPlayer : ModPlayer
     {

@@ -84,7 +84,7 @@ namespace OvermorrowMod.Particles
     }
     public class LightningSpark : CustomParticle
     {
-        public override string Texture => "OvermorrowMod/Textures/Empty";
+        public override string Texture => "OvermorrowMod/Assets/Empty";
 
         public List<Lightning2> lightnings = new List<Lightning2>();
         public override void OnSpawn()

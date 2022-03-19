@@ -1,11 +1,9 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.WardenClass
+namespace OvermorrowMod.Common
 {
     public enum OrbitingProjectileState
     {
