@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Effects.Prim;
-using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Particles;
 using OvermorrowMod.UI;
 using ReLogic.Graphics;
@@ -104,7 +104,7 @@ namespace OvermorrowMod
                 Altar = new AltarUI();
                 Altar.Activate();
 
-                Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
+                Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Content/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
                 if (Main.hardMode)
                 {
                     //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");

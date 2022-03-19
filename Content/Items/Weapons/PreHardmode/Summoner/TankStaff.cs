@@ -1,0 +1,64 @@
+﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Buffs.Summon;
+using OvermorrowMod.Projectiles.Summon;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace OvermorrowMod.Content.Items.Weapons.PreHardmode.Summoner
+{
+    public class TankStaff : ModItem
+    {
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Tank Remote");
+            Tooltip.SetDefault("Summons a tank to fight for you");
+        }
+        public override void SetDefaults()
+        {
+
+            item.width = 32;
+            item.height = 32;
+            item.damage = 25;
+            item.summon = true;
+            item.noMelee = true;
+            item.UseSound = SoundID.Item82;
+            item.useTime = 30;
+            item.useAnimation = 30;
+            item.useStyle = ItemUseStyleID.SwingThrow;
+            item.rare = ItemRarityID.Blue;
+            item.autoReuse = true;
+            item.knockBack = 0;
+            item.buffType = ModContent.BuffType<TankBuff>();
+            item.shoot = ModContent.ProjectileType<SkeleTank>();
+            item.shootSpeed = 1f;
+        }
+        public override void AddRecipes()
+        {
+            ModRecipe recipe1 = new ModRecipe(mod);
+            recipe1.AddIngredient(ItemID.Spike, 12);
+            recipe1.AddTile(TileID.Anvils);
+            recipe1.SetResult(this);
+            recipe1.AddRecipe();
+        }
+
+
+        public override void UseStyle(Player player)
+        {
+            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
+            {
+                player.AddBuff(item.buffType, 3600, true);
+            }
+        }
+
+        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        {
+            // This is needed so the buff that keeps your minion alive and allows you to despawn it properly applies
+
+
+            // Here you can change where the minion is spawned. Most vanilla minions spawn at the cursor position.
+            position = Main.MouseWorld;
+            return true;
+        }
+    }
+}

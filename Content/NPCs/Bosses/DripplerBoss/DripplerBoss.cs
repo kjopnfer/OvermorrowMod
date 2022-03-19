@@ -1,10 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Items.Accessories;
-using OvermorrowMod.Items.Armor.Masks;
-using OvermorrowMod.Items.BossBags;
-using OvermorrowMod.Items.Materials;
-using OvermorrowMod.Items.Placeable.Boss;
+using OvermorrowMod.Content.Items.Accessories;
+using OvermorrowMod.Content.Items.Armor.Masks;
+using OvermorrowMod.Content.Items.BossBags;
+using OvermorrowMod.Content.Items.Materials;
+using OvermorrowMod.Content.Items.Placeable.Boss;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;

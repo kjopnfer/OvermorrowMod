@@ -19,7 +19,6 @@ namespace OvermorrowMod.Tiles.Ambient
             soundStyle = 1;
             minPick = 65;
             AddMapEntry(new Color(102, 255, 255), name);
-            drop = ModContent.ItemType<Items.Misc.BlueCrystal>();
         }
 
         public override bool CanExplode(int i, int j)

@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Items.Materials;
+using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Projectiles.NPCs.Hostile;
 using Terraria;
 using Terraria.ID;

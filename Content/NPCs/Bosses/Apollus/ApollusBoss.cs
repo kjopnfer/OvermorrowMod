@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Armor.Marble;
-using OvermorrowMod.Items.BossBags;
-using OvermorrowMod.Items.Materials;
-using OvermorrowMod.Items.Placeable.Boss;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Content.Items.Armor.Marble;
+using OvermorrowMod.Content.Items.BossBags;
+using OvermorrowMod.Content.Items.Materials;
+using OvermorrowMod.Content.Items.Placeable.Boss;
+using OvermorrowMod.Content.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Content.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Projectiles.NPCs.Hostile;
 using System;
 using Terraria;

@@ -21,7 +21,7 @@ namespace OvermorrowMod.Tiles
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
             mineResist = 2f;
-            drop = ModContent.ItemType<OvermorrowMod.Items.Placeable.Tiles.GlowBlock>();
+            drop = ModContent.ItemType<OvermorrowMod.Content.Items.Placeable.Tiles.GlowBlock>();
             AddMapEntry(new Color(0, 25, 25));
 
             /*TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);

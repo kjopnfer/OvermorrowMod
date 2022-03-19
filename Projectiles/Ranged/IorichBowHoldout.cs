@@ -9,7 +9,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 {
     public class IorichBowHoldout : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Items/Weapons/PreHardmode/Ranged/IorichBow";
+        public override string Texture => "OvermorrowMod/Content/Items/Weapons/PreHardmode/Ranged/IorichBow";
         public override bool CanDamage() => false;
         public override void SetStaticDefaults()
         {

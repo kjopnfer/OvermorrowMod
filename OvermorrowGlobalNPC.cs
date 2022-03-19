@@ -1,9 +1,9 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Hexes;
-using OvermorrowMod.Items.Accessories;
-using OvermorrowMod.Items.Materials;
-using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Content.Items.Accessories;
+using OvermorrowMod.Content.Items.Materials;
+using OvermorrowMod.Content.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Content.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Hexes;

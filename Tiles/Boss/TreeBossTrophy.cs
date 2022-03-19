@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Placeable.Boss;
+using OvermorrowMod.Content.Items.Placeable.Boss;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ObjectData;

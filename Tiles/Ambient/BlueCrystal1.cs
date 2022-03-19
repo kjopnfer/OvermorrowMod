@@ -74,7 +74,7 @@ namespace OvermorrowMod.Tiles.Ambient
             };
             TileObjectData.addTile(Type);
             dustType = DustID.DungeonSpirit;
-            drop = ModContent.ItemType<Items.Misc.BlueCrystal>();
+            drop = ModContent.ItemType<Content.Items.Misc.BlueCrystal>();
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)

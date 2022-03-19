@@ -1,4 +1,4 @@
-using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
+using OvermorrowMod.Content.Items.Weapons.PreHardmode.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Hexes;
-using OvermorrowMod.Items.Accessories;
+using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Projectiles.Accessory;
 using System;
 using System.IO;

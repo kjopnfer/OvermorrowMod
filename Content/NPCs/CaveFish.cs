@@ -1,4 +1,4 @@
-using OvermorrowMod.Items.Accessories;
+using OvermorrowMod.Content.Items.Accessories;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

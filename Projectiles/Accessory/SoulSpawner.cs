@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Items.Consumable;
+using OvermorrowMod.Content.Items.Consumable;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
