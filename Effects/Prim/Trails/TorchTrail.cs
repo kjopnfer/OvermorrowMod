@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria;
+﻿using OvermorrowMod.Common;
 
 namespace OvermorrowMod.Effects.Prim.Trails
 {

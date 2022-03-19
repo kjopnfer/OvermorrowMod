@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.Items.Armor.Marble;
 using OvermorrowMod.Content.Items.BossBags;
 using OvermorrowMod.Content.Items.Materials;

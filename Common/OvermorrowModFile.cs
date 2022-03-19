@@ -15,7 +15,7 @@ using System;
 using OvermorrowMod.Core;
 using OvermorrowMod.Content.UI;
 
-namespace OvermorrowMod
+namespace OvermorrowMod.Common
 {
     internal enum Message : byte
     {

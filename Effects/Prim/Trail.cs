@@ -3,8 +3,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using Terraria.DataStructures;
-using Terraria.ModLoader;
+using OvermorrowMod.Common;
 
 namespace OvermorrowMod.Effects.Prim
 {

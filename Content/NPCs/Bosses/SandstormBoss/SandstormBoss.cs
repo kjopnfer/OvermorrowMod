@@ -54,6 +54,7 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.Items.BossBags;
 using OvermorrowMod.Content.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Content.Items.Weapons.PreHardmode.Melee;

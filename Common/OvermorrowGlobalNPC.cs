@@ -12,7 +12,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod
+namespace OvermorrowMod.Common
 {
     public class OvermorrowGlobalNPC : GlobalNPC
     {

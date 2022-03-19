@@ -11,7 +11,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod
+namespace OvermorrowMod.Common
 {
     public class OvermorrowModPlayer : ModPlayer
     {

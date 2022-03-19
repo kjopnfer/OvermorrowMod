@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.Items.Armor;
 using OvermorrowMod.Content.Items.BossBags;
 using OvermorrowMod.Content.Items.Materials;

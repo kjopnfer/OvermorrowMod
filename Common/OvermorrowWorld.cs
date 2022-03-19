@@ -16,7 +16,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
 
-namespace OvermorrowMod
+namespace OvermorrowMod.Common
 {
     public class OvermorrowWorld : ModWorld
     {
