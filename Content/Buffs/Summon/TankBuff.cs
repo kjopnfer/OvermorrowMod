@@ -1,23 +1,22 @@
-﻿using OvermorrowMod.Projectiles.Accessory;
+﻿using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Summon
+namespace OvermorrowMod.Content.Buffs.Summon
 {
-    class GraniteShieldBuff : ModBuff
+    public class TankBuff : ModBuff
     {
         public override void SetDefaults()
         {
-            DisplayName.SetDefault("Granite Shield");
-            Description.SetDefault("A Granite Shield will protect you");
+            DisplayName.SetDefault("Tank");
+            Description.SetDefault("The tank will fight for you");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }
 
-
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<GraniteShield>()] > 0)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<SkeleTank>()] > 0)
             {
                 player.buffTime[buffIndex] = 18000;
             }

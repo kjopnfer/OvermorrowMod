@@ -1,7 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs
+namespace OvermorrowMod.Content.Buffs
 {
     public class GraniteSpearBuff : ModBuff
     {

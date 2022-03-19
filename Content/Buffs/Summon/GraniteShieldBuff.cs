@@ -1,22 +1,23 @@
-using OvermorrowMod.Projectiles.Summon;
+﻿using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Summon
+namespace OvermorrowMod.Content.Buffs.Summon
 {
-    public class GraniteEleBuff : ModBuff
+    class GraniteShieldBuff : ModBuff
     {
         public override void SetDefaults()
         {
-            DisplayName.SetDefault("Granite Elemental");
-            Description.SetDefault("The Granite Elemental will fight for you");
+            DisplayName.SetDefault("Granite Shield");
+            Description.SetDefault("A Granite Shield will protect you");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }
 
+
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<GraniteSummon>()] > 0)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<GraniteShield>()] > 0)
             {
                 player.buffTime[buffIndex] = 18000;
             }

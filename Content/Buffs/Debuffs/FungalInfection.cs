@@ -1,7 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Debuffs
+namespace OvermorrowMod.Content.Buffs.Debuffs
 {
     // Ethereal Flames is an example of a buff that causes constant loss of life.
     // See ExamplePlayer.UpdateBadLifeRegen and ExampleGlobalNPC.UpdateLifeRegen for more information.

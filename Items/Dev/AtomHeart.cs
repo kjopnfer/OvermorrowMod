@@ -1,4 +1,4 @@
-using OvermorrowMod.Buffs.Pets;
+using OvermorrowMod.Content.Buffs.Pets;
 using OvermorrowMod.Projectiles.Pets;
 using Terraria;
 using Terraria.ID;

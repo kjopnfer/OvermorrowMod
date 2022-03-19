@@ -1,22 +1,22 @@
-﻿using OvermorrowMod.Projectiles.Summon;
+using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Summon
+namespace OvermorrowMod.Content.Buffs.Summon
 {
-    public class TankBuff : ModBuff
+    public class DustDevilBuff : ModBuff
     {
         public override void SetDefaults()
         {
-            DisplayName.SetDefault("Tank");
-            Description.SetDefault("The tank will fight for you");
+            DisplayName.SetDefault("Dust Devil");
+            Description.SetDefault("The Dust Devil will fight for you");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<SkeleTank>()] > 0)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<DustDevil>()] > 0)
             {
                 player.buffTime[buffIndex] = 18000;
             }

@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Buffs.Hexes;
+using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Particles;

@@ -1,7 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Debuffs
+namespace OvermorrowMod.Content.Buffs.Debuffs
 {
     public class Shattered : ModBuff
     {

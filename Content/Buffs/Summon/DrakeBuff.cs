@@ -2,7 +2,7 @@ using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Summon
+namespace OvermorrowMod.Content.Buffs.Summon
 {
     public class DrakeBuff : ModBuff
     {

@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Buffs.Debuffs;
+using OvermorrowMod.Content.Buffs.Debuffs;
 using System;
 using Terraria;
 using Terraria.ModLoader;

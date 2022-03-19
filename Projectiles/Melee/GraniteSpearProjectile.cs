@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Buffs;
+using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;

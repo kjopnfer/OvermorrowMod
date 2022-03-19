@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Hexes
+namespace OvermorrowMod.Content.Buffs.Hexes
 {
     public class Hex
     {

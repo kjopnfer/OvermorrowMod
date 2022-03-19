@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 
-namespace OvermorrowMod.Buffs.Hexes
+namespace OvermorrowMod.Content.Buffs.Hexes
 {
     public class SoulFlame : ModHex
     {

@@ -2,7 +2,7 @@ using OvermorrowMod.Projectiles.Pets;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Pets
+namespace OvermorrowMod.Content.Buffs.Pets
 {
     public class SmolboiBuff : ModBuff
     {

@@ -1,4 +1,4 @@
-using OvermorrowMod.Buffs.Debuffs;
+using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.Buffs.Summon;
+using OvermorrowMod.Content.Buffs.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -2,21 +2,21 @@ using OvermorrowMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Buffs.Summon
+namespace OvermorrowMod.Content.Buffs.Summon
 {
-    public class MeatBallBuff : ModBuff
+    public class DripplerBuff : ModBuff
     {
         public override void SetDefaults()
         {
-            DisplayName.SetDefault("Meatball");
-            Description.SetDefault("The Meatball will fight for you");
+            DisplayName.SetDefault("Looming Drippler");
+            Description.SetDefault("A Looming Drippler will protect you");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<FriendlyMeatball>()] > 0)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<DripplerFriendly>()] > 0)
             {
                 player.buffTime[buffIndex] = 18000;
             }
