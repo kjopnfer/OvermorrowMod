@@ -468,11 +468,11 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
                 Dust.NewDust(npc.position, npc.width, npc.height, DustID.Blood, 2.5f * (float)hitDirection, -2.5f);
             }
 
-            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss1"), npc.scale);
-            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss2"), npc.scale);
-            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss3"), npc.scale);
-            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
-            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Assets/Gores/DripplerBoss1"), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Assets/Gores/DripplerBoss2"), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Assets/Gores/DripplerBoss3"), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Assets/Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
+            Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Assets/Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()), npc.scale);
         }
 
         public override bool StrikeNPC(ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
