@@ -1,8 +1,7 @@
-using Terraria;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace OvermorrowMod.Effects.Prim
+namespace OvermorrowMod.Common.Primitives
 {
     public interface ITrailEntity
     {

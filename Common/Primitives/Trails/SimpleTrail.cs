@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using Terraria;
 
-namespace OvermorrowMod.Effects.Prim.Trails
+namespace OvermorrowMod.Common.Primitives.Trails
 {
     public class SimpleTrail : Trail
     {

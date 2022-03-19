@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 
-namespace OvermorrowMod.Effects.Prim
+namespace OvermorrowMod.Common.Primitives
 {
     public class IndexedPrimitivePacket
     {

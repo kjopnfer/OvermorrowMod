@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Hexes;
-using OvermorrowMod.Effects.Prim;
-using OvermorrowMod.Effects.Prim.Trails;
+using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Common.Primitives.Trails;
 using System;
 using Terraria;
 using Terraria.ID;

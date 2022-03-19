@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OvermorrowMod.Effects.Prim
+namespace OvermorrowMod.Common.Primitives
 {
     /// <summary>
     /// Simple circular buffer for storing trail positions.

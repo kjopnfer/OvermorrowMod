@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Buffs.Hexes;
-using OvermorrowMod.Effects.Prim;
+using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.Items.Materials;
 using ReLogic.Graphics;
 using System.Collections.Generic;

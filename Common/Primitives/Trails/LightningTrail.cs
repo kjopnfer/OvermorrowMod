@@ -1,6 +1,4 @@
-using OvermorrowMod.Common;
-
-namespace OvermorrowMod.Effects.Prim.Trails
+namespace OvermorrowMod.Common.Primitives.Trails
 {
     public class LightningTrail : SimpleTrail
     {

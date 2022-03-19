@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using OvermorrowMod.Common;
 
-namespace OvermorrowMod.Effects.Prim
+namespace OvermorrowMod.Common.Primitives
 {
     public enum DrawType
     {

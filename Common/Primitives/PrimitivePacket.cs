@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 
-namespace OvermorrowMod.Effects.Prim
+namespace OvermorrowMod.Common.Primitives
 {
     public class PrimitivePacket
     {
