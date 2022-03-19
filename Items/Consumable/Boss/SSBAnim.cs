@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.Apollus;
-using OvermorrowMod.NPCs.Bosses.GraniteMini;
+using OvermorrowMod.Content.NPCs.Bosses.Apollus;
+using OvermorrowMod.Content.NPCs.Bosses.GraniteMini;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -12,7 +13,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         public int graknightSummonIdentity;
         public int apollusSummonIdentity;
 
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Summoning Circles");

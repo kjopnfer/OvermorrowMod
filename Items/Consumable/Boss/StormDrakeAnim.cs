@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
+using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
+using OvermorrowMod.Core;
 using OvermorrowMod.Particles;
 using Terraria;
 using Terraria.ID;
@@ -8,7 +9,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
 {
     public class StormDrakeAnim : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Storm Drake Spawner");

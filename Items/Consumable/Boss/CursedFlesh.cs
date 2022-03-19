@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Items.Materials;
-using OvermorrowMod.NPCs.Bosses.DripplerBoss;
+using OvermorrowMod.Content.NPCs.Bosses.DripplerBoss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -8,7 +8,7 @@ namespace OvermorrowMod.Projectiles.Accessory
 {
     public class ArtemisRune : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/NPCs/Bosses/Apollus/ArrowRuneCircle";
+        public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/Apollus/ArrowRuneCircle";
 
         public override void SetStaticDefaults()
         {

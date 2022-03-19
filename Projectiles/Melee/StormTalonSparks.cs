@@ -1,3 +1,4 @@
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -5,7 +6,7 @@ namespace OvermorrowMod.Projectiles.Melee
 {
     public class StormTalonSparks : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
 
         public override void SetStaticDefaults()
         {

@@ -2,13 +2,11 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Materials;
-using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.NPCs;
+using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Hexes;
-using OvermorrowMod.Projectiles.Melee;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -20,10 +18,8 @@ namespace OvermorrowMod
     {
         public override bool InstancePerEntity => true;
 
-        public bool Homingdie;
         public bool FungiInfection;
         public int FungiTime;
-        public int split;
 
         public override void ResetEffects(NPC npc)
         {
@@ -104,15 +100,6 @@ namespace OvermorrowMod
                     break;
             }
 
-
-            if (npc.type == NPCID.CaveBat || npc.type == NPCID.SmallSkeleton || npc.type == NPCID.BigSkeleton || npc.type == NPCID.SmallHeadacheSkeleton || npc.type == NPCID.BigHeadacheSkeleton || npc.type == NPCID.SmallMisassembledSkeleton || npc.type == NPCID.BigMisassembledSkeleton || npc.type == NPCID.SmallPantlessSkeleton || npc.type == NPCID.BigPantlessSkeleton || npc.type == NPCID.MotherSlime || npc.type == NPCID.Skeleton || npc.type == NPCID.GiantWormHead || npc.type == NPCID.RedSlime || npc.type == NPCID.UndeadMiner || npc.type == NPCID.Harpy || npc.type == NPCID.ManEater || npc.type == NPCID.SnowFlinx || npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.GreekSkeleton || npc.type == NPCID.GraniteGolem || npc.type == NPCID.GraniteFlyer || npc.type == NPCID.Salamander)
-            {
-                if (Main.rand.Next(200) < 4)
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MegaBuster>());
-                }
-            }
-
             if (npc.type == NPCID.Zombie || npc.type == NPCID.BigRainZombie || npc.type == NPCID.BigSlimedZombie ||npc.type == NPCID.SlimedZombie || npc.type == NPCID.SmallSkeleton || npc.type == NPCID.BigSkeleton || npc.type == NPCID.SmallHeadacheSkeleton || npc.type == NPCID.BigHeadacheSkeleton || npc.type == NPCID.SmallMisassembledSkeleton || npc.type == NPCID.BigMisassembledSkeleton || npc.type == NPCID.SmallPantlessSkeleton || npc.type == NPCID.BigPantlessSkeleton || npc.type == NPCID.GoblinArcher || npc.type == NPCID.Skeleton || npc.type == NPCID.GoblinPeon || npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.GoblinThief || npc.type == NPCID.GoblinWarrior || npc.type == NPCID.GoblinSummoner || npc.type == NPCID.ZombieEskimo || npc.type == NPCID.ZombieRaincoat)
             {
                 if (Main.rand.NextFloat() < .01f) //Should be 1% drop chance...not sure
@@ -137,12 +124,6 @@ namespace OvermorrowMod
                      Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SearingSaber>());
                 }
             }
-
-            if (Homingdie)
-            {
-                Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, ModContent.ProjectileType<HeroHoming>(), npc.damage * 3, 2, Main.player[npc.target].whoAmI);
-            }
-
 
             if (Main.netMode == NetmodeID.Server)
             {

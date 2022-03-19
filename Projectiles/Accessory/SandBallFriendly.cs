@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -11,7 +12,7 @@ namespace OvermorrowMod.Projectiles.Accessory
         private bool runOnce = true;
         private float rotateSpeed;
         private int delayAttack = 60;
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
 
         public override void SetStaticDefaults()
         {

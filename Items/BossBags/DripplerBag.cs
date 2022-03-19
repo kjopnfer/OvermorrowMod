@@ -3,7 +3,7 @@ using OvermorrowMod.Items.Accessories.Expert;
 using OvermorrowMod.Items.Armor.Masks;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
-using OvermorrowMod.NPCs.Bosses.DripplerBoss;
+using OvermorrowMod.Content.NPCs.Bosses.DripplerBoss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ID;
@@ -8,7 +9,7 @@ namespace OvermorrowMod.Projectiles.Magic
 {
     public class SplittingBlood_Magic : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
 
         public override void SetStaticDefaults()
         {

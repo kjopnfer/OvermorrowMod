@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.SandstormBoss;
+using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using OvermorrowMod.Projectiles.Artifact;
 using Terraria;
 using Terraria.ID;

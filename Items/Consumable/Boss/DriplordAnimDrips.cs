@@ -5,7 +5,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
 {
     public class DriplordAnimDrips : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/NPCs/Bosses/DripplerBoss/Driplad";
+        public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/DripplerBoss/Driplad";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Small Drips");

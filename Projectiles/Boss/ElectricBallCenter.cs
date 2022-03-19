@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -8,7 +9,7 @@ namespace OvermorrowMod.Projectiles.Boss
 {
     public class ElectricBallCenter : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
         private bool spawnedProjectiles = false;
         private int storeDamage = 0;
 

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
 using System;
@@ -10,7 +11,7 @@ namespace OvermorrowMod.Projectiles.Boss
 {
     public class ElectricBall2 : ModProjectile, ITrailEntity
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
 
         private Vector2 center;
         public int direction;

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using OvermorrowMod.Effects;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
+using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Core;
 

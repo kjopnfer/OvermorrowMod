@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.Apollus;
-using OvermorrowMod.NPCs.Bosses.GraniteMini;
+using OvermorrowMod.Content.NPCs.Bosses.Apollus;
+using OvermorrowMod.Content.NPCs.Bosses.GraniteMini;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

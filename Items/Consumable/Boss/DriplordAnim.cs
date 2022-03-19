@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.DripplerBoss;
+using OvermorrowMod.Content.NPCs.Bosses.DripplerBoss;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -11,7 +11,7 @@ namespace OvermorrowMod.Items.Consumable.Boss
         //public bool dripsdead = false;
         public float scale = 1;
         public int dripsdead = 0;
-        public override string Texture => "OvermorrowMod/NPCs/Bosses/DripplerBoss/DripplerBoss";//"OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/DripplerBoss/DripplerBoss";//"OvermorrowMod/Projectiles/Boss/ElectricBall";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Summoning Circles");

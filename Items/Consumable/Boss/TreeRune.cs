@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.TreeBoss;
+using OvermorrowMod.Content.NPCs.Bosses.TreeBoss;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

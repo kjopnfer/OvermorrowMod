@@ -5,7 +5,7 @@ using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner.GraniteStaff;
-using OvermorrowMod.NPCs.Bosses.GraniteMini;
+using OvermorrowMod.Content.NPCs.Bosses.GraniteMini;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

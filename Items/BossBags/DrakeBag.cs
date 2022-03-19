@@ -5,7 +5,7 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
-using OvermorrowMod.NPCs.Bosses.StormDrake;
+using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

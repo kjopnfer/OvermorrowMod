@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.NPCs.Bosses.TreeBoss;
+using OvermorrowMod.Content.NPCs.Bosses.TreeBoss;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -9,7 +10,7 @@ namespace OvermorrowMod.Projectiles.Boss
 {
     public class AbsorbEnergy : ModNPC
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
 
         public override void SetStaticDefaults()
         {
