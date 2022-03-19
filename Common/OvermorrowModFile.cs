@@ -83,7 +83,7 @@ namespace OvermorrowMod.Common
                 TrailTextures = new List<Texture2D>();
                 for (int i = 0; i < 7; i++)
                 {
-                    TrailTextures.Add(GetTexture("Effects/TrailTextures/Trail" + i));
+                    TrailTextures.Add(GetTexture(AssetDirectory.Trails + "Trail" + i));
                 }
                 ModUtils.Load(false);
                 HexLoader.Load(false);

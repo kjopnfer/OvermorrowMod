@@ -1,8 +1,10 @@
+using OvermorrowMod.Core;
+
 namespace OvermorrowMod.Common.Primitives.Trails
 {
     public class SkullTrail : SimpleTrail
     {
-        public SkullTrail() : base(12, OvermorrowModFile.Mod.GetTexture("Effects/TrailTextures/Trail6"), true)
+        public SkullTrail() : base(12, OvermorrowModFile.Mod.GetTexture(AssetDirectory.Trails + "Trail6"), true)
         {
         }
     }

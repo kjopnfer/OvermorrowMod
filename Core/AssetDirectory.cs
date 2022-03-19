@@ -13,7 +13,7 @@ namespace OvermorrowMod.Core
 
         public const string UI = Textures + "UI/";
 
-        public const string Trails = Textures + "Trails/";
+        public const string Trails = "Assets/Textures/Trails/";
 
         #endregion
 
