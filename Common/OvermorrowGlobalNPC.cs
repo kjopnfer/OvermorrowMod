@@ -3,6 +3,7 @@ using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Weapons.Melee;
+using OvermorrowMod.Content.Items.Weapons.Melee.EatersBlade;
 using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
@@ -19,11 +20,14 @@ namespace OvermorrowMod.Common
         public override bool InstancePerEntity => true;
 
         public bool FungiInfection;
+        public bool LightningMarked;
+
         public int FungiTime;
 
         public override void ResetEffects(NPC npc)
         {
             FungiInfection = false;
+            LightningMarked = false;
         }
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)

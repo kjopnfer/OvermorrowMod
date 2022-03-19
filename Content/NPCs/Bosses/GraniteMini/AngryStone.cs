@@ -5,8 +5,8 @@ using OvermorrowMod.Content.Items.Armor;
 using OvermorrowMod.Content.Items.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.Magic;
-using OvermorrowMod.Content.Items.Weapons.Melee;
+using OvermorrowMod.Content.Items.Weapons.Magic.GraniteBook;
+using OvermorrowMod.Content.Items.Weapons.Melee.GraniteSpear;
 using OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff;
 using OvermorrowMod.Projectiles.Boss;
 using System;
@@ -753,22 +753,22 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
             }
             else if (choice == 1) // Melee
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteSpear>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<GraniteSpear>());
             }
             else if (choice == 2) // Mage
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteBook>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<GraniteBook>());
             }
             else if (choice == 3) // Summoner
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteStaff>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<GraniteStaff>());
             }
 
-            Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HeartStone>(), 2);
+            Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<HeartStone>(), 2);
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteTrophy>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<GraniteTrophy>());
             }
         }
 

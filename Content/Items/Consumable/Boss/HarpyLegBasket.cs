@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
         public override bool CanUseItem(Player player)
         {
             // Make sure that the boss doesn't already exist and player is in correct zone
-            return !NPC.AnyNPCs(ModContent.NPCType</*StormDrake*/StormDrake2>()) && player.ZoneSkyHeight;
+            return !NPC.AnyNPCs(ModContent.NPCType</*StormDrake*/StormDrake>()) && player.ZoneSkyHeight;
         }
 
         public override bool UseItem(Player player)

@@ -5,7 +5,9 @@ using OvermorrowMod.Content.Items.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
 using OvermorrowMod.Content.Items.Weapons.Magic;
+using OvermorrowMod.Content.Items.Weapons.Magic.MarbleBook;
 using OvermorrowMod.Content.Items.Weapons.Ranged;
+using OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow;
 using OvermorrowMod.Projectiles.NPCs.Hostile;
 using System;
 using Terraria;
@@ -548,24 +550,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
             int choice = Main.rand.Next(3);
             if (choice == 0) // Armor
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleHelm>());
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarblePlate>());
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleLegs>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<MarbleHelm>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<MarblePlate>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<MarbleLegs>());
             }
             else if (choice == 1) // Ranger
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleBow>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<MarbleBow>());
             }
             else if (choice == 2) // Mage
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleBook>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<MarbleBook>());
             }
 
-            Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<HeartStone>(), 2);
+            Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<HeartStone>(), 2);
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MarbleTrophy>());
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<MarbleTrophy>());
             }
         }
 

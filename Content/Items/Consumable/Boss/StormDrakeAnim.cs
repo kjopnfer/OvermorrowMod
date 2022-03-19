@@ -65,7 +65,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                             player.GetModPlayer<OvermorrowModPlayer>().TitleID = 2;
                             player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
                             Main.PlaySound(SoundID.Roar, player.position, 0);
-                            NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y + 146), ModContent.NPCType<StormDrake2>(), 0, -3f, -3f, 0f, 0f, 255);
+                            NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y + 146), ModContent.NPCType<StormDrake>(), 0, -3f, -3f, 0f, 0f, 255);
                             /*Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
                             float radius = 100;
                             int numLocations = 200;

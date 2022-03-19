@@ -32,6 +32,12 @@ namespace OvermorrowMod.Core
         {
             stopRain.Invoke(null, null);
         }
+
+        public static Vector2 GetInventoryPosition(Vector2 position, Rectangle frame, Vector2 origin, float scale)
+        {
+            return position + (((frame.Size() / 2f) - origin) * scale * Main.inventoryScale) + new Vector2(1.5f, 1.5f);
+        }
+
         public static Vector2 NearestPoint(this Vector2 vec, Rectangle rect)
         {
             float nearX = vec.X > rect.Right ? rect.Right : vec.X < rect.Left ? rect.Left : vec.X;

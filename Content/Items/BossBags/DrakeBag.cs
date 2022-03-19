@@ -69,6 +69,6 @@ namespace OvermorrowMod.Content.Items.BossBags
             player.QuickSpawnItem(ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16));
         }
 
-        public override int BossBagNPC => ModContent.NPCType</*StormDrake*/StormDrake2>();
+        public override int BossBagNPC => ModContent.NPCType</*StormDrake*/StormDrake>();
     }
 }

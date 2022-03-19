@@ -82,6 +82,219 @@ namespace OvermorrowMod.Common.Particles
             }
         }
     }
+
+    public class Smoke : CustomParticle
+    {
+        float maxTime = 420;
+        public override void OnSpawn()
+        {
+            particle.color = Color.Lerp(Color.Purple, Color.Violet, particle.scale);
+            particle.customData[0] = Main.rand.Next(3, 6);
+            if (Main.rand.NextBool(3))
+            {
+                particle.customData[0] *= 2;
+            }
+
+            particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
+            particle.scale = 0;
+        }
+        public override void Update()
+        {
+            if (particle.activeTime > maxTime) particle.Kill();
+            /*if (particle.activeTime < 10)
+            {
+                float progress = (float)particle.activeTime / 10f;
+                particle.scale = MathHelper.Lerp(0, particle.customData[0], progress);
+                particle.alpha = progress;
+            }
+            if (particle.activeTime > 35)
+            {
+                float progress = (float)(particle.activeTime - 35) / 10f;
+                particle.scale = MathHelper.Lerp(particle.customData[0], 0f, progress);
+                particle.alpha = 1f - progress;
+            }*/
+
+            float progress = (float)(particle.activeTime) / maxTime;
+            //particle.scale = MathHelper.Lerp(0f, particle.customData[0], progress);
+            particle.scale += 0.05f;
+            particle.alpha = 1f - progress;
+
+            particle.rotation += 0.06f;
+            particle.velocity.Y -= 0.05f;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Texture2D texture = Particle.GetTexture(particle.type);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+    }
+    public class Smoke2 : CustomParticle
+    {
+        float maxTime = 120;
+        public override void OnSpawn()
+        {
+            //particle.color = new Color(19, 20, 20);
+            particle.customData[0] = Main.rand.Next(3, 6);
+            if (Main.rand.NextBool(3))
+            {
+                particle.customData[0] *= 2;
+            }
+
+            particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
+            particle.scale = 0;
+        }
+        public override void Update()
+        {
+            if (particle.activeTime > maxTime) particle.Kill();
+            float progress = (float)(particle.activeTime) / maxTime;
+            //particle.scale = MathHelper.Lerp(0f, particle.customData[0], progress);
+            particle.scale += 0.025f;
+            particle.alpha = 1f - progress;
+
+            particle.rotation += 0.06f;
+
+            if (particle.velocity.X > 0)
+            {
+                particle.velocity.X -= 0.05f;
+            }
+
+            if (particle.velocity.X < 0)
+            {
+                particle.velocity.X += 0.05f;
+            }
+
+            particle.velocity.Y -= 0.05f;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            //Main.spriteBatch.End();
+            //Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Texture2D texture = Particle.GetTexture(particle.type);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
+
+            //Main.spriteBatch.End();
+            //Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+    }
+
+    public class Slash : CustomParticle
+    {
+        float maxTime = 30;
+        public override void OnSpawn()
+        {
+            //particle.color = Color.Lerp(Color.Yellow, Color.Orange, particle.scale);
+
+            //particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
+            particle.rotation = particle.velocity.ToRotation() + MathHelper.Pi;
+            //maxTime = particle.customData[0];
+            //particle.scale = 0.5f;
+        }
+        public override void Update()
+        {
+            if (particle.activeTime > maxTime) particle.Kill();
+            float progress = (float)(particle.activeTime) / maxTime;
+            //particle.scale = MathHelper.Lerp(0f, particle.customData[0], progress);
+            //particle.scale += 0.025f;
+
+            particle.alpha = 1f - progress;
+            //particle.rotation += 0.06f;
+            particle.velocity *= 0.98f;
+            particle.rotation = particle.velocity.ToRotation() + MathHelper.Pi;
+
+            /*if (particle.velocity.X > 0)
+            {
+                particle.velocity.X -= 0.05f;
+            }
+            if (particle.velocity.X < 0)
+            {
+                particle.velocity.X += 0.05f;
+            }
+            particle.velocity.Y -= 0.05f;*/
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Texture2D texture = Particle.GetTexture(particle.type);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale / 2, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+    }
+
+    public class Orb : CustomParticle
+    {
+        float maxTime = 120;
+        public override void OnSpawn()
+        {
+            particle.color = Color.Lerp(Color.Yellow, Color.Orange, particle.scale);
+
+            particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
+            maxTime = particle.customData[0];
+        }
+        public override void Update()
+        {
+            if (particle.activeTime > maxTime) particle.Kill();
+            float progress = (float)(particle.activeTime) / maxTime;
+
+            particle.alpha = 1f - progress;
+            particle.rotation += 0.06f;
+            particle.velocity *= 0.98f;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D texture = Particle.GetTexture(particle.type);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale / 2, SpriteEffects.None, 0f);
+
+            spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+    }
+
+    public class Glow1 : CustomParticle
+    {
+        public override string Texture => AssetDirectory.Textures + "Spotlight";
+        public override void Update()
+        {
+            particle.velocity.X += Main.windSpeed;
+            particle.velocity.Y -= 0.4f;
+            float progress = Utils.InverseLerp(0, particle.customData[0], particle.activeTime);
+            if (progress > 0.8f)
+                particle.alpha = (progress - 0.5f) * 2;
+            if (particle.activeTime > particle.customData[0])
+                particle.Kill();
+        }
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Texture2D texture = Particle.ParticleTextures[particle.type];
+            //Texture2D texture2 = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            spriteBatch.Reload(BlendState.Additive);
+            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, 0f, texture.Size() / 2, particle.scale / 4, SpriteEffects.None, 0f);
+            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.8f, 0f, texture.Size() / 2, particle.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.5f, 0f, texture.Size() / 2, particle.scale * 1, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.2f, 0f, texture.Size() / 2, particle.scale * 3, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.01f, 0f, texture.Size() / 2, particle.scale * 7, SpriteEffects.None, 0f);
+            //spriteBatch.Draw(texture2, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.5f, 0f, texture2.Size() / 2, particle.scale / 4, SpriteEffects.None, 0f);
+            spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+    }
+
     public class LightningSpark : CustomParticle
     {
         public override string Texture => AssetDirectory.Empty;

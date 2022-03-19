@@ -1,4 +1,4 @@
-using OvermorrowMod.Content.Items.Weapons.Ranged;
+using OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
