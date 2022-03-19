@@ -7,7 +7,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace OvermorrowMod.UI
+namespace OvermorrowMod.Content.UI
 {
     class AltarUI : UIState
     {

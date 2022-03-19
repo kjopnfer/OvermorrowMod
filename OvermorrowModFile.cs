@@ -4,7 +4,6 @@ using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Particles;
-using OvermorrowMod.UI;
 using ReLogic.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -14,6 +13,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using System;
 using OvermorrowMod.Core;
+using OvermorrowMod.Content.UI;
 
 namespace OvermorrowMod
 {

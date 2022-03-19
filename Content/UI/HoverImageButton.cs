@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 
-namespace OvermorrowMod.UI
+namespace OvermorrowMod.Content.UI
 {
     // This UIHoverImageButton class inherits from UIImageButton. 
     // Inheriting is a great tool for UI design. 

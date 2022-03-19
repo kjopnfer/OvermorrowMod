@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.GameInput;
 using Terraria.UI;
 
-namespace OvermorrowMod.UI
+namespace OvermorrowMod.Content.UI
 {
     internal class VanillaItemSlotWrapper : UIElement
     {
