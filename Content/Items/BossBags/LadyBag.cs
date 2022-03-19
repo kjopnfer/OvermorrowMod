@@ -2,7 +2,7 @@ using OvermorrowMod.Content.Items.Accessories.Expert;
 using OvermorrowMod.Content.Items.Armor.Marble;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.PreHardmode.Magic;
+using OvermorrowMod.Content.Items.Weapons.Magic;
 using OvermorrowMod.Content.NPCs.Bosses.Apollus;
 using Terraria;
 using Terraria.ID;

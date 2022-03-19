@@ -103,7 +103,7 @@ namespace OvermorrowMod.Common
                 Altar = new AltarUI();
                 Altar.Activate();
 
-                Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Content/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
+                Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture(AssetDirectory.Textures + "ChainKnife");
                 if (Main.hardMode)
                 {
                     //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");

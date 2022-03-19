@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using OvermorrowMod.Content.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Content.Items.Weapons.PreHardmode.Melee;
+using OvermorrowMod.Content.Items.Weapons.Magic;
+using OvermorrowMod.Content.Items.Weapons.Melee;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Content.Tiles.Block;

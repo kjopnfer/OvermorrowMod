@@ -1,9 +1,9 @@
 using OvermorrowMod.Content.Items.Accessories.Expert;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.PreHardmode.Magic;
-using OvermorrowMod.Content.Items.Weapons.PreHardmode.Melee;
-using OvermorrowMod.Content.Items.Weapons.PreHardmode.Ranged;
-using OvermorrowMod.Content.Items.Weapons.PreHardmode.Summoner;
+using OvermorrowMod.Content.Items.Weapons.Magic;
+using OvermorrowMod.Content.Items.Weapons.Melee;
+using OvermorrowMod.Content.Items.Weapons.Ranged;
+using OvermorrowMod.Content.Items.Weapons.Summoner;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using Terraria;
 using Terraria.ID;
