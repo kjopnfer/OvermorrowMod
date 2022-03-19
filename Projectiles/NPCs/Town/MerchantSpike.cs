@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Particles;
+using OvermorrowMod.Common.Particles;
 using System;
 using Terraria;
 using Terraria.ID;

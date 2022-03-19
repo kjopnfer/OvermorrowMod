@@ -2,7 +2,7 @@
 using OvermorrowMod.Common;
 using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Core;
-using OvermorrowMod.Particles;
+using OvermorrowMod.Common.Particles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

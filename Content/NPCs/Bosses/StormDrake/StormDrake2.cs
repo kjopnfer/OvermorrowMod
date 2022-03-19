@@ -9,7 +9,7 @@ using OvermorrowMod.Content.Items.Weapons.PreHardmode.Magic;
 using OvermorrowMod.Content.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Content.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Content.Items.Weapons.PreHardmode.Summoner;
-using OvermorrowMod.Particles;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Projectiles.Boss;
 using System;
 using System.IO;

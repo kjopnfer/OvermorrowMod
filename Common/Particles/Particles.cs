@@ -7,12 +7,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
-using OvermorrowMod.Effects;
 using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Core;
 
-namespace OvermorrowMod.Particles
+namespace OvermorrowMod.Common.Particles
 {
     // This is the file where all the particles are stored currently
     public class Lightning2

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Content.Items.Materials;
-using OvermorrowMod.Particles;
 using ReLogic.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -14,6 +13,7 @@ using Terraria.UI;
 using System;
 using OvermorrowMod.Core;
 using OvermorrowMod.Content.UI;
+using OvermorrowMod.Common.Particles;
 
 namespace OvermorrowMod.Common
 {
@@ -88,7 +88,6 @@ namespace OvermorrowMod.Common
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 Particle.Load();
-                TestDetours.Load();
                 Trail.Load();
 
                 foreach (Type type in Code.GetTypes())
@@ -338,7 +337,6 @@ namespace OvermorrowMod.Common
             ModUtils.Load(true);
             HexLoader.Load(true);
             Particle.Unload();
-            TestDetours.Unload();
             Trail.Unload();
 
             Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
