@@ -9,7 +9,6 @@ namespace OvermorrowMod.Content.Items.Weapons.PreHardmode.Melee
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Hammer Throw");
-            Tooltip.SetDefault("Use this to spawn test projectiles while you do not have an item for them");
             Item.staff[item.type] = true;
         }
         public override void SetDefaults()

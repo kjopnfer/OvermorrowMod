@@ -326,7 +326,7 @@ namespace OvermorrowMod.Particles
     }
     public class Shockwave2 : CustomParticle
     {
-        public override string Texture => "OvermorrowMod/Textures/Perlin";
+        public override string Texture => "OvermorrowMod/Assets/Textures/Perlin";
         public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
         float maxTime = 60f;
         public override void OnSpawn()

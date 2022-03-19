@@ -86,7 +86,7 @@ namespace OvermorrowMod.Projectiles.Ranged
 
         public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.GetTexture("OvermorrowMod/Textures/Extra_89");
+            Texture2D SoulTexture = ModContent.GetTexture("OvermorrowMod/Assets/Textures/Extra_89");
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (projectile.spriteDirection == -1)
