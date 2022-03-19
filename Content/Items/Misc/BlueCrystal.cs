@@ -1,4 +1,4 @@
-using OvermorrowMod.Tiles.Ambient;
+using OvermorrowMod.Content.Tiles.Ambient;
 using Terraria.ID;
 using Terraria.ModLoader;
 

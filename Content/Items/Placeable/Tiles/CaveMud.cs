@@ -1,6 +1,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
-using CaveMudBlock = OvermorrowMod.Tiles.CaveMud;
+using CaveMudBlock = OvermorrowMod.Content.Tiles.CaveMud;
 
 
 namespace OvermorrowMod.Content.Items.Placeable.Tiles

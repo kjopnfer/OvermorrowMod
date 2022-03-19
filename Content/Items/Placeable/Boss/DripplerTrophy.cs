@@ -1,4 +1,4 @@
-using OvermorrowMod.Tiles.Boss;
+using OvermorrowMod.Content.Tiles.Boss;
 using Terraria.ID;
 using Terraria.ModLoader;
 
