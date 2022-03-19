@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Terraria;
-using WardenClass;
 
 namespace OvermorrowMod
 {
@@ -77,10 +76,6 @@ namespace OvermorrowMod
         public static OvermorrowModPlayer Overmorrow(this Player player)
         {
             return player.GetModPlayer<OvermorrowModPlayer>();
-        }
-        public static WardenDamagePlayer Warden(this Player player)
-        {
-            return player.GetModPlayer<WardenDamagePlayer>();
         }
         public static void SafeSetParameter(this Effect effect, string name, float value)
         {

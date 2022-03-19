@@ -1,13 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Armor.Masks;
 using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Items.Placeable.Boss;
 using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -557,24 +555,20 @@ namespace OvermorrowMod.NPCs.Bosses.DripplerBoss
             }
             else
             {
-                int choice = Main.rand.Next(5);
-                if (choice == 0) // Warden
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodyAntikythera>());
-                }
-                else if (choice == 1) // Summoner
+                int choice = Main.rand.Next(4);
+                if (choice == 0) // Summoner
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SinisterBlood>());
                 }
-                else if (choice == 2) // Warrior
+                else if (choice == 1) // Warrior
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodyTeeth>());
                 }
-                else if (choice == 3) // Ranger
+                else if (choice == 2) // Ranger
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DripplerEye>());
                 }
-                else if (choice == 4) // Mage
+                else if (choice == 3) // Mage
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<ShatteredOrb>());
                 }

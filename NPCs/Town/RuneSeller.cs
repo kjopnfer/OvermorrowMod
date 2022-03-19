@@ -1,8 +1,6 @@
 using OvermorrowMod.Items.Consumable;
 using OvermorrowMod.Items.Pets;
 using OvermorrowMod.Projectiles.NPCs.Town;
-using OvermorrowMod.WardenClass.Accessories;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -86,33 +84,6 @@ namespace OvermorrowMod.NPCs.Town
 
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<BeanSummon>());
             nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<SaintRing>());
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<SoulPotion>());
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ModContent.ItemType<FrostburnRune>());
-            nextSlot++;
-
-            if (Main.LocalPlayer.HasItem(ModContent.ItemType<VinePiercer>()))
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<PoisonRune>());
-                nextSlot++;
-            }
-
-            if (Main.LocalPlayer.HasItem(ModContent.ItemType<FungiPiercer>()))
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<ShroomRune>());
-                nextSlot++;
-            }
-
-            if (Main.LocalPlayer.HasItem(ModContent.ItemType<BlazePiercer>()))
-            {
-                shop.item[nextSlot].SetDefaults(ModContent.ItemType<FireRune>());
-                nextSlot++;
-            }
         }
 
         public override void OnChatButtonClicked(bool firstButton, ref bool shop)

@@ -1,6 +1,4 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Buffs;
 using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Items.Materials;
@@ -11,15 +9,10 @@ using OvermorrowMod.NPCs;
 using OvermorrowMod.Projectiles.Accessory;
 using OvermorrowMod.Projectiles.Hexes;
 using OvermorrowMod.Projectiles.Melee;
-using OvermorrowMod.WardenClass.Accessories;
-using OvermorrowMod.WardenClass.Weapons.Artifacts;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
-using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using WardenClass;
 
 namespace OvermorrowMod
 {
@@ -61,12 +54,6 @@ namespace OvermorrowMod
         {
             switch (npc.type)
             {
-                case NPCID.KingSlime:
-                    if (Main.rand.NextBool(5) && !Main.expertMode)
-                    {
-                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SlimeArtifact>());
-                    }
-                    break;
                 case NPCID.AngryBones:
                 case NPCID.AngryBonesBig: 
                 case NPCID.AngryBonesBigHelmet:
@@ -75,7 +62,7 @@ namespace OvermorrowMod
                 case NPCID.CursedSkull:
                     if (Main.rand.NextBool(100)) 
                     {
-                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFragment>());
+                        // Put a thing here idk
                     }
                     break;
                 case NPCID.CaveBat:
@@ -104,20 +91,9 @@ namespace OvermorrowMod
                     break;
                 case NPCID.Drippler:
                 case NPCID.BloodZombie:
-                    if (Main.rand.NextBool(30)) // 3.33% drop chance
-                    {
-                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<AncientCrystal>());
-                    }
-
                     if (Main.rand.NextBool(3))
                     {
                         Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MutatedFlesh>(), Main.rand.Next(1, 3));
-                    }
-                    break;
-                case NPCID.FungiBulb:
-                    if (Main.rand.NextBool(6)) // 8.33% drop chance
-                    {
-                        Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<FungiPiercer>());
                     }
                     break;
                 case NPCID.Piranha:
@@ -177,14 +153,13 @@ namespace OvermorrowMod
                         if (npc.playerInteraction[i])
                         {
                             Player player = Main.player[i];
-                            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-                            var modPlayer2 = player.GetModPlayer<OvermorrowModPlayer>();
+                            var modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
 
-                            if (modPlayer2.DripplerEye)
+                            if (modPlayer.DripplerEye)
                             {
-                                if (modPlayer2.dripplerStack < 25)
+                                if (modPlayer.dripplerStack < 25)
                                 {
-                                    modPlayer2.dripplerStack++;
+                                    modPlayer.dripplerStack++;
                                 }
                             }
                         }
@@ -200,14 +175,13 @@ namespace OvermorrowMod
                         if (npc.playerInteraction[i])
                         {
                             Player player = Main.LocalPlayer;
-                            var modPlayer = WardenDamagePlayer.ModPlayer(player);
-                            var modPlayer2 = player.GetModPlayer<OvermorrowModPlayer>();
+                            var modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
 
-                            if (modPlayer2.DripplerEye)
+                            if (modPlayer.DripplerEye)
                             {
-                                if (modPlayer2.dripplerStack < 25)
+                                if (modPlayer.dripplerStack < 25)
                                 {
-                                    modPlayer2.dripplerStack++;
+                                    modPlayer.dripplerStack++;
                                 }
                             }
                         }
@@ -225,14 +199,6 @@ namespace OvermorrowMod
                 {
                     Projectile.NewProjectile(owner.Center, Vector2.Zero, ModContent.ProjectileType<SandBallFriendly>(), 24, 2f, projectile.owner, Main.rand.Next(60, 95), Main.rand.Next(3, 6));
                     owner.GetModPlayer<OvermorrowModPlayer>().sandCount++;
-                }
-            }
-
-            if (projectile.magic && owner.GetModPlayer<OvermorrowModPlayer>().MarbleTrail)
-            {
-                if (Main.rand.Next(20) == 0)
-                {
-                    owner.AddBuff(ModContent.BuffType<WindBuff>(), 600);
                 }
             }
 

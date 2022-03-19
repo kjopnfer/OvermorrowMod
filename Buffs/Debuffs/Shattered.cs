@@ -1,6 +1,5 @@
 using Terraria;
 using Terraria.ModLoader;
-using WardenClass;
 
 namespace OvermorrowMod.Buffs.Debuffs
 {
@@ -13,11 +12,6 @@ namespace OvermorrowMod.Buffs.Debuffs
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = true;
             canBeCleared = false;
-        }
-
-        public override void Update(Player player, ref int buffIndex)
-        {
-            player.GetModPlayer<WardenDamagePlayer>().Shattered = true;
         }
     }
 }

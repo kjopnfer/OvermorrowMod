@@ -5,16 +5,13 @@ using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Items.Materials;
 using OvermorrowMod.Particles;
 using OvermorrowMod.UI;
-using OvermorrowMod.WardenClass;
 using ReLogic.Graphics;
 using System.Collections.Generic;
-using System.IO;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
-using WardenClass;
 using System;
 
 namespace OvermorrowMod
@@ -32,7 +29,6 @@ namespace OvermorrowMod
         internal UserInterface MyInterface;
         internal UserInterface AltarUI;
 
-        internal SoulUI Souls;
         internal AltarUI Altar;
         private GameTime _lastUpdateUiGameTime;
 
@@ -106,9 +102,6 @@ namespace OvermorrowMod
 
                 Altar = new AltarUI();
                 Altar.Activate();
-
-                Souls = new SoulUI();
-                Souls.Activate();
 
                 Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Vanilla/ChainKnife");
                 if (Main.hardMode)
@@ -328,11 +321,6 @@ namespace OvermorrowMod
             AltarUI?.SetState(null);
         }
 
-        internal void ShowMyUI()
-        {
-            MyInterface?.SetState(Souls);
-        }
-
         internal void HideMyUI()
         {
             MyInterface?.SetState(null);
@@ -355,7 +343,6 @@ namespace OvermorrowMod
             Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
             Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
 
-            Souls = null;
             Altar = null;
             SandModeKey = null;
             AmuletKey = null;
@@ -363,162 +350,11 @@ namespace OvermorrowMod
 
         }
 
-        public override void HandlePacket(BinaryReader reader, int whoAmI)
-        {
-            Message msg = (Message)reader.ReadByte();
-
-            switch (msg)
-            {
-                case Message.syncPlayer:
-                    {
-                        Player player = Main.player[(int)reader.ReadByte()];
-                        WardenDamagePlayer wardenPlayer = player.GetModPlayer<WardenDamagePlayer>();
-
-                        wardenPlayer.soulPercentage = reader.ReadSingle();
-                        wardenPlayer.soulResourceCurrent = (int)reader.ReadByte();
-
-                        break;
-                    }
-
-                case Message.soulsChanged:
-                    {
-                        // byte playernumber = reader.ReadByte();
-                        Player player = Main.player[(int)reader.ReadByte()];
-                        WardenDamagePlayer wardenPlayer = player.GetModPlayer<WardenDamagePlayer>();
-
-                        wardenPlayer.soulPercentage = reader.ReadSingle();
-
-                        if (Main.netMode == NetmodeID.Server)
-                        {
-
-                            var packet = GetPacket();
-
-                            packet.Write((byte)Message.soulsChanged);
-                            packet.Write((byte)player.whoAmI);
-                            packet.Write(wardenPlayer.soulPercentage);
-
-                            packet.Send(-1, (byte)player.whoAmI);
-                        }
-
-                        break;
-                    }
-
-                case Message.soulAdded:
-                    {
-                        Player player = Main.player[(int)reader.ReadByte()];
-                        WardenDamagePlayer wardenPlayer = player.GetModPlayer<WardenDamagePlayer>();
-
-                        byte souls = reader.ReadByte();
-
-                        wardenPlayer.soulResourceCurrent = souls;
-
-                        if (Main.netMode == NetmodeID.Server)
-                        {
-
-                            var packet = GetPacket();
-
-                            packet.Write((byte)Message.soulAdded);
-                            packet.Write((byte)player.whoAmI);
-                            packet.Write((byte)wardenPlayer.soulResourceCurrent);
-
-                            packet.Send(-1, (byte)player.whoAmI);
-                        }
-
-                        break;
-                    }
-            }
-        }
         public override void PreUpdateEntities()
         {
             if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
             {
                 Particle.UpdateParticles();
-            }
-
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                Player player = Main.player[i];
-
-                if (player.active && !player.dead)
-                {
-                    var modPlayer = player.GetModPlayer<WardenDamagePlayer>();
-
-                    bool meterMax = modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2;
-
-                    if (modPlayer.soulPercentage >= 100 && !meterMax)
-                    {
-                        // Main.NewText("bruh");
-                        // modPlayer.soulPercentage = 100;
-                    }
-                }
-            }
-        }
-
-        public override void PostUpdateEverything()
-        {
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                Player player = Main.player[i];
-
-                if (player.active && !player.dead)
-                {
-                    var modPlayer = player.GetModPlayer<WardenDamagePlayer>();
-
-                    bool meterMax = modPlayer.soulResourceCurrent == modPlayer.soulResourceMax2;
-
-                    if (modPlayer.soulPercentage >= 100 && !modPlayer.soulMeterMax && !meterMax)
-                    {
-                        Main.NewText("add");
-                        player.GetModPlayer<WardenSoulMeter>().frame = 0;
-                        AddSoul(player, 1);
-                        //modPlayer.soulPercentage = 0;
-                    }
-                }
-            }
-
-            Trail.UpdateTrails();
-        }
-
-        public void AddSoul(Player owner, int soulEssence)
-        {
-            var modPlayer = owner.GetModPlayer<WardenDamagePlayer>();
-
-            int soul = Projectile.NewProjectile(owner.position, new Vector2(0, 0), ModContent.ProjectileType<SoulEssence>(), owner.whoAmI, 0f, Main.myPlayer, Main.rand.Next(70, 95), 0f);
-
-            Main.projectile[soul].active = true;
-
-            if (Main.netMode != NetmodeID.SinglePlayer)
-                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, soul);
-
-            Main.projectile[soul].active = true;
-
-            modPlayer.soulList.Add(soul);
-
-            modPlayer.soulResourceCurrent += soulEssence;
-
-            Color color = new Color(146, 227, 220);
-            CombatText.NewText(new Rectangle((int)owner.position.X, (int)owner.position.Y + 50, owner.width, owner.height), color, "Soul Essence Gained", true, false);
-
-            UpdatePosition(modPlayer);
-        }
-
-        private void UpdatePosition(WardenDamagePlayer player)
-        {
-            int direction = 1;
-            for (int i = 0; i < player.soulList.Count; i++)
-            {
-                if (i % 5 == 4)
-                {
-                    direction *= -1;
-                }
-
-                int radiusBuffer = (int)(20 * System.Math.Floor(i / 4f));
-                Main.projectile[player.soulList[i]].knockBack = direction;
-                Main.projectile[player.soulList[i]].ai[0] = 70 + radiusBuffer;
-                Main.projectile[player.soulList[i]].ai[1] = i * 90;
-
-                if (Main.netMode != NetmodeID.SinglePlayer)
-                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, player.soulList[i]);
             }
         }
     }

@@ -8,7 +8,6 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.WardenClass.Weapons.Artifacts;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -459,25 +458,21 @@ namespace OvermorrowMod.NPCs.Bosses.TreeBoss
             }
             else
             {
-                int choice = Main.rand.Next(5);
+                int choice = Main.rand.Next(4);
                 // Always drops one of:
-                if (choice == 0) // Warden
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<EarthCrystal>());
-                }
-                else if (choice == 1) // Mage
+                if (choice == 0) // Mage
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichStaff>());
                 }
-                if (choice == 2) // Warrior
+                if (choice == 1) // Warrior
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichHarvester>());
                 }
-                else if (choice == 3) // Ranger
+                else if (choice == 2) // Ranger
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichBow>());
                 }
-                else if (choice == 4) // Summoner
+                else if (choice == 3) // Summoner
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<IorichWand>());
                 }

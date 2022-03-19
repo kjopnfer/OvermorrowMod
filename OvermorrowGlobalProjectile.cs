@@ -8,6 +8,7 @@ namespace OvermorrowMod
 {
     public class OvermorrowGlobalProjectile : GlobalProjectile
     {
+        // Life is pain
         public override bool InstancePerEntity => true;
 
         private bool spawnedBlood = false;

@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Buffs.Debuffs;
 using OvermorrowMod.Buffs.Hexes;
 using OvermorrowMod.Items.Accessories;
 using OvermorrowMod.Projectiles.Accessory;
-using OvermorrowMod.Projectiles.Piercing;
 using System;
 using System.IO;
 using Terraria;
@@ -267,16 +265,6 @@ namespace OvermorrowMod
                     }
                 }
                 NPC.NewNPC((int)player.position.X, (int)player.position.Y, mod.NPCType("BloodHeal"));
-            }
-
-            if (explosionBuff)
-            {
-                Main.PlaySound(SoundID.Item74);
-                int projectiles = 9;
-                for (int i = 0; i < projectiles; i++)
-                {
-                    Projectile.NewProjectile(player.Center, new Vector2(4).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<Flames>(), 60, 9, player.whoAmI);
-                }
             }
         }
 

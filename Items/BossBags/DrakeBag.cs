@@ -6,7 +6,6 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Melee;
 using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -41,25 +40,21 @@ namespace OvermorrowMod.Items.BossBags
             player.TryGettingDevArmor();
             player.TryGettingDevArmor();
 
-            int choice = Main.rand.Next(5);
+            int choice = Main.rand.Next(4);
             // Always drops one of:
-            if (choice == 0) // Warden
-            {
-                player.QuickSpawnItem(ModContent.ItemType<LightningPiercer>());
-            }
-            else if (choice == 1) // Mage
+            if (choice == 0) // Mage
             {
                 player.QuickSpawnItem(ModContent.ItemType<BoltStream>());
             }
-            else if (choice == 2) // Warrior
+            else if (choice == 1) // Warrior
             {
                 player.QuickSpawnItem(ModContent.ItemType<StormTalon>());
             }
-            else if (choice == 3) // Ranger
+            else if (choice == 2) // Ranger
             {
                 player.QuickSpawnItem(ModContent.ItemType<TempestGreatbow>());
             }
-            else if (choice == 4) // Summoner
+            else if (choice == 3) // Summoner
             {
                 player.QuickSpawnItem(ModContent.ItemType<DrakeStaff>());
             }

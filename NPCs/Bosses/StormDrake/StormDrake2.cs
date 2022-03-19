@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Effects.Prim.Trails;
 using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Materials;
@@ -11,7 +10,6 @@ using OvermorrowMod.Items.Weapons.PreHardmode.Ranged;
 using OvermorrowMod.Items.Weapons.PreHardmode.Summoner;
 using OvermorrowMod.Particles;
 using OvermorrowMod.Projectiles.Boss;
-using OvermorrowMod.WardenClass.Weapons.ChainWeapons;
 using System;
 using System.IO;
 using Terraria;
@@ -1150,25 +1148,21 @@ namespace OvermorrowMod.NPCs.Bosses.StormDrake
             }
             else
             {
-                int choice = Main.rand.Next(5);
+                int choice = Main.rand.Next(4);
                 // Always drops one of:
-                if (choice == 0) // Warden
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<LightningPiercer>());
-                }
-                else if (choice == 1) // Mage
+                if (choice == 0) // Mage
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BoltStream>());
                 }
-                else if (choice == 2) // Warrior
+                else if (choice == 1) // Warrior
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<StormTalon>());
                 }
-                else if (choice == 3) // Ranger
+                else if (choice == 2) // Ranger
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<TempestGreatbow>());
                 }
-                else if (choice == 4) // Summoner
+                else if (choice == 3) // Summoner
                 {
                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DrakeStaff>());
                 }
