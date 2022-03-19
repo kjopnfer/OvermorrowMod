@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Core;
 using OvermorrowMod.Effects.Prim.Trails;
 using OvermorrowMod.Items.BossBags;
 using OvermorrowMod.Items.Materials;

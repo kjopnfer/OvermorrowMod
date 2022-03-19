@@ -1,12 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Effects.Prim;
 using System;
-using System.Linq;
 using System.Reflection;
 using Terraria;
 
-namespace OvermorrowMod
+namespace OvermorrowMod.Core
 {
     public static class ModUtils
     {

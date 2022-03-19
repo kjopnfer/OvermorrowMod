@@ -10,6 +10,7 @@ using Terraria.Graphics.Shaders;
 using OvermorrowMod.Effects;
 using OvermorrowMod.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Effects.Prim;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Particles
 {

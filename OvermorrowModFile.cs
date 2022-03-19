@@ -13,6 +13,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using System;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod
 {
