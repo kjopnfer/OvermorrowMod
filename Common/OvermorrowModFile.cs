@@ -14,6 +14,7 @@ using System;
 using OvermorrowMod.Core;
 using OvermorrowMod.Content.UI;
 using OvermorrowMod.Common.Particles;
+using Terraria.Graphics.Effects;
 
 namespace OvermorrowMod.Common
 {
@@ -40,8 +41,11 @@ namespace OvermorrowMod.Common
 
         public static OvermorrowModFile Mod { get; set; }
         public Effect Shockwave;
+        public Effect BeamShader;
+        public Effect Shockwave2;
         public Effect TrailShader;
         public Effect TextShader;
+        public Effect Whiteout;
 
         public static List<Texture2D> TrailTextures;
         public OvermorrowModFile()
@@ -75,18 +79,30 @@ namespace OvermorrowMod.Common
 
                 // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
-                TrailShader = GetEffect("Effects/Trail");
+                Shockwave2 = GetEffect("Effects/ShockwaveEffect");
+                BeamShader = GetEffect("Effects/Beam");
                 TextShader = GetEffect("Effects/TextShader");
+                TrailShader = GetEffect("Effects/Trail");
+                Whiteout = GetEffect("Effects/Whiteout");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
+                Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
+                
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
+
+                Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
+
+
                 TrailTextures = new List<Texture2D>();
                 for (int i = 0; i < 7; i++)
                 {
                     TrailTextures.Add(GetTexture(AssetDirectory.Trails + "Trail" + i));
                 }
+
+                ModDetours.Load();
                 ModUtils.Load(false);
                 HexLoader.Load(false);
+                ILEdits.Load();
                 Particle.Load();
                 Trail.Load();
 
@@ -109,6 +125,38 @@ namespace OvermorrowMod.Common
                     //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");
                 }
             }
+        }
+
+        public override void Unload()
+        {
+            Mod = null;
+            Shockwave = null;
+            TrailShader = null;
+            TextShader = null;
+            BeamShader = null;
+            Whiteout = null;
+
+            TrailTextures = null;
+            ModDetours.Unload();
+            ModUtils.Load(true);
+            HexLoader.Load(true);
+            ILEdits.Unload();
+            Particle.Unload();
+            Trail.Unload();
+
+            Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
+            Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
+
+            Altar = null;
+            SandModeKey = null;
+            AmuletKey = null;
+            ToggleUI = null;
+
+        }
+
+        public override void PostUpdateEverything()
+        {
+            Trail.UpdateTrails();
         }
 
         public override void PostSetupContent()
@@ -324,29 +372,6 @@ namespace OvermorrowMod.Common
         internal void HideMyUI()
         {
             MyInterface?.SetState(null);
-        }
-
-        public override void Unload()
-        {
-            Mod = null;
-            Shockwave = null;
-            TrailShader = null;
-            TextShader = null;
-
-            TrailTextures = null;
-            ModUtils.Load(true);
-            HexLoader.Load(true);
-            Particle.Unload();
-            Trail.Unload();
-
-            Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
-            Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
-
-            Altar = null;
-            SandModeKey = null;
-            AmuletKey = null;
-            ToggleUI = null;
-
         }
 
         public override void PreUpdateEntities()
