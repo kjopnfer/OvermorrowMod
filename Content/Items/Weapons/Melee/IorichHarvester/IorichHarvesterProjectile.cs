@@ -112,7 +112,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             Color color26 = Color.LightGreen;
-            Texture2D texture2D16 = ModContent.GetTexture(AssetDirectory.Melee + "IorichHarvesterProjectile_Afterimage");
+            Texture2D texture2D16 = ModContent.GetTexture(AssetDirectory.Melee + "IorichHarvester/IorichHarvesterProjectile_Afterimage");
 
             int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
             int y2 = num154 * projectile.frame;
