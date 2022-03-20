@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Projectiles.Accessory;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -38,7 +39,7 @@ namespace OvermorrowMod.Content.Items.Accessories
             // Creating beams of light
             if (player.HeldItem.magic && player.itemAnimation > 0 && player.itemAnimation % 7 == 0)
             {
-                Projectile.NewProjectile(player.Center, new Vector2(0), ModContent.ProjectileType<OvermorrowMod.Projectiles.Accessory.StoredDamage>(), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
+                Projectile.NewProjectile(player.Center, new Vector2(0), ModContent.ProjectileType<StoredDamage>(), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
 
                 if (player.GetModPlayer<OvermorrowModPlayer>().storedDamage < damageCap)
                 {

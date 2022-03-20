@@ -6,7 +6,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace OvermorrowMod.Projectiles.NPCs.Town
+namespace OvermorrowMod.Content.Projectiles.NPCs.Town
 {
     public class MerchantRune : ModProjectile
     {

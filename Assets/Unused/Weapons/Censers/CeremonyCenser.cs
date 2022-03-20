@@ -1,4 +1,4 @@
-using OvermorrowMod.Projectiles.Censers;
+using OvermorrowMod.Content.Projectiles.Censers;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

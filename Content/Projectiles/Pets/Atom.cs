@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Pets
+namespace OvermorrowMod.Content.Projectiles.Pets
 {
     public class Atom : ModProjectile
     {

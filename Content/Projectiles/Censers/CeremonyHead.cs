@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Censers
+namespace OvermorrowMod.Content.Projectiles.Censers
 {
     public class CeremonyHead : ModProjectile
     {

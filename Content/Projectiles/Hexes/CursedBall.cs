@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Hexes
+namespace OvermorrowMod.Content.Projectiles.Hexes
 {
     public class CursedBall : ModProjectile
     {

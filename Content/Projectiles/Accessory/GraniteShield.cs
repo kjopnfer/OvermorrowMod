@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Accessory
+namespace OvermorrowMod.Content.Projectiles.Accessory
 {
     public class GraniteShield : ModProjectile
     {

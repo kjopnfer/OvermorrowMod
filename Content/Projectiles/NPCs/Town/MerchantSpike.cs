@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.NPCs.Town
+namespace OvermorrowMod.Content.Projectiles.NPCs.Town
 {
     public class MerchantSpike : ModProjectile
     {

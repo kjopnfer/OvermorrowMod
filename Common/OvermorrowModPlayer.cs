@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
-using OvermorrowMod.Projectiles.Accessory;
+using OvermorrowMod.Content.Projectiles.Accessory;
 using System;
 using System.IO;
 using Terraria;

@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.Misc
+namespace OvermorrowMod.Content.Projectiles.Misc
 {
     public class WaterOrbSpawner : ModProjectile
     {

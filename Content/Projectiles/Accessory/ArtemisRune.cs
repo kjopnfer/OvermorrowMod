@@ -4,7 +4,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace OvermorrowMod.Projectiles.Accessory
+namespace OvermorrowMod.Content.Projectiles.Accessory
 {
     public class ArtemisRune : ModProjectile
     {

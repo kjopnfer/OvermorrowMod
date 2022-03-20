@@ -1,6 +1,6 @@
 using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Content.Items.Pets;
-using OvermorrowMod.Projectiles.NPCs.Town;
+using OvermorrowMod.Content.Projectiles.NPCs.Town;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;

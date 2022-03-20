@@ -1,4 +1,4 @@
-﻿using OvermorrowMod.Projectiles.Accessory;
+﻿using OvermorrowMod.Content.Projectiles.Accessory;
 using Terraria;
 using Terraria.ModLoader;
 
