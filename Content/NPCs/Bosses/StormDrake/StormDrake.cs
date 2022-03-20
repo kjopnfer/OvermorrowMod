@@ -6,7 +6,6 @@ using OvermorrowMod.Content.Items.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
 using OvermorrowMod.Common.Particles;
-using OvermorrowMod.Projectiles.Boss;
 using System;
 using System.IO;
 using Terraria;

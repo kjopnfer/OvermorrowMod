@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff
             item.useTime = 24;
             item.width = 56;
             item.height = 56;
-            item.shoot = ModContent.ProjectileType<SplittingBlood>();
+            item.shoot = ModContent.ProjectileType<BloodSplit>();
             item.shootSpeed = 15f;
             item.knockBack = 3f;
             item.magic = true;

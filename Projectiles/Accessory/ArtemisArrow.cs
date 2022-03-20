@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,7 +8,7 @@ namespace OvermorrowMod.Projectiles.Accessory
 {
     public class ArtemisArrow : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Magic/MarbleArrow";
+        public override string Texture => AssetDirectory.Magic + "MarbleBook/MarbleArrow";
 
         public override void SetStaticDefaults()
         {

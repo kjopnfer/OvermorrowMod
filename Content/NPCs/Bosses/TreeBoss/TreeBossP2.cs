@@ -8,7 +8,6 @@ using OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow;
 using OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester;
 using OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand;
 using OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff;
-using OvermorrowMod.Projectiles.Boss;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -288,7 +287,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             direction.Normalize();
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                                //Projectile.NewProjectile(npc.Center, direction * shootSpeed, ModContent.ProjectileType<NatureScythe>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
                             }
                         }
 
@@ -312,7 +311,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             npc.netUpdate = true;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                NPC.NewNPC((int)randPositionX, (int)randPositionY, ModContent.NPCType<AbsorbEnergy>(), 0, 0f, npc.whoAmI, 0, npc.damage / 3, Main.myPlayer);
+                                //NPC.NewNPC((int)randPositionX, (int)randPositionY, ModContent.NPCType<AbsorbEnergy>(), 0, 0f, npc.whoAmI, 0, npc.damage / 3, Main.myPlayer);
                             }
                         }
                     }
@@ -348,7 +347,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<NatureBlast>(), 19, 2, Main.myPlayer);
+                                //Projectile.NewProjectile(npc.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<NatureBlast>(), 19, 2, Main.myPlayer);
                             }
                         }
                     }
@@ -388,8 +387,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y - 200), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
-                                    Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y + 200), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    //Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y - 200), Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
+                                    //Projectile.NewProjectile(new Vector2(player.Center.X + (250 * i), player.Center.Y + 200), -Vector2.UnitY * 5, ModContent.ProjectileType<NatureScythe>(), 17, 1f, Main.myPlayer, 0, 1);
                                 }
                             }
                         }

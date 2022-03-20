@@ -127,7 +127,7 @@ namespace OvermorrowMod.Common
             {
                 if (Main.rand.NextBool(50)) //2% percent drop 
                 {
-                     Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SearingSaber>());
+                     //Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SearingSaber>());
                 }
             }
 

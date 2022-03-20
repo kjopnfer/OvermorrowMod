@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -63,7 +64,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.GetTexture("OvermorrowMod/Textures/Extra_89");
+            Texture2D SoulTexture = ModContent.GetTexture(AssetDirectory.Textures + "Extra_89");
             Main.spriteBatch.Draw(SoulTexture, projectile.Center - Main.screenPosition, null, Main.DiscoColor, projectile.rotation + MathHelper.PiOver2, SoulTexture.Size() / 2, new Vector2(0.5f, 1), SpriteEffects.None, 0f);
 
             return false;

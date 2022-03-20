@@ -1,8 +1,6 @@
-using Terraria;
+/*using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using OvermorrowMod.Projectiles.Melee;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
@@ -34,4 +32,4 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             item.channel = true;
         }
     }
-}
+}*/

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -6,7 +7,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
 {
     public class ApollusArrowTwo : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Magic/MarbleArrow";
+        public override string Texture => AssetDirectory.Magic + "MarbleBook/MarbleArrow";
 
         private Vector2 storeVelocity;
         private float storeRotation = 25;

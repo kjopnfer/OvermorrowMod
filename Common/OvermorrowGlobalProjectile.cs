@@ -1,5 +1,5 @@
 using OvermorrowMod.Content.Buffs.Debuffs;
-using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs;
-using OvermorrowMod.Projectiles.Magic;
+using OvermorrowMod.Content.Items.Weapons.Magic.GraniteBook;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

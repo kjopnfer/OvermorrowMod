@@ -6,7 +6,6 @@ using OvermorrowMod.Content.Items.Armor.Masks;
 using OvermorrowMod.Content.Items.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

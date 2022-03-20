@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -7,6 +8,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
 {
     public class WormT1 : ModProjectile
     {
+        public override string Texture => AssetDirectory.Magic + "WormStaff/WormT1";
 
         private int Wtimer = 0;
         private bool didHit = false;
@@ -110,7 +112,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
     public class WormT2 : ModProjectile
     {
         private int timer = 0;
-        public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WormT3";
+        public override string Texture => AssetDirectory.Magic + "WormStaff/WormT3";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Holy Light");
@@ -163,6 +165,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
     public class WormT3 : ModProjectile
     {
         private int timer = 0;
+        public override string Texture => AssetDirectory.Magic + "WormStaff/WormT3";
 
         public override void SetStaticDefaults()
         {
@@ -214,7 +217,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
     public class WormT4 : ModProjectile
     {
         private int timer = 0;
-        public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WormT3";
+        public override string Texture => AssetDirectory.Magic + "WormStaff/WormT3";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Holy Light");
@@ -269,7 +272,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
 
     public class WormT5 : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Summon/Worm/WormT5";
+        public override string Texture => AssetDirectory.Magic + "WormStaff/WormT5";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Holy Light");

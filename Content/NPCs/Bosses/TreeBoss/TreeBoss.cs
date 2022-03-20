@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
-using OvermorrowMod.Projectiles.Boss;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -203,7 +202,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                         }
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 26, 2.5f, Main.myPlayer, 0f, 0f);
+                            //Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 26, 2.5f, Main.myPlayer, 0f, 0f);
                         }
                     }
 
@@ -231,12 +230,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             {
                                 if (i == 0)
                                 {
-                                    Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    //Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
                                 }
                                 else
                                 {
-                                    Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
-                                    Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    //Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                    //Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
                                 }
                             }
                         }
@@ -263,7 +262,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             for (int i = 0; i < numberProjectiles; i++)
                             {
                                 Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))) * .4f; // This defines the projectile roatation and speed. .4f == projectile speed
-                                Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
+                                //Projectile.NewProjectile(npc.Center.X, npc.Center.Y - 85, perturbedSpeed.X, perturbedSpeed.Y, ModContent.ProjectileType<FloatingSeeds>(), 17, 1f, Main.myPlayer);
                             }
                         }
                     }
@@ -311,12 +310,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                                 {
                                     if (i == 0)
                                     {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        //Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
                                     }
                                     else
                                     {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
-                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        //Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        //Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
                                     }
                                 }
                             }
@@ -345,12 +344,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                                 {
                                     if (i == 0)
                                     {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        //Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
                                     }
                                     else
                                     {
-                                        Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
-                                        Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        //Projectile.NewProjectile(playerPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
+                                        //Projectile.NewProjectile(playerPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 28, 2.5f, Main.myPlayer, 0f, 0f);
                                     }
                                 }
                             }
@@ -386,9 +385,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
-
-                            Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                            //Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                            //
+                            //Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
                             bufferCount++;
                         }
                     }
@@ -425,9 +424,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
-
-                                Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                                //Projectile.NewProjectile(npcPos2 * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
+                                //
+                                //Projectile.NewProjectile(npcPos * 16, new Vector2(0, -10), ModContent.ProjectileType<ThornHead>(), 31, 2.5f, Main.myPlayer, 0f, 0f);
                                 bufferCount++;
                             }
                         }

@@ -1,5 +1,5 @@
 using OvermorrowMod.Content.Items.Accessories.Expert;
-using OvermorrowMod.Content.Items.Armor;
+using OvermorrowMod.Content.Items.Armor.Granite;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
 using OvermorrowMod.Content.Items.Weapons.Magic.GraniteBook;

@@ -2,7 +2,7 @@ using System;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Projectiles.NPCs.Hostile
+namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
 {
     public class HostileReflectile : ModProjectile
     {

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -34,7 +35,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
 
     public class SnotExplosion : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Ranged/SnotRocket";
+        public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
             projectile.alpha = 255;

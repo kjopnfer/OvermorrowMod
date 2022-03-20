@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Buffs.Debuffs;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -9,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
 {
     public class SoulFlameRing : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Textures/FlameRing";
+        public override string Texture => AssetDirectory.Textures + "FlameRing";
 
         public override bool CanDamage() => false;
         public override void SetStaticDefaults()
@@ -49,7 +50,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/FlameRing");
+            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "FlameRing");
             int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
             int y2 = num154 * projectile.frame;
             Rectangle drawRectangle = new Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);

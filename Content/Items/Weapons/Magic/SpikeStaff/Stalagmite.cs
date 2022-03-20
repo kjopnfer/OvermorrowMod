@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -22,6 +23,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.SpikeStaff
         int mrand = Main.rand.Next(-100, 101);
         int mrand2 = Main.rand.Next(-100, 101);
         private bool charge = false;
+        public override string Texture => AssetDirectory.Magic + "SpikeStaff/ShotSpike";
 
         public override void SetStaticDefaults()
         {

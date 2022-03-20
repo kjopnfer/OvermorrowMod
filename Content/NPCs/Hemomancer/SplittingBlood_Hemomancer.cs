@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Projectiles.Boss;
+using OvermorrowMod.Content.NPCs.Bosses.DripplerBoss;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,7 +9,7 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
 {
     public class SplittingBlood_Hemomancer : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Projectiles/Boss/ElectricBall";
+        public override string Texture => AssetDirectory.Empty;
 
         public override void SetStaticDefaults()
         {

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -7,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HammerThrow
     public class VeloIncrease : ModProjectile
     {
         private int timer = 0;
-
+        public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bone");

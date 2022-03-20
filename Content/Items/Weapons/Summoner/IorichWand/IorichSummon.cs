@@ -6,6 +6,7 @@ using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Content.Buffs.Summon;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -261,7 +262,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/test2");
+            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "Spotlight");
 
             Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
@@ -303,7 +304,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
 
     public class IorichSummonShield : ModProjectile
     {
-        public override string Texture => "OvermorrowMod/Textures/Perlin";
+        public override string Texture => AssetDirectory.Textures + "Perlin";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Shield");

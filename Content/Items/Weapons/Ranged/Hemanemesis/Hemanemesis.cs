@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.Projectiles.Ranged;
 using Terraria.ID;
 using Terraria.ModLoader;
 

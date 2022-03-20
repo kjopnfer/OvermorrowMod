@@ -6,7 +6,6 @@ using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
 using OvermorrowMod.Content.Items.Weapons.Magic.MarbleBook;
 using OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow;
-using OvermorrowMod.Projectiles.NPCs.Hostile;
 using System;
 using Terraria;
 using Terraria.ID;

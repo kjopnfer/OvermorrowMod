@@ -92,7 +92,7 @@ namespace OvermorrowMod.Content.Items.Materials
 
             glowCounter++;
 
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Glow");
+            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "Glow");
             Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
 

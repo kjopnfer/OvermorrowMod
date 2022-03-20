@@ -1,14 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Items.Armor;
+using OvermorrowMod.Content.Items.Armor.Granite;
 using OvermorrowMod.Content.Items.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
 using OvermorrowMod.Content.Items.Weapons.Magic.GraniteBook;
 using OvermorrowMod.Content.Items.Weapons.Melee.GraniteSpear;
 using OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff;
-using OvermorrowMod.Projectiles.Boss;
 using System;
 using Terraria;
 using Terraria.ID;
