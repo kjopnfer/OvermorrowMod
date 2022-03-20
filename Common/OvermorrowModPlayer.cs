@@ -13,7 +13,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common
 {
-    public class OvermorrowModPlayer : ModPlayer
+    partial class OvermorrowModPlayer : ModPlayer
     {
         //sadness
         Vector2 screenPositionStore;
