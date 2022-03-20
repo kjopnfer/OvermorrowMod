@@ -1,4 +1,4 @@
-using OvermorrowMod.Projectiles.Summon;
+using OvermorrowMod.Content.Items.Weapons.Summoner.DemonEye;
 using Terraria;
 using Terraria.ModLoader;
 

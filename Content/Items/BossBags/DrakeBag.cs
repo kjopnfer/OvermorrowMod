@@ -1,10 +1,10 @@
 using OvermorrowMod.Content.Items.Accessories.Expert;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.Magic;
-using OvermorrowMod.Content.Items.Weapons.Melee;
-using OvermorrowMod.Content.Items.Weapons.Ranged;
-using OvermorrowMod.Content.Items.Weapons.Summoner;
+using OvermorrowMod.Content.Items.Weapons.Summoner.DrakeStaff;
+using OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow;
+using OvermorrowMod.Content.Items.Weapons.Melee.StormTalon;
+using OvermorrowMod.Content.Items.Weapons.Magic.BoltStream;
 using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using Terraria;
 using Terraria.ID;

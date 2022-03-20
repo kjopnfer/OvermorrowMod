@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Tiles
             Main.tileMergeDirt[Type] = false;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            drop = ModContent.ItemType<OvermorrowMod.Content.Items.Placeable.Tiles.CaveMud>();
+            drop = ModContent.ItemType<Items.Placeable.Tiles.CaveMud>();
             mineResist = 2f;
             AddMapEntry(new Color(79, 86, 97));
         }

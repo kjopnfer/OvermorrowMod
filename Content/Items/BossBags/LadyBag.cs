@@ -2,7 +2,8 @@ using OvermorrowMod.Content.Items.Accessories.Expert;
 using OvermorrowMod.Content.Items.Armor.Marble;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.Magic;
+using OvermorrowMod.Content.Items.Weapons.Magic.MarbleBook;
+using OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow;
 using OvermorrowMod.Content.NPCs.Bosses.Apollus;
 using Terraria;
 using Terraria.ID;
@@ -51,7 +52,7 @@ namespace OvermorrowMod.Content.Items.BossBags
             }
             else if (choice == 2) // Mage
             {
-                player.QuickSpawnItem(ModContent.ItemType<MarbleBook>());
+                player.QuickSpawnItem(ModContent.ItemType<MarbleBow>());
             }
 
 

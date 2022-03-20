@@ -1,4 +1,4 @@
-using OvermorrowMod.Projectiles.Summon;
+using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ModLoader;
 

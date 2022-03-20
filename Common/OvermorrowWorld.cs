@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using OvermorrowMod.Content.Items.Weapons.Magic;
-using OvermorrowMod.Content.Items.Weapons.Melee;
+using OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Content.Tiles.Block;
@@ -15,6 +14,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
+using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
 
 namespace OvermorrowMod.Common
 {

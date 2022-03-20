@@ -81,6 +81,7 @@ namespace OvermorrowMod.Common
         public bool explosionBuff;
         public bool graniteSpearBuff;
         public bool goldWind;
+        public bool iorichGuardianShield;
         public bool lightningCloud;
         public bool mirrorBuff;
         public bool moonBuff;
@@ -93,6 +94,9 @@ namespace OvermorrowMod.Common
 
         // Misc
         public int BowEnergyCount = 0;
+        public int IorichGuardianEnergy = 0;
+        public int ScytheHitCount = 0;
+
         public Vector2 AltarCoordinates;
         public int ScreenShake;
         public bool BossRoar;
@@ -103,6 +107,7 @@ namespace OvermorrowMod.Common
         public bool ShowText;
         public int TitleID;
         public bool UIToggled = false;
+        public bool StoleArtifact = false;
 
         // Biome
         public bool ZoneWaterCave = false;

@@ -1,3 +1,7 @@
+using OvermorrowMod.Content.Items.Weapons.Magic.GemStaves;
+using OvermorrowMod.Content.Items.Weapons.Magic.SandStaff;
+using OvermorrowMod.Content.Items.Weapons.Magic.WaterStaff;
+using OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,63 +42,63 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BarnabyStaff
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
             recipe.AddIngredient(ModContent.ItemType<AmethystStaff>());
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
             recipe.AddIngredient(ModContent.ItemType<TopazStaff>());
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
             recipe.AddIngredient(ModContent.ItemType<SapphireStaff>());
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
             recipe.AddIngredient(ModContent.ItemType<EmeraldStaff>());
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
             recipe.AddIngredient(ModContent.ItemType<AmberStaff>());
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
             recipe.AddIngredient(ModContent.ItemType<RubyStaff>());
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);
             recipe.AddRecipe();
 
             recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff>());
+            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
+            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
+            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
             recipe.AddIngredient(ModContent.ItemType<DiamondStaff>());
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(this);

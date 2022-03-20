@@ -1,10 +1,10 @@
 using OvermorrowMod.Content.Items.Accessories.Expert;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.Magic;
-using OvermorrowMod.Content.Items.Weapons.Melee;
-using OvermorrowMod.Content.Items.Weapons.Ranged;
-using OvermorrowMod.Content.Items.Weapons.Summoner;
+using OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow;
+using OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester;
+using OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand;
+using OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff;
 using OvermorrowMod.Content.NPCs.Bosses.TreeBoss;
 using Terraria;
 using Terraria.ID;

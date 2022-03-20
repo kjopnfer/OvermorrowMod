@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
@@ -59,13 +60,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
                 int num138 = num137;
                 for (int num139 = 0; num139 < 4; num139++)
                 {
-                    int num140 = Dust.NewDust(vector23, num137, num138, 89, 0f, 0f, 100, default(Color), 0.25f);
+                    int num140 = Dust.NewDust(vector23, num137, num138, DustID.EmeraldBolt, 0f, 0f, 100, default(Color), 0.25f);
                     Main.dust[num140].position = projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
                 }
 
                 for (int num141 = 0; num141 < 10; num141++)
                 {
-                    int num142 = Dust.NewDust(vector23, num137, num138, 107, 0f, 0f, 200, default(Color), 0.7f);
+                    int num142 = Dust.NewDust(vector23, num137, num138, DustID.TerraBlade, 0f, 0f, 200, default(Color), 0.7f);
                     Main.dust[num142].position = projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
                     Main.dust[num142].noGravity = true;
                     Main.dust[num142].noLight = true;
@@ -73,7 +74,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
                     dust.velocity *= 3f;
                     dust = Main.dust[num142];
                     dust.velocity += projectile.DirectionTo(Main.dust[num142].position) * (2f + Main.rand.NextFloat() * 4f);
-                    num142 = Dust.NewDust(vector23, num137, num138, 107, 0f, 0f, 100, default(Color), 0.25f);
+                    num142 = Dust.NewDust(vector23, num137, num138, DustID.TerraBlade, 0f, 0f, 100, default(Color), 0.25f);
                     Main.dust[num142].position = projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
                     dust = Main.dust[num142];
                     dust.velocity *= 2f;
@@ -87,7 +88,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
 
                 for (int num143 = 0; num143 < 10; num143++)
                 {
-                    int num144 = Dust.NewDust(vector23, num137, num138, 107, 0f, 0f, 0, default(Color), 0.7f);
+                    int num144 = Dust.NewDust(vector23, num137, num138, DustID.TerraBlade, 0f, 0f, 0, default(Color), 0.7f);
                     Main.dust[num144].position = projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy(projectile.velocity.ToRotation()) * num137 / 2f;
                     Main.dust[num144].noGravity = true;
                     Main.dust[num144].noLight = true;
@@ -99,7 +100,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
 
                 for (int num145 = 0; num145 < 50; num145++)
                 {
-                    int num146 = Dust.NewDust(vector23, num137, num138, 89, 0f, 0f, 0, default(Color), 0.25f);
+                    int num146 = Dust.NewDust(vector23, num137, num138, DustID.EmeraldBolt, 0f, 0f, 0, default(Color), 0.25f);
                     Main.dust[num146].position = projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy(projectile.velocity.ToRotation()) * num137 / 2f;
                     Main.dust[num146].noGravity = true;
                     Dust dust = Main.dust[num146];

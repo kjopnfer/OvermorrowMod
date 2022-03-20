@@ -1,5 +1,5 @@
 using OvermorrowMod.Content.Buffs.Summon;
-using OvermorrowMod.Projectiles.Summon;
+using OvermorrowMod.Projectiles.Accessory;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
