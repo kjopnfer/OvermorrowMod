@@ -14,6 +14,8 @@ namespace OvermorrowMod.Common
         private bool spawnedBlood = false;
         public bool slowedTime = false;
 
+        public bool RetractSlow = false;
+
         public override bool PreAI(Projectile projectile)
         {
             if (slowedTime && !projectile.friendly)
@@ -76,6 +78,16 @@ namespace OvermorrowMod.Common
                     spawnedBlood = true;
                 }
             }
+        }
+
+        public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
+        {
+            if (RetractSlow)
+            {
+                speed = 4;
+            }
+
+            base.GrappleRetreatSpeed(projectile, player, ref speed);
         }
     }
 }
