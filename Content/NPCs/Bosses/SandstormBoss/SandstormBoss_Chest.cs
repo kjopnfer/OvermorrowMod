@@ -14,6 +14,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
     {
         protected NPC ParentNPC;
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/SandstormBoss_Chest";
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Chestplate");

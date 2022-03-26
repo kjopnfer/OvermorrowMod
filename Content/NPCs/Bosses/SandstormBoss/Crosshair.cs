@@ -10,6 +10,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
     public class Crosshair : ModProjectile
     {
+        public override string Texture => AssetDirectory.Textures + "Crosshair";
         public override bool CanDamage() => false;
         public override void SetStaticDefaults()
         {
@@ -61,29 +62,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
     }
 
-    public class PlayerCrosshair : ModProjectile
+    public class PlayerCrosshair : Crosshair
     {
         protected NPC ParentNPC;
         private bool MouseFired = false;
-        public override bool CanDamage() => false;
-        public override string Texture => AssetDirectory.Textures + "Crosshair";
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Crosshair");
-        }
-
         public override void SetDefaults()
         {
-            projectile.width = 16;
-            projectile.height = 16;
+            base.SetDefaults();
             projectile.friendly = true;
             projectile.hostile = false;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.alpha = 255;
             projectile.timeLeft = 5;
-            projectile.penetrate = -1;
-            projectile.scale = 0.3f;
         }
 
         public override void AI()

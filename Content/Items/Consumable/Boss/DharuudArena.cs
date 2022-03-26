@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
         }
         public override void SetDefaults()
         {
-            projectile.width = projectile.height = 36;
+            projectile.width = projectile.height = 18;
             projectile.tileCollide = false;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -74,10 +74,10 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
 
             if (projectile.ai[0] == 360)
             {
-                Player player = Main.player[projectile.owner];
-                player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
-                player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
-                player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                //Player player = Main.player[projectile.owner];
+                //player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
+                //player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
+                //player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
 
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {

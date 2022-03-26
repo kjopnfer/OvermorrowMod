@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Content.Items.BossBags;
+using OvermorrowMod.Content.Items.Consumable.Boss;
 using OvermorrowMod.Content.Items.Weapons.Magic.SandStaff;
 using OvermorrowMod.Content.Items.Weapons.Melee.SandSpinner;
 using OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower;
@@ -24,6 +25,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         private int RandomDirection;
 
+        private Projectile ArenaCenter;
+
         private enum AttackTypes
         {
             //Shards = 1,
@@ -34,6 +37,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
         private int[] AttackQueue = new int[2];
         private int AttackCounter = 0;
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void SetStaticDefaults()
         {
@@ -117,6 +122,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             switch (AICase)
             {
                 case (int)AIStates.Intro:
+                    if (MiscCounter == 0)
+                    {
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            Projectile Arena = Main.projectile[i];
+                            if (Arena.active && Arena.modProjectile is DharuudArena)
+                            {
+                                ArenaCenter = Arena;
+                            }
+                        }
+                    }
+
                     /*if (MiscCounter++ % 60 == 0)
                     {
                         for (int i = 0; i < 3; i++)
@@ -134,8 +151,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         MiscCounter = 0;
                     }*/
 
-                    if (MiscCounter == 360)
+                    if (MiscCounter == 180)
                     {
+                        int WeakLink = Main.rand.Next(1, 9);
+
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC RuinNPC = Main.npc[i];
@@ -146,9 +165,28 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 RuinNPC.noGravity = false;
                             }
                         }
+
+                        int LinkID = 1;
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            NPC BarrierNPC = Main.npc[i];
+                            if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
+                            {
+                                ((Barrier)BarrierNPC.modNPC).Rotate = false;
+                                
+                                int Node = NPC.NewNPC((int)BarrierNPC.Center.X, (int)BarrierNPC.Center.Y, ModContent.NPCType<LightningNode>(), 0, LinkID, ArenaCenter.whoAmI);
+                                if (Main.npc[Node].ai[0] == WeakLink)
+                                {
+                                    Main.npc[Node].dontTakeDamage = false;
+                                    ((LightningNode)Main.npc[Node].modNPC).LinkColor = Color.Red;
+                                }
+
+                                LinkID++;
+                            }
+                        }
                     }
 
-                    if (MiscCounter++ == 600)
+                    if (MiscCounter++ == 1200)
                     {
                         AICase = (int)AIStates.Selector;
                         MiscCounter = 0;
