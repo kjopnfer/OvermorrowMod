@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
             item.useStyle = ItemUseStyleID.HoldingUp;
             item.maxStack = 20;
             item.noMelee = true;
-            item.consumable = true;
+            item.consumable = false;
             item.autoReuse = false;
         }
 

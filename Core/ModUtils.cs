@@ -2,8 +2,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
+using Terraria.GameContent.Events;
+using Terraria.ID;
 
 namespace OvermorrowMod.Core
 {
@@ -24,6 +27,15 @@ namespace OvermorrowMod.Core
                 stopRain = typeof(Main).GetMethod("StopRain", BindingFlags.Static | BindingFlags.NonPublic);
             }
         }
+
+        public static void SandstormStuff()
+        {
+            Sandstorm.IntendedSeverity = 20; //0.4f;
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+            NetMessage.SendData(MessageID.WorldData, -1, -1, null, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+        }
+
         public static void StartRain()
         {
             startRain.Invoke(null, null);
@@ -157,6 +169,35 @@ namespace OvermorrowMod.Core
                 if (isLeft(a, b, c) < 0) result = false;
             }
             return result;
+        }
+
+        public static List<T> Shuffle<T>(this List<T> list)
+        {
+            int c = list.Count;
+            List<T> current = new List<T>();
+            for (int i = 0; i < c; i++)
+            {
+                int index = Main.rand.Next(list.Count);
+                current.Add(list[index]);
+                list.RemoveAt(index);
+            }
+
+            return current;
+        }
+
+        public static T[] Shuffle<T>(this T[] array)
+        {
+            int n = array.Length;
+            while (n > 1)
+            {
+                int k = Main.rand.Next(n--);
+                T temp = array[n];
+                array[n] = array[k];
+                array[k] = temp;
+            }
+
+            return array;
+            //return Shuffle<T>(new List<T>(array)).ToArray();
         }
     }
 }

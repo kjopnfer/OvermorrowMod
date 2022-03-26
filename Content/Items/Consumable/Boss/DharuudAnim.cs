@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
-using OvermorrowMod.Content.Projectiles.Artifact;
+using OvermorrowMod.Core;
 using Terraria;
+using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace OvermorrowMod.Content.Items.Consumable.Boss
 {
     public class DharuudAnim : ModProjectile
@@ -28,29 +30,57 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
         }
         public override void AI()
         {
-            if (projectile.ai[1] == 0)
+            if (projectile.ai[0]++ == 0)
             {
+                if (!Sandstorm.Happening)
+                {
+                    Sandstorm.Happening = true;
+                    Sandstorm.TimeLeft = (int)(3600.0 * (8.0 + (double)Main.rand.NextFloat() * 16.0));
+                    ModUtils.SandstormStuff();
+                }
+
                 int proj = Projectile.NewProjectile(projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, projectile.damage / 2, 0f, projectile.owner);
                 projectile.position = Main.projectile[proj].Center;
                 projectile.position -= new Vector2(Main.projectile[proj].width, Main.projectile[proj].height);
-                Main.projectile[proj].timeLeft = 160;
+                Main.projectile[proj].timeLeft = 480;
                 Main.projectile[proj].damage = 0;
                 Main.projectile[proj].friendly = false;
                 Main.projectile[proj].hostile = false;
             }
-            if (projectile.ai[1] > 160)
+
+            if (projectile.ai[0] > 120)
+            {
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    Player player = Main.player[i];
+                    if (player.active && projectile.Distance(player.Center) < 2000)
+                    {
+                        player.GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
+                        player.GetModPlayer<OvermorrowModPlayer>().ShakeOffset = 5;
+                    }
+                }
+
+                if (projectile.ai[1]++ % 60 == 0)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Vector2 RandomPosition = projectile.Center + new Vector2(Main.rand.Next(-10, 10) * 75, 0);
+
+                        int RuinType = mod.NPCType("Ruin" + Main.rand.Next(1, 4));
+                        NPC.NewNPC((int)RandomPosition.X, (int)RandomPosition.Y, RuinType);
+                    }
+                }
+            }
+
+            if (projectile.ai[0] > 480)
             {
                 Player player = Main.player[projectile.owner];
                 player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
                 player.GetModPlayer<OvermorrowModPlayer>().TitleID = 1;
                 player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
-                int npc = NPC.NewNPC((int)projectile.Center.X, (int)(projectile.Center.Y), ModContent.NPCType<SandstormBoss>(), 0, 0f, 0f, 0f, 0f, 255);
-                int proj1 = Projectile.NewProjectile(projectile.Center + new Vector2(950, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
-                int proj2 = Projectile.NewProjectile(projectile.Center + new Vector2(-950, 0), Vector2.Zero, ModContent.ProjectileType<SafetyZone>(), 0, npc, Main.myPlayer);
-                //bool random = Main.rand.NextBool();
-                //((SafetyZone)Main.projectile[proj1].modProjectile).hide = random;
-                //((SafetyZone)Main.projectile[proj2].modProjectile).hide = !random;
-                //Main.PlaySound(SoundID.Roar, player.position, 0);
+
+                NPC.NewNPC((int)projectile.Center.X, (int)projectile.Center.Y, ModContent.NPCType<SandstormBoss>(), 0, -1f, 0f, 0f, 0f, 255);
+
                 Vector2 origin = new Vector2((int)projectile.Center.X, (int)(projectile.Center.Y));
                 float radius = 100;
                 int numLocations = 200;
@@ -61,9 +91,9 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                     int dust = Dust.NewDust(position, 2, 2, DustID.Sand, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                     Main.dust[dust].noGravity = true;
                 }
+
                 projectile.Kill();
             }
-            projectile.ai[1]++;
         }
     }
 }

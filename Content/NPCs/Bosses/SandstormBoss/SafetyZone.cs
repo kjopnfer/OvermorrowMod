@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Projectiles.Artifact
+namespace OvermorrowMod.Projectiles.Artifact
 {
     public class SafetyZone : ModProjectile
     {

@@ -15,9 +15,6 @@ namespace OvermorrowMod.Common
 {
     partial class OvermorrowModPlayer : ModPlayer
     {
-        //sadness
-        Vector2 screenPositionStore;
-
         // Accessories
         public bool ArmBracer;
         public bool ArtemisAmulet;
@@ -98,14 +95,6 @@ namespace OvermorrowMod.Common
         public int ScytheHitCount = 0;
 
         public Vector2 AltarCoordinates;
-        public int ScreenShake;
-        public bool BossRoar;
-        public int shakeTimer = 0;
-        public bool FocusBoss;
-        public bool canFocus = true;
-        private float amount = 0;
-        public bool ShowText;
-        public int TitleID;
         public bool UIToggled = false;
         public bool StoleArtifact = false;
 
@@ -591,95 +580,6 @@ namespace OvermorrowMod.Common
             }*/
         }
 
-        private bool holdPosition;
-        private int holdCounter = 0;
-        private Vector2 focusTo;
-        private int holdCameraLength;
-        private float towardsLength;
-        private float returnLength;
-        public void PlayerFocusCamera(Vector2 focusTo, int holdCameraLength, float towardsLength, float returnLength)
-        {
-            // The position to move to and from
-            this.focusTo = focusTo;
-
-            // How long the camera stays in place
-            this.holdCameraLength = holdCameraLength;
-
-            // How long it takes to travel to the position
-            this.towardsLength = towardsLength;
-
-            // How long it takes to return to the player
-            this.returnLength = returnLength;
-
-            // Finally, flag boolean to activate ModifyScreenPosition hook
-            FocusBoss = true;
-            canFocus = true;
-        }
-
-        public override void ModifyScreenPosition()
-        {
-            if (FocusBoss)
-            {
-                if (canFocus)
-                {
-                    if (!Main.gamePaused)
-                    {
-                        screenPositionStore = new Vector2(MathHelper.Lerp(player.Center.X - Main.screenWidth / 2, focusTo.X - Main.screenWidth / 2, amount), MathHelper.Lerp(player.Center.Y - Main.screenHeight / 2, focusTo.Y - Main.screenHeight / 2, amount));
-                    }
-
-                    Main.screenPosition = screenPositionStore;
-                    amount += 1 / towardsLength;
-                    if (amount >= 1f)
-                    {
-                        holdPosition = true;
-                        canFocus = false;
-                        amount = 0;
-                    }
-                }
-                else
-                {
-                    if (holdPosition)
-                    {
-                        Main.screenPosition = screenPositionStore;
-                        holdCounter++;
-
-                        if (holdCounter == holdCameraLength)
-                        {
-                            holdCounter = 0;
-                            holdPosition = false;
-                        }
-                    }
-                    else
-                    {
-                        if (!Main.gamePaused)
-                        {
-                            screenPositionStore = new Vector2(MathHelper.SmoothStep(focusTo.X - Main.screenWidth / 2, player.Center.X - Main.screenWidth / 2, amount), MathHelper.SmoothStep(focusTo.Y - Main.screenHeight / 2, player.Center.Y - Main.screenHeight / 2, amount));
-                        }
-                        Main.screenPosition = screenPositionStore;
-
-                        amount += 1 / returnLength;
-
-                        if (amount >= 1f)
-                        {
-                            amount = 0;
-                            FocusBoss = false;
-                            canFocus = true;
-                            ShowText = false;
-                        }
-                    }
-                }
-            }
-
-            if (!Main.gamePaused)
-            {
-                if (ScreenShake > 0)
-                {
-                    Main.screenPosition += new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20));
-                    ScreenShake--;
-                }
-            }
-        }
-
         public void DashMovement()
         {
             int cShoe = 0;
@@ -945,34 +845,5 @@ namespace OvermorrowMod.Common
                 }*/
             }
         }
-
-
-        // Synchronization Code
-        /*public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
-		{
-			ModPacket packet = mod.GetPacket();
-			packet.Write((byte)ExampleModMessageType.ExamplePlayerSyncPlayer);
-			packet.Write((byte)player.whoAmI);
-			packet.Write(exampleLifeFruits);
-			packet.Write(nonStopParty); // While we sync nonStopParty in SendClientChanges, we still need to send it here as well so newly joining players will receive the correct value.
-			packet.Send(toWho, fromWho);
-		}
-
-		public override void SendClientChanges(ModPlayer clientPlayer)
-		{
-			// Here we would sync something like an RPG stat whenever the player changes it.
-			ExamplePlayer clone = clientPlayer as ExamplePlayer;
-			if (clone.nonStopParty != nonStopParty)
-			{
-				// Send a Mod Packet with the changes.
-				var packet = mod.GetPacket();
-				packet.Write((byte)ExampleModMessageType.NonStopPartyChanged);
-				packet.Write((byte)player.whoAmI);
-				packet.Write(nonStopParty);
-				packet.Send();
-			}
-		}*/
-
-
     }
 }
