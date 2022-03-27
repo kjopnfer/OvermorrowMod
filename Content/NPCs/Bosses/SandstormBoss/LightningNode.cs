@@ -14,6 +14,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public Color LinkColor = Color.Yellow;
         public Projectile ArenaCenter;
 
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
@@ -27,6 +28,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             npc.timeLeft = 5;
             npc.lifeMax = 20;
             npc.aiStyle = -1;
+            npc.knockBackResist = 0f;
             npc.noTileCollide = true;
             npc.noGravity = true;
             npc.dontTakeDamage = true;
@@ -102,7 +104,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         break;
                 }
 
-                npc.velocity = ArenaCenter.DirectionFrom(npc.Center) * 0.75f;
+                npc.velocity = ArenaCenter.DirectionFrom(npc.Center) * 0.66f;
             }
 
             if (npc.Hitbox.Intersects(ArenaCenter.Hitbox))

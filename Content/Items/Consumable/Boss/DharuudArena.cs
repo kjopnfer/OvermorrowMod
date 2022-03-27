@@ -6,6 +6,7 @@ using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -99,6 +100,18 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                     Vector2 dustvelocity = new Vector2(0f, 20f).RotatedBy(MathHelper.ToRadians(360f / numLocations * i));
                     int dust = Dust.NewDust(position, 2, 2, DustID.Sand, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                     Main.dust[dust].noGravity = true;
+                }
+            }
+
+            if (projectile.ai[0] > 360)
+            {
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    Player player = Main.player[i];
+                    if (player.active && projectile.Distance(player.Center) > 600 && projectile.Distance(player.Center) < 1050 && player.immuneTime == 0)
+                    {
+                        player.Hurt(PlayerDeathReason.ByCustomReason(player.name + " was torn apart by the desert winds."), 50, 0);
+                    }
                 }
             }
 
