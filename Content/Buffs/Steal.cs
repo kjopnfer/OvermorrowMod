@@ -1,5 +1,7 @@
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Buffs
@@ -18,6 +20,19 @@ namespace OvermorrowMod.Content.Buffs
         public override void Update(Player player, ref int buffIndex)
         {
             player.GetModPlayer<OvermorrowModPlayer>().StoleArtifact = true;
+
+            // This does stuff when Dharuud is active
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (npc.active && npc.modNPC is SandstormBoss)
+                {
+                    player.buffImmune[BuffID.WindPushed] = true;
+                    player.moveSpeed += 0.85f;
+                    player.jumpSpeedBoost += 3f;
+                    player.doubleJumpSandstorm = true;
+                }
+            }
         }
     }
 }

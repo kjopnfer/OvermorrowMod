@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
@@ -39,6 +41,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             npc.dontTakeDamage = true;
         }
 
+        public ref float AICounter => ref npc.ai[0];
+        public ref float MiscCounter => ref npc.ai[1];
+        public ref float RotationCounter => ref npc.ai[2];
         public override void AI()
         {
             // Initialization step to save input into variables
@@ -67,13 +72,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             }
 
             // Code for the barriers to shift inwards
-            if (npc.ai[0] > 30 && npc.ai[0] < 60)
+            if (AICounter > 30 && AICounter < 60)
             {
                 Radius = MathHelper.SmoothStep(InitialRadius + 25, InitialRadius, Utils.Clamp(npc.ai[0] - 30f, 0, 30) / 30f);
             }
 
             // Code that runs after the projectiles have spawned in
-            if (npc.ai[0]++ > 90)
+            if (AICounter++ > 90)
             {
                 // Arena projectile tells it when to rotate
                 if (Rotate)
@@ -83,14 +88,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         Radius += 5;
                     }
 
-                    npc.ai[2] += 0.01f;
+                    RotationCounter -= 0.01f;
                 }
 
                 // Counter for the glowmask
-                npc.ai[1]++;
+                MiscCounter++;
             }
 
-            npc.Center = RotationCenter + new Vector2(Radius, 0).RotatedBy(RotationOffset + npc.ai[2]);
+            npc.Center = RotationCenter + new Vector2(Radius, 0).RotatedBy(RotationOffset + RotationCounter);
             npc.rotation = npc.DirectionTo(RotationCenter).ToRotation() + MathHelper.PiOver2;
         }
 
@@ -104,14 +109,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 if (!Main.gamePaused) npc.localAI[0]++;
 
                 float progress = Utils.Clamp(npc.localAI[0], 0, 15f) / 15f;
-                effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
-                effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
-                effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+                if (progress < 1)
+                {
+                    effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
+                    effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+                    effect.CurrentTechnique.Passes["Whiteout"].Apply();
+                }
 
                 Texture2D texture = Main.npcTexture[npc.type];
                 Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
 
-                spriteBatch.Draw(texture, npc.Center + new Vector2(0, 4) - Main.screenPosition, null, Color.White, npc.rotation, origin, 1f, SpriteEffects.None, 0f);
+                Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
+
+                spriteBatch.Draw(texture, npc.Center + new Vector2(0, 4) - Main.screenPosition, null, color, npc.rotation, origin, 1f, SpriteEffects.None, 0f);
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);
             }
@@ -126,8 +137,84 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             if (npc.ai[0] > 90 && !RunOnce)
             {
-                Main.spriteBatch.Draw(texture, npc.Center + new Vector2(0, 4) - Main.screenPosition, null, Color.Lerp(Color.Transparent, Color.White, npc.ai[1] / 60f), npc.rotation, origin, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, npc.Center + new Vector2(0, 4) - Main.screenPosition, null, Color.Lerp(Color.Transparent, Color.White, MiscCounter / 60f), npc.rotation, origin, 1f, SpriteEffects.None, 0f);
             }
+        }
+    }
+
+    public class Spin : ModNPC, ITrailEntity
+    {
+        public Color TrailColor(float progress) => Color.Lerp(Color.Yellow, Color.Orange, progress) * progress;
+        public float TrailSize(float progress) => 60;
+        public Type TrailType() => typeof(SpinTrail);
+
+        public Vector2 RotationCenter;
+        private bool RunOnce = true;
+
+        public bool Rotate = false;
+
+        private float RotationOffset;
+        private float InitialRadius;
+        private float Radius;
+
+        public override string Texture => AssetDirectory.Melee + "SoulSaber/SoulSaber";
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("speen");
+        }
+
+        public override void SetDefaults()
+        {
+            npc.width = 140;
+            npc.height = 140;
+            npc.noTileCollide = true;
+            npc.noGravity = true;
+            npc.knockBackResist = 0f;
+            npc.lifeMax = 100;
+            npc.aiStyle = -1;
+            npc.friendly = false;
+            npc.dontTakeDamage = true;
+            npc.alpha = 255;
+        }
+
+        public override void AI()
+        {
+            // Initialization step to save input into variables
+            if (RunOnce)
+            {
+                RotationCenter = new Vector2(npc.ai[0], npc.ai[1]);
+                RotationOffset = npc.ai[2];
+                InitialRadius = npc.ai[3];
+                Radius = InitialRadius; // Spawn offset from the circumference so that they "slide" inwards
+
+                RunOnce = false;
+                npc.ai[0] = 0;
+                npc.ai[1] = 0;
+                npc.ai[2] = 0;
+                npc.ai[3] = 0;
+            }
+
+            // Code that runs after the projectiles have spawned in
+            if (npc.ai[0]++ > 90)
+            {
+                // Arena projectile tells it when to rotate
+                if (Rotate)
+                {
+                    if (Radius < InitialRadius + 275)
+                    {
+                        Radius += 5;
+                    }
+
+                    npc.ai[2] -= 0.1f;
+                }
+
+                // Counter for the glowmask
+                npc.ai[1]++;
+            }
+
+            npc.Center = RotationCenter + new Vector2(Radius, 0).RotatedBy(RotationOffset + npc.ai[2]);
+            npc.rotation = npc.DirectionTo(RotationCenter).ToRotation() + MathHelper.PiOver4 + MathHelper.Pi;
         }
     }
 }

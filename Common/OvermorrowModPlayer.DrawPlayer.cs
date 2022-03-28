@@ -13,12 +13,14 @@ namespace OvermorrowMod.Common
 {
     public partial class OvermorrowModPlayer : ModPlayer
     {
-        private void DrawGuardianBar(PlayerDrawInfo drawInfo)
+        /*private void DrawGuardianBar(PlayerDrawInfo drawInfo)
         {
             Player drawPlayer = drawInfo.drawPlayer;
             OvermorrowModPlayer modPlayer = drawPlayer.GetModPlayer<OvermorrowModPlayer>();
 
-            Texture2D ChargeContainer = ModContent.GetTexture(AssetDirectory.UI + "SoulContainerS");
+            Main.spriteBatch.Reload(BlendState.Additive);
+            //Texture2D ChargeContainer = ModContent.GetTexture(AssetDirectory.UI + "SoulContainerS");
+            Texture2D ChargeContainer = ModContent.GetTexture(AssetDirectory.Textures + "TEST");
             Texture2D ChargeBar = ModContent.GetTexture(AssetDirectory.UI + "SoulMeterSFBar");
 
             const int textureHeight = 24;
@@ -27,16 +29,54 @@ namespace OvermorrowMod.Common
             var drawRectangleMeter = new Rectangle(0, textureHeight * frame, ChargeContainer.Width, textureHeight);
 
             Vector2 PlayerPosition = drawPlayer.position;
-            Vector2 ContainerPosition = new Vector2((int)(PlayerPosition.X - (double)Main.screenPosition.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(PlayerPosition.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0) + 153 + 60) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
+            //Vector2 ContainerPosition = new Vector2((int)(PlayerPosition.X - (double)Main.screenPosition.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(PlayerPosition.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0) + 153 + 60) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
+            Vector2 ContainerPosition = new Vector2((int)(PlayerPosition.X - (double)Main.screenPosition.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(PlayerPosition.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 16.0)) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
 
-            DrawData drawData = new DrawData(ChargeContainer, ContainerPosition, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeContainer.Size() / 2f, 1f, SpriteEffects.None, 0);
-            Main.playerDrawData.Add(drawData);
+            //DrawData drawData = new DrawData(ChargeContainer, ContainerPosition, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeContainer.Size() / 2f, 1f, SpriteEffects.None, 0);
+            DrawData drawData = new DrawData(ChargeContainer, ContainerPosition, null, Color.White, drawPlayer.bodyRotation, ChargeContainer.Size() / 2f, 1f, SpriteEffects.None, 0);
+            //Main.playerDrawData.Add(drawData);
+
+            drawData.Draw(Main.spriteBatch);
 
             Rectangle drawRectangleBar = new Rectangle(0, textureHeight * 5, (int)(ChargeBar.Width * MathHelper.Lerp(0, 1, modPlayer.IorichGuardianEnergy / 100f)), textureHeight);
             drawData = new DrawData(ChargeBar, ContainerPosition + new Vector2(19, 0), drawRectangleBar, Color.White, drawPlayer.bodyRotation, ChargeContainer.Size() / 2f, 1f, SpriteEffects.None, 0);
-            Main.playerDrawData.Add(drawData);
-        }
+            //Main.playerDrawData.Add(drawData);
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
 
+        }*/
+
+        public int frameCounter;
+        public int frame = 0;
+        private void DrawGuardianBar(PlayerDrawInfo drawInfo)
+        {
+            Player drawPlayer = drawInfo.drawPlayer;
+            DrawData drawData = new DrawData();
+            Vector2 Position = drawPlayer.position;
+
+            Vector2 position = new Vector2((int)(Position.X - (double)Main.screenPosition.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(Position.Y - (double)Main.screenPosition.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4.0) + 3224) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
+
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D ChargeContainer = ModContent.GetTexture(AssetDirectory.Textures + "TESTCIRCLE");
+
+            frameCounter++;
+
+            if (frameCounter % 3f == 2f) // Ticks per frame
+            {
+                frame += 1;
+            }
+
+            if (frame >= 26) // 6 is max # of frames
+            {
+                frame = 0; // Reset back to default
+            }
+
+            var drawRectangleMeter = new Rectangle(0, 256 * frame, ChargeContainer.Width, 256);
+            drawData = new DrawData(ChargeContainer, position, drawRectangleMeter, Color.White, drawPlayer.bodyRotation, ChargeContainer.Size() / 2f, 1f, SpriteEffects.None, 0);
+            drawData.Draw(Main.spriteBatch);
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+        }
         private void DrawShield(PlayerDrawInfo drawInfo)
         {
             Player drawPlayer = drawInfo.drawPlayer;

@@ -37,8 +37,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         private ref float SelfID => ref npc.ai[0];
         private ref float ArenaID => ref npc.ai[1];
         private ref float AICounter => ref npc.ai[2];
-        private ref float Angle => ref npc.ai[3];
-
         public override void AI()
         {
             ArenaCenter = Main.projectile[(int)ArenaID];
@@ -61,12 +59,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC NodeNPC = Main.npc[i];
-                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1)
+                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1 && NodeNPC.modNPC is LightningNode)
                             {
                                 Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
                             }
 
-                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1)
+                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1 && NodeNPC.modNPC is LightningNode)
                             {
                                 Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
                             }
@@ -76,12 +74,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC NodeNPC = Main.npc[i];
-                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1)
+                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1 && NodeNPC.modNPC is LightningNode)
                             {
                                 Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
                             }
 
-                            if (NodeNPC.active && NodeNPC.ai[0] == 8)
+                            if (NodeNPC.active && NodeNPC.ai[0] == 8 && NodeNPC.modNPC is LightningNode)
                             {
                                 Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
                             }
@@ -91,12 +89,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC NodeNPC = Main.npc[i];
-                            if (NodeNPC.active && NodeNPC.ai[0] == 1)
+                            if (NodeNPC.active && NodeNPC.ai[0] == 1 && NodeNPC.modNPC is LightningNode)
                             {
                                 Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
                             }
 
-                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1)
+                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1 && NodeNPC.modNPC is LightningNode)
                             {
                                 Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
                             }

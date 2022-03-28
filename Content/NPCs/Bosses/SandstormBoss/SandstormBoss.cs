@@ -33,7 +33,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             //Vortex = 2,
             //Spin = 3,
             Wall = 4,
-            Pillars = 5
+            ChainLightning = 5
+            //Pillars = 5
         }
         private int[] AttackQueue = new int[2];
         private int AttackCounter = 0;
@@ -79,7 +80,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Vortex = 2,
             Spin = 3,
             Wall = 4,
-            Pillars = 5
+            //Pillars = 5
+            ChainLightinng = 5
         }
 
         public override void AI()
@@ -151,42 +153,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         MiscCounter = 0;
                     }*/
 
-                    if (MiscCounter == 180)
-                    {
-                        int WeakLink = Main.rand.Next(1, 9);
 
-                        for (int i = 0; i < Main.maxNPCs; i++)
-                        {
-                            NPC RuinNPC = Main.npc[i];
-                            if (RuinNPC.active && RuinNPC.modNPC is Ruin)
-                            {
-                                ((Ruin)RuinNPC.modNPC).CanFall = true;
-                                RuinNPC.velocity.Y = Main.rand.Next(3, 6);
-                                RuinNPC.noGravity = false;
-                            }
-                        }
 
-                        int LinkID = 1;
-                        for (int i = 0; i < Main.maxNPCs; i++)
-                        {
-                            NPC BarrierNPC = Main.npc[i];
-                            if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
-                            {
-                                ((Barrier)BarrierNPC.modNPC).Rotate = false;
-                                
-                                int Node = NPC.NewNPC((int)BarrierNPC.Center.X, (int)BarrierNPC.Center.Y, ModContent.NPCType<LightningNode>(), 0, LinkID, ArenaCenter.whoAmI);
-                                if (Main.npc[Node].ai[0] == WeakLink)
-                                {
-                                    Main.npc[Node].dontTakeDamage = false;
-                                    ((LightningNode)Main.npc[Node].modNPC).LinkColor = Color.Red;
-                                }
-
-                                LinkID++;
-                            }
-                        }
-                    }
-
-                    if (MiscCounter++ == 1200)
+                    if (MiscCounter++ == 60)
                     {
                         AICase = (int)AIStates.Selector;
                         MiscCounter = 0;
@@ -336,35 +305,77 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         MiscCounter = 0;
                     }
                     break;
-                case (int)AIStates.Pillars:
-                    if (MiscCounter++ == 60)
+                case (int)AIStates.ChainLightinng:
+                    if (MiscCounter++ == 180)
                     {
-                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-5, 5) * 100, Main.rand.Next(-150, -100));
-                        Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarSpawner>(), npc.damage, 3f, Main.myPlayer, RandomPosition.X, RandomPosition.Y);
-
-                        for (int i = -1; i <= 1; i += 2)
+                        int WeakLink = Main.rand.Next(1, 9);
+                        int LinkID = 1;
+                        for (int i = 0; i < Main.maxNPCs; i++)
                         {
-                            Vector2 RandomPositionSides = RandomPosition + new Vector2(Main.rand.Next(100, 450) * i, Main.rand.Next(-20, 20));
-                            Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarSpawner>(), npc.damage, 3f, Main.myPlayer, RandomPositionSides.X, RandomPositionSides.Y);
+                            NPC BarrierNPC = Main.npc[i];
+                            if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
+                            {
+                                ((Barrier)BarrierNPC.modNPC).Rotate = false;
+
+                                int Node = NPC.NewNPC((int)BarrierNPC.Center.X, (int)BarrierNPC.Center.Y, ModContent.NPCType<LightningNode>(), 0, LinkID, ArenaCenter.whoAmI);
+                                if (Main.npc[Node].ai[0] == WeakLink)
+                                {
+                                    Main.npc[Node].dontTakeDamage = false;
+                                    ((LightningNode)Main.npc[Node].modNPC).LinkColor = Color.Red;
+                                }
+
+                                LinkID++;
+                            }
                         }
                     }
 
-                    if (MiscCounter == 120)
+                    if (MiscCounter == 600)
                     {
-                        if (AttackCounter == 2)
+                        for (int i = 0; i < Main.maxNPCs; i++)
                         {
-                            AICase = (int)AIStates.Selector;
-                            AttackCounter = 0;
+                            NPC BarrierNPC = Main.npc[i];
+                            if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
+                            {
+                                ((Barrier)BarrierNPC.modNPC).Rotate = true;
+                            }
                         }
-                        else
-                        {
-                            AICase = AttackQueue[1];
-                            AttackCounter++;
-                        }
+                    }
 
+                    if (MiscCounter == 1200)
+                    {
+                        AICase = (int)AIStates.Selector;
                         MiscCounter = 0;
                     }
                     break;
+                    /*case (int)AIStates.Pillars:
+                        if (MiscCounter++ == 60)
+                        {
+                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-5, 5) * 100, Main.rand.Next(-150, -100));
+                            Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarSpawner>(), npc.damage, 3f, Main.myPlayer, RandomPosition.X, RandomPosition.Y);
+
+                            for (int i = -1; i <= 1; i += 2)
+                            {
+                                Vector2 RandomPositionSides = RandomPosition + new Vector2(Main.rand.Next(100, 450) * i, Main.rand.Next(-20, 20));
+                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarSpawner>(), npc.damage, 3f, Main.myPlayer, RandomPositionSides.X, RandomPositionSides.Y);
+                            }
+                        }
+
+                        if (MiscCounter == 120)
+                        {
+                            if (AttackCounter == 2)
+                            {
+                                AICase = (int)AIStates.Selector;
+                                AttackCounter = 0;
+                            }
+                            else
+                            {
+                                AICase = AttackQueue[1];
+                                AttackCounter++;
+                            }
+
+                            MiscCounter = 0;
+                        }
+                        break;*/
             }
 
             ArmorImmune = false;
@@ -461,15 +472,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             // Main.windSpeed is instantaneous
             // windSpeed affects how strong the sandstorm will push the player
 
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "star_05");
-            Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
-
-            if (!Main.gamePaused) GlobalCounter -= 0.5f;
-
-            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(GlobalCounter), origin, 1f, SpriteEffects.None, 0f);
-
-            texture = ModContent.GetTexture(AssetDirectory.Textures + "magic_02");
-            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(GlobalCounter), origin, 1.5f, SpriteEffects.None, 0f);
+            //Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "star_05");
+            //Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
+            //
+            //if (!Main.gamePaused) GlobalCounter -= 0.5f;
+            //
+            //Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(GlobalCounter), origin, 1f, SpriteEffects.None, 0f);
+            //
+            //texture = ModContent.GetTexture(AssetDirectory.Textures + "magic_02");
+            //Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(GlobalCounter), origin, 1.5f, SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

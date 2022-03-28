@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Buffs;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -100,7 +101,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (player.active && !PickedUp && npc.Hitbox.Intersects(player.Hitbox) && !player.HasBuff(ModContent.BuffType<Steal>()))
                     {
                         ParentPlayer = player;
-                        player.AddBuff(ModContent.BuffType<Steal>(), 540);
+                        //player.AddBuff(ModContent.BuffType<Steal>(), 540);
+                        player.AddBuff(ModContent.BuffType<Steal>(), 1200);
 
 
                         npc.noTileCollide = true;
@@ -208,7 +210,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
     public class LaserMinion : DharuudMinion
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
+        public override string Texture => AssetDirectory.Boss + "SandstormBoss/Hilt";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Forbidden Laser Artifact");
@@ -370,7 +372,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
     public class BeamMinion : DharuudMinion
     {
         private bool FiringBeam = false;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
+        //public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
+        public override string Texture => AssetDirectory.Boss + "SandstormBoss/Gem";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Forbidden Beam Artifact");
