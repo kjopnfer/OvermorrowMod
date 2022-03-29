@@ -85,7 +85,7 @@ namespace OvermorrowMod.Common
                 NPC npc = Main.npc[i];
                 if (npc.active && npc.modNPC is CollideableNPC && npc.Hitbox.Intersects(proj.Hitbox))
                 {
-                    Main.NewText("test");
+                    //Main.NewText("test");
 
                     proj.velocity = Vector2.Zero;
                     proj.tileCollide = true;

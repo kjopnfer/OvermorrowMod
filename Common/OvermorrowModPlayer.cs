@@ -92,6 +92,7 @@ namespace OvermorrowMod.Common
         // Misc
         public int BowEnergyCount = 0;
         public int IorichGuardianEnergy = 0;
+        public int PlatformTimer = 0;
         public int ScytheHitCount = 0;
 
         public Vector2 AltarCoordinates;
@@ -371,6 +372,12 @@ namespace OvermorrowMod.Common
                 amuletCounter--;
             }
         }
+
+        public override void PreUpdate()
+        {
+            PlatformTimer--;
+        }
+
         public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
         {
             if (DripplerEye)

@@ -117,108 +117,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             {
                 if (projectile.ai[0] == 460)
                 {
-                    int RADIUS = 300;
-                    /*for (int x = 0; x < Main.maxTilesX; x++)
+                    DisablePlatforms();
+
+                    for (int i = 0; i < 4; i++)
                     {
-                        for (int y = 0; y < Main.maxTilesY; y++)
-                        {                          
-                            Tile tile = Framing.GetTileSafely(x, y);
-                            Vector2 TileDistance = new Vector2(x, y) * 16;
+                        int RADIUS = 300;
+                        float Rotation = i * MathHelper.PiOver2;
 
-                            if (projectile.Distance(TileDistance) > 600) continue;
-
-                            if (tile.active() && TileID.Sets.Platforms[tile.type])
-                            {
-                                Wiring.ActuateForced(x, y);
-
-                                // inActive is actuated + active
-                                // nActive is not actuated + active
-                                tile.inActive(true);
-                            }
-                        }
-                    }*/
-
-                    int xCoord = (int)(projectile.Center.X / 16);
-                    int yCoord = (int)(projectile.Center.Y / 16);
-
-                    int xAxis = xCoord;
-                    int yAxis = yCoord;
-
-
-                    for (int j = 0; j < RADIUS; j++)
-                    {
-                        yAxis++;
-                        xAxis = xCoord;
-
-                        // Draws bottom right quadrant
-                        for (int i = 0; i < RADIUS - j; i++)
-                        {
-                            xAxis++;
-
-                            Tile tile = Framing.GetTileSafely(xAxis, yAxis);
-                            if (tile.active() && TileID.Sets.Platforms[tile.type])
-                            {
-                                Wiring.ActuateForced(xAxis, yAxis);
-
-                                // inActive is actuated + active
-                                // nActive is not actuated + active
-                                tile.inActive(true);
-                            }
-                        }
-
-                        // Reset the xAxis, offset by 1 to fill in the gap
-                        xAxis = xCoord + 1;
-
-                        // Draws bottom left quadrant
-                        for (int i = 0; i < RADIUS - j; i++)
-                        {
-                            xAxis--;
-
-                            Tile tile = Framing.GetTileSafely(xAxis, yAxis);
-                            if (tile.active() && TileID.Sets.Platforms[tile.type])
-                            {
-                                Wiring.ActuateForced(xAxis, yAxis);
-                                tile.inActive(true);
-                            }
-                        }
+                        Vector2 SpawnPosition = projectile.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation);
+                        NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<SandPlatform>(), 0, projectile.Center.X, projectile.Center.Y, Rotation, RADIUS);
                     }
 
-
-                    // Reset the y axis, offset by 1 to fill in the gap
-                    yAxis = yCoord + 1;
-
-                    for (int j = 0; j < RADIUS; j++)
+                    for (int i = 0; i < Main.maxNPCs; i++)
                     {
-                        yAxis--;
-                        xAxis = xCoord;
-
-                        // Draws top right quadrant
-                        for (int i = 0; i < RADIUS - j; i++)
+                        NPC npc = Main.npc[i];
+                        if (npc.active && npc.type == ModContent.NPCType<SandPlatform>())
                         {
-                            xAxis++;
-
-                            Tile tile = Framing.GetTileSafely(xAxis, yAxis);
-                            if (tile.active() && TileID.Sets.Platforms[tile.type])
-                            {
-                                Wiring.ActuateForced(xAxis, yAxis);
-                                tile.inActive(true);
-                            }
-                        }
-
-                        // Reset the xAxis, offset by 1 to fill in the gap
-                        xAxis = xCoord + 1;
-
-                        // Draws top left quadrant
-                        for (int i = 0; i < RADIUS - j; i++)
-                        {
-                            xAxis--;
-
-                            Tile tile = Framing.GetTileSafely(xAxis, yAxis);
-                            if (tile.active() && TileID.Sets.Platforms[tile.type])
-                            {
-                                Wiring.ActuateForced(xAxis, yAxis);
-                                tile.inActive(true);
-                            }
+                            ((SandPlatform)npc.modNPC).Rotate = true;
                         }
                     }
                 }
@@ -259,7 +174,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                 if (!Main.gamePaused) projectile.localAI[0]++;
 
-                float alpha = MathHelper.Lerp(0, 0.65f, (float)Math.Sin(projectile.localAI[0] / 30f));
+                float alpha = MathHelper.Lerp(0, 0.65f, (float)Math.Sin(projectile.localAI[0] / 15f));
                 spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, color * alpha, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, circleScale, SpriteEffects.None, 0f);
             }
 
@@ -270,24 +185,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void Kill(int timeLeft)
         {
-            /*for (int x = 0; x < Main.maxTilesX; x++)
-            {
-                for (int y = 0; y < Main.maxTilesY; y++)
-                {
-                    Tile tile = Framing.GetTileSafely(x, y);
-                    Vector2 TileDistance = new Vector2(x, y) * 16;
+            DisablePlatforms(false);
+        }
 
-                    if (projectile.Distance(TileDistance) > 600) continue;
-
-                    if (tile.active() && TileID.Sets.Platforms[tile.type])
-                    {
-                        Wiring.ActuateForced(x, y);
-                        tile.inActive(false);
-                    }
-                }
-            }*/
-
-
+        public void DisablePlatforms(bool inActive = true)
+        {
             int RADIUS = 300;
             int xCoord = (int)(projectile.Center.X / 16);
             int yCoord = (int)(projectile.Center.Y / 16);
@@ -300,6 +202,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             {
                 yAxis++;
                 xAxis = xCoord;
+
                 // Draws bottom right quadrant
                 for (int i = 0; i < RADIUS - j; i++)
                 {
@@ -309,7 +212,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (tile.active() && TileID.Sets.Platforms[tile.type])
                     {
                         Wiring.ActuateForced(xAxis, yAxis);
-                        tile.inActive(false);
+
+                        // inActive is actuated + active
+                        // nActive is not actuated + active
+                        tile.inActive(inActive);
                     }
                 }
 
@@ -325,7 +231,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (tile.active() && TileID.Sets.Platforms[tile.type])
                     {
                         Wiring.ActuateForced(xAxis, yAxis);
-                        tile.inActive(false);
+                        tile.inActive(inActive);
                     }
                 }
             }
@@ -348,7 +254,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (tile.active() && TileID.Sets.Platforms[tile.type])
                     {
                         Wiring.ActuateForced(xAxis, yAxis);
-                        tile.inActive(false);
+                        tile.inActive(inActive);
                     }
                 }
 
@@ -364,12 +270,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (tile.active() && TileID.Sets.Platforms[tile.type])
                     {
                         Wiring.ActuateForced(xAxis, yAxis);
-                        tile.inActive(false);
+                        tile.inActive(inActive);
                     }
                 }
             }
-
-
         }
     }
 }
