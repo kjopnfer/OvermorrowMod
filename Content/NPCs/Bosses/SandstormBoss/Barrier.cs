@@ -14,10 +14,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
     public class Barrier : ModNPC
     {
+        // TODO: Synchronize booleans whenever netUpdate is called
+        // TODO: Go through other classes that use ((Class)NPC.modNPC).variable and add a netUpdate call to them
+        public int BarrierID;
+
         public Vector2 RotationCenter;
         private bool RunOnce = true;
 
         public bool Rotate = false;
+        public bool Shockwave = false;
 
         private float RotationOffset;
         private float InitialRadius;
@@ -89,6 +94,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     }
 
                     RotationCounter -= 0.01f;
+                }
+
+                if (Shockwave)
+                {
+                    if (Main.rand.NextBool(5))
+                    {
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Yellow);
+                    }
                 }
 
                 // Counter for the glowmask

@@ -32,9 +32,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             //Shards = 1,
             //Vortex = 2,
             //Spin = 3,
-            Wall = 4,
-            ChainLightning = 5
+            //Wall = 4,
+            ChainLightning = 5,
             //Pillars = 5
+            Shockwave = 6
         }
         private int[] AttackQueue = new int[2];
         private int AttackCounter = 0;
@@ -81,7 +82,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Spin = 3,
             Wall = 4,
             //Pillars = 5
-            ChainLightinng = 5
+            ChainLightinng = 5,
+            Shockwave = 6
         }
 
         public override void AI()
@@ -134,30 +136,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 ArenaCenter = Arena;
                             }
                         }
-                    }
+                    }  
 
-                    /*if (MiscCounter++ % 60 == 0)
+                    if (MiscCounter++ == 120)
                     {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-9, 9) * 75, 0);
+                        //AICase = (int)AIStates.Selector;
+                        AICase = (int)AIStates.Shockwave;
 
-                            int RuinType = mod.NPCType("Ruin" + Main.rand.Next(1, 4));
-                            NPC.NewNPC((int)RandomPosition.X, (int)RandomPosition.Y, RuinType);
-                        }
-                    }
-
-                    if (MiscCounter == 1200)
-                    {
-                        AICase = (int)AIStates.Selector;
-                        MiscCounter = 0;
-                    }*/
-
-
-
-                    if (MiscCounter++ == 60)
-                    {
-                        AICase = (int)AIStates.Selector;
                         MiscCounter = 0;
                     }
 
@@ -194,8 +179,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         AttackCounter = 0;
 
-                        //AICase = (int)AIStates.Spin;
-                        AICase = AttackQueue[AttackCounter];
+                        AICase = (int)AIStates.Shockwave;
+                        //AICase = AttackQueue[AttackCounter];
 
                         AttackCounter++;
                         MiscCounter = 0;
@@ -347,35 +332,57 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         MiscCounter = 0;
                     }
                     break;
-                    /*case (int)AIStates.Pillars:
-                        if (MiscCounter++ == 60)
+                case (int)AIStates.Shockwave:
+                    if (++MiscCounter == 120)
+                    {
+                        Main.NewText("PAIR");
+
+                        // Retrieve a random ID for the barrier
+                        int RandomID = Main.rand.Next(1, 9);
+                        // Retrieve the opposite pair of the barrier
+                        switch (RandomID)
                         {
-                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-5, 5) * 100, Main.rand.Next(-150, -100));
-                            Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarSpawner>(), npc.damage, 3f, Main.myPlayer, RandomPosition.X, RandomPosition.Y);
-
-                            for (int i = -1; i <= 1; i += 2)
-                            {
-                                Vector2 RandomPositionSides = RandomPosition + new Vector2(Main.rand.Next(100, 450) * i, Main.rand.Next(-20, 20));
-                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<PillarSpawner>(), npc.damage, 3f, Main.myPlayer, RandomPositionSides.X, RandomPositionSides.Y);
-                            }
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                for (int i = 0; i < Main.maxNPCs; i++)
+                                {
+                                    NPC BarrierNPC = Main.npc[i];
+                                    if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
+                                    {
+                                        if (((Barrier)BarrierNPC.modNPC).BarrierID == RandomID || ((Barrier)BarrierNPC.modNPC).BarrierID == RandomID + 4)
+                                        {
+                                            ((Barrier)BarrierNPC.modNPC).Shockwave = true;
+                                        }
+                                    }
+                                }
+                                break;
+                            case 5:
+                            case 6:
+                            case 7:
+                            case 8:
+                                for (int i = 0; i < Main.maxNPCs; i++)
+                                {
+                                    NPC BarrierNPC = Main.npc[i];
+                                    if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
+                                    {
+                                        if (((Barrier)BarrierNPC.modNPC).BarrierID == RandomID || ((Barrier)BarrierNPC.modNPC).BarrierID == RandomID - 4)
+                                        {
+                                            ((Barrier)BarrierNPC.modNPC).Shockwave = true;
+                                        }
+                                    }
+                                }
+                                break;
                         }
+                    }
 
-                        if (MiscCounter == 120)
-                        {
-                            if (AttackCounter == 2)
-                            {
-                                AICase = (int)AIStates.Selector;
-                                AttackCounter = 0;
-                            }
-                            else
-                            {
-                                AICase = AttackQueue[1];
-                                AttackCounter++;
-                            }
-
-                            MiscCounter = 0;
-                        }
-                        break;*/
+                    if (MiscCounter == 240)
+                    {
+                        AICase = (int)AIStates.Selector;
+                        MiscCounter = 0;
+                    }
+                    break;
             }
 
             ArmorImmune = false;

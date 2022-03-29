@@ -125,14 +125,12 @@ namespace OvermorrowMod.Common.Particles
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Reload(BlendState.Additive);
 
             Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
 
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
     public class Smoke2 : CustomParticle
@@ -504,7 +502,8 @@ namespace OvermorrowMod.Common.Particles
     }
     public class Shockwave : CustomParticle
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.StardustTowerMark;
+        //public override string Texture => "Terraria/Projectile_" + ProjectileID.StardustTowerMark;
+        public override string Texture => AssetDirectory.Textures + "PulseCircle";
         public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
         float maxTime = 60f;
         public override void OnSpawn()
@@ -529,11 +528,16 @@ namespace OvermorrowMod.Common.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
+            spriteBatch.Reload(BlendState.Additive);
+
             Texture2D texture = Particle.ParticleTextures[particle.type];
             Vector2 origin = new Vector2(texture.Width, texture.Height) / 2;
             float progress = (float)particle.activeTime / maxTime;
-            float baseScale = 512f / (float)texture.Width;
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, 0f, origin, baseScale * particle.scale, SpriteEffects.None, 0f);
+            //float baseScale = 512f / (float)texture.Width;
+            Vector2 scale = new Vector2(particle.scale, particle.scale * 1.5f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, 0f, origin, scale, SpriteEffects.None, 0f);
+
+            spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
     public class Shockwave2 : CustomParticle

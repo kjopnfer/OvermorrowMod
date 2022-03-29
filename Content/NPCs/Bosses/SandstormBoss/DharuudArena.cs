@@ -65,7 +65,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     float Rotation = BarrierCounter * MathHelper.PiOver4;
 
                     Vector2 SpawnPosition = projectile.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation);
-                    NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Barrier>(), 0, projectile.Center.X, projectile.Center.Y, Rotation, RADIUS);
+                    int BarrierNPC = NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Barrier>(), 0, projectile.Center.X, projectile.Center.Y, Rotation, RADIUS);
+
+                    // Goes from 1 - 8, add 1 to offset the counter that starts at 0
+                    ((Barrier)Main.npc[BarrierNPC].modNPC).BarrierID = BarrierCounter + 1;
+                    Main.NewText(((Barrier)Main.npc[BarrierNPC].modNPC).BarrierID);
 
                     if (BarrierCounter == 4)
                     {
