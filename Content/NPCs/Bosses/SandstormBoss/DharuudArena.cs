@@ -78,6 +78,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Spin>(), 0, projectile.Center.X, projectile.Center.Y, Rotation, RADIUS);
                         NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Spin>(), 0, projectile.Center.X, projectile.Center.Y, 2 * Rotation, RADIUS);
                     }
+
                     BarrierCounter++;
                 }
             }

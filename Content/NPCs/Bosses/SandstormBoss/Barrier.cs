@@ -28,6 +28,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         private float InitialRadius;
         private float Radius;
 
+        public override bool CheckActive() => false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Forbidden Barrier");
@@ -48,7 +49,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public ref float AICounter => ref npc.ai[0];
         public ref float MiscCounter => ref npc.ai[1];
-        public ref float RotationCounter => ref npc.ai[2];
+        public ref float MiscCounter2 => ref npc.ai[2];
+        public ref float RotationCounter => ref npc.ai[3];
+
         public override void AI()
         {
             // Initialization step to save input into variables
@@ -98,9 +101,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                 if (Shockwave)
                 {
-                    if (Main.rand.NextBool(5))
+                    /*if (MiscCounter2 == 0)
+                    {
+                        InitialRadius = Radius;
+                    }
+
+                    Main.NewText((float)Math.Sin(MiscCounter2 / 60f));
+                    Radius = MathHelper.Lerp(InitialRadius, InitialRadius + 75, (float)Math.Sin(MiscCounter2 / 30f));*/
+
+                    if (MiscCounter2++ == 120)
                     {
                         Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Yellow);
+                        Projectile.NewProjectile(npc.Center, npc.DirectionTo(RotationCenter) * 2, ModContent.ProjectileType<BarrierWave>(), 50, 0f, Main.myPlayer);
+
+                        Shockwave = false;
+                        MiscCounter2 = 0;
                     }
                 }
 
@@ -109,12 +124,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             }
 
             npc.Center = RotationCenter + new Vector2(Radius, 0).RotatedBy(RotationOffset + RotationCounter);
-            npc.rotation = npc.DirectionTo(RotationCenter).ToRotation() + MathHelper.PiOver2;
+            npc.rotation = npc.DirectionTo(RotationCenter).ToRotation() + MathHelper.PiOver2 + MathHelper.Pi;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
-            if (npc.ai[0] > 30 && !RunOnce)
+            if (AICounter > 30 && !RunOnce)
             {
                 spriteBatch.Reload(SpriteSortMode.Immediate);
 
@@ -174,7 +189,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("speen");
+            DisplayName.SetDefault("");
         }
 
         public override void SetDefaults()

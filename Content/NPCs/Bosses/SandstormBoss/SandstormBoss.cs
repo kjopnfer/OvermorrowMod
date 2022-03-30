@@ -293,6 +293,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 case (int)AIStates.ChainLightinng:
                     if (MiscCounter++ == 180)
                     {
+                        StartRotation(false);
+
                         int WeakLink = Main.rand.Next(1, 9);
                         int LinkID = 1;
                         for (int i = 0; i < Main.maxNPCs; i++)
@@ -300,8 +302,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             NPC BarrierNPC = Main.npc[i];
                             if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
                             {
-                                ((Barrier)BarrierNPC.modNPC).Rotate = false;
-
                                 int Node = NPC.NewNPC((int)BarrierNPC.Center.X, (int)BarrierNPC.Center.Y, ModContent.NPCType<LightningNode>(), 0, LinkID, ArenaCenter.whoAmI);
                                 if (Main.npc[Node].ai[0] == WeakLink)
                                 {
@@ -314,17 +314,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter == 600)
-                    {
-                        for (int i = 0; i < Main.maxNPCs; i++)
-                        {
-                            NPC BarrierNPC = Main.npc[i];
-                            if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
-                            {
-                                ((Barrier)BarrierNPC.modNPC).Rotate = true;
-                            }
-                        }
-                    }
+                    if (MiscCounter == 600) StartRotation();
 
                     if (MiscCounter == 1200)
                     {
@@ -333,7 +323,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     }
                     break;
                 case (int)AIStates.Shockwave:
-                    if (++MiscCounter == 120)
+                    if (MiscCounter++ == 0) StartRotation(false);
+
+                    if (MiscCounter % 240 == 0)
                     {
                         Main.NewText("PAIR");
 
@@ -377,8 +369,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter == 240)
+                    if (MiscCounter == 1439)
                     {
+                        StartRotation();
+
                         AICase = (int)AIStates.Selector;
                         MiscCounter = 0;
                     }
@@ -394,6 +388,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     ArmorImmune = true;
                 }
             }
+        }
+
+        private void StartRotation(bool CanRotate = true)
+        {
+            foreach (NPC npc in Main.npc)
+            {
+                if (!npc.active || !(npc.modNPC is Barrier)) continue;
+
+                ((Barrier)npc.modNPC).Rotate = CanRotate;
+            }      
         }
 
         private void AttackHandler()

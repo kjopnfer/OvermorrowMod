@@ -535,7 +535,7 @@ namespace OvermorrowMod.Common.Particles
             float progress = (float)particle.activeTime / maxTime;
             //float baseScale = 512f / (float)texture.Width;
             Vector2 scale = new Vector2(particle.scale, particle.scale * 1.5f);
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, 0f, origin, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, origin, scale, SpriteEffects.None, 0f);
 
             spriteBatch.Reload(BlendState.AlphaBlend);
         }
