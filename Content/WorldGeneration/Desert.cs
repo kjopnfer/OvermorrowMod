@@ -30,10 +30,61 @@ namespace OvermorrowMod.Content.WorldGeneration
             int x = WorldGen.UndergroundDesertLocation.X + (WorldGen.UndergroundDesertLocation.Width / 2);
             int y = WorldGen.UndergroundDesertLocation.Y + (WorldGen.UndergroundDesertLocation.Height / 2);
 
-            Place(x, y);
+            //Place_LowerTemple(x, y);
+
+
+            // Position the temple's upper area to the left side of the desert, start the structure 450 pixels up into the air before dropping
+            //x = WorldGen.UndergroundDesertLocation.X + (WorldGen.UndergroundDesertLocation.Width / 6);
+            //y = WorldGen.UndergroundDesertLocation.Y - 200;
+            x = WorldGen.UndergroundDesertLocation.X + (WorldGen.UndergroundDesertLocation.Width / 2);
+            y = WorldGen.UndergroundDesertLocation.Y - 200;
+
+            // Check if the ground is solid before creating the temple
+            Tile tile = Framing.GetTileSafely(x, y);
+            while (!tile.active() && tile.wall != WallID.Sandstone)
+            {
+                y++;
+
+                tile = Framing.GetTileSafely(x, y);
+            }
+
+
+            // Offset the spawn to swallow less of the chasm
+            Place_UpperTemple(x, y - 10);
         }
 
-        public static void Place(int x, int y)
+        public static void Place_UpperTemple(int x, int y)
+        {
+            Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
+            {
+                [new Color(143, 86, 59)] = TileID.SandstoneBrick,
+                [new Color(238, 195, 154)] = TileID.Sand,
+                [new Color(123, 85, 49)] = TileID.HardenedSand,
+                [new Color(224, 220, 128)] = TileID.Gold,
+            };
+
+            Dictionary<Color, int> WallMapping = new Dictionary<Color, int>
+            {
+                [new Color(102, 57, 49)] = WallID.SandstoneBrick,
+                [new Color(69, 40, 60)] = WallID.DemoniteBrick
+            };
+
+            Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
+            {
+                [new Color(0, 0, 0)] = -2
+            };
+
+            Texture2D ClearMap = ModContent.GetTexture(AssetDirectory.WorldGen + "SurfaceTemple_Clear");
+            TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
+            TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height / 2), true, true);
+
+            Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "SurfaceTemple");
+            Texture2D WallMap = ModContent.GetTexture(AssetDirectory.WorldGen + "SurfaceTemple_Walls");
+            TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping);
+            TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height / 2), true, true);
+        }
+
+        public static void Place_LowerTemple(int x, int y)
         {
             // black is removed, white is ignored
 

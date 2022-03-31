@@ -38,7 +38,8 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
         {
             if (player.ZoneDesert)
             {
-                Projectile.NewProjectile(player.Center + Vector2.UnitY * -150, Vector2.Zero, ModContent.ProjectileType<DharuudArena>(), 0, 0, Main.myPlayer, 0, 0);
+                Vector2 SpawnPosition = new Vector2(player.Center.X, player.Bottom.Y) - Vector2.UnitY * 224;
+                Projectile.NewProjectile(SpawnPosition, Vector2.Zero, ModContent.ProjectileType<DharuudArena>(), 0, 0, Main.myPlayer, 0, 0);
                 return true;
             }
             return false;

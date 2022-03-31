@@ -124,7 +124,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 {
                     DisablePlatforms();
 
-                    for (int i = 0; i < 4; i++)
+                    /*for (int i = 0; i < 4; i++)
                     {
                         int RADIUS = 300;
                         float Rotation = i * MathHelper.PiOver2;
@@ -140,7 +140,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         {
                             ((SandPlatform)npc.modNPC).Rotate = true;
                         }
-                    }
+                    }*/
                 }
 
                 for (int i = 0; i < Main.maxPlayers; i++)
