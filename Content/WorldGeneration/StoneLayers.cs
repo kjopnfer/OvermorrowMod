@@ -97,11 +97,6 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(34, 31, 32)] = -2,
             };
 
-            Dictionary<Color, int> LiquidMapping = new Dictionary<Color, int>
-            {
-                [new Color(201, 124, 55)] = TileID.Sand,
-            };
-
             Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "CrawlerNest");
             Texture2D LiquidMap = ModContent.GetTexture(AssetDirectory.WorldGen + "CrawlerNest_Liquids");
 

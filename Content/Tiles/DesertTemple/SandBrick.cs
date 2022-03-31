@@ -17,9 +17,11 @@ namespace OvermorrowMod.Content.Tiles.DesertTemple
 
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            //drop = ModContent.ItemType<Items.Placeable.Tiles.CaveMud>();
+
             minPick = 999;
             mineResist = 600f;
+            drop = ModContent.ItemType<Items.Placeable.Tiles.SandBrick>();
+
             AddMapEntry(new Color(91, 57, 28));
         }
     }
