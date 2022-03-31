@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
+using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
@@ -59,7 +60,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
             {
-                [new Color(143, 86, 59)] = TileID.SandstoneBrick,
+                [new Color(143, 86, 59)] = ModContent.TileType<SandBrick>(),
                 [new Color(238, 195, 154)] = TileID.Sand,
                 [new Color(123, 85, 49)] = TileID.HardenedSand,
                 [new Color(224, 220, 128)] = TileID.Gold,

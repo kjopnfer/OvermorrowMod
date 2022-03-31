@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
 using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
+using OvermorrowMod.Content.Tiles.DesertTemple;
 
 namespace OvermorrowMod.Common
 {
@@ -65,7 +66,7 @@ namespace OvermorrowMod.Common
             graniteBiome = tileCounts[TileID.GraniteBlock];
 
             // Make the modded tile weigh more heavily
-            Main.sandTiles += tileCounts[TileID.SandstoneBrick] * 5;
+            Main.sandTiles += tileCounts[ModContent.TileType<SandBrick>()] * 5;
         }
 
         public override TagCompound Save()
