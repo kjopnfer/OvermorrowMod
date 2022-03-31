@@ -295,7 +295,7 @@ namespace OvermorrowMod.Common
             int WetJungle = tasks.FindIndex(genpass => genpass.Name.Equals("Wet Jungle"));
             if (WetJungle != -1)
             {
-                tasks.Insert(WetJungle + 1, new PassLegacy("WaterCaveGeneration", WaterCaveFinder));
+                //tasks.Insert(WetJungle + 1, new PassLegacy("WaterCaveGeneration", WaterCaveFinder));
             }
         }
 
