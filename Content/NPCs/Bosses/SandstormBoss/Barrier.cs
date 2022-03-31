@@ -133,7 +133,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             {
                 spriteBatch.Reload(SpriteSortMode.Immediate);
 
-                Effect effect = OvermorrowModFile.Mod.Whiteout;
+                Effect effect = OvermorrowModFile.Instance.Whiteout;
                 if (!Main.gamePaused) npc.localAI[0]++;
 
                 float progress = Utils.Clamp(npc.localAI[0], 0, 15f) / 15f;

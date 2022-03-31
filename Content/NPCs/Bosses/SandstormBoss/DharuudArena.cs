@@ -122,7 +122,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             {
                 if (projectile.ai[0] == 460)
                 {
-                    DisablePlatforms();
+                    //DisablePlatforms();
 
                     /*for (int i = 0; i < 4; i++)
                     {
@@ -168,7 +168,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             spriteBatch.Reload(BlendState.Additive);
             Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "magic_02");
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
-            float scale = MathHelper.Lerp(0, 1.5f, Utils.Clamp(projectile.localAI[0], 0, 240) / 240f);
+            float scale = MathHelper.Lerp(0, 1.25f, Utils.Clamp(projectile.localAI[0], 0, 240) / 240f);
             Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(projectile.localAI[0]), origin, scale, SpriteEffects.None, 0f);
 
             if (projectile.ai[0] > 460)
@@ -190,7 +190,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void Kill(int timeLeft)
         {
-            DisablePlatforms(false);
+            //DisablePlatforms(false);
         }
 
         public void DisablePlatforms(bool inActive = true)

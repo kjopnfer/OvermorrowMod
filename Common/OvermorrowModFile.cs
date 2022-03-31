@@ -39,7 +39,10 @@ namespace OvermorrowMod.Common
         public static ModHotKey ToggleUI;
         public static ModHotKey AmuletKey;
 
-        public static OvermorrowModFile Mod { get; set; }
+        public static OvermorrowModFile Instance { get; set; }
+        public OvermorrowModFile() => Instance = this;
+
+
         public Effect Shockwave;
         public Effect BeamShader;
         public Effect Shockwave2;
@@ -48,10 +51,6 @@ namespace OvermorrowMod.Common
         public Effect Whiteout;
 
         public static List<Texture2D> TrailTextures;
-        public OvermorrowModFile()
-        {
-            Mod = this;
-        }
 
         public override void UpdateMusic(ref int music, ref MusicPriority priority)
         {
@@ -74,8 +73,8 @@ namespace OvermorrowMod.Common
 
             if (!Main.dedServ)
             {
-                Main.logoTexture = Mod.GetTexture("logo");
-                Main.logo2Texture = Mod.GetTexture("logo");
+                Main.logoTexture = Instance.GetTexture("logo");
+                Main.logo2Texture = Instance.GetTexture("logo");
 
                 // Effects
                 Shockwave = GetEffect("Effects/Shockwave1");
@@ -129,7 +128,7 @@ namespace OvermorrowMod.Common
 
         public override void Unload()
         {
-            Mod = null;
+            Instance = null;
             Shockwave = null;
             TrailShader = null;
             TextShader = null;
@@ -165,12 +164,12 @@ namespace OvermorrowMod.Common
             {
                 if (Main.LogoB <= 255)
                 {
-                    Main.logoTexture = Mod.GetTexture("logo");
+                    Main.logoTexture = Instance.GetTexture("logo");
                 }
 
                 if (Main.LogoB < 10 || (!Main.dayTime && Main.LogoA <= 255))
                 {
-                    Main.logo2Texture = Mod.GetTexture("logo");
+                    Main.logo2Texture = Instance.GetTexture("logo");
                 }
             }
         }

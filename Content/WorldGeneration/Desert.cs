@@ -1,9 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -74,6 +76,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(0, 0, 0)] = -2
             };
 
+            #region Temple Generation
             Texture2D ClearMap = ModContent.GetTexture(AssetDirectory.WorldGen + "SurfaceTemple_Clear");
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height / 2), true, true);
@@ -82,6 +85,13 @@ namespace OvermorrowMod.Content.WorldGeneration
             Texture2D WallMap = ModContent.GetTexture(AssetDirectory.WorldGen + "SurfaceTemple_Walls");
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height / 2), true, true);
+            #endregion
+
+            #region Object Placement
+
+            StructureHelper.Generator.GenerateStructure("Content/WorldGeneration/Structures/test2", new Point16(x + 68, y + 31), OvermorrowModFile.Instance);
+
+            #endregion
         }
 
         public static void Place_LowerTemple(int x, int y)

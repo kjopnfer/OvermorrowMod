@@ -61,7 +61,7 @@ namespace OvermorrowMod.Content.Items.Materials
             if (line.Name == "ItemName")
             {
                 spriteBatch.Reload(SpriteSortMode.Immediate);
-                Effect fx = OvermorrowModFile.Mod.TextShader;
+                Effect fx = OvermorrowModFile.Instance.TextShader;
                 Main.graphics.GraphicsDevice.Textures[0] = mod.GetTexture("Assets/Textures/Perlin");
                 fx.Parameters["uColor0"].SetValue(Color.DarkRed.ToVector3());
                 //fx.Parameters["uColor1"].SetValue(Color.Black.ToVector3());

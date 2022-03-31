@@ -13,7 +13,7 @@ namespace OvermorrowMod.Common.Primitives
         // Keep separate from vertices enumerable to avoid enumerating it.
         private readonly int vertexCount;
 
-        public Effect Effect = OvermorrowModFile.Mod.TrailShader;
+        public Effect Effect = OvermorrowModFile.Instance.TrailShader;
         public string Pass = "Basic";
 
         public PrimitivePacket(IEnumerable<VertexPositionColorTexture> vertices, PrimitiveType type, int vertexCount)

@@ -4,14 +4,14 @@ namespace OvermorrowMod.Common.Primitives.Trails
 {
     public class SoulTrail : SimpleTrail
     {
-        public SoulTrail() : base(30, OvermorrowModFile.Mod.GetTexture(AssetDirectory.Trails + "Trail1"))
+        public SoulTrail() : base(30, OvermorrowModFile.Instance.GetTexture(AssetDirectory.Trails + "Trail1"))
         {
         }
     }
 
     public class SpikeTrail : SimpleTrail
     {
-        public SpikeTrail() : base(12, OvermorrowModFile.Mod.GetTexture(AssetDirectory.Trails + "Trail2"))
+        public SpikeTrail() : base(12, OvermorrowModFile.Instance.GetTexture(AssetDirectory.Trails + "Trail2"))
         {
         }
     }

@@ -45,7 +45,7 @@ namespace OvermorrowMod.Common
         public static int TitleMusicDelegate(int oldMusic)
         {
             // Can also add mod checks for music here and return oldMusic if not active
-            return OvermorrowModFile.Mod.GetSoundSlot((SoundType)51, "Sounds/Music/SandstormBoss");
+            return OvermorrowModFile.Instance.GetSoundSlot((SoundType)51, "Sounds/Music/SandstormBoss");
         }
 
         // If you don't include the following two methods, the game slaps your volume down to zero
@@ -136,7 +136,7 @@ namespace OvermorrowMod.Common
             {
                 if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
                 {
-                    OvermorrowModFile.Mod.Logger.Error("Failed to patch update water shit");
+                    OvermorrowModFile.Instance.Logger.Error("Failed to patch update water shit");
                     return;
                 }
             }
@@ -164,7 +164,7 @@ namespace OvermorrowMod.Common
 
             if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
             {
-                OvermorrowModFile.Mod.Logger.Error("Failed to patch update water shit");
+                OvermorrowModFile.Instance.Logger.Error("Failed to patch update water shit");
                 return;
             }
 
@@ -205,7 +205,7 @@ namespace OvermorrowMod.Common
             {
                 if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
                 {
-                    OvermorrowModFile.Mod.Logger.Error("Failed to patch quick water shit");
+                    OvermorrowModFile.Instance.Logger.Error("Failed to patch quick water shit");
                     return;
                 }
             }
@@ -214,7 +214,7 @@ namespace OvermorrowMod.Common
             {
                 if (!c.TryGotoNext(i => i.MatchLdcI4(1)))
                 {
-                    OvermorrowModFile.Mod.Logger.Error("Failed to patch quick water shit");
+                    OvermorrowModFile.Instance.Logger.Error("Failed to patch quick water shit");
                     return;
                 }
                 c.Index++;

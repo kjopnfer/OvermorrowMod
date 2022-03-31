@@ -1,5 +1,6 @@
 displayName = [c/28bd61:Over][c/04488c:mor][c/c7271c:row]
-author = Team OV
+author = dhood
 version = 0.1
 homepage = https://discord.gg/5CStmQTWrp
 includePDB = false
+dllReferences = StructureHelper_v1.1.1

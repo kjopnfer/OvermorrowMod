@@ -48,7 +48,7 @@ namespace OvermorrowMod.Common.Particles
                 int id = ParticleTypes.Count;
                 ParticleTypes.Add(type, id);
                 CustomParticle particle = (CustomParticle)Activator.CreateInstance(type);
-                particle.mod = OvermorrowModFile.Mod;
+                particle.mod = OvermorrowModFile.Instance;
                 CustomParticle.CustomParticles.Add(id, particle);
                 Texture2D texture = particle.Texture == null ? ModContent.GetTexture(type.FullName.Replace('.', '/')) : ModContent.GetTexture(particle.Texture);
                 ParticleTextures.Add(id, texture);
@@ -103,8 +103,8 @@ namespace OvermorrowMod.Common.Particles
                 }
                 catch(Exception e)
                 {
-                    OvermorrowModFile.Mod.Logger.Error(e.Message);
-                    OvermorrowModFile.Mod.Logger.Error(e.StackTrace);
+                    OvermorrowModFile.Instance.Logger.Error(e.Message);
+                    OvermorrowModFile.Instance.Logger.Error(e.StackTrace);
                     Main.NewText($"Error while drawing particles, error caused by particle of type: {ParticleNames[particle.type]}.", Color.Red);
                     Main.NewText("Read client.log for the full error message.", Color.Red);
                     particle.Kill();
