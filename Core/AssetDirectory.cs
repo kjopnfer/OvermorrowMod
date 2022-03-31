@@ -26,6 +26,7 @@ namespace OvermorrowMod.Core
         public const string Ranged = Content + "Items/Weapons/Ranged/";
         public const string Summon = Content + "Items/Weapons/Summon/";
 
+        public const string NPC = Content + "NPCs/";
         public const string Boss = Content + "NPCs/Bosses/";
 
         public const string Tiles = Content + "Tiles/";
