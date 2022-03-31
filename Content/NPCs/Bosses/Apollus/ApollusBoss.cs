@@ -126,7 +126,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                             if (distance <= 600)
                             {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
+                                //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
                             }
                         }
                     }
@@ -206,7 +206,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                             if (distance <= 1200)
                             {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                                //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                             }
                         }
 
@@ -246,7 +246,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                                 if (distance <= 600)
                                 {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                                    //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                                 }
                             }
                         }

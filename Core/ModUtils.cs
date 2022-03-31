@@ -36,6 +36,12 @@ namespace OvermorrowMod.Core
             NetMessage.SendData(MessageID.WorldData, -1, -1, null, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
         }
 
+        public static void PlaceObject(int x, int y, int TileType, int style = 0, int direction = -1)
+        {
+            WorldGen.PlaceObject(x, y, TileType, true, style, 0, -1, direction);
+            NetMessage.SendObjectPlacment(-1, x, y, TileType, style, 0, -1, direction);
+        }
+
         public static void StartRain()
         {
             startRain.Invoke(null, null);

@@ -647,7 +647,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 {
                                     if (projectile.Distance(Main.player[ii].Center) < 1000)
                                     {
-                                        Main.player[ii].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 5;
+                                        //Main.player[ii].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 5;
                                     }
                                 }
 
@@ -738,7 +738,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 {
                                     if (projectile.Distance(Main.player[ii].Center) < 1000)
                                     {
-                                        Main.player[ii].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 5;
+                                        //Main.player[ii].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 5;
                                     }
                                 }
 

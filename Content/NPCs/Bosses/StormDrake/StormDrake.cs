@@ -221,7 +221,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                                 if (distance <= 600)
                                 {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 45;
+                                    //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 45;
                                 }
                             }
                         }
@@ -379,7 +379,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                                 if (distance <= 1000)
                                 {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 10;
+                                    //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 10;
                                 }
                             }
                             AICounter2 += 0.3f;
@@ -607,7 +607,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                                 if (distance <= 1600)
                                 {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
+                                    //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
                                 }
                             }
 
@@ -734,7 +734,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                     {
                                         Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/NPC/flep"), Main.player[i].position);
                                     }
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
+                                    //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
                                 }
                             }
 

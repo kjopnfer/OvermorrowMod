@@ -98,7 +98,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 float distance = Vector2.Distance(projectile.Center, Main.player[i].Center);
                                 if (distance <= 1600)
                                 {
-                                    Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                                    //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                                 }
                             }
                         }

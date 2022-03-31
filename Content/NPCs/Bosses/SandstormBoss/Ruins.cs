@@ -96,8 +96,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             Player player = Main.player[i];
                             if (player.active && npc.Distance(player.Center) < 2000)
                             {
-                                player.GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
-                                player.GetModPlayer<OvermorrowModPlayer>().ShakeOffset = 5;
+                                //player.GetModPlayer<OvermorrowModPlayer>().ScreenShake = 60;
+                                //player.GetModPlayer<OvermorrowModPlayer>().ShakeOffset = 5;
                             }
                         }
 

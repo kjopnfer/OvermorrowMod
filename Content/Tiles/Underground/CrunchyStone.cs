@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles
+namespace OvermorrowMod.Content.Tiles.Underground
 {
     public class CrunchyStone : ModTile
     {

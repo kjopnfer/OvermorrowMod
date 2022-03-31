@@ -146,7 +146,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                             if (distance <= 600)
                             {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                                //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                             }
                         }
                     }
@@ -185,7 +185,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                         if (distance <= 600)
                         {
-                            Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                            //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                         }
                     }
 
@@ -233,7 +233,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                             float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
                             if (distance <= 600)
                             {
-                                Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
+                                //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                             }
                         }
                         npcDashing = false;

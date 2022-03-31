@@ -33,6 +33,7 @@ namespace OvermorrowMod.Content.NPCs.RockCrawler
             npc.DeathSound = SoundID.NPCDeath2;
             npc.value = 60f;
             npc.knockBackResist = 0f;
+            npc.lavaImmune = true;
 
             npc.aiStyle = 3;
             aiType = NPCID.GoblinScout;
@@ -52,7 +53,7 @@ namespace OvermorrowMod.Content.NPCs.RockCrawler
             switch (AICase)
             {
                 case (int)AIStates.Idle:
-                    npc.velocity = Vector2.Zero;
+                    npc.velocity.X = 0;
                     npc.aiStyle = -1;
 
                     #region Frame Animation
@@ -135,6 +136,10 @@ namespace OvermorrowMod.Content.NPCs.RockCrawler
             Rectangle drawRectangle = new Rectangle(0, TEXTURE_HEIGHT * frame, texture.Width, TEXTURE_HEIGHT);
 
             Main.spriteBatch.Draw(texture, npc.Center + new Vector2(0, (TEXTURE_HEIGHT / 2 * MAX_FRAMES) + 4 - (TEXTURE_HEIGHT / 2)) - Main.screenPosition, drawRectangle, color, npc.rotation, origin, 1f, SpriteEffects.None, 0f);
+
+            Texture2D glow = ModContent.GetTexture(AssetDirectory.NPC + "RockCrawler/RockCrawler_Glow");
+            spriteBatch.Draw(glow, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 4), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            //Main.spriteBatch.Draw(glow, npc.Center + new Vector2(0, (TEXTURE_HEIGHT / 2 * MAX_FRAMES) + 4 - (TEXTURE_HEIGHT / 2)) - Main.screenPosition, drawRectangle, color, npc.rotation, origin, 1f, SpriteEffects.None, 0f);
         }
     }
 }

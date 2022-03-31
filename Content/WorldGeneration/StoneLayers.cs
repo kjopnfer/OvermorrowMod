@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.Tiles;
+using OvermorrowMod.Content.Tiles.Underground;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
@@ -110,10 +110,10 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             #region Miscellaneous 
             Main.tile[origin.X - (TileClear.width / 2) + 9, origin.Y - (TileClear.height / 2) + 13].halfBrick(true);
-
             Main.tile[origin.X - (TileClear.width / 2) + 17, origin.Y - (TileClear.height / 2) + 10].halfBrick(true);
-
             Main.tile[origin.X - (TileClear.width / 2) + 39, origin.Y - (TileClear.height / 2) + 13].halfBrick(true);
+
+            ModUtils.PlaceObject(origin.X - (TileClear.width / 2) + 23, origin.Y - (TileClear.height / 2) + 23, (ushort)ModContent.TileType<RockEgg>());
 
             #endregion
 

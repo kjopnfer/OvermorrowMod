@@ -1,6 +1,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
-using StoneBlock = OvermorrowMod.Content.Tiles.CrunchyStone;
+using StoneBlock = OvermorrowMod.Content.Tiles.Underground.CrunchyStone;
 
 
 namespace OvermorrowMod.Content.Items.Placeable.Tiles

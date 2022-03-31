@@ -48,9 +48,9 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                         {
                             NPC.NewNPC((int)projectile.position.X, (int)(projectile.position.Y), ModContent.NPCType<AngryStone>(), 0, -3f, 0f, 0f, 0f, 255);
                             Player projectileowner = Main.player[projectile.owner];
-                            projectileowner.GetModPlayer<OvermorrowModPlayer>().TitleID = 5;
-                            projectileowner.GetModPlayer<OvermorrowModPlayer>().FocusBoss = false;
-                            projectileowner.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                            //projectileowner.GetModPlayer<OvermorrowModPlayer>().TitleID = 5;
+                            //projectileowner.GetModPlayer<OvermorrowModPlayer>().FocusBoss = false;
+                            //projectileowner.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
 
 
 

@@ -24,6 +24,16 @@ namespace OvermorrowMod.Common
         //sadness
         Vector2 screenPositionStore;
 
+        // Controls the length of time the screen shakes
+        public static int ScreenShake;
+        // Controls how violently the screen shakes
+        public static int ShakeOffset = 0;
+        public void AddScreenShake(int Length, int Intensity = 1)
+        {
+            ScreenShake = Length;
+            ShakeOffset = Intensity;
+        }
+
         public void PlayerFocusCamera(Vector2 focusTo, int holdCameraLength, float towardsLength, float returnLength)
         {
             // The position to move to and from
@@ -43,11 +53,9 @@ namespace OvermorrowMod.Common
             canFocus = true;
         }
 
-        // Controls the length of time the screen shakes
-        public int ScreenShake;
+        //public int ScreenShake;
 
-        // Controls how violently the screen shakes
-        public int ShakeOffset = 0;
+        
 
         public override void ModifyScreenPosition()
         {

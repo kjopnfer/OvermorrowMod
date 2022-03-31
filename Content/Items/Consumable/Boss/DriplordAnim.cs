@@ -63,9 +63,9 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                     Main.dust[dust].noGravity = true;
                 }
                 Player player = Main.player[projectile.owner];
-                player.GetModPlayer<OvermorrowModPlayer>().TitleID = 3;
-                player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
-                player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
+                //player.GetModPlayer<OvermorrowModPlayer>().TitleID = 3;
+                //player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
+                //player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
