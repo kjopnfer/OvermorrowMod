@@ -40,6 +40,7 @@ namespace OvermorrowMod.Common
         public static int floodedCaves;
 
         // These are here because we can't have nice things
+        public static int desertBiome;
         public static int marbleBiome;
         public static int graniteBiome;
 
@@ -62,6 +63,9 @@ namespace OvermorrowMod.Common
             floodedCaves = tileCounts[ModContent.TileType<GlowBlock>()];
             marbleBiome = tileCounts[TileID.MarbleBlock];
             graniteBiome = tileCounts[TileID.GraniteBlock];
+
+            // Make the modded tile weigh more heavily
+            Main.sandTiles += tileCounts[TileID.SandstoneBrick] * 5;
         }
 
         public override TagCompound Save()
@@ -131,38 +135,6 @@ namespace OvermorrowMod.Common
             flags[3] = downedDrake;
 
             writer.Write(flags);
-
-            /*
-      			Remember that Bytes/BitsByte only have 8 entries. If you have more than 8 flags you want to sync, use multiple BitsByte:
-      				This is wrong:
-      			flags[8] = downed9thBoss; // an index of 8 is nonsense.
-      				This is correct:
-      			flags[7] = downed8thBoss;
-      			writer.Write(flags);
-      			BitsByte flags2 = new BitsByte(); // create another BitsByte
-      			flags2[0] = downed9thBoss; // start again from 0
-      			// up to 7 more flags here
-      			writer.Write(flags2); // write this byte
-      			*/
-
-            //If you prefer, you can use the BitsByte constructor approach as well.
-            //writer.Write(saveVersion);
-            //BitsByte flags = new BitsByte(downedAbomination, downedPuritySpirit);
-            //writer.Write(flags);
-
-            // This is another way to do the same thing, but with bitmasks and the bitwise OR assignment operator (the |=)
-            // Note that 1 and 2 here are bit masks. The next values in the pattern are 4,8,16,32,64,128. If you require more than 8 flags, make another byte.
-            //writer.Write(saveVersion);
-            //byte flags = 0;
-            //if (downedAbomination)
-            //{
-            //	flags |= 1;
-            //}
-            //if (downedPuritySpirit)
-            //{
-            //	flags |= 2;
-            //}
-            //writer.Write(flags);
         }
 
         public override void NetReceive(BinaryReader reader)
@@ -172,12 +144,9 @@ namespace OvermorrowMod.Common
             downedDarude = flags[1];
             downedDrippler = flags[2];
             downedDrake = flags[3];
-
-            // As mentioned in NetSend, BitBytes can contain 8 values. If you have more, be sure to read the additional data:
-            // BitsByte flags2 = reader.ReadByte();
-            // downed9thBoss = flags[0];
         }
 
+        #region chest shit i nede to move somewhere else
         public override void PostWorldGen()
         {
             for (int chestIndex = 0; chestIndex < 1000; chestIndex++)
@@ -297,6 +266,7 @@ namespace OvermorrowMod.Common
                 }
             }
         }
+        #endregion
 
         // Worldgen Debugging
         public static bool JustPressed(Keys key)
@@ -327,6 +297,8 @@ namespace OvermorrowMod.Common
                 tasks.Insert(WetJungle + 1, new PassLegacy("WaterCaveGeneration", WaterCaveFinder));
             }
         }
+
+        #region oldworldgen shit i need to move somewhere else
 
         int randSize = Main.rand.Next(140, 150);
         bool notInvalid = true;
@@ -794,5 +766,6 @@ namespace OvermorrowMod.Common
                 }
             }
         }
+        #endregion
     }
 }
