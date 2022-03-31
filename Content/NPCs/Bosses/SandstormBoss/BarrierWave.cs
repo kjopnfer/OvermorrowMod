@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         foreach (Player player in Main.player)
                         {
-                            if (player.active && projectile.Distance(player.Center) < 420)
+                            if (player.active && projectile.Distance(player.Center) < 600)
                             {
                                 var modPlayer = player.Overmorrow();
                                 modPlayer.ScreenShake = 45;

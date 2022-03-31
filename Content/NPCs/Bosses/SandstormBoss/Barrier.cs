@@ -91,7 +91,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 // Arena projectile tells it when to rotate
                 if (Rotate)
                 {
-                    if (Radius < InitialRadius + 275)
+                    if (Radius < 675)
                     {
                         Radius += 5;
                     }
@@ -101,17 +101,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                 if (Shockwave)
                 {
-                    /*if (MiscCounter2 == 0)
+                    if (MiscCounter2++ == 0)
                     {
                         InitialRadius = Radius;
                     }
 
-                    Main.NewText((float)Math.Sin(MiscCounter2 / 60f));
-                    Radius = MathHelper.Lerp(InitialRadius, InitialRadius + 75, (float)Math.Sin(MiscCounter2 / 30f));*/
-
-                    if (MiscCounter2++ == 120)
+                    if (MiscCounter2 <= 60f)
                     {
-                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Yellow);
+                        Radius = MathHelper.Lerp(InitialRadius, InitialRadius + 75, (float)MiscCounter2 / 60f);
+
+                        if (MiscCounter2 == 60) InitialRadius = Radius;
+                    }
+
+                    if (MiscCounter2 > 60f && MiscCounter2 <= 65f)
+                    {
+                        Radius = MathHelper.Lerp(InitialRadius, InitialRadius - 75, Utils.Clamp((float)(MiscCounter2 - 60f) / 5f, 0, 20));
+                    }
+
+                    if (MiscCounter2 == 65)
+                    {
+                        //Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Yellow);
                         Projectile.NewProjectile(npc.Center, npc.DirectionTo(RotationCenter) * 2, ModContent.ProjectileType<BarrierWave>(), 50, 0f, Main.myPlayer);
 
                         Shockwave = false;
