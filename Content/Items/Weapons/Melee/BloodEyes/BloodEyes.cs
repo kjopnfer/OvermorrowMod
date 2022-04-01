@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,6 +8,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.BloodEyes
 {
     public class BloodEyes : ModItem
     {
+        public override string Texture => AssetDirectory.Melee + "BloodEyes/BloodyEye";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bloody Eyes");

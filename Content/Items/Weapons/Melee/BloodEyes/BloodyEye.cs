@@ -64,8 +64,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.BloodEyes
             }
         }
 
-
-
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);

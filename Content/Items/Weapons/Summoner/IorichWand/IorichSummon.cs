@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Iorich's Avatar");
-            Main.projFrames[projectile.type] = 19;
+            Main.projFrames[projectile.type] = 8;
         }
 
         public override void SetDefaults()
