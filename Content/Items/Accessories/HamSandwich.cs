@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Ham Sandwich");
-            Tooltip.SetDefault("Yumby\nIncreases max life by 50.");
+            Tooltip.SetDefault("Increases max life by 50\n'Yumby'");
         }
 
         public override void SetDefaults()

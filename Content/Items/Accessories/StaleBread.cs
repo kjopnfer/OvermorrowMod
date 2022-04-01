@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Stale Bread");
-            Tooltip.SetDefault(":(\nIncreases max life by 10.");
+            Tooltip.SetDefault("Increases max life by 10");
         }
 
         public override void SetDefaults()
