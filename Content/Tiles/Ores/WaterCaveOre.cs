@@ -5,14 +5,14 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles
+namespace OvermorrowMod.Content.Tiles.Ores
 {
-    public class ManaStone : ModTile
+    public class WaterCaveOre : ModTile
     {
         public override void SetDefaults()
         {
             ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Mana Stone");
+            name.SetDefault("Lacusite");
             Main.tileSolid[Type] = true;
             Main.tileSpelunker[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -21,9 +21,10 @@ namespace OvermorrowMod.Content.Tiles
             Main.tileLighted[Type] = true;
             soundType = SoundID.Tink;
             soundStyle = 1;
-            minPick = 65;
-            drop = ModContent.ItemType<CrystalMana>();
-            AddMapEntry(new Color(51, 204, 255), name);
+            minPick = 55;
+            mineResist = 2f;
+            drop = ModContent.ItemType<WaterOre>();
+            AddMapEntry(new Color(102, 255, 255), name);
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
@@ -45,8 +46,8 @@ namespace OvermorrowMod.Content.Tiles
                 zero = Vector2.Zero;
             }
             int height = tile.frameY == 36 ? 18 : 16;
-            Main.spriteBatch.Draw(mod.GetTexture("Content/Tiles/ManaStone_Glow"), new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero,
-                new Rectangle(tile.frameX, tile.frameY, 16, height), new Color(100, 100, 100), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            //Main.spriteBatch.Draw(mod.GetTexture("Tiles/WaterCaveOre"), new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero,
+            //    new Rectangle(tile.frameX, tile.frameY, 16, height), new Color(100, 100, 100), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
 
         public override bool CanExplode(int i, int j)
@@ -57,8 +58,8 @@ namespace OvermorrowMod.Content.Tiles
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 0.0f;
-            g = 0.0f;
-            b = 0.02f;
+            g = 1f;
+            b = 1f;
         }
     }
 }

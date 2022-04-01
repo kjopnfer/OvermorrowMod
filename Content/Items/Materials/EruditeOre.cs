@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Content.Tiles.Block;
+using OvermorrowMod.Content.Tiles.Ores;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

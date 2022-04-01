@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles.Block
+namespace OvermorrowMod.Content.Tiles.Ores
 {
     public class EruditeTile : ModTile
     {

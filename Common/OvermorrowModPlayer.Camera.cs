@@ -53,10 +53,6 @@ namespace OvermorrowMod.Common
             canFocus = true;
         }
 
-        //public int ScreenShake;
-
-        
-
         public override void ModifyScreenPosition()
         {
             if (FocusBoss)
