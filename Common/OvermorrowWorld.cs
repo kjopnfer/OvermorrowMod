@@ -19,16 +19,8 @@ using OvermorrowMod.Content.Tiles.Ores;
 
 namespace OvermorrowMod.Common
 {
-    public class OvermorrowWorld : ModWorld
+    public partial class OvermorrowWorld : ModWorld
     {
-        // Bosses
-        public static bool downedDarude;
-        public static bool downedTree;
-        public static bool downedDrippler;
-        public static bool downedDrake;
-        public static bool downedLady;
-        public static bool downedKnight;
-
         // Boss Attacks
         public static bool DripplerCircle;
         public static bool DripladShoot = false;
@@ -51,14 +43,6 @@ namespace OvermorrowMod.Common
         private bool placedtele = false;
         private bool placedclaw = false;
 
-        public override void Initialize()
-        {
-            downedTree = false;
-            downedDarude = false;
-            downedDrippler = false;
-            downedDrake = false;
-        }
-
         public override void TileCountsAvailable(int[] tileCounts)
         {
             floodedCaves = tileCounts[ModContent.TileType<GlowBlock>()];
@@ -67,85 +51,7 @@ namespace OvermorrowMod.Common
 
             // Make the modded tile weigh more heavily
             Main.sandTiles += tileCounts[ModContent.TileType<SandBrick>()] * 5;
-        }
-
-        public override TagCompound Save()
-        {
-            var downed = new List<string>();
-
-            if (downedTree)
-            {
-                downed.Add("Iorich");
-            }
-
-            if (downedDarude)
-            {
-                downed.Add("Dharuud");
-            }
-
-            if (downedDrippler)
-            {
-                downed.Add("Dripplord");
-            }
-
-            if (downedDrake)
-            {
-                downed.Add("Storm Drake");
-            }
-
-
-            return new TagCompound
-            {
-                ["downed"] = downed
-            };
-
-        }
-
-        public override void Load(TagCompound tag)
-        {
-            var downed = tag.GetList<string>("downed");
-            downedTree = downed.Contains("Iorich");
-            downedDarude = downed.Contains("Dharuud");
-            downedDrippler = downed.Contains("Dripplord");
-            downedDrake = downed.Contains("Storm Drake");
-        }
-
-        public override void LoadLegacy(BinaryReader reader)
-        {
-            int loadVersion = reader.ReadInt32();
-            if (loadVersion == 0)
-            {
-                BitsByte flags = reader.ReadByte();
-                downedTree = flags[0];
-                downedDarude = flags[1];
-                downedDrippler = flags[2];
-                downedDrake = flags[3];
-            }
-            else
-            {
-                mod.Logger.WarnFormat("Overmorrow: Unknown loadVersion: {0}", loadVersion);
-            }
-        }
-
-        public override void NetSend(BinaryWriter writer)
-        {
-            var flags = new BitsByte();
-            flags[0] = downedTree;
-            flags[1] = downedDarude;
-            flags[2] = downedDrippler;
-            flags[3] = downedDrake;
-
-            writer.Write(flags);
-        }
-
-        public override void NetReceive(BinaryReader reader)
-        {
-            BitsByte flags = reader.ReadByte();
-            downedTree = flags[0];
-            downedDarude = flags[1];
-            downedDrippler = flags[2];
-            downedDrake = flags[3];
-        }
+        } 
 
         #region chest shit i nede to move somewhere else
         public override void PostWorldGen()

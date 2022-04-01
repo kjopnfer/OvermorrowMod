@@ -15,6 +15,7 @@ using OvermorrowMod.Core;
 using OvermorrowMod.Content.UI;
 using OvermorrowMod.Common.Particles;
 using Terraria.Graphics.Effects;
+using OvermorrowMod.Content.WorldGeneration;
 
 namespace OvermorrowMod.Common
 {
@@ -66,6 +67,8 @@ namespace OvermorrowMod.Common
 
         public override void Load()
         {
+            //Terraria.ModLoader.IO.TagSerializer.AddSerializer(new VectorSerializer());
+
             // Keys
             SandModeKey = RegisterHotKey("Swap Sand Mode", "Q");
             AmuletKey = RegisterHotKey("Artemis Amulet Attack", "C");

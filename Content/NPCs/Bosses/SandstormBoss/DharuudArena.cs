@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
         public override void SetDefaults()
         {
-            projectile.width = projectile.height = 18;
+            projectile.width = projectile.height = 16;
             projectile.tileCollide = false;
             projectile.hostile = false;
             projectile.friendly = true;
@@ -69,7 +69,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                     // Goes from 1 - 8, add 1 to offset the counter that starts at 0
                     ((Barrier)Main.npc[BarrierNPC].modNPC).BarrierID = BarrierCounter + 1;
-                    Main.NewText(((Barrier)Main.npc[BarrierNPC].modNPC).BarrierID);
 
                     if (BarrierCounter == 4)
                     {

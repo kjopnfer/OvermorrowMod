@@ -63,7 +63,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             {
                 for (int y = 0; y < Main.maxTilesY; y++)
                 {
-                    if (y > WorldGen.lavaLine && y < Main.maxTilesY - 200)
+                    if (y > WorldGen.lavaLine - 20 && y < Main.maxTilesY)
                     {
                         Tile tile = Framing.GetTileSafely(x, y);
                         if (tile.type == TileID.Stone)

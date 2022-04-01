@@ -565,7 +565,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
     public class BlasterMinion : DharuudMinion
     {
         private Vector2 RecoilPosition;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
+        public override string Texture => AssetDirectory.Boss + "SandstormBoss/Mask";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Forbidden Blaster Artifact");

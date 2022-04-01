@@ -10,12 +10,28 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
 
 namespace OvermorrowMod.Content.WorldGeneration
 {
     public class Desert : ModWorld
     {
+        public static Vector2 DesertArenaCenter;
+
+        public override TagCompound Save()
+        {
+            return new TagCompound
+            {
+                ["DesertArenaCenter"] = DesertArenaCenter
+            };
+        }
+
+        public override void Load(TagCompound tag)
+        {
+            DesertArenaCenter = tag.Get<Vector2>("DesertArenaCenter");
+        }
+
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
             int DesertIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
@@ -40,7 +56,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             //x = WorldGen.UndergroundDesertLocation.X + (WorldGen.UndergroundDesertLocation.Width / 6);
             //y = WorldGen.UndergroundDesertLocation.Y - 200;
             x = WorldGen.UndergroundDesertLocation.X + (WorldGen.UndergroundDesertLocation.Width / 2);
-            y = WorldGen.UndergroundDesertLocation.Y - 200;
+            y = (int)(Main.worldSurface * 0.35f) + 50;
+            //y = WorldGen.UndergroundDesertLocation.Y + (WorldGen.UndergroundDesertLocation.Height / 2);
 
             // Check if the ground is solid before creating the temple
             Tile tile = Framing.GetTileSafely(x, y);
@@ -89,8 +106,9 @@ namespace OvermorrowMod.Content.WorldGeneration
             #endregion
 
             #region Object Placement
-
-            StructureHelper.Generator.GenerateStructure("Content/WorldGeneration/Structures/test2", new Point16(x + 68, y + 31), OvermorrowModFile.Instance);
+            DesertArenaCenter = new Vector2(x, y) * 16;
+            //DesertArenaCenter = new Vector2(x - (TileGen.width / 2) + 68, y - (TileGen.width / 2) + 31) * 16;
+            //StructureHelper.Generator.GenerateStructure("Content/WorldGeneration/Structures/test2", new Point16(x - (TileGen.width / 2) + 68, y - (TileGen.width / 2) + 31), OvermorrowModFile.Instance);
 
             #endregion
         }

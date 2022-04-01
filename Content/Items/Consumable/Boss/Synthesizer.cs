@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
+using OvermorrowMod.Content.WorldGeneration;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,8 +40,11 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
         {
             if (player.ZoneDesert)
             {
-                Vector2 SpawnPosition = new Vector2(player.Center.X, player.Bottom.Y) - Vector2.UnitY * 224;
-                Projectile.NewProjectile(SpawnPosition, Vector2.Zero, ModContent.ProjectileType<DharuudArena>(), 0, 0, Main.myPlayer, 0, 0);
+                // Arena spawn offset since it isn't precise grahhh
+                // First vector spawns it onto the tile position, second vector shifts it back halfway
+                Vector2 SpawnOffset = new Vector2(1 * 16, 2 * 16) - new Vector2(8, -8);
+                Projectile.NewProjectile(Desert.DesertArenaCenter + SpawnOffset, Vector2.Zero, ModContent.ProjectileType<DharuudArena>(), 0, 0, Main.myPlayer, 0, 0);
+
                 return true;
             }
             return false;
