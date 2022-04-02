@@ -212,7 +212,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     ModUtils.PlaceObject(x + 12, y + 9, TileID.Torches);
                     ModUtils.PlaceObject(x + 23, y + 12, TileID.Torches);
 
-                    ModUtils.PlaceObject(x + 11, y + 13, TileID.Pots);
+                    WorldGen.PlaceTile(x + 11, y + 13, TileID.Pots, true); ;
 
                     ModUtils.PlaceObject(x + 14, y + 13, ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4)); 
                     break;
@@ -224,9 +224,9 @@ namespace OvermorrowMod.Content.WorldGeneration
                     ModUtils.PlaceObject(x + 23, y + 22, TileID.Torches);
                     ModUtils.PlaceObject(x + 9, y + 33, TileID.Torches);
 
-                    ModUtils.PlaceObject(x + 29, y + 14, TileID.Pots);
-                    ModUtils.PlaceObject(x + 30, y + 25, TileID.Pots);
-                    ModUtils.PlaceObject(x + 23, y + 30, TileID.Pots);
+                    WorldGen.PlaceTile(x + 29, y + 14, TileID.Pots, true);
+                    WorldGen.PlaceTile(x + 30, y + 25, TileID.Pots, true);
+                    WorldGen.PlaceTile(x + 23, y + 30, TileID.Pots, true);
 
                     ModUtils.PlaceObject(x + 7, y + 14,  ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4)); 
                     ModUtils.PlaceObject(x + 26, y + 30, ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4)); 
@@ -243,13 +243,13 @@ namespace OvermorrowMod.Content.WorldGeneration
                     ModUtils.PlaceObject(x + 37, y + 62, TileID.Torches);
                     ModUtils.PlaceObject(x + 39, y + 48, TileID.Torches);
 
-                    ModUtils.PlaceObject(x + 12, y + 34, TileID.Pots);
-                    ModUtils.PlaceObject(x + 12, y + 19, TileID.Pots);
-                    ModUtils.PlaceObject(x + 36, y + 28, TileID.Pots);
-                    ModUtils.PlaceObject(x + 35, y + 36, TileID.Pots);
-                    ModUtils.PlaceObject(x + 24, y + 65, TileID.Pots);
-                    ModUtils.PlaceObject(x + 48, y + 54, TileID.Pots);
-                    ModUtils.PlaceObject(x + 40, y + 37, TileID.Pots);
+                    WorldGen.PlaceTile(x + 12, y + 34, TileID.Pots, true);
+                    WorldGen.PlaceTile(x + 12, y + 19, TileID.Pots, true);
+                    WorldGen.PlaceTile(x + 36, y + 28, TileID.Pots, true);
+                    WorldGen.PlaceTile(x + 35, y + 36, TileID.Pots, true);
+                    WorldGen.PlaceTile(x + 24, y + 65, TileID.Pots, true);
+                    WorldGen.PlaceTile(x + 48, y + 54, TileID.Pots, true);
+                    WorldGen.PlaceTile(x + 40, y + 37, TileID.Pots, true);
 
                     ModUtils.PlaceObject(x + 32, y + 36, ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4)); 
                     ModUtils.PlaceObject(x + 45, y + 54, ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4));    

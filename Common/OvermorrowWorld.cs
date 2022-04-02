@@ -5,17 +5,16 @@ using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Content.Tiles.TrapOre;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Terraria.World.Generation;
 using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
 using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Content.Tiles.Ores;
+using OvermorrowMod.Content.Tiles.Ambient;
 
 namespace OvermorrowMod.Common
 {
@@ -51,15 +50,27 @@ namespace OvermorrowMod.Common
 
             // Make the modded tile weigh more heavily
             Main.sandTiles += tileCounts[ModContent.TileType<SandBrick>()] * 5;
-        } 
+        }
 
         #region chest shit i nede to move somewhere else
         public override void PostWorldGen()
         {
+            /*for (int x = 0; x < Main.maxTilesX; x++)
+            {
+                for (int y = 0; y < Main.maxTilesY; y++)
+                {
+                    Tile tile = Framing.GetTileSafely(x, y);
+                    if (tile.type == TileID.Pots)
+                    {
+                        tile.type = (ushort)ModContent.TileType<LargePot>();
+                    }
+                }
+            }*/
+
             for (int chestIndex = 0; chestIndex < 1000; chestIndex++)
             {
                 Chest chest = Main.chest[chestIndex];
-     
+
                 int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
                 int itemsToPlaceInGranChestsChoice = 0;
                 if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 50 * 36)
@@ -95,10 +106,6 @@ namespace OvermorrowMod.Common
                         }
                     }
                 }
-
-
-
-
 
                 int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
                 int itemsToPlaceInGranMarbleChoice = 0;
