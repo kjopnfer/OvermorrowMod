@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
 using OvermorrowMod.Content.Tiles;
+using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.Underground;
 using OvermorrowMod.Core;
 using System;
@@ -212,7 +213,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                     ModUtils.PlaceObject(x + 23, y + 12, TileID.Torches);
 
                     ModUtils.PlaceObject(x + 11, y + 13, TileID.Pots);
-                    ModUtils.PlaceObject(x + 14, y + 13, TileID.Pots); // TODO: Make this a giant pot
+
+                    ModUtils.PlaceObject(x + 14, y + 13, ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4)); 
                     break;
                 case 2:
                     int chestIndex = WorldGen.PlaceChest(x + 16, y + 30, style: 1);
@@ -225,8 +227,9 @@ namespace OvermorrowMod.Content.WorldGeneration
                     ModUtils.PlaceObject(x + 29, y + 14, TileID.Pots);
                     ModUtils.PlaceObject(x + 30, y + 25, TileID.Pots);
                     ModUtils.PlaceObject(x + 23, y + 30, TileID.Pots);
-                    ModUtils.PlaceObject(x + 7, y + 14, TileID.Pots); // TODO: Make this a giant pot
-                    ModUtils.PlaceObject(x + 26, y + 30, TileID.Pots); // TODO: Make this a giant pot
+
+                    ModUtils.PlaceObject(x + 7, y + 14,  ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4)); 
+                    ModUtils.PlaceObject(x + 26, y + 30, ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4)); 
                     break;
                 case 3:
                     chestIndex = WorldGen.PlaceChest(x + 29, y + 49, style: 1);
@@ -247,8 +250,9 @@ namespace OvermorrowMod.Content.WorldGeneration
                     ModUtils.PlaceObject(x + 24, y + 65, TileID.Pots);
                     ModUtils.PlaceObject(x + 48, y + 54, TileID.Pots);
                     ModUtils.PlaceObject(x + 40, y + 37, TileID.Pots);
-                    ModUtils.PlaceObject(x + 32, y + 36, TileID.Pots); // TODO: Make this a giant pot
-                    ModUtils.PlaceObject(x + 45, y + 54, TileID.Pots); // TODO: Make this a giant pot   
+
+                    ModUtils.PlaceObject(x + 32, y + 36, ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4)); 
+                    ModUtils.PlaceObject(x + 45, y + 54, ModContent.TileType<LargePot>(), WorldGen.genRand.Next(4));    
 
                     //Main.tile[x + 30, y + 65].leftSlope();
                     //Main.tile[x + 31, y + 64].leftSlope();
