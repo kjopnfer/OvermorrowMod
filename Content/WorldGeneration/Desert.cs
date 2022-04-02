@@ -95,12 +95,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             };
 
             #region Temple Generation
-            Texture2D ClearMap = ModContent.GetTexture(AssetDirectory.WorldGen + "SurfaceTemple_Clear");
+            Texture2D ClearMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/SurfaceTemple_Clear");
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height / 2), true, true);
 
-            Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "SurfaceTemple");
-            Texture2D WallMap = ModContent.GetTexture(AssetDirectory.WorldGen + "SurfaceTemple_Walls");
+            Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/SurfaceTemple");
+            Texture2D WallMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/SurfaceTemple_Walls");
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height / 2), true, true);
             #endregion
@@ -135,7 +135,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(93, 87, 68)] = WallID.SandstoneBrick,
             };
 
-            Texture2D TexMap = ModContent.GetTexture(AssetDirectory.WorldGen + "TempleTexture");
+            Texture2D TexMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/TempleTexture");
 
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TexMap, TileMapping, TexMap, WallMapping);
             TileGen.Generate(x - (TileGen.width / 2), y - (TileGen.height / 2), true, true);
