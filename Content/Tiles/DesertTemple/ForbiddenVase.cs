@@ -1,14 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.Enums;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace OvermorrowMod.Content.Tiles.Ambient
+namespace OvermorrowMod.Content.Tiles.DesertTemple
 {
-    public class LargePot : ModTile
+    public class ForbiddenVase : ModTile
     {
         public override void SetDefaults()
         {
@@ -39,13 +36,6 @@ namespace OvermorrowMod.Content.Tiles.Ambient
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             // TODO: Put shit here
-            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(13, 0));
-            for (int k = 0; k < 8; k++)
-            {
-                Dust.NewDust(new Vector2(i * 16, j * 16 - 10), 54, 16, DustID.Dirt, 0.0f, -1, 0, new Color(), 0.5f);
-                Dust.NewDust(new Vector2(i * 16, j * 16 - 10), 75, 16, DustID.Dirt, 0.0f, 0, 0, new Color(), 0.5f);		
-                Gore.NewGore(new Vector2(i * 16 + Main.rand.Next(-10, 10), j * 16 + Main.rand.Next(-10, 10)), new Vector2(-1, 1), mod.GetGoreSlot("Terraria/Gore_" + Main.rand.Next(698, 704)), 1f);
-            }
         }
     }
 }
