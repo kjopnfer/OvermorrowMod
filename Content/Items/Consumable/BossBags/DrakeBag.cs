@@ -1,18 +1,18 @@
 using OvermorrowMod.Content.Items.Accessories.Expert;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow;
-using OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester;
-using OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand;
-using OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff;
-using OvermorrowMod.Content.NPCs.Bosses.TreeBoss;
+using OvermorrowMod.Content.Items.Weapons.Summoner.DrakeStaff;
+using OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow;
+using OvermorrowMod.Content.Items.Weapons.Melee.StormTalon;
+using OvermorrowMod.Content.Items.Weapons.Magic.BoltStream;
+using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Items.BossBags
+namespace OvermorrowMod.Content.Items.Consumable.BossBags
 {
-    public class TreeBag : ModItem
+    public class DrakeBag : ModItem
     {
         public override void SetStaticDefaults()
         {
@@ -24,8 +24,8 @@ namespace OvermorrowMod.Content.Items.BossBags
         {
             item.maxStack = 999;
             item.consumable = true;
-            item.width = 32;
-            item.height = 38;
+            item.width = 36;
+            item.height = 36;
             item.rare = ItemRarityID.Expert;
             item.expert = true;
         }
@@ -44,31 +44,31 @@ namespace OvermorrowMod.Content.Items.BossBags
             // Always drops one of:
             if (choice == 0) // Mage
             {
-                player.QuickSpawnItem(ModContent.ItemType<IorichStaff>());
+                player.QuickSpawnItem(ModContent.ItemType<BoltStream>());
             }
             else if (choice == 1) // Warrior
             {
-                player.QuickSpawnItem(ModContent.ItemType<IorichHarvester>());
+                player.QuickSpawnItem(ModContent.ItemType<StormTalon>());
             }
             else if (choice == 2) // Ranger
             {
-                player.QuickSpawnItem(ModContent.ItemType<IorichBow>());
+                player.QuickSpawnItem(ModContent.ItemType<TempestGreatbow>());
             }
             else if (choice == 3) // Summoner
             {
-                player.QuickSpawnItem(ModContent.ItemType<IorichWand>());
+                player.QuickSpawnItem(ModContent.ItemType<DrakeStaff>());
             }
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                player.QuickSpawnItem(ModContent.ItemType<TreeTrophy>());
+                player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());
             }
 
-            player.QuickSpawnItem(ModContent.ItemType<TreeNecklace>());
+            player.QuickSpawnItem(ModContent.ItemType<StormScale>());
 
-            player.QuickSpawnItem(ModContent.ItemType<SapStone>(), Main.rand.Next(1, 3));
+            player.QuickSpawnItem(ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16));
         }
 
-        public override int BossBagNPC => ModContent.NPCType<TreeBossP2>();
+        public override int BossBagNPC => ModContent.NPCType</*StormDrake*/StormDrake>();
     }
 }

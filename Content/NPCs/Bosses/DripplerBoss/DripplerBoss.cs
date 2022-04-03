@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Armor.Masks;
-using OvermorrowMod.Content.Items.BossBags;
+using OvermorrowMod.Content.Items.Consumable.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
 using Terraria;

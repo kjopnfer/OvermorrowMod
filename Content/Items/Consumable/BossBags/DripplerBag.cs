@@ -8,7 +8,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Items.BossBags
+namespace OvermorrowMod.Content.Items.Consumable.BossBags
 {
     public class DripplerBag : ModItem
     {

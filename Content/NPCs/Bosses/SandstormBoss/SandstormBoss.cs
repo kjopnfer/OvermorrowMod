@@ -1,8 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Items.BossBags;
-using OvermorrowMod.Content.Items.Consumable.Boss;
+using OvermorrowMod.Content.Items.Consumable.BossBags;
 using OvermorrowMod.Content.Items.Weapons.Magic.SandStaff;
 using OvermorrowMod.Content.Items.Weapons.Melee.SandSpinner;
 using OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower;

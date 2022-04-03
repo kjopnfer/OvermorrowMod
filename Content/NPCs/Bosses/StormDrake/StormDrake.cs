@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using OvermorrowMod.Common.Primitives.Trails;
-using OvermorrowMod.Content.Items.BossBags;
+using OvermorrowMod.Content.Items.Consumable.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
 using OvermorrowMod.Common.Particles;

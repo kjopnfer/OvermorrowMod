@@ -1,18 +1,18 @@
 using OvermorrowMod.Content.Items.Accessories.Expert;
+using OvermorrowMod.Content.Items.Armor.Granite;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.Summoner.DrakeStaff;
-using OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow;
-using OvermorrowMod.Content.Items.Weapons.Melee.StormTalon;
-using OvermorrowMod.Content.Items.Weapons.Magic.BoltStream;
-using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
+using OvermorrowMod.Content.Items.Weapons.Magic.GraniteBook;
+using OvermorrowMod.Content.Items.Weapons.Melee.GraniteSpear;
+using OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff;
+using OvermorrowMod.Content.NPCs.Bosses.GraniteMini;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Items.BossBags
+namespace OvermorrowMod.Content.Items.Consumable.BossBags
 {
-    public class DrakeBag : ModItem
+    public class KnightBag : ModItem
     {
         public override void SetStaticDefaults()
         {
@@ -41,22 +41,23 @@ namespace OvermorrowMod.Content.Items.BossBags
             player.TryGettingDevArmor();
 
             int choice = Main.rand.Next(4);
-            // Always drops one of:
-            if (choice == 0) // Mage
+            if (choice == 0) // Armor
             {
-                player.QuickSpawnItem(ModContent.ItemType<BoltStream>());
+                player.QuickSpawnItem(ModContent.ItemType<GraniteHelmet>());
+                player.QuickSpawnItem(ModContent.ItemType<GraniteBreastplate>());
+                player.QuickSpawnItem(ModContent.ItemType<GraniteLeggings>());
             }
-            else if (choice == 1) // Warrior
+            else if (choice == 1) // Melee
             {
-                player.QuickSpawnItem(ModContent.ItemType<StormTalon>());
+                player.QuickSpawnItem(ModContent.ItemType<GraniteSpear>());
             }
-            else if (choice == 2) // Ranger
+            else if (choice == 2) // Mage
             {
-                player.QuickSpawnItem(ModContent.ItemType<TempestGreatbow>());
+                player.QuickSpawnItem(ModContent.ItemType<GraniteBook>());
             }
             else if (choice == 3) // Summoner
             {
-                player.QuickSpawnItem(ModContent.ItemType<DrakeStaff>());
+                player.QuickSpawnItem(ModContent.ItemType<GraniteStaff>());
             }
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
@@ -64,11 +65,11 @@ namespace OvermorrowMod.Content.Items.BossBags
                 player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());
             }
 
-            player.QuickSpawnItem(ModContent.ItemType<StormScale>());
+            player.QuickSpawnItem(ModContent.ItemType<HeartStone>(), 2);
 
-            player.QuickSpawnItem(ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16));
+            player.QuickSpawnItem(ModContent.ItemType<GraniteShield>());
         }
 
-        public override int BossBagNPC => ModContent.NPCType</*StormDrake*/StormDrake>();
+        public override int BossBagNPC => ModContent.NPCType<AngryStone>();
     }
 }
