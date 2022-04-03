@@ -126,8 +126,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                     // Code to spawn shit exactly where the dungeon is
                     // if (DungeonLeft ? x < Main.dungeonX : x > Main.dungeonX)
 
-                    // Spawns on the opposite side of the dungeon, if dungeon is to the left then spawn on the right outer thirds
-                    if (DungeonLeft ? x > Main.maxTilesX - (Main.maxTilesX / 3) : x < Main.maxTilesX / 3)
+                    // Spawns on the opposite side of the dungeon, if dungeon is to the left then spawn on the right outer fourths
+                    if (DungeonLeft ? x > Main.maxTilesX - (Main.maxTilesX / 4) : x < Main.maxTilesX / 4)
                     {
                         if (y > Main.worldSurface && y < WorldGen.lavaLine - 100)
                         {

@@ -89,6 +89,7 @@ namespace OvermorrowMod.Content.NPCs.RockCrawler
                     npc.aiStyle = -1;
 
                     #region Frame Animation
+                    // Frames 3 - 4
                     if (frame >= 3 && frame < 4)
                     {
                         frameTimer++;
