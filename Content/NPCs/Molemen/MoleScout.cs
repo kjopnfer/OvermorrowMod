@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Items.Materials;
+using OvermorrowMod.Content.Items.Misc;
 using OvermorrowMod.Core;
 using System.IO;
 using Terraria;
@@ -135,11 +136,16 @@ namespace OvermorrowMod.Content.NPCs.Molemen
         public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
         {
             Texture2D texture = Main.npcTexture[npc.type];
-            Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             var spriteEffects = npc.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, drawColor, npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
             return false;
+        }
+
+        public override void NPCLoot()
+        {
+            int item = Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MonkeyStone>());
+            ((MonkeyStone)Main.item[item].modItem).itemFrame = Main.rand.Next(0, 3);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
