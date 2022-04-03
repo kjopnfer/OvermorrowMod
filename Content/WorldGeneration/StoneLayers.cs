@@ -100,12 +100,42 @@ namespace OvermorrowMod.Content.WorldGeneration
             {
                 for (int y = 0; y < Main.maxTilesY; y++)
                 {
-                    if (y > WorldGen.lavaLine - 50 && y < Main.maxTilesY)
+                    if (y > WorldGen.lavaLine - 100 && y < Main.maxTilesY)
                     {
                         Tile tile = Framing.GetTileSafely(x, y);
                         if (tile.type == TileID.Stone)
                         {
                             tile.type = (ushort)ModContent.TileType<CrunchyStone>();
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region SmoothStone
+            bool DungeonLeft = true;
+            if (Main.dungeonX > Main.spawnTileX)
+            {
+                DungeonLeft = false;
+            }
+
+            for (int x = 0; x < Main.maxTilesX; x++)
+            {
+                for (int y = 0; y < Main.maxTilesY; y++)
+                {
+                    // Code to spawn shit exactly where the dungeon is
+                    // if (DungeonLeft ? x < Main.dungeonX : x > Main.dungeonX)
+
+                    // Spawns on the opposite side of the dungeon, if dungeon is to the left then spawn on the right outer thirds
+                    if (DungeonLeft ? x > Main.maxTilesX - (Main.maxTilesX / 3) : x < Main.maxTilesX / 3)
+                    {
+                        if (y > Main.worldSurface && y < WorldGen.lavaLine - 100)
+                        {
+                            Tile tile = Framing.GetTileSafely(x, y);
+                            if (tile.type == TileID.Stone)
+                            {
+                                tile.type = (ushort)ModContent.TileType<SmoothStone>();
+                            }
                         }
                     }
                 }
@@ -261,7 +291,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     break;
                 case 2:
                     chestIndex = WorldGen.PlaceChest(x + 16, y + 30, style: 1);
-                    Tier2ChestItems(chestIndex);
+                    //Tier2ChestItems(chestIndex);
 
                     ModUtils.PlaceObject(x + 13, y + 13, TileID.Torches);
                     ModUtils.PlaceObject(x + 23, y + 22, TileID.Torches);
@@ -276,7 +306,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     break;
                 case 3:
                     chestIndex = WorldGen.PlaceChest(x + 29, y + 49, style: 1);
-                    Tier1ChestItems(chestIndex);
+                    //Tier1ChestItems(chestIndex);
 
                     ModUtils.PlaceObject(x + 23, y + 16, TileID.Torches);
                     ModUtils.PlaceObject(x + 34, y + 12, TileID.Torches);
