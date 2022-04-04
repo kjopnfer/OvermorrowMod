@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
+using OvermorrowMod.Content.NPCs.Shades;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.Underground;
@@ -637,7 +638,14 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             // Original Coordinate on Texture: (12, 11)
             ModUtils.PlaceObject(x + 12, y + 5, ModContent.TileType<TrollToll>());
-            
+
+            // Spawns and saves the Shade Orb, these need to be added into the list so that they load properly
+            Vector2 SpawnPosition = (new Vector2(x + 17, y + 17) * 16) + new Vector2(8, 8);
+            int npc = NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<ShadeOrb>());
+
+            OvermorrowWorld.SavedShades.Add(npc);
+            OvermorrowWorld.ShadePositions.Add(Main.npc[npc].Center);
+
             #endregion
 
             return true;
