@@ -27,6 +27,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (HiveIndex != -1)
             {
                 tasks.Insert(HiveIndex + 1, new PassLegacy("Mine Index", MoleMines)); // Because the rocks get smoothed in later passes
+                tasks.Insert(HiveIndex + 2, new PassLegacy("Shack Index", ShadeShack)); 
             }
 
             int RockIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Moss"));
@@ -43,8 +44,30 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
-        // Store the actual ID of the tile when selecting an origin
-        public static int TileSelected;
+        #region World Generation
+        private void ShadeShack(GenerationProgress progress)
+        {
+            progress.Message = "Ripping Off Minecraft";
+
+            for (int i = 0; i < 36; i++)
+            {
+                int x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
+                int y = WorldGen.genRand.Next((int)(WorldGen.rockLayer - 50), Main.maxTilesY - 200);
+
+                ShadeShack shack = new ShadeShack();
+
+                // This shit doesn't actually check blocks properly
+                Tile tile = Framing.GetTileSafely(x, y);
+                while (!shack.Place(new Point(x, y), WorldGen.structures) && !tile.active())
+                {
+                    x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
+                    y = WorldGen.genRand.Next((int)(WorldGen.rockLayer - 50), Main.maxTilesY - 200);
+
+                    tile = Framing.GetTileSafely(x, y);
+                }
+            }
+        }
+
         private void MoleMines(GenerationProgress progress)
         {
             progress.Message = "Digging out Moleman Mines";
@@ -142,6 +165,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
             #endregion
         }
+        #endregion
     }
 
     public class CrawlerNest : MicroBiome
@@ -562,4 +586,62 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
     }
+
+    public class ShadeShack : MicroBiome
+    {
+        public override bool Place(Point origin, StructureMap structures)
+        {
+            #region Texture Mapping
+            Vector2 Dimensions = new Vector2(34, 27);
+
+            Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
+            {
+                [new Color(94, 92, 89)] = TileID.GrayBrick,
+            };
+
+            Dictionary<Color, int> WallMapping = new Dictionary<Color, int>
+            {
+                [new Color(73, 71, 70)] = WallID.GrayBrick,
+            };
+
+            Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
+            {
+                [new Color(50, 41, 45)] = -2,
+            };
+
+            Texture2D ClearMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/ShadeShack_Clear");
+            Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/ShadeShack");
+
+            TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval);
+            TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping);
+            #endregion
+
+            #region Generation
+            int x = origin.X - (TileClear.width / 2);
+            int y = origin.Y - (TileGen.height / 2);
+
+            if (!structures.CanPlace(new Rectangle(x, y, (int)Dimensions.X, (int)Dimensions.Y)))
+            {
+                return false;
+            }
+
+            TileClear.Generate(x, y, true, true);
+            TileGen.Generate(x, y, true, true);
+            #endregion
+
+            #region Miscellaneous 
+            // The multi-tile starts on the top left corner for the origin
+            // When placed, the bottom left corner of the tile is where it starts visually and then moves to the right
+            // Therefore, if you want to place it on the left edge of a structure,
+            // you would need the coordinate above the ground at that position offset by the height of the multi-tile
+
+            // Original Coordinate on Texture: (12, 11)
+            ModUtils.PlaceObject(x + 12, y + 5, ModContent.TileType<TrollToll>());
+            
+            #endregion
+
+            return true;
+        }
+    }
+
 }

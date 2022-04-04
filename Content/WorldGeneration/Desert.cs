@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.WorldGeneration
     {
         public static Vector2 DesertArenaCenter;
 
-        public override TagCompound Save()
+        /*public override TagCompound Save()
         {
             return new TagCompound
             {
@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         public override void Load(TagCompound tag)
         {
             DesertArenaCenter = tag.Get<Vector2>("DesertArenaCenter");
-        }
+        }*/
 
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
