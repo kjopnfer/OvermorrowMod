@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using OvermorrowMod.Common.NPCs;
-using OvermorrowMod.Content.Tiles;
+using OvermorrowMod.Content.Tiles.WaterCave;
 using System;
 using System.Linq;
 using Terraria;

@@ -1,6 +1,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
-using GlowBlockBlock = OvermorrowMod.Content.Tiles.GlowBlock;
+using GlowBlockBlock = OvermorrowMod.Content.Tiles.WaterCave.GlowBlock;
 
 
 namespace OvermorrowMod.Content.Items.Placeable.Tiles

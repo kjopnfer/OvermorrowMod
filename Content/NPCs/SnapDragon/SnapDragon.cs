@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Tiles;
+using OvermorrowMod.Content.Tiles.WaterCave;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -89,7 +89,7 @@ namespace OvermorrowMod.Content.NPCs.SnapDragon
                 num109 = npc.ai[0] * 16f + 8f - vector16.X;
                 num110 = npc.ai[1] * 16f + 8f - vector16.Y;
                 Color color95 = Lighting.GetColor((int)vector16.X / 16, (int)(vector16.Y / 16f));
-                Texture2D chain5Texture = mod.GetTexture("NPCs/SnapDragon_Chain");
+                Texture2D chain5Texture = mod.GetTexture("Content/NPCs/SnapDragon_Chain");
                 spriteBatch.Draw(chain5Texture, new Vector2(vector16.X - Main.screenPosition.X, vector16.Y - Main.screenPosition.Y), new Rectangle(0, 0, chain5Texture.Width, num274), color95, rotation11, new Vector2((float)chain5Texture.Width * 0.5f, (float)chain5Texture.Height * 0.5f), 1f, SpriteEffects.None, 0f);
             }
             return base.PreDraw(spriteBatch, drawColor);

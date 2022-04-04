@@ -15,6 +15,7 @@ using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
 using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Content.Tiles.Ores;
 using OvermorrowMod.Content.Tiles.Ambient;
+using OvermorrowMod.Content.Tiles.WaterCave;
 
 namespace OvermorrowMod.Common
 {

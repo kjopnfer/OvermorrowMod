@@ -1,7 +1,7 @@
 using OvermorrowMod.Content.Items.Placeable.Tiles;
 using Terraria.ID;
 using Terraria.ModLoader;
-using GlowWallWall = OvermorrowMod.Content.Tiles.GlowWall;
+using GlowWallWall = OvermorrowMod.Content.Tiles.WaterCave.GlowWall;
 
 namespace OvermorrowMod.Content.Items.Placeable.Walls
 {

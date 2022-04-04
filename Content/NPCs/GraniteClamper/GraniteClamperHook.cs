@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
     {
         private int timer = 0;
         Vector2 DrawToPos;
-        private const string ChainTexturePath = "OvermorrowMod/NPCs/Biome/GranNPCChain";
+        private const string ChainTexturePath = "OvermorrowMod/Content/NPCs/GraniteClamper/GranNPCChain";
 
         public override void SetDefaults()
         {
