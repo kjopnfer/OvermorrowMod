@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles
+namespace OvermorrowMod.Content.Tiles.WaterCave
 {
     public class GlowWall : ModWall
     {

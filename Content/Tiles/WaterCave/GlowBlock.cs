@@ -6,7 +6,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles
+namespace OvermorrowMod.Content.Tiles.WaterCave
 {
     public class GlowBlock : ModTile
     {

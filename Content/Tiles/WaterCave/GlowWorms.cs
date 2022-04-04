@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles
+namespace OvermorrowMod.Content.Tiles.WaterCave
 {
     public class GlowWorms : ModTile
     {
