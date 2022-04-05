@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Misc;
-using OvermorrowMod.Core;
 using System.IO;
 using Terraria;
 using Terraria.ID;
@@ -44,12 +42,6 @@ namespace OvermorrowMod.Content.NPCs.Molemen
             aiType = NPCID.GoblinScout;
         }
 
-        public enum AIStates
-        {
-            Walk = 0,
-            Swipe = 1
-        }
-
         public override void SendExtraAI(BinaryWriter writer)
         {
             base.SendExtraAI(writer);
@@ -68,6 +60,12 @@ namespace OvermorrowMod.Content.NPCs.Molemen
                 RunOnce = reader.ReadBoolean();
                 NPCStyle = reader.ReadInt32();
             }
+        }
+
+        public enum AIStates
+        {
+            Walk = 0,
+            Swipe = 1
         }
 
         public ref float AICase => ref npc.ai[0];
