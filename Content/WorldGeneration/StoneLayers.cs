@@ -639,6 +639,23 @@ namespace OvermorrowMod.Content.WorldGeneration
             // Original Coordinate on Texture: (12, 11)
             ModUtils.PlaceObject(x + 12, y + 5, ModContent.TileType<TrollToll>());
 
+            // This is the code that runs to create the Tile Entity in order to pair them up, same as the manual placement hook
+            int id = ModContent.GetInstance<TETrollToll>().Place(x + 12, y + 5);
+            TETrollToll te = TileEntity.ByID[id] as TETrollToll;
+
+            // For each tunnel that is placed, assign a new ID and then add into the global list
+            te.TunnelID = TrollWorld.TunnelCounter++;
+
+            // If the tunnel's ID is 0, then the next tunnel is 1. Their paired tunnel is the previous tunnel, so ID - 1.
+            // Therefore, for each even tunnel, make it ID - 1, and then for each odd tunnel make it ID + 1
+            te.PairedTunnel = TrollWorld.TunnelCounter % 2 == 0 ? te.TunnelID - 1 : te.TunnelID + 1;
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                NetMessage.SendData(MessageID.TileEntityPlacement, -1, -1, null, x + 12, y + 5, ModContent.TileEntityType<TETrollToll>(), 0f, 0, 0, 0);
+                NetMessage.SendTileSquare(-1, x + 12, y + 5, 2);
+            }
+
             // Spawns and saves the Shade Orb, these need to be added into the list so that they load properly
             Vector2 SpawnPosition = (new Vector2(x + 17, y + 17) * 16) + new Vector2(8, 8);
             int npc = NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<ShadeOrb>());
