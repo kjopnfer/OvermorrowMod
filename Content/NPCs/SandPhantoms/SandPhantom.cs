@@ -4,6 +4,7 @@ using OvermorrowMod.Core;
 using System;
 using System.IO;
 using Terraria;
+using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,6 +16,8 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
 
         protected int MoveDirection;
         protected Vector2 InitialPosition;
+        protected bool SlashPlayer;
+
         public bool ThrewSword = true;
 
         private int frame = 0;
@@ -76,10 +79,11 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
 
         public ref float AICase => ref npc.ai[0];
         public ref float AICounter => ref npc.ai[1];
+        public ref float MiscCounter => ref npc.ai[2];
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            return AICounter > 170 && AICase == (int)AIStates.Swing;
+            return frame > 15 && frame < 17;
         }
 
         public override void AI()
@@ -90,11 +94,29 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
             switch (AICase)
             {
                 case (int)AIStates.Float:
-                    npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
-                    npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, player.Center.Y > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+
+                    SlashPlayer = false;
+                    if (npc.Hitbox.Intersects(player.Hitbox))
+                    {
+                        SlashPlayer = true;
+                    }
+
+
+                    if (!SlashPlayer)
+                    {
+                        npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
+                        npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, player.Center.Y > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+                    }
+                    else
+                    {
+                        npc.velocity = Vector2.Zero;
+                        MiscCounter++;
+                    }
 
                     if (AICounter++ == 180)
                     {
+                        SlashPlayer = false;
+
                         InitialPosition = npc.Center;
                         npc.velocity = Vector2.Zero;
 
@@ -105,6 +127,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
 
                         AICase = (int)RandomAttack[0];
                         AICounter = 0;
+                        MiscCounter = 0;
 
                         npc.netUpdate = true;
                     }
@@ -115,6 +138,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
                     {
                         Vector2 PositionOffset = Vector2.UnitX * 50 * MoveDirection;
                         npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + PositionOffset, AICounter / 60f);
+                        npc.alpha = (int)MathHelper.Lerp(0, 255, Utils.Clamp(AICounter, 0, 45) / 45f);
                     }
 
                     // Lunge forward with a swing
@@ -126,6 +150,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
                         if (AICounter < 150)
                         {
                             npc.Center = player.Center + Vector2.UnitX * 75 * -MoveDirection;
+                            npc.alpha = (int)MathHelper.Lerp(255, 0, (AICounter - 60f) / 90f);
                         }
                         else
                         {
@@ -170,23 +195,51 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
             switch (AICase)
             {
                 case (int)AIStates.Float:
-                    // Float animation
-                    // Frames 0 - 11
-                    if (frame < 11)
+                    if (SlashPlayer)
                     {
-                        frameTimer++;
-                        if (frameTimer % 8 == 0)
+                        if (MiscCounter < 60)
                         {
-                            frame++;
+                            frame = 15;
+                            frameTimer = 0;
+                        }
+                        else
+                        {
+                            if (frame < 17)
+                            {
+                                frameTimer++;
+                                if (frameTimer % 5 == 0)
+                                {
+                                    frame++;
+                                }
+                            }
+                            else
+                            {
+                                MiscCounter = 0;
+                                SlashPlayer = false;
+                            }
                         }
                     }
                     else
                     {
-                        frameTimer++;
-                        if (frameTimer % 8 == 0)
+
+                        // Float animation
+                        // Frames 0 - 11
+                        if (frame < 11)
                         {
-                            frame = 0;
-                            frameTimer = 0;
+                            frameTimer++;
+                            if (frameTimer % 8 == 0)
+                            {
+                                frame++;
+                            }
+                        }
+                        else
+                        {
+                            frameTimer++;
+                            if (frameTimer % 8 == 0)
+                            {
+                                frame = 0;
+                                frameTimer = 0;
+                            }
                         }
                     }
                     break;
@@ -229,6 +282,12 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
             }
         }
 
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
+        {
+            position = npc.Center + new Vector2(16 * -npc.direction, 16);
+            return true;
+        }
+
         private const int MAX_FRAMES = 6;
         private const int TEXTURE_HEIGHT = 66;
 
@@ -263,19 +322,24 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
                 {
                     // Adjust drawPos if the hitbox does not match sprite dimension
                     Vector2 drawPos = npc.oldPos[k] + npcTexture.Size() / 2f - Main.screenPosition;
-                    Color afterImageColor = npc.GetAlpha(Color.Yellow) * ((npc.oldPos.Length - k) / (float)npc.oldPos.Length);
+                    Color afterImageColor = npc.GetAlpha(new Color(56, 40, 26)) * ((npc.oldPos.Length - k) / (float)npc.oldPos.Length);
                     spriteBatch.Draw(npcTexture, drawPos + new Vector2(-23, -29), npc.frame, afterImageColor, npc.rotation, npcTexture.Size() / 2f, npc.scale, spriteEffects, 0f);
                 }
             }
 
             Texture2D texture = ModContent.GetTexture(AssetDirectory.NPC + "SandPhantoms/SandPhantom_Bottom");
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
-            Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
+            Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
             Rectangle drawRectangle = new Rectangle(0, TEXTURE_HEIGHT * bottomFrame, texture.Width, TEXTURE_HEIGHT);
 
             Main.spriteBatch.Draw(texture, npc.Center + new Vector2(0, (TEXTURE_HEIGHT / 2 * MAX_FRAMES) - 12 - (TEXTURE_HEIGHT / 2)) - Main.screenPosition, drawRectangle, color, npc.rotation, origin, 1f, spriteEffects, 0f);
 
             return base.PreDraw(spriteBatch, drawColor);
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            return Sandstorm.Happening && spawnInfo.player.ZoneDesert ? 0.025f : 0f;
         }
     }
 }
