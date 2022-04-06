@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Content.Items.Misc;
 using OvermorrowMod.Core;
@@ -39,7 +40,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
             TileObjectData.addTile(Type);
 
-            animationFrameHeight = 126;
+            //animationFrameHeight = 126;
             minPick = 1;
 
             ModTranslation name = CreateMapEntryName();
@@ -58,7 +59,6 @@ namespace OvermorrowMod.Content.Tiles.Underground
             {
                 return null;
             }
-            //Main.NewText("found entity");
 
             TETrollToll alter = (TETrollToll)TileEntity.ByID[index];
             return alter;
@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
             return base.NewRightClick(i, j);
         }
 
-        public override void AnimateTile(ref int frame, ref int frameCounter)
+        /*public override void AnimateTile(ref int frame, ref int frameCounter)
         {
             frameCounter++;
             if (frameCounter > 8)
@@ -96,11 +96,33 @@ namespace OvermorrowMod.Content.Tiles.Underground
                     frame = 0;
                 }
             }
-        }
+        }*/
 
         public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height)
         {
             offsetY = 2;
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Tile tile = Framing.GetTileSafely(i, j);
+            TETrollToll tunnel = FindTE(i, j);
+
+            // PreDraw works by going through each tile and then drawing that portion at that area
+            // If try to draw the texture once it will draw an additional 77 times for each tile leading to weird overlap shenanigans
+            // Therefore, we'll only draw the texture once if it is the origin tile
+            if (tile.frameX == 0 && tile.frameY == 0)
+            {
+                Texture2D texture = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollToll_New");
+                Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
+
+                Rectangle drawRectangle = new Rectangle(0, texture.Height / 5 * tunnel.TunnelFrame, texture.Width, texture.Height / 5);
+
+                spriteBatch.Draw(texture, drawPos, drawRectangle, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+            }
+
+            return false;
         }
     }
 
@@ -108,6 +130,10 @@ namespace OvermorrowMod.Content.Tiles.Underground
     {
         public int TunnelID;
         public int PairedTunnel;
+
+        public bool CanTeleport = false;
+        public int FrameCounter = 0;
+        public int TunnelFrame = 0; // Goes from frame 0 to 4
 
         public override TagCompound Save()
         {
@@ -134,25 +160,17 @@ namespace OvermorrowMod.Content.Tiles.Underground
                 TileEntity entity;
                 if (ByID.TryGetValue(i, out entity))
                 {
-                    if (entity != null)
+                    // Check if the tile entity is the tunnel and that their pair ID is equal to this one
+                    if (entity != null && entity is TETrollToll tunnel && tunnel.PairedTunnel == TunnelID && PairedTunnel == tunnel.TunnelID)
                     {
-                        // Check if the tile entity is the tunnel and that their pair ID is equal to this one
-                        if (entity is TETrollToll tunnel && tunnel.PairedTunnel == TunnelID && PairedTunnel == tunnel.TunnelID)
+                        // Teleport the player to that position, and then remove a stone from their inventory
+                        foreach (Item playerItem in Main.LocalPlayer.inventory)
                         {
-                            // Teleport the player to that position, and then remove a stone from their inventory
-                            //Main.LocalPlayer.position = tunnel.Position.ToWorldCoordinates(16, 16);
-
-                            foreach (Item playerItem in Main.LocalPlayer.inventory)
+                            if (playerItem.type == ModContent.ItemType<MonkeyStone>() && playerItem.stack > 0)
                             {
-                                if (playerItem.type == ModContent.ItemType<MonkeyStone>() && playerItem.stack > 0)
-                                {
-                                    playerItem.stack--;
-
-                                    Main.LocalPlayer.Teleport(tunnel.Position.ToWorldCoordinates(16, 16), -1);
-                                    Main.NewText(TunnelID + "going to id " + tunnel.TunnelID);
-
-                                    break;
-                                }
+                                playerItem.stack--;
+                                CanTeleport = true;
+                                break;
                             }
                         }
                     }
@@ -163,15 +181,33 @@ namespace OvermorrowMod.Content.Tiles.Underground
         public Vector2 TunnelPosition => Position.ToWorldCoordinates(16, 16);
         public override void Update()
         {
-            int detectionRange = 3 * 16;
-
-            foreach (Player player in Main.player)
+            if (CanTeleport)
             {
-                if (Vector2.DistanceSquared(player.Center, TunnelPosition) < detectionRange * detectionRange)
+                FrameCounter++;
+                if (FrameCounter > 8)
                 {
-                    //NetMessage.SendData(MessageID.TileEntitySharing, -1, -1, null, ID, Position.X, Position.Y);
-                    Main.NewText("range check, my id is: " + TunnelID + " and pair is " + PairedTunnel);
-                    break;
+                    FrameCounter = 0;
+                    TunnelFrame++;
+
+                    if (TunnelFrame > 4)
+                    {
+                        for (int i = 0; i < ByID.Count; i++)
+                        {
+                            TileEntity entity;
+                            if (ByID.TryGetValue(i, out entity))
+                            {
+                                // Check if the tile entity is the tunnel and that their pair ID is equal to this one
+                                if (entity != null && entity is TETrollToll tunnel && tunnel.PairedTunnel == TunnelID && PairedTunnel == tunnel.TunnelID)
+                                {
+                                    Main.LocalPlayer.Teleport(tunnel.Position.ToWorldCoordinates(16, 16), -1);
+                                }
+                            }
+                        }
+
+                        FrameCounter = 0;
+                        TunnelFrame = 0;
+                        CanTeleport = false;
+                    }
                 }
             }
         }
