@@ -6,6 +6,7 @@ using OvermorrowMod.Core;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
@@ -114,12 +115,26 @@ namespace OvermorrowMod.Content.Tiles.Underground
             if (tile.frameX == 0 && tile.frameY == 0)
             {
                 Texture2D texture = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollToll_New");
+                Texture2D glow = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollToll_Glow");
+                Texture2D lamp = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollToll_Lamp");
+                Texture2D face = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollFace");
+
                 Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                 Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
 
-                Rectangle drawRectangle = new Rectangle(0, texture.Height / 5 * tunnel.TunnelFrame, texture.Width, texture.Height / 5);
+                Rectangle drawRectangle = new Rectangle(0, texture.Height / 3 * tunnel.LightFrame, texture.Width, texture.Height / 3);
+                Rectangle faceRectangle = new Rectangle(0, face.Height / 5 * tunnel.TunnelFrame, face.Width, face.Height / 5);
+                Rectangle miscRectangle = new Rectangle(0, lamp.Height, lamp.Width, lamp.Height);
 
                 spriteBatch.Draw(texture, drawPos, drawRectangle, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                spriteBatch.Draw(glow, drawPos, drawRectangle, Color.White * 0.25f, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+
+                if (tunnel.LampOn)
+                {
+                    spriteBatch.Draw(lamp, drawPos, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                }
+
+                spriteBatch.Draw(face, drawPos + new Vector2((texture.Width / 2) - (face.Width / 2), 114 / 2 + 17), faceRectangle, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
 
             return false;
@@ -132,8 +147,15 @@ namespace OvermorrowMod.Content.Tiles.Underground
         public int PairedTunnel;
 
         public bool CanTeleport = false;
-        public int FrameCounter = 0;
+        public bool LampOn = false;
+
+        // Face sprite
+        private int FrameCounter = 0;
         public int TunnelFrame = 0; // Goes from frame 0 to 4
+
+        // Light sprite
+        private int LightCounter = 0;
+        public int LightFrame = 0;
 
         public override TagCompound Save()
         {
@@ -181,6 +203,44 @@ namespace OvermorrowMod.Content.Tiles.Underground
         public Vector2 TunnelPosition => Position.ToWorldCoordinates(16, 16);
         public override void Update()
         {
+            int detectionRange = 20 * 16;
+
+            LampOn = false;
+            if (!LampOn)
+            {
+                foreach (Player player in Main.player)
+                {
+                    if (Vector2.DistanceSquared(player.Center, TunnelPosition + new Vector2(84, 57)) < detectionRange * detectionRange)
+                    {
+                        LampOn = true;
+                        NetMessage.SendData(MessageID.TileEntitySharing, -1, -1, null, ID, Position.X, Position.Y);
+                        break;
+                    }
+                }
+            }
+
+            if (LampOn)
+            {
+                Lighting.AddLight(TunnelPosition + new Vector2(82, 82), new Color(201, 59, 8).ToVector3());
+
+                if (LightCounter++ > 8)
+                {
+                    LightCounter = 0;
+                    LightFrame++;
+
+                    if (LightFrame > 1)
+                    {
+                        LightFrame = 0;
+                    }
+                }
+            }
+            else
+            {
+                LightFrame = 2;
+            }
+
+            
+
             if (CanTeleport)
             {
                 FrameCounter++;
