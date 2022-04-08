@@ -49,6 +49,28 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     ModUtils.SandstormStuff();
                 }
 
+                for (int i = 0; i < 3; i++)
+                {
+                    int RADIUS = 60;
+                    Vector2 SpawnRotation = projectile.Center + new Vector2(RADIUS, 0).RotatedBy(120 * i);
+
+                    int NPCType = -1;
+                    switch (i)
+                    {
+                        case 0:
+                            NPCType = ModContent.NPCType<LaserMinion>();
+                            break;
+                        case 1:
+                            NPCType = ModContent.NPCType<BeamMinion>();
+                            break;
+                        case 2:
+                            NPCType = ModContent.NPCType<BlasterMinion>();
+                            break;
+                    }
+
+                    NPC.NewNPC((int)SpawnRotation.X, (int)SpawnRotation.Y, NPCType, 0, projectile.whoAmI, 0f, 120 * i);
+                }
+
                 //int proj = Projectile.NewProjectile(projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, 0, 0f, projectile.owner);
                 //projectile.position = Main.projectile[proj].Center;
                 //projectile.position -= new Vector2(Main.projectile[proj].width, Main.projectile[proj].height);

@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
     public class DharuudMinion : PullableNPC
     {
-        public NPC ParentNPC = null;
+        public Projectile RotationCenter = null;
         public Player ParentPlayer = null;
 
         protected Vector2 InitialPosition;
@@ -45,16 +45,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             if (RunOnce)
             {
-                ParentNPC = Main.npc[(int)npc.ai[0]];
+                //RotationCenter = Main.npc[(int)npc.ai[0]];
+                RotationCenter = Main.projectile[(int)npc.ai[0]];
                 RunOnce = false;
             }
 
-            if (!ParentNPC.active)
+            if (!RotationCenter.active)
             {
                 npc.active = false;
             }
 
-            IdlePosition = ParentNPC.Center + new Vector2(100, 0).RotatedBy(MathHelper.ToRadians(RotationCounter += 2f));
+            IdlePosition = RotationCenter.Center + new Vector2(60, 0).RotatedBy(MathHelper.ToRadians(RotationCounter += 2f));
 
             // Code to rotate around the boss and allow grappling
             if (!IsDisabled)
@@ -196,7 +197,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             if (IsDisabled && !PickedUp)
             {
                 Texture2D texture = Main.npcTexture[npc.type];
-                Color color = Color.Yellow;
+                Color color = new Color(186, 99, 45);
                 float mult = (0.55f + (float)Math.Sin(Main.GlobalTime * 2) * 0.1f);
                 float scale = npc.scale * 2.5f * mult;
 
@@ -259,13 +260,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         InitialPosition = npc.Center;
                     }
 
-                    npc.Center = Vector2.Lerp(InitialPosition, ParentNPC.Center - new Vector2(0, 250), AttackCounter / 60f);
+                    npc.Center = Vector2.Lerp(InitialPosition, RotationCenter.Center - new Vector2(0, 250), AttackCounter / 60f);
                 }
 
                 if (AttackCounter == 120)
                 {
                     InitialPosition = npc.Center;
-                    float RandomOffset = /*MathHelper.ToRadians(Main.rand.Next(-3, 3)) * 20*/MathHelper.PiOver4 * ParentNPC.direction;
+                    float RandomOffset = /*MathHelper.ToRadians(Main.rand.Next(-3, 3)) * 20*/MathHelper.PiOver4 * RotationCenter.direction;
                     npc.netUpdate = true;
 
                     Projectile.NewProjectile(npc.Center, (npc.DirectionTo(player.Center).ToRotation() + RandomOffset).ToRotationVector2(), ModContent.ProjectileType<ForbiddenBeam>(), 60, 6f, Main.myPlayer, player.whoAmI);
@@ -630,7 +631,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    npc.Center = Vector2.Lerp(InitialPosition, ParentNPC.Center - new Vector2(0, 250), GlobalCounter / 60f);
+                    npc.Center = Vector2.Lerp(InitialPosition, RotationCenter.Center - new Vector2(0, 250), GlobalCounter / 60f);
                 }
 
                 // Fire at the cross hairs

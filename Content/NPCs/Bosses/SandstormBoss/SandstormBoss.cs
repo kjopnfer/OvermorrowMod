@@ -6,6 +6,7 @@ using OvermorrowMod.Content.Items.Weapons.Magic.SandStaff;
 using OvermorrowMod.Content.Items.Weapons.Melee.SandSpinner;
 using OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower;
 using OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff;
+using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using System;
 using System.Linq;
@@ -94,7 +95,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             if (RunOnce)
             {
-                for (int i = 0; i < 3; i++)
+                /*for (int i = 0; i < 3; i++)
                 {
                     int RADIUS = 100;
                     Vector2 SpawnRotation = npc.Center + new Vector2(RADIUS, 0).RotatedBy(120 * i);
@@ -114,7 +115,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     }
 
                     NPC.NewNPC((int)SpawnRotation.X, (int)SpawnRotation.Y, NPCType, 0, npc.whoAmI, 0f, 120 * i);
-                }
+                }*/
 
                 NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SandstormBoss_Chest>(), 0, npc.whoAmI);
 
@@ -140,7 +141,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (MiscCounter++ == 120)
                     {
                         //AICase = (int)AIStates.Selector;
-                        AICase = (int)AIStates.Shockwave;
+                        AICase = (int)AIStates.Shards;
 
                         MiscCounter = 0;
                     }
@@ -178,7 +179,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         AttackCounter = 0;
 
-                        AICase = (int)AIStates.Shockwave;
+                        AICase = (int)AIStates.Shards;
                         //AICase = AttackQueue[AttackCounter];
 
                         AttackCounter++;
@@ -266,13 +267,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         npc.netUpdate = true;
                     }
 
-                    if (MiscCounter % 20 == 0)
+                    if (MiscCounter % 5 == 0)
                     {
-                        Vector2 RandomPosition = new Vector2(Main.rand.Next(700, 800) * RandomDirection, Main.rand.Next(-8, 8) * 30);
-                        Projectile.NewProjectile(player.Center + RandomPosition, Vector2.UnitX * Main.rand.Next(3, 6) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), npc.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 90));
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Vector2 RandomPosition = new Vector2(Main.rand.Next(700, 900) * RandomDirection, Main.rand.Next(-15, 15) * 30);
+                            Projectile.NewProjectile(Desert.DesertArenaCenter + RandomPosition, Vector2.UnitX * Main.rand.Next(5, 8) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), npc.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 90) * 12);
+                        }
                     }
 
-                    if (MiscCounter++ == 240)
+                    if (MiscCounter++ == 480)
                     {
                         //AICase = (int)AIStates.Shards;
                         if (AttackCounter == 2)

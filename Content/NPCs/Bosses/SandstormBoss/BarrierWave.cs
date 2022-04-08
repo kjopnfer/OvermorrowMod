@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            projectile.width = projectile.height = 12;
+            projectile.width = projectile.height = 48;
             projectile.timeLeft = 69420;
             projectile.friendly = false;
             projectile.hostile = true;

@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
@@ -130,36 +132,43 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
     }
 
-    public class HorizontalFragment : ModProjectile
+    public class HorizontalFragment : ModProjectile, ITrailEntity
     {
+        public Color TrailColor(float progress) => Color.Yellow;
+        public float TrailSize(float progress) => 48;
+        public Type TrailType() => typeof(LightningTrail);
+
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/Fragment";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Fragment");
+            DisplayName.SetDefault("Light Warping Bullets");
             ProjectileID.Sets.TrailingMode[projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[projectile.type] = 20;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 10;
-            projectile.height = 10;
+            projectile.width = 26;
+            projectile.height = 26;
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.ignoreWater = true;
             projectile.tileCollide = false;
-            projectile.timeLeft = 600;
+            projectile.timeLeft = 1200;
             projectile.penetrate = -1;
-            projectile.extraUpdates = 1;
+            projectile.extraUpdates = 10;
 
             drawOffsetX = -5;
             //drawOriginOffsetY = -7;
             drawOriginOffsetY = 2;
         }
 
+        public ref float AICounter => ref projectile.ai[0];
+        public ref float Delay => ref projectile.ai[1];
+
         public override void AI()
         {
-            if (projectile.ai[0]++ == 0)
+            if (AICounter++ == 0)
             {
                 float radius = 15;
                 int numLocations = 10;
@@ -172,12 +181,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 }
             }
 
+            Tile tile = Framing.GetTileSafely((int)(projectile.Center.X / 16), (int)(projectile.Center.Y / 16));
+            if (tile.active() && tile.type == TileID.Gold)
+            {
+                projectile.Kill();
+            }
+
+            projectile.localAI[0]++;
             projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
         public override bool ShouldUpdatePosition()
         {
-            if (projectile.ai[0] < projectile.ai[1])
+            if (AICounter < Delay)
             {
                 return false;
             }
@@ -187,17 +203,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/Fragment_Trail");
+            /*spriteBatch.Reload(BlendState.Additive);
+            Texture2D texture = ModContent.GetTexture(AssetDirectory.Boss + "SandstormBoss/Fragment_Trail");
             var off = new Vector2(projectile.width / 2f, projectile.height / 2f) + new Vector2(0, 10);
             int frameHeight = texture.Height / Main.projFrames[projectile.type];
             var frame = new Rectangle(0, frameHeight * projectile.frame, texture.Width, frameHeight - 2);
             var orig = frame.Size() / 2f;
 
-            Color color = Color.Yellow;
             var trailLength = ProjectileID.Sets.TrailCacheLength[projectile.type];
             var fadeMult = 1f / trailLength;
             for (int i = 1; i < trailLength; i++)
             {
+                Color color = Color.Lerp(Color.Yellow, Color.Orange, i / trailLength);
                 Main.spriteBatch.Draw(texture, projectile.oldPos[i] - Main.screenPosition + off, frame, color * (1f - fadeMult * i), projectile.oldRot[i], orig, projectile.scale * (trailLength - i) / trailLength, SpriteEffects.None, 0f);
             }
 
@@ -208,18 +225,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             float mult = (0.55f + (float)Math.Sin(Main.GlobalTime * 2) * 0.1f);
             float scale = projectile.scale * 2 * mult;
 
-            spriteBatch.Draw(texture, projectile.Center + new Vector2(0, 10) - Main.screenPosition, drawRectangle, color, projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), scale, SpriteEffects.None, 0f);
+            //Color pulseColor = Color.Yellow;
+            //spriteBatch.Draw(texture, projectile.Center + new Vector2(0, 10) - Main.screenPosition, drawRectangle, pulseColor, projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), scale, SpriteEffects.None, 0f);
 
+            spriteBatch.Reload(BlendState.AlphaBlend);*/
             spriteBatch.Reload(SpriteSortMode.Immediate);
 
             Effect effect = OvermorrowModFile.Instance.Whiteout;
-            float progress = Utils.Clamp(projectile.localAI[0]++, 0, 15f) / 15f;
+
+            float progress = Utils.Clamp(projectile.localAI[0], 0, Delay) / Delay;
             effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
-            effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+            // effect.Parameters["WhiteoutProgress"].SetValue(1 - progress); Fade out of a color
+            effect.Parameters["WhiteoutProgress"].SetValue(progress);
+
             effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
-            texture = Main.projectileTexture[projectile.type];
-            spriteBatch.Draw(texture, projectile.Center + new Vector2(0, 10) - Main.screenPosition, null, Color.White, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
+            Texture2D texture = Main.projectileTexture[projectile.type];
+            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
 
             spriteBatch.Reload(SpriteSortMode.Deferred);
 
@@ -345,7 +367,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             Texture2D texture = ModContent.GetTexture("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/Fragment_Trail");
             Color color = Color.Yellow;
-            
+
             int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
             int y2 = num154 * projectile.frame;
             Rectangle drawRectangle = new Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
