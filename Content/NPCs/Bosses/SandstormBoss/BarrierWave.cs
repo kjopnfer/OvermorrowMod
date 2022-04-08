@@ -36,16 +36,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             if (++projectile.ai[0] % 60 == 0)
             {
-                Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Orange, 1, 0.5f, projectile.velocity.ToRotation());
+                Particle.CreateParticle(Particle.ParticleType<Pulse>(), projectile.Center, Vector2.Zero, Color.Orange, 1, 0.5f, projectile.velocity.ToRotation());
             }
 
             foreach (Projectile proj in Main.projectile)
             {
-                if (proj.whoAmI != projectile.whoAmI && proj.active && proj.type == ModContent.ProjectileType<BarrierWave>())
+                if (proj.active && proj.type == ModContent.ProjectileType<DharuudArena>())
                 {
                     if (projectile.Hitbox.Intersects(proj.Hitbox))
                     {
-                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), projectile.Center, Vector2.Zero, Color.Yellow, 1, 2f);
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), proj.Center, Vector2.Zero, Color.Yellow, 1, 2f);
 
                         foreach (Player player in Main.player)
                         {
@@ -58,7 +58,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             }
                         }
 
-                        proj.Kill();
                         projectile.Kill();
                     }
                 }

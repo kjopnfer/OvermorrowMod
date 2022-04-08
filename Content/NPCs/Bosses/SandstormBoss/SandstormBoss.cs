@@ -76,10 +76,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             PhaseTransition = -2,
             Intro = -1,
             Selector = 0,
-            Shards = 1,
+            //Shards = 1,
             Vortex = 2,
             Spin = 3,
-            Wall = 4,
+            Shards = 4,
             //Pillars = 5
             ChainLightinng = 5,
             Shockwave = 6
@@ -186,7 +186,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     }
 
                     break;
-                case (int)AIStates.Shards:
+                /*case (int)AIStates.Shards:
                     if (++MiscCounter % 120 == 0)
                     {
                         for (int i = 0; i < Main.rand.Next(5, 8); i++)
@@ -211,7 +211,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         MiscCounter = 0;
                     }
-                    break;
+                    break;*/
                 case (int)AIStates.Vortex:
                     if (MiscCounter++ == 0)
                     {
@@ -259,7 +259,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         MiscCounter = 0;
                     }
                     break;
-                case (int)AIStates.Wall:
+                case (int)AIStates.Shards:
                     if (MiscCounter == 0)
                     {
                         RandomDirection = Main.rand.NextBool() ? -1 : 1;
@@ -463,11 +463,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             //    Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Rays");
             //    Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(npc.localAI[0] += 0.5f) + MathHelper.ToRadians(i * (360 / 9)), new Vector2(texture.Width / 2, texture.Height) / 2, new Vector2(3f, 1f), SpriteEffects.None, 0f);
             //}
-
-            if (AICase == (int)AIStates.Wall)
-            {
-
-            }
 
             if (npc.localAI[0]++ == 0)
             {

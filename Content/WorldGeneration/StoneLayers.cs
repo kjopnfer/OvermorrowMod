@@ -28,7 +28,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (HiveIndex != -1)
             {
                 tasks.Insert(HiveIndex + 1, new PassLegacy("Mine Index", MoleMines)); // Because the rocks get smoothed in later passes
-                tasks.Insert(HiveIndex + 2, new PassLegacy("Shack Index", ShadeShack)); 
+                tasks.Insert(HiveIndex + 2, new PassLegacy("Shack Index", ShadeShack));
             }
 
             int RockIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Moss"));
@@ -130,6 +130,11 @@ namespace OvermorrowMod.Content.WorldGeneration
                         if (tile.type == TileID.Stone)
                         {
                             tile.type = (ushort)ModContent.TileType<CrunchyStone>();
+                        }
+
+                        if (tile.type == TileID.Dirt)
+                        {
+                            tile.type = (ushort)TileID.Ash;
                         }
                     }
                 }

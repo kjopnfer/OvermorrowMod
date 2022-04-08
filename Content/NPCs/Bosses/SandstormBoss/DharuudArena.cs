@@ -165,15 +165,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             spriteBatch.Reload(BlendState.Additive);
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "magic_02");
+            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "MagicCircle_2");
+            Color color = new Color(244, 188, 91);
+            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Lerp(Color.Transparent, color, Utils.Clamp(projectile.localAI[0], 0, 240) / 240f), MathHelper.ToRadians(projectile.localAI[0]), texture.Size() / 2, 0.65f, SpriteEffects.None, 0f);
+
+            texture = ModContent.GetTexture(AssetDirectory.Textures + "magic_02");
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             float scale = MathHelper.Lerp(0, 1.25f, Utils.Clamp(projectile.localAI[0], 0, 240) / 240f);
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(projectile.localAI[0]), origin, scale, SpriteEffects.None, 0f);
+            color = new Color(186, 99, 45);
+            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, color, MathHelper.ToRadians(projectile.localAI[0]), origin, scale, SpriteEffects.None, 0f);
+
 
             if (projectile.ai[0] > 460)
             {
                 texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
-                Color color = Color.Orange;
+                color = Color.Orange;
                 float circleScale = MathHelper.Lerp(0, 2.5f, Utils.Clamp(projectile.ai[0] - 360, 0, 100) / 100f);
 
                 if (!Main.gamePaused) projectile.localAI[0]++;

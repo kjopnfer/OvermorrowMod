@@ -7,7 +7,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
-using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Core;
 
@@ -500,7 +499,7 @@ namespace OvermorrowMod.Common.Particles
             spriteBatch.Draw(texture, pos, null, col2, particle.rotation, origin, scale2 * 0.6f, effects, 0f);
         }
     }
-    public class Shockwave : CustomParticle
+    public class Pulse : CustomParticle
     {
         //public override string Texture => "Terraria/Projectile_" + ProjectileID.StardustTowerMark;
         public override string Texture => AssetDirectory.Textures + "PulseCircle";
@@ -526,8 +525,34 @@ namespace OvermorrowMod.Common.Particles
             particle.alpha = MathHelper.Lerp(particle.alpha, 0, progress);
             if (particle.activeTime > maxTime) particle.Kill();
         }
+
+        private void DrawRing(SpriteBatch spriteBatch, Vector2 position, float width, float height, float rotation, float prog, Color color)
+        {
+            var texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
+            Effect effect = OvermorrowModFile.Instance.Ring;
+
+            effect.Parameters["uProgress"].SetValue(rotation);
+            effect.Parameters["uColor"].SetValue(color.ToVector3());
+            effect.Parameters["uImageSize1"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
+            effect.Parameters["uOpacity"].SetValue(prog);
+            effect.CurrentTechnique.Passes["BowRingPass"].Apply();
+
+            spriteBatch.End();
+            spriteBatch.Begin(default, BlendState.Additive, default, default, default, effect, Main.GameViewMatrix.ZoomMatrix);
+
+            var target = ModUtils.toRect(position, (int)(16 * (width + prog)), (int)(60 * (height + prog)));
+            spriteBatch.Draw(texture, target, null, color * prog, particle.rotation, texture.Size() / 2, 0, 0);
+
+            spriteBatch.End();
+            spriteBatch.Begin(default, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
+            
+            //float progress = (float)particle.activeTime / maxTime;
+            //DrawRing(spriteBatch, particle.position, 1, 1, Main.GameUpdateCount / 40f, 1f, new Color(244, 188, 91));
+
             spriteBatch.Reload(BlendState.Additive);
 
             Texture2D texture = Particle.ParticleTextures[particle.type];

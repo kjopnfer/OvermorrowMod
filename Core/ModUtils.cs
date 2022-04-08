@@ -51,6 +51,11 @@ namespace OvermorrowMod.Core
             stopRain.Invoke(null, null);
         }
 
+        public static Rectangle toRect(Vector2 pos, int w, int h)
+        {
+            return new Rectangle((int)(pos.X - Main.screenPosition.X), (int)(pos.Y - Main.screenPosition.Y), w, h);
+        }
+
         public static Vector2 GetInventoryPosition(Vector2 position, Rectangle frame, Vector2 origin, float scale)
         {
             return position + (((frame.Size() / 2f) - origin) * scale * Main.inventoryScale) + new Vector2(1.5f, 1.5f);

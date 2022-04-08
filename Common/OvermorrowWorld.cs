@@ -16,6 +16,7 @@ using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Content.Tiles.Ores;
 using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.WaterCave;
+using OvermorrowMod.Content.Tiles.Underground;
 
 namespace OvermorrowMod.Common
 {
@@ -32,10 +33,10 @@ namespace OvermorrowMod.Common
         // Biomes
         public static int floodedCaves;
 
-        // These are here because we can't have nice things
         public static int desertBiome;
         public static int marbleBiome;
         public static int graniteBiome;
+        public static int lavaBiome;
 
         private bool placedBook = false;
         private bool placedGranite = false;
@@ -48,6 +49,7 @@ namespace OvermorrowMod.Common
             floodedCaves = tileCounts[ModContent.TileType<GlowBlock>()];
             marbleBiome = tileCounts[TileID.MarbleBlock];
             graniteBiome = tileCounts[TileID.GraniteBlock];
+            lavaBiome = tileCounts[ModContent.TileType<CrunchyStone>()];
 
             // Make the modded tile weigh more heavily
             Main.sandTiles += tileCounts[ModContent.TileType<SandBrick>()] * 5;

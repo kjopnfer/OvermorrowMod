@@ -239,7 +239,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
                 LightFrame = 2;
             }
 
-            
+
 
             if (CanTeleport)
             {
@@ -275,6 +275,11 @@ namespace OvermorrowMod.Content.Tiles.Underground
         public override bool ValidTile(int i, int j)
         {
             Tile tile = Main.tile[i, j];
+            if (!tile.active() || tile.type != ModContent.TileType<TrollToll>())
+            {
+                Kill(Position.X, Position.Y);
+            }
+
             return tile.active() && tile.type == ModContent.TileType<TrollToll>();
         }
 

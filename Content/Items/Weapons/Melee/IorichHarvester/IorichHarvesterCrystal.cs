@@ -65,7 +65,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
         {
             npc.position += Vector2.Normalize(projectile.velocity);
 
-            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.LightGreen, 0.5f, 0.5f);
+            Particle.CreateParticle(Particle.ParticleType<Pulse>(), projectile.Center, Vector2.Zero, Color.LightGreen, 0.5f, 0.5f);
 
             for (int i = 0; i < Main.rand.Next(3, 6); i++)
             {

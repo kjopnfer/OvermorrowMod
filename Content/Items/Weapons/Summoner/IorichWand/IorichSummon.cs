@@ -188,7 +188,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
             if (projectile.getRect().Intersects(parent.getRect()))
             {
                 Main.PlaySound(SoundID.DD2_DarkMageHealImpact);
-                Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, new Color(195, 255, 154), 0.5f, 0.25f);
+                Particle.CreateParticle(Particle.ParticleType<Pulse>(), projectile.Center, Vector2.Zero, new Color(195, 255, 154), 0.5f, 0.25f);
 
                 parent.GetModPlayer<OvermorrowModPlayer>().IorichGuardianEnergy += 3;
 
@@ -284,7 +284,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
 
         public override void Kill(int timeLeft)
         {
-            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, ProjectileColor, 1, 0.5f, 0, 1f);
+            Particle.CreateParticle(Particle.ParticleType<Pulse>(), projectile.Center, Vector2.Zero, ProjectileColor, 1, 0.5f, 0, 1f);
 
             Vector2 origin = projectile.Center;
             float radius = 15;

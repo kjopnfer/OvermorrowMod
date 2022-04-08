@@ -37,7 +37,7 @@ namespace OvermorrowMod.Common.Particles
             ParticleTypes = new Dictionary<Type, int>();
             ParticleTextures = new Dictionary<int, Texture2D>();
             ParticleNames = new Dictionary<int, string>();
-			CustomParticle.CustomParticles = new Dictionary<int, CustomParticle>();
+            CustomParticle.CustomParticles = new Dictionary<int, CustomParticle>();
             On.Terraria.Main.DrawInterface += Draw;
         }
         public static void TryRegisteringParticle(Type type)
@@ -68,14 +68,14 @@ namespace OvermorrowMod.Common.Particles
         }
         public static void Draw(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)
         {
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, null, null, null, Main.UIScaleMatrix); 
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, null, null, null, Main.UIScaleMatrix);
             DrawParticles(Main.spriteBatch);
             Main.spriteBatch.End();
             orig(self, time);
         }
         public static void UpdateParticles()
         {
-            foreach(Particle particle in particles)
+            foreach (Particle particle in particles)
             {
                 if (particle == null) continue;
                 for (int i = 0; i < particle.extraUpdates + 1; i++)
@@ -93,7 +93,7 @@ namespace OvermorrowMod.Common.Particles
         }
         public static void DrawParticles(SpriteBatch spriteBatch)
         {
-            foreach(Particle particle in particles)
+            foreach (Particle particle in particles)
             {
                 if (particle == null) continue;
                 particle.cParticle.particle = particle;
@@ -101,7 +101,7 @@ namespace OvermorrowMod.Common.Particles
                 {
                     particle.cParticle.Draw(spriteBatch);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     OvermorrowModFile.Instance.Logger.Error(e.Message);
                     OvermorrowModFile.Instance.Logger.Error(e.StackTrace);
@@ -121,7 +121,7 @@ namespace OvermorrowMod.Common.Particles
         }
         public static bool ParticleExists(int type)
         {
-            foreach(Particle particle in particles)
+            foreach (Particle particle in particles)
             {
                 if (particle == null) continue;
                 if (particle.type == type) return true;
@@ -145,9 +145,9 @@ namespace OvermorrowMod.Common.Particles
             particle.alpha = alpha;
             particle.scale = scale;
             particle.rotation = rotation;
-            particle.customData = new float[4] {data1, data2, data3, data4};
+            particle.customData = new float[4] { data1, data2, data3, data4 };
             particle.id = NextIndex;
-            
+
             CustomParticle particle1 = (CustomParticle)Activator.CreateInstance(CustomParticle.GetCParticle(particle.type).GetType());
             particle.cParticle = particle1;
             particle.cParticle.particle = particle;
@@ -155,11 +155,11 @@ namespace OvermorrowMod.Common.Particles
 
             particles[NextIndex] = particle;
             if (NextIndex + 1 < particles.Length && particles[NextIndex + 1] == null)
-				NextIndex++;
-			else
-				for (int i = 0; i < particles.Length; i++)
-					if (particles[i] == null)
-						NextIndex = i;
+                NextIndex++;
+            else
+                for (int i = 0; i < particles.Length; i++)
+                    if (particles[i] == null)
+                        NextIndex = i;
 
             ActiveParticles++;
             return particle.id;
@@ -173,9 +173,9 @@ namespace OvermorrowMod.Common.Particles
         public Particle particle;
         public virtual void OnSpawn() { }
         public virtual void Update() { }
-        public virtual string Texture { get{return null; } private set{}}
-		public virtual bool ShouldUpdatePosition() => true;
-        public virtual void Draw(SpriteBatch spriteBatch) 
+        public virtual string Texture { get { return null; } private set { } }
+        public virtual bool ShouldUpdatePosition() => true;
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width / 2, texture.Height / 2), particle.scale, SpriteEffects.None, 0f);

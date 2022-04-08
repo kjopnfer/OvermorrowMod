@@ -7,6 +7,7 @@ using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -106,6 +107,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         InitialRadius = Radius;
                     }
 
+                    // Pull backwards
                     if (MiscCounter2 <= 60f)
                     {
                         Radius = MathHelper.Lerp(InitialRadius, InitialRadius + 75, (float)MiscCounter2 / 60f);
@@ -113,18 +115,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         if (MiscCounter2 == 60) InitialRadius = Radius;
                     }
 
-                    if (MiscCounter2 > 60f && MiscCounter2 <= 65f)
+                    // Launch forward
+                    if (MiscCounter2 > 120f && MiscCounter2 <= 125f)
                     {
-                        Radius = MathHelper.Lerp(InitialRadius, InitialRadius - 75, Utils.Clamp((float)(MiscCounter2 - 60f) / 5f, 0, 20));
+                        Radius = MathHelper.Lerp(InitialRadius, InitialRadius - 75, Utils.Clamp((float)(MiscCounter2 - 120f) / 5f, 0, 20));
                     }
 
-                    if (MiscCounter2 == 65)
+                    if (MiscCounter2 == 125)
                     {
                         //Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Yellow);
                         Projectile.NewProjectile(npc.Center, npc.DirectionTo(RotationCenter) * 2, ModContent.ProjectileType<BarrierWave>(), 50, 0f, Main.myPlayer);
 
                         Shockwave = false;
                         MiscCounter2 = 0;
+                        npc.localAI[1] = 0;
                     }
                 }
 
@@ -164,6 +168,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 spriteBatch.Reload(SpriteSortMode.Deferred);
             }
 
+         
+            if (Shockwave)
+            {
+                Vector2 offset = Vector2.UnitY.RotatedBy(npc.rotation);
+
+                float progress2 = Utils.Clamp(npc.localAI[1]++, 0, 25f) / 25f;
+                float progress3 = Utils.Clamp(npc.localAI[1]++, 0, 20f) / 25f;
+
+                DrawRing(AssetDirectory.Textures + "Crosshair", spriteBatch, npc.Center + offset * (npc.height / 2 - 20), 1, 1, Main.GameUpdateCount / 40f, progress2, new Color(244, 188, 91));
+                //DrawRing(AssetDirectory.Textures + "MagicCircle", spriteBatch, npc.Center, 2f, 2f, Main.GameUpdateCount / 40f, progress3, new Color(244, 188, 91));
+                DrawRing(AssetDirectory.Textures + "Crosshair", spriteBatch, npc.Center, 3f, 3f, Main.GameUpdateCount / 20f, progress3, new Color(244, 188, 91));
+            }
+
             return false;
         }
 
@@ -176,6 +193,27 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             {
                 Main.spriteBatch.Draw(texture, npc.Center + new Vector2(0, 4) - Main.screenPosition, null, Color.Lerp(Color.Transparent, Color.White, MiscCounter / 60f), npc.rotation, origin, 1f, SpriteEffects.None, 0f);
             }
+        }
+
+        private void DrawRing(string texture, SpriteBatch spriteBatch, Vector2 position, float width, float height, float rotation, float prog, Color color)
+        {
+            var texRing = ModContent.GetTexture(texture);
+            Effect effect = OvermorrowModFile.Instance.Ring;
+
+            effect.Parameters["uProgress"].SetValue(rotation);
+            effect.Parameters["uColor"].SetValue(color.ToVector3());
+            effect.Parameters["uImageSize1"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
+            effect.Parameters["uOpacity"].SetValue(prog);
+            effect.CurrentTechnique.Passes["BowRingPass"].Apply();
+
+            spriteBatch.End();
+            spriteBatch.Begin(default, BlendState.Additive, default, default, default, effect, Main.GameViewMatrix.ZoomMatrix);
+
+            var target = ModUtils.toRect(position, (int)(16 * (width + prog)), (int)(60 * (height + prog)));
+            spriteBatch.Draw(texRing, target, null, color * prog, npc.rotation + MathHelper.PiOver2, texRing.Size() / 2, 0, 0);
+
+            spriteBatch.End();
+            spriteBatch.Begin(default, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
         }
     }
 

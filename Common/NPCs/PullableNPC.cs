@@ -58,7 +58,7 @@ namespace OvermorrowMod.Common.NPCs
                                 Particle.CreateParticle(Particle.ParticleType<Spark>(), projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(4, 6), Color.Yellow);
                             }
 
-                            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Color.Yellow, 0.5f, 0.5f);
+                            Particle.CreateParticle(Particle.ParticleType<Pulse>(), projectile.Center, Vector2.Zero, Color.Yellow, 0.5f, 0.5f);
 
                             projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>().RetractSlow = true;
                             projectile.ai[0] = 1;

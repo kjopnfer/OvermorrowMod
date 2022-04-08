@@ -44,8 +44,9 @@ namespace OvermorrowMod.Common
         public OvermorrowModFile() => Instance = this;
 
 
-        public Effect Shockwave;
         public Effect BeamShader;
+        public Effect Ring;
+        public Effect Shockwave;
         public Effect Shockwave2;
         public Effect TrailShader;
         public Effect TextShader;
@@ -80,9 +81,10 @@ namespace OvermorrowMod.Common
                 Main.logo2Texture = Instance.GetTexture("logo");
 
                 // Effects
+                BeamShader = GetEffect("Effects/Beam");
+                Ring = GetEffect("Effects/Ring");
                 Shockwave = GetEffect("Effects/Shockwave1");
                 Shockwave2 = GetEffect("Effects/ShockwaveEffect");
-                BeamShader = GetEffect("Effects/Beam");
                 TextShader = GetEffect("Effects/TextShader");
                 TrailShader = GetEffect("Effects/Trail");
                 Whiteout = GetEffect("Effects/Whiteout");
@@ -132,10 +134,12 @@ namespace OvermorrowMod.Common
         public override void Unload()
         {
             Instance = null;
+
+            BeamShader = null;
+            Ring = null;
             Shockwave = null;
             TrailShader = null;
             TextShader = null;
-            BeamShader = null;
             Whiteout = null;
 
             TrailTextures = null;

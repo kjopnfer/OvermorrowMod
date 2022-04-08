@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
 
         public override void Kill(int timeLeft)
         {
-            Particle.CreateParticle(Particle.ParticleType<Shockwave>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 0.5f, 0.25f);
+            Particle.CreateParticle(Particle.ParticleType<Pulse>(), projectile.Center, Vector2.Zero, Main.DiscoColor, 0.5f, 0.25f);
 
             for (int i = 0; i < 15; i++)
             {
