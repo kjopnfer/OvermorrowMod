@@ -108,7 +108,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             #region Object Placement
             DesertArenaCenter = new Vector2(x, y) * 16;
-            WorldGen.PlaceTile(x, y, ModContent.TileType<DharuudArena>());
+            //WorldGen.PlaceTile(x, y, ModContent.TileType<DharuudArena>());
             //DesertArenaCenter = new Vector2(x - (TileGen.width / 2) + 68, y - (TileGen.width / 2) + 31) * 16;
             //StructureHelper.Generator.GenerateStructure("Content/WorldGeneration/Structures/test2", new Point16(x - (TileGen.width / 2) + 68, y - (TileGen.width / 2) + 31), OvermorrowModFile.Instance);
 

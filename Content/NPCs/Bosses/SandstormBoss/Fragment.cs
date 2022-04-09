@@ -135,9 +135,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
     public class HorizontalFragment : ModProjectile, ITrailEntity
     {
-        public Color TrailColor(float progress) => Color.Yellow;
+        public Color TrailColor(float progress) => Color.Lerp(new Color(253, 254, 255), new Color(244, 188, 91), progress) * progress;
         public float TrailSize(float progress) => 48;
-        public Type TrailType() => typeof(LightningTrail);
+        public Type TrailType() => typeof(TorchTrail);
 
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/Fragment";
         public override void SetStaticDefaults()
@@ -204,7 +204,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            /*spriteBatch.Reload(BlendState.Additive);
+            /*
             Texture2D texture = ModContent.GetTexture(AssetDirectory.Boss + "SandstormBoss/Fragment_Trail");
             var off = new Vector2(projectile.width / 2f, projectile.height / 2f) + new Vector2(0, 10);
             int frameHeight = texture.Height / Main.projFrames[projectile.type];
@@ -229,22 +229,35 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             //Color pulseColor = Color.Yellow;
             //spriteBatch.Draw(texture, projectile.Center + new Vector2(0, 10) - Main.screenPosition, drawRectangle, pulseColor, projectile.rotation, new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2), scale, SpriteEffects.None, 0f);
 
-            spriteBatch.Reload(BlendState.AlphaBlend);*/
-            spriteBatch.Reload(SpriteSortMode.Immediate);
+            */
 
-            Effect effect = OvermorrowModFile.Instance.Whiteout;
+            if (projectile.localAI[0] < Delay)
+            {
+                spriteBatch.Reload(SpriteSortMode.Immediate);
 
-            float progress = Utils.Clamp(projectile.localAI[0], 0, Delay) / Delay;
-            effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
-            // effect.Parameters["WhiteoutProgress"].SetValue(1 - progress); Fade out of a color
-            effect.Parameters["WhiteoutProgress"].SetValue(progress);
+                Effect effect = OvermorrowModFile.Instance.Whiteout;
 
-            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+                float progress = Utils.Clamp(projectile.localAI[0], 0, Delay) / Delay;
+                effect.Parameters["WhiteoutColor"].SetValue(new Color(244, 188, 91).ToVector3());
+                // effect.Parameters["WhiteoutProgress"].SetValue(1 - progress); Fade out of a color
+                effect.Parameters["WhiteoutProgress"].SetValue(progress);
 
-            Texture2D texture = Main.projectileTexture[projectile.type];
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
+                effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
-            spriteBatch.Reload(SpriteSortMode.Deferred);
+                Texture2D texture = Main.projectileTexture[projectile.type];
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
+
+                spriteBatch.Reload(SpriteSortMode.Deferred);
+            }
+            else
+            {
+                spriteBatch.Reload(BlendState.Additive);
+
+                Texture2D texture = ModContent.GetTexture(AssetDirectory.Boss + "SandstormBoss/Fragment_Trail");
+                spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, new Color(244, 188, 91), projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, 1, SpriteEffects.None, 0f);
+
+                spriteBatch.Reload(BlendState.AlphaBlend);
+            }
 
             return false;
         }

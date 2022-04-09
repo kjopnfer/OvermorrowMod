@@ -136,7 +136,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 ArenaCenter = Arena;
                             }
                         }
-                    }  
+                    }
 
                     if (MiscCounter++ == 120)
                     {
@@ -265,14 +265,57 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     {
                         RandomDirection = Main.rand.NextBool() ? -1 : 1;
                         npc.netUpdate = true;
+
+                        Vector2 ArenaCenter = Desert.DesertArenaCenter + new Vector2(1 * 16, 2 * 16) - new Vector2(8, -8);
+
+                        // ----->
+                        if (RandomDirection == -1)
+                        {
+                            // TOP-DOWN MIDDLE
+                            // Lower Right
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(10 * 16 + 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+
+                            // Upper Right
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(10 * 16 + 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+
+                            // LEFT-RIGHT INNER
+                            // Left
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+                            // Right
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+
+                            // Right
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(25 * 16 + 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+                        }
+                        else // <----
+                        {
+                            Main.NewText("traveling LEFT");
+
+                            // TOP-DOWN MIDDLE
+                            // Lower Left
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(-10 * 16 - 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+
+                            // Upper Left
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(-10 * 16 - 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+
+                            // LEFT-RIGHT INNER
+                            // Left
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+                            // Right
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+
+                            // LEFT-RIGHT OUTER
+                            // Left
+                            Projectile.NewProjectile(ArenaCenter + new Vector2(-25 * 16 - 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+                        }
                     }
 
-                    if (MiscCounter % 5 == 0)
+                    if (MiscCounter > 120 && MiscCounter % 3 == 0)
                     {
-                        for (int i = 0; i < 2; i++)
+                        for (int i = 0; i < Main.rand.Next(2, 4); i++)
                         {
                             Vector2 RandomPosition = new Vector2(Main.rand.Next(700, 900) * RandomDirection, Main.rand.Next(-15, 15) * 30);
-                            Projectile.NewProjectile(Desert.DesertArenaCenter + RandomPosition, Vector2.UnitX * Main.rand.Next(5, 8) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), npc.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 90) * 12);
+                            Projectile.NewProjectile(Desert.DesertArenaCenter + RandomPosition, Vector2.UnitX * Main.rand.Next(5, 8) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), npc.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 70) * 12);
                         }
                     }
 
@@ -400,7 +443,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 if (!npc.active || !(npc.modNPC is Barrier)) continue;
 
                 ((Barrier)npc.modNPC).Rotate = CanRotate;
-            }      
+            }
         }
 
         private void AttackHandler()

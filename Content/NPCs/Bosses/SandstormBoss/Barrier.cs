@@ -153,7 +153,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                 if (progress < 1)
                 {
-                    effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
+                    effect.Parameters["WhiteoutColor"].SetValue(new Color(244, 188, 91).ToVector3());
                     effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
                     effect.CurrentTechnique.Passes["Whiteout"].Apply();
                 }
