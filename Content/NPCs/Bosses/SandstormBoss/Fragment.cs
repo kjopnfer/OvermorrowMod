@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
@@ -250,6 +251,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void Kill(int timeLeft)
         {
+            Particle.CreateParticle(Particle.ParticleType<Pulse2>(), projectile.Center, Vector2.Zero, Color.Yellow);
+
             float radius = 15;
             int numLocations = 10;
             for (int i = 0; i < numLocations; i++)
@@ -259,13 +262,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 int dust = Dust.NewDust(position, 2, 2, DustID.Enchanted_Gold, dustvelocity.X, dustvelocity.Y, 0, default, 2);
                 Main.dust[dust].noGravity = true;
             }
-        }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            projectile.extraUpdates = 0;
-            projectile.velocity = Vector2.Zero;
-            return false;
         }
     }
 

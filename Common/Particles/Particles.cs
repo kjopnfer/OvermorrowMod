@@ -565,6 +565,47 @@ namespace OvermorrowMod.Common.Particles
             spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
+
+    public class Pulse2 : CustomParticle
+    {
+        //public override string Texture => "Terraria/Projectile_" + ProjectileID.StardustTowerMark;
+        public override string Texture => AssetDirectory.Textures + "PulseCircle";
+        public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
+        float maxTime = 60f;
+        public override void OnSpawn()
+        {
+            /*if (Main.rand.NextBool(3))
+            {
+                particle.customData[0] *= 2;
+            }*/
+            if (particle.customData[1] == 0) particle.customData[1] = 1;
+            if (particle.customData[2] == 0) particle.customData[2] = 1;
+            if (particle.customData[3] == 0) particle.customData[3] = 1;
+            maxSize = particle.scale;
+            particle.scale = 0f;
+        }
+
+        public override void Update()
+        {
+            particle.velocity = Vector2.Zero;
+            float progress = (float)particle.activeTime / maxTime;
+            particle.scale = MathHelper.Lerp(particle.scale, maxSize, progress);
+            particle.alpha = MathHelper.Lerp(particle.alpha, 0, progress);
+            if (particle.activeTime > maxTime) particle.Kill();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
+            Vector2 origin = new Vector2(texture.Width, texture.Height) / 2;
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
+
+            spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+    }
+
     public class Shockwave2 : CustomParticle
     {
         public override string Texture => AssetDirectory.Textures + "Perlin";
