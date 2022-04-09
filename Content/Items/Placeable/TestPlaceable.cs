@@ -25,7 +25,7 @@ namespace OvermorrowMod.Content.Items.Placeable
 			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.consumable = true;
 			item.value = 2000;
-			item.createTile = TileType<Content.Tiles.Boss.DharuudArena>();
+			item.createTile = TileType<Content.Tiles.OrbAltar>();
 		}
 	}
 }
