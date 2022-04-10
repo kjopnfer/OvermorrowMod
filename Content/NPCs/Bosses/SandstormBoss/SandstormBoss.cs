@@ -14,6 +14,7 @@ using Terraria;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
@@ -167,10 +168,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 case (int)AIStates.Ruins:
                     if (MiscCounter++ % 15 == 0 && MiscCounter < 280)
                     {
-                        for (int i = 0; i < Main.rand.Next(3, 5); i++)
+                        for (int i = 0; i < Main.rand.Next(2, 4); i++)
                         {
-                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-18, 18) * 38, 0);
-                            int RuinType = mod.NPCType("Ruin" + Main.rand.Next(1, 4));
+                            WeightedRandom<int> RandomType = new WeightedRandom<int>(Main.rand);
+                            RandomType.Add(3, 5);
+                            RandomType.Add(1, 4);
+                            RandomType.Add(2, 1);
+                            int RuinID = RandomType.Get();
+
+                            Vector2 RandomPosition = Desert.DesertArenaCenter + new Vector2(Main.rand.Next(-18, 18) * 38, 0);
+                            int RuinType = mod.NPCType("Ruin" + RuinID);
                             NPC.NewNPC((int)RandomPosition.X, (int)RandomPosition.Y, RuinType, 0, 0f, Main.rand.Next(3, 8) * 128);
                         }
                     }
@@ -188,9 +195,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                                 if (RuinNPC.modNPC is Ruin1) RuinNPC.velocity.Y = Main.rand.Next(5, 7);
 
-                                if (RuinNPC.modNPC is Ruin2) RuinNPC.velocity.Y = Main.rand.Next(7, 10);
+                                if (RuinNPC.modNPC is Ruin2) RuinNPC.velocity.Y = Main.rand.Next(3, 6);
 
-                                if (RuinNPC.modNPC is Ruin3) RuinNPC.velocity.Y = Main.rand.Next(3, 6);
+                                if (RuinNPC.modNPC is Ruin3) RuinNPC.velocity.Y = Main.rand.Next(7, 10);
 
                                 RuinNPC.noGravity = false;
                             }
