@@ -78,10 +78,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Intro = -1,
             Selector = 0,
             //Shards = 1,
-            Vortex = 2,
-            Spin = 3,
+            Ruins = 2,
+            Vortex = 3,
             Shards = 4,
-            //Pillars = 5
             ChainLightinng = 5,
             Shockwave = 6
         }
@@ -95,32 +94,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             if (RunOnce)
             {
-                /*for (int i = 0; i < 3; i++)
-                {
-                    int RADIUS = 100;
-                    Vector2 SpawnRotation = npc.Center + new Vector2(RADIUS, 0).RotatedBy(120 * i);
-
-                    int NPCType = -1;
-                    switch (i)
-                    {
-                        case 0:
-                            NPCType = ModContent.NPCType<LaserMinion>();
-                            break;
-                        case 1:
-                            NPCType = ModContent.NPCType<BeamMinion>();
-                            break;
-                        case 2:
-                            NPCType = ModContent.NPCType<BlasterMinion>();
-                            break;
-                    }
-
-                    NPC.NewNPC((int)SpawnRotation.X, (int)SpawnRotation.Y, NPCType, 0, npc.whoAmI, 0f, 120 * i);
-                }*/
-
                 NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SandstormBoss_Chest>(), 0, npc.whoAmI);
 
-
                 RunOnce = false;
+                npc.netUpdate = true;
             }
 
             switch (AICase)
@@ -141,7 +118,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (MiscCounter++ == 120)
                     {
                         //AICase = (int)AIStates.Selector;
-                        AICase = (int)AIStates.Shards;
+                        AICase = (int)AIStates.Vortex;
 
                         MiscCounter = 0;
                     }
@@ -179,7 +156,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         AttackCounter = 0;
 
-                        AICase = (int)AIStates.Shards;
+                        AICase = (int)AIStates.Ruins;
                         //AICase = AttackQueue[AttackCounter];
 
                         AttackCounter++;
@@ -187,37 +164,52 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     }
 
                     break;
-                /*case (int)AIStates.Shards:
-                    if (++MiscCounter % 120 == 0)
+                case (int)AIStates.Ruins:
+                    if (MiscCounter++ % 15 == 0 && MiscCounter < 280)
                     {
-                        for (int i = 0; i < Main.rand.Next(5, 8); i++)
+                        for (int i = 0; i < Main.rand.Next(3, 5); i++)
                         {
-                            Vector2 RandomPosition = new Vector2(Main.rand.Next(-10, 10) * 30, Main.rand.Next(-300, -250));
-                            Projectile.NewProjectile(player.Center + RandomPosition, Vector2.UnitY * 8, ModContent.ProjectileType<Fragment>(), npc.damage, 3f, Main.myPlayer, 0f, Main.rand.Next(90, 120));
+                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-18, 18) * 38, 0);
+                            int RuinType = mod.NPCType("Ruin" + Main.rand.Next(1, 4));
+                            NPC.NewNPC((int)RandomPosition.X, (int)RandomPosition.Y, RuinType, 0, 0f, Main.rand.Next(3, 8) * 128);
                         }
                     }
 
-                    if (MiscCounter == 240)
+                    if (MiscCounter == 860)
                     {
-                        if (AttackCounter == 2)
-                        {
-                            AICase = (int)AIStates.Selector;
-                            AttackCounter = 0;
-                        }
-                        else
-                        {
-                            AICase = AttackQueue[1];
-                            AttackCounter++;
-                        }
+                        Main.NewText("DROP");
 
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            NPC RuinNPC = Main.npc[i];
+                            if (RuinNPC.active && RuinNPC.modNPC is Ruin)
+                            {
+                                ((Ruin)RuinNPC.modNPC).CanFall = true;
+
+                                if (RuinNPC.modNPC is Ruin1) RuinNPC.velocity.Y = Main.rand.Next(5, 7);
+
+                                if (RuinNPC.modNPC is Ruin2) RuinNPC.velocity.Y = Main.rand.Next(7, 10);
+
+                                if (RuinNPC.modNPC is Ruin3) RuinNPC.velocity.Y = Main.rand.Next(3, 6);
+
+                                RuinNPC.noGravity = false;
+                            }
+                        }
+                    }
+
+                    if (MiscCounter == 920)
+                    {
+                        AICase = (int)AIStates.Selector;
                         MiscCounter = 0;
                     }
-                    break;*/
+                    break;
                 case (int)AIStates.Vortex:
                     if (MiscCounter++ == 0)
                     {
-                        Vector2 RandomPosition = new Vector2(Main.rand.Next(-8, 8) * 30, Main.rand.Next(-100, -50));
-                        Projectile.NewProjectile(player.Center + RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
+                        Vector2 ArenaCenter = Desert.DesertArenaCenter + new Vector2(1 * 16, 2 * 16) - new Vector2(8, -8);
+
+                        Vector2 RandomPosition = ArenaCenter + new Vector2(20 * 16 * (Main.rand.NextBool() ? 1 : -1), 10 * 16 * (Main.rand.NextBool() ? 1 : -1));
+                        Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
                     }
 
                     if (MiscCounter == 60)
@@ -225,7 +217,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         //AICase = (int)AIStates.Shards;
                         if (AttackCounter == 2)
                         {
-                            AICase = (int)AIStates.Selector;
+                            AICase = (int)AIStates.Shards;
                             AttackCounter = 0;
                         }
                         else
@@ -236,30 +228,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         MiscCounter = 0;
                     }
-                    break;
-                case (int)AIStates.Spin:
-                    if (MiscCounter++ == 60)
-                    {
-                        Projectile.NewProjectile(npc.Center, Vector2.Normalize(npc.DirectionTo(player.Center)), ModContent.ProjectileType<FragmentCenter>(), npc.damage, 3f, Main.myPlayer);
-                    }
-
-                    if (MiscCounter == 90)
-                    {
-                        //AICase = (int)AIStates.Wall;
-                        if (AttackCounter == 2)
-                        {
-                            AICase = (int)AIStates.Selector;
-                            AttackCounter = 0;
-                        }
-                        else
-                        {
-                            AICase = AttackQueue[1];
-                            AttackCounter++;
-                        }
-
-                        MiscCounter = 0;
-                    }
-                    break;
+                    break;          
                 case (int)AIStates.Shards:
                     if (MiscCounter == 0)
                     {
@@ -310,7 +279,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter > 120 && MiscCounter % 3 == 0)
+                    if (MiscCounter > 180 && MiscCounter % 3 == 0)
                     {
                         for (int i = 0; i < Main.rand.Next(2, 4); i++)
                         {

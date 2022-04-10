@@ -7,6 +7,7 @@ using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,7 +23,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            projectile.width = projectile.height = 48;
+            projectile.width = projectile.height = 96;
             projectile.timeLeft = 69420;
             projectile.friendly = false;
             projectile.hostile = true;
@@ -49,12 +50,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         foreach (Player player in Main.player)
                         {
-                            if (player.active && projectile.Distance(player.Center) < 600)
+                            if (player.active && projectile.Distance(player.Center) < 300 && player.immuneTime == 0)
+                            {
+                                player.Hurt(PlayerDeathReason.ByCustomReason(player.name + " was flattened by shock waves."), 50, 0);
+                            }
+
+                            if (player.active && projectile.Distance(player.Center) < 1200)
                             {
                                 var modPlayer = player.Overmorrow();
                                 modPlayer.AddScreenShake(45, 10);
-                                //modPlayer.ScreenShake = 45;
-                                //modPlayer.ShakeOffset = 10;
                             }
                         }
 

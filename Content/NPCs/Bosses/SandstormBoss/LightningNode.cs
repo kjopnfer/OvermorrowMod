@@ -138,7 +138,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SafeSetDefaults()
         {
-            projectile.width = 15;
+            projectile.width = 7;
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.timeLeft = (int)maxTime;
@@ -159,7 +159,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Length = TRay.CastLength(projectile.Center, projectile.velocity, 2000f);
             float sway = 40f;
             float divider = 16f;
-            Positions = CreateLightning(Main.npc[(int)projectile.ai[0]].Center, Main.npc[(int)projectile.ai[1]].Center, projectile.width, sway, divider);
+            Positions = CreateLightning(Main.npc[(int)projectile.ai[0]].Center, Main.npc[(int)projectile.ai[1]].Center, 15, sway, divider);
 
             float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);

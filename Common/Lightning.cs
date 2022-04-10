@@ -80,6 +80,7 @@ namespace OvermorrowMod.Common
             float prevDisplacement = 0;
             for (int i = 1; i < Lengths.Count; i++)
             {
+                
                 float current = thickness;
                 float prog = (float)Math.Sin(((float)i / (float)Lengths.Count) * MathHelper.Pi);
                 if (sine) current *= prog;

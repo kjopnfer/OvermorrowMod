@@ -42,7 +42,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 Player player = Main.player[i];
-                if (player.active && projectile.Distance(player.Center) < 200)
+                if (player.active && projectile.Distance(player.Center) < 200 && Collision.CanHit(projectile.Center, 1, 1, player.Center, 1, 1))
                 {
                     float PullStrength = projectile.ai[0] >= 180 ? .25f : .165f;
                     float Direction = (projectile.Center - player.Center).ToRotation();

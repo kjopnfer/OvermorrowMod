@@ -21,7 +21,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             projectile.width = 113;
             projectile.height = 64;
             projectile.aiStyle = -1;
-            projectile.timeLeft = 480;
+            projectile.timeLeft = 540;
         }
 
         public ref float AICounter => ref projectile.ai[0];
@@ -40,8 +40,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             spriteBatch.Reload(BlendState.Additive);
             Texture2D texture = Main.projectileTexture[projectile.type];
             var spriteEffects = Direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Color color = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(AICounter / 10f));
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, color * 0.75f, projectile.rotation, texture.Size() / 2, projectile.scale, spriteEffects, 0f);
+            Color flashColor = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(AICounter / 10f)) * 0.75f;
+            Color color = Color.Lerp(Color.Transparent, flashColor, Utils.Clamp(AICounter, 0, 60) / 60f);
+
+            if (projectile.timeLeft < 60) color = Color.Lerp(Color.Transparent, flashColor, Utils.Clamp(projectile.timeLeft, 0, 60) / 60f);
+
+            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, color, projectile.rotation, texture.Size() / 2, projectile.scale, spriteEffects, 0f);
             spriteBatch.Reload(BlendState.AlphaBlend);
 
             return false;
