@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             projectile.hide = true;
             projectile.alpha = 255;
         }
-
+        public ref float AICounter => ref projectile.ai[0];
         public override void DrawBehind(int index, List<int> drawCacheProjsBehindNPCsAndTiles, List<int> drawCacheProjsBehindNPCs, List<int> drawCacheProjsBehindProjectiles, List<int> drawCacheProjsOverWiresUI)
         {
             drawCacheProjsBehindProjectiles.Add(index);
@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
-            if (projectile.ai[0]++ == 0)
+            if (AICounter++ == 0)
             {
                 if (!Sandstorm.Happening)
                 {
@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 //Main.projectile[proj].hostile = false;
             }
 
-            if (projectile.ai[0] > 120)
+            if (AICounter > 120)
             {
                 if (projectile.ai[1]++ % 10 == 0 && BarrierCounter < 8)
                 {
@@ -104,7 +104,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 }
             }
 
-            if (projectile.ai[0] == 360)
+            if (AICounter == 360)
             {
                 //Player player = Main.player[projectile.owner];
                 //player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(projectile.Center, 90, 120f, 60f);
@@ -139,9 +139,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 }
             }
 
-            if (projectile.ai[0] > 360)
+            if (AICounter > 360)
             {
-                if (projectile.ai[0] == 460)
+                if (AICounter == 460)
                 {
                     //DisablePlatforms();
 
@@ -198,11 +198,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, color, MathHelper.ToRadians(projectile.localAI[0]), origin, scale, SpriteEffects.None, 0f);
 
 
-            if (projectile.ai[0] > 460)
+            if (AICounter > 460)
             {
                 texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
                 color = Color.Orange;
-                float circleScale = MathHelper.Lerp(0, 2.5f, Utils.Clamp(projectile.ai[0] - 360, 0, 100) / 100f);
+                float circleScale = MathHelper.Lerp(0, 2.5f, Utils.Clamp(AICounter - 360, 0, 100) / 100f);
 
                 if (!Main.gamePaused) projectile.localAI[0]++;
 

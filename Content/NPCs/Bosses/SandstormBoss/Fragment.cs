@@ -136,7 +136,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
     public class HorizontalFragment : ModProjectile, ITrailEntity
     {
         public Color TrailColor(float progress) => Color.Lerp(new Color(253, 254, 255), new Color(244, 188, 91), progress) * progress;
-        public float TrailSize(float progress) => 48;
+        public float TrailSize(float progress) => 12;
         public Type TrailType() => typeof(TorchTrail);
 
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/Fragment";

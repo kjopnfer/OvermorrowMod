@@ -28,6 +28,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         private Projectile ArenaCenter;
 
+        private Vector2 InitialPosition;
+        private int MoveDirection;
         private enum AttackTypes
         {
             //Shards = 1,
@@ -70,15 +72,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
         public ref float AICase => ref npc.ai[0];
         public ref float GlobalCounter => ref npc.ai[1];
-        public ref float MiscCounter => ref npc.ai[2];
-        public ref float MiscCounter2 => ref npc.ai[3];
+        public ref float AICounter => ref npc.ai[2];
+        public ref float AICounter2 => ref npc.ai[3];
 
         public enum AIStates
         {
             PhaseTransition = -2,
             Intro = -1,
             Selector = 0,
-            //Shards = 1,
+            Orbs = 1,
             Ruins = 2,
             Vortex = 3,
             Shards = 4,
@@ -91,8 +93,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
 
-            npc.spriteDirection = npc.direction;
-
             if (RunOnce)
             {
                 NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SandstormBoss_Chest>(), 0, npc.whoAmI);
@@ -104,7 +104,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             switch (AICase)
             {
                 case (int)AIStates.Intro:
-                    if (MiscCounter == 0)
+                    if (AICounter == 0)
                     {
                         for (int i = 0; i < Main.maxProjectiles; i++)
                         {
@@ -116,36 +116,38 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter++ == 120)
+                    if (AICounter++ == 120)
                     {
                         //AICase = (int)AIStates.Selector;
                         AICase = (int)AIStates.Vortex;
 
-                        MiscCounter = 0;
+                        AICounter = 0;
                     }
 
                     break;
                 case (int)AIStates.Selector:
-                    if (MiscCounter++ <= 180)
+                    if (AICounter++ <= 180)
                     {
                         npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
                         npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y - 50) > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
                     }
-                    else if (MiscCounter > 180 && MiscCounter < 300)
+                    else if (AICounter > 180 && AICounter < 300)
                     {
                         npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
                         npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y - 250) > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
                     }
 
+                    npc.spriteDirection = npc.direction;
+
                     // Chooses a random active minion to perform their attack
-                    if (MiscCounter == 300)
+                    if (AICounter == 300)
                     {
                         npc.velocity = Vector2.Zero;
 
                         AttackHandler();
                     }
 
-                    if (MiscCounter == 540)
+                    if (AICounter == 540)
                     {
                         AttackTypes[] values = (AttackTypes[])Enum.GetValues(typeof(AttackTypes));
                         values = values.Shuffle();
@@ -161,12 +163,50 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         //AICase = AttackQueue[AttackCounter];
 
                         AttackCounter++;
-                        MiscCounter = 0;
+                        AICounter = 0;
                     }
 
                     break;
+                case (int)AIStates.Orbs:
+
+
+                    break;
                 case (int)AIStates.Ruins:
-                    if (MiscCounter++ % 15 == 0 && MiscCounter < 280)
+                    // Move to the center of the arena, fire off in all directions
+                    // Choose a random point of the arena and move there, repeat thrice
+                    // Align near the player before charging forward
+                    // Release unstable orbs that drift towards the player before sucking in dust and exploding
+                    /*if (GlobalCounter <= 240)
+                    {
+                        if (GlobalCounter++ == 0)
+                        {
+                            MoveDirection = Main.rand.NextBool() ? -1 : 1;
+                            InitialPosition = npc.Center;
+                        }
+
+                        Main.NewText(GlobalCounter);
+
+                        if (GlobalCounter <= 120)
+                        {
+                            npc.spriteDirection = npc.direction;
+                            npc.Center = Vector2.Lerp(InitialPosition, player.Center + Vector2.UnitX * 75 * -MoveDirection, Utils.Clamp(GlobalCounter, 0, 120) / 120f);
+                        }
+                        else
+                        {
+                            if (GlobalCounter == 180)
+                            {
+                                npc.velocity = Vector2.UnitX * 10 * MoveDirection;
+                            }
+                        }
+
+                        if (GlobalCounter == 200)
+                        {
+                            npc.velocity = Vector2.Zero;
+                            GlobalCounter = 0;
+                        }
+                    }*/
+
+                    if (AICounter++ % 15 == 0 && AICounter < 280)
                     {
                         for (int i = 0; i < Main.rand.Next(2, 4); i++)
                         {
@@ -182,7 +222,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter == 860)
+                    if (AICounter % 90 == 0)
+                    {
+                        for(int i = 0; i < 3; i++)
+                            Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<ExplodeOrb>(), 30, 6f, Main.myPlayer, 0, npc.whoAmI);
+                        /*for (int i = 0; i < 6; i++)
+                        {
+                            Vector2 SpawnPosition = npc.Center + new Vector2(28, 0).RotatedBy(MathHelper.ToRadians(360 / 6 * i));
+
+
+                            Vector2 RandomVelocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(Main.rand.Next(60, 90))) * Main.rand.Next(3, 5);
+                            Projectile.NewProjectile(SpawnPosition, RandomVelocity, ModContent.ProjectileType<LightStar>(), 30, 6f, Main.myPlayer, 0, -1);
+
+                            RandomVelocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(-Main.rand.Next(60, 90))) * Main.rand.Next(3, 5);
+                            Projectile.NewProjectile(SpawnPosition, RandomVelocity, ModContent.ProjectileType<LightStar>(), 30, 6f, Main.myPlayer, 0, 1);
+                            //NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<LightBullet>(), 0, npc.whoAmI, 360 / 8 * i);
+
+                        }*/
+                    }
+
+                    if (AICounter == 860)
                     {
                         Main.NewText("DROP");
 
@@ -204,14 +263,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter == 920)
+                    if (AICounter == 920)
                     {
                         AICase = (int)AIStates.Selector;
-                        MiscCounter = 0;
+                        GlobalCounter = 0;
+                        AICounter = 0;
                     }
                     break;
                 case (int)AIStates.Vortex:
-                    if (MiscCounter++ == 0)
+                    if (AICounter++ == 0)
                     {
                         Vector2 ArenaCenter = Desert.DesertArenaCenter + new Vector2(1 * 16, 2 * 16) - new Vector2(8, -8);
 
@@ -219,7 +279,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
                     }
 
-                    if (MiscCounter == 60)
+                    if (AICounter == 60)
                     {
                         //AICase = (int)AIStates.Shards;
                         if (AttackCounter == 2)
@@ -233,11 +293,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             AttackCounter++;
                         }
 
-                        MiscCounter = 0;
+                        AICounter = 0;
                     }
-                    break;          
+                    break;
                 case (int)AIStates.Shards:
-                    if (MiscCounter == 0)
+                    if (AICounter == 0)
                     {
                         RandomDirection = Main.rand.NextBool() ? -1 : 1;
                         npc.netUpdate = true;
@@ -286,7 +346,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter > 180 && MiscCounter % 3 == 0)
+                    if (AICounter > 180 && AICounter % 3 == 0)
                     {
                         for (int i = 0; i < Main.rand.Next(2, 4); i++)
                         {
@@ -295,7 +355,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter++ == 480)
+                    if (AICounter++ == 480)
                     {
                         //AICase = (int)AIStates.Shards;
                         if (AttackCounter == 2)
@@ -309,11 +369,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             AttackCounter++;
                         }
 
-                        MiscCounter = 0;
+                        AICounter = 0;
                     }
                     break;
                 case (int)AIStates.ChainLightinng:
-                    if (MiscCounter++ == 180)
+                    if (AICounter++ == 180)
                     {
                         StartRotation(false);
 
@@ -336,18 +396,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter == 600) StartRotation();
+                    if (AICounter == 600) StartRotation();
 
-                    if (MiscCounter == 1200)
+                    if (AICounter == 1200)
                     {
                         AICase = (int)AIStates.Selector;
-                        MiscCounter = 0;
+                        AICounter = 0;
                     }
                     break;
                 case (int)AIStates.Shockwave:
-                    if (MiscCounter++ == 0) StartRotation(false);
+                    if (AICounter++ == 0) StartRotation(false);
 
-                    if (MiscCounter % 240 == 0)
+                    if (AICounter % 240 == 0)
                     {
                         Main.NewText("PAIR");
 
@@ -391,12 +451,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }
 
-                    if (MiscCounter == 1439)
+                    if (AICounter == 1439)
                     {
                         StartRotation();
 
                         AICase = (int)AIStates.Selector;
-                        MiscCounter = 0;
+                        AICounter = 0;
                     }
                     break;
             }
@@ -486,15 +546,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             //    Texture2D texture = ModContent.GetTexture("OvermorrowMod/Textures/Rays");
             //    Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(npc.localAI[0] += 0.5f) + MathHelper.ToRadians(i * (360 / 9)), new Vector2(texture.Width / 2, texture.Height) / 2, new Vector2(3f, 1f), SpriteEffects.None, 0f);
             //}
-
-            if (npc.localAI[0]++ == 0)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    Vector2 SpawnPosition = npc.Center + new Vector2(206, 0).RotatedBy(MathHelper.ToRadians(360 / 8 * i));
-                    NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<LightBullet>(), 0, npc.whoAmI, 360 / 8 * i);
-                }
-            }
 
             // Main.windSpeedSet lets the wind speed gradually increase
             // Main.windSpeed is instantaneous

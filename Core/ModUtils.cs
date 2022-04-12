@@ -157,11 +157,38 @@ namespace OvermorrowMod.Core
         {
             return obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(obj);
         }
+
+        public static float Magnitude(Vector2 mag)
+        {
+            return (float)Math.Sqrt(mag.X * mag.X + mag.Y * mag.Y);
+        }
+
         public static void Move(this NPC npc, Vector2 pos, float speed, float divider)
         {
             Vector2 vel = npc.DirectionTo(pos) * speed;
             npc.velocity = (npc.velocity * divider + vel) / (divider + 1);
         }
+
+        public static void Move(this Projectile projectile, Vector2 vector, float speed, float turnResistance = 10f, bool toPlayer = false)
+        {
+            Player player = Main.player[projectile.owner];
+            Vector2 moveTo = toPlayer ? player.Center + vector : vector;
+            Vector2 move = moveTo - projectile.Center;
+            float magnitude = Magnitude(move);
+            if (magnitude > speed)
+            {
+                move *= speed / magnitude;
+            }
+
+            move = (projectile.velocity * turnResistance + move) / (turnResistance + 1f);
+            magnitude = Magnitude(move);
+            if (magnitude > speed)
+            {
+                move *= speed / magnitude;
+            }
+
+            projectile.velocity = move;
+        } 
 
         public static float isLeft(Vector2 P0, Vector2 P1, Vector2 P2)
         {

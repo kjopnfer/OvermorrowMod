@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => CanFall;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Buried Ruin");
+            DisplayName.SetDefault("");
         }
 
         public override void SetDefaults()
@@ -71,22 +71,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 npc.position.Y += Main.rand.Next(4, 8) * 20;
                 InitialPosition = npc.Center;
             }
-
-            /*if (!Collision.CanHit(npc.Center, npc.width, npc.height, npc.Center + Vector2.UnitY, 2, 2))
-            {
-                if (Main.rand.NextBool(3))
-                {
-                    Tile tile = Framing.GetTileSafely((int)(SpawnPosition.X + (Main.rand.Next(-2, 2) * 15)) / 16, (int)SpawnPosition.Y / 16);
-
-                    while (!tile.active() || tile.collisionType != 1)
-                    {
-                        SpawnPosition.Y += 1;
-                        tile = Framing.GetTileSafely((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
-                    }
-
-                    Particle.CreateParticle(Particle.ParticleType<Smoke2>(), SpawnPosition * 16, Vector2.One.RotatedByRandom(MathHelper.TwoPi), new Color(182, 128, 70));
-                }
-            }*/
 
             if (!CanFall)
             {
@@ -141,7 +125,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     {
                         Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-10, 10), 5);
                         Vector2 RandomVelocity = -Vector2.One.RotatedByRandom(MathHelper.Pi) * Main.rand.Next(1, 3);
-                        Particle.CreateParticle(Particle.ParticleType<Smoke2>(), RandomPosition, RandomVelocity, new Color(182, 128, 70), Main.rand.NextFloat(0.25f, 0.55f));
+                        Particle.CreateParticle(Particle.ParticleType<Smoke2>(), RandomPosition, RandomVelocity, new Color(182, 128, 70), Main.rand.NextFloat(0.15f, 0.35f));
                     }
 
                     npc.life = 0;
@@ -199,7 +183,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             npc.height = 102;
             npc.timeLeft = 1200;
             npc.lifeMax = 200;
-            npc.damage = 45;
+            npc.damage = 85;
         }
     }
 
@@ -213,7 +197,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             npc.height = 132;
             npc.timeLeft = 1200;
             npc.lifeMax = 400;
-            npc.damage = 20;
+            npc.damage = 160;
         }
     }
 
@@ -227,7 +211,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             npc.height = 60;
             npc.timeLeft = 1200;
             npc.lifeMax = 100;
-            npc.damage = 90;
+            npc.damage = 50;
         }
     }
 }
