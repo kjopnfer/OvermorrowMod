@@ -13,10 +13,18 @@ namespace OvermorrowMod.Quests
         protected virtual IEnumerable<IQuestReward> Rewards { get; set; }
         protected virtual List<string> QuestDialogue { get; } = new List<string>();
         protected virtual List<string> QuestHint { get; } = new List<string>();
+        protected virtual IEnumerable<int> QuestGivers { get; set; }
+        /// <summary>
+        /// Important that this is specified manually, otherwise adding new quests will probably break saves.
+        /// </summary>
+        public abstract int QuestId { get; }
+        public abstract string QuestName { get; }
+        public virtual bool IsRepeatable => false;
         public virtual void SetDefaults()
         {
             Requirements = Enumerable.Empty<IQuestRequirement>();
             Rewards = Enumerable.Empty<IQuestReward>();
+            QuestGivers = Enumerable.Empty<int>();
         }
 
         /// <summary>
@@ -54,11 +62,23 @@ namespace OvermorrowMod.Quests
         }
 
         /// <summary>
-        /// Return true if the given player is allowed to accept this quest.
+        /// Return true if the given player is allowed to accept this quest in general.
+        /// Ignore whether the quest has already been completed.
         /// </summary>
-        public virtual bool IsValidFor(Player player)
+        protected virtual bool IsValidFor(Player player)
         {
             return true;
+        }
+
+        /// <summary>
+        /// Return true if the npc can give the current quest to the given player.
+        /// </summary>
+        /// <param name="npcType"></param>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public virtual bool IsValidQuest(int npcType, Player player)
+        {
+            return IsValidFor(player) && QuestGivers.Contains(npcType) && (IsRepeatable || !Quests.CompletedQuests.Contains(QuestId));
         }
     }
 }
