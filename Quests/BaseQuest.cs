@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,6 +65,7 @@ namespace OvermorrowMod.Quests
             if (success)
             {
                 GiveRewards(player);
+                Main.NewText("COMPLETED QUEST: " + QuestName, Color.Yellow);
             }
             modPlayer.RemoveQuest(this);
             if (Repeatability == QuestRepeatability.OncePerPlayer)
@@ -118,7 +120,7 @@ namespace OvermorrowMod.Quests
         /// <param name="npcType"></param>
         /// <param name="player"></param>
         /// <returns></returns>
-        public virtual bool IsValidQuest(int npcType, Player player)
+        public bool IsValidQuest(int npcType, Player player)
         {
             // Can this NPC give this quest?
             if (QuestGiver != npcType) return false;

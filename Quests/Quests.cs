@@ -86,11 +86,14 @@ namespace OvermorrowMod.Quests
             QuestPlayer questPlayer = player.GetModPlayer<QuestPlayer>();
             var questNpc = npc.GetGlobalNPC<QuestNPC>();
             var quest = questNpc.GetCurrentQuest(npc, out var isDoing);
-            if (quest == null) return;
+            if (quest == null)
+            {
+                orig(superColor, chatColor, numLines, focusText, focusText3);
+                return;
+            }
 
             var text = GetQuestButtonText(quest, isDoing, player);
             // In this case there is no quest available or active, so we don't need to draw any buttons at all.
-            if (text == null) return;
 
             DynamicSpriteFont font = Main.fontMouseText;
             Color textColor = new Color(superColor, (int)(superColor / 1.1), superColor / 2, superColor);
@@ -145,7 +148,6 @@ namespace OvermorrowMod.Quests
                         {
                             quest.CompleteQuest(player, true);
                             Main.PlaySound(OvermorrowModFile.Instance.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestTurnIn"), npc.Center);
-                            Main.NewText("COMPLETED QUEST: " + quest.QuestName, Color.Yellow);
 
                             player.talkNPC = -1;
                         }
