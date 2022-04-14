@@ -139,6 +139,7 @@ namespace OvermorrowMod.Common.Particles
         {
             //particle.color = new Color(19, 20, 20);
             particle.customData[0] = Main.rand.Next(3, 6);
+            maxTime = particle.customData[1];
             if (Main.rand.NextBool(3))
             {
                 particle.customData[0] *= 2;

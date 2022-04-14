@@ -29,6 +29,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         private Projectile ArenaCenter;
 
         private Vector2 InitialPosition;
+        private Vector2 RandomOffset;
         private int MoveDirection;
         private enum AttackTypes
         {
@@ -206,6 +207,48 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         }
                     }*/
 
+                    if (GlobalCounter <= 240)
+                    {
+                        if (GlobalCounter++ == 0)
+                        {
+                            MoveDirection = Main.rand.NextBool() ? -1 : 1;
+                            InitialPosition = npc.Center;
+                            RandomOffset = new Vector2(Main.rand.Next(15, 20) * 10, Main.rand.Next(-5, 5) * 10);
+                        }
+
+                        Main.NewText(GlobalCounter);
+
+                        if (GlobalCounter <= 120)
+                        {
+                            npc.spriteDirection = npc.direction;
+                            npc.Center = Vector2.Lerp(InitialPosition, player.Center + RandomOffset * -MoveDirection, Utils.Clamp(GlobalCounter, 0, 120) / 120f);
+                        }
+                        else
+                        {
+                            if (GlobalCounter == 180)
+                            {
+                                if (Main.rand.NextBool())
+                                {
+                                    npc.velocity = Vector2.UnitX * 20 * MoveDirection;
+                                }
+                                else
+                                {
+                                    npc.velocity = Vector2.UnitY * 20 * MoveDirection;
+                                }
+                            }
+                        }
+
+                        if (GlobalCounter == 200)
+                        {
+                            npc.velocity = Vector2.Zero;
+                        }
+
+                        if (GlobalCounter == 220)
+                        {
+                            GlobalCounter = 0;
+                        }
+                    }
+
                     if (AICounter++ % 15 == 0 && AICounter < 280)
                     {
                         for (int i = 0; i < Main.rand.Next(2, 4); i++)
@@ -224,8 +267,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                     if (AICounter % 90 == 0)
                     {
-                        for(int i = 0; i < 3; i++)
-                            Projectile.NewProjectile(npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<ExplodeOrb>(), 30, 6f, Main.myPlayer, 0, npc.whoAmI);
+                        for (int i = 0; i < 2; i++)
+                        {
+                            float OffsetDirection = i == 0 ? 1 : -1;
+                            Projectile.NewProjectile(npc.Center, Vector2.UnitY, ModContent.ProjectileType<ExplodeOrb>(), 30, 6f, Main.myPlayer, npc.whoAmI, OffsetDirection);
+                        }
+
                         /*for (int i = 0; i < 6; i++)
                         {
                             Vector2 SpawnPosition = npc.Center + new Vector2(28, 0).RotatedBy(MathHelper.ToRadians(360 / 6 * i));
