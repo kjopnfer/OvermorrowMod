@@ -7,41 +7,34 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Quests
 {
-    public class ActiveQuest
-    {
-        public BaseQuest Quest { get; }
-        public int NpcId { get; }
-        public ActiveQuest(BaseQuest quest, int npcId)
-        {
-            Quest = quest;
-            NpcId = npcId;
-        }
-    }
     public class QuestPlayer : ModPlayer
     {
-        private List<ActiveQuest> activeQuests = new List<ActiveQuest>();
+        private readonly List<BaseQuest> activeQuests = new List<BaseQuest>();
+        public HashSet<int> CompletedQuests { get; } = new HashSet<int>();
+
+        public IEnumerable<BaseQuest> CurrentQuests => activeQuests;
 
         public bool IsDoingQuest(int questId)
         {
-            return activeQuests.Any(q => q.Quest.QuestId == questId);
+            return activeQuests.Any(q => q.QuestId == questId);
         }
 
-        public void AddQuest(int npcId, BaseQuest quest)
+        public void AddQuest(BaseQuest quest)
         {
-            activeQuests.Add(new ActiveQuest(quest, npcId));
+            activeQuests.Add(quest);
         }
 
         public BaseQuest QuestByNpc(int npcId)
         {
-            return activeQuests.FirstOrDefault(q => npcId == q.NpcId)?.Quest;
+            return activeQuests.FirstOrDefault(q => npcId == q.QuestGiver);
         }
 
         public void CompleteQuest(int questId)
         {
-            var quest = activeQuests.FirstOrDefault(q => q.Quest.QuestId == questId);
+            var quest = activeQuests.FirstOrDefault(q => q.QuestId == questId);
             // Should not happen!
             if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
-            quest.Quest.GiveRewards(player);
+            quest.CompleteQuest(player, true);
             activeQuests.Remove(quest);
         }
     }

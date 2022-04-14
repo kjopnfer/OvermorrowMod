@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Quests
@@ -14,16 +15,37 @@ namespace OvermorrowMod.Quests
     {
         public override bool InstancePerEntity => true;
 
-        public BaseQuest GetCurrentQuest(NPC npc)
+        private BaseQuest availableQuest;
+
+        /// <summary>
+        /// Get quest the active player is pursuing, invoked on the client.
+        /// If the player is not pursuing any from this NPC, lock one in at random.
+        /// </summary>
+        public BaseQuest GetCurrentQuest(NPC npc, out bool isDoing)
         {
-            // Active quests are per-player, not really per NPC.
+            if (Main.netMode == NetmodeID.Server) throw new ArgumentException("GetCurrentQuest invoked on the server is invalid");
+            isDoing = true;
             var currentModPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-            return currentModPlayer.QuestByNpc(npc.type);
+            var pursuedQuest = currentModPlayer.QuestByNpc(npc.type);
+            if (pursuedQuest != null) return pursuedQuest;
+
+            isDoing = false;
+            if (availableQuest != null) return availableQuest;
+            var possibleQuests = Quests.QuestList.Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer)).ToList();
+            if (!possibleQuests.Any()) return null;
+
+            availableQuest = possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)];
+            return availableQuest;
+        }
+
+        public void TakeQuest()
+        {
+            availableQuest = null;
         }
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)
         {
-            var quest = GetCurrentQuest(npc);
+            var quest = GetCurrentQuest(npc, out _);
             if (quest != null)
             {
                 Texture2D texture = ModContent.GetTexture("OvermorrowMod/Quests/QuestAlert");

@@ -7,24 +7,30 @@ using Terraria;
 
 namespace OvermorrowMod.Quests
 {
+    public enum QuestRepeatability
+    {
+        Repeatable,
+        OncePerPlayer,
+        OncePerWorld
+    }
+
     public abstract class BaseQuest
     {
         protected virtual IEnumerable<IQuestRequirement> Requirements { get; set; }
         protected virtual IEnumerable<IQuestReward> Rewards { get; set; }
         protected virtual List<string> QuestDialogue { get; } = new List<string>();
         protected virtual List<string> QuestHint { get; } = new List<string>();
-        protected virtual IEnumerable<int> QuestGivers { get; set; }
+        public virtual int QuestGiver { get; }
         /// <summary>
         /// Important that this is specified manually, otherwise adding new quests will probably break saves.
         /// </summary>
         public abstract int QuestId { get; }
         public abstract string QuestName { get; }
-        public virtual bool IsRepeatable => false;
+        public virtual QuestRepeatability Repeatability => QuestRepeatability.OncePerPlayer;
         public virtual void SetDefaults()
         {
             Requirements = Enumerable.Empty<IQuestRequirement>();
             Rewards = Enumerable.Empty<IQuestReward>();
-            QuestGivers = Enumerable.Empty<int>();
         }
 
         /// <summary>
@@ -41,11 +47,46 @@ namespace OvermorrowMod.Quests
         /// <summary>
         /// Give rewards of this quest to the given player.
         /// </summary>
-        public void GiveRewards(Player player)
+        private void GiveRewards(Player player)
         {
             foreach (var reward in Rewards)
             {
                 reward.Give(player);
+            }
+        }
+
+        public void CompleteQuest(Player player, bool success)
+        {
+            var modPlayer = player.GetModPlayer<QuestPlayer>();
+            if (Repeatability == QuestRepeatability.OncePerPlayer && modPlayer.CompletedQuests.Contains(QuestId)) success = false;
+            if (Repeatability == QuestRepeatability.OncePerWorld && Quests.GlobalCompletedQuests.Contains(QuestId)) success = false;
+
+            if (success)
+            {
+                GiveRewards(player);
+            }
+            if (Repeatability == QuestRepeatability.OncePerPlayer)
+            {
+                modPlayer.CompletedQuests.Add(QuestId);
+            }
+            else if (Repeatability == QuestRepeatability.OncePerWorld)
+            {
+                // For per-world quests any duplicates must be terminated here.
+                Quests.GlobalCompletedQuests.Add(QuestId);
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    var p = Main.player[i];
+                    if (!p.active || p == player) continue;
+
+                    var extModPlayer = p.GetModPlayer<QuestPlayer>();
+                    foreach (var quest in extModPlayer.CurrentQuests)
+                    {
+                        if (quest.QuestId == QuestId)
+                        {
+                            quest.CompleteQuest(p, false);
+                        }
+                    }
+                }
             }
         }
 
@@ -78,7 +119,16 @@ namespace OvermorrowMod.Quests
         /// <returns></returns>
         public virtual bool IsValidQuest(int npcType, Player player)
         {
-            return IsValidFor(player) && QuestGivers.Contains(npcType) && (IsRepeatable || !Quests.CompletedQuests.Contains(QuestId));
+            // Can this NPC give this quest?
+            if (QuestGiver != npcType) return false;
+            // Per quest check
+            if (!IsValidFor(player)) return false;
+            var modPlayer = player.GetModPlayer<QuestPlayer>();
+            // Is the player currently doing this quest?
+            if (modPlayer.CurrentQuests.Any(q => q.QuestId == QuestId)) return false;
+            if (Repeatability == QuestRepeatability.OncePerPlayer && modPlayer.CompletedQuests.Contains(QuestId)) return false;
+            if (Repeatability == QuestRepeatability.OncePerWorld && Quests.GlobalCompletedQuests.Contains(QuestId)) return false;
+            return true;
         }
     }
 }
