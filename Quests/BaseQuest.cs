@@ -65,6 +65,7 @@ namespace OvermorrowMod.Quests
             {
                 GiveRewards(player);
             }
+            modPlayer.RemoveQuest(this);
             if (Repeatability == QuestRepeatability.OncePerPlayer)
             {
                 modPlayer.CompletedQuests.Add(QuestId);

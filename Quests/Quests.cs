@@ -156,19 +156,18 @@ namespace OvermorrowMod.Quests
                         }
                     }
                 }
-                else
-                {
-                    // Plays the sound once
-                    if (hoverButton)
-                    {
-                        Main.PlaySound(SoundID.MenuTick);
-                        hoverButton = false;
-                    }
-                }
-
-                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, font, text, textPosition + new Vector2(16f, 14f), textColor, 0f,
-                      stringSize * 0.5f, textScale);
             }
+            else
+            {
+                // Plays the sound once
+                if (hoverButton)
+                {
+                    Main.PlaySound(SoundID.MenuTick);
+                    hoverButton = false;
+                }
+            }
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, font, text, textPosition + new Vector2(16f, 14f), textColor, 0f,
+                      stringSize * 0.5f, textScale);
 
             orig(superColor, chatColor, numLines, focusText, focusText3);
         }

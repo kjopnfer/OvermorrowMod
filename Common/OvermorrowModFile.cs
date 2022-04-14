@@ -104,6 +104,7 @@ namespace OvermorrowMod.Common
                 }
 
                 ModDetours.Load();
+                Quests.Quests.Load(this);
                 ModUtils.Load(false);
                 HexLoader.Load(false);
                 ILEdits.Load();
@@ -146,6 +147,7 @@ namespace OvermorrowMod.Common
             ModDetours.Unload();
             ModUtils.Load(true);
             HexLoader.Load(true);
+            Quests.Quests.Unload();
             ILEdits.Unload();
             Particle.Unload();
             Trail.Unload();
