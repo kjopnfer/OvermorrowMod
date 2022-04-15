@@ -16,16 +16,11 @@ using OvermorrowMod.Content.UI;
 using OvermorrowMod.Common.Particles;
 using Terraria.Graphics.Effects;
 using OvermorrowMod.Content.WorldGeneration;
+using System.IO;
+using OvermorrowMod.Common.Netcode;
 
 namespace OvermorrowMod.Common
 {
-    internal enum Message : byte
-    {
-        syncPlayer,
-        soulAdded,
-        soulsChanged,
-        meterMaxed,
-    }
     public class OvermorrowModFile : Mod
     {
         // UI
@@ -388,6 +383,11 @@ namespace OvermorrowMod.Common
             {
                 Particle.UpdateParticles();
             }
+        }
+
+        public override void HandlePacket(BinaryReader reader, int whoAmI)
+        {
+            NetworkMessageHandler.HandlePacket(reader, whoAmI);
         }
     }
 }
