@@ -30,7 +30,7 @@ namespace OvermorrowMod.Quests
             }
             questCheckTick++;
 
-            var possibleQuests = Quests.QuestList.Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer)).ToList();
+            var possibleQuests = Quests.QuestList.Values.Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer)).ToList();
             if (!possibleQuests.Any()) return null;
 
             availableQuest = possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)];

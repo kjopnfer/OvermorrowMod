@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Quests
 {
@@ -41,6 +42,33 @@ namespace OvermorrowMod.Quests
             if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
             quest.CompleteQuest(player, true);
             activeQuests.Remove(quest);
+        }
+
+        public override TagCompound Save()
+        {
+            return new TagCompound
+            {
+                ["CompletedQuests"] = CompletedQuests.ToList(),
+                ["CurrentQuests"] = CurrentQuests.Select(q => q.QuestName).ToList()
+            };
+        }
+
+        public override void Load(TagCompound tag)
+        {
+            CompletedQuests.Clear();
+            activeQuests.Clear();
+
+            var completedQuests = tag.GetList<string>("CompletedQuests");
+            foreach (var quest in completedQuests) CompletedQuests.Add(quest);
+
+            var currentQuests = tag.GetList<string>("CurrentQuests");
+            foreach (var questId in currentQuests)
+            {
+                if (Quests.QuestList.TryGetValue(questId, out var quest))
+                {
+                    activeQuests.Add(quest);
+                }
+            }
         }
     }
 }

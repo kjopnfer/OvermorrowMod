@@ -16,7 +16,7 @@ namespace OvermorrowMod.Quests
 {
     public static class Quests
     {
-        public static List<BaseQuest> QuestList = new List<BaseQuest>();
+        public static Dictionary<string, BaseQuest> QuestList = new Dictionary<string, BaseQuest>();
         public static HashSet<string> GlobalCompletedQuests = new HashSet<string>();
 
         private static bool hoverButton = false;
@@ -32,7 +32,7 @@ namespace OvermorrowMod.Quests
                 {
                     BaseQuest quest = (BaseQuest)Activator.CreateInstance(type);
                     quest.SetDefaults();
-                    QuestList.Add(quest);
+                    QuestList.Add(quest.QuestId, quest);
                 }
             }
             On.Terraria.Main.DrawNPCChatButtons += Main_DrawNPCChatButtons;
