@@ -35,6 +35,10 @@ namespace OvermorrowMod.Quests.ModQuests
             QuestDialogue.Add("Once you're done, I'll move in, and if you make more houses, some new faces might just show up!");
 
             QuestHint.Add("Keep on working on building a house. Remember a house needs walls, a table and chair, and some light.");
+
+            QuestEndDialogue.Add("Nice job! The house looks very comfortable.");
+            QuestEndDialogue.Add("Well I think you're pretty ready now. I'd suggest you start exploring the world and the underground. " +
+                "There's a lot to find which will help you with your journey");
         }
 
         protected override bool IsValidFor(Player player)

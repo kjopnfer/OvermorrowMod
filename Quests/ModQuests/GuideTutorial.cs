@@ -34,6 +34,8 @@ namespace OvermorrowMod.Quests.ModQuests
             QuestDialogue.Add("If you get me a few torches and make a workbench, I'll give you something I found in my travels as a reward");
 
             QuestHint.Add("Let me know when you get those torches and a workbench.");
+
+            QuestEndDialogue.Add("Excellent! Here is your reward!");
         }
     }
 }

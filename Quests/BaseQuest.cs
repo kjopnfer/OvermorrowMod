@@ -21,17 +21,9 @@ namespace OvermorrowMod.Quests
         protected virtual IEnumerable<IQuestReward> Rewards { get; set; }
         protected virtual List<string> QuestDialogue { get; } = new List<string>();
         protected virtual List<string> QuestHint { get; } = new List<string>();
+        protected virtual List<string> QuestEndDialogue { get; } = new List<string>();
         public virtual int QuestGiver { get; }
-        /// <summary>
-        /// Important that this is specified manually, otherwise adding new quests will probably break saves.
-        /// </summary>
-        public string QuestId
-        {
-            get
-            {
-                return GetType().FullName;
-            }
-        }
+        public string QuestId => GetType().FullName;
         public abstract string QuestName { get; }
         public virtual QuestRepeatability Repeatability => QuestRepeatability.OncePerPlayer;
         public virtual void SetDefaults()
@@ -50,6 +42,12 @@ namespace OvermorrowMod.Quests
         /// </summary>
         public virtual string GetHint(int index) => QuestHint[index];
         public int HintCount => QuestHint.Count;
+
+        /// <summary>
+        /// Get end dialogue line
+        /// </summary>
+        public virtual string GetEndDialogue(int index) => QuestEndDialogue[index];
+        public int EndDialogueCount => QuestEndDialogue.Count;
 
         /// <summary>
         /// Give rewards of this quest to the given player.

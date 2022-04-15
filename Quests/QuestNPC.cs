@@ -28,13 +28,13 @@ namespace OvermorrowMod.Quests
                 if (questCheckTick >= 3000) questCheckTick = 0;
                 return null;
             }
+            questCheckTick++;
 
             var possibleQuests = Quests.QuestList.Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer)).ToList();
             if (!possibleQuests.Any()) return null;
 
             availableQuest = possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)];
 
-            questCheckTick++;
             return availableQuest;
         }
 
@@ -49,7 +49,7 @@ namespace OvermorrowMod.Quests
             var currentModPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             var pursuedQuest = currentModPlayer.QuestByNpc(npc.type);
             if (pursuedQuest != null) return pursuedQuest;
-
+            isDoing = false;
             return GetCurrentAvailableQuest(npc);
         }
 

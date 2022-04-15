@@ -21,6 +21,7 @@ namespace OvermorrowMod.Quests
 
         private static bool hoverButton = false;
         private static bool nextButton = false;
+        private static BaseQuest endDialogueQuest = null;
         private static int dialogueCounter = 0;
 
         public static void Load(OvermorrowModFile mod)
@@ -56,6 +57,7 @@ namespace OvermorrowMod.Quests
         {
             hoverButton = false;
             nextButton = false;
+            endDialogueQuest = null;
             dialogueCounter = 0;
         }
 
@@ -69,6 +71,81 @@ namespace OvermorrowMod.Quests
                 return quest.CheckRequirements(player) ? "Turn In" : "Quest";
             }
             return "Quest";
+        }
+
+        private static void HandleButtonClick(
+            bool isDoing,
+            BaseQuest quest,
+            NPC npc,
+            Player player,
+            QuestPlayer questPlayer,
+            QuestNPC questNpc)
+        {
+            if (isDoing)
+            {
+                if (quest.CheckRequirements(player))
+                {
+                    quest.CompleteQuest(player, true);
+                    Main.PlaySound(OvermorrowModFile.Instance.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestTurnIn"), npc.Center);
+
+                    if (quest.EndDialogueCount > 0)
+                    {
+                        endDialogueQuest = quest;
+                        dialogueCounter = 0;
+                        nextButton = true;
+                        Main.npcChatText = endDialogueQuest.GetEndDialogue(dialogueCounter++);
+                    }
+                    else
+                    {
+                        player.talkNPC = -1;
+                        ResetUi();
+                    }
+                }
+                else
+                {
+                    Main.PlaySound(SoundID.MenuTick);
+                    Main.npcChatText = quest.GetHint(Main.rand.Next(0, quest.HintCount - 1));
+                }
+                return;
+            }
+
+            if (endDialogueQuest != null)
+            {
+                if (dialogueCounter >= endDialogueQuest.EndDialogueCount)
+                {
+                    player.talkNPC = -1;
+                    ResetUi();
+                }
+                else
+                {
+                    Main.PlaySound(SoundID.MenuTick);
+                    Main.npcChatText = endDialogueQuest.GetEndDialogue(dialogueCounter++);
+                }
+                return;
+            }
+
+
+            nextButton = true;
+            if (dialogueCounter >= quest.DialogueCount)
+            {
+                // Accept button pressed
+                questPlayer.AddQuest(quest);
+                questNpc.TakeQuest();
+
+                Main.PlaySound(OvermorrowModFile.Instance.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestAccept"), npc.Center);
+
+                // Run the Quest Accepted UI
+                Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
+
+                player.talkNPC = -1;
+                ResetUi();
+            }
+            else
+            {
+                // Next button pressed
+                Main.PlaySound(SoundID.MenuTick);
+                Main.npcChatText = quest.GetDialogue(dialogueCounter++);
+            }
         }
 
         private static void Main_DrawNPCChatButtons(
@@ -85,7 +162,8 @@ namespace OvermorrowMod.Quests
             Player player = Main.LocalPlayer;
             QuestPlayer questPlayer = player.GetModPlayer<QuestPlayer>();
             var questNpc = npc.GetGlobalNPC<QuestNPC>();
-            var quest = questNpc.GetCurrentQuest(npc, out var isDoing);
+            bool isDoing = false;
+            var quest = endDialogueQuest ?? questNpc.GetCurrentQuest(npc, out isDoing);
             if (quest == null)
             {
                 orig(superColor, chatColor, numLines, focusText, focusText3);
@@ -118,45 +196,7 @@ namespace OvermorrowMod.Quests
                 // Button pushed
                 if (Main.mouseLeft && Main.mouseLeftRelease)
                 {
-                    if (!isDoing)
-                    {
-                        nextButton = true;
-                        if (dialogueCounter >= quest.DialogueCount)
-                        {
-                            // Accept button pressed
-                            questPlayer.AddQuest(quest);
-                            questNpc.TakeQuest();
-
-                            Main.PlaySound(OvermorrowModFile.Instance.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestAccept"), npc.Center);
-
-                            // Run the Quest Accepted UI
-                            Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
-
-                            player.talkNPC = -1;
-                            ResetUi();
-                        }
-                        else
-                        {
-                            // Next button pressed
-                            Main.PlaySound(SoundID.MenuTick);
-                            Main.npcChatText = quest.GetDialogue(dialogueCounter++);
-                        }
-                    }
-                    else
-                    {
-                        if (quest.CheckRequirements(player))
-                        {
-                            quest.CompleteQuest(player, true);
-                            Main.PlaySound(OvermorrowModFile.Instance.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestTurnIn"), npc.Center);
-
-                            player.talkNPC = -1;
-                        }
-                        else
-                        {
-                            Main.PlaySound(SoundID.MenuTick);
-                            Main.npcChatText = quest.GetHint(Main.rand.Next(0, quest.HintCount - 1));
-                        }
-                    }
+                    HandleButtonClick(isDoing, quest, npc, player, questPlayer, questNpc);
                 }
             }
             else
