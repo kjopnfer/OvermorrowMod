@@ -1,8 +1,11 @@
-﻿using System;
+﻿using OvermorrowMod.Common.Netcode;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -22,6 +25,8 @@ namespace OvermorrowMod.Quests
 
         public void AddQuest(BaseQuest quest)
         {
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == player)
+                NetworkMessageHandler.Quests.TakeQuest(-1, -1, quest.QuestId);
             activeQuests.Add(quest);
         }
 
@@ -40,6 +45,10 @@ namespace OvermorrowMod.Quests
             var quest = activeQuests.FirstOrDefault(q => q.QuestId == questId);
             // Should not happen!
             if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
+            // Send message to server if the quest is being completed for the current player
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == player)
+                NetworkMessageHandler.Quests.CompleteQuest(-1, -1, questId);
+
             quest.CompleteQuest(player, true);
             activeQuests.Remove(quest);
         }

@@ -53,6 +53,16 @@ namespace OvermorrowMod.Quests
             }
         }
 
+        public static void ClearAllCompletedQuests()
+        {
+            GlobalCompletedQuests.Clear();
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                if (!Main.player[i].active) continue;
+                Main.player[i].GetModPlayer<QuestPlayer>().CompletedQuests.Clear();
+            }
+        }
+
         public static void ResetUi()
         {
             hoverButton = false;

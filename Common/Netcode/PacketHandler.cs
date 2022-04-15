@@ -24,11 +24,11 @@ namespace OvermorrowMod.Common.Netcode
 		{
 			var p = OvermorrowModFile.Instance.GetPacket();
 			p.Write((byte)Type);
-			p.Write(packetType);
 			if (Main.netMode == NetmodeID.Server)
-			{
-				p.Write((byte)fromWho);
-			}
+            {
+				p.Write(fromWho);
+            }
+			p.Write(packetType);
 			return p;
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OvermorrowMod.Common.Netcode;
+using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.ID;
@@ -9,7 +10,7 @@ namespace OvermorrowMod.Quests
     public class QuestCommand : ModCommand
     {
         public override string Command => "overmorrowquests";
-        public override CommandType Type => CommandType.Chat;
+        public override CommandType Type => CommandType.Chat | CommandType.Console;
         public override string Description => "Command for managing overmorrow quests";
         public override string Usage => $"/{Command} list [active/finished/unfinished] OR /{Command} reset OR /{Command} complete [QuestName]";
 
@@ -63,16 +64,8 @@ namespace OvermorrowMod.Quests
         private void Reset(CommandCaller caller, string[] args)
         {
             Main.NewText("Cleared all quests for all players!");
-            Quests.GlobalCompletedQuests.Clear();
-            if (Main.netMode == NetmodeID.Server)
-            {
-                // Send reset message to all players
-            }
-            else
-            {
-                Main.LocalPlayer.GetModPlayer<QuestPlayer>().CompletedQuests.Clear();
-                // Send reset message to server instead
-            }
+            Quests.ClearAllCompletedQuests();
+            NetworkMessageHandler.Quests.ResetQuest(-1, -1);
         }
 
         private void Complete(CommandCaller caller, string[] args)
