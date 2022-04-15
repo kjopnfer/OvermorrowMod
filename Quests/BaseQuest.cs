@@ -33,6 +33,12 @@ namespace OvermorrowMod.Quests
         }
 
         /// <summary>
+        /// Quest priority for the given NPC. Quests with higher priority will always be chosen first.
+        /// Can be a positive or a negative number.
+        /// </summary>
+        public virtual int Priority { get; } = 0;
+
+        /// <summary>
         /// Get dialogue line.
         /// </summary>
         public virtual string GetDialogue(int index) => QuestDialogue[index];

@@ -43,6 +43,8 @@ namespace OvermorrowMod.Quests.ModQuests
 
         protected override bool IsValidFor(Player player)
         {
+            // This is how we do quest dependencies, you could have multiple statements like this.
+            if (!Quests.HasCompletedQuest<GuideTutorial>(player)) return false;
             // This would mean that in theory the quest could be available if no NPC was present,
             // so this could be used as an "Invite NPC" quest as well.
             var npc = Main.npc.FirstOrDefault(n => n.active && n.type == NPCID.Guide);

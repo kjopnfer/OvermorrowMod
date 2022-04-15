@@ -17,6 +17,8 @@ namespace OvermorrowMod.Quests
     public static class Quests
     {
         public static Dictionary<string, BaseQuest> QuestList = new Dictionary<string, BaseQuest>();
+
+        private static Dictionary<Type, BaseQuest> QuestTypes = new Dictionary<Type, BaseQuest>();
         public static HashSet<string> GlobalCompletedQuests = new HashSet<string>();
 
         private static bool hoverButton = false;
@@ -33,6 +35,7 @@ namespace OvermorrowMod.Quests
                     BaseQuest quest = (BaseQuest)Activator.CreateInstance(type);
                     quest.SetDefaults();
                     QuestList.Add(quest.QuestId, quest);
+                    QuestTypes.Add(type, quest);
                 }
             }
             On.Terraria.Main.DrawNPCChatButtons += Main_DrawNPCChatButtons;
@@ -227,6 +230,21 @@ namespace OvermorrowMod.Quests
         public static void Unload()
         {
             QuestList.Clear();
+        }
+
+        // utils
+
+        public static BaseQuest GetQuest<T>() where T : BaseQuest
+        {
+            return QuestTypes[typeof(T)];
+        }
+
+        public static bool HasCompletedQuest<T>(Player player) where T : BaseQuest
+        {
+            var quest = GetQuest<T>();
+            return quest.Repeatability == QuestRepeatability.Repeatable
+                || GlobalCompletedQuests.Contains(quest.QuestId)
+                || player.GetModPlayer<QuestPlayer>().CompletedQuests.Contains(quest.QuestId);
         }
     }
 }

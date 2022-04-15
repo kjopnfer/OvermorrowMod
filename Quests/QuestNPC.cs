@@ -25,12 +25,16 @@ namespace OvermorrowMod.Quests
             if (questCheckTick > 0)
             {
                 questCheckTick++;
-                if (questCheckTick >= 3000) questCheckTick = 0;
+                if (questCheckTick >= 600) questCheckTick = 0;
                 return null;
             }
             questCheckTick++;
 
-            var possibleQuests = Quests.QuestList.Values.Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer)).ToList();
+            var possibleQuests = Quests.QuestList.Values
+                .Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer))
+                .GroupBy(q => q.Priority)
+                .Max()
+                .ToList();
             if (!possibleQuests.Any()) return null;
 
             availableQuest = possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)];
