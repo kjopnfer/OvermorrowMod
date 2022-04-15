@@ -16,16 +16,11 @@ using OvermorrowMod.Content.UI;
 using OvermorrowMod.Common.Particles;
 using Terraria.Graphics.Effects;
 using OvermorrowMod.Content.WorldGeneration;
+using System.IO;
+using OvermorrowMod.Common.Netcode;
 
 namespace OvermorrowMod.Common
 {
-    internal enum Message : byte
-    {
-        syncPlayer,
-        soulAdded,
-        soulsChanged,
-        meterMaxed,
-    }
     public class OvermorrowModFile : Mod
     {
         // UI
@@ -103,19 +98,6 @@ namespace OvermorrowMod.Common
                     TrailTextures.Add(GetTexture(AssetDirectory.Trails + "Trail" + i));
                 }
 
-                ModDetours.Load();
-                ModUtils.Load(false);
-                HexLoader.Load(false);
-                ILEdits.Load();
-                Particle.Load();
-                Trail.Load();
-
-                foreach (Type type in Code.GetTypes())
-                {
-                    HexLoader.TryRegisteringHex(type);
-                    Particle.TryRegisteringParticle(type);
-                }
-
                 AltarUI = new UserInterface();
 
                 MyInterface = new UserInterface();
@@ -128,6 +110,19 @@ namespace OvermorrowMod.Common
                 {
                     //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");
                 }
+            }
+            ModDetours.Load();
+            ModUtils.Load(false);
+            HexLoader.Load(false);
+            ILEdits.Load();
+            Particle.Load();
+            Trail.Load();
+            Quests.Quests.Load(this);
+
+            foreach (Type type in Code.GetTypes())
+            {
+                HexLoader.TryRegisteringHex(type);
+                Particle.TryRegisteringParticle(type);
             }
         }
 
@@ -146,12 +141,17 @@ namespace OvermorrowMod.Common
             ModDetours.Unload();
             ModUtils.Load(true);
             HexLoader.Load(true);
+            Quests.Quests.Unload();
             ILEdits.Unload();
             Particle.Unload();
             Trail.Unload();
 
-            Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
-            Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
+            if (!Main.dedServ)
+            {
+                Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
+                Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
+            }
+            
 
             Altar = null;
             SandModeKey = null;
@@ -167,7 +167,7 @@ namespace OvermorrowMod.Common
 
         public override void PostSetupContent()
         {
-            if (Main.gameMenu && Main.menuMode >= 0)
+            if (Main.gameMenu && Main.menuMode >= 0 && !Main.dedServ)
             {
                 if (Main.LogoB <= 255)
                 {
@@ -386,6 +386,11 @@ namespace OvermorrowMod.Common
             {
                 Particle.UpdateParticles();
             }
+        }
+
+        public override void HandlePacket(BinaryReader reader, int whoAmI)
+        {
+            NetworkMessageHandler.HandlePacket(reader, whoAmI);
         }
     }
 }
