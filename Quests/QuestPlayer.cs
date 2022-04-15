@@ -10,11 +10,11 @@ namespace OvermorrowMod.Quests
     public class QuestPlayer : ModPlayer
     {
         private readonly List<BaseQuest> activeQuests = new List<BaseQuest>();
-        public HashSet<int> CompletedQuests { get; } = new HashSet<int>();
+        public HashSet<string> CompletedQuests { get; } = new HashSet<string>();
 
         public IEnumerable<BaseQuest> CurrentQuests => activeQuests;
 
-        public bool IsDoingQuest(int questId)
+        public bool IsDoingQuest(string questId)
         {
             return activeQuests.Any(q => q.QuestId == questId);
         }
@@ -34,7 +34,7 @@ namespace OvermorrowMod.Quests
             return activeQuests.FirstOrDefault(q => npcId == q.QuestGiver);
         }
 
-        public void CompleteQuest(int questId)
+        public void CompleteQuest(string questId)
         {
             var quest = activeQuests.FirstOrDefault(q => q.QuestId == questId);
             // Should not happen!

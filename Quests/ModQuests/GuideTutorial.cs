@@ -11,8 +11,6 @@ namespace OvermorrowMod.Quests.ModQuests
 {
     public class GuideTutorial : BaseQuest
     {
-        public override int QuestId => 2;
-
         public override string QuestName => "Tutorial";
         public override QuestRepeatability Repeatability => QuestRepeatability.OncePerPlayer;
         public override int QuestGiver => NPCID.Guide;

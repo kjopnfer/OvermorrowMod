@@ -8,9 +8,11 @@ namespace OvermorrowMod.Quests.ModQuests
 {
     public class GuideHouse : BaseQuest
     {
-        public override int QuestId => 1;
-
         public override string QuestName => "Homeless";
+        // So that this can't be abused, make it only possible to complete once per world. If multiple players
+        // "compete", then only the first one to finish gets the reward. This is an OK way to handle this kind of
+        // quest. It can also be used to make quests which have global consequences, i.e. an reward that
+        // it would be really bad if triggered twice.
         public override QuestRepeatability Repeatability => QuestRepeatability.OncePerWorld;
         public override int QuestGiver => NPCID.Guide;
 

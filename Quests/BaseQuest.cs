@@ -25,7 +25,13 @@ namespace OvermorrowMod.Quests
         /// <summary>
         /// Important that this is specified manually, otherwise adding new quests will probably break saves.
         /// </summary>
-        public abstract int QuestId { get; }
+        public string QuestId
+        {
+            get
+            {
+                return GetType().FullName;
+            }
+        }
         public abstract string QuestName { get; }
         public virtual QuestRepeatability Repeatability => QuestRepeatability.OncePerPlayer;
         public virtual void SetDefaults()

@@ -17,6 +17,27 @@ namespace OvermorrowMod.Quests
 
         private BaseQuest availableQuest;
 
+        private int questCheckTick = 0;
+
+        private BaseQuest GetCurrentAvailableQuest(NPC npc)
+        {
+            if (availableQuest != null) return availableQuest;
+            if (questCheckTick > 0)
+            {
+                questCheckTick++;
+                if (questCheckTick >= 3000) questCheckTick = 0;
+                return null;
+            }
+
+            var possibleQuests = Quests.QuestList.Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer)).ToList();
+            if (!possibleQuests.Any()) return null;
+
+            availableQuest = possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)];
+
+            questCheckTick++;
+            return availableQuest;
+        }
+
         /// <summary>
         /// Get quest the active player is pursuing, invoked on the client.
         /// If the player is not pursuing any from this NPC, lock one in at random.
@@ -29,18 +50,13 @@ namespace OvermorrowMod.Quests
             var pursuedQuest = currentModPlayer.QuestByNpc(npc.type);
             if (pursuedQuest != null) return pursuedQuest;
 
-            isDoing = false;
-            if (availableQuest != null) return availableQuest;
-            var possibleQuests = Quests.QuestList.Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer)).ToList();
-            if (!possibleQuests.Any()) return null;
-
-            availableQuest = possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)];
-            return availableQuest;
+            return GetCurrentAvailableQuest(npc);
         }
 
         public void TakeQuest()
         {
             availableQuest = null;
+            questCheckTick = 0;
         }
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)

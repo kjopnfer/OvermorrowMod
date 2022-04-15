@@ -17,7 +17,7 @@ namespace OvermorrowMod.Quests
     public static class Quests
     {
         public static List<BaseQuest> QuestList = new List<BaseQuest>();
-        public static HashSet<int> GlobalCompletedQuests = new HashSet<int>();
+        public static HashSet<string> GlobalCompletedQuests = new HashSet<string>();
 
         private static bool hoverButton = false;
         private static bool nextButton = false;
