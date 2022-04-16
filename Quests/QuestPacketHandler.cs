@@ -19,6 +19,7 @@ namespace OvermorrowMod.Quests
 
         public void TakeQuest(int toWho, int fromWho, string questId)
         {
+            if (Main.netMode == NetmodeID.SinglePlayer) return;
             var packet = GetPacket((byte)QuestPacketType.TakeQuest, fromWho);
             packet.Write(questId);
             packet.Send(toWho, fromWho);
@@ -37,6 +38,7 @@ namespace OvermorrowMod.Quests
 
         public void CompleteQuest(int toWho, int fromWho, string questId)
         {
+            if (Main.netMode == NetmodeID.SinglePlayer) return;
             var packet = GetPacket((byte)QuestPacketType.CompleteQuest, fromWho);
             packet.Write(questId);
             packet.Send(toWho, fromWho);
@@ -54,6 +56,7 @@ namespace OvermorrowMod.Quests
 
         public void ResetQuest(int toWho, int fromWho)
         {
+            if (Main.netMode == NetmodeID.SinglePlayer) return;
             var packet = GetPacket((byte)QuestPacketType.ResetQuests, fromWho);
             packet.Send(toWho, fromWho);
         }

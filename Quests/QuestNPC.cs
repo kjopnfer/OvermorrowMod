@@ -31,8 +31,8 @@ namespace OvermorrowMod.Quests
                 .Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer))
                 .GroupBy(q => q.Priority)
                 .Max()
-                .ToList();
-            if (!possibleQuests.Any()) return null;
+                ?.ToList();
+            if (possibleQuests == null || !possibleQuests.Any()) return null;
 
             availableQuest = possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)];
 
