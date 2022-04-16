@@ -8,7 +8,7 @@ namespace OvermorrowMod.Quests
 {
     public class QuestCommand : ModCommand
     {
-        public override string Command => "overmorrowquests";
+        public override string Command => "quests";
         public override CommandType Type => CommandType.Chat | CommandType.Console;
         public override string Description => "Command for managing overmorrow quests";
         public override string Usage => $"/{Command} list [active/finished/unfinished] OR /{Command} reset OR /{Command} complete [QuestName]";
