@@ -91,11 +91,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
-            if (npc.localAI[2] < 120)
-            {
-                npc.localAI[2] += 0.5f;
-            }
-
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
 
