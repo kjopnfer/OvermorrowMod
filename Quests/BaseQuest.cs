@@ -9,7 +9,8 @@ namespace OvermorrowMod.Quests
     {
         Repeatable,
         OncePerPlayer,
-        OncePerWorld
+        OncePerWorld,
+        OncePerWorldPerPlayer
     }
 
     public abstract class BaseQuest
@@ -68,6 +69,8 @@ namespace OvermorrowMod.Quests
             var modPlayer = player.GetModPlayer<QuestPlayer>();
             if (Repeatability == QuestRepeatability.OncePerPlayer && modPlayer.CompletedQuests.Contains(QuestId)) success = false;
             if (Repeatability == QuestRepeatability.OncePerWorld && Quests.GlobalCompletedQuests.Contains(QuestId)) success = false;
+            if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer
+                && Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(QuestId)) success = false;
 
             if (success)
             {
@@ -97,6 +100,10 @@ namespace OvermorrowMod.Quests
                         }
                     }
                 }
+            }
+            else if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer)
+            {
+                Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Add(QuestId);
             }
         }
 
@@ -138,6 +145,8 @@ namespace OvermorrowMod.Quests
             if (modPlayer.CurrentQuests.Any(q => q.QuestId == QuestId)) return false;
             if (Repeatability == QuestRepeatability.OncePerPlayer && modPlayer.CompletedQuests.Contains(QuestId)) return false;
             if (Repeatability == QuestRepeatability.OncePerWorld && Quests.GlobalCompletedQuests.Contains(QuestId)) return false;
+            if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer
+                && Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(QuestId)) return false;
             return true;
         }
     }

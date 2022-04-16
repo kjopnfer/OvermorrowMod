@@ -11,36 +11,48 @@ namespace OvermorrowMod.Quests
 {
     public class QuestPlayer : ModPlayer
     {
+        public string PlayerUUID { get; private set; } = null;
+
         private readonly List<BaseQuest> activeQuests = new List<BaseQuest>();
         public HashSet<string> CompletedQuests { get; } = new HashSet<string>();
 
-        public IEnumerable<BaseQuest> CurrentQuests => activeQuests;
+        public IEnumerable<BaseQuest> CurrentQuests => activeQuests.Concat(Quests.PerPlayerActiveQuests[PlayerUUID]);
+
+        public HashSet<string> LocalCompletedQuests { get; } = new HashSet<string>();
 
         public bool IsDoingQuest(string questId)
         {
-            return activeQuests.Any(q => q.QuestId == questId);
+            return CurrentQuests.Any(q => q.QuestId == questId);
         }
 
         public void AddQuest(BaseQuest quest)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == player)
                 NetworkMessageHandler.Quests.TakeQuest(-1, -1, quest.QuestId);
-            activeQuests.Add(quest);
+            if (quest.Repeatability == QuestRepeatability.OncePerWorldPerPlayer || quest.Repeatability == QuestRepeatability.OncePerWorld)
+            {
+                Quests.PerPlayerActiveQuests[PlayerUUID].Add(quest);
+            }
+            else
+            {
+                activeQuests.Add(quest);
+            }
         }
 
         public void RemoveQuest(BaseQuest quest)
         {
             activeQuests.Remove(quest);
+            Quests.PerPlayerActiveQuests[PlayerUUID].Remove(quest);
         }
 
         public BaseQuest QuestByNpc(int npcId)
         {
-            return activeQuests.FirstOrDefault(q => npcId == q.QuestGiver);
+            return CurrentQuests.FirstOrDefault(q => npcId == q.QuestGiver);
         }
 
         public void CompleteQuest(string questId)
         {
-            var quest = activeQuests.FirstOrDefault(q => q.QuestId == questId);
+            var quest = CurrentQuests.FirstOrDefault(q => q.QuestId == questId);
             // Should not happen!
             if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
             // Send message to server if the quest is being completed for the current player
@@ -48,7 +60,7 @@ namespace OvermorrowMod.Quests
                 NetworkMessageHandler.Quests.CompleteQuest(-1, -1, questId);
 
             quest.CompleteQuest(player, true);
-            activeQuests.Remove(quest);
+            RemoveQuest(quest);
         }
 
         public override TagCompound Save()
@@ -56,7 +68,8 @@ namespace OvermorrowMod.Quests
             return new TagCompound
             {
                 ["CompletedQuests"] = CompletedQuests.ToList(),
-                ["CurrentQuests"] = CurrentQuests.Select(q => q.QuestName).ToList()
+                ["CurrentQuests"] = activeQuests.Select(q => q.QuestId).ToList(),
+                ["PlayerUUID"] = PlayerUUID
             };
         }
 
@@ -66,15 +79,33 @@ namespace OvermorrowMod.Quests
             activeQuests.Clear();
 
             var completedQuests = tag.GetList<string>("CompletedQuests");
-            foreach (var quest in completedQuests) CompletedQuests.Add(quest);
+            foreach (var quest in completedQuests)
+            {
+                if (!Quests.QuestList.TryGetValue(quest, out var qInst) || qInst.Repeatability != QuestRepeatability.OncePerPlayer)
+                    continue;
+                CompletedQuests.Add(quest);
+            }
 
             var currentQuests = tag.GetList<string>("CurrentQuests");
             foreach (var questId in currentQuests)
             {
-                if (Quests.QuestList.TryGetValue(questId, out var quest))
+                if (Quests.QuestList.TryGetValue(questId, out var quest)
+                    && (quest.Repeatability == QuestRepeatability.Repeatable || quest.Repeatability == QuestRepeatability.OncePerPlayer))
                 {
                     activeQuests.Add(quest);
                 }
+            }
+
+            PlayerUUID = tag.GetString("PlayerUUID");
+            if (PlayerUUID == null) PlayerUUID = Guid.NewGuid().ToString();
+
+            if (!Quests.PerPlayerCompletedQuests.ContainsKey(PlayerUUID))
+            {
+                Quests.PerPlayerCompletedQuests[PlayerUUID] = new HashSet<string>();
+            }
+            if (!Quests.PerPlayerActiveQuests.ContainsKey(PlayerUUID))
+            {
+                Quests.PerPlayerActiveQuests[PlayerUUID] = new List<BaseQuest>();
             }
         }
     }

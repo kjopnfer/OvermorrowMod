@@ -18,6 +18,14 @@ namespace OvermorrowMod.Quests
         private static Dictionary<Type, BaseQuest> QuestTypes = new Dictionary<Type, BaseQuest>();
         public static HashSet<string> GlobalCompletedQuests = new HashSet<string>();
 
+        public static Dictionary<string, HashSet<string>> PerPlayerCompletedQuests { get; }
+            = new Dictionary<string, HashSet<string>>();
+
+
+        public static Dictionary<string, List<BaseQuest>> PerPlayerActiveQuests { get; }
+            = new Dictionary<string, List<BaseQuest>>();
+
+
         private static bool hoverButton = false;
         private static bool nextButton = false;
         private static BaseQuest endDialogueQuest = null;
@@ -56,6 +64,10 @@ namespace OvermorrowMod.Quests
         public static void ClearAllCompletedQuests()
         {
             GlobalCompletedQuests.Clear();
+            foreach (var kvp in PerPlayerCompletedQuests)
+            {
+                kvp.Value.Clear();
+            }
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 if (!Main.player[i].active) continue;
@@ -238,10 +250,12 @@ namespace OvermorrowMod.Quests
 
         public static bool HasCompletedQuest<T>(Player player) where T : BaseQuest
         {
+            var modPlayer = player.GetModPlayer<QuestPlayer>();
             var quest = GetQuest<T>();
             return quest.Repeatability == QuestRepeatability.Repeatable
                 || GlobalCompletedQuests.Contains(quest.QuestId)
-                || player.GetModPlayer<QuestPlayer>().CompletedQuests.Contains(quest.QuestId);
+                || modPlayer.CompletedQuests.Contains(quest.QuestId)
+                || PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(quest.QuestId);
         }
     }
 }

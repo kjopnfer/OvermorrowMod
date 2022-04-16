@@ -25,8 +25,12 @@ namespace OvermorrowMod.Quests
             Main.NewText($"Globally completed quests: {string.Join(", ", globalQuestNames)}");
             if (caller.Player != null)
             {
-                var localQuestNames = caller.Player.GetModPlayer<QuestPlayer>().CompletedQuests.Select(qid => Quests.QuestList[qid].QuestName);
+                var modPlayer = caller.Player.GetModPlayer<QuestPlayer>();
+                var localQuestNames = modPlayer.CompletedQuests.Select(qid => Quests.QuestList[qid].QuestName);
                 Main.NewText($"Player completed quests: {string.Join(", ", localQuestNames)}");
+
+                var worldLocalQuestNames = Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Select(qid => Quests.QuestList[qid].QuestName);
+                Main.NewText($"Per player per world completed quests: {string.Join(", ", worldLocalQuestNames)}");
             }
         }
 
@@ -35,7 +39,10 @@ namespace OvermorrowMod.Quests
             IEnumerable<string> finishedQuestIds = Quests.GlobalCompletedQuests;
             if (caller.Player != null)
             {
-                finishedQuestIds = finishedQuestIds.Concat(caller.Player.GetModPlayer<QuestPlayer>().CompletedQuests);
+                var modPlayer = caller.Player.GetModPlayer<QuestPlayer>();
+                finishedQuestIds = finishedQuestIds
+                    .Concat(modPlayer.CompletedQuests)
+                    .Concat(Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID]);
             }
             var finishedQuestSet = new HashSet<string>(finishedQuestIds);
             var remainingQuests = Quests.QuestList.Values.Where(q => !finishedQuestSet.Contains(q.QuestId));
