@@ -11,11 +11,6 @@ namespace OvermorrowMod.Quests.ModQuests
         public override QuestRepeatability Repeatability => QuestRepeatability.OncePerWorldPerPlayer;
         public override int QuestGiver => NPCID.Guide;
 
-        protected override bool IsValidFor(Player player)
-        {
-            return Quests.HasCompletedQuest<GuideTutorial>(player);
-        }
-
         public override void SetDefaults()
         {
             Requirements = new[]
@@ -35,6 +30,11 @@ namespace OvermorrowMod.Quests.ModQuests
             QuestHint.Add("Dig up some copper or tin ore for me, if you would. You can find it just beneath the surface.");
 
             QuestEndDialogue.Add("Excellent! Here is your reward!");
+        }
+
+        protected override bool IsValidFor(Player player)
+        {
+            return Quests.HasCompletedQuest<GuideTutorial>(player);
         }
     }
 }
