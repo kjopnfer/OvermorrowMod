@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Pets;
 using OvermorrowMod.Content.Projectiles.Pets;
 using Terraria;
