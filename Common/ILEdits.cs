@@ -15,18 +15,19 @@ namespace OvermorrowMod.Common
     {
         public static void Load()
         {
-            IL.Terraria.Main.UpdateAudio += TitleMusic;
-            IL.Terraria.Main.UpdateAudio += TitleDisable;
-            IL.Terraria.Projectile.VanillaAI += GrappleCollision;
+            // TODO: There is literally zero percent chance this works the same in 1.4. Needs to be redone.
+            // IL.Terraria.Main.UpdateAudio += TitleMusic;
+            // IL.Terraria.Main.UpdateAudio += TitleDisable;
+            // IL.Terraria.Projectile.VanillaAI += GrappleCollision;
             //IL.Terraria.Liquid.Update += UpdateWater;
             //IL.Terraria.Liquid.QuickWater += QuickWater;
         }
 
         public static void Unload()
         {
-            IL.Terraria.Main.UpdateAudio -= TitleMusic;
-            IL.Terraria.Main.UpdateAudio -= TitleDisable;
-            IL.Terraria.Projectile.VanillaAI -= GrappleCollision;
+            // IL.Terraria.Main.UpdateAudio -= TitleMusic;
+            // IL.Terraria.Main.UpdateAudio -= TitleDisable;
+            // IL.Terraria.Projectile.VanillaAI -= GrappleCollision;
             //IL.Terraria.Liquid.Update -= UpdateWater;
             //IL.Terraria.Liquid.QuickWater -= QuickWater;
         }
@@ -45,7 +46,7 @@ namespace OvermorrowMod.Common
         public static int TitleMusicDelegate(int oldMusic)
         {
             // Can also add mod checks for music here and return oldMusic if not active
-            return OvermorrowModFile.Instance.GetSoundSlot((SoundType)51, "Sounds/Music/SandstormBoss");
+            return SoundLoader.GetSoundSlot(OvermorrowModFile.Instance, "Sounds/Music/SandstormBoss");
         }
 
         // If you don't include the following two methods, the game slaps your volume down to zero
@@ -83,7 +84,7 @@ namespace OvermorrowMod.Common
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc.active && npc.modNPC is CollideableNPC && npc.Hitbox.Intersects(proj.Hitbox))
+                if (npc.active && npc.ModNPC is CollideableNPC && npc.Hitbox.Intersects(proj.Hitbox))
                 {
                     //Main.NewText("test");
 
@@ -147,10 +148,10 @@ namespace OvermorrowMod.Common
             c.EmitDelegate<Func<int, Liquid, int>>((value, Liquid) =>
             {
                 Tile tile = Main.tile[Liquid.x, Liquid.y];
-                if (tile.wall == ModContent.WallType<GlowWall>())
+                if (tile.WallType == ModContent.WallType<GlowWall>())
                 {
                     Tile tile2 = Framing.GetTileSafely(Liquid.x, Liquid.y + 1);
-                    if (tile2.wall == ModContent.WallType<GlowWall>())
+                    if (tile2.WallType == ModContent.WallType<GlowWall>())
                     {
                         value = -value;
                     }
@@ -173,10 +174,10 @@ namespace OvermorrowMod.Common
             c.EmitDelegate<Func<int, Liquid, int>>((value, Liquid) =>
             {
                 Tile tile = Main.tile[Liquid.x, Liquid.y];
-                if (tile.wall == ModContent.WallType<GlowWall>())
+                if (tile.WallType == ModContent.WallType<GlowWall>())
                 {
                     Tile tile2 = Framing.GetTileSafely(Liquid.x, Liquid.y + 1);
-                    if (tile2.wall == ModContent.WallType<GlowWall>())
+                    if (tile2.WallType == ModContent.WallType<GlowWall>())
                     {
                         value = -value;
                     }
@@ -192,7 +193,7 @@ namespace OvermorrowMod.Common
         public static int Inverse(int value, int x, int y)
         {
             Tile tile = Main.tile[x, y];
-            if (tile.wall == WallID.LunarBrickWall) value = -value;
+            if (tile.WallType == WallID.LunarBrickWall) value = -value;
             return value;
         }
 

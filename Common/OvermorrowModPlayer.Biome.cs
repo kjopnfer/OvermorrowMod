@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common
 {
-    public partial class OvermorrowModPlayer : ModPlayer
+    /* public partial class OvermorrowModPlayer : ModPlayer
     {
         // Biome
         public bool ZoneWaterCave = false;
@@ -84,5 +84,5 @@ namespace OvermorrowMod.Common
                 }
             }
         }
-    }
+    } */
 }

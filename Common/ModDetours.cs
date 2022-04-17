@@ -238,7 +238,7 @@ namespace OvermorrowMod.Common
                 NPC npc = Main.npc[i];
 
                 // We don't want to include Moving Platforms for collision because this detour will block the FallThrough needed
-                if (npc.modNPC is CollideableNPC && npc.active && npc.modNPC != null && !(npc.modNPC is MovingPlatform))
+                if (npc.ModNPC is CollideableNPC && npc.active && npc.ModNPC != null && !(npc.ModNPC is MovingPlatform))
                 {
                     Rectangle PlayerBottom = new Rectangle((int)self.position.X, (int)self.position.Y + self.height, self.width, 1);
                     Rectangle NPCTop = new Rectangle((int)npc.position.X, (int)npc.position.Y - (int)npc.velocity.Y, npc.width, 8 + (int)Math.Max(self.velocity.Y, 0));
@@ -277,7 +277,7 @@ namespace OvermorrowMod.Common
                     {
                         if (self.position.X >= npc.position.X + npc.width && self.velocity.X <= 0)
                         {
-                            int offset = npc.modNPC is PushableNPC ? 7 : 2;
+                            int offset = npc.ModNPC is PushableNPC ? 7 : 2;
                             self.velocity.X = 0;
                             self.position.X = npc.position.X + npc.width + offset;
 
@@ -287,7 +287,7 @@ namespace OvermorrowMod.Common
                             //orig(self);
                         }
 
-                        if (npc.modNPC is PushableNPC)
+                        if (npc.ModNPC is PushableNPC)
                         {
                             npc.position.X -= 1;
                         }
@@ -295,14 +295,14 @@ namespace OvermorrowMod.Common
 
                     if (PlayerRight.Intersects(NPCLeft))
                     {
-                        if (npc.modNPC is PushableNPC)
+                        if (npc.ModNPC is PushableNPC)
                         {
                             npc.position.X += 1;
                         }
 
                         if (self.position.X <= npc.position.X && self.velocity.X >= 0)
                         {
-                            int offset = npc.modNPC is PushableNPC ? 2 : 0;
+                            int offset = npc.ModNPC is PushableNPC ? 2 : 0;
 
                             self.velocity.X = 0;
                             self.position.X = npc.position.X - self.width - offset;
@@ -337,11 +337,11 @@ namespace OvermorrowMod.Common
         }
 
         // Detour for moving platforms
-        private static void PlatformCollision(On.Terraria.Player.orig_SlopingCollision orig, Player self, bool fallThrough)
+        private static void PlatformCollision(On.Terraria.Player.orig_SlopingCollision orig, Player self, bool fallThrough, bool ignorePlats)
         {
             if (self.GetModPlayer<OvermorrowModPlayer>().PlatformTimer > 0)
             {
-                orig(self, fallThrough);
+                orig(self, fallThrough, ignorePlats);
                 return;
             }
 
@@ -358,7 +358,7 @@ namespace OvermorrowMod.Common
 
                         foreach (NPC npc in Main.npc)
                         {
-                            if (!npc.active || npc.modNPC == null || !(npc.modNPC is MovingPlatform))
+                            if (!npc.active || npc.ModNPC == null || !(npc.ModNPC is MovingPlatform))
                                 continue;
 
                             if (GrappleHook.active && npc.Hitbox.Intersects(GrappleHook.Hitbox) && self.Hitbox.Intersects(GrappleHook.Hitbox))
@@ -375,13 +375,13 @@ namespace OvermorrowMod.Common
                     }
                 }
 
-                orig(self, fallThrough);
+                orig(self, fallThrough, ignorePlats);
                 return;
             }
 
             foreach (NPC npc in Main.npc)
             {
-                if (!npc.active || npc.modNPC == null || !(npc.modNPC is MovingPlatform))
+                if (!npc.active || npc.ModNPC == null || !(npc.ModNPC is MovingPlatform))
                     continue;
 
                 Rectangle PlayerRect = new Rectangle((int)self.position.X, (int)self.position.Y + (self.height), self.width, 1);
@@ -427,7 +427,7 @@ namespace OvermorrowMod.Common
                 }
             }
 
-            orig(self, fallThrough);
+            orig(self, fallThrough, ignorePlats);
         }
     }
 }

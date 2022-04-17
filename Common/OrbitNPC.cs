@@ -15,12 +15,11 @@ namespace OvermorrowMod.Common
 
             base.PostAI(npc);
         }
-
-        public override void NPCLoot(NPC npc)
+        public override void OnKill(NPC npc)
         {
             Container.ResetProjectiles();
 
-            base.NPCLoot(npc);
+            base.OnKill(npc);
         }
     }
 }

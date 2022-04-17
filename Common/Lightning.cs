@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Core;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Common
 {
@@ -151,21 +152,21 @@ namespace OvermorrowMod.Common
         public sealed override void SetDefaults()
         {
             SafeSetDefaults();
-            projectile.velocity = projectile.velocity.SafeNormalize(Vector2.UnitY);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
-            projectile.tileCollide = false;
-            projectile.ignoreWater = true;
-            projectile.penetrate = -1;
+            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
+            Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
+            Projectile.penetrate = -1;
         }
         private bool Startup;
         public override bool PreAI()
         {
             if (!Startup)
             {
-                projectile.velocity = projectile.velocity.SafeNormalize(-Vector2.UnitY);
+                Projectile.velocity = Projectile.velocity.SafeNormalize(-Vector2.UnitY);
                 Startup = true;
-                Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
-                Main.PlaySound(SoundID.Item, (int)projectile.Center.X, (int)projectile.Center.Y, 122, 0.5f, -0.5f);
+                Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
+                SoundEngine.PlaySound(SoundID.Item, (int)Projectile.Center.X, (int)Projectile.Center.Y, 122, 0.5f, -0.5f);
             }
             return true;
         }
@@ -183,12 +184,12 @@ namespace OvermorrowMod.Common
             return false;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
             spriteBatch.Reload(BlendState.Additive);
 
             //if (Positions == default || Positions == null) return false;
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "Circle");
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Circle").Value;
             //Texture2D texture2 = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
 
             for (int i = 0; i < Positions.Count - 1; i++)
@@ -222,17 +223,17 @@ namespace OvermorrowMod.Common
         }
         public override void SafeSetDefaults()
         {
-            projectile.width = 10;
-            projectile.hostile = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.width = 10;
+            Projectile.hostile = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 3000f);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 3000f);
+            Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {
@@ -251,25 +252,25 @@ namespace OvermorrowMod.Common
         }
         public override void SafeSetDefaults()
         {
-            projectile.width = 10;
-            projectile.hostile = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.width = 10;
+            Projectile.hostile = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 3000f);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, 240, 4f);
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 3000f);
+            Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width, 240, 4f);
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {
                 Positions[i].Size = Positions[i].DefSize * mult;
             }
-            NPC projectileowner = Main.npc[(int)projectile.ai[1]];
-            //projectile.position = projectileowner.Center + new Vector2(187 * Direction, -110);//49);
-            projectile.velocity = (Vector2.UnitX * Direction).RotatedBy(MathHelper.ToRadians((Direction == 1) ? 315 + RotateBy : 45 + -RotateBy));
+            NPC projectileowner = Main.npc[(int)Projectile.ai[1]];
+            //Projectile.position = projectileowner.Center + new Vector2(187 * Direction, -110);//49);
+            Projectile.velocity = (Vector2.UnitX * Direction).RotatedBy(MathHelper.ToRadians((Direction == 1) ? 315 + RotateBy : 45 + -RotateBy));
         }
     }
     public class LightningBurst : Lightning
@@ -281,24 +282,24 @@ namespace OvermorrowMod.Common
         }
         public override void SafeSetDefaults()
         {
-            projectile.damage = 25;
-            projectile.width = 5;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.damage = 25;
+            Projectile.width = 5;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 3f;
             Sine = true;
         }
         public override void AI()
         {
-            if (!Main.npc[(int)projectile.ai[0]].active || !Main.projectile[(int)projectile.ai[1]].active)
+            if (!Main.npc[(int)Projectile.ai[0]].active || !Main.projectile[(int)Projectile.ai[1]].active)
             {
-                projectile.Kill();
+                Projectile.Kill();
             }
 
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 10f);
-            Positions = Lightning.CreateLightning(Main.projectile[(int)projectile.ai[1]].Center/*projectile.Center*/, Main.npc[(int)projectile.ai[0]].Center/*projectile.Center + projectile.velocity * Length*/, projectile.width, 160, /*2f*/ 1f/*, true*/);
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 10f);
+            Positions = Lightning.CreateLightning(Main.projectile[(int)Projectile.ai[1]].Center/*Projectile.Center*/, Main.npc[(int)Projectile.ai[0]].Center/*Projectile.Center + Projectile.velocity * Length*/, Projectile.width, 160, /*2f*/ 1f/*, true*/);
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {
@@ -315,17 +316,17 @@ namespace OvermorrowMod.Common
         }
         public override void SafeSetDefaults()
         {
-            projectile.width = 10;
-            projectile.hostile = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.width = 10;
+            Projectile.hostile = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 3000f);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, /*320*/ 640, /*16*/ 8, true);
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 3000f);
+            Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width, /*320*/ 640, /*16*/ 8, true);
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {
@@ -343,23 +344,23 @@ namespace OvermorrowMod.Common
         }
         public override void SafeSetDefaults()
         {
-            projectile.width = 10;
-            projectile.hostile = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.width = 10;
+            Projectile.hostile = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 3000f);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width, 240, 4f);
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 3000f);
+            Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width, 240, 4f);
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {
                 Positions[i].Size = Positions[i].DefSize * mult;
             }
-            projectile.velocity = projectile.velocity.RotatedBy(MathHelper.ToRadians(RotateBy));
+            Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(RotateBy));
         }
     }
     public class StormBolt2 : Lightning
@@ -371,17 +372,17 @@ namespace OvermorrowMod.Common
         }
         public override void SafeSetDefaults()
         {
-            projectile.width = 10;
-            projectile.friendly = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.width = 10;
+            Projectile.friendly = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 2000f);
-            Positions = Lightning.CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 2000f);
+            Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {

@@ -10,17 +10,19 @@ using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.World.Generation;
 using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
 using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Content.Tiles.Ores;
 using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.WaterCave;
 using OvermorrowMod.Content.Tiles.Underground;
+using System;
+using Terraria.WorldBuilding;
+using Terraria.IO;
 
 namespace OvermorrowMod.Common
 {
-    public partial class OvermorrowWorld : ModWorld
+    public partial class OvermorrowWorld : ModSystem
     {
         // Boss Attacks
         public static bool DripplerCircle;
@@ -44,15 +46,17 @@ namespace OvermorrowMod.Common
         private bool placedtele = false;
         private bool placedclaw = false;
 
-        public override void TileCountsAvailable(int[] tileCounts)
+        public override void TileCountsAvailable(ReadOnlySpan<int> tileCounts)
         {
             floodedCaves = tileCounts[ModContent.TileType<GlowBlock>()];
             marbleBiome = tileCounts[TileID.MarbleBlock];
             graniteBiome = tileCounts[TileID.GraniteBlock];
             lavaBiome = tileCounts[ModContent.TileType<CrunchyStone>()];
 
+            
             // Make the modded tile weigh more heavily
-            Main.sandTiles += tileCounts[ModContent.TileType<SandBrick>()] * 5;
+            // TODO: Figure out where this has been moved
+            // Main.sandTiles += tileCounts[ModContent.TileType<SandBrick>()] * 5;
         }
 
         #region chest shit i nede to move somewhere else
@@ -63,9 +67,9 @@ namespace OvermorrowMod.Common
                 for (int y = 0; y < Main.maxTilesY; y++)
                 {
                     Tile tile = Framing.GetTileSafely(x, y);
-                    if (tile.type == TileID.Pots)
+                    if (tile.TileType == TileID.Pots)
                     {
-                        tile.type = (ushort)ModContent.TileType<LargePot>();
+                        tile.TileType = (ushort)ModContent.TileType<LargePot>();
                     }
                 }
             }*/
@@ -76,7 +80,7 @@ namespace OvermorrowMod.Common
 
                 int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
                 int itemsToPlaceInGranChestsChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 50 * 36)
+                if (chest != null && Main.tile[chest.x, chest.y].TileType == TileID.Containers && Main.tile[chest.x, chest.y].TileFrameX == 50 * 36)
                 {
                     if (!placedGranite) // Guarantees at least one book in a Dungeon Chest
                     {
@@ -112,7 +116,7 @@ namespace OvermorrowMod.Common
 
                 int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
                 int itemsToPlaceInGranMarbleChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 51 * 36)
+                if (chest != null && Main.tile[chest.x, chest.y].TileType == TileID.Containers && Main.tile[chest.x, chest.y].TileFrameX == 51 * 36)
                 {
                     if (!placedtele) // Guarantees at least one book in a Dungeon Chest
                     {
@@ -148,7 +152,7 @@ namespace OvermorrowMod.Common
 
                 int[] itemsToPlaceInSteamChests = { 953 };
                 int itemsToPlaceInSteampunkChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].type == TileID.Containers && Main.tile[chest.x, chest.y].frameX == 30 * 36)
+                if (chest != null && Main.tile[chest.x, chest.y].TileType == TileID.Containers && Main.tile[chest.x, chest.y].TileFrameX == 30 * 36)
                 {
                     if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
                     {
@@ -191,14 +195,6 @@ namespace OvermorrowMod.Common
             return Main.keyState.IsKeyDown(key) && !Main.oldKeyState.IsKeyDown(key);
         }
 
-        public override void PostUpdate()
-        {
-            /*if (JustPressed(Keys.D1))
-            {
-                TestMethod((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
-            }*/
-        }
-
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
             int ShiniesIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shinies"));
@@ -232,14 +228,14 @@ namespace OvermorrowMod.Common
             while (true)
             {
                 // We want to be in the jungle
-                if (Main.tile[x, y].type != TileID.JungleGrass)
+                if (Main.tile[x, y].TileType != TileID.JungleGrass)
                 {
                     notInvalid = false;
                 }
 
                 // While loop to find a valid tile
-                if (!Main.tile[x, y].active() || Main.tile[x, y].type == TileID.SnowBlock || Main.tile[x, y].type == TileID.IceBlock || Main.tile[x, y].type == TileID.BlueDungeonBrick ||
-                    Main.tile[x, y].type == TileID.Sand || Main.tile[x, y].type == TileID.HardenedSand || Main.tile[x, y].type == TileID.GreenDungeonBrick || Main.tile[x, y].type == TileID.PinkDungeonBrick)
+                if (!Main.tile[x, y].HasTile || Main.tile[x, y].TileType == TileID.SnowBlock || Main.tile[x, y].TileType == TileID.IceBlock || Main.tile[x, y].TileType == TileID.BlueDungeonBrick ||
+                    Main.tile[x, y].TileType == TileID.Sand || Main.tile[x, y].TileType == TileID.HardenedSand || Main.tile[x, y].TileType == TileID.GreenDungeonBrick || Main.tile[x, y].TileType == TileID.PinkDungeonBrick)
                 {
                     notInvalid = false;
                 }
@@ -264,7 +260,7 @@ namespace OvermorrowMod.Common
                         xAxis++;
                         if (Main.tile[xAxis, yAxis] != null)
                         {
-                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].TileType))
                             {
                                 notNear = false;
                             }
@@ -280,7 +276,7 @@ namespace OvermorrowMod.Common
                         xAxis--;
                         if (Main.tile[xAxis, yAxis] != null)
                         {
-                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].TileType))
                             {
                                 notNear = false;
                             }
@@ -303,7 +299,7 @@ namespace OvermorrowMod.Common
                         xAxis++;
                         if (Main.tile[xAxis, yAxis] != null)
                         {
-                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].TileType))
                             {
                                 notNear = false;
                             }
@@ -319,7 +315,7 @@ namespace OvermorrowMod.Common
                         xAxis--;
                         if (Main.tile[xAxis, yAxis] != null)
                         {
-                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                            if (TileBlacklist.Contains(Main.tile[xAxis, yAxis].TileType))
                             {
                                 notNear = false;
                             }
@@ -372,13 +368,13 @@ namespace OvermorrowMod.Common
                     xAxis++;
                     if (Main.tile[xAxis, yAxis] != null)
                     {
-                        if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                        if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].TileType))
                         {
                             WorldGen.KillTile(xAxis, yAxis);
                             WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
 
                             Tile wall = Framing.GetTileSafely(xAxis, yAxis);
-                            wall.wall = (ushort)ModContent.WallType<GlowWall>();
+                            wall.WallType = (ushort)ModContent.WallType<GlowWall>();
                         }
                     }
                 }
@@ -392,13 +388,13 @@ namespace OvermorrowMod.Common
                     xAxis--;
                     if (Main.tile[xAxis, yAxis] != null)
                     {
-                        if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                        if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].TileType))
                         {
                             WorldGen.KillTile(xAxis, yAxis);
                             WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
 
                             Tile wall = Framing.GetTileSafely(xAxis, yAxis);
-                            wall.wall = (ushort)ModContent.WallType<GlowWall>();
+                            wall.WallType = (ushort)ModContent.WallType<GlowWall>();
                         }
                     }
                 }
@@ -419,13 +415,13 @@ namespace OvermorrowMod.Common
                     xAxis++;
                     if (Main.tile[xAxis, yAxis] != null)
                     {
-                        if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                        if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].TileType))
                         {
                             WorldGen.KillTile(xAxis, yAxis);
                             WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
 
                             Tile wall = Framing.GetTileSafely(xAxis, yAxis);
-                            wall.wall = (ushort)ModContent.WallType<GlowWall>();
+                            wall.WallType = (ushort)ModContent.WallType<GlowWall>();
                         }
                     }
                 }
@@ -439,13 +435,13 @@ namespace OvermorrowMod.Common
                     xAxis--;
                     if (Main.tile[xAxis, yAxis] != null)
                     {
-                        if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].type))
+                        if (!TileBlacklist.Contains(Main.tile[xAxis, yAxis].TileType))
                         {
                             WorldGen.KillTile(xAxis, yAxis);
                             WorldGen.PlaceTile(xAxis, yAxis, ModContent.TileType<GlowBlock>());
 
                             Tile wall = Framing.GetTileSafely(xAxis, yAxis);
-                            wall.wall = (ushort)ModContent.WallType<GlowWall>();
+                            wall.WallType = (ushort)ModContent.WallType<GlowWall>();
                         }
                     }
                 }
@@ -572,7 +568,7 @@ namespace OvermorrowMod.Common
                 // Strength controls size
                 // Steps control interations
                 Tile tile = Framing.GetTileSafely(i, j);
-                if (tile.active() && tile.type == ModContent.TileType<GlowBlock>())
+                if (tile.HasTile && tile.TileType == ModContent.TileType<GlowBlock>())
                 {
                     //WorldGen.OreRunner(i, j, WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(1, 3), (ushort)ModContent.TileType<WaterCaveOre>());
                     WorldGen.TileRunner(i, j, WorldGen.genRand.Next(3, 7), WorldGen.genRand.Next(8, 18), ModContent.TileType<CaveMud>(), false, WorldGen.genRand.Next(-1, 1), WorldGen.genRand.Next(-1, 1));
@@ -592,7 +588,7 @@ namespace OvermorrowMod.Common
                 // Strength controls size
                 // Steps control interations
                 Tile tile = Framing.GetTileSafely(i, j);
-                if (tile.active() && (tile.type == ModContent.TileType<GlowBlock>() || tile.type == ModContent.TileType<WaterCaveOre>()))
+                if (tile.HasTile && (tile.TileType == ModContent.TileType<GlowBlock>() || tile.TileType == ModContent.TileType<WaterCaveOre>()))
                 {
                     //WorldGen.OreRunner(i, j, WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(2, 4), (ushort)ModContent.TileType<WaterCaveOre>());
                     WorldGen.TileRunner(i, j, WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(1, 4), ModContent.TileType<WaterCaveOre>());
@@ -601,7 +597,7 @@ namespace OvermorrowMod.Common
             }
         }
 
-        private void ManaStoneOres(GenerationProgress progress)
+        private void ManaStoneOres(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Generating Modded Ores";
             for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-05); k++)
@@ -614,7 +610,7 @@ namespace OvermorrowMod.Common
                 // Strength controls size
                 // Steps control interations
                 Tile tile = Framing.GetTileSafely(x, y);
-                if (tile.active() && tile.type == TileID.Stone)
+                if (tile.HasTile && tile.TileType == TileID.Stone)
                 {
                     WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<ManaStone>());
                 }
@@ -652,9 +648,9 @@ namespace OvermorrowMod.Common
                 // Strength controls size
                 // Steps control interations
                 Tile tile = Framing.GetTileSafely(x, y);
-                if (tile.active() && ValidTiles.Contains(tile.type))
+                if (tile.HasTile && ValidTiles.Contains(tile.TileType))
                 {
-                    if (WorldGen.GoldTierOre == TileID.Gold)
+                    if (WorldGen.SavedOreTiers.Gold == TileID.Gold)
                     {
                         WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 8), 1, ModContent.TileType<FakeiteGold>());
                     }
@@ -667,7 +663,7 @@ namespace OvermorrowMod.Common
 
         }
 
-        private void GenerateAmbientObjects(GenerationProgress progress)
+        private void GenerateAmbientObjects(GenerationProgress progress, GameConfiguration config)
         {
             // Place ambient objects for the Flooded Caverns
             for (int i = 0; i < Main.maxTilesY * 45; i++)
@@ -676,7 +672,7 @@ namespace OvermorrowMod.Common
                 int x = WorldGen.genRand.Next(300, Main.maxTilesX - 300);
                 int y = WorldGen.genRand.Next((int)WorldGen.rockLayer, Main.maxTilesY - 200);
                 int type = rockFormations[Main.rand.Next(9)];
-                if (Main.tile[x, y].type == ModContent.TileType<GlowBlock>())
+                if (Main.tile[x, y].TileType == ModContent.TileType<GlowBlock>())
                 {
                     WorldGen.PlaceObject(x, y, (ushort)type);
                     NetMessage.SendObjectPlacment(-1, x, y, (ushort)type, 0, 0, -1, -1);

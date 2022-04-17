@@ -50,7 +50,7 @@ namespace OvermorrowMod.Common
         {
             Player player = Main.player[projectile.owner];
             var modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
-            if (modPlayer.ShatteredOrb && !spawnedBlood && projectile.magic)
+            if (modPlayer.ShatteredOrb && !spawnedBlood && projectile.DamageType == DamageClass.Magic)
             {
                 // This thing is absolutely insane without the explosion chance
                 if (Main.rand.NextBool(6))
@@ -60,19 +60,20 @@ namespace OvermorrowMod.Common
                     int randChoice = Main.rand.Next(2);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        var source = projectile.GetProjectileSource_FromThis();
                         if (randChoice == 0)
                         {
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, -6f, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 6, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 6f, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, -6, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, -6f, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 6, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 6f, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, -6, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
                         }
                         else
                         {
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0f, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 6, 0f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0f, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, -6, 0f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 0f, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 6, 0f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 0f, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, -6, 0f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
                         }
                     }
                     spawnedBlood = true;

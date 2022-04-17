@@ -71,13 +71,13 @@ namespace OvermorrowMod.Common
 
         public int ProjIndex
         {
-            get => (int)projectile.localAI[0];
-            set => projectile.localAI[0] = value;
+            get => (int)Projectile.localAI[0];
+            set => Projectile.localAI[0] = value;
         }
         protected OrbitingProjectileState ProjState
         {
-            get => (OrbitingProjectileState)projectile.localAI[1];
-            set => projectile.localAI[1] = (float)value;
+            get => (OrbitingProjectileState)Projectile.localAI[1];
+            set => Projectile.localAI[1] = (float)value;
         }
 
         public override void AI()
@@ -102,7 +102,7 @@ namespace OvermorrowMod.Common
             // This handles the spawning of the projectiles. 
             if (ProjState == OrbitingProjectileState.Initializing)
             {
-                ProjIndex = container.RegisterNewProjectile(ProjectileSlot, projectile);
+                ProjIndex = container.RegisterNewProjectile(ProjectileSlot, Projectile);
                 // Make sure to update the array whenever the ProjectileSlot of projectiles changes.
                 ProjState = OrbitingProjectileState.Spawning;
             }
@@ -111,9 +111,9 @@ namespace OvermorrowMod.Common
 
             // Despawn distance since server despawned projectiles don't call the Kill hook.
             // This is important since Kill is where we do the calculations to reorder the projectiles once one dies.
-            if (projectile.DistanceSQ(OrbitCenter) > 2000 * 2000)
+            if (Projectile.DistanceSQ(OrbitCenter) > 2000 * 2000)
             {
-                projectile.Kill();
+                Projectile.Kill();
                 return;
             }
 
@@ -121,7 +121,7 @@ namespace OvermorrowMod.Common
             if (ProjState == OrbitingProjectileState.Spawning || ProjState == OrbitingProjectileState.Moving)
             {
                 // We make all the movement of the projectiles relative to the player to make sure the orbiting around the player works properly.
-                projectile.velocity = RelativeVelocity;
+                Projectile.velocity = RelativeVelocity;
                 int numProjectilesOfType = container.OrbitingProjectileCount[ProjectileSlot];
                 // Here we assign the projectile its position on the circle the positions are assigned from front to back to make sure that the projectiles rotate in the correct direction.
                 // The positions are stored in the array that is stored on the modplayer instance. 
@@ -129,9 +129,9 @@ namespace OvermorrowMod.Common
                 Vector2 wantedPosition = container.OrbitingProjectilePositions[ProjectileSlot, numProjectilesOfType - ProjIndex - 1];
                 // Snapping distance of 20 meaning that once the projectile gets within 20 pixels of the ideal position it just snapps there and stays.
                 // !!!!Make sure this ProjectileSlot is never smaller than the rotational velocity of the cirlce (the fast one)!!!!            
-                if (projectile.DistanceSQ(wantedPosition) < 20 * 20)
+                if (Projectile.DistanceSQ(wantedPosition) < 20 * 20)
                 {
-                    projectile.Center = wantedPosition;
+                    Projectile.Center = wantedPosition;
                     // Once spawning is done aka we reached the correct OrbitingRadius. We can switch to using the radial movement.
                     ProjState = OrbitingProjectileState.Moving;
                     TimerStart = 0;
@@ -142,13 +142,13 @@ namespace OvermorrowMod.Common
                     // This just moves straight to the wanted position. This does work for getting to the positions after just spawning it does look somewhat wierd tho since it doesn't move along the OrbitingRadius of the circle.
                     if (ProjState == OrbitingProjectileState.Spawning || CurrentOrbitingRadius != OrbitingRadius)
                     {
-                        velocityChange = wantedPosition - projectile.Center;
+                        velocityChange = wantedPosition - Projectile.Center;
                         if (velocityChange != Vector2.Zero)
                         {
                             velocityChange.Normalize();
                         }
                         velocityChange *= ProjectileSpeed;
-                        projectile.velocity += velocityChange;
+                        Projectile.velocity += velocityChange;
                     }
 
                     // This is our main way of movement. We initialze the TimerStart here and calculate the current angle towards the player. These 2 variables allow us to get a starting position for the movement.
@@ -161,18 +161,18 @@ namespace OvermorrowMod.Common
                         //    factor /= Math.Abs(factor);
                         //    ProjectileVelocity = WantedPosition - OrbitCenter;
                         //    ProjectileVelocity *= ProjectileSpeedRadial / OrbitingRadius * factor;
-                        //    projectile.velocity += ProjectileVelocity;
+                        //    Projectile.velocity += ProjectileVelocity;
                         //    CurrentOrbitingRadius += ProjectileSpeedRadial * factor;
                         //}
                         if (TimerStart == 0)
                         {
                             //Get the initial conditions and with that also the current starting location for the movement.
-                            angle = Math.Atan2(projectile.Center.Y - entity.Center.Y, projectile.Center.X - entity.Center.X);
+                            angle = Math.Atan2(Projectile.Center.Y - entity.Center.Y, Projectile.Center.X - entity.Center.X);
                             TimerStart = container.RotationTimer;
                         }
                         //This period determines how fast the projectiles move along the radial path.
                         double period = 2 * Math.PI / PeriodFast;
-                        projectile.Center = 
+                        Projectile.Center = 
                             OrbitCenter 
                             + new Vector2(
                                 OrbitingRadius * (float)Math.Cos(period * (container.RotationTimer - TimerStart) + angle),

@@ -1,5 +1,6 @@
 using OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,33 +15,33 @@ namespace OvermorrowMod.Common
                 if (Main.rand.Next(6) == 0)
                 {
                     // Normal Trees
-                    if (type == TileID.Trees && Main.tile[i, j + 1].type == TileID.Grass)
+                    if (type == TileID.Trees && Main.tile[i, j + 1].TileType == TileID.Grass)
                     {
-                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<BrambleCannon>());
+                        Item.NewItem(new EntitySource_TileBreak(i * 16, (j - 5) * 16), i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<BrambleCannon>());
                     }
 
                     // Tundra
-                    if (type == TileID.Trees && (Main.tile[i, j + 1].type == TileID.SnowBlock))
+                    if (type == TileID.Trees && (Main.tile[i, j + 1].TileType == TileID.SnowBlock))
                     {
-                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<SpruceSprayer>());
+                        Item.NewItem(new EntitySource_TileBreak(i * 16, (j - 5) * 16), i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<SpruceSprayer>());
                     }
 
                     // Corruption
-                    if (type == TileID.Trees && (Main.tile[i, j + 1].type == TileID.CorruptGrass))
+                    if (type == TileID.Trees && (Main.tile[i, j + 1].TileType == TileID.CorruptGrass))
                     {
-                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<RotRocket>());
+                        Item.NewItem(new EntitySource_TileBreak(i * 16, (j - 5) * 16), i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<RotRocket>());
                     }
 
                     // Crimson
-                    if (type == TileID.Trees && (Main.tile[i, j + 1].type == TileID.FleshGrass))
+                    if (type == TileID.Trees && (Main.tile[i, j + 1].TileType == TileID.CrimsonGrass))
                     {
-                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<MeatMissile>());
+                        Item.NewItem(new EntitySource_TileBreak(i * 16, (j - 5) * 16), i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<MeatMissile>());
                     }
 
                     // Palm Trees
-                    if (type == TileID.PalmTree && Main.tile[i, j + 1].type == TileID.Sand)
+                    if (type == TileID.PalmTree && Main.tile[i, j + 1].TileType == TileID.Sand)
                     {
-                        Item.NewItem(i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<CoconutBuster>());
+                        Item.NewItem(new EntitySource_TileBreak(i * 16, (j - 5) * 16), i * 16, (j - 5) * 16, 32, 32, ModContent.ItemType<CoconutBuster>());
                     }
                 }
             }
