@@ -1,4 +1,5 @@
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,35 +18,35 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.PufferStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 20;
-            projectile.height = 20;
-            projectile.timeLeft = 75;
-            projectile.penetrate = 1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.tileCollide = true;
-            projectile.ignoreWater = true;
+            Projectile.width = 20;
+            Projectile.height = 20;
+            Projectile.timeLeft = 75;
+            Projectile.penetrate = 1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.tileCollide = true;
+            Projectile.ignoreWater = true;
         }
         public override void AI()
         {
-            if (!Main.player[projectile.owner].channel)
+            if (!Main.player[Projectile.owner].channel)
             {
                 release = true;
             }
             if (release)
             {
-                projectile.velocity.Y -= 0.5f;
+                Projectile.velocity.Y -= 0.5f;
             }
             if (!release)
             {
-                projectile.velocity.X *= 0.90f;
-                projectile.velocity.Y *= 0.90f;
+                Projectile.velocity.X *= 0.90f;
+                Projectile.velocity.Y *= 0.90f;
             }
         }
 
         public override void Kill(int timeLeft)
         {
-            Main.PlaySound(SoundID.Item, projectile.position, 54);
+            SoundEngine.PlaySound(SoundID.Item, Projectile.position, 54);
         }
     }
 }

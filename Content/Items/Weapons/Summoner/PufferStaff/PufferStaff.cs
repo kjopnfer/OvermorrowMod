@@ -1,4 +1,5 @@
-﻿using OvermorrowMod.Content.Buffs.Summon;
+﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Buffs.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,42 +15,42 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.PufferStaff
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Green;
-            item.width = 32;
-            item.height = 32;
-            item.damage = 8;
-            item.UseSound = SoundID.Item82;
-            item.summon = true;
-            item.noMelee = true;
-            item.channel = true;
-            item.sentry = true;
-            item.useTime = 40;
-            item.useAnimation = 40;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.autoReuse = false;
-            item.buffType = ModContent.BuffType<PufferBuff>();
-            item.knockBack = 0;
-            item.shoot = ModContent.ProjectileType<PufferFish>();
-            item.shootSpeed = 0f;
+            Item.rare = ItemRarityID.Green;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 8;
+            Item.UseSound = SoundID.Item82;
+            Item.DamageType = DamageClass.Summon;
+            Item.noMelee = true;
+            Item.channel = true;
+            Item.sentry = true;
+            Item.useTime = 40;
+            Item.useAnimation = 40;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.autoReuse = false;
+            Item.buffType = ModContent.BuffType<PufferBuff>();
+            Item.knockBack = 0;
+            Item.shoot = ModContent.ProjectileType<PufferFish>();
+            Item.shootSpeed = 0f;
         }
         public override bool CanUseItem(Player player)
         {
             // Ensures no more than one spear can be thrown out, use this when using autoReuse
-            return player.ownedProjectileCounts[item.shoot] < 1;
+            return player.ownedProjectileCounts[Item.shoot] < 1;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(ItemID.Coral, 8);
-            recipe1.AddTile(TileID.Anvils);
-            recipe1.SetResult(this);
-            recipe1.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.Coral, 8)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
-        public override void UseStyle(Player player)
+
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                player.AddBuff(item.buffType, 3600, true);
+                player.AddBuff(Item.buffType, 3600, true);
             }
         }
     }

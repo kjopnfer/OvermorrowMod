@@ -16,23 +16,23 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.SkeletonStaff
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Green;
-            item.width = 32;
-            item.height = 32;
-            item.damage = 15;
-            item.UseSound = SoundID.Item82;
-            item.summon = true;
-            item.noMelee = true;
-            item.sentry = true;
-            item.channel = true;
-            item.useTime = 40;
-            item.useAnimation = 40;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.autoReuse = false;
-            item.buffType = ModContent.BuffType<SkullBuff>();
-            item.knockBack = 0;
-            item.shoot = ModContent.ProjectileType<SkeletronSumm>();
-            item.shootSpeed = 0f;
+            Item.rare = ItemRarityID.Green;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 15;
+            Item.UseSound = SoundID.Item82;
+            Item.DamageType = DamageClass.Summon;
+            Item.noMelee = true;
+            Item.sentry = true;
+            Item.channel = true;
+            Item.useTime = 40;
+            Item.useAnimation = 40;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.autoReuse = false;
+            Item.buffType = ModContent.BuffType<SkullBuff>();
+            Item.knockBack = 0;
+            Item.shoot = ModContent.ProjectileType<SkeletronSumm>();
+            Item.shootSpeed = 0f;
         }
 
         public override bool AltFunctionUse(Player player)
@@ -44,7 +44,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.SkeletonStaff
         {
             if (player.altFunctionUse == 2)
             {
-                return player.ownedProjectileCounts[item.shoot] < 1;
+                return player.ownedProjectileCounts[Item.shoot] < 1;
             }
             else
             {
@@ -52,35 +52,27 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.SkeletonStaff
             }
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool CanShoot(Player player)
         {
-            if (player.altFunctionUse == 2)
-            {
-                return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
-            }
-            else
-            {
-                return false;
-            }
+            return player.altFunctionUse == 2 && base.CanShoot(player);
         }
 
 
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                player.AddBuff(item.buffType, 3600, true);
+                player.AddBuff(Item.buffType, 3600, true);
             }
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.Bone, 60);
-            recipe.AddIngredient(ModContent.ItemType<SoulFire>());
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.Bone, 60)
+                .AddIngredient<SoulFire>()
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

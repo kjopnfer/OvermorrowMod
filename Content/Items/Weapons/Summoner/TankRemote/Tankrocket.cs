@@ -14,24 +14,24 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
 
         public override void SetDefaults()
         {
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.tileCollide = true;
-            projectile.width = 16;
-            projectile.height = 12;
-            projectile.penetrate = 1;
-            projectile.aiStyle = 34;
-            projectile.timeLeft = 120; //The amount of time the projectile is alive for
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.tileCollide = true;
+            Projectile.width = 16;
+            Projectile.height = 12;
+            Projectile.penetrate = 1;
+            Projectile.aiStyle = 34;
+            Projectile.timeLeft = 120; //The amount of time the Projectile is alive for
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            target.immune[projectile.owner] = 1;
+            target.immune[Projectile.owner] = 1;
         }
 
         public override void Kill(int timeLeft)
         {
-            int explode = Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, ProjectileID.RocketSnowmanI, projectile.damage, 3f, projectile.owner, 0f);
+            int explode = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ProjectileID.RocketSnowmanI, Projectile.damage, 3f, Projectile.owner, 0f);
             Main.projectile[explode].timeLeft = 0;
             Main.projectile[explode].friendly = true;
             Main.projectile[explode].hostile = false;

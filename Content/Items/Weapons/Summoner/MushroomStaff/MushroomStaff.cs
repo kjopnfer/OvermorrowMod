@@ -14,35 +14,34 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MushroomStaff
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Blue;
-            item.width = 32;
-            item.height = 32;
-            item.damage = 15;
-            item.summon = true;
-            item.noMelee = true;
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.UseSound = SoundID.Item82;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.sentry = true;
-            item.autoReuse = true;
-            item.knockBack = 0.1f;
-            item.shoot = ModContent.ProjectileType<MushroomSumm>();
-            item.shootSpeed = 0f;
+            Item.rare = ItemRarityID.Blue;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 15;
+            Item.DamageType = DamageClass.Summon;
+            Item.noMelee = true;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.UseSound = SoundID.Item82;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.sentry = true;
+            Item.autoReuse = true;
+            Item.knockBack = 0.1f;
+            Item.shoot = ModContent.ProjectileType<MushroomSumm>();
+            Item.shootSpeed = 0f;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.GlowingMushroom, 35);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.GlowingMushroom, 35)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             // Here you can change where the minion is spawned. Most vanilla minions spawn at the cursor position.
             position = Main.MouseWorld;
-            return true;
         }
     }
 }

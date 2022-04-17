@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Summon;
 using Terraria;
 using Terraria.ID;
@@ -15,26 +16,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
 
         public override void SetDefaults()
         {
-            item.width = 56;
-            item.height = 56;
-            item.damage = 16;
-            item.mana = 20;
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.rare = ItemRarityID.Green;
-            item.noMelee = true;
-            item.summon = true;
-            item.buffType = ModContent.BuffType<MeatBallBuff>();
-            item.shoot = ModContent.ProjectileType<FriendlyMeatball>();
-            item.UseSound = SoundID.Item82;
+            Item.width = 56;
+            Item.height = 56;
+            Item.damage = 16;
+            Item.mana = 20;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.rare = ItemRarityID.Green;
+            Item.noMelee = true;
+            Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<MeatBallBuff>();
+            Item.shoot = ModContent.ProjectileType<FriendlyMeatball>();
+            Item.UseSound = SoundID.Item82;
         }
 
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                player.AddBuff(item.buffType, 3600, true);
+                player.AddBuff(Item.buffType, 3600, true);
             }
         }
     }

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Buffs.Summon;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
@@ -10,7 +11,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
     {
         int Random2 = Main.rand.Next(-15, 12);
         int Random = Main.rand.Next(1, 3);
-        public override bool CanDamage() => false;
+        public override bool? CanDamage() => false;
 
         private int timer = 0;
         private int PosCheck = 0;
@@ -26,26 +27,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Elemental");
-            Main.projFrames[projectile.type] = 4;
+            Main.projFrames[Projectile.type] = 4;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 30;
-            projectile.height = 38;
-            projectile.minionSlots = 1f;
-            projectile.minion = true;
-            projectile.friendly = true;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.netImportant = true;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 200000;
+            Projectile.width = 30;
+            Projectile.height = 38;
+            Projectile.minionSlots = 1f;
+            Projectile.minion = true;
+            Projectile.friendly = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.netImportant = true;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 200000;
         }
 
         public override void AI()
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             #region Active check
             if (player.dead || !player.active)
@@ -54,12 +55,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
             }
             if (player.HasBuff(ModContent.BuffType<GraniteEleBuff>()))
             {
-                projectile.timeLeft = 2;
+                Projectile.timeLeft = 2;
             }
             #endregion
 
 
-            NumProj = Main.player[projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<GraniteSummon>()];
+            NumProj = Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<GraniteSummon>()];
             PosCheck++;
             if (PosCheck == 2)
             {
@@ -71,10 +72,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
                 Pos = PosPlay * 30;
             }
             float distanceFromTarget = 500f;
-            Vector2 targetCenter = projectile.position;
+            Vector2 targetCenter = Projectile.position;
             bool foundTarget = false;
 
-            projectile.tileCollide = false;
+            Projectile.tileCollide = false;
             if (!foundTarget)
             {
                 // This code is required either way, used for finding a target
@@ -83,8 +84,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
                     NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy())
                     {
-                        float between = Vector2.Distance(npc.Center, Main.player[projectile.owner].Center);
-                        bool closest = Vector2.Distance(projectile.Center, targetCenter) > between;
+                        float between = Vector2.Distance(npc.Center, Main.player[Projectile.owner].Center);
+                        bool closest = Vector2.Distance(Projectile.Center, targetCenter) > between;
                         bool inRange = between < distanceFromTarget;
 
                         if (((closest && inRange) || !foundTarget))
@@ -92,7 +93,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
                             NPCtargetX = npc.Center.X;
                             NPCtargetY = npc.Center.Y;
                             Vector2 Rot = npc.Center;
-                            //projectile.rotation = (Rot - projectile.Center).ToRotation();
+                            //Projectile.rotation = (Rot - Projectile.Center).ToRotation();
                             distanceFromTarget = between;
                             targetCenter = npc.Center;
                             foundTarget = true;
@@ -102,7 +103,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
             }
 
 
-            if (foundTarget && Main.player[projectile.owner].channel)
+            if (foundTarget && Main.player[Projectile.owner].channel)
             {
                 movement2++;
 
@@ -113,131 +114,131 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
                     movement2 = 0;
                 }
 
-                if (NPCtargetX > projectile.Center.X)
+                if (NPCtargetX > Projectile.Center.X)
                 {
-                    projectile.spriteDirection = -1;
+                    Projectile.spriteDirection = -1;
                 }
                 else
                 {
-                    projectile.spriteDirection = 1;
+                    Projectile.spriteDirection = 1;
                 }
 
-                if (NPCtargetX + mrand > projectile.Center.X)
+                if (NPCtargetX + mrand > Projectile.Center.X)
                 {
-                    projectile.velocity.X += 0.9f;
+                    Projectile.velocity.X += 0.9f;
                 }
 
-                if (NPCtargetX + mrand < projectile.Center.X)
+                if (NPCtargetX + mrand < Projectile.Center.X)
                 {
-                    projectile.velocity.X -= 0.9f;
+                    Projectile.velocity.X -= 0.9f;
                 }
 
-                if (NPCtargetY + mrand2 > projectile.Center.Y)
+                if (NPCtargetY + mrand2 > Projectile.Center.Y)
                 {
-                    projectile.velocity.Y += 2f;
+                    Projectile.velocity.Y += 2f;
                 }
-                if (NPCtargetY + mrand2 < projectile.Center.Y)
+                if (NPCtargetY + mrand2 < Projectile.Center.Y)
                 {
-                    projectile.velocity.Y -= 2f;
-                }
-
-
-                if (projectile.velocity.Y < -9f)
-                {
-                    projectile.velocity.Y = -9f;
-                }
-
-                if (projectile.velocity.Y > 9f)
-                {
-                    projectile.velocity.Y = 9f;
+                    Projectile.velocity.Y -= 2f;
                 }
 
 
-                if (projectile.velocity.X < -9f)
+                if (Projectile.velocity.Y < -9f)
                 {
-                    projectile.velocity.X = -9f;
+                    Projectile.velocity.Y = -9f;
                 }
 
-                if (projectile.velocity.X > 9f)
+                if (Projectile.velocity.Y > 9f)
                 {
-                    projectile.velocity.X = 9f;
+                    Projectile.velocity.Y = 9f;
+                }
+
+
+                if (Projectile.velocity.X < -9f)
+                {
+                    Projectile.velocity.X = -9f;
+                }
+
+                if (Projectile.velocity.X > 9f)
+                {
+                    Projectile.velocity.X = 9f;
                 }
 
             }
             else
             {
-                projectile.spriteDirection = -Main.player[projectile.owner].direction;
+                Projectile.spriteDirection = -Main.player[Projectile.owner].direction;
 
 
-                if (Main.player[projectile.owner].direction == -1)
+                if (Main.player[Projectile.owner].direction == -1)
                 {
-                    projectile.position.X = Main.player[projectile.owner].Center.X + Pos;
-                    projectile.position.Y = Main.player[projectile.owner].Center.Y - 32;
+                    Projectile.position.X = Main.player[Projectile.owner].Center.X + Pos;
+                    Projectile.position.Y = Main.player[Projectile.owner].Center.Y - 32;
                 }
 
-                if (Main.player[projectile.owner].direction == 1)
+                if (Main.player[Projectile.owner].direction == 1)
                 {
-                    projectile.position.X = Main.player[projectile.owner].Center.X - Pos - 32;
-                    projectile.position.Y = Main.player[projectile.owner].Center.Y - 32;
+                    Projectile.position.X = Main.player[Projectile.owner].Center.X - Pos - 32;
+                    Projectile.position.Y = Main.player[Projectile.owner].Center.Y - 32;
                 }
 
-                projectile.velocity.Y = 0f;
-                projectile.velocity.X = 0f;
+                Projectile.velocity.Y = 0f;
+                Projectile.velocity.X = 0f;
 
             }
 
-            if (Main.player[projectile.owner].channel && foundTarget)
+            if (Main.player[Projectile.owner].channel && foundTarget)
             {
                 timer++;
                 if (timer == 45 + Random2)
                 {
                     Random2 = Main.rand.Next(-15, 12);
                     Random = Main.rand.Next(-2, 3);
-                    Vector2 position = projectile.Center;
+                    Vector2 position = Projectile.Center;
                     Vector2 targetPosition = Main.MouseWorld;
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(1.5f));
                     float speed = Random + 20f;
-                    Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<GraniteLaser>(), projectile.damage, 1f, projectile.owner, 0f);
+                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<GraniteLaser>(), Projectile.damage, 1f, Projectile.owner, 0f);
                     timer = 0;
                 }
             }
 
             // Loop through the 4 animation frames, spending 5 ticks on each.
-            if (++projectile.frameCounter >= 4)
+            if (++Projectile.frameCounter >= 4)
             {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                Projectile.frameCounter = 0;
+                if (++Projectile.frame >= Main.projFrames[Projectile.type])
                 {
-                    projectile.frame = 0;
+                    Projectile.frame = 0;
                 }
             }
         }
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override void PostDraw(Color lightColor)
         {
             //Texture2D texture = mod.GetTexture("Projectiles/Summon/StormWhelp_Glowmask");
 
-            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-            int y2 = num154 * projectile.frame;
+            int num154 = TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y2 = num154 * Projectile.frame;
 
-            Texture2D texture = mod.GetTexture("Projectiles/Summon/GraniteSummon_Glow");
-            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
-            spriteBatch.Draw
+            Texture2D texture = ModContent.Request<Texture2D>("Projectiles/Summon/GraniteSummon_Glow").Value;
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, TextureAssets.Projectile[Projectile.type].Value.Width, num154);
+            Main.EntitySpriteDraw
             (
                 texture,
                 new Vector2
                 (
-                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
-                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f
+                    Projectile.position.X - Main.screenPosition.X + Projectile.width * 0.5f,
+                    Projectile.position.Y - Main.screenPosition.Y + Projectile.height - drawRectangle.Height * 0.5f
                 ),
                 drawRectangle,
                 Color.White,
-                projectile.rotation,
+                Projectile.rotation,
                 new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2),
-                projectile.scale,
-                projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
-                0f
+                Projectile.scale,
+                Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                0
             );
         }
     }
