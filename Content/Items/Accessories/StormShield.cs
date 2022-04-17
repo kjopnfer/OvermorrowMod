@@ -19,16 +19,16 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            item.melee = true;
-            item.damage = 36;
-            item.knockBack = 9f;
-            item.shieldSlot = 5;
-            item.width = 38;
-            item.height = 48;
-            item.value = Item.buyPrice(gold: 1);
-            item.rare = ItemRarityID.Orange;
-            item.accessory = true;
-            item.defense = 3;
+            Item.DamageType = DamageClass.Melee;
+            Item.damage = 36;
+            Item.knockBack = 9f;
+            Item.shieldSlot = 5;
+            Item.width = 38;
+            Item.height = 48;
+            Item.value = Item.buyPrice(gold: 1);
+            Item.rare = ItemRarityID.Orange;
+            Item.accessory = true;
+            Item.defense = 3;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -82,12 +82,11 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<StormScale>(), 1);
-            recipe.AddIngredient(ItemID.EoCShield, 1);
-            recipe.AddTile(TileID.TinkerersWorkbench);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient<StormScale>()
+                .AddIngredient(ItemID.EoCShield)
+                .AddTile(TileID.TinkerersWorkbench)
+                .Register();
         }
     }
 }

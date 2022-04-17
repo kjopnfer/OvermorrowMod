@@ -14,19 +14,16 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            item.accessory = true;
-            item.width = 26;
-            item.height = 24;
-            item.rare = ItemRarityID.Blue;
-            item.value = Item.sellPrice(0, 1, 0, 0);
+            Item.accessory = true;
+            Item.width = 26;
+            Item.height = 24;
+            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(0, 1, 0, 0);
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.magicCrit += 7;
-            player.meleeCrit += 7;
-            player.rangedCrit += 7;
-            player.thrownCrit += 7;
+            player.GetCritChance(DamageClass.Generic) += 7;
         }
     }
 }

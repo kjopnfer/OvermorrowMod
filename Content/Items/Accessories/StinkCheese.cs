@@ -14,11 +14,11 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            item.accessory = true;
-            item.width = 26;
-            item.height = 24;
-            item.rare = ItemRarityID.Blue;
-            item.value = Item.sellPrice(0, 0, 15, 0);
+            Item.accessory = true;
+            Item.width = 26;
+            Item.height = 24;
+            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(0, 0, 15, 0);
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {

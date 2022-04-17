@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
 
         public override void SetDefaults()
         {
-            item.width = 28;
+            Item.width = 28;
             item.height = 28;
             item.value = Item.buyPrice(0, 1, 50, 0);
             item.rare = ItemRarityID.Orange;

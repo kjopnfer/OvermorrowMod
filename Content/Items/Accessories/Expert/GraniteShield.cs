@@ -15,11 +15,11 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
         }
         public override void SetDefaults()
         {
-            item.width = 30;
-            item.height = 34;
-            item.value = 10000;
-            item.rare = ItemRarityID.Expert;
-            item.accessory = true;
+            Item.width = 30;
+            Item.height = 34;
+            Item.value = 10000;
+            Item.rare = ItemRarityID.Expert;
+            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -29,7 +29,7 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
             {
                 return;
             }
-            Projectile.NewProjectile(player.position.X, player.position.Y, 0f, 0f, ModContent.ProjectileType<Projectiles.Accessory.GraniteShield>(), 20, 1.25f, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(null, player.position.X, player.position.Y, 0f, 0f, ModContent.ProjectileType<Projectiles.Accessory.GraniteShield>(), 20, 1.25f, player.whoAmI, 0f, 0f);
         }
     }
 }

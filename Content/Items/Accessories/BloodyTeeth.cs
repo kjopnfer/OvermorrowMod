@@ -16,17 +16,17 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            item.width = 30;
-            item.height = 22;
-            item.value = Item.buyPrice(0, 1, 50, 0);
-            item.rare = ItemRarityID.Orange;
-            item.accessory = true;
+            Item.width = 30;
+            Item.height = 22;
+            Item.value = Item.buyPrice(0, 1, 50, 0);
+            Item.rare = ItemRarityID.Orange;
+            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<OvermorrowModPlayer>().BloodyTeeth = true;
-            player.meleeDamage += 0.05f;
+            player.GetDamage(DamageClass.Melee) *= 1.05f;
         }
     }
 }
