@@ -3,6 +3,7 @@ using Terraria.ID;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace OvermorrowMod.Common.Base
 {
@@ -21,14 +22,23 @@ namespace OvermorrowMod.Common.Base
                 colorToLiquid[new Color(255, 255, 0)] = 2;
                 colorToLiquid[new Color(150, 150, 150)] = -2;
             }
+
+
             Color[] tileData = new Color[tileTex.Width * tileTex.Height];
-            tileTex.GetData(0, tileTex.Bounds, tileData, 0, tileTex.Width * tileTex.Height);
             Color[] wallData = (wallTex != null ? new Color[wallTex.Width * wallTex.Height] : null);
-            if (wallData != null) wallTex.GetData(0, wallTex.Bounds, wallData, 0, wallTex.Width * wallTex.Height);
             Color[] liquidData = (liquidTex != null ? new Color[liquidTex.Width * liquidTex.Height] : null);
-            if (liquidData != null) liquidTex.GetData(0, liquidTex.Bounds, liquidData, 0, liquidTex.Width * liquidTex.Height);
             Color[] slopeData = (slopeTex != null ? new Color[slopeTex.Width * slopeTex.Height] : null);
-            if (slopeData != null) slopeTex.GetData(0, slopeTex.Bounds, slopeData, 0, slopeTex.Width * slopeTex.Height);
+            var evt = new ManualResetEvent(false);
+            Main.QueueMainThreadAction(() =>
+            {
+                tileTex.GetData(0, tileTex.Bounds, tileData, 0, tileTex.Width * tileTex.Height);
+                if (wallData != null) wallTex.GetData(0, wallTex.Bounds, wallData, 0, wallTex.Width * wallTex.Height);
+                if (liquidData != null) liquidTex.GetData(0, liquidTex.Bounds, liquidData, 0, liquidTex.Width * liquidTex.Height);
+                if (slopeData != null) slopeTex.GetData(0, slopeTex.Bounds, slopeData, 0, slopeTex.Width * slopeTex.Height);
+                evt.Set();
+            });
+
+            evt.WaitOne();
 
             int x = 0, y = 0;
             TexGen gen = new TexGen(tileTex.Width, tileTex.Height);
@@ -51,8 +61,15 @@ namespace OvermorrowMod.Common.Base
         public static TexGen GetPlatformTexGenerator(Texture2D platformTex, Dictionary<Color, int> colorToPlatform) // platforms wont generate using above for some reason
         {
             Color[] platformData = new Color[platformTex.Width * platformTex.Height];
-            platformTex.GetData(0, platformTex.Bounds, platformData, 0, platformTex.Width * platformTex.Height);
+            var evt = new ManualResetEvent(false);
 
+            Main.QueueMainThreadAction(() =>
+            {
+                platformTex.GetData(0, platformTex.Bounds, platformData, 0, platformTex.Width * platformTex.Height);
+                evt.Set();
+            });
+
+            evt.WaitOne();
 
             int x = 0, y = 0;
             TexGen gen = new TexGen(platformTex.Width, platformTex.Height);
