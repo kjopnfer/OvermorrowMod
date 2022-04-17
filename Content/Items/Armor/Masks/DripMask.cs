@@ -13,10 +13,10 @@ namespace OvermorrowMod.Content.Items.Armor.Masks
 
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 28;
-            item.rare = ItemRarityID.Blue;
-            item.vanity = true;
+            Item.width = 24;
+            Item.height = 28;
+            Item.rare = ItemRarityID.Blue;
+            Item.vanity = true;
         }
     }
 }

@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<OvermorrowModPlayer>().ShatteredOrb = true;
-            player.GetDamage(DamageClass.Magic) *= 0.05f;
+            player.GetDamage(DamageClass.Magic) += 0.05f;
         }
     }
 }

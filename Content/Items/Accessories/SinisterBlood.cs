@@ -25,7 +25,7 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetDamage(DamageClass.Summon) *= 0.05f;
+            player.GetDamage(DamageClass.Summon) += 0.05f;
             player.AddBuff(ModContent.BuffType<DripplerBuff>(), 2);
             if ((int)player.ownedProjectileCounts[ModContent.ProjectileType<DripplerFriendly>()] >= 1)
             {

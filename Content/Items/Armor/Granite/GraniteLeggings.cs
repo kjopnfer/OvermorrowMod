@@ -15,11 +15,11 @@ namespace OvermorrowMod.Content.Items.Armor.Granite
 
         public override void SetDefaults()
         {
-            item.width = 22;
-            item.height = 18;
-            item.value = Item.sellPrice(gold: 1);
-            item.rare = ItemRarityID.Blue;
-            item.defense = 4;
+            Item.width = 22;
+            Item.height = 18;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.rare = ItemRarityID.Blue;
+            Item.defense = 4;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

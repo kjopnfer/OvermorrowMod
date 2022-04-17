@@ -12,36 +12,36 @@ namespace OvermorrowMod.Content.Items.Armor.Marble
 
         public override void SetDefaults()
         {
-            projectile.width = 44;
-            projectile.height = 18;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.ranged = true;
-            projectile.light = 1f;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 128;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.extraUpdates = 1;
+            Projectile.width = 44;
+            Projectile.height = 18;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.light = 1f;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 128;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 1;
 
         }
         public override void AI()
         {
             timer++;
-            projectile.alpha = projectile.alpha + 2;
+            Projectile.alpha = Projectile.alpha + 2;
             if (timer == 1)
             {
-                projectile.alpha = 255;
-                projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                Projectile.alpha = 255;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
             else
             {
-                projectile.velocity.Y = 0;
-                projectile.velocity.X = 0;
+                Projectile.velocity.Y = 0;
+                Projectile.velocity.X = 0;
             }
             if (timer == 2)
             {
-                projectile.alpha = 0;
+                Projectile.alpha = 0;
             }
         }
     }

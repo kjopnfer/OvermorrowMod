@@ -16,11 +16,11 @@ namespace OvermorrowMod.Content.Items.Armor.Granite
 
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 22;
-            item.value = Item.sellPrice(gold: 1);
-            item.rare = ItemRarityID.Blue;
-            item.defense = 4;
+            Item.width = 24;
+            Item.height = 22;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.rare = ItemRarityID.Blue;
+            Item.defense = 4;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -30,8 +30,8 @@ namespace OvermorrowMod.Content.Items.Armor.Granite
 
         public override void UpdateEquip(Player player)
         {
-            player.meleeDamage += 0.05f;
-            player.minionDamage += 0.05f;
+            player.GetDamage(DamageClass.Melee) += 0.05f;
+            player.GetDamage(DamageClass.Summon) += 0.05f;
         }
 
         public override void UpdateArmorSet(Player player)

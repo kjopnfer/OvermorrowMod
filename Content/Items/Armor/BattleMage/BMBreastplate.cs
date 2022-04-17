@@ -16,36 +16,34 @@ namespace OvermorrowMod.Content.Items.Armor.BattleMage
 
         public override void SetDefaults()
         {
-            item.width = 30;
-            item.height = 22;
-            item.value = Item.sellPrice(gold: 1);
-            item.rare = ItemRarityID.Blue;
-            item.defense = 8;
+            Item.width = 30;
+            Item.height = 22;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.rare = ItemRarityID.Blue;
+            Item.defense = 8;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.meleeCrit += 5;
-            player.magicCrit += 10;
+            player.GetCritChance(DamageClass.Melee) += 5;
+            player.GetCritChance(DamageClass.Magic) += 10;
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.GoldChainmail, 1);
-            recipe.AddIngredient(ItemID.ManaCrystal, 3);
-            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 8);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.GoldChainmail, 1)
+                .AddIngredient(ItemID.ManaCrystal, 3)
+                .AddIngredient<ManaBar>(8)
+                .AddTile(TileID.Anvils)
+                .Register();
 
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.PlatinumChainmail, 1);
-            recipe.AddIngredient(ItemID.ManaCrystal, 3);
-            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 8);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.PlatinumChainmail, 1)
+                .AddIngredient(ItemID.ManaCrystal, 3)
+                .AddIngredient<ManaBar>(8)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

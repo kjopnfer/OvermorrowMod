@@ -17,11 +17,11 @@ namespace OvermorrowMod.Content.Items.Armor.BattleMage
 
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 22;
-            item.value = Item.sellPrice(gold: 1);
-            item.rare = ItemRarityID.Blue;
-            item.defense = 6;
+            Item.width = 24;
+            Item.height = 22;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.rare = ItemRarityID.Blue;
+            Item.defense = 6;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -31,8 +31,8 @@ namespace OvermorrowMod.Content.Items.Armor.BattleMage
 
         public override void UpdateEquip(Player player)
         {
-            player.magicDamage += 0.1f;
-            player.meleeDamage += 0.05f;
+            player.GetDamage(DamageClass.Magic) += 0.1f;
+            player.GetDamage(DamageClass.Melee) += 0.05f;
         }
 
         public override void UpdateArmorSet(Player player)
@@ -46,21 +46,19 @@ namespace OvermorrowMod.Content.Items.Armor.BattleMage
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.GoldHelmet, 1);
-            recipe.AddIngredient(ItemID.ManaCrystal, 2);
-            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 6);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.GoldHelmet, 1)
+                .AddIngredient(ItemID.ManaCrystal, 2)
+                .AddIngredient<ManaBar>(6)
+                .AddTile(TileID.Anvils)
+                .Register();
 
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.PlatinumHelmet, 1);
-            recipe.AddIngredient(ItemID.ManaCrystal, 2);
-            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 6);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.PlatinumHelmet, 1)
+                .AddIngredient(ItemID.ManaCrystal, 2)
+                .AddIngredient<ManaBar>(6)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

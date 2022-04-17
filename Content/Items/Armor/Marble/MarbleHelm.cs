@@ -17,17 +17,17 @@ namespace OvermorrowMod.Content.Items.Armor.Marble
 
         public override void SetDefaults()
         {
-            item.width = 22;
-            item.height = 20;
-            item.value = Item.sellPrice(0, 2, 0, 0);
-            item.rare = ItemRarityID.Blue;
-            item.defense = 3;
+            Item.width = 22;
+            Item.height = 20;
+            Item.value = Item.sellPrice(0, 2, 0, 0);
+            Item.rare = ItemRarityID.Blue;
+            Item.defense = 3;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.magicDamage += 0.05f;
-            player.rangedDamage += 0.03f;
+            player.GetDamage(DamageClass.Magic) += 0.05f;
+            player.GetDamage(DamageClass.Ranged) += 0.03f;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -38,8 +38,8 @@ namespace OvermorrowMod.Content.Items.Armor.Marble
         {
             player.setBonus = "2% increased ranged damage \n3% increased magic damage" +
                 "\nMagic projectiles have a chance to grant 'Apollo's Favor'\nWhile active, all held Ranged weapons provide a speed boost and leaves a wind trail";
-            player.rangedDamage += 0.02f;
-            player.magicDamage += 0.03f;
+            player.GetDamage(DamageClass.Ranged) += 0.02f;
+            player.GetDamage(DamageClass.Magic) += 0.03f;
             player.GetModPlayer<OvermorrowModPlayer>().MarbleTrail = true;
         }
     }
