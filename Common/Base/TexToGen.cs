@@ -103,16 +103,19 @@ namespace OvermorrowMod.Common.Base
                         if (removeSlopes) info.slope = 0;
                         if (info.tileID == -1 && info.wallID == -1 && info.liquidType == -1 && info.wire == -1) continue;
                         if (info.tileID != -1 || info.wallID > -1 || info.wire > -1) BaseWorldGen.GenerateTile(x2, y2, info.tileID, info.wallID, (info.tileStyle != 0 ? info.tileStyle : info.tileID == TileID.Torches ? torchStyle : info.tileID == TileID.Platforms ? platformStyle : 0), info.tileID > -1, info.liquidAmt == 0, info.slope == 99 ? info.slope : info.slope, false, sync);
-                        if (info.slope == 99) Main.tile[x2, y2].halfBrick(true);
+                        if (info.slope == 99)
+                        {
+                            var tile = Main.tile[x2, y2];
+                            tile.IsHalfBlock = true;
+                        }
                         if (info.liquidType > -1)
                         {
                             BaseWorldGen.GenerateLiquid(x2, y2, info.liquidType, false, info.liquidAmt, sync);
                         }
                         else if (info.liquidType == -2)
                         {
-                            Main.tile[x1, y1].liquid = 0;
-                            Main.tile[x1, y1].lava(false);
-                            Main.tile[x1, y1].honey(false);
+                            var tile = Main.tile[x1, y1];
+                            tile.LiquidType = LiquidID.Water;
                         }
                     }
                 }
@@ -129,16 +132,19 @@ namespace OvermorrowMod.Common.Base
                         if (removeSlopes) info.slope = 0;
                         if (info.tileID == -1 && info.wallID == -1 && info.liquidType == -1 && info.wire == -1) continue;
                         if (info.tileID != -1 || info.wallID > -1 || info.wire > -1) BaseWorldGen.GenerateTile(x2, y2, info.tileID, info.wallID, (info.tileStyle != 0 ? info.tileStyle : info.tileID == TileID.Torches ? torchStyle : info.tileID == TileID.Platforms ? platformStyle : 0), info.tileID > -1, info.liquidAmt == 0, info.slope == 99 ? info.slope : info.slope, false, sync);
-                        if (info.slope == 99) Main.tile[x2, y2].halfBrick(true);
+                        if (info.slope == 99)
+                        {
+                            var tile = Main.tile[x2, y2];
+                            tile.IsHalfBlock = true;
+                        }
                         if (info.liquidType > -1)
                         {
                             BaseWorldGen.GenerateLiquid(x2, y2, info.liquidType, false, info.liquidAmt, sync);
                         }
                         else if (info.liquidType == -2)
                         {
-                            Main.tile[x1, y1].liquid = 0;
-                            Main.tile[x1, y1].lava(false);
-                            Main.tile[x1, y1].honey(false);
+                            var tile = Main.tile[x1, y1];
+                            tile.LiquidType = LiquidID.Water;
                         }
                     }
                 }
