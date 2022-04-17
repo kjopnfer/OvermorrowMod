@@ -74,13 +74,13 @@ namespace OvermorrowMod.Common
                 // Main.logo2Texture = Instance.GetTexture("logo");
 
                 // Effects
-                BeamShader = ModContent.Request<Effect>("Effects/Beam").Value;
-                Ring = ModContent.Request<Effect>("Effects/Ring").Value;
-                Shockwave = ModContent.Request<Effect>("Effects/Shockwave1").Value;
-                Shockwave2 = ModContent.Request<Effect>("Effects/ShockwaveEffect").Value;
-                TextShader = ModContent.Request<Effect>("Effects/TextShader").Value;
-                TrailShader = ModContent.Request<Effect>("Effects/Trail").Value;
-                Whiteout = ModContent.Request<Effect>("Effects/Whiteout").Value;
+                BeamShader = ModContent.Request<Effect>("OvermorrowMod/Effects/Beam").Value;
+                Ring = ModContent.Request<Effect>("OvermorrowMod/Effects/Ring").Value;
+                Shockwave = ModContent.Request<Effect>("OvermorrowMod/Effects/Shockwave1").Value;
+                Shockwave2 = ModContent.Request<Effect>("OvermorrowMod/Effects/ShockwaveEffect").Value;
+                TextShader = ModContent.Request<Effect>("OvermorrowMod/Effects/TextShader").Value;
+                TrailShader = ModContent.Request<Effect>("OvermorrowMod/Effects/Trail").Value;
+                Whiteout = ModContent.Request<Effect>("OvermorrowMod/Effects/Whiteout").Value;
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
