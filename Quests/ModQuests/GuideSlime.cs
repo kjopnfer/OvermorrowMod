@@ -15,7 +15,7 @@ namespace OvermorrowMod.Quests.ModQuests
         {
             Requirements = new[]
             {
-                new KillRequirement(NPCID.GreenSlime, 3)
+                new KillRequirement(NPCID.BlueSlime, 3)
             };
             Rewards = new[]
             {

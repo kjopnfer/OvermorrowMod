@@ -142,6 +142,7 @@ namespace OvermorrowMod.Quests
             base.PostDraw(npc, spriteBatch, drawColor);
         }
 
+
         public override void NPCLoot(NPC npc)
         {
             // Like three for loops just to check if the NPC killed can count towards the player's quest, not sure if more optimal way?
@@ -152,27 +153,25 @@ namespace OvermorrowMod.Quests
                 var modPlayer = player.GetModPlayer<QuestPlayer>();
                 if (npc.playerInteraction[player.whoAmI])
                 {
-                    foreach (BaseQuest quest in modPlayer.CurrentQuests)
+                    foreach (var quest in modPlayer.CurrentQuests)
                     {
-                        if (quest.Type == QuestType.Kill)
-                        {
-                            foreach (KillRequirement requirement in quest.Requirements)
-                            {
-                                if (requirement.type == npc.type)
-                                {
-                                    var KilledList = modPlayer.KilledNPCs;
+                        if (quest.Type != QuestType.Kill) continue;
 
-                                    // Check if the player has the entry of the killed NPC stored to increment their kill counter
-                                    if (KilledList.ContainsKey(npc.type))
-                                    {
-                                        KilledList[npc.type]++;
-                                    }
-                                    else
-                                    {
-                                        // Add the entry into the Dictionary if this is the first time they are killed
-                                        KilledList.Add(npc.type, 1);
-                                    }
-                                }
+                        foreach (KillRequirement requirement in quest.Requirements)
+                        {
+                            if (requirement.type != npc.type) continue;
+
+                            var KilledList = modPlayer.KilledNPCs;
+
+                            // Check if the player has the entry of the killed NPC stored to increment their kill counter
+                            if (KilledList.ContainsKey(npc.type))
+                            {
+                                KilledList[npc.type]++;
+                            }
+                            else
+                            {
+                                // Add the entry into the Dictionary if this is the first time they are killed
+                                KilledList.Add(npc.type, 1);
                             }
                         }
                     }
