@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SkullGun
         public override void SetDefaults()
         {
             item.damage = 19;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.width = 40;
             item.height = 25;
             item.useTime = 7;

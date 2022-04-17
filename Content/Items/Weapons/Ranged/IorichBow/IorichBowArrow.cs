@@ -34,7 +34,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
             projectile.timeLeft = 900;
             projectile.alpha = 255;
             projectile.tileCollide = true;
-            projectile.ranged = true;
+            projectile.DamageType = DamageClass.Ranged;
             projectile.extraUpdates = 10;
             projectile.usesLocalNPCImmunity = true;
             projectile.localNPCHitCooldown = 60;

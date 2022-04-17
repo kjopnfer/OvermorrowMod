@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             item.useAmmo = AmmoID.Bullet;
             item.useTurn = true;
             item.autoReuse = true;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.noMelee = true;
             item.useStyle = 5;
             item.UseSound = SoundID.Item11;

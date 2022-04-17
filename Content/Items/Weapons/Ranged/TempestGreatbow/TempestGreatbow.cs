@@ -31,7 +31,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow
             item.shoot = ModContent.ProjectileType<StormBolt>();
             item.shootSpeed = 30f;
             item.knockBack = 10f;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.value = Item.sellPrice(gold: 1);
             item.useAmmo = AmmoID.Arrow;
         }

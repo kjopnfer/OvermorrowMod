@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
-            projectile.magic = true;
+            projectile.DamageType = DamageClass.Magic;
             projectile.tileCollide = false;
             projectile.ignoreWater = true;
         }

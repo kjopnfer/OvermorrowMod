@@ -4,6 +4,8 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -25,46 +27,46 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
             DisplayName.SetDefault("Harvester of Iorich");
 
             // Afterimage effect
-            ProjectileID.Sets.TrailCacheLength[projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[projectile.type] = 2;     
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;     
         }
         public override void SetDefaults()
         {
-            projectile.width = 52;
-            projectile.height = 52;
-            projectile.friendly = true;
-            projectile.melee = true;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 600;
-            projectile.tileCollide = true;
-            projectile.extraUpdates = 1;
-            projectile.ignoreWater = true;
+            Projectile.width = 52;
+            Projectile.height = 52;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 600;
+            Projectile.tileCollide = true;
+            Projectile.extraUpdates = 1;
+            Projectile.ignoreWater = true;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 0f, 1f, 0f);
-            if (projectile.soundDelay == 0 && projectile.ai[1] > 10)
+            Lighting.AddLight(Projectile.Center, 0f, 1f, 0f);
+            if (Projectile.soundDelay == 0 && Projectile.ai[1] > 10)
             {
-                projectile.soundDelay = 16;
-                Main.PlaySound(SoundID.Item7, projectile.position);
+                Projectile.soundDelay = 16;
+                SoundEngine.PlaySound(SoundID.Item7, Projectile.position);
             }
 
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
             player.itemAnimation = 10;
             player.itemTime = 10;
 
             if (RunOnce)
             {
-                if (projectile.ai[1] == 1)
+                if (Projectile.ai[1] == 1)
                 {
                     ReverseMovement = true;
                 }
 
-                projectile.spriteDirection = player.direction;
-                RotationDirection = projectile.spriteDirection;
+                Projectile.spriteDirection = player.direction;
+                RotationDirection = Projectile.spriteDirection;
 
-                projectile.ai[1] = 0;
+                Projectile.ai[1] = 0;
                 LaunchLength = Vector2.Distance(Main.MouseWorld, player.Center);
                 AimDirection = Vector2.Normalize(Main.MouseWorld - player.Center);
 
@@ -80,68 +82,68 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
             {
                 Vector2 cp1 = player.Center + new Vector2(LaunchLength + OFFSET, 300).RotatedBy(AimDirection.ToRotation());
                 Vector2 cp2 = player.Center + new Vector2(LaunchLength + OFFSET, -300).RotatedBy(AimDirection.ToRotation());
-                projectile.position = ModUtils.Bezier(player.Center, player.Center, cp1, cp2, Utils.Clamp(ReverseMovement ? projectile.ai[0]-- : projectile.ai[0]++, 0, 120) / 120f); ;
+                Projectile.position = ModUtils.Bezier(player.Center, player.Center, cp1, cp2, Utils.Clamp(ReverseMovement ? Projectile.ai[0]-- : Projectile.ai[0]++, 0, 120) / 120f); ;
             }
             else
             {
-                projectile.position = Vector2.Lerp(projectile.position, player.Center, projectile.ai[0]++ / 30f);
+                Projectile.position = Vector2.Lerp(Projectile.position, player.Center, Projectile.ai[0]++ / 30f);
             }
 
-            projectile.timeLeft = 5;
+            Projectile.timeLeft = 5;
 
-            projectile.rotation += 0.37f * RotationDirection;
+            Projectile.rotation += 0.37f * RotationDirection;
 
-            if (projectile.ai[1]++ >= 60f || HitTile)
+            if (Projectile.ai[1]++ >= 60f || HitTile)
             {
-                if (projectile.getRect().Intersects(player.getRect()))
+                if (Projectile.getRect().Intersects(player.getRect()))
                 {
-                    projectile.Kill();
+                    Projectile.Kill();
                 }
             }
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
             if (target.type != ModContent.NPCType<IorichHarvesterCrystal>())
             {
                 player.GetModPlayer<OvermorrowModPlayer>().ScytheHitCount++;
             }
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
             Color color26 = Color.LightGreen;
-            Texture2D texture2D16 = ModContent.GetTexture(AssetDirectory.Melee + "IorichHarvester/IorichHarvesterProjectile_Afterimage");
+            Texture2D texture2D16 = ModContent.Request<Texture2D>(AssetDirectory.Melee + "IorichHarvester/IorichHarvesterProjectile_Afterimage").Value;
 
-            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-            int y2 = num154 * projectile.frame;
-            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
+            int num154 = TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y2 = num154 * Projectile.frame;
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, TextureAssets.Projectile[Projectile.type].Value.Width, num154);
 
             Vector2 origin2 = drawRectangle.Size() / 2f;
 
-            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[projectile.type]; i++)
+            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Projectile.type]; i++)
             {
                 Color color27 = color26;
-                color27 *= (float)(ProjectileID.Sets.TrailCacheLength[projectile.type] - i) / ProjectileID.Sets.TrailCacheLength[projectile.type];
-                Vector2 value4 = projectile.oldPos[i];
-                float num165 = projectile.oldRot[i];
-                Main.spriteBatch.Draw(texture2D16, value4 + projectile.Size / 2f - Main.screenPosition + new Vector2(0, projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(drawRectangle), color27, num165, origin2, projectile.scale, SpriteEffects.None, 0f);
+                color27 *= (float)(ProjectileID.Sets.TrailCacheLength[Projectile.type] - i) / ProjectileID.Sets.TrailCacheLength[Projectile.type];
+                Vector2 value4 = Projectile.oldPos[i];
+                float num165 = Projectile.oldRot[i];
+                Main.spriteBatch.Draw(texture2D16, value4 + Projectile.Size / 2f - Main.screenPosition + new Vector2(0, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(drawRectangle), color27, num165, origin2, Projectile.scale, SpriteEffects.None, 0f);
             }
 
-            return base.PreDraw(spriteBatch, lightColor);
+            return base.PreDraw(ref lightColor);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            Collision.HitTiles(projectile.position, projectile.velocity, projectile.width, projectile.height);
+            Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
 
-            if (!HitTile) projectile.ai[0] = 0;
+            if (!HitTile) Projectile.ai[0] = 0;
 
             HitTile = true;
-            projectile.netUpdate = true;
+            Projectile.netUpdate = true;
 
-            Main.PlaySound(SoundID.Dig, (int)projectile.position.X, (int)projectile.position.Y);
+            SoundEngine.PlaySound(SoundID.Dig, (int)Projectile.position.X, (int)Projectile.position.Y);
             return false;
         }
     }

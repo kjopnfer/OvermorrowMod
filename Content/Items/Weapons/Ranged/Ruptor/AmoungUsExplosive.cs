@@ -25,7 +25,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Ruptor
         {
             projectile.width = 38;
             projectile.height = 38;
-            projectile.ranged = true;
+            projectile.DamageType = DamageClass.Ranged;
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.penetrate = -1;

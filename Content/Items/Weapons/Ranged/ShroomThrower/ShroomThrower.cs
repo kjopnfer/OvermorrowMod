@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.ShroomThrower
             item.width = 32;
             item.height = 32;
             item.damage = 12;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.noMelee = true;
             item.useTime = 10;
             item.useAnimation = 10;

@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,33 +26,32 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
 
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Orange;
-            item.UseSound = SoundID.Item1;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.damage = 17;
-            item.useTime = 20;
-            item.useAnimation = 20;
-            item.width = 58;
-            item.height = 48;
-            item.shoot = ModContent.ProjectileType<IorichHarvesterProjectile>();
-            item.shootSpeed = 10f; //8f;
-            item.knockBack = 3f;
-            item.melee = true;
-            item.autoReuse = true;
-            item.value = Item.sellPrice(gold: 1);
-            item.channel = true;
-            item.noUseGraphic = true;
+            Item.rare = ItemRarityID.Orange;
+            Item.UseSound = SoundID.Item1;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.damage = 17;
+            Item.useTime = 20;
+            Item.useAnimation = 20;
+            Item.width = 58;
+            Item.height = 48;
+            Item.shoot = ModContent.ProjectileType<IorichHarvesterProjectile>();
+            Item.shootSpeed = 10f; //8f;
+            Item.knockBack = 3f;
+            Item.DamageType = DamageClass.Melee;
+            Item.autoReuse = true;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.channel = true;
+            Item.noUseGraphic = true;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (UsageCounter++ % 2 == 0)
             {
-                Projectile.NewProjectile(player.Center, new Vector2(speedX, speedY), ModContent.ProjectileType<IorichHarvesterProjectile>(), damage, 0f, player.whoAmI, 120f, 1f);
+                Projectile.NewProjectile(source, player.Center, velocity, ModContent.ProjectileType<IorichHarvesterProjectile>(), damage, 0f, player.whoAmI, 120f, 1f);
                 return false;
             }
-
-            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
+            return base.Shoot(player, source, position, velocity, type, damage, knockback);
         }
 
         public override void HoldItem(Player player)
@@ -61,14 +62,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(MathHelper.Pi * i);
-                    int proj = Projectile.NewProjectile(player.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<IorichHarvesterSpinner>(), 0, 0f, player.whoAmI, MathHelper.Pi * i, RADIUS);
-                    ((IorichHarvesterSpinner)Main.projectile[proj].modProjectile).RotationCenter = player;
+                    int proj = Projectile.NewProjectile(player.GetProjectileSource_Item(Item), player.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<IorichHarvesterSpinner>(), 0, 0f, player.whoAmI, MathHelper.Pi * i, RADIUS);
+                    ((IorichHarvesterSpinner)Main.projectile[proj].ModProjectile).RotationCenter = player;
                 }
             }
 
             if (player.GetModPlayer<OvermorrowModPlayer>().ScytheHitCount >= 3 && !PlaySound)
             {
-                Main.PlaySound(SoundID.Item4, player.Center);
+                SoundEngine.PlaySound(SoundID.Item4, player.Center);
                 PlaySound = true;
             }
             else if (player.GetModPlayer<OvermorrowModPlayer>().ScytheHitCount <= 0)
@@ -86,14 +87,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
                 {
                     player.GetModPlayer<OvermorrowModPlayer>().ScytheHitCount = 0;
 
-                    int npc = NPC.NewNPC((int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<IorichHarvesterCrystal>(), 0, 0f, player.whoAmI);
-                    Projectile.NewProjectile(Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<IorichHarvesterCrystalProjectile>(), 0, 0f, player.whoAmI, npc);
+                    int npc = NPC.NewNPC(null, (int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<IorichHarvesterCrystal>(), 0, 0f, player.whoAmI);
+                    Projectile.NewProjectile(player.GetProjectileSource_Item(Item), Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<IorichHarvesterCrystalProjectile>(), 0, 0f, player.whoAmI, npc);
                 }
 
                 return false;
             }
 
-            return player.ownedProjectileCounts[item.shoot] < 1;
+            return player.ownedProjectileCounts[Item.shoot] < 1;
         }
     }
 }

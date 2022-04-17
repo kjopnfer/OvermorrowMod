@@ -13,7 +13,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
             projectile.timeLeft = 200;
             projectile.penetrate = 1;
             projectile.friendly = true;
-            projectile.ranged = true;
+            projectile.DamageType = DamageClass.Ranged;
             projectile.tileCollide = true;
             drawOffsetX = -6;
         }

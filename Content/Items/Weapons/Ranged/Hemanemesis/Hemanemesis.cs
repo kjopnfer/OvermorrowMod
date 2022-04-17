@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Hemanemesis
         public override void SetDefaults()
         {
             item.damage = 17;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.width = 40;
             item.height = 25;
             item.useTime = 26;

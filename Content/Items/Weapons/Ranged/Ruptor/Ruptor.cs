@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Ruptor
             item.autoReuse = true;
             item.shootSpeed = 17f;
             item.knockBack = 0;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.UseSound = SoundID.Item61;
             item.shoot = ModContent.ProjectileType<AmoungUsExplosive>();
             item.scale = 0.86f;

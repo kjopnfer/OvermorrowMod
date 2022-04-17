@@ -31,7 +31,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SkullGun
             projectile.width = 2;
             projectile.height = 20;
             projectile.friendly = true;
-            projectile.ranged = true;
+            projectile.DamageType = DamageClass.Ranged;
             projectile.penetrate = 1;
             projectile.timeLeft = 100;
             projectile.alpha = 255;

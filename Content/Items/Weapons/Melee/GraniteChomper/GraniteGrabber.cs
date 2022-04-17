@@ -14,23 +14,23 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Grabber");
-            Main.projFrames[projectile.type] = 3;
+            Main.projFrames[Projectile.type] = 3;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 22;
-            projectile.height = 36;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = 3;
-            projectile.timeLeft = 2;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = true;
-            projectile.timeLeft = 200;
+            Projectile.width = 22;
+            Projectile.height = 36;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = 3;
+            Projectile.timeLeft = 2;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = true;
+            Projectile.timeLeft = 200;
         }
 
-        public override bool CanDamage() => true;
+        public override bool? CanDamage() => true;
 
         private int timer = 0;
         private bool ComingBack = false;
@@ -48,23 +48,25 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
 
         public bool IsStickingToTarget
         {
-            get => projectile.ai[0] == 1f;
-            set => projectile.ai[0] = value ? 1f : 0f;
+            get => Projectile.ai[0] == 1f;
+            set => Projectile.ai[0] = value ? 1f : 0f;
         }
         // Index of the current target
         public int TargetWhoAmI
         {
-            get => (int)projectile.ai[1];
-            set => projectile.ai[1] = value;
+            get => (int)Projectile.ai[1];
+            set => Projectile.ai[1] = value;
         }
         private const int MAX_STICKY_JAVELINS = 6; // This is the max. amount of javelins being able to attach
         private readonly Point[] _stickingJavelins = new Point[MAX_STICKY_JAVELINS]; // The point array holding for sticking javelins
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough)
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
             // For going through platforms and such, javelins use a tad smaller size
             width = height = 10; // notice we set the width to the height, the height to 10. so both are 10
             return true;
         }
+
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
 
@@ -81,8 +83,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
         public override void AI()
         {
             ComingBackTimer++;
-            float BetweenBack = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
-            if (!Main.player[projectile.owner].channel || BetweenBack > 375f || ComingBackTimer > 100 && !StickingToNPC)
+            float BetweenBack = Vector2.Distance(Main.player[Projectile.owner].Center, Projectile.Center);
+            if (!Main.player[Projectile.owner].channel || BetweenBack > 375f || ComingBackTimer > 100 && !StickingToNPC)
             {
                 ReturnBack();
             }
@@ -92,57 +94,57 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
 
             if (ComingBack)
             {
-                float BetweenKill = Vector2.Distance(Main.player[projectile.owner].Center, projectile.Center);
-                projectile.tileCollide = false;
-                Vector2 position = projectile.Center;
-                Vector2 targetPosition = Main.player[projectile.owner].Center;
+                float BetweenKill = Vector2.Distance(Main.player[Projectile.owner].Center, Projectile.Center);
+                Projectile.tileCollide = false;
+                Vector2 position = Projectile.Center;
+                Vector2 targetPosition = Main.player[Projectile.owner].Center;
                 Vector2 direction2 = targetPosition - position;
                 direction2.Normalize();
-                projectile.velocity = direction2 * 23;
+                Projectile.velocity = direction2 * 23;
                 if (BetweenKill < 50f)
                 {
-                    projectile.Kill();
+                    Projectile.Kill();
                 }
             }
 
-            var player2 = Main.player[projectile.owner];
+            var player2 = Main.player[Projectile.owner];
 
             Vector2 mountedCenter2 = player2.Center;
 
-            var drawPosition2 = projectile.Center;
+            var drawPosition2 = Projectile.Center;
             var remainingVectorToPlayer2 = mountedCenter2 - drawPosition2;
 
             int direction4 = -1;
 
-            if (projectile.Center.X < mountedCenter2.X)
+            if (Projectile.Center.X < mountedCenter2.X)
             {
                 direction4 = 1;
             }
 
             player2.itemRotation = (float)Math.Atan2(remainingVectorToPlayer2.Y * direction4, remainingVectorToPlayer2.X * direction4);
 
-            projectile.timeLeft = 2;
+            Projectile.timeLeft = 2;
 
             timer++;
             if (timer == 1)
             {
-                savedDMG = projectile.damage;
+                savedDMG = Projectile.damage;
             }
 
 
             if (HasHit > 0)
             {
-                SpearTargetX = projectile.Center.X;
-                SpearTargetY = projectile.Center.Y;
+                SpearTargetX = Projectile.Center.X;
+                SpearTargetY = Projectile.Center.Y;
             }
 
 
-            if (++projectile.frameCounter >= 3)
+            if (++Projectile.frameCounter >= 3)
             {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                Projectile.frameCounter = 0;
+                if (++Projectile.frame >= Main.projFrames[Projectile.type])
                 {
-                    projectile.frame = 0;
+                    Projectile.frame = 0;
                 }
             }
 
@@ -162,10 +164,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
             {
                 IsStickingToTarget = true; // we are sticking to a target
                 TargetWhoAmI = target.whoAmI; // Set the target whoAmI
-                projectile.velocity =
-                    (target.Center - projectile.Center) *
+                Projectile.velocity =
+                    (target.Center - Projectile.Center) *
                     0.75f; // Change velocity based on delta center of targets (difference between entity centers)
-                projectile.netUpdate = true; // netUpdate this javelin
+                Projectile.netUpdate = true; // netUpdate this javelin
                                              // It is recommended to split your code into separate methods to keep code clean and clear // Makes sure the sticking javelins do not deal damage anymore
 
                 UpdateStickyJavelins(target);
@@ -173,8 +175,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            projectile.tileCollide = false;
-            projectile.damage = 0;
+            Projectile.tileCollide = false;
+            Projectile.damage = 0;
             HasHit++;
             penet++;
         }
@@ -182,19 +184,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
         {
             int currentJavelinIndex = 0; // The javelin index
 
-            for (int i = 0; i < Main.maxProjectiles; i++) // Loop all projectiles
+            for (int i = 0; i < Main.maxProjectiles; i++) // Loop all Projectiles
             {
                 Projectile currentProjectile = Main.projectile[i];
-                if (i != projectile.whoAmI // Make sure the looped projectile is not the current javelin
-                    && currentProjectile.active // Make sure the projectile is active
-                    && currentProjectile.owner == Main.myPlayer // Make sure the projectile's owner is the client's player
-                    && currentProjectile.type == projectile.type // Make sure the projectile is of the same type as this javelin
-                    && currentProjectile.modProjectile is GraniteGrabber javelinProjectile // Use a pattern match cast so we can access the projectile like an ExampleJavelinProjectile
+                if (i != Projectile.whoAmI // Make sure the looped Projectile is not the current javelin
+                    && currentProjectile.active // Make sure the Projectile is active
+                    && currentProjectile.owner == Main.myPlayer // Make sure the Projectile's owner is the client's player
+                    && currentProjectile.type == Projectile.type // Make sure the Projectile is of the same type as this javelin
+                    && currentProjectile.ModProjectile is GraniteGrabber javelinProjectile // Use a pattern match cast so we can access the Projectile like an ExampleJavelinProjectile
                     && javelinProjectile.IsStickingToTarget // the previous pattern match allows us to use our properties
                     && javelinProjectile.TargetWhoAmI == target.whoAmI)
                 {
 
-                    _stickingJavelins[currentJavelinIndex++] = new Point(i, currentProjectile.timeLeft); // Add the current projectile's index and timeleft to the point array
+                    _stickingJavelins[currentJavelinIndex++] = new Point(i, currentProjectile.timeLeft); // Add the current Projectile's index and timeleft to the point array
                     if (currentJavelinIndex >= _stickingJavelins.Length)  // If the javelin's index is bigger than or equal to the point array's length, break
                         break;
                 }
@@ -219,14 +221,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
         private void UpdateAlpha()
         {
             // Slowly remove alpha as it is present
-            if (projectile.alpha > 0)
+            if (Projectile.alpha > 0)
             {
-                projectile.alpha -= ALPHA_REDUCTION;
+                Projectile.alpha -= ALPHA_REDUCTION;
             }
             // If alpha gets lower than 0, set it to 0
-            if (projectile.alpha < 0)
+            if (Projectile.alpha < 0)
             {
-                projectile.alpha = 0;
+                Projectile.alpha = 0;
             }
         }
         private const int MAX_TICKS = 45;
@@ -244,15 +246,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
                 const float velXmult = 0.98f; // x velocity factor, every AI update the x velocity will be 98% of the original speed
                 const float velYmult = 0.98f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
                 TargetWhoAmI = MAX_TICKS; // set ai1 to maxTicks continuously
-                projectile.velocity.X *= velXmult;
-                projectile.velocity.Y *= velYmult;
+                Projectile.velocity.X *= velXmult;
+                Projectile.velocity.Y *= velYmult;
             }
 
             // Make sure to set the rotation accordingly to the velocity, and add some to work around the sprite's rotation
             // Please notice the MathHelper usage, offset the rotation by 90 degrees (to radians because rotation uses radians) because the sprite's rotation is not aligned!
             if (!ComingBack)
             {
-                projectile.rotation = (Main.player[projectile.owner].Center - projectile.Center).ToRotation() - MathHelper.ToRadians(90f);
+                Projectile.rotation = (Main.player[Projectile.owner].Center - Projectile.Center).ToRotation() - MathHelper.ToRadians(90f);
             }
 
 
@@ -262,31 +264,31 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
         {
 
 
-            projectile.rotation = (Main.player[projectile.owner].Center - projectile.Center).ToRotation() - MathHelper.ToRadians(90f);
+            Projectile.rotation = (Main.player[Projectile.owner].Center - Projectile.Center).ToRotation() - MathHelper.ToRadians(90f);
 
 
             if (!ComingBack)
             {
                 StickingToNPC = true;
                 // These 2 could probably be moved to the ModifyNPCHit hook, but in vanilla they are present in the AI
-                projectile.ignoreWater = true; // Make sure the projectile ignores water
-                projectile.tileCollide = false; // Make sure the projectile doesn't collide with tiles anymore
+                Projectile.ignoreWater = true; // Make sure the Projectile ignores water
+                Projectile.tileCollide = false; // Make sure the Projectile doesn't collide with tiles anymore
                 const int aiFactor = 15; // Change this factor to change the 'lifetime' of this sticking javelin
-                projectile.localAI[0] += 1f;
+                Projectile.localAI[0] += 1f;
 
 
                 // Every 30 ticks, the javelin will perform a hit effect
-                bool hitEffect = projectile.localAI[0] % 30f == 0f;
+                bool hitEffect = Projectile.localAI[0] % 30f == 0f;
                 int projTargetIndex = TargetWhoAmI;
-                if (projectile.localAI[0] >= 60 * aiFactor || projTargetIndex < 0 || projTargetIndex >= 200)
+                if (Projectile.localAI[0] >= 60 * aiFactor || projTargetIndex < 0 || projTargetIndex >= 200)
                 { // If the index is past its limits, kill it
                     ReturnBack();
                 }
                 else if (Main.npc[projTargetIndex].active && !Main.npc[projTargetIndex].dontTakeDamage)
                 { // If the target is active and can take damage
-                  // Set the projectile's position relative to the target's center
-                    projectile.Center = Main.npc[projTargetIndex].Center - projectile.velocity * 2f;
-                    projectile.gfxOffY = Main.npc[projTargetIndex].gfxOffY;
+                  // Set the Projectile's position relative to the target's center
+                    Projectile.Center = Main.npc[projTargetIndex].Center - Projectile.velocity * 2f;
+                    Projectile.gfxOffY = Main.npc[projTargetIndex].gfxOffY;
                     if (hitEffect)
                     { // Perform a hit effect here
                         Main.npc[projTargetIndex].HitEffect(0, 1.0);
@@ -306,7 +308,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
 
                 }
                 else
-                { // Otherwise, kill the projectile
+                { // Otherwise, kill the Projectile
                     ReturnBack();
                 }
             }
@@ -320,19 +322,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
             ComingBack = true;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
-            var player = Main.player[projectile.owner];
+            var player = Main.player[Projectile.owner];
 
             Vector2 mountedCenter = player.Center;
-            Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
+            Texture2D chainTexture = ModContent.Request<Texture2D>(ChainTexturePath).Value;
 
-            var drawPosition = projectile.Center;
+            var drawPosition = Projectile.Center;
             var remainingVectorToPlayer = mountedCenter - drawPosition;
 
             float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
 
-            // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
+            // This while loop draws the chain texture from the Projectile to the player, looping to draw the chain texture along the path
             while (true)
             {
                 float length = remainingVectorToPlayer.Length();
@@ -341,13 +343,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
                     break;
 
                 // drawPosition is advanced along the vector back to the player by 32 pixels
-                // 32 comes from the height of the projectile and the spacing that we desired between links
+                // 32 comes from the height of the Projectile and the spacing that we desired between links
                 drawPosition += remainingVectorToPlayer * 32 / length;
                 remainingVectorToPlayer = mountedCenter - drawPosition;
 
                 // Finally, we draw the texture at the coordinates using the lighting information of the tile coordinates of the chain section
                 Color color = Lighting.GetColor((int)drawPosition.X / 16, (int)(drawPosition.Y / 16f));
-                spriteBatch.Draw(chainTexture, drawPosition - Main.screenPosition, null, color, rotation, chainTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
+                Main.EntitySpriteDraw(chainTexture, drawPosition - Main.screenPosition, null, color, rotation, chainTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0);
             }
 
             return true;

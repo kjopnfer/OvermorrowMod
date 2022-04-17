@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
             item.shoot = ModContent.ProjectileType<SnotRocket>();
             item.shootSpeed = 12f;
             item.knockBack = 10f;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.value = Item.sellPrice(gold: 1);
         }
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)

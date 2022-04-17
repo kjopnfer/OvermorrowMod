@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             item.damage = 22;
             item.width = 38;
             item.height = 18;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.noMelee = true;
             item.useTime = 11;
             item.useAnimation = 11;

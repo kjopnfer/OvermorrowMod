@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower
             item.autoReuse = true;
             item.rare = ItemRarityID.Orange;
             item.damage = 17;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.shoot = ModContent.ProjectileType<SandThrowerProjectile>();
             item.shootSpeed = 4.5f;
             item.useAmmo = AmmoID.Gel;

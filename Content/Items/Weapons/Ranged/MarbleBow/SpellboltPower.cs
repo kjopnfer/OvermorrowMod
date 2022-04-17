@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
             projectile.width = 30;
             projectile.height = 30;
             projectile.friendly = true;
-            projectile.ranged = true;
+            projectile.DamageType = DamageClass.Ranged;
             projectile.penetrate = 1;
             projectile.timeLeft = 600;
         }

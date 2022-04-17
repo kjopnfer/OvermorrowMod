@@ -13,24 +13,24 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.ScarTissue
 
         public override void SetDefaults()
         {
-            item.damage = 20;
-            item.melee = true;
-            item.width = 50;
-            item.height = 50;
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.knockBack = 0.5f;
-            item.value = 10000;
-            item.rare = ItemRarityID.Orange;
-            item.UseSound = SoundID.Item71;
-            item.autoReuse = false;
+            Item.damage = 20;
+            Item.DamageType = DamageClass.Melee;
+            Item.width = 50;
+            Item.height = 50;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.knockBack = 0.5f;
+            Item.value = 10000;
+            Item.rare = ItemRarityID.Orange;
+            Item.UseSound = SoundID.Item71;
+            Item.autoReuse = false;
         }
 
 
         public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
         {
-            Projectile.NewProjectile(target.Center.X, target.Center.Y, target.velocity.X, target.velocity.Y, ModContent.ProjectileType<Scar>(), 5, 0, player.whoAmI);
+            Projectile.NewProjectile(player.GetProjectileSource_OnHit(target, ProjectileSourceID.None), target.Center.X, target.Center.Y, target.velocity.X, target.velocity.Y, ModContent.ProjectileType<Scar>(), 5, 0, player.whoAmI);
         }
     }
 }

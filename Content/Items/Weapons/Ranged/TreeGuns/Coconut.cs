@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
             projectile.hostile = false;
             projectile.friendly = true;
             projectile.extraUpdates = 2;
-            projectile.ranged = true;
+            projectile.DamageType = DamageClass.Ranged;
             projectile.tileCollide = true;
             projectile.ignoreWater = true;
         }

@@ -20,7 +20,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower
             projectile.width = 6;
             projectile.height = 6;
             projectile.friendly = true;
-            projectile.ranged = true;
+            projectile.DamageType = DamageClass.Ranged;
             projectile.penetrate = 2;
             projectile.extraUpdates = 3;
             projectile.timeLeft = 90;

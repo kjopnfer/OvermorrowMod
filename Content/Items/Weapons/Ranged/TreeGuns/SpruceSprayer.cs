@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
         {
             item.rare = ItemRarityID.Blue;
             item.damage = 7;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.width = 70;
             item.height = 46;
             item.useTime = 7;

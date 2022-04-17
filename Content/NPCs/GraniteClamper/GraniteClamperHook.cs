@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
             projectile.penetrate = -1;
             projectile.hostile = true;
             projectile.friendly = false;
-            projectile.melee = true;
+            projectile.DamageType = DamageClass.Melee;
             projectile.tileCollide = true;
             projectile.ignoreWater = true;
         }

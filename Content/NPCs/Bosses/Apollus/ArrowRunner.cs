@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
             projectile.width = 32;
             projectile.height = 32;
             projectile.friendly = true;
-            projectile.melee = true;
+            projectile.DamageType = DamageClass.Melee;
             projectile.tileCollide = false;
             projectile.penetrate = 30;
             projectile.timeLeft = 420;

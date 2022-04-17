@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
         public override void SetDefaults()
         {
             item.damage = 13;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.width = 40;
             item.height = 25;
             item.useTime = 20;

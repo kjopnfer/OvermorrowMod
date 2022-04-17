@@ -29,7 +29,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Catfish
             item.shoot = ModContent.ProjectileType<WaterBullet>();
             item.shootSpeed = 15;
             item.knockBack = 5f;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.value = Item.sellPrice(gold: 1);
             item.useAmmo = AmmoID.Bullet;
         }

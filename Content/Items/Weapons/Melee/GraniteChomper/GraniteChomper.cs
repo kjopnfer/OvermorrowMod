@@ -12,35 +12,35 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Blue;
-            item.width = 32;
-            item.height = 32;
-            item.damage = 15;
-            item.ranged = true;
-            item.noMelee = true;
-            item.noUseGraphic = true;
-            item.useTime = 12;
-            item.useAnimation = 12;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.autoReuse = true;
-            item.knockBack = 0;
-            item.shoot = mod.ProjectileType("GraniteGrabber");
-            item.shootSpeed = 11f;
-            item.channel = true;
+            Item.rare = ItemRarityID.Blue;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 15;
+            Item.DamageType = DamageClass.Ranged;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.useTime = 12;
+            Item.useAnimation = 12;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.knockBack = 0;
+            Item.shoot = ModContent.ProjectileType<GraniteGrabber>();
+            Item.shootSpeed = 11f;
+            Item.channel = true;
         }
 
         public override void HoldItem(Player player)
         {
             {
-                if (player.ownedProjectileCounts[mod.ProjectileType("GraniteGrabber")] < 1)
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<GraniteGrabber>()] < 1)
                 {
-                    item.shoot = mod.ProjectileType("GraniteGrabber");
-                    item.UseSound = SoundID.Item71;
+                    Item.shoot = ModContent.ProjectileType<GraniteGrabber>();
+                    Item.UseSound = SoundID.Item71;
                 }
                 else
                 {
-                    item.shoot = ProjectileID.MoonlordTurretLaser;
-                    item.UseSound = SoundID.Item120;
+                    Item.shoot = ProjectileID.MoonlordTurretLaser;
+                    Item.UseSound = SoundID.Item120;
                 }
             }
         }

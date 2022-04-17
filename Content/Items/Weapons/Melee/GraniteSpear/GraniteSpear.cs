@@ -14,29 +14,29 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteSpear
 
         public override void SetDefaults()
         {
-            //item.autoReuse = true;
-            item.rare = ItemRarityID.Green;
-            item.UseSound = SoundID.Item1;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 17;
-            item.scale = 1.1f;
-            item.useAnimation = 20;
-            item.useTime = 20;
-            item.width = 58;
-            item.height = 58;
-            item.shoot = ModContent.ProjectileType<GraniteSpearProjectile>();
-            item.shootSpeed = 4f;
-            item.knockBack = 3.9f;
-            item.melee = true;
-            item.value = Item.sellPrice(gold: 1);
-            item.noUseGraphic = true;
+            //Item.autoReuse = true;
+            Item.rare = ItemRarityID.Green;
+            Item.UseSound = SoundID.Item1;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 17;
+            Item.scale = 1.1f;
+            Item.useAnimation = 20;
+            Item.useTime = 20;
+            Item.width = 58;
+            Item.height = 58;
+            Item.shoot = ModContent.ProjectileType<GraniteSpearProjectile>();
+            Item.shootSpeed = 4f;
+            Item.knockBack = 3.9f;
+            Item.DamageType = DamageClass.Melee;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.noUseGraphic = true;
         }
 
         public override bool CanUseItem(Player player)
         {
             // Ensures no more than one spear can be thrown out, use this when using autoReuse
-            return player.ownedProjectileCounts[item.shoot] < 1;
+            return player.ownedProjectileCounts[Item.shoot] < 1;
         }
     }
 }

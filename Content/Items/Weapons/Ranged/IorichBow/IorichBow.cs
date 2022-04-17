@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
         {
             item.damage = 26;
             item.noMelee = true;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.rare = ItemRarityID.Orange;
             item.UseSound = null;
             item.useStyle = ItemUseStyleID.HoldingOut;

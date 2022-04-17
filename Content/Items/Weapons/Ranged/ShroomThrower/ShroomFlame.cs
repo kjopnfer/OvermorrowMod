@@ -21,7 +21,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.ShroomThrower
             projectile.penetrate = -1;
             projectile.hostile = false;
             projectile.friendly = true;
-            projectile.ranged = true;
+            projectile.DamageType = DamageClass.Ranged;
             projectile.tileCollide = true;
             projectile.ignoreWater = true;
         }

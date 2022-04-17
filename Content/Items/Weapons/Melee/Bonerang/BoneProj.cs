@@ -15,33 +15,33 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.Bonerang
 
         public override void SetDefaults()
         {
-            projectile.width = 24;
-            projectile.height = 18;
-            projectile.timeLeft = 50;
-            projectile.penetrate = -1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.melee = true;
-            projectile.tileCollide = true;
-            projectile.ignoreWater = true;
+            Projectile.width = 24;
+            Projectile.height = 18;
+            Projectile.timeLeft = 50;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.tileCollide = true;
+            Projectile.ignoreWater = true;
         }
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
             timer++;
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             {
-                projectile.velocity.X = -projectile.velocity.X;
-                projectile.velocity.Y = -projectile.velocity.Y;
+                Projectile.velocity.X = -Projectile.velocity.X;
+                Projectile.velocity.Y = -Projectile.velocity.Y;
             }
             return false;
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            projectile.velocity.X *= -1;
-            projectile.velocity.Y *= -1;
+            Projectile.velocity.X *= -1;
+            Projectile.velocity.Y *= -1;
         }
     }
 }

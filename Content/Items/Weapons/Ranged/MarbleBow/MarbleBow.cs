@@ -29,7 +29,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
             item.shoot = AmmoID.Arrow;
             item.shootSpeed = 8f;
             item.knockBack = 10f;
-            item.ranged = true;
+            item.DamageType = DamageClass.Ranged;
             item.value = Item.sellPrice(gold: 1);
             item.useAmmo = AmmoID.Arrow;
         }
