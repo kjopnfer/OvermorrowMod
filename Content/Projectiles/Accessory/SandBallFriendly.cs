@@ -22,43 +22,43 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
 
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = 2;
-            projectile.timeLeft = 900;
-            projectile.alpha = 255;
-            projectile.tileCollide = false;
+            Projectile.width = 12;
+            Projectile.height = 12;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = 2;
+            Projectile.timeLeft = 900;
+            Projectile.alpha = 255;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
             if (runOnce)
             {
-                rotateSpeed = projectile.ai[1];
+                rotateSpeed = Projectile.ai[1];
                 runOnce = false;
             }
 
             //Making player variable "p" set as the projectile's owner
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             if (player.dead)
             {
-                projectile.Kill();
+                Projectile.Kill();
                 return;
             }
             else
             {
-                projectile.timeLeft = 2;
+                Projectile.timeLeft = 2;
             }
 
             if (player.GetModPlayer<OvermorrowModPlayer>().sandMode == 1) // Attack Mode
             {
-                if (projectile.localAI[0] == 0f)
+                if (Projectile.localAI[0] == 0f)
                 {
-                    if (projectile.velocity.Length() > 6f) projectile.velocity = projectile.velocity.SafeNormalize(Vector2.Zero) * 6;
-                    projectile.localAI[0] = 1f;
+                    if (Projectile.velocity.Length() > 6f) Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * 6;
+                    Projectile.localAI[0] = 1f;
                 }
 
                 Vector2 move = Vector2.Zero;
@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
                     {
                         if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5 && Main.npc[k].CanBeChasedBy())
                         {
-                            Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                            Vector2 newMove = Main.npc[k].Center - Projectile.Center;
                             float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
                             if (distanceTo < distance)
                             {
@@ -89,70 +89,70 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
                 if (target)
                 {
                     if (move.Length() > 6f) move = move.SafeNormalize(Vector2.Zero) * 6f;
-                    projectile.velocity = (10 * projectile.velocity + move) / 11f;
-                    if (projectile.velocity.Length() > 6f) projectile.velocity = projectile.velocity.SafeNormalize(Vector2.Zero) * 6;
+                    Projectile.velocity = (10 * Projectile.velocity + move) / 11f;
+                    if (Projectile.velocity.Length() > 6f) Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * 6;
                 }
                 else
                 {
-                    projectile.velocity = Vector2.Zero;
+                    Projectile.velocity = Vector2.Zero;
                     //Factors for calculations
-                    double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                    double deg = (double)Projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                     double rad = deg * (Math.PI / 180); //Convert degrees to radians
-                    double dist = projectile.ai[0]; //Distance away from the player
+                    double dist = Projectile.ai[0]; //Distance away from the player
 
                     /*Position the player projectiled on where the player is, the Sin/Cos of the angle times the /
                     /distance for the desired distance away from the player minus the projectile's width   /
                     /and height divided by two so the center of the projectile is at the right place.     */
-                    projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
-                    projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
+                    Projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - Projectile.width / 2;
+                    Projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - Projectile.height / 2;
 
                     //Increase the counter/angle in degrees by 1 point, you can change the rate here too, but the orbit may look choppy depending on the value
-                    projectile.ai[1] += (1f * rotateSpeed);
+                    Projectile.ai[1] += (1f * rotateSpeed);
                 }
             }
             else
             {
-                projectile.velocity = Vector2.Zero;
+                Projectile.velocity = Vector2.Zero;
 
                 //Factors for calculations
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / 180); //Convert degrees to radians
-                double dist = projectile.ai[0]; //Distance away from the player
+                double dist = Projectile.ai[0]; //Distance away from the player
 
                 /*Position the player projectiled on where the player is, the Sin/Cos of the angle times the /
                 /distance for the desired distance away from the player minus the projectile's width   /
                 /and height divided by two so the center of the projectile is at the right place.     */
-                projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
-                projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
+                Projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - Projectile.width / 2;
+                Projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - Projectile.height / 2;
 
                 //Increase the counter/angle in degrees by 1 point, you can change the rate here too, but the orbit may look choppy depending on the value
-                projectile.ai[1] += (1f * rotateSpeed);
+                Projectile.ai[1] += (1f * rotateSpeed);
             }
 
-            projectile.localAI[0] += 1f;
-            if (projectile.localAI[0] > 3f)
+            Projectile.localAI[0] += 1f;
+            if (Projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Sand, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1f);
-                Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
+                int num1110 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Sand, Projectile.velocity.X, Projectile.velocity.Y, 50, default(Color), 1f);
+                Main.dust[num1110].position = (Main.dust[num1110].position + Projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
                 dust81.velocity *= 0.5f;
 
-                Dust dustTrail = Dust.NewDustPerfect(new Vector2(projectile.position.X, projectile.position.Y), 32, projectile.velocity);
-                dustTrail.position = (Main.dust[num1110].position + projectile.Center) / 2f;
+                Dust dustTrail = Dust.NewDustPerfect(new Vector2(Projectile.position.X, Projectile.position.Y), 32, Projectile.velocity);
+                dustTrail.position = (Main.dust[num1110].position + Projectile.Center) / 2f;
                 dustTrail.noGravity = true;
             }
         }
 
         public override void Kill(int timeLeft)
         {
-            Player owner = Main.player[projectile.owner];
+            Player owner = Main.player[Projectile.owner];
             owner.GetModPlayer<OvermorrowModPlayer>().sandCount--;
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            target.immune[projectile.owner] = 3;
+            target.immune[Projectile.owner] = 3;
         }
     }
 }

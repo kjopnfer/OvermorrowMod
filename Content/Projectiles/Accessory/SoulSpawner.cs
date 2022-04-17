@@ -11,41 +11,41 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Soul Spawner");
-            Main.projFrames[projectile.type] = 8;
+            Main.projFrames[Projectile.type] = 8;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 86;
-            projectile.height = 60;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 120;
-            projectile.tileCollide = false;
+            Projectile.width = 86;
+            Projectile.height = 60;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 120;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
 
             // Spawn the flame during only one frame and only once
-            if (projectile.frame == 4 && projectile.ai[0] == 0)
+            if (Projectile.frame == 4 && Projectile.ai[0] == 0)
             {
-                projectile.ai[0]++;
+                Projectile.ai[0]++;
 
-                int item = Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, ModContent.ItemType<ReaperFlame>());
+                int item = Item.NewItem(Projectile.GetItemSource_FromThis(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<ReaperFlame>());
 
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item);
             }
 
             // Loop through the 8 animation frames, spending 4 ticks on each.
-            if (++projectile.frameCounter >= 4)
+            if (++Projectile.frameCounter >= 4)
             {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                Projectile.frameCounter = 0;
+                if (++Projectile.frame >= Main.projFrames[Projectile.type])
                 {
-                    projectile.Kill();
+                    Projectile.Kill();
                 }
             }
         }

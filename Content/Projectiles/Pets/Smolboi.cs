@@ -10,28 +10,28 @@ namespace OvermorrowMod.Content.Projectiles.Pets
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Smolboi");
-            Main.projFrames[projectile.type] = 3;
-            Main.projPet[projectile.type] = true;
+            Main.projFrames[Projectile.type] = 3;
+            Main.projPet[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            projectile.CloneDefaults(ProjectileID.Penguin);
-            aiType = ProjectileID.Penguin;
-            projectile.width = 22;
-            projectile.height = 46;
+            Projectile.CloneDefaults(ProjectileID.Penguin);
+            AIType = ProjectileID.Penguin;
+            Projectile.width = 22;
+            Projectile.height = 46;
         }
 
         public override bool PreAI()
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
             player.penguin = false; // Relic from aiType
             return true;
         }
 
         public override void AI()
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
             OvermorrowModPlayer modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
             if (player.dead)
             {
@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.Projectiles.Pets
 
             if (modPlayer.smolBoi)
             {
-                projectile.timeLeft = 2;
+                Projectile.timeLeft = 2;
             }
         }
     }

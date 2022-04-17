@@ -17,28 +17,28 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
 
         public override void SetDefaults()
         {
-            projectile.width = 16;
-            projectile.height = 16;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = 3;
-            projectile.timeLeft = 300;
-            projectile.alpha = 255;
-            projectile.tileCollide = true;
+            Projectile.width = 16;
+            Projectile.height = 16;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = 3;
+            Projectile.timeLeft = 300;
+            Projectile.alpha = 255;
+            Projectile.tileCollide = true;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
+            Lighting.AddLight(Projectile.Center, 1f, 0f, 0f);
 
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
 
-            projectile.localAI[0] += 1f;
-            if (projectile.localAI[0] > 3f)
+            Projectile.localAI[0] += 1f;
+            if (Projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Blood, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1.6f);
+                int num1110 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X, Projectile.velocity.Y, 50, default(Color), 1.6f);
                 Dust dust = Main.dust[num1110];
-                dust.position = (Main.dust[num1110].position + projectile.Center) / 2f;
+                dust.position = (Main.dust[num1110].position + Projectile.Center) / 2f;
                 dust.noGravity = true;
                 dust.velocity *= 0.5f;
             }
@@ -46,16 +46,16 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            Collision.HitTiles(projectile.position + projectile.velocity, projectile.velocity, projectile.width, projectile.height);
+            Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
             // Make projectiles bounce on impact
 
-            if (projectile.velocity.X != oldVelocity.X)
+            if (Projectile.velocity.X != oldVelocity.X)
             {
-                projectile.velocity.X = -oldVelocity.X;
+                Projectile.velocity.X = -oldVelocity.X;
             }
-            if (projectile.velocity.Y != oldVelocity.Y)
+            if (Projectile.velocity.Y != oldVelocity.Y)
             {
-                projectile.velocity.Y = -oldVelocity.Y;
+                Projectile.velocity.Y = -oldVelocity.Y;
             }
             return false;
         }

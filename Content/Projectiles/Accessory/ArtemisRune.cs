@@ -17,61 +17,61 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
 
         public override void SetDefaults()
         {
-            projectile.width = 62;
-            projectile.height = 62;
-            projectile.tileCollide = false;
-            projectile.hostile = true;
-            projectile.friendly = false;
-            projectile.timeLeft = 600;
-            projectile.penetrate = -1;
-            projectile.scale = 1f;
+            Projectile.width = 62;
+            Projectile.height = 62;
+            Projectile.tileCollide = false;
+            Projectile.hostile = true;
+            Projectile.friendly = false;
+            Projectile.timeLeft = 600;
+            Projectile.penetrate = -1;
+            Projectile.scale = 1f;
         }
 
         public override void AI()
         {
 
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
             if (!player.active)
             {
-                projectile.Kill();
+                Projectile.Kill();
                 return;
             }
 
-            if (projectile.ai[1] == 0)
+            if (Projectile.ai[1] == 0)
             {
-                if (projectile.ai[0] == 0)
+                if (Projectile.ai[0] == 0)
                 {
-                    projectile.scale = 0.01f;
+                    Projectile.scale = 0.01f;
                 }
-                if (projectile.ai[0] > 2 && projectile.ai[0] < 45)
+                if (Projectile.ai[0] > 2 && Projectile.ai[0] < 45)
                 {
-                    projectile.scale = MathHelper.Lerp(projectile.scale, 1, 0.05f);
-                    projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
-                    projectile.rotation += projectile.localAI[0];
+                    Projectile.scale = MathHelper.Lerp(Projectile.scale, 1, 0.05f);
+                    Projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                    Projectile.rotation += Projectile.localAI[0];
                 }
-                if (projectile.ai[0] == 45)
+                if (Projectile.ai[0] == 45)
                 {
-                    projectile.ai[1] = 1;
+                    Projectile.ai[1] = 1;
                 }
             }
             else
             {
-                projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
+                Projectile.localAI[0] = MathHelper.Lerp(0.001f, 5f, 0.05f);
 
-                if (projectile.ai[0] % 45 == 0)
+                if (Projectile.ai[0] % 45 == 0)
                 {
                     for (int i = 0; i < 4; i++)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ArtemisArrow>(), 75, 3f, Main.myPlayer);
+                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ArtemisArrow>(), 75, 3f, Main.myPlayer);
                         }
                     }
                 }
             }
 
-            projectile.ai[0]++;
-            projectile.rotation += projectile.localAI[0];
+            Projectile.ai[0]++;
+            Projectile.rotation += Projectile.localAI[0];
         }
         public override Color? GetAlpha(Color lightColor)
         {
