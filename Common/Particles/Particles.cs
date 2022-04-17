@@ -64,7 +64,7 @@ namespace OvermorrowMod.Common.Particles
         public void Draw(SpriteBatch spriteBatch)
         {
             // draw lightnings, draw alpha circle, draw extra small electric particles
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Projectile_" + ProjectileID.StardustTowerMark).Value;
             for (int i = 0; i < previousSegments.Count - 1; i++)
             {
                 var seg1 = previousSegments[i];
@@ -270,9 +270,9 @@ namespace OvermorrowMod.Common.Particles
         public override string Texture => AssetDirectory.Textures + "Spotlight";
         public override void Update()
         {
-            particle.velocity.X += Main.windSpeed;
+            particle.velocity.X += Main.windSpeedCurrent;
             particle.velocity.Y -= 0.4f;
-            float progress = Utils.InverseLerp(0, particle.customData[0], particle.activeTime);
+            float progress = Utils.GetLerpValue(0, particle.customData[0], particle.activeTime);
             if (progress > 0.8f)
                 particle.alpha = (progress - 0.5f) * 2;
             if (particle.activeTime > particle.customData[0])
@@ -475,13 +475,13 @@ namespace OvermorrowMod.Common.Particles
         {
             // 0.05 == 20
             particle.velocity *= 0.98f;
-            particle.alpha = Terraria.Utils.InverseLerp(0f, 0.05f, particle.activeTime / 60f, clamped: true) * Terraria.Utils.InverseLerp(1f, 0.9f, particle.activeTime / 60f, clamped: true);
-            particle.scale = Terraria.Utils.InverseLerp(0f, 20f, particle.activeTime, clamped: true) * Terraria.Utils.InverseLerp(45f, 30f, particle.activeTime, clamped: true);
+            particle.alpha = Utils.GetLerpValue(0f, 0.05f, particle.activeTime / 60f, clamped: true) * Utils.GetLerpValue(1f, 0.9f, particle.activeTime / 60f, clamped: true);
+            particle.scale = Utils.GetLerpValue(0f, 20f, particle.activeTime, clamped: true) * Utils.GetLerpValue(45f, 30f, particle.activeTime, clamped: true);
             if (particle.activeTime > maxTime) particle.Kill();
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_644");
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Projectile_644").Value;
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             Color col = Color.White * particle.alpha * 0.9f;
             col.A /= 2;
@@ -529,7 +529,7 @@ namespace OvermorrowMod.Common.Particles
 
         private void DrawRing(SpriteBatch spriteBatch, Vector2 position, float width, float height, float rotation, float prog, Color color)
         {
-            var texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
+            var texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
             Effect effect = OvermorrowModFile.Instance.Ring;
 
             effect.Parameters["uProgress"].SetValue(rotation);
@@ -599,7 +599,7 @@ namespace OvermorrowMod.Common.Particles
         {
             spriteBatch.Reload(BlendState.Additive);
 
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
             Vector2 origin = new Vector2(texture.Width, texture.Height) / 2;
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
 

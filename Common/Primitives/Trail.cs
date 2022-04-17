@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using OvermorrowMod.Common;
+using Terraria.DataStructures;
 
 namespace OvermorrowMod.Common.Primitives
 {
@@ -50,13 +51,13 @@ namespace OvermorrowMod.Common.Primitives
                 }
             }
         }
-        public static int CreateNPCTrail(On.Terraria.NPC.orig_NewNPC orig, int X, int Y, int Type, int start, float ai0, float ai1, float ai2, float ai3, int target)
+        public static int CreateNPCTrail(On.Terraria.NPC.orig_NewNPC orig, IEntitySource source, int X, int Y, int Type, int start, float ai0, float ai1, float ai2, float ai3, int target)
         {
-            int a = orig(X, Y, Type, start, ai0, ai1, ai2, ai3, target);
+            int a = orig(source, X, Y, Type, start, ai0, ai1, ai2, ai3, target);
             NPC npc = Main.npc[a];
-            if (npc.modNPC != null && npc.modNPC is ITrailEntity)
+            if (npc.ModNPC != null && npc.ModNPC is ITrailEntity)
             {
-                ITrailEntity entity = npc.modNPC as ITrailEntity;
+                ITrailEntity entity = npc.ModNPC as ITrailEntity;
                 Trail trail = (Trail)Activator.CreateInstance(entity.TrailType());
                 trail.DrawType = DrawType.NPC;
                 trail.Entity = npc;
@@ -66,11 +67,11 @@ namespace OvermorrowMod.Common.Primitives
             }
             return a;
         }
-        public static int CreateProjectileTrail(On.Terraria.Projectile.orig_NewProjectile_float_float_float_float_int_int_float_int_float_float orig, float X, float Y, float SpeedX, float SpeedY, int type, int damage, float Knockback, int owner, float ai0, float ai1)
+        public static int CreateProjectileTrail(On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float orig, IEntitySource source, float X, float Y, float SpeedX, float SpeedY, int type, int damage, float Knockback, int owner, float ai0, float ai1)
         {
-            int p = orig(X, Y, SpeedX, SpeedY, type, damage, Knockback, owner, ai0, ai1);
+            int p = orig(source, X, Y, SpeedX, SpeedY, type, damage, Knockback, owner, ai0, ai1);
             Projectile projectile = Main.projectile[p];
-            if (projectile.modProjectile is ITrailEntity entity)
+            if (projectile.ModProjectile is ITrailEntity entity)
             {
                 Trail trail = (Trail)Activator.CreateInstance(entity.TrailType());
                 trail.DrawType = DrawType.Projectile;
@@ -123,7 +124,7 @@ namespace OvermorrowMod.Common.Primitives
         {
             trails = new List<Trail>();
             On.Terraria.NPC.NewNPC += CreateNPCTrail;
-            On.Terraria.Projectile.NewProjectile_float_float_float_float_int_int_float_int_float_float += CreateProjectileTrail;
+            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float += CreateProjectileTrail;
 
             On.Terraria.Main.DrawNPCs += DrawNPCTrails;
             On.Terraria.Main.DrawProjectiles += DrawProjectileTrails;
@@ -139,7 +140,7 @@ namespace OvermorrowMod.Common.Primitives
             On.Terraria.Main.DrawProjectiles -= DrawProjectileTrails;
             On.Terraria.Main.DrawNPCs -= DrawNPCTrails;
 
-            On.Terraria.Projectile.NewProjectile_float_float_float_float_int_int_float_int_float_float -= CreateProjectileTrail;
+            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float -= CreateProjectileTrail;
             On.Terraria.NPC.NewNPC -= CreateNPCTrail;
             trails = null;
         }

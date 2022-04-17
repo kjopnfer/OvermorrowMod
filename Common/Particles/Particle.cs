@@ -50,7 +50,7 @@ namespace OvermorrowMod.Common.Particles
                 CustomParticle particle = (CustomParticle)Activator.CreateInstance(type);
                 particle.mod = OvermorrowModFile.Instance;
                 CustomParticle.CustomParticles.Add(id, particle);
-                Texture2D texture = particle.Texture == null ? ModContent.GetTexture(type.FullName.Replace('.', '/')) : ModContent.GetTexture(particle.Texture);
+                var texture = ModContent.Request<Texture2D>(particle.Texture ?? type.FullName.Replace('.', '/')).Value;
                 ParticleTextures.Add(id, texture);
                 ParticleNames.Add(id, type.Name);
             }
