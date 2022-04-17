@@ -157,7 +157,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
 
     public class IorichSummonEnergy : ModProjectile
     {
-        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Item_" + ProjectileID.LostSoulFriendly;
         public override bool? CanDamage() => false;
         public override void SetStaticDefaults()
         {
@@ -208,7 +208,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
             return typeof(TorchTrail);
         }
 
-        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Item_" + ProjectileID.LostSoulFriendly;
         public Color ProjectileColor = Main.DiscoColor;
 
         public override void SetStaticDefaults()

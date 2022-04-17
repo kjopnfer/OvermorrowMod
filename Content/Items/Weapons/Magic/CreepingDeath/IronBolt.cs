@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.CreepingDeath
 {
     public class IronBolt : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.SlushBall;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.SlushBall;
 
         public override void SetDefaults()
         {

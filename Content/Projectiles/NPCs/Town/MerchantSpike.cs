@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Projectiles.NPCs.Town
 {
     public class MerchantSpike : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.MagnetSphereBolt;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.MagnetSphereBolt;
         public override void SetDefaults()
         {
             //projectile.CloneDefaults(ProjectileID.MagnetSphereBolt);

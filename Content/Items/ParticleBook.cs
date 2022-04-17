@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items
 {
     public class ParticleBook : ModItem
     {
-        public override string Texture => "Terraria/Item_" + ItemID.Book;
+        public override string Texture => "Terraria/Images/Item_" + ItemID.Book;
         public int currentType;
 
         public override void SetStaticDefaults()

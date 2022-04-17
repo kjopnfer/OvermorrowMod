@@ -6,8 +6,8 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.WardenClass.Weapons.Censers
 {
     public class CeremonyCenser : ModItem
-    {        
-        public override string Texture => "Terraria/Item_" + ItemID.CactusBathtub;
+    {
+        public override string Texture => "Terraria/Images/Item_" + ItemID.CactusBathtub;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Ceremonial Censer");

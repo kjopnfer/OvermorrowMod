@@ -168,7 +168,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Projectile_644").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_644").Value;
             Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
 
@@ -178,7 +178,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.Request<Texture2D>("Terraria/Extra_89").Value;
+            Texture2D SoulTexture = ModContent.Request<Texture2D>("Terraria/Images/Extra_89").Value;
 
             Main.spriteBatch.Draw(SoulTexture, Projectile.Center - Main.screenPosition, null, ProjectileColor, Projectile.rotation + MathHelper.PiOver2, SoulTexture.Size() / 2, new Vector2(0.5f, 1), SpriteEffects.None, 0f);
 

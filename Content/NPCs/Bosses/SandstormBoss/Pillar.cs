@@ -57,7 +57,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         private int RandomStart;
         private int RandomDelay;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Ancient Energy");
@@ -145,7 +145,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
     public class PillarShot : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Ancient Bolt");

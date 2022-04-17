@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
 {
     public class CursedBall : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.CursedFlameFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.CursedFlameFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Cursed Fireball");

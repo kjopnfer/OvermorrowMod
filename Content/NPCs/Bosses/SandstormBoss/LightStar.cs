@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public float TrailSize(float progress) => 24;
         public Type TrailType() => typeof(TorchTrail);
 
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Searing Star");

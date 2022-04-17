@@ -142,7 +142,7 @@ namespace OvermorrowMod.Common
 
             return positions;
         }
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulHostile;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulHostile;
         public List<LightningSegment> Positions = new List<LightningSegment>();
         public float Length;
         public bool Sine;

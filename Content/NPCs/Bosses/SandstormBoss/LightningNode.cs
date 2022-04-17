@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public Projectile ArenaCenter;
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lightning Node");

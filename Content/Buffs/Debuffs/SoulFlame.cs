@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
             DisplayName.SetDefault("Flame Test");
         }
 
-        public override string Texture => "Terraria/Buff_" + BuffID.OnFire;
+        public override string Texture => "Terraria/Images/Buff_" + BuffID.OnFire;
 
         public override void Update(NPC npc, ref int buffIndex)
         {

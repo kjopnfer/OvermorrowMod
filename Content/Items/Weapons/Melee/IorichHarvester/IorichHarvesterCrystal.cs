@@ -107,7 +107,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
     public class IorichHarvesterCrystalProjectile : ModProjectile
     {
         public override bool? CanDamage() => false;
-        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Item_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Nature Crystal");

@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
             return typeof(SoulTrail);
         }
 
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public float distance;
         public float movement;
         public float delta;

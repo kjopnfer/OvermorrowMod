@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GemStaves
 {
     public class DiamondProj : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.MagnetSphereBolt;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.MagnetSphereBolt;
         public override void SetDefaults()
         {
             Projectile.CloneDefaults(ProjectileID.MagnetSphereBolt);

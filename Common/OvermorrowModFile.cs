@@ -139,10 +139,10 @@ namespace OvermorrowMod.Common
 
             if (!Main.dedServ)
             {
-                // Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
-                // Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
+                // Main.logoTexture = ModContent.GetTexture("Terraria/Images/Logo");
+                // Main.logo2Texture = ModContent.GetTexture("Terraria/Images/Logo2");
             }
-            
+
 
             SandModeKey = null;
             AmuletKey = null;

@@ -11,7 +11,7 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
 {
     public class IchorStream : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.IchorSplash;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.IchorSplash;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Ichor Stream");

@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
 {
     public class IorichBowEnergy : ModProjectile
     {
-        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Item_" + ProjectileID.LostSoulFriendly;
         public override bool? CanDamage() => false;
         public override void SetStaticDefaults()
         {

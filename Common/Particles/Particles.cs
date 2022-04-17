@@ -64,7 +64,7 @@ namespace OvermorrowMod.Common.Particles
         public void Draw(SpriteBatch spriteBatch)
         {
             // draw lightnings, draw alpha circle, draw extra small electric particles
-            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Projectile_" + ProjectileID.StardustTowerMark).Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
             for (int i = 0; i < previousSegments.Count - 1; i++)
             {
                 var seg1 = previousSegments[i];
@@ -481,7 +481,7 @@ namespace OvermorrowMod.Common.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Projectile_644").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_644").Value;
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             Color col = Color.White * particle.alpha * 0.9f;
             col.A /= 2;

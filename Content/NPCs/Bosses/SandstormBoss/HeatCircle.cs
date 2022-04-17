@@ -12,7 +12,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
     {
         private const int RADIUS = 102;
 
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Heat Circle");

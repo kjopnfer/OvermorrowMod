@@ -11,7 +11,7 @@ namespace OvermorrowMod.Common.NPCs
         public bool Grappled = false;
         protected bool CanBeGrappled = true;
         protected Projectile GrappleProjectile = null;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.Meteor3;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {

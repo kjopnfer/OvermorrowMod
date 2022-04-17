@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
 {
     public class SapSpurt : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulHostile;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulHostile;
 
         public override void SetStaticDefaults()
         {
@@ -73,7 +73,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
     public class SapSpurt2 : ModProjectile
     {
         int storeDamage;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulHostile;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulHostile;
 
         public override void SetStaticDefaults()
         {

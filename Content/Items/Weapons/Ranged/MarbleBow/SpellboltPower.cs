@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
 {
     public class SpellboltPower : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.UnholyArrow; // until we've got a new texture
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.UnholyArrow; // until we've got a new texture
         public override void SetDefaults()
         {
             Projectile.width = 30;

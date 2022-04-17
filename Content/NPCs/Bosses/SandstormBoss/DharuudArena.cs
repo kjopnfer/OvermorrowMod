@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         int BarrierCounter = 0;
 
         public override bool? CanDamage() => false;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.SandnadoHostile;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.SandnadoHostile;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dhood Arena");

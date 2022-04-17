@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.PufferStaff
     {
         private bool release = false;
 
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.FlaironBubble;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.FlaironBubble;
 
         public override void SetStaticDefaults()
         {

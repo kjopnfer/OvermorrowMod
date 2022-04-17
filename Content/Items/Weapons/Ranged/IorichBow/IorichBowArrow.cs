@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Projectile_644").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_644").Value;
             Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
 

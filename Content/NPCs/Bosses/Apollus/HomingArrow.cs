@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
 {
     public class HomingArrow : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.BoneArrow;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.BoneArrow;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Arrow");
