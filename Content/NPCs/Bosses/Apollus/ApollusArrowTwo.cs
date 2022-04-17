@@ -19,55 +19,55 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
         }
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
-            projectile.hostile = true;
-            projectile.friendly = false;
-            projectile.tileCollide = false;
-            projectile.penetrate = 30;
-            projectile.timeLeft = 600;
-            projectile.light = 0.75f;
-            projectile.extraUpdates = 1;
-            projectile.ignoreWater = true;
+            Projectile.width = 12;
+            Projectile.height = 12;
+            Projectile.hostile = true;
+            Projectile.friendly = false;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = 30;
+            Projectile.timeLeft = 600;
+            Projectile.light = 0.75f;
+            Projectile.extraUpdates = 1;
+            Projectile.ignoreWater = true;
         }
 
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
-            Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
+            Dust dust = Dust.NewDustPerfect(Projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
+            Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 0);
 
 
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
 
-            if (projectile.ai[0] < 15 && part2 == false)
+            if (Projectile.ai[0] < 15 && part2 == false)
             {
-                projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
 
-            if (projectile.ai[0] == 5 && part2 == false)
+            if (Projectile.ai[0] == 5 && part2 == false)
             {
-                storeVelocity = projectile.velocity;
-                storeRotation = projectile.rotation;
+                storeVelocity = Projectile.velocity;
+                storeRotation = Projectile.rotation;
             }
 
-            projectile.rotation = storeRotation;
+            Projectile.rotation = storeRotation;
 
-            if (projectile.ai[0] > 15 && part2 == false)
+            if (Projectile.ai[0] > 15 && part2 == false)
             {
-                projectile.velocity = Vector2.Zero;
+                Projectile.velocity = Vector2.Zero;
             }
 
-            if (projectile.velocity == Vector2.Zero && part2 == false)
+            if (Projectile.velocity == Vector2.Zero && part2 == false)
             {
-                projectile.ai[0] = 0;
+                Projectile.ai[0] = 0;
                 part2 = true;
             }
 
-            if (projectile.ai[0] > 90 + (projectile.ai[1] * -4) && part2 == true)
+            if (Projectile.ai[0] > 90 + (Projectile.ai[1] * -4) && part2 == true)
             {
-                projectile.velocity = storeVelocity;
+                Projectile.velocity = storeVelocity;
             }
 
         }

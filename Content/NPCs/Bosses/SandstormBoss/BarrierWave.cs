@@ -23,46 +23,46 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            projectile.width = projectile.height = 96;
-            projectile.timeLeft = 69420;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.penetrate = -1;
-            projectile.extraUpdates = 100;
+            Projectile.width = Projectile.height = 96;
+            Projectile.timeLeft = 69420;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.extraUpdates = 100;
         }
 
         public override void AI()
         {
-            if (++projectile.ai[0] % 60 == 0)
+            if (++Projectile.ai[0] % 60 == 0)
             {
-                Particle.CreateParticle(Particle.ParticleType<Pulse>(), projectile.Center, Vector2.Zero, Color.Orange, 1, 0.5f, projectile.velocity.ToRotation());
+                Particle.CreateParticle(Particle.ParticleType<Pulse>(), Projectile.Center, Vector2.Zero, Color.Orange, 1, 0.5f, Projectile.velocity.ToRotation());
             }
 
             foreach (Projectile proj in Main.projectile)
             {
                 if (proj.active && proj.type == ModContent.ProjectileType<DharuudArena>())
                 {
-                    if (projectile.Hitbox.Intersects(proj.Hitbox))
+                    if (Projectile.Hitbox.Intersects(proj.Hitbox))
                     {
                         Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), proj.Center, Vector2.Zero, Color.Yellow, 1, 2f);
 
                         foreach (Player player in Main.player)
                         {
-                            if (player.active && projectile.Distance(player.Center) < 300 && player.immuneTime == 0)
+                            if (player.active && Projectile.Distance(player.Center) < 300 && player.immuneTime == 0)
                             {
                                 player.Hurt(PlayerDeathReason.ByCustomReason(player.name + " was flattened by shock waves."), 50, 0);
                             }
 
-                            if (player.active && projectile.Distance(player.Center) < 1200)
+                            if (player.active && Projectile.Distance(player.Center) < 1200)
                             {
                                 var modPlayer = player.Overmorrow();
                                 modPlayer.AddScreenShake(45, 10);
                             }
                         }
 
-                        projectile.Kill();
+                        Projectile.Kill();
                     }
                 }
             }

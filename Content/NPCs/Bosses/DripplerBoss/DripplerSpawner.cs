@@ -14,31 +14,31 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
         }
         public override void SetDefaults()
         {
-            projectile.width = 16;
-            projectile.height = 16;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 120;
-            projectile.alpha = 255;
-            projectile.tileCollide = false;
+            Projectile.width = 16;
+            Projectile.height = 16;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 120;
+            Projectile.alpha = 255;
+            Projectile.tileCollide = false;
         }
         public override void AI()
         {
-            projectile.localAI[0] += 1f;
-            if (projectile.localAI[0] > 3f)
+            Projectile.localAI[0] += 1f;
+            if (Projectile.localAI[0] > 3f)
             {
-                int dust = Dust.NewDust(projectile.Center, projectile.width, projectile.height, DustID.Blood, 0, 0, 0, default, 1.84f);
+                int dust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Blood, 0, 0, 0, default, 1.84f);
                 Main.dust[dust].noGravity = true;
             }
         }
         public override void Kill(int timeLeft)
         {
-            if (projectile.ai[0] == 0)
+            if (Projectile.ai[0] == 0)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int spawnedNPC = NPC.NewNPC((int)(projectile.Center.X), (int)(projectile.Center.Y), ModContent.NPCType<LoomingDrippler>(), 0, 0, projectile.ai[1]);
+                    int spawnedNPC = NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)(Projectile.Center.X), (int)(Projectile.Center.Y), ModContent.NPCType<LoomingDrippler>(), 0, 0, Projectile.ai[1]);
 
                     if (Main.netMode == NetmodeID.Server)
                     {

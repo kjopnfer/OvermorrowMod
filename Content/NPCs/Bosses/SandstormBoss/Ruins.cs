@@ -28,29 +28,29 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            npc.noTileCollide = true;
-            npc.noGravity = true;
-            npc.knockBackResist = 0f;
-            npc.aiStyle = -1;
-            npc.friendly = false;
+            NPC.noTileCollide = true;
+            NPC.noGravity = true;
+            NPC.knockBackResist = 0f;
+            NPC.aiStyle = -1;
+            NPC.friendly = false;
             //npc.behindTiles = true;
-            npc.dontTakeDamage = true;
-            npc.alpha = 255;
+            NPC.dontTakeDamage = true;
+            NPC.alpha = 255;
         }
 
-        public ref float AICounter => ref npc.ai[0];
-        public ref float Offset => ref npc.ai[1];
+        public ref float AICounter => ref NPC.ai[0];
+        public ref float Offset => ref NPC.ai[1];
 
         public override void DrawBehind(int index)
         {
             if (!CanFall)
             {
-                npc.hide = true;
+                NPC.hide = true;
                 Main.instance.DrawCacheNPCsMoonMoon.Add(index);
             }
             else
             {
-                npc.hide = false;
+                NPC.hide = false;
             }
         }
 
@@ -60,61 +60,61 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             {
                 InitialRotation = MathHelper.ToRadians(Main.rand.Next(0, 9) * 20);
 
-                Tile tile = Framing.GetTileSafely((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
+                Tile tile = Framing.GetTileSafely((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
 
-                while (!tile.active() || tile.collisionType != 1 || tile.type == TileID.Gold || tile.type == ModContent.TileType<SandBrick>())
+                while (!tile.HasTile || !Main.tileSolid[tile.TileType] || Main.tileSolidTop[tile.TileType] || tile.TileType == TileID.Gold || tile.TileType == ModContent.TileType<SandBrick>())
                 {
-                    npc.position.Y += 1;
-                    tile = Framing.GetTileSafely((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
+                    NPC.position.Y += 1;
+                    tile = Framing.GetTileSafely((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
                 }
 
-                npc.position.Y += Main.rand.Next(4, 8) * 20;
-                InitialPosition = npc.Center;
+                NPC.position.Y += Main.rand.Next(4, 8) * 20;
+                InitialPosition = NPC.Center;
             }
 
             if (!CanFall)
             {
                 if (AICounter++ <= 1280)
                 {
-                    npc.alpha = 0;
+                    NPC.alpha = 0;
 
                     //npc.Center -= Vector2.UnitY * 5;
 
-                    npc.Center = Vector2.Lerp(InitialPosition, new Vector2(InitialPosition.X, Desert.DesertArenaCenter.Y - Offset - 750), Utils.Clamp((float)AICounter++, 0, 1280) / 1280);
+                    NPC.Center = Vector2.Lerp(InitialPosition, new Vector2(InitialPosition.X, Desert.DesertArenaCenter.Y - Offset - 750), Utils.Clamp((float)AICounter++, 0, 1280) / 1280);
 
-                    if (AICounter == 1280) InitialPosition = npc.Center;
+                    if (AICounter == 1280) InitialPosition = NPC.Center;
                 }
                 else
                 {
-                    npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + Vector2.UnitY * 50, (float)Math.Sin(npc.localAI[0]++ / 120f));
+                    NPC.Center = Vector2.Lerp(InitialPosition, InitialPosition + Vector2.UnitY * 50, (float)Math.Sin(NPC.localAI[0]++ / 120f));
                 }
 
-                npc.rotation = MathHelper.Lerp(InitialRotation, InitialRotation + MathHelper.PiOver4, (float)Math.Sin(npc.localAI[0] / 240f));
+                NPC.rotation = MathHelper.Lerp(InitialRotation, InitialRotation + MathHelper.PiOver4, (float)Math.Sin(NPC.localAI[0] / 240f));
             }
             else
             {
                 // Boss sets the velocity of the NPC
                 // The velocity is then stopped here if it detects a tile
-                Tile tile = Framing.GetTileSafely(npc.Center + Vector2.UnitY * 25);
-                if (tile.active() && tile.collisionType == 1 && 
-                    (tile.type == TileID.Gold || tile.type == ModContent.TileType<SandBrick>() || tile.type == TileID.Sand))
+                Tile tile = Framing.GetTileSafely(NPC.Center + Vector2.UnitY * 25);
+                if (tile.HasTile && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType] && 
+                    (tile.TileType == TileID.Gold || tile.TileType == ModContent.TileType<SandBrick>() || tile.TileType == TileID.Sand))
                 {
                     if (!Collided)
                     {
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
                             Player player = Main.player[i];
-                            if (player.active && npc.Distance(player.Center) < 2000)
+                            if (player.active && NPC.Distance(player.Center) < 2000)
                             {
                                 player.Overmorrow().AddScreenShake(60, 10);
                             }
                         }
 
-                        InitialPosition = npc.Center;
+                        InitialPosition = NPC.Center;
                     }
 
-                    npc.noGravity = true;
-                    npc.velocity.Y = 0;
+                    NPC.noGravity = true;
+                    NPC.velocity.Y = 0;
 
                     Collided = true;
                 }
@@ -123,18 +123,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 {
                     for (int i = 0; i < Main.rand.Next(7, 10); i++)
                     {
-                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-10, 10), 5);
+                        Vector2 RandomPosition = NPC.Center + new Vector2(Main.rand.Next(-10, 10), 5);
                         Vector2 RandomVelocity = -Vector2.One.RotatedByRandom(MathHelper.Pi) * Main.rand.Next(1, 3);
                         Particle.CreateParticle(Particle.ParticleType<Smoke2>(), RandomPosition, RandomVelocity, new Color(182, 128, 70), Main.rand.NextFloat(0.15f, 0.35f), 1, 0, 0, Main.rand.Next(90, 120));
                     }
 
-                    npc.life = 0;
-                    npc.active = false;
+                    NPC.life = 0;
+                    NPC.active = false;
                 }
             }
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             /*if (CanFall && !Collided)
             {
@@ -169,7 +169,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 return false;
             }*/
 
-            return base.PreDraw(spriteBatch, drawColor);
+            return base.PreDraw(spriteBatch, screenPos, drawColor);
         }
     }
 
@@ -179,11 +179,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             base.SetDefaults();
 
-            npc.width = 94;
-            npc.height = 102;
-            npc.timeLeft = 1200;
-            npc.lifeMax = 200;
-            npc.damage = 85;
+            NPC.width = 94;
+            NPC.height = 102;
+            NPC.timeLeft = 1200;
+            NPC.lifeMax = 200;
+            NPC.damage = 85;
         }
     }
 
@@ -193,11 +193,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             base.SetDefaults();
 
-            npc.width = 142;
-            npc.height = 132;
-            npc.timeLeft = 1200;
-            npc.lifeMax = 400;
-            npc.damage = 160;
+            NPC.width = 142;
+            NPC.height = 132;
+            NPC.timeLeft = 1200;
+            NPC.lifeMax = 400;
+            NPC.damage = 160;
         }
     }
 
@@ -207,11 +207,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             base.SetDefaults();
 
-            npc.width = 60;
-            npc.height = 60;
-            npc.timeLeft = 1200;
-            npc.lifeMax = 100;
-            npc.damage = 50;
+            NPC.width = 60;
+            NPC.height = 60;
+            NPC.timeLeft = 1200;
+            NPC.lifeMax = 100;
+            NPC.damage = 50;
         }
     }
 }

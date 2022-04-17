@@ -23,20 +23,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            npc.width = npc.height = 70;
-            npc.friendly = false;
-            npc.timeLeft = 5;
-            npc.lifeMax = 20;
-            npc.aiStyle = -1;
-            npc.knockBackResist = 0f;
-            npc.noTileCollide = true;
-            npc.noGravity = true;
-            npc.dontTakeDamage = true;
+            NPC.width = NPC.height = 70;
+            NPC.friendly = false;
+            NPC.timeLeft = 5;
+            NPC.lifeMax = 20;
+            NPC.aiStyle = -1;
+            NPC.knockBackResist = 0f;
+            NPC.noTileCollide = true;
+            NPC.noGravity = true;
+            NPC.dontTakeDamage = true;
         }
 
-        private ref float SelfID => ref npc.ai[0];
-        private ref float ArenaID => ref npc.ai[1];
-        private ref float AICounter => ref npc.ai[2];
+        private ref float SelfID => ref NPC.ai[0];
+        private ref float ArenaID => ref NPC.ai[1];
+        private ref float AICounter => ref NPC.ai[2];
         public override void AI()
         {
             ArenaCenter = Main.projectile[(int)ArenaID];
@@ -59,14 +59,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC NodeNPC = Main.npc[i];
-                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1 && NodeNPC.modNPC is LightningNode)
+                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
 
-                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1 && NodeNPC.modNPC is LightningNode)
+                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
                         }
                         break;
@@ -74,14 +74,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC NodeNPC = Main.npc[i];
-                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1 && NodeNPC.modNPC is LightningNode)
+                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
 
-                            if (NodeNPC.active && NodeNPC.ai[0] == 8 && NodeNPC.modNPC is LightningNode)
+                            if (NodeNPC.active && NodeNPC.ai[0] == 8 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
                         }
                         break;
@@ -89,42 +89,42 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC NodeNPC = Main.npc[i];
-                            if (NodeNPC.active && NodeNPC.ai[0] == 1 && NodeNPC.modNPC is LightningNode)
+                            if (NodeNPC.active && NodeNPC.ai[0] == 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
 
-                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1 && NodeNPC.modNPC is LightningNode)
+                            if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(npc.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, npc.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
                         }
                         break;
                 }
 
-                npc.velocity = ArenaCenter.DirectionFrom(npc.Center) * 0.66f;
+                NPC.velocity = ArenaCenter.DirectionFrom(NPC.Center) * 0.66f;
             }
 
-            if (npc.Hitbox.Intersects(ArenaCenter.Hitbox))
+            if (NPC.Hitbox.Intersects(ArenaCenter.Hitbox))
             {
-                npc.active = false;
+                NPC.active = false;
             }
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/PillarSpawner");
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/PillarSpawner").Value;
             //float mult = (0.55f + (float)Math.Sin(Main.GlobalTime) * 0.1f);
             //float scale = npc.scale * 2 * mult;
 
-            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, LinkColor, 0, new Vector2(texture.Width, texture.Height) / 2, 2, SpriteEffects.None, 0f);
-            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.White, 0, new Vector2(texture.Width, texture.Height) / 2, 1f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, LinkColor, 0, new Vector2(texture.Width, texture.Height) / 2, 2, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.White, 0, new Vector2(texture.Width, texture.Height) / 2, 1f, SpriteEffects.None, 0f);
 
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
 
@@ -138,10 +138,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SafeSetDefaults()
         {
-            projectile.width = 7;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.width = 7;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
             Color1 = Color.LightYellow;
@@ -150,18 +150,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
-            if (Main.npc[(int)projectile.ai[0]].active && Main.npc[(int)projectile.ai[0]].modNPC is LightningNode &&
-                Main.npc[(int)projectile.ai[1]].active && Main.npc[(int)projectile.ai[1]].modNPC is LightningNode)
+            if (Main.npc[(int)Projectile.ai[0]].active && Main.npc[(int)Projectile.ai[0]].ModNPC is LightningNode &&
+                Main.npc[(int)Projectile.ai[1]].active && Main.npc[(int)Projectile.ai[1]].ModNPC is LightningNode)
             {
-                projectile.timeLeft = 5;
+                Projectile.timeLeft = 5;
             }
 
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 2000f);
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 2000f);
             float sway = 40f;
             float divider = 16f;
-            Positions = CreateLightning(Main.npc[(int)projectile.ai[0]].Center, Main.npc[(int)projectile.ai[1]].Center, 15, sway, divider);
+            Positions = CreateLightning(Main.npc[(int)Projectile.ai[0]].Center, Main.npc[(int)Projectile.ai[1]].Center, 15, sway, divider);
 
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {

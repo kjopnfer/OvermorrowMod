@@ -15,20 +15,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
         }
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
-            projectile.tileCollide = false;
-            projectile.hostile = true;
-            projectile.friendly = false;
-            projectile.timeLeft = 1800;
-            projectile.penetrate = -1;
-            aiType = ProjectileID.BoneArrow;
-            projectile.aiStyle = 1;
+            Projectile.width = 12;
+            Projectile.height = 12;
+            Projectile.tileCollide = false;
+            Projectile.hostile = true;
+            Projectile.friendly = false;
+            Projectile.timeLeft = 1800;
+            Projectile.penetrate = -1;
+            AIType = ProjectileID.BoneArrow;
+            Projectile.aiStyle = 1;
         }
         public override void AI()
         {
-            Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
-            Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
+            Dust dust = Dust.NewDustPerfect(Projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
+            Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 0);
 
         }
     }

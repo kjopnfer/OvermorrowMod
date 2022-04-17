@@ -11,36 +11,36 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("ArrowRunner");
-            Main.projFrames[projectile.type] = 6;
+            Main.projFrames[Projectile.type] = 6;
         }
         public override void SetDefaults()
         {
-            projectile.width = 32;
-            projectile.height = 32;
-            projectile.friendly = true;
-            projectile.DamageType = DamageClass.Melee;
-            projectile.tileCollide = false;
-            projectile.penetrate = 30;
-            projectile.timeLeft = 420;
-            projectile.light = 0.75f;
-            projectile.extraUpdates = 1;
-            projectile.ignoreWater = true;
+            Projectile.width = 32;
+            Projectile.height = 32;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = 30;
+            Projectile.timeLeft = 420;
+            Projectile.light = 0.75f;
+            Projectile.extraUpdates = 1;
+            Projectile.ignoreWater = true;
         }
         int timer = 0;
         public override void AI()
         {
             /*
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
             */
             Vector2 value1 = new Vector2(0f, 1f);
             value1.Normalize();
             value1 *= 1f;
-            int projectiles = 8;
+            int Projectiles = 8;
             if (++timer % 120 == 0)
             {
-                for (int j = 0; j < projectiles; j++)
+                for (int j = 0; j < Projectiles; j++)
                 {
-                    Projectile.NewProjectile(projectile.Center, new Vector2(0f, -6f).RotatedBy(j * MathHelper.ToRadians(360f) / projectiles), ModContent.ProjectileType<HomingArrow>(), 2, 10f, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(0f, -6f).RotatedBy(j * MathHelper.ToRadians(360f) / Projectiles), ModContent.ProjectileType<HomingArrow>(), 2, 10f, Main.myPlayer);
                 }
             }
         }

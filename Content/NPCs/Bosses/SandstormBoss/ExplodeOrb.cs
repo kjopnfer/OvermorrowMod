@@ -25,27 +25,27 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Volatile Orb");
-            ProjectileID.Sets.TrailingMode[projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = projectile.height = 50;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.aiStyle = -1;
-            projectile.timeLeft = 600;
-            projectile.tileCollide = false;
-            projectile.extraUpdates = 1;
+            Projectile.width = Projectile.height = 50;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.aiStyle = -1;
+            Projectile.timeLeft = 600;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 1;
         }
         public Vector2 PolarVector(float radius, float theta)
         {
             return new Vector2((float)Math.Cos(theta), (float)Math.Sin(theta)) * radius;
         }
 
-        public ref float AICounter => ref projectile.ai[0];
-        public ref float AngleOffset => ref projectile.ai[1];
+        public ref float AICounter => ref Projectile.ai[0];
+        public ref float AngleOffset => ref Projectile.ai[1];
         public override void AI()
         {
             /*Vector2 move = Vector2.Zero;
@@ -83,14 +83,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             if (RunOnce)
             {
-                npc = Main.npc[(int)projectile.ai[0]];
+                npc = Main.npc[(int)Projectile.ai[0]];
 
                 AICounter = 0;
 
                 RunOnce = false;
             }
 
-            if (!npc.active) projectile.Kill();
+            if (!npc.active) Projectile.Kill();
 
             Player player = Main.player[npc.target];
             if (AICounter++ <= 120)
@@ -98,12 +98,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 Vector2 direction = npc.DirectionTo(player.Center);
                 float dist = 85f;
 
-                projectile.Center = npc.Center + direction.RotatedBy(MathHelper.PiOver2 * AngleOffset) * dist;
+                Projectile.Center = npc.Center + direction.RotatedBy(MathHelper.PiOver2 * AngleOffset) * dist;
 
                 if (AICounter == 120)
                 {
-                    projectile.velocity = direction * 2;
-                    storeDirection = projectile.velocity.ToRotation();
+                    Projectile.velocity = direction * 2;
+                    storeDirection = Projectile.velocity.ToRotation();
                 }
             }
             else
@@ -111,7 +111,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 trigCounter += 2 * (float)Math.PI / period;
                 float r = amplitude * (float)Math.Sin(trigCounter) * AngleOffset;
                 Vector2 instaVel = PolarVector(r - previousR, storeDirection + (float)Math.PI / 2);
-                projectile.position += instaVel;
+                Projectile.position += instaVel;
                 previousR = r;
             }
 
@@ -147,27 +147,27 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             float radius = 30;
             projectile.ai[1] += projectile.ai[0] == 0 ? 16 : -16;*/
 
-            projectile.rotation += 0.1f;
+            Projectile.rotation += 0.1f;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Boss + "SandstormBoss/ExplodeOrb_Trail");
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "SandstormBoss/ExplodeOrb_Trail").Value;
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            var off = new Vector2(projectile.width / 2f, projectile.height / 2f);
-            int frameHeight = texture.Height / Main.projFrames[projectile.type];
-            var frame = new Rectangle(0, frameHeight * projectile.frame, texture.Width, frameHeight - 2);
+            var off = new Vector2(Projectile.width / 2f, Projectile.height / 2f);
+            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            var frame = new Rectangle(0, frameHeight * Projectile.frame, texture.Width, frameHeight - 2);
             var orig = frame.Size() / 2f;
 
             Color color = Color.Yellow;
-            var trailLength = ProjectileID.Sets.TrailCacheLength[projectile.type];
+            var trailLength = ProjectileID.Sets.TrailCacheLength[Projectile.type];
             var fadeMult = 1f / trailLength;
             for (int i = 1; i < trailLength; i++)
             {
-                Main.spriteBatch.Draw(texture, projectile.oldPos[i] - Main.screenPosition + off, frame, color * (1f - fadeMult * i), projectile.oldRot[i], orig, projectile.scale * (trailLength - i) / trailLength, SpriteEffects.None, 0f);
+                Main.EntitySpriteDraw(texture, Projectile.oldPos[i] - Main.screenPosition + off, frame, color * (1f - fadeMult * i), Projectile.oldRot[i], orig, Projectile.scale * (trailLength - i) / trailLength, SpriteEffects.None, 0);
             }
 
             Main.spriteBatch.End();
