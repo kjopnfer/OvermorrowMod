@@ -18,16 +18,16 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
 
         public override void SetDefaults()
         {
-            item.width = 48;
-            item.height = 34;
-            item.rare = ItemRarityID.Green;
-            item.useAnimation = 45;
-            item.useTime = 45;
-            item.useStyle = ItemUseStyleID.HoldingUp;
-            item.maxStack = 20;
-            item.noMelee = true;
-            item.consumable = false;
-            item.autoReuse = false;
+            Item.width = 48;
+            Item.height = 34;
+            Item.rare = ItemRarityID.Green;
+            Item.useAnimation = 45;
+            Item.useTime = 45;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.maxStack = 20;
+            Item.noMelee = true;
+            Item.consumable = false;
+            Item.autoReuse = false;
         }
 
         public override bool CanUseItem(Player player)
@@ -36,14 +36,14 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
             return !NPC.AnyNPCs(ModContent.NPCType<SandstormBoss>()) && player.ZoneDesert;
         }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)
         {
             if (player.ZoneDesert)
             {
                 // Arena spawn offset since it isn't precise grahhh
                 // First vector spawns it onto the tile position, second vector shifts it back halfway
                 Vector2 SpawnOffset = new Vector2(1 * 16, 2 * 16) - new Vector2(8, -8);
-                Projectile.NewProjectile(Desert.DesertArenaCenter + SpawnOffset, Vector2.Zero, ModContent.ProjectileType<DharuudArena>(), 0, 0, Main.myPlayer, 0, 0);
+                Projectile.NewProjectile(null, Desert.DesertArenaCenter + SpawnOffset, Vector2.Zero, ModContent.ProjectileType<DharuudArena>(), 0, 0, Main.myPlayer, 0, 0);
 
                 return true;
             }
@@ -52,13 +52,12 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.Amber, 2);
-            recipe.AddRecipeGroup("IronBar", 10);
-            recipe.AddIngredient(ItemID.SandBlock, 25);
-            recipe.AddTile(TileID.DemonAltar);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.Amber, 2)
+                .AddRecipeGroup("IronBar", 10)
+                .AddIngredient(ItemID.SandBlock, 25)
+                .AddTile(TileID.DemonAltar)
+                .Register();
         }
     }
 }

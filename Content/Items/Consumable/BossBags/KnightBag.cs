@@ -22,12 +22,12 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void SetDefaults()
         {
-            item.maxStack = 999;
-            item.consumable = true;
-            item.width = 36;
-            item.height = 36;
-            item.rare = ItemRarityID.Expert;
-            item.expert = true;
+            Item.maxStack = 999;
+            Item.consumable = true;
+            Item.width = 36;
+            Item.height = 36;
+            Item.rare = ItemRarityID.Expert;
+            Item.expert = true;
         }
 
         public override bool CanRightClick()
@@ -37,37 +37,38 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void OpenBossBag(Player player)
         {
-            player.TryGettingDevArmor();
-            player.TryGettingDevArmor();
+            var source = player.GetItemSource_OpenItem(Type);
+            player.TryGettingDevArmor(source);
+            player.TryGettingDevArmor(source);
 
             int choice = Main.rand.Next(4);
             if (choice == 0) // Armor
             {
-                player.QuickSpawnItem(ModContent.ItemType<GraniteHelmet>());
-                player.QuickSpawnItem(ModContent.ItemType<GraniteBreastplate>());
-                player.QuickSpawnItem(ModContent.ItemType<GraniteLeggings>());
+                player.QuickSpawnItem(source, ModContent.ItemType<GraniteHelmet>());
+                player.QuickSpawnItem(source, ModContent.ItemType<GraniteBreastplate>());
+                player.QuickSpawnItem(source, ModContent.ItemType<GraniteLeggings>());
             }
             else if (choice == 1) // Melee
             {
-                player.QuickSpawnItem(ModContent.ItemType<GraniteSpear>());
+                player.QuickSpawnItem(source, ModContent.ItemType<GraniteSpear>());
             }
             else if (choice == 2) // Mage
             {
-                player.QuickSpawnItem(ModContent.ItemType<GraniteBook>());
+                player.QuickSpawnItem(source, ModContent.ItemType<GraniteBook>());
             }
             else if (choice == 3) // Summoner
             {
-                player.QuickSpawnItem(ModContent.ItemType<GraniteStaff>());
+                player.QuickSpawnItem(source, ModContent.ItemType<GraniteStaff>());
             }
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());
+                player.QuickSpawnItem(source, ModContent.ItemType<DrakeTrophy>());
             }
 
-            player.QuickSpawnItem(ModContent.ItemType<HeartStone>(), 2);
+            player.QuickSpawnItem(source, ModContent.ItemType<HeartStone>(), 2);
 
-            player.QuickSpawnItem(ModContent.ItemType<GraniteShield>());
+            player.QuickSpawnItem(source, ModContent.ItemType<GraniteShield>());
         }
 
         public override int BossBagNPC => ModContent.NPCType<AngryStone>();

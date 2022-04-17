@@ -10,15 +10,15 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Healing Water");
-            ItemID.Sets.ItemNoGravity[item.type] = true;
-            Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(6, 6));
+            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
         }
 
         public override void SetDefaults()
         {
-            item.width = 16;
-            item.height = 28;
-            item.maxStack = 999;
+            Item.width = 16;
+            Item.height = 28;
+            Item.maxStack = 999;
         }
 
         public override bool ItemSpace(Player player)

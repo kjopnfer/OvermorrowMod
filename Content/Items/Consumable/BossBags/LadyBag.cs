@@ -21,12 +21,12 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void SetDefaults()
         {
-            item.maxStack = 999;
-            item.consumable = true;
-            item.width = 36;
-            item.height = 36;
-            item.rare = ItemRarityID.Expert;
-            item.expert = true;
+            Item.maxStack = 999;
+            Item.consumable = true;
+            Item.width = 36;
+            Item.height = 36;
+            Item.rare = ItemRarityID.Expert;
+            Item.expert = true;
         }
 
         public override bool CanRightClick()
@@ -36,34 +36,35 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void OpenBossBag(Player player)
         {
-            player.TryGettingDevArmor();
-            player.TryGettingDevArmor();
+            var source = player.GetItemSource_OpenItem(Type);
+            player.TryGettingDevArmor(source);
+            player.TryGettingDevArmor(source);
 
             int choice = Main.rand.Next(3);
             if (choice == 0) // Armor
             {
-                player.QuickSpawnItem(ModContent.ItemType<MarblePlate>());
-                player.QuickSpawnItem(ModContent.ItemType<MarbleHelm>());
-                player.QuickSpawnItem(ModContent.ItemType<MarbleLegs>());
+                player.QuickSpawnItem(source, ModContent.ItemType<MarblePlate>());
+                player.QuickSpawnItem(source, ModContent.ItemType<MarbleHelm>());
+                player.QuickSpawnItem(source, ModContent.ItemType<MarbleLegs>());
             }
             else if (choice == 1) // Magic
             {
-                player.QuickSpawnItem(ModContent.ItemType<MarbleBook>());
+                player.QuickSpawnItem(source, ModContent.ItemType<MarbleBook>());
             }
             else if (choice == 2) // Mage
             {
-                player.QuickSpawnItem(ModContent.ItemType<MarbleBow>());
+                player.QuickSpawnItem(source, ModContent.ItemType<MarbleBow>());
             }
 
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());
+                player.QuickSpawnItem(source, ModContent.ItemType<DrakeTrophy>());
             }
 
-            player.QuickSpawnItem(ModContent.ItemType<HeartStone>(), 2);
+            player.QuickSpawnItem(source, ModContent.ItemType<HeartStone>(), 2);
 
-            player.QuickSpawnItem(ModContent.ItemType<ArtemisAmulet>());
+            player.QuickSpawnItem(source, ModContent.ItemType<ArtemisAmulet>());
         }
 
         public override int BossBagNPC => ModContent.NPCType<ApollusBoss>();

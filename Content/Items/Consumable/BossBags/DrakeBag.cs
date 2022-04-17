@@ -22,12 +22,12 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void SetDefaults()
         {
-            item.maxStack = 999;
-            item.consumable = true;
-            item.width = 36;
-            item.height = 36;
-            item.rare = ItemRarityID.Expert;
-            item.expert = true;
+            Item.maxStack = 999;
+            Item.consumable = true;
+            Item.width = 36;
+            Item.height = 36;
+            Item.rare = ItemRarityID.Expert;
+            Item.expert = true;
         }
 
         public override bool CanRightClick()
@@ -37,36 +37,37 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void OpenBossBag(Player player)
         {
-            player.TryGettingDevArmor();
-            player.TryGettingDevArmor();
+            var source = player.GetItemSource_OpenItem(Type);
+            player.TryGettingDevArmor(source);
+            player.TryGettingDevArmor(source);
 
             int choice = Main.rand.Next(4);
             // Always drops one of:
             if (choice == 0) // Mage
             {
-                player.QuickSpawnItem(ModContent.ItemType<BoltStream>());
+                player.QuickSpawnItem(source, ModContent.ItemType<BoltStream>());
             }
             else if (choice == 1) // Warrior
             {
-                player.QuickSpawnItem(ModContent.ItemType<StormTalon>());
+                player.QuickSpawnItem(source, ModContent.ItemType<StormTalon>());
             }
             else if (choice == 2) // Ranger
             {
-                player.QuickSpawnItem(ModContent.ItemType<TempestGreatbow>());
+                player.QuickSpawnItem(source, ModContent.ItemType<TempestGreatbow>());
             }
             else if (choice == 3) // Summoner
             {
-                player.QuickSpawnItem(ModContent.ItemType<DrakeStaff>());
+                player.QuickSpawnItem(source, ModContent.ItemType<DrakeStaff>());
             }
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                player.QuickSpawnItem(ModContent.ItemType<DrakeTrophy>());
+                player.QuickSpawnItem(source, ModContent.ItemType<DrakeTrophy>());
             }
 
-            player.QuickSpawnItem(ModContent.ItemType<StormScale>());
+            player.QuickSpawnItem(source, ModContent.ItemType<StormScale>());
 
-            player.QuickSpawnItem(ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16));
+            player.QuickSpawnItem(source, ModContent.ItemType<StormCore>(), Main.rand.Next(10, 16));
         }
 
         public override int BossBagNPC => ModContent.NPCType</*StormDrake*/StormDrake>();

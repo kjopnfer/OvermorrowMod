@@ -11,15 +11,15 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Reaped Soul");
-            ItemID.Sets.ItemNoGravity[item.type] = true;
-            Main.RegisterItemAnimation(item.type, new DrawAnimationVertical(3, 9));
+            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(3, 9));
         }
 
         public override void SetDefaults()
         {
-            item.width = 18;
-            item.height = 30;
-            item.maxStack = 999;
+            Item.width = 18;
+            Item.height = 30;
+            Item.maxStack = 999;
         }
 
         public override Color? GetAlpha(Color lightColor) => Color.White;
@@ -29,7 +29,7 @@ namespace OvermorrowMod.Content.Items.Consumable
  
         public override void PostUpdate()
         {
-            Lighting.AddLight(item.Center, new Color(187, 127, 128).ToVector3() * 0.55f * Main.essScale);
+            Lighting.AddLight(Item.Center, new Color(187, 127, 128).ToVector3() * 0.55f * Main.essScale);
         }
     }
 }

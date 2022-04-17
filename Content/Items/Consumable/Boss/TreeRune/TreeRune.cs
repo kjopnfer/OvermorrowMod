@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using OvermorrowMod.Content.NPCs.Bosses.TreeBoss;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -18,16 +20,16 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss.TreeRune
 
         public override void SetDefaults()
         {
-            item.width = 26;
-            item.height = 28;
-            item.rare = ItemRarityID.Green;
-            item.useAnimation = 45;
-            item.useTime = 45;
-            item.useStyle = ItemUseStyleID.HoldingUp;
-            item.maxStack = 20;
-            item.noMelee = true;
-            item.consumable = true;
-            item.autoReuse = false;
+            Item.width = 26;
+            Item.height = 28;
+            Item.rare = ItemRarityID.Green;
+            Item.useAnimation = 45;
+            Item.useTime = 45;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.maxStack = 20;
+            Item.noMelee = true;
+            Item.consumable = true;
+            Item.autoReuse = false;
         }
 
         public override bool CanUseItem(Player player)
@@ -36,7 +38,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss.TreeRune
             return !NPC.AnyNPCs(ModContent.NPCType<TreeBoss>()) && !NPC.AnyNPCs(ModContent.NPCType<TreeBossP2>()) && Main.dayTime;
         }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)
         {
             player.GetModPlayer<OvermorrowModPlayer>().TitleID = 4;
             player.GetModPlayer<OvermorrowModPlayer>().FocusBoss = true;
@@ -50,11 +52,11 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss.TreeRune
                 }
                 else if (Main.netMode == NetmodeID.Server)
                 {
-                    NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich, the Guardian has awoken!"), new Color(175, 75, 255));
+                    ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Iorich, the Guardian has awoken!"), new Color(175, 75, 255));
                 }
 
-                NPC.NewNPC((int)player.position.X, (int)(player.position.Y - 50f), ModContent.NPCType<TreeBoss>(), 0, 0f, 0f, 0f, 0f, 255);
-                Main.PlaySound(SoundID.Roar, player.position, 0);
+                NPC.NewNPC(null, (int)player.position.X, (int)(player.position.Y - 50f), ModContent.NPCType<TreeBoss>(), 0, 0f, 0f, 0f, 0f, 255);
+                SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
                 return true;
             }
             return false;
@@ -62,14 +64,13 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss.TreeRune
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.PurificationPowder, 15);
-            recipe.AddIngredient(ItemID.Emerald, 1);
-            recipe.AddIngredient(ItemID.StoneBlock, 25);
-            recipe.AddIngredient(ItemID.Acorn, 10);
-            recipe.AddTile(TileID.DemonAltar);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.PurificationPowder, 15)
+                .AddIngredient(ItemID.Emerald, 1)
+                .AddIngredient(ItemID.StoneBlock, 25)
+                .AddIngredient(ItemID.Acorn, 10)
+                .AddTile(TileID.DemonAltar)
+                .Register();
         }
     }
 }

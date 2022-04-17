@@ -1,5 +1,6 @@
 using OvermorrowMod.Common;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Buffs
