@@ -16,27 +16,27 @@ namespace OvermorrowMod.WardenClass.Weapons.Censers
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.useTurn = true;
-            item.useAnimation = 30;
-            item.useTime = 30;
-            item.knockBack = 0f;
-            item.width = 36;
-            item.height = 48;
-            item.damage = 9;
-            item.shootSpeed = 18f;
-            item.shoot = ModContent.ProjectileType<CeremonyHead>();
-            item.rare = ItemRarityID.Orange;
-            item.UseSound = SoundID.Item71;
-            item.noUseGraphic = true;
-            item.channel = true;
-            item.noMelee = true;
+            Item.autoReuse = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useTurn = true;
+            Item.useAnimation = 30;
+            Item.useTime = 30;
+            Item.knockBack = 0f;
+            Item.width = 36;
+            Item.height = 48;
+            Item.damage = 9;
+            Item.shootSpeed = 18f;
+            Item.shoot = ModContent.ProjectileType<CeremonyHead>();
+            Item.rare = ItemRarityID.Orange;
+            Item.UseSound = SoundID.Item71;
+            Item.noUseGraphic = true;
+            Item.channel = true;
+            Item.noMelee = true;
         }
 
         public override bool CanUseItem(Player player)
         {
-            return player.ownedProjectileCounts[item.shoot] < 1;
+            return player.ownedProjectileCounts[Item.shoot] < 1;
         }
     }
 }

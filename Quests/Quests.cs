@@ -8,6 +8,8 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
+using Terraria.Audio;
+using Terraria.GameContent;
 
 namespace OvermorrowMod.Quests
 {
@@ -108,7 +110,7 @@ namespace OvermorrowMod.Quests
                 if (quest.CheckRequirements(player))
                 {
                     quest.CompleteQuest(player, true);
-                    Main.PlaySound(OvermorrowModFile.Instance.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestTurnIn"), npc.Center);
+                    SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("Sounds/QuestTurnIn"), npc.Center);
 
                     if (quest.EndDialogueCount > 0)
                     {
@@ -119,13 +121,13 @@ namespace OvermorrowMod.Quests
                     }
                     else
                     {
-                        player.talkNPC = -1;
+                        player.SetTalkNPC(-1);
                         ResetUi();
                     }
                 }
                 else
                 {
-                    Main.PlaySound(SoundID.MenuTick);
+                    SoundEngine.PlaySound(SoundID.MenuTick);
                     Main.npcChatText = quest.GetHint(Main.rand.Next(0, quest.HintCount - 1));
                 }
                 return;
@@ -135,12 +137,12 @@ namespace OvermorrowMod.Quests
             {
                 if (dialogueCounter >= endDialogueQuest.EndDialogueCount)
                 {
-                    player.talkNPC = -1;
+                    player.SetTalkNPC(-1);
                     ResetUi();
                 }
                 else
                 {
-                    Main.PlaySound(SoundID.MenuTick);
+                    SoundEngine.PlaySound(SoundID.MenuTick);
                     Main.npcChatText = endDialogueQuest.GetEndDialogue(dialogueCounter++);
                 }
                 return;
@@ -154,18 +156,18 @@ namespace OvermorrowMod.Quests
                 questPlayer.AddQuest(quest);
                 questNpc.TakeQuest();
 
-                Main.PlaySound(OvermorrowModFile.Instance.GetLegacySoundSlot(SoundType.Custom, "Sounds/QuestAccept"), npc.Center);
+                SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("Sounds/QuestAccept"), npc.Center);
 
                 // Run the Quest Accepted UI
                 Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
 
-                player.talkNPC = -1;
+                player.SetTalkNPC(-1);
                 ResetUi();
             }
             else
             {
                 // Next button pressed
-                Main.PlaySound(SoundID.MenuTick);
+                SoundEngine.PlaySound(SoundID.MenuTick);
                 Main.npcChatText = quest.GetDialogue(dialogueCounter++);
             }
         }
@@ -195,7 +197,7 @@ namespace OvermorrowMod.Quests
             var text = GetQuestButtonText(quest, isDoing, player);
             // In this case there is no quest available or active, so we don't need to draw any buttons at all.
 
-            DynamicSpriteFont font = Main.fontMouseText;
+            DynamicSpriteFont font = FontAssets.MouseText.Value;
             Color textColor = new Color(superColor, (int)(superColor / 1.1), superColor / 2, superColor);
             Vector2 textScale = new Vector2(0.9f);
             Vector2 stringSize = ChatManager.GetStringSize(font, text, textScale);
@@ -209,7 +211,7 @@ namespace OvermorrowMod.Quests
 
                 if (!hoverButton)
                 {
-                    Main.PlaySound(SoundID.MenuTick);
+                    SoundEngine.PlaySound(SoundID.MenuTick);
                     hoverButton = true;
                 }
 
@@ -226,7 +228,7 @@ namespace OvermorrowMod.Quests
                 // Plays the sound once
                 if (hoverButton)
                 {
-                    Main.PlaySound(SoundID.MenuTick);
+                    SoundEngine.PlaySound(SoundID.MenuTick);
                     hoverButton = false;
                 }
             }

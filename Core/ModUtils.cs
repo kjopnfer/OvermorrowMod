@@ -225,7 +225,7 @@ namespace OvermorrowMod.Core
             Tile tile = Framing.GetTileSafely(i, j);
 
             Point16 coord = new Point16(i, j);
-            Point16 frame = new Point16(tile.frameX / 18, tile.frameY / 18);
+            Point16 frame = new Point16(tile.TileFrameX / 18, tile.TileFrameY / 18);
 
             return coord - frame;
         }

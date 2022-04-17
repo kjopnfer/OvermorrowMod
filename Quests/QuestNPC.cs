@@ -60,16 +60,16 @@ namespace OvermorrowMod.Quests
             questCheckTick = 0;
         }
 
-        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)
+        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             var quest = GetCurrentQuest(npc, out _);
             if (quest != null)
             {
-                Texture2D texture = ModContent.GetTexture("OvermorrowMod/Quests/QuestAlert");
+                Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Quests/QuestAlert").Value;
                 Rectangle drawRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
                 spriteBatch.Draw(
                     texture,
-                    new Vector2(npc.Center.X, npc.Center.Y - 80) - Main.screenPosition,
+                    new Vector2(npc.Center.X, npc.Center.Y - 80) - screenPos,
                     drawRectangle,
                     Color.White,
                     npc.rotation,
@@ -79,7 +79,7 @@ namespace OvermorrowMod.Quests
                     0f);
             }
 
-            base.PostDraw(npc, spriteBatch, drawColor);
+            base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace OvermorrowMod.Quests
 
         public void AddQuest(BaseQuest quest)
         {
-            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == player)
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == Player)
                 NetworkMessageHandler.Quests.TakeQuest(-1, -1, quest.QuestId);
             if (quest.Repeatability == QuestRepeatability.OncePerWorldPerPlayer || quest.Repeatability == QuestRepeatability.OncePerWorld)
             {
@@ -56,24 +56,21 @@ namespace OvermorrowMod.Quests
             // Should not happen!
             if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
             // Send message to server if the quest is being completed for the current player
-            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == player)
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == Player)
                 NetworkMessageHandler.Quests.CompleteQuest(-1, -1, questId);
 
-            quest.CompleteQuest(player, true);
+            quest.CompleteQuest(Player, true);
             RemoveQuest(quest);
         }
-
-        public override TagCompound Save()
+        public override void SaveData(TagCompound tag)
         {
-            return new TagCompound
-            {
-                ["CompletedQuests"] = CompletedQuests.ToList(),
-                ["CurrentQuests"] = activeQuests.Select(q => q.QuestId).ToList(),
-                ["PlayerUUID"] = PlayerUUID
-            };
+            tag["CompletedQuests"] = CompletedQuests.ToList();
+            tag["CurrentQuests"] = activeQuests.Select(q => q.QuestId).ToList();
+            tag["PlayerUUID"] = PlayerUUID;
+            base.SaveData(tag);
         }
 
-        public override void Load(TagCompound tag)
+        public override void LoadData(TagCompound tag)
         {
             CompletedQuests.Clear();
             activeQuests.Clear();

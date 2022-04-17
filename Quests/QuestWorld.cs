@@ -8,27 +8,24 @@ using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Quests
 {
-    public class QuestWorld : ModWorld
+    public class QuestWorld : ModSystem
     {
-        public override void PreUpdate()
+        public override void PreUpdateNPCs()
         {
             if (Main.netMode != NetmodeID.Server && Main.LocalPlayer.talkNPC == -1) Quests.ResetUi();
         }
 
-        public override TagCompound Save()
+        public override void SaveWorldData(TagCompound tag)
         {
-            return new TagCompound
-            {
-                ["globalCompletedQuests"] = Quests.GlobalCompletedQuests.ToList(),
-                ["perPlayerCompletedQuestsKeys"] = Quests.PerPlayerCompletedQuests.Keys.ToList(),
-                ["perPlayerCompletedQuestsValues"] = Quests.PerPlayerCompletedQuests.Values.Select(v => v.ToList()).ToList(),
-                ["perPlayerActiveQuestsKeys"] = Quests.PerPlayerActiveQuests.Keys.ToList(),
-                ["perPlayerActiveQuestsValues"] = Quests.PerPlayerActiveQuests.Values
-                    .Select(v => v.Select(q => q.QuestId).ToList()).ToList(),
-            };
+            tag["globalCompletedQuests"] = Quests.GlobalCompletedQuests.ToList();
+            tag["perPlayerCompletedQuestsKeys"] = Quests.PerPlayerCompletedQuests.Keys.ToList();
+            tag["perPlayerCompletedQuestsValues"] = Quests.PerPlayerCompletedQuests.Values.Select(v => v.ToList()).ToList();
+            tag["perPlayerActiveQuestsKeys"] = Quests.PerPlayerActiveQuests.Keys.ToList();
+            tag["perPlayerActiveQuestsValues"] = Quests.PerPlayerActiveQuests.Values
+                    .Select(v => v.Select(q => q.QuestId).ToList()).ToList();
         }
 
-        public override void Load(TagCompound tag)
+        public override void LoadWorldData(TagCompound tag)
         {
             Quests.GlobalCompletedQuests.Clear();
             var quests = tag.GetList<string>("globalCompletedQuests");

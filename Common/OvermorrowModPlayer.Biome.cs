@@ -79,7 +79,7 @@ namespace OvermorrowMod.Common
                             {
                                 Main.dust[Index].velocity.Y += 0.09f;
                             }
-                        }*/
+                        }
                     }
                 }
             }
