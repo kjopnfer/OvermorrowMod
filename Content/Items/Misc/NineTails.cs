@@ -20,16 +20,16 @@ namespace OvermorrowMod.Content.Items.Misc
 
         public override void SetDefaults()
         {
-            item.width = 46;
-            item.height = 40;
-            item.rare = ItemRarityID.Red;
-            item.maxStack = 1;
-            item.useTurn = true;
-            item.autoReuse = true;
-            item.useAnimation = 15;
-            item.useTime = 15;
-            item.consumable = false;
-            item.useStyle = ItemUseStyleID.SwingThrow;
+            Item.width = 46;
+            Item.height = 40;
+            Item.rare = ItemRarityID.Red;
+            Item.maxStack = 1;
+            Item.useTurn = true;
+            Item.autoReuse = true;
+            Item.useAnimation = 15;
+            Item.useTime = 15;
+            Item.consumable = false;
+            Item.useStyle = ItemUseStyleID.Swing;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -61,13 +61,13 @@ namespace OvermorrowMod.Content.Items.Misc
             {
                 spriteBatch.Reload(SpriteSortMode.Immediate);
                 Effect fx = OvermorrowModFile.Instance.TextShader;
-                Main.graphics.GraphicsDevice.Textures[0] = mod.GetTexture("Assets/Textures/Perlin");
+                Main.graphics.GraphicsDevice.Textures[0] = ModContent.Request<Texture2D>("Assets/Textures/Perlin").Value;
                 fx.Parameters["uColor0"].SetValue(Color.DarkRed.ToVector3());
                 //fx.Parameters["uColor1"].SetValue(Color.Black.ToVector3());
                 //fx.Parameters["uColor0"].SetValue(new Color(140, 48, 85).ToVector3());
                 //fx.Parameters["uColor1"].SetValue(new Color(176, 48, 62).ToVector3());
                 fx.Parameters["uColor1"].SetValue(Color.Purple.ToVector3());
-                fx.SafeSetParameter("uTime", Main.GlobalTime);
+                fx.SafeSetParameter("uTime", Main.GlobalTimeWrappedHourly);
                 //fx.CurrentTechnique.Passes["Noise"].Apply();
                 fx.CurrentTechnique.Passes[2].Apply();
 

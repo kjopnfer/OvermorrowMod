@@ -14,10 +14,10 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void SetDefaults()
         {
-            item.width = 18;
-            item.height = 32;
-            item.rare = ItemRarityID.Blue;
-            item.maxStack = 99;
+            Item.width = 18;
+            Item.height = 32;
+            Item.rare = ItemRarityID.Blue;
+            Item.maxStack = 99;
         }
         public override Color? GetAlpha(Color lightColor)
         {
@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void PostUpdate()
         {
-            Lighting.AddLight(item.Center, Color.White.ToVector3() * 0.55f * Main.essScale);
+            Lighting.AddLight(Item.Center, Color.White.ToVector3() * 0.55f * Main.essScale);
         }
     }
 }

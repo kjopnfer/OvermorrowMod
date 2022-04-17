@@ -17,16 +17,16 @@ namespace OvermorrowMod.Content.Items.Pets
 
         public override void SetDefaults()
         {
-            item.CloneDefaults(ItemID.ZephyrFish);
-            item.shoot = ModContent.ProjectileType<Smolboi>();
-            item.buffType = ModContent.BuffType<SmolboiBuff>();
+            Item.CloneDefaults(ItemID.ZephyrFish);
+            Item.shoot = ModContent.ProjectileType<Smolboi>();
+            Item.buffType = ModContent.BuffType<SmolboiBuff>();
         }
 
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle rect)
         {
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                player.AddBuff(item.buffType, 3600, true);
+                player.AddBuff(Item.buffType, 3600, true);
             }
         }
     }
