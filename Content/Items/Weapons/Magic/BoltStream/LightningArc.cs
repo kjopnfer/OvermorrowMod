@@ -17,27 +17,27 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BoltStream
         }
         public override void SafeSetDefaults()
         {
-            projectile.width = 5;
-            projectile.friendly = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.width = 5;
+            Projectile.friendly = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
         }
 
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 10f);
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 10f);
 
-            if (projectile.ai[0] != -1 && projectile.ai[1] != -1)
+            if (Projectile.ai[0] != -1 && Projectile.ai[1] != -1)
             {
-                Positions = CreateLightning(Main.npc[(int)projectile.ai[0]].Center, Main.npc[(int)projectile.ai[1]].Center, projectile.width  * 2, 80, 16f);
+                Positions = CreateLightning(Main.npc[(int)Projectile.ai[0]].Center, Main.npc[(int)Projectile.ai[1]].Center, Projectile.width  * 2, 80, 16f);
             }
-            else if (projectile.ai[1] == -1)
+            else if (Projectile.ai[1] == -1)
             {
-                Positions = CreateLightning(Main.player[projectile.owner].Center, Main.npc[(int)projectile.ai[0]].Center, projectile.width * 2, 80, 16f);
+                Positions = CreateLightning(Main.player[Projectile.owner].Center, Main.npc[(int)Projectile.ai[0]].Center, Projectile.width * 2, 80, 16f);
             }
 
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {
@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BoltStream
                     if (npc.active && npc.HasBuff(ModContent.BuffType<LightningMarked>()) && target.Distance(npc.Center) < StartingRadius)
                     {
                         // Insert targeted npc in ai0, if jumping from npcs, input starting npc as ai0 and ending npc as ai1
-                        Projectile.NewProjectile(target.Center, Vector2.Zero, ModContent.ProjectileType<LightningArc>(), projectile.damage, 6f, projectile.owner, target.whoAmI, npc.whoAmI);
+                        Projectile.NewProjectile(Projectile.GetProjectileSource_OnHit(target, ProjectileSourceID.None), target.Center, Vector2.Zero, ModContent.ProjectileType<LightningArc>(), Projectile.damage, 6f, Projectile.owner, target.whoAmI, npc.whoAmI);
                         FoundTarget = true;
                         break;
                     }

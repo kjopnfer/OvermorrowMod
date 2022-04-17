@@ -10,38 +10,37 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GemStaves
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Greater Amber Staff");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
-            item.mana = 15;
-            item.UseSound = SoundID.Item43;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 20;
-            item.useTurn = false;
-            item.useAnimation = 33;
-            item.useTime = 33;
-            item.width = 48;
-            item.height = 48;
-            item.shoot = ModContent.ProjectileType<AmberProj>();
-            item.shootSpeed = 5f;
-            item.knockBack = 6f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 1, silver: 75);
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Orange;
+            Item.mana = 15;
+            Item.UseSound = SoundID.Item43;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 20;
+            Item.useTurn = false;
+            Item.useAnimation = 33;
+            Item.useTime = 33;
+            Item.width = 48;
+            Item.height = 48;
+            Item.shoot = ModContent.ProjectileType<AmberProj>();
+            Item.shootSpeed = 5f;
+            Item.knockBack = 6f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 1, silver: 75);
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.AmberStaff);
-            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 6);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.AmberStaff)
+                .AddIngredient<ManaBar>(6)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

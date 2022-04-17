@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,23 +16,23 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.MarbleBook
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Green;
-            item.mana = 12; //11;
-            item.UseSound = SoundID.Item9;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 18;
-            item.useTurn = false;
-            item.useAnimation = 28;
-            item.useTime = 28;
-            item.width = 30;
-            item.height = 36;
-            item.shoot = ModContent.ProjectileType<MarbleArrow>();
-            item.shootSpeed = 20f;
-            item.knockBack = 3f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 1);
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Green;
+            Item.mana = 12; //11;
+            Item.UseSound = SoundID.Item9;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 18;
+            Item.useTurn = false;
+            Item.useAnimation = 28;
+            Item.useTime = 28;
+            Item.width = 30;
+            Item.height = 36;
+            Item.shoot = ModContent.ProjectileType<MarbleArrow>();
+            Item.shootSpeed = 20f;
+            Item.knockBack = 3f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 1);
         }
 
         // A lot of old code, this will just refund mana for now until I get around to making this actually work
@@ -39,7 +40,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.MarbleBook
         //int limit = 0;
         //int capone = 0;
         //int z = 0;
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
         {
             /*for (int x = (int)player.Center.X - 7; x > player.Center.X + 7; x++)
              {
@@ -102,9 +103,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.MarbleBook
             for (int i = 0; i < 3; i++)
             {
                 Vector2 randPos = new Vector2(player.Center.X + Main.rand.Next(-7, 7) * 10, player.Center.Y + Main.rand.Next(-7, 7) * 10);
-                if (!Main.tile[(int)randPos.X / 16, (int)randPos.Y / 16].active())
+                if (!Main.tile[(int)randPos.X / 16, (int)randPos.Y / 16].HasTile)
                 {
-                    Projectile.NewProjectile(randPos, new Vector2(speedX, speedY), type, damage, knockBack, player.whoAmI);
+                    Projectile.NewProjectile(source, randPos, velocity, type, damage, knockBack, player.whoAmI);
                 }
                 else
                 {

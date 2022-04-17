@@ -14,23 +14,23 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GraniteBook
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Green;
-            item.mana = 11;
-            item.UseSound = SoundID.Item20;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 22;
-            item.useTurn = false;
-            item.useAnimation = 28;
-            item.useTime = 28;
-            item.width = 30;
-            item.height = 36;
-            item.shoot = ModContent.ProjectileType<GraniteSpike>();
-            item.shootSpeed = 12f;
-            item.knockBack = 3f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 1);
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Green;
+            Item.mana = 11;
+            Item.UseSound = SoundID.Item20;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 22;
+            Item.useTurn = false;
+            Item.useAnimation = 28;
+            Item.useTime = 28;
+            Item.width = 30;
+            Item.height = 36;
+            Item.shoot = ModContent.ProjectileType<GraniteSpike>();
+            Item.shootSpeed = 12f;
+            Item.knockBack = 3f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 1);
         }
     }
 }

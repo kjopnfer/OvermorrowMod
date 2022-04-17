@@ -10,38 +10,37 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GemStaves
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Greater Ruby Staff");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
-            item.mana = 10;
-            item.UseSound = SoundID.Item43;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 14;
-            item.useTurn = false;
-            item.useAnimation = 28;
-            item.useTime = 28;
-            item.width = 64;
-            item.height = 60;
-            item.shoot = ModContent.ProjectileType<RubyProj>();
-            item.shootSpeed = 14f;
-            item.knockBack = 6f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 1, silver: 75);
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Orange;
+            Item.mana = 10;
+            Item.UseSound = SoundID.Item43;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 14;
+            Item.useTurn = false;
+            Item.useAnimation = 28;
+            Item.useTime = 28;
+            Item.width = 64;
+            Item.height = 60;
+            Item.shoot = ModContent.ProjectileType<RubyProj>();
+            Item.shootSpeed = 14f;
+            Item.knockBack = 6f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 1, silver: 75);
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.RubyStaff);
-            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 6);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.RubyStaff)
+                .AddIngredient<ManaBar>(6)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

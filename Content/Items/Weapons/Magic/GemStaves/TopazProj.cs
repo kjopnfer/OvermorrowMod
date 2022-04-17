@@ -12,19 +12,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GemStaves
 
         public override void SetDefaults()
         {
-            projectile.width = 18;
-            projectile.height = 14;
-            projectile.timeLeft = 200;
-            projectile.penetrate = 1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.magic = true;
-            projectile.tileCollide = true;
-            projectile.ignoreWater = true;
+            Projectile.width = 18;
+            Projectile.height = 14;
+            Projectile.timeLeft = 200;
+            Projectile.penetrate = 1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = true;
+            Projectile.ignoreWater = true;
         }
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation();
+            Projectile.rotation = Projectile.velocity.ToRotation();
             timer++;
             if (timer == 1)
             {
@@ -32,14 +32,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GemStaves
             }
             if (timer < 10)
             {
-                Vector2 position = projectile.Center;
+                Vector2 position = Projectile.Center;
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
-                projectile.velocity += direction * 1.5f;
+                Projectile.velocity += direction * 1.5f;
             }
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Smoke, projectile.velocity.X, projectile.velocity.Y, 75, Color.Yellow, 1.2f);
-                Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
+                int num1110 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Smoke, Projectile.velocity.X, Projectile.velocity.Y, 75, Color.Yellow, 1.2f);
+                Main.dust[num1110].position = (Main.dust[num1110].position + Projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
                 dust81.velocity *= 0.5f;

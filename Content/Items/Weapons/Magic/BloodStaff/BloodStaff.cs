@@ -10,28 +10,28 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff
         {
             DisplayName.SetDefault("Bloodburst Staff");
             Tooltip.SetDefault("Shoots a blood ball that explodes into bouncing balls upon hitting an enemy");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
-            item.mana = 10;
-            item.UseSound = SoundID.Item21;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 17;
-            item.useTurn = false;
-            item.useAnimation = 24;
-            item.useTime = 24;
-            item.width = 56;
-            item.height = 56;
-            item.shoot = ModContent.ProjectileType<BloodSplit>();
-            item.shootSpeed = 15f;
-            item.knockBack = 3f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 1, silver: 75);
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Orange;
+            Item.mana = 10;
+            Item.UseSound = SoundID.Item21;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 17;
+            Item.useTurn = false;
+            Item.useAnimation = 24;
+            Item.useTime = 24;
+            Item.width = 56;
+            Item.height = 56;
+            Item.shoot = ModContent.ProjectileType<BloodSplit>();
+            Item.shootSpeed = 15f;
+            Item.knockBack = 3f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 1, silver: 75);
         }
     }
 }

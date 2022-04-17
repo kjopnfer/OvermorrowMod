@@ -7,45 +7,45 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.CreepingDeath
     public class BloodIronDraw : ModProjectile
     {
 
-        public override bool CanDamage() => false;
+        public override bool? CanDamage() => false;
 
         public override void SetDefaults()
         {
-            projectile.width = 7;
-            projectile.height = 30;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.ranged = true;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 17;
-            projectile.alpha = 255;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.extraUpdates = 1;
+            Projectile.width = 7;
+            Projectile.height = 30;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 17;
+            Projectile.alpha = 255;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 1;
 
         }
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 0.65f, 0f, 0f);
+            Lighting.AddLight(Projectile.Center, 0.65f, 0f, 0f);
 
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
 
             Dust dust;
             // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
-            Vector2 position = projectile.Center;
+            Vector2 position = Projectile.Center;
             dust = Terraria.Dust.NewDustPerfect(position, 183, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
             dust.noGravity = true;
 
 
-            if (projectile.ai[0] == 1)
+            if (Projectile.ai[0] == 1)
             {
-                projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
             else
             {
-                projectile.alpha = 255;
-                projectile.velocity.Y = 0;
-                projectile.velocity.X = 0;
+                Projectile.alpha = 255;
+                Projectile.velocity.Y = 0;
+                Projectile.velocity.X = 0;
             }
         }
     }

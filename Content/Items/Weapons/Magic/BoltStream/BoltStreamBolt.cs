@@ -19,89 +19,89 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BoltStream
 
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 600;
-            projectile.alpha = 255;
-            projectile.tileCollide = true;
-            projectile.magic = true;
+            Projectile.width = 12;
+            Projectile.height = 12;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 600;
+            Projectile.alpha = 255;
+            Projectile.tileCollide = true;
+            Projectile.DamageType = DamageClass.Magic;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 0, 0.5f, 0.5f);
+            Lighting.AddLight(Projectile.Center, 0, 0.5f, 0.5f);
 
-            if (projectile.ai[0] == 0) // Store the projectile's velocity when it was fired from the weapon
+            if (Projectile.ai[0] == 0) // Store the Projectile's velocity when it was fired from the weapon
             {
-                storeVelocity = projectile.velocity;
+                storeVelocity = Projectile.velocity;
             }
 
-            if (projectile.ai[0] >= 5 && projectile.ai[0] <= 25) // Make the projectile stops momentarily for 40 ticks
+            if (Projectile.ai[0] >= 5 && Projectile.ai[0] <= 25) // Make the Projectile stops momentarily for 40 ticks
             {
-                projectile.velocity = new Vector2(0, 0);
-                if (projectile.ai[0] == 25) // Allow the projectile to accelerate
+                Projectile.velocity = new Vector2(0, 0);
+                if (Projectile.ai[0] == 25) // Allow the Projectile to accelerate
                 {
                     canAccelerate = true;
                 }
             }
 
-            if (projectile.ai[0] <= 25) // Let's the 3rd projectile not get stuck in the ground
+            if (Projectile.ai[0] <= 25) // Let's the 3rd Projectile not get stuck in the ground
             {
-                projectile.tileCollide = false;
+                Projectile.tileCollide = false;
             }
             else
             {
-                projectile.tileCollide = true;
+                Projectile.tileCollide = true;
             }
 
             if (canAccelerate)
             {
-                if (projectile.ai[0] == 25)
+                if (Projectile.ai[0] == 25)
                 {
-                    projectile.velocity = storeVelocity;
+                    Projectile.velocity = storeVelocity;
                 }
                 else
                 {
-                    projectile.localAI[0] += 1f;
-                    if (projectile.localAI[0] > 3f)
+                    Projectile.localAI[0] += 1f;
+                    if (Projectile.localAI[0] > 3f)
                     {
                         for (int num1202 = 0; num1202 < 4; num1202++)
                         {
-                            Vector2 vector304 = projectile.position;
-                            vector304 -= projectile.velocity * ((float)num1202 * 0.25f);
-                            projectile.alpha = 255;
+                            Vector2 vector304 = Projectile.position;
+                            vector304 -= Projectile.velocity * ((float)num1202 * 0.25f);
+                            Projectile.alpha = 255;
                             int num1200 = Dust.NewDust(vector304, 1, 1, DustID.UnusedWhiteBluePurple);
                             Main.dust[num1200].position = vector304;
                             Dust expr_140F1_cp_0 = Main.dust[num1200];
-                            expr_140F1_cp_0.position.X = expr_140F1_cp_0.position.X + (float)(projectile.width / 2);
+                            expr_140F1_cp_0.position.X = expr_140F1_cp_0.position.X + (float)(Projectile.width / 2);
                             Dust expr_14115_cp_0 = Main.dust[num1200];
-                            expr_14115_cp_0.position.Y = expr_14115_cp_0.position.Y + (float)(projectile.height / 2);
+                            expr_14115_cp_0.position.Y = expr_14115_cp_0.position.Y + (float)(Projectile.height / 2);
                             Main.dust[num1200].scale = (float)Main.rand.Next(70, 110) * 0.013f;
                             Dust dust81 = Main.dust[num1200];
                             dust81.velocity *= 0.2f;
                         }
                     }
 
-                    if (projectile.ai[0] % 4 == 0)
+                    if (Projectile.ai[0] % 4 == 0)
                     {
-                        projectile.velocity *= 1.47f;
+                        Projectile.velocity *= 1.47f;
                     }
                 }
             }
 
             for (int i = 0; i < 3; i++)
             {
-                Dust.NewDust(projectile.position, 1, 1, DustID.UnusedWhiteBluePurple);
+                Dust.NewDust(Projectile.position, 1, 1, DustID.UnusedWhiteBluePurple);
             }
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            target.immune[projectile.owner] = 6;
+            target.immune[Projectile.owner] = 6;
         }
     }
 }
