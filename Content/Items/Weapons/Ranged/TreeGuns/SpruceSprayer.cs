@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,36 +15,33 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Blue;
-            item.damage = 7;
-            item.DamageType = DamageClass.Ranged;
-            item.width = 70;
-            item.height = 46;
-            item.useTime = 7;
-            item.useAnimation = 14;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.noMelee = true;
-            item.knockBack = 0.2f;
-            item.value = 10000;
-            item.scale = 0.8f;
-            item.UseSound = SoundID.Item17;
-            item.shoot = ProjectileID.PineNeedleFriendly;
-            item.autoReuse = true;
-            item.shootSpeed = 5f;
+            Item.rare = ItemRarityID.Blue;
+            Item.damage = 7;
+            Item.DamageType = DamageClass.Ranged;
+            Item.width = 70;
+            Item.height = 46;
+            Item.useTime = 7;
+            Item.useAnimation = 14;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.noMelee = true;
+            Item.knockBack = 0.2f;
+            Item.value = 10000;
+            Item.scale = 0.8f;
+            Item.UseSound = SoundID.Item17;
+            Item.shoot = ProjectileID.PineNeedleFriendly;
+            Item.autoReuse = true;
+            Item.shootSpeed = 5f;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY)) * 15f;
+            Vector2 muzzleOffset = Vector2.Normalize(velocity) * 15f;
             if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
             {
                 position += muzzleOffset;
             }
 
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(50));
-            speedX = perturbedSpeed.X;
-            speedY = perturbedSpeed.Y;
-            return true;
+            velocity = velocity.RotatedByRandom(MathHelper.ToRadians(50));
         }
 
         public override Vector2? HoldoutOffset()

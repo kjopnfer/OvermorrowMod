@@ -17,32 +17,31 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow
 
         public override void SetDefaults()
         {
-            //item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
-            item.UseSound = SoundID.Item5;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 46;
-            item.useAnimation = 50;
-            item.useTime = 50;
-            item.width = 40;
-            item.height = 66;
-            //item.shoot = ModContent.ProjectileType<StormBolt>();
-            item.shoot = ModContent.ProjectileType<StormBolt>();
-            item.shootSpeed = 30f;
-            item.knockBack = 10f;
-            item.DamageType = DamageClass.Ranged;
-            item.value = Item.sellPrice(gold: 1);
-            item.useAmmo = AmmoID.Arrow;
+            //Item.autoReuse = true;
+            Item.rare = ItemRarityID.Orange;
+            Item.UseSound = SoundID.Item5;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 46;
+            Item.useAnimation = 50;
+            Item.useTime = 50;
+            Item.width = 40;
+            Item.height = 66;
+            //Item.shoot = ModContent.ProjectileType<StormBolt>();
+            Item.shoot = ModContent.ProjectileType<StormBolt>();
+            Item.shootSpeed = 30f;
+            Item.knockBack = 10f;
+            Item.DamageType = DamageClass.Ranged;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.useAmmo = AmmoID.Arrow;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             if (type == ProjectileID.WoodenArrowFriendly)
             {
                 type = ModContent.ProjectileType<StormBolt>();
             }
-            return true;
         }
 
 

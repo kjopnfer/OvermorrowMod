@@ -9,37 +9,37 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
     {
         public override void SetDefaults()
         {
-            projectile.width = 14;
-            projectile.height = 14;
-            projectile.timeLeft = 200;
-            projectile.alpha = 255;
-            projectile.penetrate = 1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.extraUpdates = 2;
-            projectile.DamageType = DamageClass.Ranged;
-            projectile.tileCollide = true;
-            projectile.ignoreWater = true;
+            Projectile.width = 14;
+            Projectile.height = 14;
+            Projectile.timeLeft = 200;
+            Projectile.alpha = 255;
+            Projectile.penetrate = 1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.extraUpdates = 2;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.tileCollide = true;
+            Projectile.ignoreWater = true;
         }
         public override void AI()
         {
-            projectile.velocity.Y += 0.13f;
+            Projectile.velocity.Y += 0.13f;
 
-            if (projectile.ai[0] > 3f)
+            if (Projectile.ai[0] > 3f)
             {
-                projectile.ai[0] += projectile.ai[1];
-                if (projectile.ai[0] > 30f)
+                Projectile.ai[0] += Projectile.ai[1];
+                if (Projectile.ai[0] > 30f)
                 {
-                    projectile.velocity.Y += 0.1f;
+                    Projectile.velocity.Y += 0.1f;
                 }
 
                 int num508 = 175;
                 Color newColor2 = new Color(255, 255, 255, 100);
                 for (int num509 = 0; num509 < 6; num509++)
                 {
-                    Vector2 vector41 = projectile.velocity * num509 / 6f;
+                    Vector2 vector41 = Projectile.velocity * num509 / 6f;
                     int num510 = 6;
-                    int num511 = Dust.NewDust(projectile.position + Vector2.One * 6f, projectile.width - num510 * 2, projectile.height - num510 * 2, DustID.t_Slime, 0f, 0f, num508, newColor2, 1.2f);
+                    int num511 = Dust.NewDust(Projectile.position + Vector2.One * 6f, Projectile.width - num510 * 2, Projectile.height - num510 * 2, DustID.t_Slime, 0f, 0f, num508, newColor2, 1.2f);
                     Dust dust;
                     if (Main.rand.Next(2) == 0)
                     {
@@ -60,8 +60,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
                     dust = Main.dust[num511];
                     dust.velocity *= 0.3f;
                     dust = Main.dust[num511];
-                    dust.velocity += projectile.velocity * 0.5f;
-                    Main.dust[num511].position = projectile.Center;
+                    dust.velocity += Projectile.velocity * 0.5f;
+                    Main.dust[num511].position = Projectile.Center;
                     Main.dust[num511].position.X -= vector41.X;
                     Main.dust[num511].position.Y -= vector41.Y;
                     dust = Main.dust[num511];
@@ -70,16 +70,16 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
                 if (Main.rand.Next(4) == 0)
                 {
                     int num512 = 6;
-                    int num513 = Dust.NewDust(projectile.position + Vector2.One * 6f, projectile.width - num512 * 2, projectile.height - num512 * 2, DustID.t_Slime, 0f, 0f, num508, newColor2, 1.2f);
+                    int num513 = Dust.NewDust(Projectile.position + Vector2.One * 6f, Projectile.width - num512 * 2, Projectile.height - num512 * 2, DustID.t_Slime, 0f, 0f, num508, newColor2, 1.2f);
                     Dust dust = Main.dust[num513];
                     dust.velocity *= 0.5f;
                     dust = Main.dust[num513];
-                    dust.velocity += projectile.velocity * 0.5f;
+                    dust.velocity += Projectile.velocity * 0.5f;
                 }
             }
             else
             {
-                projectile.ai[0] += 1f;
+                Projectile.ai[0] += 1f;
             }
         }
     }

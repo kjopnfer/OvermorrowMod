@@ -17,39 +17,39 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower
 
         public override void SetDefaults()
         {
-            projectile.width = 6;
-            projectile.height = 6;
-            projectile.friendly = true;
-            projectile.DamageType = DamageClass.Ranged;
-            projectile.penetrate = 2;
-            projectile.extraUpdates = 3;
-            projectile.timeLeft = 90;
-            projectile.alpha = 255;
+            Projectile.width = 6;
+            Projectile.height = 6;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.penetrate = 2;
+            Projectile.extraUpdates = 3;
+            Projectile.timeLeft = 90;
+            Projectile.alpha = 255;
         }
 
         public override void AI()
         {
-            if (projectile.timeLeft > 60)
+            if (Projectile.timeLeft > 60)
             {
-                projectile.timeLeft = 60;
+                Projectile.timeLeft = 60;
             }
 
-            if (projectile.ai[0] > 7f)
+            if (Projectile.ai[0] > 7f)
             {
                 float num919 = 1f;
-                if (projectile.ai[0] == 8f)
+                if (Projectile.ai[0] == 8f)
                 {
                     num919 = 0.25f;
                 }
-                else if (projectile.ai[0] == 9f)
+                else if (Projectile.ai[0] == 9f)
                 {
                     num919 = 0.5f;
                 }
-                else if (projectile.ai[0] == 10f)
+                else if (Projectile.ai[0] == 10f)
                 {
                     num919 = 0.75f;
                 }
-                projectile.ai[0] += 1f;
+                Projectile.ai[0] += 1f;
                 int num920 = 6;
                 /*if (type == 101)
 				{
@@ -59,7 +59,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower
                 {
                     for (int num927 = 0; num927 < 1; num927++)
                     {
-                        int num929 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Sand, projectile.velocity.X * 0.2f, projectile.velocity.Y * 0.2f, 100);
+                        int num929 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Sand, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
                         Dust dust81;
                         if (Main.rand.Next(3) != 0 || (num920 == 75 && Main.rand.Next(3) == 0))
                         {
@@ -84,7 +84,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower
                         if (num920 == 75)
                         {
                             dust81 = Main.dust[num929];
-                            dust81.velocity += projectile.velocity;
+                            dust81.velocity += Projectile.velocity;
                             if (!Main.dust[num929].noGravity)
                             {
                                 dust81 = Main.dust[num929];
@@ -96,9 +96,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower
             }
             else
             {
-                projectile.ai[0] += 1f;
+                Projectile.ai[0] += 1f;
             }
-            projectile.rotation += 0.3f * (float)projectile.direction;
+            Projectile.rotation += 0.3f * (float)Projectile.direction;
         }
     }
 }

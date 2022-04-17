@@ -15,21 +15,21 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower
 
         public override void SetDefaults()
         {
-            item.width = 54;
-            item.height = 20;
-            item.useTime = 10;
-            item.useAnimation = 30;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
-            item.damage = 17;
-            item.DamageType = DamageClass.Ranged;
-            item.shoot = ModContent.ProjectileType<SandThrowerProjectile>();
-            item.shootSpeed = 4.5f;
-            item.useAmmo = AmmoID.Gel;
-            item.noMelee = true;
-            item.UseSound = SoundID.Item34;
-            item.value = Item.buyPrice(gold: 1, silver: 75);
+            Item.width = 54;
+            Item.height = 20;
+            Item.useTime = 10;
+            Item.useAnimation = 30;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Orange;
+            Item.damage = 17;
+            Item.DamageType = DamageClass.Ranged;
+            Item.shoot = ModContent.ProjectileType<SandThrowerProjectile>();
+            Item.shootSpeed = 4.5f;
+            Item.useAmmo = AmmoID.Gel;
+            Item.noMelee = true;
+            Item.UseSound = SoundID.Item34;
+            Item.value = Item.buyPrice(gold: 1, silver: 75);
         }
 
         public override Vector2? HoldoutOffset()

@@ -17,26 +17,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
 
         public override void SetDefaults()
         {
-            item.damage = 26;
-            item.noMelee = true;
-            item.DamageType = DamageClass.Ranged;
-            item.rare = ItemRarityID.Orange;
-            item.UseSound = null;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.channel = true;
-            item.noUseGraphic = true;
-            item.useAnimation = 10;
-            item.useTime = 10;
-            item.reuseDelay = 5;
-            item.width = 28;
-            item.height = 72;
-            item.shoot = ModContent.ProjectileType<IorichBowHoldout>()/*AmmoID.Arrow*/;
-            item.shootSpeed = 8f;
-            item.knockBack = 10f;
-            item.value = Item.sellPrice(gold: 1);
-            //item.useAmmo = AmmoID.Arrow;
+            Item.damage = 26;
+            Item.noMelee = true;
+            Item.DamageType = DamageClass.Ranged;
+            Item.rare = ItemRarityID.Orange;
+            Item.UseSound = null;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.channel = true;
+            Item.noUseGraphic = true;
+            Item.useAnimation = 10;
+            Item.useTime = 10;
+            Item.reuseDelay = 5;
+            Item.width = 28;
+            Item.height = 72;
+            Item.shoot = ModContent.ProjectileType<IorichBowHoldout>()/*AmmoID.Arrow*/;
+            Item.shootSpeed = 8f;
+            Item.knockBack = 10f;
+            Item.value = Item.sellPrice(gold: 1);
+            //Item.useAmmo = AmmoID.Arrow;
         }
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[item.shoot] <= 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         /*public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {

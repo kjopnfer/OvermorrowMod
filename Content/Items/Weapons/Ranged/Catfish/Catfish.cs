@@ -17,25 +17,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Catfish
 
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Green;
-            item.UseSound = SoundID.Item41;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 19;
-            item.useAnimation = 25;
-            item.useTime = 25;
-            item.width = 52;
-            item.height = 34;
-            item.shoot = ModContent.ProjectileType<WaterBullet>();
-            item.shootSpeed = 15;
-            item.knockBack = 5f;
-            item.DamageType = DamageClass.Ranged;
-            item.value = Item.sellPrice(gold: 1);
-            item.useAmmo = AmmoID.Bullet;
+            Item.rare = ItemRarityID.Green;
+            Item.UseSound = SoundID.Item41;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 19;
+            Item.useAnimation = 25;
+            Item.useTime = 25;
+            Item.width = 52;
+            Item.height = 34;
+            Item.shoot = ModContent.ProjectileType<WaterBullet>();
+            Item.shootSpeed = 15;
+            Item.knockBack = 5f;
+            Item.DamageType = DamageClass.Ranged;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.useAmmo = AmmoID.Bullet;
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY - 5)) * 45f;
+            Vector2 muzzleOffset = Vector2.Normalize(new Vector2(velocity.X, velocity.Y - 5)) * 45f;
             if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
             {
                 position += muzzleOffset;
@@ -45,7 +46,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Catfish
             {
                 type = ModContent.ProjectileType<WaterBullet>();
             }
-            return true;
         }
 
         public override Vector2? HoldoutOffset()

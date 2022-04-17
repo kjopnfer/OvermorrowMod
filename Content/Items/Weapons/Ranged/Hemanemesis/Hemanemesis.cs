@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,32 +14,31 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Hemanemesis
         }
         public override void SetDefaults()
         {
-            item.damage = 17;
-            item.DamageType = DamageClass.Ranged;
-            item.width = 40;
-            item.height = 25;
-            item.useTime = 26;
-            item.useAnimation = 26;
-            item.UseSound = SoundID.NPCHit1;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.noMelee = true;
-            item.knockBack = 0f;
-            item.value = 10000;
-            item.rare = ItemRarityID.Orange;
-            item.shoot = ModContent.ProjectileType<BloodBullet>();
-            item.autoReuse = true;
-            item.shootSpeed = 6f;
-            item.scale = 0.86f;
-            item.useAmmo = AmmoID.Bullet;
+            Item.damage = 17;
+            Item.DamageType = DamageClass.Ranged;
+            Item.width = 40;
+            Item.height = 25;
+            Item.useTime = 26;
+            Item.useAnimation = 26;
+            Item.UseSound = SoundID.NPCHit1;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.noMelee = true;
+            Item.knockBack = 0f;
+            Item.value = 10000;
+            Item.rare = ItemRarityID.Orange;
+            Item.shoot = ModContent.ProjectileType<BloodBullet>();
+            Item.autoReuse = true;
+            Item.shootSpeed = 6f;
+            Item.scale = 0.86f;
+            Item.useAmmo = AmmoID.Bullet;
         }
 
-        public override bool Shoot(Terraria.Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             if (type == ProjectileID.Bullet)
             {
                 type = ModContent.ProjectileType<BloodBullet>();
             }
-            return true;
         }
 
         public override Vector2? HoldoutOffset()

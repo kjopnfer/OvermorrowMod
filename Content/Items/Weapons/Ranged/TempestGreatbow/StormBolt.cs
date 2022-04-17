@@ -13,17 +13,17 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow
         }
         public override void SafeSetDefaults()
         {
-            projectile.width = 10;
-            projectile.friendly = true;
-            projectile.timeLeft = (int)maxTime;
+            Projectile.width = 10;
+            Projectile.friendly = true;
+            Projectile.timeLeft = (int)maxTime;
             Length = 1f;
             Sine = true;
         }
         public override void AI()
         {
-            Length = TRay.CastLength(projectile.Center, projectile.velocity, 2000f);
-            Positions = CreateLightning(projectile.Center, projectile.Center + projectile.velocity * Length, projectile.width/*, Sine*/);
-            float progress = (maxTime - (float)projectile.timeLeft) / maxTime;
+            Length = TRay.CastLength(Projectile.Center, Projectile.velocity, 2000f);
+            Positions = CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
+            float progress = (maxTime - (float)Projectile.timeLeft) / maxTime;
             float mult = (float)Math.Sin(progress * Math.PI);
             for (int i = 0; i < Positions.Count; i++)
             {

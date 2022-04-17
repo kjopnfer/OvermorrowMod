@@ -15,27 +15,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Ruptor
 
         public override void SetDefaults()
         {
-            item.damage = 14;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.useTime = 31;
-            item.useAnimation = 31;
-            item.autoReuse = true;
-            item.shootSpeed = 17f;
-            item.knockBack = 0;
-            item.DamageType = DamageClass.Ranged;
-            item.UseSound = SoundID.Item61;
-            item.shoot = ModContent.ProjectileType<AmoungUsExplosive>();
-            item.scale = 0.86f;
-            item.value = Item.sellPrice(0, 1, 0, 0);
-            item.rare = ItemRarityID.Green;
+            Item.damage = 14;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useTime = 31;
+            Item.useAnimation = 31;
+            Item.autoReuse = true;
+            Item.shootSpeed = 17f;
+            Item.knockBack = 0;
+            Item.DamageType = DamageClass.Ranged;
+            Item.UseSound = SoundID.Item61;
+            Item.shoot = ModContent.ProjectileType<AmoungUsExplosive>();
+            Item.scale = 0.86f;
+            Item.value = Item.sellPrice(0, 1, 0, 0);
+            Item.rare = ItemRarityID.Green;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe2 = new ModRecipe(mod);
-            recipe2.AddIngredient(ItemID.Bone, 30);
-            recipe2.AddTile(TileID.Anvils);
-            recipe2.SetResult(this);
-            recipe2.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.Bone, 30)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
 
         public override Vector2? HoldoutOffset()

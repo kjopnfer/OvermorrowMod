@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,24 +17,25 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
 
         public override void SetDefaults()
         {
-            //item.autoReuse = true;
-            item.rare = ItemRarityID.Green;
-            item.UseSound = SoundID.Item5;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 25;
-            item.useAnimation = 25;
-            item.useTime = 25;
-            item.width = 30;
-            item.height = 60;
-            item.shoot = AmmoID.Arrow;
-            item.shootSpeed = 8f;
-            item.knockBack = 10f;
-            item.DamageType = DamageClass.Ranged;
-            item.value = Item.sellPrice(gold: 1);
-            item.useAmmo = AmmoID.Arrow;
+            //Item.autoReuse = true;
+            Item.rare = ItemRarityID.Green;
+            Item.UseSound = SoundID.Item5;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 25;
+            Item.useAnimation = 25;
+            Item.useTime = 25;
+            Item.width = 30;
+            Item.height = 60;
+            Item.shoot = AmmoID.Arrow;
+            Item.shootSpeed = 8f;
+            Item.knockBack = 10f;
+            Item.DamageType = DamageClass.Ranged;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.useAmmo = AmmoID.Arrow;
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // Power-attacking if player right-clicked
             if (powerAttack)
@@ -43,15 +45,16 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
                 Vector2 direction;
 
                 // creating first arrow
-                direction = Rotate(new Vector2(speedX, speedY), 30);
-                Projectile.NewProjectile(player.Center.X, player.Center.Y, direction.X, direction.Y, type, damage, knockBack, player.whoAmI);
+                direction = Rotate(velocity, 30);
+                Projectile.NewProjectile(source, player.Center.X, player.Center.Y, direction.X, direction.Y, type, damage, knockback, player.whoAmI);
 
                 // creating second arrow
-                direction = Rotate(new Vector2(speedX, speedY), -30);
-                Projectile.NewProjectile(player.Center.X, player.Center.Y, direction.X, direction.Y, type, damage, knockBack, player.whoAmI);
+                direction = Rotate(velocity, -30);
+                Projectile.NewProjectile(source, player.Center.X, player.Center.Y, direction.X, direction.Y, type, damage, knockback, player.whoAmI);
             }
             return true;
         }
+
         public override bool AltFunctionUse(Player player)
         {
             return true;
@@ -66,27 +69,27 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
         {
             if (player.altFunctionUse == 2)
             {
-                item.useAnimation = 33;
-                item.useTime = 33;
-                item.autoReuse = true;
-                item.mana = 10;
-                item.damage = 22;
-                item.shootSpeed = 10f;
-                item.knockBack = 10f;
-                item.shoot = ModContent.ProjectileType<SpellboltPower>();
+                Item.useAnimation = 33;
+                Item.useTime = 33;
+                Item.autoReuse = true;
+                Item.mana = 10;
+                Item.damage = 22;
+                Item.shootSpeed = 10f;
+                Item.knockBack = 10f;
+                Item.shoot = ModContent.ProjectileType<SpellboltPower>();
 
                 powerAttack = true;
             }
             else
             {
-                item.useAnimation = 19;
-                item.useTime = 19;
-                item.autoReuse = false;
-                item.mana = 0;
-                item.damage = 25;
-                item.shootSpeed = 8f;
-                item.knockBack = 4f;
-                item.shoot = AmmoID.Arrow;
+                Item.useAnimation = 19;
+                Item.useTime = 19;
+                Item.autoReuse = false;
+                Item.mana = 0;
+                Item.damage = 25;
+                Item.shootSpeed = 8f;
+                Item.knockBack = 4f;
+                Item.shoot = AmmoID.Arrow;
 
                 powerAttack = false;
             }

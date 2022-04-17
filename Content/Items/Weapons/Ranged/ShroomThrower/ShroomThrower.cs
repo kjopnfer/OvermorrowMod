@@ -13,30 +13,29 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.ShroomThrower
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Blue;
-            item.width = 32;
-            item.height = 32;
-            item.damage = 12;
-            item.DamageType = DamageClass.Ranged;
-            item.noMelee = true;
-            item.useTime = 10;
-            item.useAnimation = 10;
-            item.UseSound = SoundID.Item34;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.autoReuse = true;
-            item.knockBack = 0.1f;
-            item.shoot = ModContent.ProjectileType<ShroomFlame>();
-            item.useAmmo = 183;
-            item.useAmmo = ItemID.Gel;
-            item.shootSpeed = 15f;
+            Item.rare = ItemRarityID.Blue;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 12;
+            Item.DamageType = DamageClass.Ranged;
+            Item.noMelee = true;
+            Item.useTime = 10;
+            Item.useAnimation = 10;
+            Item.UseSound = SoundID.Item34;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.knockBack = 0.1f;
+            Item.shoot = ModContent.ProjectileType<ShroomFlame>();
+            Item.useAmmo = 183;
+            Item.useAmmo = ItemID.Gel;
+            Item.shootSpeed = 15f;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.GlowingMushroom, 35);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.GlowingMushroom, 35)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
         public override Vector2? HoldoutOffset()
         {
