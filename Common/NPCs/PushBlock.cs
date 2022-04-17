@@ -10,15 +10,15 @@ namespace OvermorrowMod.Common.NPCs
 
         public override void SetDefaults()
         {
-            npc.width = 57;
-            npc.height = 64;
-            npc.aiStyle = -1;
-            npc.noGravity = false;
-            npc.dontTakeDamage = true;
-            npc.lifeMax = 100;
-            npc.knockBackResist = 0f;
-            npc.dontCountMe = true;
-            npc.chaseable = false;
+            NPC.width = 57;
+            NPC.height = 64;
+            NPC.aiStyle = -1;
+            NPC.noGravity = false;
+            NPC.dontTakeDamage = true;
+            NPC.lifeMax = 100;
+            NPC.knockBackResist = 0f;
+            NPC.dontCountMe = true;
+            NPC.chaseable = false;
         }
     }
 }

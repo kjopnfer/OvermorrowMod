@@ -15,24 +15,24 @@ namespace OvermorrowMod.Common.NPCs
 
         public override void SetDefaults()
         {
-            npc.width = npc.height = 32;
-            npc.aiStyle = -1;
-            npc.noGravity = true;
-            npc.dontTakeDamage = true;
-            npc.lifeMax = 100;
-            npc.knockBackResist = 0f;
-            npc.dontCountMe = true;
-            npc.chaseable = false;
+            NPC.width = NPC.height = 32;
+            NPC.aiStyle = -1;
+            NPC.noGravity = true;
+            NPC.dontTakeDamage = true;
+            NPC.lifeMax = 100;
+            NPC.knockBackResist = 0f;
+            NPC.dontCountMe = true;
+            NPC.chaseable = false;
         }
 
         public override void AI()
         {
             base.AI();
 
-            if (npc.ai[0]++ == 60)
+            if (NPC.ai[0]++ == 60)
             {
 
-                npc.velocity = Main.rand.NextBool() ? Vector2.UnitX : -Vector2.UnitX;
+                NPC.velocity = Main.rand.NextBool() ? Vector2.UnitX : -Vector2.UnitX;
 
             }
 
@@ -40,7 +40,7 @@ namespace OvermorrowMod.Common.NPCs
             {
                 if (RunOnce)
                 {
-                    NPC.NewNPC((int)npc.Center.X, (int)(npc.Center.Y - 75), ModContent.NPCType<MovingBlock>());
+                    NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)NPC.Center.X, (int)(NPC.Center.Y - 75), ModContent.NPCType<MovingBlock>());
                     RunOnce = false;
                 }
             }
@@ -58,26 +58,26 @@ namespace OvermorrowMod.Common.NPCs
 
         public override void SetDefaults()
         {
-            npc.width = npc.height = 32;
-            npc.aiStyle = -1;
-            npc.noGravity = true;
-            npc.dontTakeDamage = true;
-            npc.lifeMax = 100;
-            npc.knockBackResist = 0f;
-            npc.dontCountMe = true;
-            npc.chaseable = false;
+            NPC.width = NPC.height = 32;
+            NPC.aiStyle = -1;
+            NPC.noGravity = true;
+            NPC.dontTakeDamage = true;
+            NPC.lifeMax = 100;
+            NPC.knockBackResist = 0f;
+            NPC.dontCountMe = true;
+            NPC.chaseable = false;
         }
 
         public override void AI()
         {
             base.AI();
 
-            if (npc.ai[0]++ == 120)
+            if (NPC.ai[0]++ == 120)
             {
-                npc.velocity = new Vector2(1, -1) * 6;
+                NPC.velocity = new Vector2(1, -1) * 6;
             }
 
-            npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(2f));
+            NPC.velocity = NPC.velocity.RotatedBy(MathHelper.ToRadians(2f));
         }
     }
 }

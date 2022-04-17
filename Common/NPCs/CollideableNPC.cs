@@ -12,10 +12,10 @@ namespace OvermorrowMod.Common.NPCs
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
                 Projectile projectile = Main.projectile[i];
-                if (projectile.ai[0] != 1 && projectile.active && projectile.aiStyle == 7 && projectile.Hitbox.Intersects(npc.Hitbox))
+                if (projectile.ai[0] != 1 && projectile.active && projectile.aiStyle == 7 && projectile.Hitbox.Intersects(NPC.Hitbox))
                 {
                     projectile.ai[0] = 2f;
-                    projectile.position += npc.velocity;
+                    projectile.position += NPC.velocity;
                     Grappled = true;
                     //Main.NewText("a");
 

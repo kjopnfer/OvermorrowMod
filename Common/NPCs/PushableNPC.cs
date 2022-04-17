@@ -9,10 +9,10 @@ namespace OvermorrowMod.Common.NPCs
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
                 Projectile projectile = Main.projectile[i];
-                if (projectile.active && projectile.aiStyle == 7 && npc.Hitbox.Intersects(projectile.Hitbox))
+                if (projectile.active && projectile.aiStyle == 7 && NPC.Hitbox.Intersects(projectile.Hitbox))
                 {
                     projectile.ai[0] = 2f;
-                    projectile.position += npc.velocity;
+                    projectile.position += NPC.velocity;
                 }
             }
         }
