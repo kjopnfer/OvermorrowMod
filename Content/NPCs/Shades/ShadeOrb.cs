@@ -16,35 +16,35 @@ namespace OvermorrowMod.Content.NPCs.Shades
 
         public override void SetDefaults()
         {
-            npc.width = 32;
-            npc.height = 32;
-            npc.defense = 9;
-            npc.lifeMax = 500;
-            npc.aiStyle = -1;
-            npc.HitSound = SoundID.NPCHit4;
-            npc.DeathSound = SoundID.NPCDeath53;
-            npc.value = 60f;
-            npc.knockBackResist = 0f;
-            npc.noGravity = true;
-            npc.noTileCollide = true;
+            NPC.width = 32;
+            NPC.height = 32;
+            NPC.defense = 9;
+            NPC.lifeMax = 500;
+            NPC.aiStyle = -1;
+            NPC.HitSound = SoundID.NPCHit4;
+            NPC.DeathSound = SoundID.NPCDeath53;
+            NPC.value = 60f;
+            NPC.knockBackResist = 0f;
+            NPC.noGravity = true;
+            NPC.noTileCollide = true;
         }
 
-        public ref float AICounter => ref npc.ai[0];
-        public ref float SpawnFlag => ref npc.ai[1];
+        public ref float AICounter => ref NPC.ai[0];
+        public ref float SpawnFlag => ref NPC.ai[1];
         public override void AI()
         {
             SpawnFlag = -1;
             foreach (Player player in Main.player)
             {
-                if (player.active && npc.Distance(player.Center) < 2000) SpawnFlag = 1;
+                if (player.active && NPC.Distance(player.Center) < 2000) SpawnFlag = 1;
             }
 
             if (SpawnFlag == 1)
             {
                 if (++AICounter % 300 == 0)
                 {
-                    Vector2 SpawnPosition = npc.Center;
-                    NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Shade>());
+                    Vector2 SpawnPosition = NPC.Center;
+                    NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Shade>());
                 }
             }
         }

@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Items.Misc;
 using System.IO;
 using Terraria;
+using Terraria.GameContent;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,25 +23,25 @@ namespace OvermorrowMod.Content.NPCs.Molemen
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Moleman Scout");
-            Main.npcFrameCount[npc.type] = MAX_FRAMES;
+            Main.npcFrameCount[NPC.type] = MAX_FRAMES;
         }
 
         public override void SetDefaults()
         {
-            npc.width = 32;
-            npc.height = 38;
-            npc.damage = 20;
-            npc.defense = 6;
-            npc.lifeMax = 360;
-            npc.HitSound = SoundID.NPCHit2;
-            npc.DeathSound = SoundID.NPCDeath2;
-            npc.value = 60f;
+            NPC.width = 32;
+            NPC.height = 38;
+            NPC.damage = 20;
+            NPC.defense = 6;
+            NPC.lifeMax = 360;
+            NPC.HitSound = SoundID.NPCHit2;
+            NPC.DeathSound = SoundID.NPCDeath2;
+            NPC.value = 60f;
 
             // knockBackResist is the multiplier applied to the knockback the NPC receives when it takes damage
-            npc.knockBackResist = 0.5f;
+            NPC.knockBackResist = 0.5f;
 
-            npc.aiStyle = 3;
-            aiType = NPCID.GoblinScout;
+            NPC.aiStyle = 3;
+            AIType = NPCID.GoblinScout;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -68,8 +70,8 @@ namespace OvermorrowMod.Content.NPCs.Molemen
             Swipe = 1
         }
 
-        public ref float AICase => ref npc.ai[0];
-        public ref float AICounter => ref npc.ai[1];
+        public ref float AICase => ref NPC.ai[0];
+        public ref float AICounter => ref NPC.ai[1];
 
         public override void AI()
         {
@@ -78,15 +80,15 @@ namespace OvermorrowMod.Content.NPCs.Molemen
                 NPCStyle = Main.rand.Next(2);
                 RunOnce = false;
 
-                npc.netUpdate = true;
+                NPC.netUpdate = true;
             }
 
             switch (AICase)
             {
                 case (int)AIStates.Walk:
-                    if (npc.collideX && npc.velocity.Y == 0)
+                    if (NPC.collideX && NPC.velocity.Y == 0)
                     {
-                        npc.velocity.Y -= 3f;
+                        NPC.velocity.Y -= 3f;
                     }
 
                     #region Frame Animation
@@ -123,27 +125,26 @@ namespace OvermorrowMod.Content.NPCs.Molemen
 
         public override void FindFrame(int frameHeight)
         {
-            npc.spriteDirection = npc.direction;
-            npc.frame.Width = Main.npcTexture[npc.type].Width / 2;
-            npc.frame.X = npc.frame.Width * NPCStyle;
+            NPC.spriteDirection = NPC.direction;
+            NPC.frame.Width = TextureAssets.Npc[NPC.type].Value.Width / 2;
+            NPC.frame.X = NPC.frame.Width * NPCStyle;
             //npc.frame.X = 0;
-            npc.frame.Y = frameHeight * frame;
+            NPC.frame.Y = frameHeight * frame;
         }
 
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = Main.npcTexture[npc.type];
-            var spriteEffects = npc.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, drawColor, npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             return false;
         }
 
-        public override void NPCLoot()
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            int item = Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<MonkeyStone>());
-            ((MonkeyStone)Main.item[item].modItem).itemFrame = Main.rand.Next(0, 3);
+            // TODO: ((MonkeyStone)Main.item[item].modItem).itemFrame = Main.rand.Next(0, 3); can this be done somehow?
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MonkeyStone>()));
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -158,7 +159,7 @@ namespace OvermorrowMod.Content.NPCs.Molemen
 
         public override int SpawnNPC(int tileX, int tileY)
         {
-            return NPC.NewNPC(tileX * 16, tileY * 16, npc.type);
+            return NPC.NewNPC(NPC.GetSpawnSourceForNaturalSpawn(), tileX * 16, tileY * 16, NPC.type);
         }
     }
 }

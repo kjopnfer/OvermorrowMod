@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Content.NPCs.GraniteClamper
 {
@@ -14,80 +15,80 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
 
         public override void SetDefaults()
         {
-            projectile.width = 44;
-            projectile.height = 44;
-            projectile.penetrate = -1;
-            projectile.hostile = true;
-            projectile.friendly = false;
-            projectile.DamageType = DamageClass.Melee;
-            projectile.tileCollide = true;
-            projectile.ignoreWater = true;
+            Projectile.width = 44;
+            Projectile.height = 44;
+            Projectile.penetrate = -1;
+            Projectile.hostile = true;
+            Projectile.friendly = false;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.tileCollide = true;
+            Projectile.ignoreWater = true;
         }
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Clamper");
-            Main.projFrames[base.projectile.type] = 2;
+            Main.projFrames[base.Projectile.type] = 2;
         }
 
         public override void AI()
         {
 
 
-            NPC npc = Main.npc[(int)projectile.ai[1]];
+            NPC npc = Main.npc[(int)Projectile.ai[1]];
 
             if (npc.active)
             {
-                projectile.timeLeft = 3;
+                Projectile.timeLeft = 3;
             }
             DrawToPos = npc.Center;
-            npc.rotation = (npc.Center - Main.player[projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
+            npc.rotation = (npc.Center - Main.player[Projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
 
             timer++;
             if (timer == 100)
             {
-                Vector2 position = projectile.Center;
-                Vector2 targetPosition = Main.player[projectile.owner].Center;
+                Vector2 position = Projectile.Center;
+                Vector2 targetPosition = Main.player[Projectile.owner].Center;
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
-                projectile.velocity = direction * 5f;
-                Main.PlaySound(SoundID.Item, npc.position, 99);
+                Projectile.velocity = direction * 5f;
+                SoundEngine.PlaySound(SoundID.Item, npc.position, 99);
                 timer = 0;
             }
 
             if (npc.velocity.X < 1 && npc.velocity.X > -1)
             {
-                projectile.rotation = (projectile.Center - Main.player[projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
-                projectile.frame = 0;
+                Projectile.rotation = (Projectile.Center - Main.player[Projectile.owner].Center).ToRotation() + MathHelper.ToRadians(-90f);
+                Projectile.frame = 0;
             }
             else
             {
-                projectile.rotation = (npc.Center - projectile.Center).ToRotation() + MathHelper.ToRadians(-90f);
-                projectile.frame = 1;
+                Projectile.rotation = (npc.Center - Projectile.Center).ToRotation() + MathHelper.ToRadians(-90f);
+                Projectile.frame = 1;
             }
 
 
-            if (Vector2.Distance(npc.Center, projectile.Center) < 77)
+            if (Vector2.Distance(npc.Center, Projectile.Center) < 77)
             {
                 npc.velocity *= 0f;
             }
 
             if (timer > 25 && timer < 46)
             {
-                projectile.velocity *= 0.4f;
+                Projectile.velocity *= 0.4f;
 
                 Vector2 position = npc.Center;
-                Vector2 targetPosition = projectile.Center;
+                Vector2 targetPosition = Projectile.Center;
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 npc.velocity = direction * 7f;
             }
 
 
-            if (!Main.npc[(int)projectile.ai[1]].active)
+            if (!Main.npc[(int)Projectile.ai[1]].active)
             {
-                projectile.Kill();
-                projectile.active = false;
+                Projectile.Kill();
+                Projectile.active = false;
             }
         }
 
@@ -97,12 +98,12 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
         }
 
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
             Vector2 mountedCenter = DrawToPos;
-            Texture2D chainTexture = ModContent.GetTexture(ChainTexturePath);
+            Texture2D chainTexture = ModContent.Request<Texture2D>(ChainTexturePath).Value;
 
-            var drawPosition = projectile.Center;
+            var drawPosition = Projectile.Center;
             var remainingVectorToPlayer = mountedCenter - drawPosition;
 
             // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
@@ -120,7 +121,7 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
 
                 // Finally, we draw the texture at the coordinates using the lighting information of the tile coordinates of the chain section
                 Color color = Lighting.GetColor((int)drawPosition.X / 16, (int)(drawPosition.Y / 16f));
-                spriteBatch.Draw(chainTexture, drawPosition - Main.screenPosition, null, color, (DrawToPos - projectile.Center).ToRotation(), chainTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
+                Main.EntitySpriteDraw(chainTexture, drawPosition - Main.screenPosition, null, color, (DrawToPos - Projectile.Center).ToRotation(), chainTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0);
             }
 
             return true;

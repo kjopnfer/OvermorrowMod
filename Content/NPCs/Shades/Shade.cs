@@ -13,21 +13,21 @@ namespace OvermorrowMod.Content.NPCs.Shades
 
         public override void SetDefaults()
         {
-            npc.CloneDefaults(NPCID.Wraith);
-            npc.width = 32;
-            npc.height = 32;
-            npc.defense = 9;
-            npc.lifeMax = 200;
-            npc.HitSound = SoundID.NPCHit4;
-            npc.DeathSound = SoundID.NPCDeath53;
-            npc.value = 60f;
-            npc.knockBackResist = 0f;
-            npc.noGravity = true;
-            npc.noTileCollide = true;
+            NPC.CloneDefaults(NPCID.Wraith);
+            NPC.width = 32;
+            NPC.height = 32;
+            NPC.defense = 9;
+            NPC.lifeMax = 200;
+            NPC.HitSound = SoundID.NPCHit4;
+            NPC.DeathSound = SoundID.NPCDeath53;
+            NPC.value = 60f;
+            NPC.knockBackResist = 0f;
+            NPC.noGravity = true;
+            NPC.noTileCollide = true;
 
             //aiType = NPCID.Wraith;
         }
 
-        public ref float AICounter => ref npc.ai[0];
+        public ref float AICounter => ref NPC.ai[0];
     }
 }

@@ -6,6 +6,8 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Audio;
+using Terraria.GameContent.ItemDropRules;
 
 namespace OvermorrowMod.Content.NPCs.Hemomancer
 {
@@ -17,88 +19,88 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Hemomancer");
-            Main.npcFrameCount[npc.type] = 3;
+            Main.npcFrameCount[NPC.type] = 3;
         }
 
         public override void SetDefaults()
         {
             //npc.width = 18;
             //npc.height = 40;
-            npc.width = 32;
-            npc.height = 46;
-            npc.damage = 29;
-            npc.defense = 10;
-            npc.lifeMax = 350;
-            npc.HitSound = SoundID.NPCHit2;
-            npc.DeathSound = SoundID.NPCDeath2;
-            npc.knockBackResist = 0.6f;
-            npc.value = 140f;
-            npc.npcSlots = 2f;
-            npc.buffImmune[20] = true;
+            NPC.width = 32;
+            NPC.height = 46;
+            NPC.damage = 29;
+            NPC.defense = 10;
+            NPC.lifeMax = 350;
+            NPC.HitSound = SoundID.NPCHit2;
+            NPC.DeathSound = SoundID.NPCDeath2;
+            NPC.knockBackResist = 0.6f;
+            NPC.value = 140f;
+            NPC.npcSlots = 2f;
+            NPC.buffImmune[20] = true;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(npc.Center, 0.75f, 0f, 0f);
+            Lighting.AddLight(NPC.Center, 0.75f, 0f, 0f);
             //npc.ai[0] = 400f;
-            npc.TargetClosest();
-            npc.velocity.X *= 0.93f;
-            if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
+            NPC.TargetClosest();
+            NPC.velocity.X *= 0.93f;
+            if (NPC.velocity.X > -0.1 && NPC.velocity.X < 0.1)
             {
-                npc.velocity.X = 0f;
+                NPC.velocity.X = 0f;
             }
-            if (npc.ai[0] == 0f)
+            if (NPC.ai[0] == 0f)
             {
-                npc.ai[0] = 500f;
+                NPC.ai[0] = 500f;
             }
 
-            if (npc.ai[2] != 0f && npc.ai[3] != 0f)
+            if (NPC.ai[2] != 0f && NPC.ai[3] != 0f)
             {
-                Main.PlaySound(SoundID.Item8, npc.position);
+                SoundEngine.PlaySound(SoundID.Item8, NPC.position);
                 for (int num175 = 0; num175 < 50; num175++)
                 {
-                    int num214 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                    int num214 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
                     Dust dust46 = Main.dust[num214];
                     dust46.velocity *= 3f;
                     Main.dust[num214].noGravity = true;
                 }
-                npc.position.X = npc.ai[2] * 16f - (npc.width / 2) + 8f;
-                npc.position.Y = npc.ai[3] * 16f - npc.height;
-                npc.velocity.X = 0f;
-                npc.velocity.Y = 0f;
-                npc.ai[2] = 0f;
-                npc.ai[3] = 0f;
-                Main.PlaySound(SoundID.Item8, npc.position);
+                NPC.position.X = NPC.ai[2] * 16f - (NPC.width / 2) + 8f;
+                NPC.position.Y = NPC.ai[3] * 16f - NPC.height;
+                NPC.velocity.X = 0f;
+                NPC.velocity.Y = 0f;
+                NPC.ai[2] = 0f;
+                NPC.ai[3] = 0f;
+                SoundEngine.PlaySound(SoundID.Item8, NPC.position);
                 for (int num179 = 0; num179 < 50; num179++)
                 {
-                    int num180 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                    int num180 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
                     Dust dust46 = Main.dust[num180];
                     dust46.velocity *= 3f;
                     Main.dust[num180].noGravity = true;
                 }
             }
 
-            npc.ai[0] += 1f;
+            NPC.ai[0] += 1f;
 
             // Shooting code, shoots thrice
-            if (npc.ai[0] == 100f || npc.ai[0] == 200f || npc.ai[0] == 300f)
+            if (NPC.ai[0] == 100f || NPC.ai[0] == 200f || NPC.ai[0] == 300f)
             {
-                npc.ai[1] = 30f;
-                npc.netUpdate = true;
+                NPC.ai[1] = 30f;
+                NPC.netUpdate = true;
             }
 
             // Teleporting code
-            if (npc.ai[0] >= 650f && Main.netMode != NetmodeID.MultiplayerClient)
+            if (NPC.ai[0] >= 650f && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                npc.ai[0] = 1f;
-                int num234 = (int)Main.player[npc.target].position.X / 16;
-                int num235 = (int)Main.player[npc.target].position.Y / 16;
-                int num239 = (int)npc.position.X / 16;
-                int num241 = (int)npc.position.Y / 16;
+                NPC.ai[0] = 1f;
+                int num234 = (int)Main.player[NPC.target].position.X / 16;
+                int num235 = (int)Main.player[NPC.target].position.Y / 16;
+                int num239 = (int)NPC.position.X / 16;
+                int num241 = (int)NPC.position.Y / 16;
                 int num242 = 20;
                 int num251 = 0;
                 bool flag149 = false;
-                if (Math.Abs(npc.position.X - Main.player[npc.target].position.X) + Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 2000f)
+                if (Math.Abs(NPC.position.X - Main.player[NPC.target].position.X) + Math.Abs(NPC.position.Y - Main.player[NPC.target].position.Y) > 2000f)
                 {
                     num251 = 100;
                     flag149 = true;
@@ -110,45 +112,45 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
                     int num254 = Main.rand.Next(num235 - num242, num235 + num242);
                     for (int num255 = num254; num255 < num235 + num242; num255++)
                     {
-                        if ((num255 < num235 - 4 || num255 > num235 + 4 || num253 < num234 - 4 || num253 > num234 + 4) && (num255 < num241 - 1 || num255 > num241 + 1 || num253 < num239 - 1 || num253 > num239 + 1) && Main.tile[num253, num255].nactive())
+                        if ((num255 < num235 - 4 || num255 > num235 + 4 || num253 < num234 - 4 || num253 > num234 + 4) && (num255 < num241 - 1 || num255 > num241 + 1 || num253 < num239 - 1 || num253 > num239 + 1) && Main.tile[num253, num255].HasUnactuatedTile)
                         {
                             bool flag150 = true;
-                            if ((!Main.wallDungeon[Main.tile[num253, num255 - 1].wall]))
+                            if ((!Main.wallDungeon[Main.tile[num253, num255 - 1].WallType]))
                             {
                                 flag150 = false;
                             }
-                            else if (Main.tile[num253, num255 - 1].lava())
+                            else if (Main.tile[num253, num255 - 1].LiquidType == LiquidID.Lava)
                             {
                                 flag150 = false;
                             }
-                            if (flag150 && Main.tileSolid[Main.tile[num253, num255].type] && !Collision.SolidTiles(num253 - 1, num253 + 1, num255 - 4, num255 - 1))
+                            if (flag150 && Main.tileSolid[Main.tile[num253, num255].TileType] && !Collision.SolidTiles(num253 - 1, num253 + 1, num255 - 4, num255 - 1))
                             {
-                                npc.ai[1] = 20f;
-                                npc.ai[2] = num253;
-                                npc.ai[3] = num255;
+                                NPC.ai[1] = 20f;
+                                NPC.ai[2] = num253;
+                                NPC.ai[3] = num255;
                                 flag149 = true;
                                 break;
                             }
                         }
                     }
                 }
-                npc.netUpdate = true;
+                NPC.netUpdate = true;
             }
 
             // Projectile code
-            if (npc.ai[1] > 0f)
+            if (NPC.ai[1] > 0f)
             {
-                npc.ai[1] -= 1f;
-                if (npc.ai[1] == 25f)
+                NPC.ai[1] -= 1f;
+                if (NPC.ai[1] == 25f)
                 {
                     frame = 1;
-                    Main.PlaySound(SoundID.Item8, npc.position);
+                    SoundEngine.PlaySound(SoundID.Item8, NPC.position);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         //NPC.NewNPC((int)npc.position.X + npc.width / 2, (int)npc.position.Y - 8, 33);
 
-                        Player player = Main.player[npc.target];
-                        Vector2 shootPosition = new Vector2(npc.Center.X, npc.Center.Y - 20);
+                        Player player = Main.player[NPC.target];
+                        Vector2 shootPosition = new Vector2(NPC.Center.X, NPC.Center.Y - 20);
 
                         float speed = 7;
 
@@ -160,12 +162,12 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
                         speedY = speedY * num12;
 
                         Vector2 position = shootPosition;
-                        Vector2 targetPosition = Main.player[npc.target].Center;
+                        Vector2 targetPosition = Main.player[NPC.target].Center;
                         Vector2 direction = targetPosition - position;
                         direction.Normalize();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(npc.Center + new Vector2(0, -20), direction * speed, ModContent.ProjectileType<SplittingBlood_Hemomancer>(), npc.damage / 2, 3f, Main.myPlayer, 0, 0);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(0, -20), direction * speed, ModContent.ProjectileType<SplittingBlood_Hemomancer>(), NPC.damage / 2, 3f, Main.myPlayer, 0, 0);
                         }
                     }
                 }
@@ -174,7 +176,7 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
             // NPC Dust
             if (Main.rand.Next(3) != 0)
             {
-                int num327 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, DustID.Blood, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100, default(Color), 0.9f);
+                int num327 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y + 2f), NPC.width, NPC.height, DustID.Blood, NPC.velocity.X * 0.2f, NPC.velocity.Y * 0.2f, 100, default(Color), 0.9f);
                 Main.dust[num327].noGravity = true;
                 Dust expr_448D_cp_0 = Main.dust[num327];
                 expr_448D_cp_0.velocity.X = expr_448D_cp_0.velocity.X * 0.3f;
@@ -199,49 +201,39 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
         public override void HitEffect(int hitDirection, double damage)
         {
             int dmg = 10;
-            if (npc.life > 0)
+            if (NPC.life > 0)
             {
-                for (int num333 = 0; (double)num333 < dmg / (double)npc.lifeMax * 50.0; num333++)
+                for (int num333 = 0; (double)num333 < dmg / (double)NPC.lifeMax * 50.0; num333++)
                 {
-                    Dust.NewDust(npc.position, npc.width, npc.height, DustID.Bone, hitDirection, -1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Bone, hitDirection, -1f);
                 }
                 return;
             }
             for (int num331 = 0; num331 < 20; num331++)
             {
-                Dust.NewDust(npc.position, npc.width, npc.height, DustID.Bone, 2.5f * (float)hitDirection, -2.5f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Bone, 2.5f * (float)hitDirection, -2.5f);
             }
 
-            Gore.NewGore(npc.position, npc.velocity, 42, npc.scale);
-            Gore.NewGore(new Vector2(npc.position.X, npc.position.Y + 20f), npc.velocity, 43, npc.scale);
-            Gore.NewGore(new Vector2(npc.position.X, npc.position.Y + 20f), npc.velocity, 43, npc.scale);
-            Gore.NewGore(new Vector2(npc.position.X, npc.position.Y + 34f), npc.velocity, 44, npc.scale);
-            Gore.NewGore(new Vector2(npc.position.X, npc.position.Y + 34f), npc.velocity, 44, npc.scale);
+            Gore.NewGore(NPC.position, NPC.velocity, 42, NPC.scale);
+            Gore.NewGore(new Vector2(NPC.position.X, NPC.position.Y + 20f), NPC.velocity, 43, NPC.scale);
+            Gore.NewGore(new Vector2(NPC.position.X, NPC.position.Y + 20f), NPC.velocity, 43, NPC.scale);
+            Gore.NewGore(new Vector2(NPC.position.X, NPC.position.Y + 34f), NPC.velocity, 44, NPC.scale);
+            Gore.NewGore(new Vector2(NPC.position.X, NPC.position.Y + 34f), NPC.velocity, 44, NPC.scale);
         }
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frame.Y = frameHeight * frame;
+            NPC.frame.Y = frameHeight * frame;
         }
 
-        public override void NPCLoot()
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            // Drops Bloodburst Staff and Sanguine Beacon (Replace with Bloody Tear when 1.4)
+            // Drops Bloodburst Staff and Sanguine Beacon (Replace with Bloody Tear when 1.4) TODO somebody who knows what this means please
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BloodBeacon>(), 2));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BloodStaff>(), 3));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BloodGem>(), 4));
 
-            if (Main.rand.Next(2) == 0) // Beacon Dropchance
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodBeacon>());
-            }
-
-            if (Main.rand.Next(3) == 0) // Staff Dropchance
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodStaff>());
-            }
-
-            if (Main.rand.Next(4) == 0) // Blood Gem Dropchance
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<BloodGem>());
-            }
+            base.ModifyNPCLoot(npcLoot);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)

@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Content.Tiles.WaterCave;
 using System;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,61 +15,56 @@ namespace OvermorrowMod.Content.NPCs.SnapDragon
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Secluded Snapdragon");
-            Main.npcFrameCount[npc.type] = 2;
+            Main.npcFrameCount[NPC.type] = 2;
         }
 
         public override void SetDefaults()
         {
-            npc.CloneDefaults(NPCID.ManEater);
-            npc.width = 58;
-            npc.height = 64;
-            aiType = NPCID.ManEater;
-            npc.aiStyle = 13;
-            npc.lifeMax = 140;
-            npc.damage = 30;
-            npc.defense = 13;
-            npc.HitSound = SoundID.NPCHit1;
-            npc.DeathSound = SoundID.NPCDeath1;
+            NPC.CloneDefaults(NPCID.ManEater);
+            NPC.width = 58;
+            NPC.height = 64;
+            AIType = NPCID.ManEater;
+            NPC.aiStyle = 13;
+            NPC.lifeMax = 140;
+            NPC.damage = 30;
+            NPC.defense = 13;
+            NPC.HitSound = SoundID.NPCHit1;
+            NPC.DeathSound = SoundID.NPCDeath1;
         }
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frameCounter++;
+            NPC.frameCounter++;
 
-            if (npc.frameCounter % 12f == 11f) // Ticks per frame
+            if (NPC.frameCounter % 12f == 11f) // Ticks per frame
             {
-                npc.frame.Y += frameHeight;
+                NPC.frame.Y += frameHeight;
             }
-            if (npc.frame.Y >= frameHeight * 2) // 2 is max # of frames
+            if (NPC.frame.Y >= frameHeight * 2) // 2 is max # of frames
             {
-                npc.frame.Y = 0; // Reset back to default
+                NPC.frame.Y = 0; // Reset back to default
             }
         }
 
         public override void AI()
         {
-            npc.TargetClosest(true);
-            npc.netAlways = true;
+            NPC.TargetClosest(true);
+            NPC.netAlways = true;
         }
 
-        public override void NPCLoot()
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            Vector2 vector16 = new Vector2(NPC.position.X + (float)(NPC.width / 2), NPC.position.Y + (float)(NPC.height / 2));
 
-        }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
-        {
-            Vector2 vector16 = new Vector2(npc.position.X + (float)(npc.width / 2), npc.position.Y + (float)(npc.height / 2));
-
-            for (int k = 0; k < npc.oldPos.Length; k++)
+            for (int k = 0; k < NPC.oldPos.Length; k++)
             {
-                Vector2 drawPos = npc.oldPos[k] - Main.screenPosition + vector16 + new Vector2(0f, npc.gfxOffY);
-                Color color = npc.GetAlpha(drawColor) * ((float)(npc.oldPos.Length - k) / (float)npc.oldPos.Length);
-                spriteBatch.Draw(Main.npcTexture[npc.type], drawPos, npc.frame, color, npc.rotation, vector16, npc.scale, SpriteEffects.None, 0f);
+                Vector2 drawPos = NPC.oldPos[k] - screenPos + vector16 + new Vector2(0f, NPC.gfxOffY);
+                Color color = NPC.GetAlpha(drawColor) * ((float)(NPC.oldPos.Length - k) / (float)NPC.oldPos.Length);
+                spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, drawPos, NPC.frame, color, NPC.rotation, vector16, NPC.scale, SpriteEffects.None, 0f);
             }
 
-            float num109 = npc.ai[0] * 16f + 8f - vector16.X;
-            float num110 = npc.ai[1] * 16f + 8f - vector16.Y;
+            float num109 = NPC.ai[0] * 16f + 8f - vector16.X;
+            float num110 = NPC.ai[1] * 16f + 8f - vector16.Y;
             float rotation11 = (float)Math.Atan2(num110, num109) - 1.57f;
             bool flag15 = true;
             while (flag15)
@@ -86,23 +82,25 @@ namespace OvermorrowMod.Content.NPCs.SnapDragon
                 num110 *= num102;
                 vector16.X += num109;
                 vector16.Y += num110;
-                num109 = npc.ai[0] * 16f + 8f - vector16.X;
-                num110 = npc.ai[1] * 16f + 8f - vector16.Y;
+                num109 = NPC.ai[0] * 16f + 8f - vector16.X;
+                num110 = NPC.ai[1] * 16f + 8f - vector16.Y;
                 Color color95 = Lighting.GetColor((int)vector16.X / 16, (int)(vector16.Y / 16f));
-                Texture2D chain5Texture = mod.GetTexture("Content/NPCs/SnapDragon_Chain");
+                Texture2D chain5Texture = Mod.Assets.Request<Texture2D>("Content/NPCs/SnapDragon_Chain").Value;
                 spriteBatch.Draw(chain5Texture, new Vector2(vector16.X - Main.screenPosition.X, vector16.Y - Main.screenPosition.Y), new Rectangle(0, 0, chain5Texture.Width, num274), color95, rotation11, new Vector2((float)chain5Texture.Width * 0.5f, (float)chain5Texture.Height * 0.5f), 1f, SpriteEffects.None, 0f);
             }
-            return base.PreDraw(spriteBatch, drawColor);
+            return base.PreDraw(spriteBatch, screenPos, drawColor);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == ModContent.TileType<GlowBlock>() ? 0.02f : 0f;
+            // TODO: Figure out biomes
+            // return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].TileType == ModContent.TileType<GlowBlock>() ? 0.02f : 0f;
+            return 0.0f;
         }
 
         public override int SpawnNPC(int tileX, int tileY)
         {
-            return NPC.NewNPC(tileX * 16 + 8, tileY * 16, npc.type, 0, tileX, tileY);
+            return NPC.NewNPC(NPC.GetSpawnSourceForNaturalSpawn(), tileX * 16 + 8, tileY * 16, NPC.type, 0, tileX, tileY);
         }
     }
 }
