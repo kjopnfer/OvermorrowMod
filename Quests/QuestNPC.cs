@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Quests.Requirements;
 using System;
 using System.Linq;
 using Terraria;
@@ -110,6 +111,12 @@ namespace OvermorrowMod.Quests
                                 frame = 0;
                             }
                             break;
+                        case QuestType.Kill:
+                            if (frame >= 4 || frame <= 2)
+                            {
+                                frame = 2;
+                            }
+                            break;
                     }
 
                     lerpTimer++;
@@ -133,6 +140,46 @@ namespace OvermorrowMod.Quests
             }
 
             base.PostDraw(npc, spriteBatch, drawColor);
+        }
+
+        public override void NPCLoot(NPC npc)
+        {
+            // Like three for loops just to check if the NPC killed can count towards the player's quest, not sure if more optimal way?
+            foreach (Player player in Main.player)
+            {
+                if (!player.active) continue;
+
+                var modPlayer = player.GetModPlayer<QuestPlayer>();
+                if (npc.playerInteraction[player.whoAmI])
+                {
+                    foreach (BaseQuest quest in modPlayer.CurrentQuests)
+                    {
+                        if (quest.Type == QuestType.Kill)
+                        {
+                            foreach (KillRequirement requirement in quest.Requirements)
+                            {
+                                if (requirement.type == npc.type)
+                                {
+                                    var KilledList = modPlayer.KilledNPCs;
+
+                                    // Check if the player has the entry of the killed NPC stored to increment their kill counter
+                                    if (KilledList.ContainsKey(npc.type))
+                                    {
+                                        KilledList[npc.type]++;
+                                    }
+                                    else
+                                    {
+                                        // Add the entry into the Dictionary if this is the first time they are killed
+                                        KilledList.Add(npc.type, 1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            base.NPCLoot(npc);
         }
     }
 }

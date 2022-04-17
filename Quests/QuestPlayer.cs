@@ -20,6 +20,8 @@ namespace OvermorrowMod.Quests
 
         public HashSet<string> LocalCompletedQuests { get; } = new HashSet<string>();
 
+        public Dictionary<int, int> KilledNPCs = new Dictionary<int, int>();
+
         public bool IsDoingQuest(string questId)
         {
             return CurrentQuests.Any(q => q.QuestID == questId);

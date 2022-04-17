@@ -1,5 +1,6 @@
 ﻿using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
+using Terraria;
 using Terraria.ID;
 
 namespace OvermorrowMod.Quests.ModQuests
@@ -31,6 +32,11 @@ namespace OvermorrowMod.Quests.ModQuests
             QuestHint.Add("Let me know when you get those torches and a workbench.");
 
             QuestEndDialogue.Add("Excellent! Here is your reward!");
+        }
+
+        protected override bool IsValidFor(Player player)
+        {
+            return Quests.HasCompletedQuest<GuideSlime>(player);
         }
     }
 }

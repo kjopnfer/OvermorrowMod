@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Quests.Requirements;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -16,12 +17,13 @@ namespace OvermorrowMod.Quests
     public enum QuestType
     {
         Fetch,
-        Housing
+        Housing,
+        Kill
     }
 
     public abstract class BaseQuest
     {
-        protected virtual IEnumerable<IQuestRequirement> Requirements { get; set; }
+        public virtual IEnumerable<IQuestRequirement> Requirements { get; set; }
         protected virtual IEnumerable<IQuestReward> Rewards { get; set; }
         protected virtual List<string> QuestDialogue { get; } = new List<string>();
         protected virtual List<string> QuestHint { get; } = new List<string>();
@@ -71,6 +73,20 @@ namespace OvermorrowMod.Quests
             }
         }
 
+        /// <summary>
+        /// Resets the kill count of the NPC within the Dictionary after completion
+        /// </summary>
+        /// <param name="player"></param>
+        private void ResetKillCount(Player player)
+        {
+            var modPlayer = player.GetModPlayer<QuestPlayer>();
+            var KilledList = modPlayer.KilledNPCs;
+            foreach (KillRequirement requirement in Requirements)
+            {
+                KilledList[requirement.type] = 0;
+            }
+        }
+
         public void CompleteQuest(Player player, bool success)
         {
             var modPlayer = player.GetModPlayer<QuestPlayer>();
@@ -81,6 +97,11 @@ namespace OvermorrowMod.Quests
 
             if (success)
             {
+                if (Type == QuestType.Kill)
+                {
+                    ResetKillCount(player);
+                }
+
                 GiveRewards(player);
                 Main.NewText("COMPLETED QUEST: " + QuestName, Color.Yellow);
             }
