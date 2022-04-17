@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
                     {
                         bind = key;
                     }
-                    tooltip.text = $"Press [{bind}] to summon the rune";
+                    tooltip.Text = $"Press [{bind}] to summon the rune";
                 }
             }
         }

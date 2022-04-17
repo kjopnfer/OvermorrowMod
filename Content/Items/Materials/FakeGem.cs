@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.Items.Materials
             {
                 if (line.Name == "ItemName")
                 {
-                    string text = line.text;
+                    string text = line.Text;
                     string text2 = "";
                     for (int ind = 0; ind < text.Length; ind++)
                     {
@@ -50,7 +50,7 @@ namespace OvermorrowMod.Content.Items.Materials
                         }
                         text2 += ch;
                     }
-                    line.text = text2;
+                    line.Text = text2;
                 }
             }
         }

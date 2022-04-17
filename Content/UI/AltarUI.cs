@@ -55,7 +55,7 @@ namespace OvermorrowMod.Content.UI
 
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    Texture2D plusButtonTexture = ModContent.GetTexture("OvermorrowMod/UI/PlusButton");
+                    var plusButtonTexture = ModContent.Request<Texture2D>("OvermorrowMod/UI/PlusButton");
                     HoverImageButton button = new HoverImageButton(plusButtonTexture, "hi");
                     button.Top.Set(164, 0);
                     button.HAlign = 0.5f;
@@ -80,7 +80,7 @@ namespace OvermorrowMod.Content.UI
             if (!_vanillaItemSlot.Item.IsAir)
             {
                 // QuickSpawnClonedItem will preserve mod data of the item. QuickSpawnItem will just spawn a fresh version of the item, losing the prefix.
-                Main.LocalPlayer.QuickSpawnClonedItem(_vanillaItemSlot.Item, _vanillaItemSlot.Item.stack);
+                Main.LocalPlayer.QuickSpawnClonedItem(null, _vanillaItemSlot.Item, _vanillaItemSlot.Item.stack);
                 // Now that we've spawned the item back onto the player, we reset the item by turning it into air.
                 _vanillaItemSlot.Item.TurnToAir();
             }
@@ -107,7 +107,7 @@ namespace OvermorrowMod.Content.UI
         {
             base.DrawSelf(spriteBatch);
             // This will hide the crafting menu similar to the reforge menu.
-            Main.HidePlayerCraftingMenu = true;
+            Main.hidePlayerCraftingMenu = true;
 
             if (ContainsPoint(Main.MouseScreen) && !PlayerInput.IgnoreMouseInterface) // Prevent player from using items
             {

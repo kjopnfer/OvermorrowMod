@@ -55,11 +55,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Catfish
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<WaterBar>(), 7);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe(1).AddIngredient(ModContent.ItemType<WaterBar>(), 7).AddTile(TileID.Anvils).Register();
         }
     }
 }

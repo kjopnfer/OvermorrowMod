@@ -89,7 +89,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SkullGun
 
         public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.GetTexture("Terraria/Extra_89");
+            Texture2D SoulTexture = ModContent.Request<Texture2D>("Terraria/Extra_89");
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
