@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.Buffs.Hexes
         /// <summary>Is ran every time a npc is updated, more focused on life regeneration</summary>
         public virtual void UpdateLifeRegen(ref int damage) { }
         /// <summary>Used for drawing sprites or changing the npc's drawing color</summary>
-        public virtual void Draw(SpriteBatch spriteBatch, ref Color drawColor) { }
+        public virtual void Draw(SpriteBatch spriteBatch, Vector2 screenPos, ref Color drawColor) { }
         /// <summary>Used for making synergies between 2 different hexes</summary>
         public virtual void ApplySynergies(Hex otherHex) { }
     }
@@ -122,13 +122,14 @@ namespace OvermorrowMod.Content.Buffs.Hexes
                 hex.modHex.UpdateLifeRegen(ref damage);
             }
         }
-        public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)
+
+        public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             for (int i = 0; i < Hexes.Count; i++)
             {
                 Hex hex = Hexes[i];
                 hex.npc = npc;
-                hex.modHex.Draw(spriteBatch, ref drawColor);
+                hex.modHex.Draw(spriteBatch, screenPos, ref drawColor);
             }
             return true;
         }

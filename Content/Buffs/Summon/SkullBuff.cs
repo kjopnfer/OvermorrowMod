@@ -6,7 +6,7 @@ namespace OvermorrowMod.Content.Buffs.Summon
 {
     public class SkullBuff : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Skull");
             Description.SetDefault("The skull will shoot for you while using a summon stick");

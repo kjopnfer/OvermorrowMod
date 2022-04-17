@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Buffs
 {
     public class Steal : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Steal!");
             Description.SetDefault("You've taken something from the enemy, better put it to good use...");
@@ -25,12 +25,14 @@ namespace OvermorrowMod.Content.Buffs
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc.active && npc.modNPC is SandstormBoss)
+                if (npc.active && npc.ModNPC is SandstormBoss)
                 {
                     player.buffImmune[BuffID.WindPushed] = true;
                     player.moveSpeed += 0.85f;
                     player.jumpSpeedBoost += 3f;
-                    player.doubleJumpSandstorm = true;
+
+                    // What is this? Needs migration.
+                    // player.doubleJumpSandstorm = true;
                 }
             }
         }

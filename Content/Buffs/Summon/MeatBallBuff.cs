@@ -6,7 +6,7 @@ namespace OvermorrowMod.Content.Buffs.Summon
 {
     public class MeatBallBuff : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Meatball");
             Description.SetDefault("The Meatball will fight for you");

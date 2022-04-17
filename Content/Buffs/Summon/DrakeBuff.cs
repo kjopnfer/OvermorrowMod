@@ -6,7 +6,7 @@ namespace OvermorrowMod.Content.Buffs.Summon
 {
     public class DrakeBuff : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Storm Whelp");
             Description.SetDefault("The Storm Whelp will fight for you");

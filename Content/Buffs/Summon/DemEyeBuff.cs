@@ -6,7 +6,7 @@ namespace OvermorrowMod.Content.Buffs.Summon
 {
     public class DemEyeBuff : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Demon Eye");
             Description.SetDefault("The demon eye will fight for you");

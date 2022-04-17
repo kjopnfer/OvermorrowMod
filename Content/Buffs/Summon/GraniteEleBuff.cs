@@ -6,7 +6,7 @@ namespace OvermorrowMod.Content.Buffs.Summon
 {
     public class GraniteEleBuff : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Granite Elemental");
             Description.SetDefault("The Granite Elemental will fight for you");

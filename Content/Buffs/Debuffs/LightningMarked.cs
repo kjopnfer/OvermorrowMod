@@ -6,7 +6,7 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
 {
     public class LightningMarked : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Marked");
             Main.debuff[Type] = true;
