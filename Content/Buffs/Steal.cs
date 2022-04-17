@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Buffs
             Description.SetDefault("You've taken something from the enemy, better put it to good use...");
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = false;
-            canBeCleared = false;
+            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)

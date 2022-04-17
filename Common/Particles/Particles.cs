@@ -126,7 +126,7 @@ namespace OvermorrowMod.Common.Particles
         {
             spriteBatch.Reload(BlendState.Additive);
 
-            Texture2D texture = Particle.Assets.Request<Texture2D>(particle.type).Value;
+            Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
 
             spriteBatch.Reload(BlendState.AlphaBlend);
@@ -176,7 +176,7 @@ namespace OvermorrowMod.Common.Particles
             //Main.spriteBatch.End();
             //Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D texture = Particle.Assets.Request<Texture2D>(particle.type).Value;
+            Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
 
             //Main.spriteBatch.End();
@@ -224,7 +224,7 @@ namespace OvermorrowMod.Common.Particles
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D texture = Particle.Assets.Request<Texture2D>(particle.type).Value;
+            Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale / 2, SpriteEffects.None, 0f);
 
@@ -257,7 +257,7 @@ namespace OvermorrowMod.Common.Particles
         {
             spriteBatch.Reload(BlendState.Additive);
 
-            Texture2D texture = Particle.Assets.Request<Texture2D>(particle.type).Value;
+            Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale / 2, SpriteEffects.None, 0f);
 
@@ -354,7 +354,7 @@ namespace OvermorrowMod.Common.Particles
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = Particle.Assets.Request<Texture2D>(particle.type).Value;
+            Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height), new Vector2(particle.scale, 0.05f), SpriteEffects.None, 0f);
         }
     }

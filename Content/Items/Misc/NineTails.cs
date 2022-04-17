@@ -38,7 +38,7 @@ namespace OvermorrowMod.Content.Items.Misc
             {
                 if (line.Name == "ItemName")
                 {
-                    string text = line.Text;
+                    string text = line.text;
                     string text2 = "";
                     for (int ind = 0; ind < text.Length; ind++)
                     {
@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.Items.Misc
                         }
                         text2 += ch;
                     }
-                    line.Text = text2;
+                    line.text = text2;
                 }
             }
         }

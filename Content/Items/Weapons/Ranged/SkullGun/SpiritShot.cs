@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -87,16 +88,16 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SkullGun
             }
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override void PostDraw(Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.Request<Texture2D>("Terraria/Extra_89");
+            Texture2D SoulTexture = ModContent.Request<Texture2D>("Terraria/Extra_89").Value;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            int frameHeight = Main.ProjectileTexture[Projectile.type].Height / Main.projFrames[Projectile.type];
+            int frameHeight = TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int startY = frameHeight * Projectile.frame;
             Rectangle sourceRectangle = new Rectangle(0, startY, SoulTexture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;

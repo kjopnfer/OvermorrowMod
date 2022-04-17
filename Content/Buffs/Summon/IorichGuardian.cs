@@ -1,5 +1,6 @@
 using OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Buffs.Summon
@@ -12,7 +13,7 @@ namespace OvermorrowMod.Content.Buffs.Summon
             Description.SetDefault("A Guardian of Iorich will fight for you");
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = false;
-            canBeCleared = false;
+            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)

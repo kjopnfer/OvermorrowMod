@@ -156,18 +156,13 @@ namespace OvermorrowMod.Content.Tiles.Underground
         // Light sprite
         private int LightCounter = 0;
         public int LightFrame = 0;
-
-        public override TagCompound Save()
+        public override void SaveData(TagCompound tag)
         {
-            // Save the Tunnel's ID into this, and the paired Tunnel
-            return new TagCompound()
-            {
-                ["TunnelID"] = TunnelID,
-                ["PairedTunnel"] = PairedTunnel
-            };
+            tag["TunnelID"] = TunnelID;
+            tag["PairedTunnel"] = PairedTunnel;
         }
 
-        public override void Load(TagCompound tag)
+        public override void LoadData(TagCompound tag)
         {
             // Load the Tunnel's ID and the paired Tunnel
             TunnelID = tag.Get<int>("TunnelID");
@@ -301,7 +296,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
         }
     }
 
-    public class TrollWorld : ModWorld
+    public class TrollWorld : ModSystem
     {
         public static int TunnelCounter;
     }

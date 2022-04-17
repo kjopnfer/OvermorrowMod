@@ -186,7 +186,7 @@ namespace OvermorrowMod.Common
 
         public override bool PreDraw(ref Color lightColor)
         {
-            spriteBatch.Reload(BlendState.Additive);
+            Main.spriteBatch.Reload(BlendState.Additive);
 
             //if (Positions == default || Positions == null) return false;
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Circle").Value;
@@ -203,12 +203,12 @@ namespace OvermorrowMod.Common
                     Vector2 pos = Vector2.Lerp(seg1.Position, seg2.Position, progress);
                     float alpha = MathHelper.Lerp(seg1.Alpha, seg2.Alpha, progress);
                     float scale = MathHelper.Lerp(seg1.Size, seg2.Size, progress) / texture.Width;
-                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.Lerp(Color1, Color2, alpha) * 0.5f, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 3, SpriteEffects.None, 0f);
-                    spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 0.5f, SpriteEffects.None, 0f);
+                    Main.EntitySpriteDraw(texture, pos - Main.screenPosition, null, Color.Lerp(Color1, Color2, alpha) * 0.5f, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 3, SpriteEffects.None, 0);
+                    Main.EntitySpriteDraw(texture, pos - Main.screenPosition, null, Color.White, 0f, new Vector2(texture.Width / 2, texture.Height / 2), scale * 0.5f, SpriteEffects.None, 0);
                 }
             }
 
-            spriteBatch.Reload(BlendState.AlphaBlend);
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
 
             return false;
         }

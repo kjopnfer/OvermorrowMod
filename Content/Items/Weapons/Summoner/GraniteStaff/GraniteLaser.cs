@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
         public override void SetDefaults()
         {
             Projectile.CloneDefaults(ProjectileID.EyeBeam);
-            aiType = ProjectileID.EyeBeam;
+            AIType = ProjectileID.EyeBeam;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
             Projectile.hostile = false;
