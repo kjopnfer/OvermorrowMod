@@ -15,10 +15,10 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 24;
-            item.rare = ItemRarityID.White;
-            item.maxStack = 999;
+            Item.width = 24;
+            Item.height = 24;
+            Item.rare = ItemRarityID.White;
+            Item.maxStack = 999;
         }
         public override Color? GetAlpha(Color lightColor)
         {
@@ -27,16 +27,15 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void PostUpdate()
         {
-            Lighting.AddLight(item.Center, Color.Green.ToVector3() * 0.55f * Main.essScale);
+            Lighting.AddLight(Item.Center, Color.Green.ToVector3() * 0.55f * Main.essScale);
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOre>(), 9);
-            recipe.AddTile(TileID.Furnaces);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient<EruditeOre>(9)
+                .AddTile(TileID.Furnaces)
+                .Register();
         }
     }
 }

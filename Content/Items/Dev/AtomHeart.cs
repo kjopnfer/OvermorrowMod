@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Pets;
 using OvermorrowMod.Content.Projectiles.Pets;
 using Terraria;
@@ -15,17 +16,17 @@ namespace OvermorrowMod.Content.Items.Dev
         public override void SetDefaults()
         {
 
-            item.damage = 0;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.width = 22;
-            item.height = 22;
-            item.useAnimation = 20;
-            item.useTime = 20;
-            item.rare = ItemRarityID.Expert;
-            item.noMelee = true;
-            item.value = Item.sellPrice(0, 3, 50, 0);
-            item.shoot = ModContent.ProjectileType<Atom>();
-            item.buffType = ModContent.BuffType<AtomBuff>();
+            Item.damage = 0;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.width = 22;
+            Item.height = 22;
+            Item.useAnimation = 20;
+            Item.useTime = 20;
+            Item.rare = ItemRarityID.Expert;
+            Item.noMelee = true;
+            Item.value = Item.sellPrice(0, 3, 50, 0);
+            Item.shoot = ModContent.ProjectileType<Atom>();
+            Item.buffType = ModContent.BuffType<AtomBuff>();
         }
 
         public override bool CanUseItem(Player player)
@@ -33,12 +34,11 @@ namespace OvermorrowMod.Content.Items.Dev
             // The equip slot
             return player.miscEquips[1].IsAir;
         }
-
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                player.AddBuff(item.buffType, 3600, true);
+                player.AddBuff(Item.buffType, 3600, true);
             }
         }
     }

@@ -16,16 +16,16 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void SetDefaults()
         {
-            item.width = 14;
-            item.height = 14;
-            item.rare = ItemRarityID.Green;
-            item.maxStack = 999;
-            item.useTurn = true;
-            item.autoReuse = true;
-            item.useAnimation = 15;
-            item.useTime = 10;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.createTile = ModContent.TileType<WaterCaveOre>();
+            Item.width = 14;
+            Item.height = 14;
+            Item.rare = ItemRarityID.Green;
+            Item.maxStack = 999;
+            Item.useTurn = true;
+            Item.autoReuse = true;
+            Item.useAnimation = 15;
+            Item.useTime = 10;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.createTile = ModContent.TileType<WaterCaveOre>();
         }
         public override Color? GetAlpha(Color lightColor)
         {
@@ -34,7 +34,7 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void PostUpdate()
         {
-            Lighting.AddLight(item.Center, Color.White.ToVector3() * 0.55f * Main.essScale);
+            Lighting.AddLight(Item.Center, Color.White.ToVector3() * 0.55f * Main.essScale);
         }
     }
 }

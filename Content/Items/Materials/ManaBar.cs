@@ -14,17 +14,17 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void SetDefaults()
         {
-            item.width = 48;
-            item.height = 30;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.value = 550;
-            item.rare = ItemRarityID.Green;
-            item.maxStack = 999;
-            item.autoReuse = true;
-            item.useAnimation = 15;
-            item.useTime = 10;
-            //item.createTile = ModContent.TileType<ManaBarTile>();
-            //item.placeStyle = 0;
+            Item.width = 48;
+            Item.height = 30;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.value = 550;
+            Item.rare = ItemRarityID.Green;
+            Item.maxStack = 999;
+            Item.autoReuse = true;
+            Item.useAnimation = 15;
+            Item.useTime = 10;
+            //Item.createTile = ModContent.TileType<ManaBarTile>();
+            //Item.placeStyle = 0;
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -34,24 +34,16 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void PostUpdate()
         {
-            Lighting.AddLight(item.Center, Color.White.ToVector3() * 0.55f * Main.essScale);
+            Lighting.AddLight(Item.Center, Color.White.ToVector3() * 0.55f * Main.essScale);
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.IronBar, 5);
-            recipe.AddIngredient(ModContent.ItemType<CrystalMana>(), 3);
-            recipe.AddTile(TileID.Furnaces);
-            recipe.SetResult(this, 5);
-            recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.LeadBar, 5);
-            recipe.AddIngredient(ModContent.ItemType<CrystalMana>(), 3);
-            recipe.AddTile(TileID.Furnaces);
-            recipe.SetResult(this, 5);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddRecipeGroup("IronBar", 5)
+                .AddIngredient<CrystalMana>(3)
+                .AddTile(TileID.Furnaces)
+                .Register();
         }
     }
 }

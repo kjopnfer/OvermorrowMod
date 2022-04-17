@@ -16,16 +16,16 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void SetDefaults()
         {
-            item.width = 16;
-            item.height = 16;
-            item.rare = ItemRarityID.Blue;
-            item.maxStack = 999;
-            item.useTurn = true;
-            item.autoReuse = true;
-            item.useAnimation = 15;
-            item.useTime = 10;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.createTile = ModContent.TileType<EruditeTile>();
+            Item.width = 16;
+            Item.height = 16;
+            Item.rare = ItemRarityID.Blue;
+            Item.maxStack = 999;
+            Item.useTurn = true;
+            Item.autoReuse = true;
+            Item.useAnimation = 15;
+            Item.useTime = 10;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.createTile = ModContent.TileType<EruditeTile>();
         }
         public override Color? GetAlpha(Color lightColor)
         {
@@ -34,7 +34,7 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void PostUpdate()
         {
-            Lighting.AddLight(item.Center, 0f, 0.5f, 0f);
+            Lighting.AddLight(Item.Center, 0f, 0.5f, 0f);
         }
     }
 }

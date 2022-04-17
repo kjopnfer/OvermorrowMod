@@ -15,11 +15,11 @@ namespace OvermorrowMod.Content.Items.Dev
 
         public override void SetDefaults()
         {
-            item.width = 20;
-            item.height = 22;
-            item.value = Item.sellPrice(gold: 1);
-            item.rare = ItemRarityID.Expert;
-            item.vanity = true;
+            Item.width = 20;
+            Item.height = 22;
+            Item.value = Item.sellPrice(gold: 1);
+            Item.rare = ItemRarityID.Expert;
+            Item.vanity = true;
         }
     }
 }
