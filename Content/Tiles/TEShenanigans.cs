@@ -14,20 +14,20 @@ namespace OvermorrowMod.Content.Tiles
             WorldGen.Convert(i, j, 0, 0);
 
             Tile tile = Framing.GetTileSafely(i, j - 1);
-            tile.liquidType(Tile.Liquid_Water);
-            tile.liquid = byte.MaxValue;
+            tile.LiquidType = LiquidID.Water;
+            tile.LiquidAmount = byte.MaxValue;
             WorldGen.SquareTileFrame(i, j - 1, true);
         }
 
-        public override bool ValidTile(int i, int j)
+        public override bool IsTileValidForEntity(int i, int j)
         {
             // valid tile does not get called for some reason
             Main.NewText("valid tile");
             Tile tile = Main.tile[i, j];
-            return tile.active() && tile.type == ModContent.TileType<GlowBlock>() && tile.frameX == 0 && tile.frameY == 0;
+            return tile.HasTile && tile.TileType == ModContent.TileType<GlowBlock>() && tile.TileFrameX == 0 && tile.TileFrameY == 0;
         }
 
-        public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction)
+        public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
         {
             // this only gets called when this is placed directly on top of a solid block for some reason
             Main.NewText("i " + i + " j " + j + " t " + type + " s " + style + " d " + direction);

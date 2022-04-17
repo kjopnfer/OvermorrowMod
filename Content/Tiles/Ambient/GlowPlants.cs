@@ -8,15 +8,15 @@ namespace OvermorrowMod.Content.Tiles.Ambient
 {
     public class GlowPlants : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileCut[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            dustType = DustID.Blood;
-            soundType = SoundID.Grass;
+            DustType = DustID.Blood;
+            SoundType = SoundID.Grass;
             AddMapEntry(new Color(0, 200, 200));
         }
 
@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.Tiles.Ambient
             num = 2;
         }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height)
+        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
         {
             offsetY = 2;
         }
@@ -41,7 +41,7 @@ namespace OvermorrowMod.Content.Tiles.Ambient
         {
             Tile tileBelow = Framing.GetTileSafely(i, j + 1);
 
-            if (!tileBelow.active() || tileBelow.halfBrick() || tileBelow.topSlope() || tileBelow.type != ModContent.TileType<GlowBlock>())
+            if (!tileBelow.HasTile || tileBelow.IsHalfBlock || tileBelow.TopSlope || tileBelow.TileType != ModContent.TileType<GlowBlock>())
             {
                 WorldGen.KillTile(i, j);
             }

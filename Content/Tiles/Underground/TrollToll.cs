@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
     public class TrollToll : ModTile
     {
         public override bool CanExplode(int i, int j) => false;
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
@@ -42,7 +42,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
             TileObjectData.addTile(Type);
 
             //animationFrameHeight = 126;
-            minPick = 1;
+            MinPick = 1;
 
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Troll Toll");
@@ -52,8 +52,8 @@ namespace OvermorrowMod.Content.Tiles.Underground
         public static TETrollToll FindTE(int i, int j)
         {
             Tile tile = Main.tile[i, j];
-            int left = i - tile.frameX / 18;
-            int top = j - tile.frameY / 18;
+            int left = i - tile.TileFrameX / 18;
+            int top = j - tile.TileFrameY / 18;
 
             int index = ModContent.GetInstance<TETrollToll>().Find(left, top);
             if (index == -1)
@@ -70,18 +70,18 @@ namespace OvermorrowMod.Content.Tiles.Underground
         {
             Player player = Main.player[Main.myPlayer];
             player.noThrow = 2;
-            player.showItemIcon = true;
-            player.showItemIcon2 = ModContent.ItemType<MonkeyStone_ShowItem>();
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = ModContent.ItemType<MonkeyStone_ShowItem>();
         }
 
-        public override bool NewRightClick(int i, int j)
+        public override bool RightClick(int i, int j)
         {
             Tile tile = Framing.GetTileSafely(i, j);
             TETrollToll tunnel = FindTE(i, j);
 
             if (tunnel != null) tunnel.Interact();
 
-            return base.NewRightClick(i, j);
+            return base.RightClick(i, j);
         }
 
         /*public override void AnimateTile(ref int frame, ref int frameCounter)
@@ -99,7 +99,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
             }
         }*/
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height)
+        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
         {
             offsetY = 2;
         }
@@ -112,12 +112,12 @@ namespace OvermorrowMod.Content.Tiles.Underground
             // PreDraw works by going through each tile and then drawing that portion at that area
             // If try to draw the texture once it will draw an additional 77 times for each tile leading to weird overlap shenanigans
             // Therefore, we'll only draw the texture once if it is the origin tile
-            if (tile.frameX == 0 && tile.frameY == 0)
+            if (tile.TileFrameX == 0 && tile.TileFrameY == 0)
             {
-                Texture2D texture = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollToll_New");
-                Texture2D glow = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollToll_Glow");
-                Texture2D lamp = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollToll_Lamp");
-                Texture2D face = ModContent.GetTexture(AssetDirectory.Tiles + "Underground/TrollFace");
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Tiles + "Underground/TrollToll_New").Value;
+                Texture2D glow = ModContent.Request<Texture2D>(AssetDirectory.Tiles + "Underground/TrollToll_Glow").Value;
+                Texture2D lamp = ModContent.Request<Texture2D>(AssetDirectory.Tiles + "Underground/TrollToll_Lamp").Value;
+                Texture2D face = ModContent.Request<Texture2D>(AssetDirectory.Tiles + "Underground/TrollFace").Value;
 
                 Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                 Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
@@ -272,18 +272,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
             }
         }
 
-        public override bool ValidTile(int i, int j)
-        {
-            Tile tile = Main.tile[i, j];
-            if (!tile.active() || tile.type != ModContent.TileType<TrollToll>())
-            {
-                Kill(Position.X, Position.Y);
-            }
-
-            return tile.active() && tile.type == ModContent.TileType<TrollToll>();
-        }
-
-        public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction)
+        public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
         {
             int id = Place(i, j);
             TETrollToll te = TileEntity.ByID[id] as TETrollToll;
@@ -298,6 +287,17 @@ namespace OvermorrowMod.Content.Tiles.Underground
             Main.NewText("placed tunnel, my id is:" + te.TunnelID + " my pair is:" + te.PairedTunnel);
 
             return id;
+        }
+
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<TrollToll>())
+            {
+                Kill(Position.X, Position.Y);
+            }
+
+            return tile.HasTile && tile.TileType == ModContent.TileType<TrollToll>();
         }
     }
 

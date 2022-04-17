@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
 {
     public class SmoothStone : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -29,9 +29,9 @@ namespace OvermorrowMod.Content.Tiles.Underground
 
             Main.tileLighted[Type] = true;
 
-            minPick = 55;
-            mineResist = 2f;
-            drop = ModContent.ItemType<Items.Placeable.Tiles.SmoothStone>();
+            MinPick = 55;
+            MineResist = 2f;
+            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.SmoothStone>();
 
             AddMapEntry(new Color(100, 83, 83));
         }

@@ -16,28 +16,20 @@ namespace OvermorrowMod.Content.Tiles.DesertTemple
      */
     public class snek : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             //TileID.Sets.DrawsWalls[Type] = true;
             Main.tileBlockLight[Type] = false;
             Main.tileSolid[Type] = true;
-            minPick = 1;
+            MinPick = 1;
         }
 
-        /**
-         * Set the texture of the tile to be invisible
-         */
-        public override bool Autoload(ref string name, ref string texture)
-        {
-            texture = AssetDirectory.Assets + "Empty";
-
-            return base.Autoload(ref name, ref texture);
-        }
+        public override string Texture => AssetDirectory.Assets + "Empty";
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Framing.GetTileSafely(i, j);
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Tiles + "DesertTemple/snek");
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Tiles + "DesertTemple/snek").Value;
 
             int progress = (int)(20 / 120f * texture.Height);
             foreach (NPC npc in Main.npc)

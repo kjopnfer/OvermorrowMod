@@ -15,23 +15,15 @@ namespace OvermorrowMod.Content.Tiles.Boss
      */
     public class DharuudArena : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             //TileID.Sets.DrawsWalls[Type] = true;
             Main.tileBlockLight[Type] = false;
             Main.tileSolid[Type] = true;
-            minPick = 1;
+            MinPick = 1;
         }
 
-        /**
-         * Set the texture of the tile to be invisible
-         */
-        public override bool Autoload(ref string name, ref string texture)
-        {
-            texture = AssetDirectory.Assets + "Empty";
-
-            return base.Autoload(ref name, ref texture);
-        }
+        public override string Texture => AssetDirectory.Assets + "Empty";
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
@@ -46,7 +38,7 @@ namespace OvermorrowMod.Content.Tiles.Boss
                 spriteBatch.Draw(texture, drawPos /*- texture.Size() / 2, drawRectangle, Lighting.GetColor(i, j), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }*/
 
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Tiles + "Boss/BG");
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Tiles + "Boss/BG").Value;
             Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
             Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
             Rectangle drawRectangle = new Rectangle(0, texture.Height, texture.Width, texture.Height);

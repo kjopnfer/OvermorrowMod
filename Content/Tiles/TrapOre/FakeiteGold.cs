@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Items.Materials;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,7 +9,7 @@ namespace OvermorrowMod.Content.Tiles.TrapOre
 {
     public class FakeiteGold : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             TileID.Sets.Ore[Type] = false;
             Main.tileSpelunker[Type] = false;
@@ -24,13 +25,13 @@ namespace OvermorrowMod.Content.Tiles.TrapOre
 
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("\"Gold\"");
-            drop = ModContent.ItemType<FakeGem>();
+            ItemDrop = ModContent.ItemType<FakeGem>();
             AddMapEntry(new Color(100, 0, 0), name);
-            dustType = DustID.Copper;
-            soundType = SoundID.Tink;
-            soundStyle = 1;
-            mineResist = 2f;
-            minPick = 1;
+            DustType = DustID.Copper;
+            SoundType = SoundID.Tink;
+            SoundStyle = 1;
+            MineResist = 2f;
+            MinPick = 1;
         }
         public override bool Drop(int i, int j)
         {
@@ -38,7 +39,7 @@ namespace OvermorrowMod.Content.Tiles.TrapOre
             int style = 0;
             if (style == 0) // It can be useful to share a single tile with multiple styles. This code will let you drop the appropriate bar if you had multiple.
             {
-                Projectile.NewProjectile(i * 16, j * 16, 0, 0, mod.ProjectileType("FakeGold"), 0, 0f, Main.myPlayer);
+                Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16, j * 16, 0, 0, Mod.Find<ModProjectile>("FakeGold").Type, 0, 0f, Main.myPlayer);
             }
             return base.Drop(i, j);
         }

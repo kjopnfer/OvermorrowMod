@@ -4,12 +4,13 @@ using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Content.Tiles.Ambient
 {
     public class BlueCrystal : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
             TileObjectData.newAlternate.StyleHorizontal = true;
@@ -68,12 +69,12 @@ namespace OvermorrowMod.Content.Tiles.Ambient
                 16,
             };
             TileObjectData.addTile(Type);
-            dustType = DustID.DungeonSpirit;
+            DustType = DustID.DungeonSpirit;
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            Main.PlaySound(new Terraria.Audio.LegacySoundStyle(2, 27));
+            SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(2, 27));
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)

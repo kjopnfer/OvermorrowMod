@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
 {
     public class CrunchyStone : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -26,9 +26,9 @@ namespace OvermorrowMod.Content.Tiles.Underground
 
             Main.tileLighted[Type] = true;
 
-            minPick = 55;
-            mineResist = 3f;
-            drop = ModContent.ItemType<Items.Placeable.Tiles.CrunchyStone>();
+            MinPick = 55;
+            MineResist = 3f;
+            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.CrunchyStone>();
 
             AddMapEntry(new Color(79, 86, 97));
         }

@@ -6,7 +6,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
 {
     public class GlowWall : ModWall
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = false;
             AddMapEntry(new Color(23, 71, 71));

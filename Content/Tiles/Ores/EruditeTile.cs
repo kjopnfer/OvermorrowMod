@@ -5,12 +5,13 @@ using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Content.Tiles.Ores
 {
     public class EruditeTile : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Erudite");
@@ -20,10 +21,10 @@ namespace OvermorrowMod.Content.Tiles.Ores
             Main.tileMerge[Type][TileID.Stone] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            soundType = SoundID.Tink;
-            soundStyle = 1;
-            minPick = 40;
-            drop = ModContent.ItemType<EruditeOre>();
+            SoundType = SoundID.Tink;
+            SoundStyle = 1;
+            MinPick = 40;
+            ItemDrop = ModContent.ItemType<EruditeOre>();
             AddMapEntry(new Color(51, 204, 51), name);
         }
 
@@ -33,7 +34,7 @@ namespace OvermorrowMod.Content.Tiles.Ores
             int distance = (int)Vector2.Distance(new Vector2(i * 16, j * 16), player.Center);
             if (distance < 54)
             {
-                Main.PlaySound(new Terraria.Audio.LegacySoundStyle(21, 1));
+                SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(21, 1));
             }
         }
 
@@ -45,9 +46,9 @@ namespace OvermorrowMod.Content.Tiles.Ores
             {
                 zero = Vector2.Zero;
             }
-            int height = tile.frameY == 36 ? 18 : 16;
-            Main.spriteBatch.Draw(ModContent.GetTexture(AssetDirectory.Tiles + "Ores/EruditeTile_Glow"), new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero,
-                new Rectangle(tile.frameX, tile.frameY, 16, height), new Color(100, 100, 100), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            int height = tile.TileFrameY == 36 ? 18 : 16;
+            spriteBatch.Draw(ModContent.Request<Texture2D>(AssetDirectory.Tiles + "Ores/EruditeTile_Glow").Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero,
+                new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, height), new Color(100, 100, 100), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
 
         public override bool CanExplode(int i, int j)

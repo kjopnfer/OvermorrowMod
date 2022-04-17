@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Tiles
         int glowFrame;
 
         public override bool CanExplode(int i, int j) => false;
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
@@ -33,7 +33,7 @@ namespace OvermorrowMod.Content.Tiles
             name.SetDefault("Reaper Buff Station Thing");
             AddMapEntry(new Color(33, 18, 36), name);
 
-            animationFrameHeight = 72;
+            AnimationFrameHeight = 72;
         }
 
 
