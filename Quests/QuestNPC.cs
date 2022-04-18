@@ -150,7 +150,32 @@ namespace OvermorrowMod.Quests
                             {
                                 foreach (KillRequirement kill in orRequirement.clauses)
                                 {
-                                    if (kill.type != npc.type) continue;
+                                    var KilledList = modPlayer.KilledNPCs;
+
+                                    foreach (int type in kill.type)
+                                    {
+                                        if (type != npc.type) continue;
+
+                                        // Check if the player has the entry of the killed NPC stored to increment their kill counter
+                                        if (KilledList.ContainsKey(type))
+                                        {
+                                            KilledList[npc.type]++;
+                                            Main.NewText(npc.type + ": " + KilledList[npc.type]);
+                                        }
+                                        else
+                                        {
+                                            // Add the entry into the Dictionary if this is the first time they are killed
+                                            KilledList.Add(npc.type, 1);
+                                        }
+                                    }                                 
+                                }
+                            }
+
+                            if (requirement is KillRequirement killRequirement)
+                            {
+                                foreach (int type in killRequirement.type)
+                                {
+                                    if (type != npc.type) continue;
 
                                     var KilledList = modPlayer.KilledNPCs;
 
@@ -158,32 +183,13 @@ namespace OvermorrowMod.Quests
                                     if (KilledList.ContainsKey(npc.type))
                                     {
                                         KilledList[npc.type]++;
-                                        Main.NewText(npc.type + ": " + KilledList[npc.type]);
                                     }
                                     else
                                     {
                                         // Add the entry into the Dictionary if this is the first time they are killed
                                         KilledList.Add(npc.type, 1);
                                     }
-                                }
-                            }
-
-                            if (requirement is KillRequirement killRequirement)
-                            {
-                                if (killRequirement.type != npc.type) continue;
-
-                                var KilledList = modPlayer.KilledNPCs;
-
-                                // Check if the player has the entry of the killed NPC stored to increment their kill counter
-                                if (KilledList.ContainsKey(npc.type))
-                                {
-                                    KilledList[npc.type]++;
-                                }
-                                else
-                                {
-                                    // Add the entry into the Dictionary if this is the first time they are killed
-                                    KilledList.Add(npc.type, 1);
-                                }
+                                }        
                             }
                         }
                     }

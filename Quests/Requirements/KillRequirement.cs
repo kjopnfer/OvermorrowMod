@@ -1,30 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
 {
     public class KillRequirement : IQuestRequirement
     {
-        public readonly int type;
+        public readonly List<int> type;
         public readonly int amount;
 
-        public KillRequirement(int type, int amount)
+        public KillRequirement(List<int> type, int amount)
         {
             if (amount <= 0) throw new ArgumentException($"Invalid amount: {amount}");
             this.type = type;
             this.amount = amount;
         }
 
-        public string Description => $"#{amount} {Lang.GetNPCNameValue(type)}";
+        // I don't know how to show each of the required types, lol
+        public string Description => $"#{amount} {Lang.GetNPCNameValue(type[0])}";
 
         public bool IsCompleted(Player player)
         {
+            int remaining = amount;
             var KilledList = player.GetModPlayer<QuestPlayer>().KilledNPCs;
 
-            if (KilledList.ContainsKey(type) && KilledList[type] >= amount)
+            foreach (int ID in type)
             {
-                return true;
+                remaining -= KilledList[ID];
             }
+
+            if (remaining <= 0) return true;
 
             return false;
         }
@@ -32,7 +37,10 @@ namespace OvermorrowMod.Quests.Requirements
         public void ResetState(Player player)
         {
             var KilledList = player.GetModPlayer<QuestPlayer>().KilledNPCs;
-            KilledList[type] = 0;
+            foreach (int ID in type)
+            {
+                if (KilledList.ContainsKey(ID)) KilledList[ID] = 0;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
+using System.Collections.Generic;
 using Terraria.ID;
 
 namespace OvermorrowMod.Quests.ModQuests
@@ -16,8 +17,14 @@ namespace OvermorrowMod.Quests.ModQuests
             Requirements = new[]
             {
                 new OrRequirement(
-                    new KillRequirement(NPCID.BlueSlime, 3),
-                    new KillRequirement(NPCID.Bunny, 3)
+                    new KillRequirement(new List<int>(){
+                        NPCID.BlueSlime,
+                        NPCID.Bunny,
+                        NPCID.BirdRed
+                    }, 3),
+                    new KillRequirement(new List<int>(){
+                        NPCID.Grasshopper,               
+                    }, 3)
                 )
             };
             Rewards = new[]
