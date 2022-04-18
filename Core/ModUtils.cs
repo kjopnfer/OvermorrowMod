@@ -138,7 +138,7 @@ namespace OvermorrowMod.Core
         }
         public static void Reload(this SpriteBatch spriteBatch, BlendState blendState = null, SpriteSortMode sortMode = default)
         {
-            if ((bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch))
+            if (spriteBatch.HasBegun())
             {
                 spriteBatch.End();
             }
@@ -152,7 +152,7 @@ namespace OvermorrowMod.Core
         }
         public static bool HasBegun(this SpriteBatch spriteBatch)
         {
-            return (bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch);
+            return (bool)spriteBatch.GetType().GetField("beginCalled", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch);
         }
         public static object GetField(this object obj, string name)
         {
