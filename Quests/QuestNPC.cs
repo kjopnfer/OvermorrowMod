@@ -55,12 +55,6 @@ namespace OvermorrowMod.Quests
             return GetCurrentAvailableQuest(npc);
         }
 
-        // Sets the delay between Quests after the player turns them in
-        public void SetDelay()
-        {
-
-        }
-
         public void TakeQuest()
         {
             // Set the delay between Quests based on the Quest
@@ -156,8 +150,49 @@ namespace OvermorrowMod.Quests
                     foreach (var quest in modPlayer.CurrentQuests)
                     {
                         if (quest.Type != QuestType.Kill) continue;
+                        foreach (IQuestRequirement requirement in quest.Requirements)
+                        {
+                            if (requirement is OrRequirement orRequirement)
+                            {
+                                foreach (KillRequirement kill in orRequirement.clauses)
+                                {
+                                    if (kill.type != npc.type) continue;
 
-                        foreach (KillRequirement requirement in quest.Requirements)
+                                    var KilledList = modPlayer.KilledNPCs;
+
+                                    // Check if the player has the entry of the killed NPC stored to increment their kill counter
+                                    if (KilledList.ContainsKey(npc.type))
+                                    {
+                                        KilledList[npc.type]++;
+                                        Main.NewText(npc.type + ": " + KilledList[npc.type]);
+                                    }
+                                    else
+                                    {
+                                        // Add the entry into the Dictionary if this is the first time they are killed
+                                        KilledList.Add(npc.type, 1);
+                                    }
+                                }
+                            }
+
+                            if (requirement is KillRequirement killRequirement)
+                            {
+                                if (killRequirement.type != npc.type) continue;
+
+                                var KilledList = modPlayer.KilledNPCs;
+
+                                // Check if the player has the entry of the killed NPC stored to increment their kill counter
+                                if (KilledList.ContainsKey(npc.type))
+                                {
+                                    KilledList[npc.type]++;
+                                }
+                                else
+                                {
+                                    // Add the entry into the Dictionary if this is the first time they are killed
+                                    KilledList.Add(npc.type, 1);
+                                }
+                            }
+                        }
+                        /*foreach (KillRequirement requirement in quest.Requirements)
                         {
                             if (requirement.type != npc.type) continue;
 
@@ -173,7 +208,7 @@ namespace OvermorrowMod.Quests
                                 // Add the entry into the Dictionary if this is the first time they are killed
                                 KilledList.Add(npc.type, 1);
                             }
-                        }
+                        }*/
                     }
                 }
             }

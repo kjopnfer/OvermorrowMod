@@ -9,7 +9,7 @@ namespace OvermorrowMod.Quests.Requirements
 {
     public class OrRequirement : IQuestRequirement
     {
-        private IQuestRequirement[] clauses;
+        public IQuestRequirement[] clauses;
 
         public OrRequirement(params IQuestRequirement[] clauses)
         {

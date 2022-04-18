@@ -81,9 +81,23 @@ namespace OvermorrowMod.Quests
         {
             var modPlayer = player.GetModPlayer<QuestPlayer>();
             var KilledList = modPlayer.KilledNPCs;
-            foreach (KillRequirement requirement in Requirements)
+            foreach (IQuestRequirement requirement in Requirements)
             {
-                KilledList[requirement.type] = 0;
+                if (requirement is OrRequirement orRequirement)
+                {
+                    foreach (KillRequirement kill in orRequirement.clauses)
+                    {
+                        KilledList[kill.type] = 0;
+                    }
+                }
+
+                if (requirement is KillRequirement killRequirement)
+                {
+                    foreach (KillRequirement kill in Requirements)
+                    {
+                        KilledList[kill.type] = 0;
+                    }
+                }
             }
         }
 
