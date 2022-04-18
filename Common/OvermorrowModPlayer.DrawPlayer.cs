@@ -1,13 +1,9 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.DrawLayers;
 using OvermorrowMod.Content.Buffs.Summon;
 using OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand;
-using OvermorrowMod.Core;
-using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common

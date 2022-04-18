@@ -11,7 +11,7 @@ using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common
+namespace OvermorrowMod.Common.DrawLayers
 {
     public class ShieldDrawLayer : PlayerDrawLayer
     {
