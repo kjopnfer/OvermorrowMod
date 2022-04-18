@@ -75,7 +75,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WaterStaff
             int num154 = TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y2 = num154 * Projectile.frame;
 
-            Texture2D texture = ModContent.Request<Texture2D>("Projectiles/Magic/WaterStaffProj_Glow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/Projectiles/Magic/WaterStaffProj_Glow").Value;
             Rectangle drawRectangle = new Rectangle(0, y2, TextureAssets.Projectile[Projectile.type].Value.Width, num154);
             Main.EntitySpriteDraw
             (

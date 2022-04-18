@@ -67,7 +67,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GemStaves
         {
             if (ComingBack)
             {
-                Texture2D texture = ModContent.Request<Texture2D>("Projectiles/Magic/Gems/SapphireProj").Value;
+                Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/Projectiles/Magic/Gems/SapphireProj").Value;
 
                 Vector2 drawOrigin = new Vector2(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Width * 0.5f, Projectile.height * 0.5f);
                 for (int k = 0; k < Projectile.oldPos.Length; k++)

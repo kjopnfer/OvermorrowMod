@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
@@ -36,23 +37,21 @@ namespace OvermorrowMod.Common
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
             Player player = spawnInfo.player;
-            // TODO: Handle biome
-            /* if (player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave)
+            if (player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()))
             {
                 pool.Clear();
                 pool.Add(ModContent.NPCType<CaveFish>(), .10f);
                 pool.Add(ModContent.NPCType<SnapDragon>(), .15f);
                 pool.Add(ModContent.NPCType<SalamanderHunter>(), .25f);
-            } */
+            }
         }
 
         public override void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
         {
-            // TODO: Handle biome
-            /* if (player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave)
+            if (player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()))
             {
                 spawnRate = 140;
-            }*/ 
+            }
         }
 
         public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)

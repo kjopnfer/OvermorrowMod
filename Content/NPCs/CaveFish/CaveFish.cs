@@ -1,4 +1,5 @@
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Items.Accessories;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -254,9 +255,7 @@ namespace OvermorrowMod.Content.NPCs.CaveFish
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            // TODO: Fix biomes
-            // return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && spawnInfo.water ? 0.05f : 0f;
-            return 0f;
+            return spawnInfo.player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()) ? 0.05f : 0f;
         }
     }
 }

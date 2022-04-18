@@ -96,7 +96,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.Bonerang
         public override bool PreDraw(ref Color lightColor)
         {
 
-            Texture2D texture = ModContent.Request<Texture2D>("Projectiles/Melee/Bonerang").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/Projectiles/Melee/Bonerang").Value;
 
             Vector2 drawOrigin = new Vector2(TextureAssets.Projectile[Projectile.type].Value.Width * 0.5f, Projectile.height * 0.5f);
             for (int k = 0; k < Projectile.oldPos.Length; k++)

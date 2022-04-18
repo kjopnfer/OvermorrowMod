@@ -1,4 +1,5 @@
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Biomes;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -58,9 +59,7 @@ namespace OvermorrowMod.Content.NPCs.SalamanderHunter
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            // TODO: Figure out biomes
-            // return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && !spawnInfo.water ? 0.08f : 0f;
-            return 0.0f;
+            return spawnInfo.player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()) ? 0.08f : 0f;
         }
     }
 }

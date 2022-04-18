@@ -45,15 +45,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         //int timer = 160;
         public override bool PreDraw(ref Color lightColor)
         {
-            // TODO: Figure out what to do with these
-            // spriteBatch.Reload(BlendState.Additive);
+            Main.spriteBatch.Reload(BlendState.Additive);
 
             Player player = Main.player[Projectile.owner];
             Texture2D slash = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
             float mult = Lerp(Utils.GetLerpValue(0f, SwingTime, Projectile.timeLeft));
             float alpha = (float)Math.Sin(mult * Math.PI);
             Vector2 pos = player.Center + Projectile.velocity * (80f - mult * 60f);
-            //spriteBatch.Draw(slash, pos - Main.screenPosition, null, new Color(56, 38, 208) * alpha, Projectile.velocity.ToRotation() - MathHelper.PiOver2, slash.Size() / 2, Projectile.scale, SpriteEffects.None, 0f);
+            Main.EntitySpriteDraw(slash, pos - Main.screenPosition, null, new Color(56, 38, 208) * alpha, Projectile.velocity.ToRotation() - MathHelper.PiOver2, slash.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             var off = new Vector2(Projectile.width / 2f, Projectile.height / 2f);
             Texture2D texture2D16 = ModContent.Request<Texture2D>(AssetDirectory.Melee + "Katana/Katana_Afterimage").Value;
@@ -83,7 +82,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             timer += 0.25f;
 
             //timer--;
-            // spriteBatch.Reload(BlendState.AlphaBlend);
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
 
             // draws the main blade
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;

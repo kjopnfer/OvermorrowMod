@@ -11,11 +11,8 @@ using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.ModLoader;
 using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
-using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Content.Tiles.Ores;
-using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.WaterCave;
-using OvermorrowMod.Content.Tiles.Underground;
 using System;
 using Terraria.WorldBuilding;
 using Terraria.IO;
@@ -33,12 +30,6 @@ namespace OvermorrowMod.Common
         public static int RotatingDripladAttackCounter;
 
         // Biomes
-        public static int floodedCaves;
-
-        public static int desertBiome;
-        public static int marbleBiome;
-        public static int graniteBiome;
-        public static int lavaBiome;
 
         private bool placedBook = false;
         private bool placedGranite = false;
@@ -46,18 +37,7 @@ namespace OvermorrowMod.Common
         private bool placedtele = false;
         private bool placedclaw = false;
 
-        public override void TileCountsAvailable(ReadOnlySpan<int> tileCounts)
-        {
-            floodedCaves = tileCounts[ModContent.TileType<GlowBlock>()];
-            marbleBiome = tileCounts[TileID.MarbleBlock];
-            graniteBiome = tileCounts[TileID.GraniteBlock];
-            lavaBiome = tileCounts[ModContent.TileType<CrunchyStone>()];
-
-            
-            // Make the modded tile weigh more heavily
-            // TODO: Figure out where this has been moved
-            // Main.sandTiles += tileCounts[ModContent.TileType<SandBrick>()] * 5;
-        }
+        
 
         #region chest shit i nede to move somewhere else
         public override void PostWorldGen()

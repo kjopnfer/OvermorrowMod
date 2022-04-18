@@ -360,7 +360,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DrakeStaff
             int num154 = TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y2 = num154 * Projectile.frame;
 
-            Texture2D texture = ModContent.Request<Texture2D>("Projectiles/Summon/StormWhelp_Glowmask").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/Projectiles/Summon/StormWhelp_Glowmask").Value;
             Rectangle drawRectangle = new Rectangle(0, y2, TextureAssets.Projectile[Projectile.type].Value.Width, num154);
             /*spriteBatch.Draw
             (

@@ -16,7 +16,8 @@ namespace OvermorrowMod.Quests
         private readonly List<BaseQuest> activeQuests = new List<BaseQuest>();
         public HashSet<string> CompletedQuests { get; } = new HashSet<string>();
 
-        public IEnumerable<BaseQuest> CurrentQuests => activeQuests.Concat(Quests.PerPlayerActiveQuests[PlayerUUID]);
+        public IEnumerable<BaseQuest> CurrentQuests => activeQuests.Concat(
+            Quests.PerPlayerActiveQuests.GetValueOrDefault(PlayerUUID) ?? Enumerable.Empty<BaseQuest>());
 
         public HashSet<string> LocalCompletedQuests { get; } = new HashSet<string>();
 

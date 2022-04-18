@@ -24,7 +24,6 @@ namespace OvermorrowMod.Quests.Rewards
 
         public void Give(Player player)
         {
-            // TODO Should probably have a custom item source for quests?
             player.QuickSpawnItem(player.GetItemSource_Misc(ItemSourceID.None), type, stack);
         }
     }

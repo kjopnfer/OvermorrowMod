@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Tiles.WaterCave;
 using System;
 using Terraria;
@@ -85,7 +86,7 @@ namespace OvermorrowMod.Content.NPCs.SnapDragon
                 num109 = NPC.ai[0] * 16f + 8f - vector16.X;
                 num110 = NPC.ai[1] * 16f + 8f - vector16.Y;
                 Color color95 = Lighting.GetColor((int)vector16.X / 16, (int)(vector16.Y / 16f));
-                Texture2D chain5Texture = Mod.Assets.Request<Texture2D>("Content/NPCs/SnapDragon_Chain").Value;
+                Texture2D chain5Texture = Mod.Assets.Request<Texture2D>("OvermorrowMod/Content/NPCs/SnapDragon_Chain").Value;
                 spriteBatch.Draw(chain5Texture, new Vector2(vector16.X - Main.screenPosition.X, vector16.Y - Main.screenPosition.Y), new Rectangle(0, 0, chain5Texture.Width, num274), color95, rotation11, new Vector2((float)chain5Texture.Width * 0.5f, (float)chain5Texture.Height * 0.5f), 1f, SpriteEffects.None, 0f);
             }
             return base.PreDraw(spriteBatch, screenPos, drawColor);
@@ -93,9 +94,9 @@ namespace OvermorrowMod.Content.NPCs.SnapDragon
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            // TODO: Figure out biomes
-            // return spawnInfo.player.GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave && Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].TileType == ModContent.TileType<GlowBlock>() ? 0.02f : 0f;
-            return 0.0f;
+            return spawnInfo.player.InModBiome(ModContent.GetInstance<WaterCaveBiome>())
+                && Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].TileType == ModContent.TileType<GlowBlock>()
+                ? 0.02f : 0.0f;
         }
 
         public override int SpawnNPC(int tileX, int tileY)

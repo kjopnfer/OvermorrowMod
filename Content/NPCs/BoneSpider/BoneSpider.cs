@@ -127,7 +127,7 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("NPCs/BoneSpider/BoneSpider_Glowmask").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/NPCs/BoneSpider/BoneSpider_Glowmask").Value;
             spriteBatch.Draw(texture, new Vector2(NPC.Center.X - Main.screenPosition.X, NPC.Center.Y - Main.screenPosition.Y + 4), NPC.frame, Color.White, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 

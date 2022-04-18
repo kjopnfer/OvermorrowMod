@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
 
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/StormDrake/LaserWarning";
 
-        public LaserWarning() : base(300 + wait, 3000f, 0f, Color.Blue, "Content/NPCs/Bosses/StormDrake/LaserWarning") { }
+        public LaserWarning() : base(300 + wait, 3000f, 0f, Color.Blue, "OvermorrowMod/Content/NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
         public bool killearly = false;
         public bool killnow = false;
 
-        public LaserWarning2() : base(50, 3000f, 0f, Color.Blue, "Content/NPCs/Bosses/StormDrake/LaserWarning") { }
+        public LaserWarning2() : base(50, 3000f, 0f, Color.Blue, "OvermorrowMod/Content/NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
@@ -78,7 +78,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
         private float flashTimer = 0;
         public int Direction = 1;
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/StormDrake/LaserWarning";
-        public LaserBreathWarning() : base(180, 3000f, 0f, Color.Blue, "Content/NPCs/Bosses/StormDrake/LaserWarning") { }
+        public LaserBreathWarning() : base(180, 3000f, 0f, Color.Blue, "OvermorrowMod/Content/NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
@@ -97,7 +97,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
     {
         public float RotateBy;
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/StormDrake/LaserWarning";
-        public LightningPhaseChangeWarning() : base(120, 3000f, 0f, Color.Blue, "Content/NPCs/Bosses/StormDrake/LaserWarning") { }
+        public LightningPhaseChangeWarning() : base(120, 3000f, 0f, Color.Blue, "OvermorrowMod/Content/NPCs/Bosses/StormDrake/LaserWarning") { }
         public override bool CanHitPlayer(Player target) => false;
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()

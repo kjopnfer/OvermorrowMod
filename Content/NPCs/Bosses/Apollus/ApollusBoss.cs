@@ -27,8 +27,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
         int randomCeiling;
         Vector2 teleportPosition; //= Vector2.Zero;
         int projalt;
-        // TODO: This is unused
-        int proj;
         //bool direction;
         bool direction = true;
         bool changedPhase2 = false;
@@ -36,10 +34,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
         bool spawnedShields = false;
         Vector2 playerCenterSnapShot;
         bool dead = false;
-
-        // TODO: This is also unused
-        // private int groupAttack;
-
 
         public int graknightIdentity;
 
@@ -271,7 +265,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), NPC.damage / 2, 0f, Main.myPlayer, -10, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), NPC.damage / 2, 0f, Main.myPlayer, -10, NPC.whoAmI);
                             }
                         }
 
