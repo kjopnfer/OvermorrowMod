@@ -26,7 +26,7 @@ namespace OvermorrowMod.Quests.Requirements
 
             foreach (int ID in type)
             {
-                remaining -= KilledList[ID];
+                if (KilledList.ContainsKey(ID)) remaining -= KilledList[ID];
             }
 
             if (remaining <= 0) return true;
