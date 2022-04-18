@@ -14,6 +14,7 @@ namespace OvermorrowMod.Quests.ModQuests
         // quest. It can also be used to make quests which have global consequences, i.e. an reward that
         // it would be really bad if triggered twice.
         public override QuestRepeatability Repeatability => QuestRepeatability.OncePerWorld;
+        public override QuestType Type => QuestType.Housing;
         public override int QuestGiver => NPCID.Guide;
 
         public override void SetDefaults()
@@ -44,7 +45,7 @@ namespace OvermorrowMod.Quests.ModQuests
         protected override bool IsValidFor(Player player)
         {
             // This is how we do quest dependencies, you could have multiple statements like this.
-            if (!Quests.HasCompletedQuest<GuideTutorial>(player)) return false;
+            if (!Quests.HasCompletedQuest<GuideTutorial2>(player)) return false;
             // This would mean that in theory the quest could be available if no NPC was present,
             // so this could be used as an "Invite NPC" quest as well.
             var npc = Main.npc.FirstOrDefault(n => n.active && n.type == NPCID.Guide);

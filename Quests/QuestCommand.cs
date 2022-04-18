@@ -45,7 +45,7 @@ namespace OvermorrowMod.Quests
                     .Concat(Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID]);
             }
             var finishedQuestSet = new HashSet<string>(finishedQuestIds);
-            var remainingQuests = Quests.QuestList.Values.Where(q => !finishedQuestSet.Contains(q.QuestId));
+            var remainingQuests = Quests.QuestList.Values.Where(q => !finishedQuestSet.Contains(q.QuestID));
             var unfinishedQuestNames = remainingQuests.Select(q => q.QuestName);
 
             Main.NewText($"Remaining unfinished or repeatable quests: {string.Join(", ", unfinishedQuestNames)}");

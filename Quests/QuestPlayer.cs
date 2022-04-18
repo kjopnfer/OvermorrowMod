@@ -20,15 +20,17 @@ namespace OvermorrowMod.Quests
 
         public HashSet<string> LocalCompletedQuests { get; } = new HashSet<string>();
 
+        public Dictionary<int, int> KilledNPCs = new Dictionary<int, int>();
+
         public bool IsDoingQuest(string questId)
         {
-            return CurrentQuests.Any(q => q.QuestId == questId);
+            return CurrentQuests.Any(q => q.QuestID == questId);
         }
 
         public void AddQuest(BaseQuest quest)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == player)
-                NetworkMessageHandler.Quests.TakeQuest(-1, -1, quest.QuestId);
+                NetworkMessageHandler.Quests.TakeQuest(-1, -1, quest.QuestID);
             if (quest.Repeatability == QuestRepeatability.OncePerWorldPerPlayer || quest.Repeatability == QuestRepeatability.OncePerWorld)
             {
                 Quests.PerPlayerActiveQuests[PlayerUUID].Add(quest);
@@ -52,7 +54,7 @@ namespace OvermorrowMod.Quests
 
         public void CompleteQuest(string questId)
         {
-            var quest = CurrentQuests.FirstOrDefault(q => q.QuestId == questId);
+            var quest = CurrentQuests.FirstOrDefault(q => q.QuestID == questId);
             // Should not happen!
             if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
             // Send message to server if the quest is being completed for the current player
@@ -68,8 +70,10 @@ namespace OvermorrowMod.Quests
             return new TagCompound
             {
                 ["CompletedQuests"] = CompletedQuests.ToList(),
-                ["CurrentQuests"] = activeQuests.Select(q => q.QuestId).ToList(),
-                ["PlayerUUID"] = PlayerUUID
+                ["CurrentQuests"] = activeQuests.Select(q => q.QuestID).ToList(),
+                ["PlayerUUID"] = PlayerUUID,
+                ["KilledIDs"] = KilledNPCs.Keys.ToList(),
+                ["KilledCounts"] = KilledNPCs.Values.ToList()
             };
         }
 
@@ -107,6 +111,10 @@ namespace OvermorrowMod.Quests
             {
                 Quests.PerPlayerActiveQuests[PlayerUUID] = new List<BaseQuest>();
             }
+
+            var IDs = tag.GetList<int>("KilledIDs");
+            var counts = tag.GetList<int>("KilledCounts");
+            KilledNPCs = IDs.Zip(counts, (k, v) => new { Key = k, Value = v }).ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

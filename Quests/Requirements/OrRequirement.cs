@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
 {
     public class OrRequirement : IQuestRequirement
     {
-        private IQuestRequirement[] clauses;
+        public IQuestRequirement[] clauses;
 
         public OrRequirement(params IQuestRequirement[] clauses)
         {
@@ -21,6 +17,14 @@ namespace OvermorrowMod.Quests.Requirements
         public bool IsCompleted(Player player)
         {
             return clauses.Any(c => c.IsCompleted(player));
+        }
+
+        public void ResetState(Player player)
+        {
+            foreach (KillRequirement killRequirement in clauses)
+            {
+                killRequirement.ResetState(player);
+            }
         }
     }
 }

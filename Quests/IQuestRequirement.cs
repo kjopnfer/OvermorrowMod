@@ -6,5 +6,6 @@ namespace OvermorrowMod.Quests
     {
         bool IsCompleted(Player player);
         string Description { get; }
+        void ResetState(Player player);
     }
 }
