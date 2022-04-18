@@ -10,11 +10,11 @@ using OvermorrowMod.Content.Items.Weapons.Melee.GraniteSpear;
 using OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
 {

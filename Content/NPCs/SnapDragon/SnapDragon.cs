@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Tiles.WaterCave;
 using System;

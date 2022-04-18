@@ -1,10 +1,10 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common;
+using OvermorrowMod.Content.Buffs.Debuffs;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using OvermorrowMod.Content.Buffs.Debuffs;
-using OvermorrowMod.Common;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Magic.BoltStream
 {
@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BoltStream
 
             if (Projectile.ai[0] != -1 && Projectile.ai[1] != -1)
             {
-                Positions = CreateLightning(Main.npc[(int)Projectile.ai[0]].Center, Main.npc[(int)Projectile.ai[1]].Center, Projectile.width  * 2, 80, 16f);
+                Positions = CreateLightning(Main.npc[(int)Projectile.ai[0]].Center, Main.npc[(int)Projectile.ai[1]].Center, Projectile.width * 2, 80, 16f);
             }
             else if (Projectile.ai[1] == -1)
             {

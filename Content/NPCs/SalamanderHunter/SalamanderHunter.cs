@@ -1,4 +1,3 @@
-using OvermorrowMod.Common;
 using OvermorrowMod.Content.Biomes;
 using Terraria;
 using Terraria.ID;

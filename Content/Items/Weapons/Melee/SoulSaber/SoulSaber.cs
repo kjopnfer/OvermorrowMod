@@ -1,9 +1,9 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Items.Materials;
+using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Content.Items.Materials;
-using Microsoft.Xna.Framework;
-using Terraria.DataStructures;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
 {

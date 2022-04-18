@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
         //public float TrailSize(float progress) => 20;
 
         public Type TrailType() => typeof(TorchTrail);
-   
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Prismatic Bolt");

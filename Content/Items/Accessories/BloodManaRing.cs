@@ -43,7 +43,7 @@ namespace OvermorrowMod.Content.Items.Accessories
                 .AddIngredient(ItemID.PanicNecklace, 1)
                 .AddIngredient(ItemID.BandofRegeneration, 1)
                 .Register();
-            
+
             CreateRecipe()
                 .AddIngredient<SoulFire>()
                 .AddIngredient<MutatedFlesh>()

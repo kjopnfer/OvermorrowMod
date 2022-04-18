@@ -4,21 +4,20 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Content.Items.Consumable.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow;
-using OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester;
-using OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand;
 using OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff;
+using OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester;
+using OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow;
+using OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand;
 using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.GameContent;
-
-using static Terraria.ModLoader.ModContent;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
 {

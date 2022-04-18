@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;

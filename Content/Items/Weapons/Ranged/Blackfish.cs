@@ -1,8 +1,7 @@
-using Terraria;
-using System;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged
 {

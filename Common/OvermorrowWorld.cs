@@ -1,21 +1,21 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
 using OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
+using OvermorrowMod.Content.Tiles.Ores;
 using OvermorrowMod.Content.Tiles.TrapOre;
+using OvermorrowMod.Content.Tiles.WaterCave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.ModLoader;
-using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
-using OvermorrowMod.Content.Tiles.Ores;
-using OvermorrowMod.Content.Tiles.WaterCave;
-using System;
-using Terraria.WorldBuilding;
 using Terraria.IO;
+using Terraria.ModLoader;
+using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Common
 {
@@ -37,7 +37,7 @@ namespace OvermorrowMod.Common
         private bool placedtele = false;
         private bool placedclaw = false;
 
-        
+
 
         #region chest shit i nede to move somewhere else
         public override void PostWorldGen()

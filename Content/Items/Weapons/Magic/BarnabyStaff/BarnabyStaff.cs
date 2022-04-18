@@ -1,7 +1,4 @@
 using OvermorrowMod.Content.Items.Weapons.Magic.GemStaves;
-using OvermorrowMod.Content.Items.Weapons.Magic.SandStaff;
-using OvermorrowMod.Content.Items.Weapons.Magic.WaterStaff;
-using OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -12,7 +12,7 @@ namespace OvermorrowMod.Content.Items.Armor.Granite
             DisplayName.SetDefault("Granite Crusher Breastplate");
             Tooltip.SetDefault("Increases melee damage by 5%\nIncreases your max number of minions");
         }
-        
+
         public override void SetDefaults()
         {
             Item.width = 30;

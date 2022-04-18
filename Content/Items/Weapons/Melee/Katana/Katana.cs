@@ -1,14 +1,14 @@
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.Utilities;
-using System;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Core;
+using System;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee.Katana
 {

@@ -42,7 +42,7 @@ namespace OvermorrowMod.Content.Items.Misc
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color ItemColor, Vector2 origin, float scale)
         {
             Vector2 pos = ModUtils.GetInventoryPosition(position, frame, origin, scale);
-            
+
             Texture2D texture = Terraria.GameContent.TextureAssets.Item[Item.type].Value;
             Vector2 textureOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
             Rectangle drawRectangle = new Rectangle(0, texture.Height / 3 * ItemFrame, texture.Width, texture.Height / 3);

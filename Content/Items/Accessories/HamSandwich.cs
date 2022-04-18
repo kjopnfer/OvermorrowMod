@@ -1,7 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Content.Items.Accessories;
 
 namespace OvermorrowMod.Content.Items.Accessories
 {

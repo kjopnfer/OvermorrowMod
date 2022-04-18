@@ -4,10 +4,10 @@ using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff;
 using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Hemomancer
 {

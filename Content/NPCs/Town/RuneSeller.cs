@@ -1,4 +1,3 @@
-using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Content.Items.Pets;
 using OvermorrowMod.Content.Projectiles.NPCs.Town;
 using System.Collections.Generic;

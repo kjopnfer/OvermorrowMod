@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Consumable
 
         public override bool ItemSpace(Player player) => true;
 
- 
+
         public override void PostUpdate()
         {
             Lighting.AddLight(Item.Center, new Color(187, 127, 128).ToVector3() * 0.55f * Main.essScale);

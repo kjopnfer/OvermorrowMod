@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.NPCs.Bosses.DripplerBoss;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.GameContent;
@@ -86,7 +85,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
 
         public override bool PreDraw(ref Color lightColor)
         {
-            
+
             Projectile.spriteDirection = Projectile.direction;
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "SandPhantoms/PhantomSword_Trail").Value;

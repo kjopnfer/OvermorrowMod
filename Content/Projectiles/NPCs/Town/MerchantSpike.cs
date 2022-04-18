@@ -41,7 +41,7 @@ namespace OvermorrowMod.Content.Projectiles.NPCs.Town
                 Particle.CreateParticle(Particle.ParticleType<BlackFlame>(), vector29, Vector2.Zero, Main.DiscoColor, 1, (float)Main.rand.Next(70, 110) * 0.013f, 0, 1f);
             }
 
-            
+
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 1.57f;
             if (Projectile.localAI[0] == 0f)
             {

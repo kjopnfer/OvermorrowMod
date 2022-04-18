@@ -1,24 +1,18 @@
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.Buffs.Hexes;
+using OvermorrowMod.Common.Netcode;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Materials;
-using ReLogic.Graphics;
+using OvermorrowMod.Core;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
+using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.UI;
-using System;
-using OvermorrowMod.Core;
-using OvermorrowMod.Content.UI;
-using OvermorrowMod.Common.Particles;
-using Terraria.Graphics.Effects;
-using OvermorrowMod.Content.WorldGeneration;
-using System.IO;
-using OvermorrowMod.Common.Netcode;
-using Terraria.GameContent;
 
 namespace OvermorrowMod.Common
 {
@@ -71,7 +65,7 @@ namespace OvermorrowMod.Common
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
-                
+
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);

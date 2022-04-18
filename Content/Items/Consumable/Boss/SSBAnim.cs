@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.Common;
 using OvermorrowMod.Content.NPCs.Bosses.Apollus;
 using OvermorrowMod.Content.NPCs.Bosses.GraniteMini;
 using OvermorrowMod.Core;

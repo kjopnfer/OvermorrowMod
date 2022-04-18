@@ -1,9 +1,9 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace OvermorrowMod.Content.NPCs.Teleporter
 {

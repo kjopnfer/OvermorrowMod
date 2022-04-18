@@ -1,5 +1,3 @@
-using System;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -15,11 +13,11 @@ namespace OvermorrowMod.Content.Items.Dev
             Main.buffNoTimeDisplay[Type] = true;
             Main.vanityPet[Type] = true;
         }
-        
+
         public override void Update(Player player, ref int buffIndex)
         {
             player.buffTime[buffIndex] = 18000;
-            
+
             bool petProjectileNotSpawned = player.ownedProjectileCounts[ModContent.ProjectileType<LokiPet>()] <= 0;
             if (petProjectileNotSpawned && player.whoAmI == Main.myPlayer)
             {

@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using OvermorrowMod.Core;
-using OvermorrowMod.Common.Particles;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace OvermorrowMod.Content.Items.Consumable.Boss
 {

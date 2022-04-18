@@ -136,7 +136,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
                 return;
             }
 
-            if (player.HasBuff(ModContent.BuffType<IorichGuardian>()))  
+            if (player.HasBuff(ModContent.BuffType<IorichGuardian>()))
             {
                 Projectile.timeLeft = 2;
             }

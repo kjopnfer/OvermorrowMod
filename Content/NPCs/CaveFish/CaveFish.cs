@@ -1,4 +1,3 @@
-using OvermorrowMod.Common;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Items.Accessories;
 using Terraria;

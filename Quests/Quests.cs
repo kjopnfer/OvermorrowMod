@@ -4,12 +4,12 @@ using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
-using Terraria.Audio;
-using Terraria.GameContent;
 
 namespace OvermorrowMod.Quests
 {
@@ -89,7 +89,7 @@ namespace OvermorrowMod.Quests
         {
             if (nextButton && dialogueCounter >= quest.DialogueCount) return "Accept";
             else if (nextButton) return "Next";
-                        
+
             if (isDoing)
             {
                 return quest.CheckRequirements(player) ? "Turn In" : "Quest";

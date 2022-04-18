@@ -1,9 +1,9 @@
-﻿using Terraria;
-using Terraria.ID;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Threading;
+using Terraria;
+using Terraria.ID;
 
 namespace OvermorrowMod.Common.Base
 {
@@ -44,11 +44,11 @@ namespace OvermorrowMod.Common.Base
             TexGen gen = new TexGen(tileTex.Width, tileTex.Height);
             for (int m = 0; m < tileData.Length; m++)
             {
-                Color tileColor = tileData[m], wallColor = (wallTex == null ? Color.Black : wallData[m]), liquidColor = (liquidTex == null ? Color.Black : liquidData[m]),slopeColor = (slopeTex == null ? Color.Black : slopeData[m]);
+                Color tileColor = tileData[m], wallColor = (wallTex == null ? Color.Black : wallData[m]), liquidColor = (liquidTex == null ? Color.Black : liquidData[m]), slopeColor = (slopeTex == null ? Color.Black : slopeData[m]);
                 int tileID = (colorToTile.ContainsKey(tileColor) ? colorToTile[tileColor] : -1); //if no key assume no action
                 int wallID = (colorToWall != null && colorToWall.ContainsKey(wallColor) ? colorToWall[wallColor] : -1);
                 int liquidID = (colorToLiquid != null && colorToLiquid.ContainsKey(liquidColor) ? colorToLiquid[liquidColor] : -1);
-                int slopeID = (colorToSlopes != null && colorToSlopes.ContainsKey(slopeColor) ? colorToSlopes[slopeColor] : -2); 
+                int slopeID = (colorToSlopes != null && colorToSlopes.ContainsKey(slopeColor) ? colorToSlopes[slopeColor] : -2);
                 gen.tileGen[x, y] = new TileInfo(tileID, 0, wallID, liquidID, liquidID == -1 ? 0 : 255, slopeID);
                 gen.platformStyle = platformStyle;
                 x++;
@@ -81,11 +81,11 @@ namespace OvermorrowMod.Common.Base
                 gen.tileGen[x, y] = new TileInfo(tileID, 0);
                 gen.platformStyle = 13;
                 x++;
-                if (x >= platformTex.Width) 
-                { 
-                    x = 0; y++; 
+                if (x >= platformTex.Width)
+                {
+                    x = 0; y++;
                 }
-                if (y >= platformTex.Height) 
+                if (y >= platformTex.Height)
                 {
                     break; //you've somehow reached the end of the texture! (this shouldn't happen!)
                 }

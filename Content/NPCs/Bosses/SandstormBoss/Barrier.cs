@@ -1,14 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -169,7 +167,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 spriteBatch.Reload(SpriteSortMode.Deferred);
             }
 
-         
+
             if (Shockwave)
             {
                 Vector2 offset = Vector2.UnitY.RotatedBy(NPC.rotation);

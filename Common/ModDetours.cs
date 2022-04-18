@@ -3,16 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
-using ReLogic.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Common
 {

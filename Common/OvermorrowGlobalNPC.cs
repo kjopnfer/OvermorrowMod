@@ -257,7 +257,7 @@ namespace OvermorrowMod.Common
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-                if (FungiInfection)
+            if (FungiInfection)
             {
                 if (Main.rand.NextBool(10))
                 {

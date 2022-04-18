@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Content.WorldGeneration;
@@ -96,7 +95,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 // Boss sets the velocity of the NPC
                 // The velocity is then stopped here if it detects a tile
                 Tile tile = Framing.GetTileSafely(NPC.Center + Vector2.UnitY * 25);
-                if (tile.HasTile && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType] && 
+                if (tile.HasTile && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType] &&
                     (tile.TileType == TileID.Gold || tile.TileType == ModContent.TileType<SandBrick>() || tile.TileType == TileID.Sand))
                 {
                     if (!Collided)

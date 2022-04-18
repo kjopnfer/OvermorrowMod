@@ -21,7 +21,7 @@ namespace OvermorrowMod.Content.Biomes
             MarbleBiome = tileCounts[TileID.MarbleBlock];
             GraniteBiome = tileCounts[TileID.GraniteBlock];
             LavaBiome = tileCounts[ModContent.TileType<CrunchyStone>()];
-            
+
             // Make the modded tile weigh more heavily
             Main.SceneMetrics.SandTileCount += tileCounts[ModContent.TileType<SandBrick>()] * 5;
         }

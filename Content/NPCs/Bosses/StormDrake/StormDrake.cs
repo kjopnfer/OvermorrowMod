@@ -1,29 +1,28 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Core;
+using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Content.Items.Consumable.BossBags;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.Items.Placeable.Boss;
-using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Content.Items.Weapons.Magic.BoltStream;
+using OvermorrowMod.Content.Items.Weapons.Melee.StormTalon;
+using OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow;
+using OvermorrowMod.Content.Items.Weapons.Summoner.DrakeStaff;
+using OvermorrowMod.Core;
 using System;
 using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Chat;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using OvermorrowMod.Common;
-using OvermorrowMod.Content.Items.Weapons.Summoner.DrakeStaff;
-using OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow;
-using OvermorrowMod.Content.Items.Weapons.Melee.StormTalon;
-using OvermorrowMod.Content.Items.Weapons.Magic.BoltStream;
-using Terraria.Audio;
-using Terraria.Chat;
-using Terraria.GameContent;
-
 using static Terraria.ModLoader.ModContent;
-using Terraria.GameContent.ItemDropRules;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
 {

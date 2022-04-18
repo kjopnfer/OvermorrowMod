@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

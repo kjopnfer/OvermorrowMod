@@ -1,8 +1,6 @@
-using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Dev
 {
@@ -11,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Dev
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Loki");
-            
+
             Main.projPet[Projectile.type] = true;
         }
 

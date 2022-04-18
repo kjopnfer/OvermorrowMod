@@ -1,6 +1,6 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ObjectData;
-using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.Common.Base
 {

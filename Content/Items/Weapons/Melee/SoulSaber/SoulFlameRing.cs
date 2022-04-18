@@ -44,9 +44,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
                 }
             }
 
-            Projectile.velocity.X *= 0.995f;            
-            Projectile.velocity.Y *= 0.995f ;
-            
+            Projectile.velocity.X *= 0.995f;
+            Projectile.velocity.Y *= 0.995f;
+
         }
 
         public override bool PreDraw(ref Color lightColor)

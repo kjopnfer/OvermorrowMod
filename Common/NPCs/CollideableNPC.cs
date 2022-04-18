@@ -21,7 +21,7 @@ namespace OvermorrowMod.Common.NPCs
 
                     projectile.netUpdate = true;
                 }
-            }  
+            }
         }
     }
 }

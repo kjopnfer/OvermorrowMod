@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -28,7 +27,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
 
             // Afterimage effect
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;     
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
         public override void SetDefaults()
         {

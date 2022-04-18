@@ -1,12 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Core;
-using Terraria.Audio;
 
 namespace OvermorrowMod.Common
 {
@@ -81,7 +81,7 @@ namespace OvermorrowMod.Common
             float prevDisplacement = 0;
             for (int i = 1; i < Lengths.Count; i++)
             {
-                
+
                 float current = thickness;
                 float prog = (float)Math.Sin(((float)i / (float)Lengths.Count) * MathHelper.Pi);
                 if (sine) current *= prog;

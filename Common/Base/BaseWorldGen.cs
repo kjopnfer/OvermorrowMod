@@ -1,10 +1,9 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ObjectData;
-using Terraria.Localization;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ObjectData;
 using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Common.Base
@@ -700,7 +699,7 @@ namespace OvermorrowMod.Common.Base
                             WorldGen.SlopeTile(x, y, 1);
                         }
                     }
-                    if (Main.tile[x, y].Slope ==  SlopeType.SlopeDownLeft && !WorldGen.SolidTile(x - 1, y))
+                    if (Main.tile[x, y].Slope == SlopeType.SlopeDownLeft && !WorldGen.SolidTile(x - 1, y))
                     {
                         WorldGen.SlopeTile(x, y, 0);
                         WorldGen.PoundTile(x, y);

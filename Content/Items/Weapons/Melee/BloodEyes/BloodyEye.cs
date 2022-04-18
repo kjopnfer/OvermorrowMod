@@ -69,7 +69,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.BloodEyes
         {
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
             ComingBack = true;
-            
+
             return false;
         }
 

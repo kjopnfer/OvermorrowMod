@@ -1,5 +1,4 @@
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.NPCs.Bosses.StormDrake;
 using System;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged.TempestGreatbow

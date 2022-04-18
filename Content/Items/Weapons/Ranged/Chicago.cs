@@ -1,8 +1,7 @@
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using System;
 using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged
 {
@@ -42,8 +41,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         }
 
         public override Vector2? HoldoutOffset()
-		{
-			return new Vector2(-10, 0);
-		}
+        {
+            return new Vector2(-10, 0);
+        }
     }
 }

@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Content.Items.Misc;
 using OvermorrowMod.Core;
 using Terraria;

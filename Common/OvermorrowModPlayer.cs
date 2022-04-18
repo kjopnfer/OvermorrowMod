@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
-using OvermorrowMod.Content.Items.Armor.Marble;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Content.Projectiles.Accessory;
 using System;

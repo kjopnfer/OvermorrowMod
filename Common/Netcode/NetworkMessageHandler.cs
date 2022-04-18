@@ -17,7 +17,8 @@ namespace OvermorrowMod.Common.Netcode
                 fromWho = reader.ReadInt32();
             }
 
-            switch (type) {
+            switch (type)
+            {
                 case (byte)PacketType.QuestPacket:
                     Quests.HandlePacket(reader, fromWho);
                     break;

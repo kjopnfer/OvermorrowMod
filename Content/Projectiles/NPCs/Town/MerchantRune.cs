@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.Projectiles.NPCs.Town
         }
         public override Color? GetAlpha(Color lightColor)
         {
-            return Color.White * Projectile.Opacity;  
+            return Color.White * Projectile.Opacity;
         }
 
         public override void Kill(int timeLeft)

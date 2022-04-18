@@ -1,14 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Core;
+using System;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Particles
 {
@@ -398,7 +398,7 @@ namespace OvermorrowMod.Common.Particles
                 particle.customData[0] = particle.scale;
             }
             else
-            particle.customData[0] = Main.rand.NextFloat(1f, 3f);
+                particle.customData[0] = Main.rand.NextFloat(1f, 3f);
             particle.scale = 0;
         }
         public override void Update()
@@ -408,7 +408,7 @@ namespace OvermorrowMod.Common.Particles
             particle.scale = MathHelper.Lerp(0f, particle.customData[0], p);
             particle.alpha = p;
             particle.velocity *= 0.99f;
-            particle.rotation = MathHelper.Pi / 2 +  particle.velocity.X / 10f;
+            particle.rotation = MathHelper.Pi / 2 + particle.velocity.X / 10f;
             if (particle.activeTime > maxTime) particle.Kill();
         }
         public override void Draw(SpriteBatch spriteBatch)
@@ -504,7 +504,7 @@ namespace OvermorrowMod.Common.Particles
     {
         //public override string Texture => "Terraria/Projectile_" + ProjectileID.StardustTowerMark;
         public override string Texture => AssetDirectory.Textures + "PulseCircle";
-        public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
+        public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
         float maxTime = 60f;
         public override void OnSpawn()
         {
@@ -550,7 +550,7 @@ namespace OvermorrowMod.Common.Particles
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            
+
             //float progress = (float)particle.activeTime / maxTime;
             //DrawRing(spriteBatch, particle.position, 1, 1, Main.GameUpdateCount / 40f, 1f, new Color(244, 188, 91));
 
@@ -610,7 +610,7 @@ namespace OvermorrowMod.Common.Particles
     public class Shockwave2 : CustomParticle
     {
         public override string Texture => AssetDirectory.Textures + "Perlin";
-        public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
+        public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
         float maxTime = 60f;
         public override void OnSpawn()
         {
@@ -638,14 +638,14 @@ namespace OvermorrowMod.Common.Particles
             spriteBatch.Reload(SpriteSortMode.Immediate);
             Texture2D texture = Particle.ParticleTextures[particle.type];
             // make a new drawdata(spritebatch draw but saved inside a class)
-            DrawData data = new DrawData(texture, 
-                particle.position - Main.screenPosition, 
-                new Rectangle(0, 0, texture.Width, texture.Height), 
-                particle.color * particle.alpha, 
-                particle.rotation, 
+            DrawData data = new DrawData(texture,
+                particle.position - Main.screenPosition,
+                new Rectangle(0, 0, texture.Width, texture.Height),
+                particle.color * particle.alpha,
+                particle.rotation,
                 new Vector2(texture.Width, texture.Height) / 2,
-                scale, 
-                SpriteEffects.None, 
+                scale,
+                SpriteEffects.None,
             0);
             // vanilla effect used in pillar shield
             var effect = GameShaders.Misc["ForceField"];
@@ -654,7 +654,7 @@ namespace OvermorrowMod.Common.Particles
             // make it actually draw
             data.Draw(spriteBatch);
             // restart spritebatch again so effect doesnt continue to be applied
-			spriteBatch.Reload(SpriteSortMode.Deferred);
+            spriteBatch.Reload(SpriteSortMode.Deferred);
         }
     }
 }

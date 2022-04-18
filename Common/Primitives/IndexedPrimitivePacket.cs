@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -93,7 +92,7 @@ namespace OvermorrowMod.Common.Primitives
                         }
                         return indexes;
                     }
-                    
+
                 case PrimitiveType.LineStrip:
                     {
                         var indexes = new short[count];
@@ -108,7 +107,7 @@ namespace OvermorrowMod.Common.Primitives
                         return indexes;
                     }
                 default: return new short[0];
-                    
+
             }
         }
         public void Send()

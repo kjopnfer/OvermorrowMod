@@ -1,14 +1,10 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper;
-using OvermorrowMod.Content.Tiles;
-using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
+using OvermorrowMod.Content.NPCs.Shades;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using OvermorrowMod.Content.NPCs.Shades;
 
 namespace OvermorrowMod.Common
 {

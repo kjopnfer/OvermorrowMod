@@ -11,7 +11,7 @@ namespace OvermorrowMod.Common
         {
             Container.ResetProjectiles();
         }
-     
+
         public override void UpdateDead()
         {
             Container.ResetProjectiles();

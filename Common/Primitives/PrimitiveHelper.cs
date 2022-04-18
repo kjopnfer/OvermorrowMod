@@ -1,7 +1,7 @@
-using Terraria;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using Terraria;
 
 namespace OvermorrowMod.Common.Primitives
 {
@@ -44,7 +44,7 @@ namespace OvermorrowMod.Common.Primitives
                     * Matrix.CreateScale(zoom.X, zoom.Y, 1f);
                 projection = Matrix.CreateOrthographic(width, height, 0, 1000);
             }
-            
+
             return view * projection;
         }
 
@@ -66,8 +66,9 @@ namespace OvermorrowMod.Common.Primitives
         {
             if (oldPos.Count == 1)
                 return oldPos[0];
-                
-            if (index == 0) {
+
+            if (index == 0)
+            {
                 return Vector2.Normalize(oldPos[1] - oldPos[0]).RotatedBy(MathHelper.Pi / 2);
             }
 

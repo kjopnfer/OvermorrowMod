@@ -1,13 +1,13 @@
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Common;
-using OvermorrowMod.Core;
-using System.Collections.Generic;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Core;
+using OvermorrowMod.Effects.Prim;
+using System;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
@@ -388,7 +388,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             // make the beam slightly change scale with time
             float mult = 0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly/* * 2*/) * 0.1f;
-            
+
             //float scale = projectile.scale * 2 * mult;
             BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
@@ -441,7 +441,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             return false;
         }
- 
+
     }
 
     public class SandFall2 : ForbiddenBeam

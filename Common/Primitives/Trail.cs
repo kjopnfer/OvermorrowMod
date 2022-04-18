@@ -1,9 +1,8 @@
-using Terraria;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using OvermorrowMod.Common;
+using System.Collections.Generic;
+using Terraria;
 using Terraria.DataStructures;
 
 namespace OvermorrowMod.Common.Primitives
@@ -13,13 +12,13 @@ namespace OvermorrowMod.Common.Primitives
         NPC,
         Projectile
     }
-   
+
     public abstract class Trail
     {
         public static List<Trail> trails;
         public static void UpdateTrails()
         {
-            for( int i = 0; i < trails.Count; i++)
+            for (int i = 0; i < trails.Count; i++)
             {
                 Trail trail = trails[i];
                 if (!trail.Entity.active)
@@ -33,7 +32,7 @@ namespace OvermorrowMod.Common.Primitives
                     continue;
                 }
                 if (!trail.Dying)
-                trail.Update();
+                    trail.Update();
                 else
                 {
                     trail.UpdateDead();
@@ -42,7 +41,7 @@ namespace OvermorrowMod.Common.Primitives
         }
         public static void KillByID(int id, DrawType type = DrawType.Projectile)
         {
-            for( int i = 0; i < trails.Count; i++)
+            for (int i = 0; i < trails.Count; i++)
             {
                 Trail trail = trails[i];
                 if (trail.DrawType == type && trail.EntityID == id && !trail.Dying)
@@ -94,7 +93,7 @@ namespace OvermorrowMod.Common.Primitives
         }
         public static void DrawNPCTrails(On.Terraria.Main.orig_DrawNPCs orig, Main self, bool behind)
         {
-            foreach(Trail trail in trails)
+            foreach (Trail trail in trails)
             {
                 if (trail.DrawType == DrawType.NPC && !trail.Pixelated)
                 {
@@ -144,7 +143,7 @@ namespace OvermorrowMod.Common.Primitives
             On.Terraria.NPC.NewNPC -= CreateNPCTrail;
             trails = null;
         }
-        protected Effect Effect { get; } 
+        protected Effect Effect { get; }
         protected List<VertexPositionColorTexture> Vertices { get; } = new List<VertexPositionColorTexture>();
         protected Texture2D Texture { get; }
         protected TrailPositionBuffer Positions { get; }

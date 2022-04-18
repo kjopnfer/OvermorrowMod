@@ -7,7 +7,6 @@ using OvermorrowMod.Content.Items.Placeable.Boss;
 using OvermorrowMod.Content.Items.Weapons.Magic.MarbleBook;
 using OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;

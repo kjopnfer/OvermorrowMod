@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.AddBuff(BuffID.Stinky, 999); 
+            player.AddBuff(BuffID.Stinky, 999);
         }
     }
 }

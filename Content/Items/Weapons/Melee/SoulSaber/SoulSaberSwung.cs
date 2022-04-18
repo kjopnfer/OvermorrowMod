@@ -1,14 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.Buffs.Debuffs;
-using OvermorrowMod.Core;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
+using OvermorrowMod.Content.Buffs.Debuffs;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
 {

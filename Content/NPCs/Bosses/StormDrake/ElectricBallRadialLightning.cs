@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
@@ -87,7 +86,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         {
                             for (int i = 0; i < Main.maxProjectiles; i++)
                             {
-                                if (Main.projectile[i].active && Main.projectile[i].type == Mod.Find<ModProjectile>("LaserWarning") .Type&& ((LaserWarning)Main.projectile[i].ModProjectile).killearly == true)
+                                if (Main.projectile[i].active && Main.projectile[i].type == Mod.Find<ModProjectile>("LaserWarning").Type && ((LaserWarning)Main.projectile[i].ModProjectile).killearly == true)
                                 {
                                     ((LaserWarning)Main.projectile[i].ModProjectile).killnow = true;
                                     Main.projectile[i].Kill();

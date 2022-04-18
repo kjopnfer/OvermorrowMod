@@ -8,7 +8,7 @@ namespace OvermorrowMod.Common
     public enum OrbitingProjectileState
     {
         Initializing = 0, // This is used for initilizing all values.
-        Spawning = 1,     
+        Spawning = 1,
         Moving = 2,       // This is the state in which the projectiles moves on the circle with the fast period.
         Cycling = 3,      // Unused but might be needed for better control over how the projectile moves when a new radius is set.
         Attacking = 4,    // Abstract state used to give the projectile Attacking behaviour or any other things like getting fired at a enemy.
@@ -172,8 +172,8 @@ namespace OvermorrowMod.Common
                         }
                         //This period determines how fast the projectiles move along the radial path.
                         double period = 2 * Math.PI / PeriodFast;
-                        Projectile.Center = 
-                            OrbitCenter 
+                        Projectile.Center =
+                            OrbitCenter
                             + new Vector2(
                                 OrbitingRadius * (float)Math.Cos(period * (container.RotationTimer - TimerStart) + angle),
                                 OrbitingRadius * (float)Math.Sin(period * (container.RotationTimer - TimerStart) + angle)

@@ -92,7 +92,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.StormTalon
             if (Projectile.spriteDirection == -1)
             {
                 Projectile.rotation -= MathHelper.ToRadians(90f);
-            }            
+            }
         }
     }
 }

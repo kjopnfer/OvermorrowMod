@@ -1,13 +1,13 @@
-using OvermorrowMod.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria;
-using Terraria.ModLoader;
-using System;
-using OvermorrowMod.Effects.Prim;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Core;
+using OvermorrowMod.Effects.Prim;
+using System;
+using Terraria;
 using Terraria.DataStructures;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
@@ -65,7 +65,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     progress),
                 new Rectangle(0, 0, texture.Width, progress),
                 lightColor));
-            
+
 
             Vector2 drawCenter = Projectile.Center + Vector2.Lerp(new Vector2(62 - texture.Width / 2, 0), new Vector2(62 - texture.Width / 2, -188), progress / 240f);
 

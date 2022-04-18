@@ -1,13 +1,13 @@
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.Utilities;
-using System;
 using OvermorrowMod.Core;
+using System;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee.HeavenBlade
 {
@@ -50,7 +50,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HeavenBlade
         }*/
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Vector2 pos = Item.Center -  Main.screenPosition;
+            Vector2 pos = Item.Center - Main.screenPosition;
             Texture2D texture = TextureAssets.Item[Item.type].Value;
             Texture2D spot = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
             float alpha = 0.8f;

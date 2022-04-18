@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.Projectiles.Censers
 
                 Projectile.Center = owner.Center + Vector2.One.RotatedBy(-Projectile.ai[0] / 7f) * activeRadius;
                 Projectile.rotation = Projectile.DirectionTo(owner.Center).ToRotation() + MathHelper.PiOver2 + MathHelper.ToRadians(35);
-                
+
                 owner.ChangeDir(-Projectile.direction);
                 owner.heldProj = Projectile.whoAmI;
                 owner.itemTime = 30;
@@ -102,7 +102,7 @@ namespace OvermorrowMod.Content.Projectiles.Censers
 
             Vector2 midPoint1 = player.Center + new Vector2(25, 25).RotatedBy(Projectile.DirectionTo(player.Center).ToRotation() + MathHelper.PiOver2);
             Vector2 midPoint2 = Projectile.Center - new Vector2(-25, 25).RotatedBy(Projectile.DirectionTo(player.Center).ToRotation() + MathHelper.PiOver2);
-        
+
             for (int i = 0; i < iterations; i++)
             {
                 float progress = i / iterations;

@@ -1,13 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.Tiles.Boss;
 using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;

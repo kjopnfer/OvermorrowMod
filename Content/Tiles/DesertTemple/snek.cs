@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using OvermorrowMod.Core;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Tiles.DesertTemple

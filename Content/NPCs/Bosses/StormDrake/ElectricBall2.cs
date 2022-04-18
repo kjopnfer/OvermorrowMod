@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Core;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ID;

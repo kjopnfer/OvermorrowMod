@@ -13,7 +13,7 @@ namespace OvermorrowMod.Content.Tiles.Underground
             Main.tileMergeDirt[Type] = true;
 
             Main.tileMerge[Type][TileID.Stone] = true;
-            Main.tileMerge[TileID.Stone][Type] = true; 
+            Main.tileMerge[TileID.Stone][Type] = true;
 
             Main.tileMerge[Type][TileID.Mud] = true;
             Main.tileMerge[TileID.Mud][Type] = true;

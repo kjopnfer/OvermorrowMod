@@ -1,10 +1,9 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Summon;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace OvermorrowMod.Content.Projectiles.Accessory
 {
