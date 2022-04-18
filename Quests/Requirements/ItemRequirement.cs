@@ -28,5 +28,7 @@ namespace OvermorrowMod.Quests.Requirements
             }
             return false;
         }
+
+        public void ResetState(Player player) { }
     }
 }

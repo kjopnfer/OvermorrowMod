@@ -10,6 +10,7 @@ namespace OvermorrowMod.Quests.ModQuests
         public override string QuestName => "Tutorial 2";
         public override QuestRepeatability Repeatability => QuestRepeatability.OncePerWorldPerPlayer;
         public override int QuestGiver => NPCID.Guide;
+        public override int QuestDelay => 1200;
 
         public override void SetDefaults()
         {

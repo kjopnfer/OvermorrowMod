@@ -23,10 +23,9 @@ namespace OvermorrowMod.Quests
             if (questCheckTick > 0)
             {
                 questCheckTick--;
-                if (questCheckTick <= 0) questCheckTick = 0;
                 return null;
             }
-            //questCheckTick++;
+            questCheckTick = 0;
 
             var possibleQuests = Quests.QuestList.Values
                 .Where(q => q.IsValidQuest(npc.type, Main.LocalPlayer))
@@ -57,15 +56,10 @@ namespace OvermorrowMod.Quests
 
         public void TakeQuest()
         {
-            // Set the delay between Quests based on the Quest
-            switch (availableQuest.QuestName)
+            if (availableQuest != null)
             {
-                case "Tutorial 2":
-                    questCheckTick = 1200;
-                    break;
-                default:
-                    questCheckTick = 600;
-                    break;
+                // Set the delay between Quests based on the Quest
+                questCheckTick = availableQuest.QuestDelay;
             }
 
             availableQuest = null;
@@ -192,23 +186,6 @@ namespace OvermorrowMod.Quests
                                 }
                             }
                         }
-                        /*foreach (KillRequirement requirement in quest.Requirements)
-                        {
-                            if (requirement.type != npc.type) continue;
-
-                            var KilledList = modPlayer.KilledNPCs;
-
-                            // Check if the player has the entry of the killed NPC stored to increment their kill counter
-                            if (KilledList.ContainsKey(npc.type))
-                            {
-                                KilledList[npc.type]++;
-                            }
-                            else
-                            {
-                                // Add the entry into the Dictionary if this is the first time they are killed
-                                KilledList.Add(npc.type, 1);
-                            }
-                        }*/
                     }
                 }
             }

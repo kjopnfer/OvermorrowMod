@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.Quests.Requirements;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -33,6 +32,7 @@ namespace OvermorrowMod.Quests
         public abstract string QuestName { get; }
         public virtual QuestType Type => QuestType.Fetch;
         public virtual QuestRepeatability Repeatability => QuestRepeatability.OncePerPlayer;
+        public virtual int QuestDelay => 600;
         public virtual void SetDefaults()
         {
             Requirements = Enumerable.Empty<IQuestRequirement>();
@@ -79,25 +79,9 @@ namespace OvermorrowMod.Quests
         /// <param name="player"></param>
         private void ResetKillCount(Player player)
         {
-            var modPlayer = player.GetModPlayer<QuestPlayer>();
-            var KilledList = modPlayer.KilledNPCs;
             foreach (IQuestRequirement requirement in Requirements)
             {
-                if (requirement is OrRequirement orRequirement)
-                {
-                    foreach (KillRequirement kill in orRequirement.clauses)
-                    {
-                        KilledList[kill.type] = 0;
-                    }
-                }
-
-                if (requirement is KillRequirement killRequirement)
-                {
-                    foreach (KillRequirement kill in Requirements)
-                    {
-                        KilledList[kill.type] = 0;
-                    }
-                }
+                requirement.ResetState(player);
             }
         }
 

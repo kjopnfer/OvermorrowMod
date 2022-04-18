@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
@@ -31,6 +27,12 @@ namespace OvermorrowMod.Quests.Requirements
             }
 
             return false;
+        }
+
+        public void ResetState(Player player)
+        {
+            var KilledList = player.GetModPlayer<QuestPlayer>().KilledNPCs;
+            KilledList[type] = 0;
         }
     }
 }
