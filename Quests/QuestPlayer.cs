@@ -71,7 +71,9 @@ namespace OvermorrowMod.Quests
             {
                 ["CompletedQuests"] = CompletedQuests.ToList(),
                 ["CurrentQuests"] = activeQuests.Select(q => q.QuestID).ToList(),
-                ["PlayerUUID"] = PlayerUUID
+                ["PlayerUUID"] = PlayerUUID,
+                ["killedIDs"] = KilledNPCs.Keys.ToList(),
+                ["killedCounts"] = KilledNPCs.Values.ToList()
             };
         }
 
@@ -109,6 +111,10 @@ namespace OvermorrowMod.Quests
             {
                 Quests.PerPlayerActiveQuests[PlayerUUID] = new List<BaseQuest>();
             }
+
+            var IDs = tag.GetList<int>("killedIDs");
+            var counts = tag.GetList<int>("killedCounts");
+            KilledNPCs = IDs.Zip(counts, (k, v) => new { Key = k, Value = v }).ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }
