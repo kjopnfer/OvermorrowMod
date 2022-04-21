@@ -47,7 +47,7 @@ namespace OvermorrowMod.Quests
             Quests.PerPlayerActiveQuests[PlayerUUID].Remove(quest);
         }
 
-        public BaseQuest QuestByNpc(int npcId)
+        public BaseQuest QuestByNPC(int npcId)
         {
             return CurrentQuests.FirstOrDefault(q => npcId == q.QuestGiver);
         }
@@ -115,6 +115,11 @@ namespace OvermorrowMod.Quests
             var IDs = tag.GetList<int>("KilledIDs");
             var counts = tag.GetList<int>("KilledCounts");
             KilledNPCs = IDs.Zip(counts, (k, v) => new { Key = k, Value = v }).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public override void PreUpdate()
+        {
+            base.PreUpdate();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Quests.Requirements;
 using System;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace OvermorrowMod.Quests
             if (Main.netMode == NetmodeID.Server) throw new ArgumentException("GetCurrentQuest invoked on the server is invalid");
             isDoing = true;
             var currentModPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-            var pursuedQuest = currentModPlayer.QuestByNpc(npc.type);
+            var pursuedQuest = currentModPlayer.QuestByNPC(npc.type);
             if (pursuedQuest != null) return pursuedQuest;
             isDoing = false;
             return GetCurrentAvailableQuest(npc);
@@ -58,9 +59,23 @@ namespace OvermorrowMod.Quests
         {
             if (availableQuest != null)
             {
-                // Set the delay between Quests based on the Quest
-                questCheckTick = availableQuest.QuestDelay;
+                // If the Quest type is a Travel quest, spawn the travel marker for the player
+                if (availableQuest.Type == QuestType.Travel)
+                {
+                    foreach (IQuestRequirement requirement in availableQuest.Requirements)
+                    {
+                        if (requirement is TravelRequirement travelRequirement)
+                        {
+                            Vector2 SpawnLocation = travelRequirement.location;
+                            NPC.NewNPC((int)SpawnLocation.X, (int)SpawnLocation.Y, ModContent.NPCType<QuestMarker>());
+                        }
+                    }
+                }
             }
+
+            // Set the delay between Quests based on the Quest
+            questCheckTick = availableQuest.QuestDelay;
+
 
             availableQuest = null;
         }
@@ -86,13 +101,7 @@ namespace OvermorrowMod.Quests
                     }
 
                     switch (quest.Type)
-                    {
-                        case QuestType.Fetch:
-                            if (frame >= 6 || frame <= 4)
-                            {
-                                frame = 4;
-                            }
-                            break;
+                    {                       
                         case QuestType.Housing:
                             if (frame >= 2)
                             {
@@ -100,9 +109,16 @@ namespace OvermorrowMod.Quests
                             }
                             break;
                         case QuestType.Kill:
+                        case QuestType.Travel:
                             if (frame >= 4 || frame <= 2)
                             {
                                 frame = 2;
+                            }
+                            break;
+                        case QuestType.Fetch:
+                            if (frame >= 6 || frame <= 4)
+                            {
+                                frame = 4;
                             }
                             break;
                     }
@@ -129,7 +145,6 @@ namespace OvermorrowMod.Quests
 
             base.PostDraw(npc, spriteBatch, drawColor);
         }
-
 
         public override void NPCLoot(NPC npc)
         {
@@ -167,7 +182,7 @@ namespace OvermorrowMod.Quests
                                             // Add the entry into the Dictionary if this is the first time they are killed
                                             KilledList.Add(npc.type, 1);
                                         }
-                                    }                                 
+                                    }
                                 }
                             }
 
@@ -189,7 +204,7 @@ namespace OvermorrowMod.Quests
                                         // Add the entry into the Dictionary if this is the first time they are killed
                                         KilledList.Add(npc.type, 1);
                                     }
-                                }        
+                                }
                             }
                         }
                     }

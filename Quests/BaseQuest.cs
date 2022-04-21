@@ -17,7 +17,8 @@ namespace OvermorrowMod.Quests
     {
         Fetch,
         Housing,
-        Kill
+        Kill,
+        Travel
     }
 
     public abstract class BaseQuest
