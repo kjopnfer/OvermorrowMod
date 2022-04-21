@@ -13,6 +13,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using OvermorrowMod.Sounds.Music;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
 {
@@ -56,7 +57,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
             npc.value = Item.buyPrice(gold: 3);
             npc.npcSlots = 10f;
             //music = MusicID.Boss5;
-            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeBoss");
+            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeMan2");
             bossBag = ModContent.ItemType<TreeBag>();
         }
 
