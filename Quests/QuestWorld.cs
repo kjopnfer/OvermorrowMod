@@ -11,7 +11,7 @@ namespace OvermorrowMod.Quests
     {
         public override void PreUpdateNPCs()
         {
-            if (Main.netMode != NetmodeID.Server && Main.LocalPlayer.talkNPC == -1) Quests.ResetUi();
+            if (Main.netMode != NetmodeID.Server && Main.LocalPlayer.talkNPC == -1) Quests.ResetUI();
         }
 
         public override void SaveWorldData(TagCompound tag)
@@ -21,7 +21,7 @@ namespace OvermorrowMod.Quests
             tag["perPlayerCompletedQuestsValues"] = Quests.PerPlayerCompletedQuests.Values.Select(v => v.ToList()).ToList();
             tag["perPlayerActiveQuestsKeys"] = Quests.PerPlayerActiveQuests.Keys.ToList();
             tag["perPlayerActiveQuestsValues"] = Quests.PerPlayerActiveQuests.Values
-                    .Select(v => v.Select(q => q.QuestId).ToList()).ToList();
+                    .Select(v => v.Select(q => q.QuestID).ToList()).ToList();
         }
 
         public override void LoadWorldData(TagCompound tag)

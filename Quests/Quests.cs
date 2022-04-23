@@ -41,7 +41,7 @@ namespace OvermorrowMod.Quests
                 {
                     BaseQuest quest = (BaseQuest)Activator.CreateInstance(type);
                     quest.SetDefaults();
-                    QuestList.Add(quest.QuestId, quest);
+                    QuestList.Add(quest.QuestID, quest);
                     QuestTypes.Add(type, quest);
                 }
             }
@@ -77,7 +77,7 @@ namespace OvermorrowMod.Quests
             }
         }
 
-        public static void ResetUi()
+        public static void ResetUI()
         {
             hoverButton = false;
             nextButton = false;
@@ -122,7 +122,7 @@ namespace OvermorrowMod.Quests
                     else
                     {
                         player.SetTalkNPC(-1);
-                        ResetUi();
+                        ResetUI();
                     }
                 }
                 else
@@ -138,7 +138,7 @@ namespace OvermorrowMod.Quests
                 if (dialogueCounter >= endDialogueQuest.EndDialogueCount)
                 {
                     player.SetTalkNPC(-1);
-                    ResetUi();
+                    ResetUI();
                 }
                 else
                 {
@@ -162,7 +162,7 @@ namespace OvermorrowMod.Quests
                 Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
 
                 player.SetTalkNPC(-1);
-                ResetUi();
+                ResetUI();
             }
             else
             {
@@ -255,9 +255,9 @@ namespace OvermorrowMod.Quests
             var modPlayer = player.GetModPlayer<QuestPlayer>();
             var quest = GetQuest<T>();
             return quest.Repeatability == QuestRepeatability.Repeatable
-                || GlobalCompletedQuests.Contains(quest.QuestId)
-                || modPlayer.CompletedQuests.Contains(quest.QuestId)
-                || PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(quest.QuestId);
+                || GlobalCompletedQuests.Contains(quest.QuestID)
+                || modPlayer.CompletedQuests.Contains(quest.QuestID)
+                || PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(quest.QuestID);
         }
     }
 }

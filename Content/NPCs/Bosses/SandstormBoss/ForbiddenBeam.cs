@@ -199,9 +199,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
     public class ForbiddenBurst : ForbiddenBeam
     {
-        public Projectile Target;
+        public new Projectile Target;
 
-        private const float MAX_TIME = 20;
+        private new const float MAX_TIME = 20;
 
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
