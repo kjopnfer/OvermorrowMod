@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit4;
             NPC.damage = 45;
-            Music = SoundLoader.GetSoundSlot("Sounds/Music/STONEBROS");
+            Music = MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/STONEBROS");
         }
 
         public override void AI()

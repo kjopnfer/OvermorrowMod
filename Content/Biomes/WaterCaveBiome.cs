@@ -10,6 +10,6 @@ namespace OvermorrowMod.Content.Biomes
             return ModContent.GetInstance<BiomeTileCounts>().FloodedCaves > 50;
         }
 
-        public override int Music => SoundLoader.GetSoundSlot("OvermorrowMod/Sounds/Music/WaterBiomeMusic");
+        public override int Music => MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/WaterBiomeMusic");
     }
 }

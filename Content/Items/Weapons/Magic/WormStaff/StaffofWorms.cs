@@ -21,7 +21,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
             Item.mana = 7;
             Item.useTime = 28;
             Item.useAnimation = 28;
-            Item.UseSound = SoundLoader.GetLegacySoundSlot("Sounds/Items/Hork");
+            Item.UseSound = SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/Items/Hork");
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
             Item.knockBack = 0;

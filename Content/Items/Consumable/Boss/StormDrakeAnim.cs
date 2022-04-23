@@ -55,7 +55,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                         if (Projectile.ai[1] == 260)
                         {
                             Player player = Main.player[Projectile.owner];
-                            SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("Sounds/NPC/woow"), player.position);
+                            SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/woow"), player.position);
                         }
 
                         if (Projectile.ai[1]++ > 300)

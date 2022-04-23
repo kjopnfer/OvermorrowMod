@@ -71,7 +71,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             NPC.boss = true;
             NPC.chaseable = false;
             NPC.npcSlots = 10f;
-            Music = SoundLoader.GetSoundSlot("Sounds/Music/SandstormBoss");
+            Music = MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/SandstormBoss");
         }
         public ref float AICase => ref NPC.ai[0];
         public ref float GlobalCounter => ref NPC.ai[1];

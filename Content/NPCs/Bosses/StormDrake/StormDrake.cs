@@ -84,7 +84,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
             NPC.boss = true;
             NPC.value = Item.buyPrice(gold: 3);
             NPC.npcSlots = 10f;
-            Music = SoundLoader.GetSoundSlot("Sounds/Music/StormDrake");
+            Music = MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/StormDrake");
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -601,11 +601,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             {
                                 if (Main.rand.Next(2) == 0)
                                 {
-                                    SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("Sounds/NPC/woosh"), Main.player[i].position);
+                                    SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/woosh"), Main.player[i].position);
                                 }
                                 else
                                 {
-                                    SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("Sounds/NPC/flep"), Main.player[i].position);
+                                    SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/flep"), Main.player[i].position);
                                 }
 
                                 float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
@@ -732,11 +732,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 {
                                     if (Main.rand.Next(2) == 0)
                                     {
-                                        SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("Sounds/NPC/woosh"), Main.player[i].position);
+                                        SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/woosh"), Main.player[i].position);
                                     }
                                     else
                                     {
-                                        SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("Sounds/NPC/flep"), Main.player[i].position);
+                                        SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/flep"), Main.player[i].position);
                                     }
                                     //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
                                 }

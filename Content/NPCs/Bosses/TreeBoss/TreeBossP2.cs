@@ -61,7 +61,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
             NPC.value = Item.buyPrice(gold: 3);
             NPC.npcSlots = 10f;
             //music = MusicID.Boss5;
-            Music = MusicLoader.GetMusicSlot("Sounds/Music/TreeMan2");
+            Music = MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/TreeMan2");
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)

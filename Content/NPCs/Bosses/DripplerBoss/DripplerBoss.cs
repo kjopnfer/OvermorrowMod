@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
             NPC.value = Item.buyPrice(gold: 2, silver: 50);
             NPC.npcSlots = 10f;
             NPC.chaseable = false;
-            Music = SoundLoader.GetSoundSlot("Sounds/Music/DripplerBoss");
+            Music = MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/DripplerBoss");
 
             NPC.buffImmune[BuffID.OnFire] = true;
             NPC.buffImmune[BuffID.Poisoned] = true;
