@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.ID;
@@ -10,6 +9,8 @@ namespace OvermorrowMod.Quests
 {
     public class QuestWorld : ModWorld
     {
+        public static List<string> PlayerTraveled = new List<string>();
+
         public override void PreUpdate()
         {
             if (Main.netMode != NetmodeID.Server && Main.LocalPlayer.talkNPC == -1) Quests.ResetUI();
@@ -25,6 +26,7 @@ namespace OvermorrowMod.Quests
                 ["perPlayerActiveQuestsKeys"] = Quests.PerPlayerActiveQuests.Keys.ToList(),
                 ["perPlayerActiveQuestsValues"] = Quests.PerPlayerActiveQuests.Values
                     .Select(v => v.Select(q => q.QuestID).ToList()).ToList(),
+                ["PlayerTraveled"] = PlayerTraveled
             };
         }
 
@@ -63,6 +65,12 @@ namespace OvermorrowMod.Quests
                 Quests.PerPlayerActiveQuests[pair.k] = qlist;
             }
 
+            // Stores the places the player has traveled in order to persist the Travel quest data
+            var TraveledList = tag.GetList<string>("PlayerTraveled");
+            foreach (var Location in TraveledList)
+            {
+                PlayerTraveled.Add(Location);
+            }
         }
     }
 }

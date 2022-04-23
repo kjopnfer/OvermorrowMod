@@ -1,6 +1,7 @@
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
 using System.Collections.Generic;
+using Terraria;
 using Terraria.ID;
 
 namespace OvermorrowMod.Quests.ModQuests
@@ -40,6 +41,11 @@ namespace OvermorrowMod.Quests.ModQuests
             QuestHint.Add("Slimes are common around these parts, keep moving around and you'll be sure to find some.");
 
             QuestEndDialogue.Add("Wow, nice work.");
+        }
+
+        protected override bool IsValidFor(Player player)
+        {
+            return Quests.HasCompletedQuest<GuideTravel>(player);
         }
     }
 }

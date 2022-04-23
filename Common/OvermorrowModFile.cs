@@ -1,9 +1,7 @@
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.Items.Materials;
-using ReLogic.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -15,21 +13,13 @@ using OvermorrowMod.Core;
 using OvermorrowMod.Content.UI;
 using OvermorrowMod.Common.Particles;
 using Terraria.Graphics.Effects;
-using OvermorrowMod.Content.WorldGeneration;
 using System.IO;
 using OvermorrowMod.Common.Netcode;
 
 namespace OvermorrowMod.Common
 {
-    public class OvermorrowModFile : Mod
+    public partial class OvermorrowModFile : Mod
     {
-        // UI
-        internal UserInterface MyInterface;
-        internal UserInterface AltarUI;
-
-        internal AltarUI Altar;
-        private GameTime _lastUpdateUiGameTime;
-
         // Hotkeys
         public static ModHotKey SandModeKey;
         public static ModHotKey ToggleUI;
@@ -37,7 +27,6 @@ namespace OvermorrowMod.Common
 
         public static OvermorrowModFile Instance { get; set; }
         public OvermorrowModFile() => Instance = this;
-
 
         public Effect BeamShader;
         public Effect Ring;
@@ -86,7 +75,7 @@ namespace OvermorrowMod.Common
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
-                
+
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
@@ -151,7 +140,7 @@ namespace OvermorrowMod.Common
                 Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
                 Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
             }
-            
+
 
             Altar = null;
             SandModeKey = null;
@@ -247,137 +236,6 @@ namespace OvermorrowMod.Common
             recipe.AddTile(TileID.Anvils);
             recipe.SetResult(ItemID.JellyfishNecklace);
             recipe.AddRecipe();
-        }
-
-        internal void BossTitle(int BossID)
-        {
-            string BossName = "";
-            string BossTitle = "";
-            Color titleColor = Color.White;
-            Color nameColor = Color.White;
-            switch (BossID)
-            {
-                case 1:
-                    BossName = "Dharuud";
-                    BossTitle = "The Sandstorm";
-                    nameColor = Color.LightGoldenrodYellow;
-                    titleColor = Color.Yellow;
-                    break;
-                case 2:
-                    BossName = "The Storm Drake";
-                    BossTitle = "Apex Predator";
-                    nameColor = Color.Cyan;
-                    titleColor = Color.DarkCyan;
-                    break;
-                case 3:
-                    BossName = "Dripplord";
-                    BossTitle = "Bloody Assimilator";
-                    nameColor = Color.Red;
-                    titleColor = Color.DarkRed;
-                    break;
-                case 4:
-                    BossName = "Iorich";
-                    BossTitle = "The Guardian";
-                    nameColor = Color.LimeGreen;
-                    titleColor = Color.Green;
-                    break;
-                case 5:
-                    BossName = "Gra-knight and Lady Apollo";//"Gra-knight and Apollus";
-                    BossTitle = "The Super Stoner Buds";//"The Super Stoner Bros"; /*The Super Biome Brothers*/
-                    nameColor = new Color(230, 228, 216);
-                    titleColor = new Color(64, 80, 89);
-                    break;
-                default:
-                    BossName = "snoop dogg";
-                    BossTitle = "high king";
-                    nameColor = Color.LimeGreen;
-                    titleColor = Color.Green;
-                    break;
-
-            }
-            Vector2 textSize = Main.fontDeathText.MeasureString(BossName);
-            Vector2 textSize2 = Main.fontDeathText.MeasureString(BossTitle) * 0.5f;
-            float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
-            float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
-            /*float alpha = 255;
-			float alpha2 = 255;*/
-
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontDeathText, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
-        }
-
-        public override void UpdateUI(GameTime gameTime)
-        {
-            _lastUpdateUiGameTime = gameTime;
-            if (MyInterface?.CurrentState != null && !Main.gameMenu)
-            {
-                MyInterface.Update(gameTime);
-            }
-
-            if (AltarUI?.CurrentState != null && !Main.gameMenu)
-            {
-                AltarUI.Update(gameTime);
-            }
-        }
-
-        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-        {
-            int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
-            if (mouseTextIndex != -1)
-            {
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                       "OvermorrowMod: AltarUI",
-                       delegate
-                       {
-                           if (_lastUpdateUiGameTime != null && AltarUI?.CurrentState != null)
-                           {
-                               AltarUI.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
-                           }
-                           return true;
-                       },
-                          InterfaceScaleType.UI));
-
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "OvermorrowMod: MyInterface",
-                    delegate
-                    {
-                        if (_lastUpdateUiGameTime != null && MyInterface?.CurrentState != null)
-                        {
-                            MyInterface.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
-                        }
-                        return true;
-                    },
-                       InterfaceScaleType.UI));
-
-
-                OvermorrowModPlayer modPlayer = Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>();
-                if (modPlayer.ShowText)
-                {
-                    layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "OvermorrowMod: Title",
-                    delegate
-                    {
-                        BossTitle(modPlayer.TitleID);
-                        return true;
-                    },
-                    InterfaceScaleType.UI));
-                }
-            }
-        }
-
-        internal void ShowAltar()
-        {
-            AltarUI?.SetState(Altar);
-        }
-
-        internal void HideAltar()
-        {
-            AltarUI?.SetState(null);
-        }
-
-        internal void HideMyUI()
-        {
-            MyInterface?.SetState(null);
         }
 
         public override void PreUpdateEntities()
