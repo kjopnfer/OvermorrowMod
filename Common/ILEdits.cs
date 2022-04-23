@@ -19,6 +19,7 @@ namespace OvermorrowMod.Common
             // IL.Terraria.Main.UpdateAudio += TitleMusic;
             // IL.Terraria.Main.UpdateAudio += TitleDisable;
             // IL.Terraria.Projectile.VanillaAI += GrappleCollision;
+            IL.Terraria.Projectile.AI_007_GrapplingHooks += GrappleCollision;
             //IL.Terraria.Liquid.Update += UpdateWater;
             //IL.Terraria.Liquid.QuickWater += QuickWater;
         }
@@ -66,6 +67,37 @@ namespace OvermorrowMod.Common
         public static void GrappleCollision(ILContext il)
         {
             ILCursor c = new ILCursor(il);
+
+            // this.ai[0] == 0f
+            c.TryGotoNext(i => i.MatchLdfld<Projectile>("ai"), i => i.MatchLdcI4(0), i => i.MatchLdelemR4(), i => i.MatchLdcR4(0));
+            // Call to tile.nactive()
+            c.TryGotoNext(i => i.MatchCall<Tile>("nactive"));
+            c.Index--;
+
+            // Inject some code that skips the condition checks for whether to hook onto a tile.
+            var label = il.DefineLabel();
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate(HooksNPC);
+            c.Emit(OpCodes.Brtrue, label);
+
+            // Matches a later part of the if (Main.player[this.owner].grapCount < 10) line
+            c.TryGotoNext(i => i.MatchLdfld<Player>("grapCount"));
+            // Step back so that we are just inside the condition
+            c.Index -= 4;
+            c.MarkLabel(label);
+
+            // Skip to last check of AI_007_GrapplingHooks_CanTileBeLatchedOnTo
+            c.TryGotoNext(i => i.MatchCall<Projectile>("AI_007_GrapplingHooks_CanTileBeLatchedOnTo"));
+            // Jump down a few instructions to get right after loading flag onto the stack
+            c.Index += 5;
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate(ShouldReleaseHook);
+
+            // Should match int num14 = 0
+            /* c.TryGotoNext(i => i.MatchLdcI4(0))
+
+
+
             c.TryGotoNext(i => i.MatchLdfld<Projectile>("aiStyle"), i => i.MatchLdcI4(7));
             c.TryGotoNext(i => i.MatchLdfld<Projectile>("ai"), i => i.MatchLdcI4(0), i => i.MatchLdelemR4(), i => i.MatchLdcR4(2));
             c.TryGotoNext(i => i.MatchLdloc(143)); //flag2 in source code
@@ -75,58 +107,43 @@ namespace OvermorrowMod.Common
             c.TryGotoNext(i => i.MatchStfld<Player>("grapCount"));
             c.Index++;
             c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<UngrappleDelegate>(EmitUngrappleDelegate);
+            c.EmitDelegate<UngrappleDelegate>(EmitUngrappleDelegate); */
         }
-
-        private delegate bool GrappleDelegate(bool fail, Projectile proj);
-        private static bool EmitGrappleDelegate(bool fail, Projectile proj)
+        private static bool HooksNPC(Projectile proj)
         {
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
+
                 if (npc.active && npc.ModNPC is CollideableNPC && npc.Hitbox.Intersects(proj.Hitbox))
                 {
-                    //Main.NewText("test");
-
                     proj.velocity = Vector2.Zero;
                     proj.tileCollide = true;
+                    ((CollideableNPC)npc.ModNPC).Grappled = true;
+                    proj.ai[0] = 2f;
+                    proj.ai[1] = i;
+                    proj.position += npc.velocity;
+                    proj.netUpdate = true;
                     //proj.position += npc.velocity;
 
-                    return false;
+                    return true;
                 }
             }
-
-            return fail;
+            return false;
         }
 
-        private delegate void UngrappleDelegate(Projectile proj);
-        private static void EmitUngrappleDelegate(Projectile proj)
+        private static bool ShouldReleaseHook(bool flag, Projectile proj)
         {
-            Player player = Main.player[proj.owner];
-            int numHooks = 3;
-
-            switch (proj.type)
+            if (proj.ai[1] >= 0 && proj.ai[1] < Main.maxNPCs)
             {
-                case 165:
-                    numHooks = 8;
-                    break;
-                case 256:
-                case 372:
-                    numHooks = 2;
-                    break;
-                case 652:
-                    numHooks = 1;
-                    break;
-                case 646:
-                case 647:
-                case 648:
-                case 649:
-                    numHooks = 4;
-                    break;
+                var npc = Main.npc[(int)proj.ai[1]];
+                if (!npc.active || npc.ModNPC is not CollideableNPC cnpc) return flag;
+                proj.position += npc.velocity;
+                proj.netUpdate = true;
+                return false;
             }
 
-            ProjectileLoader.NumGrappleHooks(proj, player, ref numHooks);
-            if (player.grapCount > numHooks) Main.projectile[player.grappling.OrderBy(n => (Main.projectile[n].active ? 0 : 999999) + Main.projectile[n].timeLeft).ToArray()[0]].Kill();
+            return flag;
         }
 
         public static void UpdateWater(ILContext il)
