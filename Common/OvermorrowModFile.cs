@@ -118,33 +118,11 @@ namespace OvermorrowMod.Common
             Particle.Unload();
             Trail.Unload();
 
-            if (!Main.dedServ)
-            {
-                // Main.logoTexture = ModContent.GetTexture("Terraria/Images/Logo");
-                // Main.logo2Texture = ModContent.GetTexture("Terraria/Images/Logo2");
-            }
-
 
             SandModeKey = null;
             AmuletKey = null;
             ToggleUI = null;
 
-        }
-
-        public override void PostSetupContent()
-        {
-            if (Main.gameMenu && Main.menuMode >= 0 && !Main.dedServ)
-            {
-                if (Main.LogoB <= 255)
-                {
-                    // Main.logoTexture = Instance.GetTexture("logo");
-                }
-
-                if (Main.LogoB < 10 || (!Main.dayTime && Main.LogoA <= 255))
-                {
-                    // Main.logo2Texture = Instance.GetTexture("logo");
-                }
-            }
         }
 
         public override void AddRecipes()
