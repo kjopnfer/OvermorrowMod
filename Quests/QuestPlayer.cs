@@ -148,49 +148,6 @@ namespace OvermorrowMod.Quests
                 }
             }
 
-            // So that we don't have to run the check every single tick for every single player,
-            // We use this to place any markers that have been despawned either from leaving the world or somehow killing them
-            //if (Main.dayTime && Main.time == 0)
-            /*{
-                foreach (Player player in Main.player)
-                {
-                    if (!player.active) continue;
-
-                    var modPlayer = player.GetModPlayer<QuestPlayer>();
-                    foreach (var quest in modPlayer.CurrentQuests)
-                    {
-                        if (quest.Type != QuestType.Travel) continue;
-
-                        foreach (IQuestRequirement requirement in quest.Requirements)
-                        {
-                            bool exists = false;
-
-                            // Check if the travel requirement isn't completed, if it isn't then:
-                            if (requirement is TravelRequirement travelRequirement && !travelRequirement.completed)
-                            {
-                                // Loop through the NPC array, check if the marker for the Quest exists
-                                foreach (NPC npc in Main.npc)
-                                {
-                                    if (npc.modNPC is QuestMarker marker && marker.LocationID == travelRequirement.ID)
-                                    {
-                                        exists = true;
-                                    }
-                                }
-                                
-                                // The marker doesn't exist, so spawn it in with the QuestName and the ID
-                                if (!exists)
-                                {
-                                    Vector2 SpawnLocation = travelRequirement.location;
-                                    int marker = NPC.NewNPC((int)SpawnLocation.X, (int)SpawnLocation.Y, ModContent.NPCType<QuestMarker>());
-                                    ((QuestMarker)Main.npc[marker].modNPC).QuestName = quest.QuestName;
-                                    ((QuestMarker)Main.npc[marker].modNPC).LocationID = travelRequirement.ID;
-                                }
-                            }
-                        }
-                    }
-                }
-            }*/
-
             base.PreUpdate();
         }
     }
