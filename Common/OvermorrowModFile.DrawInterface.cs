@@ -74,14 +74,15 @@ namespace OvermorrowMod.Common
                             for (int i = 0; i < 4; i++)
                             {
                                 Vector2 OffsetPositon = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * 3;
-                                Main.spriteBatch.Draw(QuestMarker, DrawCoordinates + OffsetPositon, null, Color.Red, 0, QuestMarker.Size() / 2, 1.07f, SpriteEffects.None, 1);
+                                //Main.spriteBatch.Draw(QuestMarker, DrawCoordinates + OffsetPositon, null, Color.Red, 0, QuestMarker.Size() / 2, 1.07f, SpriteEffects.None, 1);
                             }
 
-                            Main.spriteBatch.Draw(QuestMarker, DrawCoordinates, null, Color.White, 0, QuestMarker.Size() / 2, 1.05f, SpriteEffects.None, 1);
+                            Main.spriteBatch.Draw(QuestMarker, DrawCoordinates, null, Color.White, 0, QuestMarker.Size() / 2, 1.08f, SpriteEffects.None, 1);
 
                             if (Main.mouseLeft)
                             {
                                 Main.PlaySound(SoundID.Item20, Main.LocalPlayer.position);
+                                modPlayer.SelectedLocation = travelRequirement.ID;
                                 Main.mapFullscreen = false;
                                 Main.PlaySound(SoundID.Item20, travelRequirement.location * 16);
                             }
@@ -118,76 +119,91 @@ namespace OvermorrowMod.Common
 
                 foreach (IQuestRequirement requirement in quest.Requirements)
                 {
-                    if (requirement is TravelRequirement travelRequirement && !QuestWorld.PlayerTraveled.Contains(travelRequirement.ID))
+                    if (requirement is TravelRequirement travelRequirement && modPlayer.SelectedLocation == travelRequirement.ID
+                        && !QuestWorld.PlayerTraveled.Contains(travelRequirement.ID))
                     {
                         PlayerInput.SetZoom_World();
-                        var screenWidth = Main.screenWidth;
-                        var screenHeight = Main.screenHeight;
-                        var screenPosition = Main.screenPosition;
+                        var ScreenWidth = Main.screenWidth;
+                        var ScreenHeight = Main.screenHeight;
+                        var ScreenPosition = Main.screenPosition;
                         PlayerInput.SetZoom_UI();
-                        var uIScale = Main.UIScale;
+                        var UIScale = Main.UIScale;
 
-                        var pingLabelPos = Main.fontMouseText.MeasureString(travelRequirement.ID);
-                        var pingLabelPosYNegative = 0f;
+                        var LabelPosition = Main.fontMouseText.MeasureString(travelRequirement.ID);
+                        var LabelPositionYNegative = 0f;
                         if (Main.LocalPlayer.chatOverhead.timeLeft > 0)
                         {
-                            pingLabelPosYNegative = -pingLabelPos.Y;
+                            LabelPositionYNegative = -LabelPosition.Y;
                         }
-                        var screenCenter = new Vector2(screenWidth / 2 + screenPosition.X, screenHeight / 2 + screenPosition.Y);
-                        var pingPos = travelRequirement.location;
-                        pingPos += (pingPos - screenCenter) * (Main.GameViewMatrix.Zoom - Vector2.One);
+
+                        var ScreenCenter = new Vector2(ScreenWidth / 2 + ScreenPosition.X, ScreenHeight / 2 + ScreenPosition.Y);
+                        var TravelPosition = travelRequirement.location;
+                        TravelPosition += (TravelPosition - ScreenCenter) * (Main.GameViewMatrix.Zoom - Vector2.One);
+
                         var distance2 = 0f;
                         var color = Color.White;
-                        var distanceX = pingPos.X - screenCenter.X;
-                        var distanceY = pingPos.Y - pingLabelPos.Y - 2f + pingLabelPosYNegative - screenCenter.Y;
-                        var distance = (float)Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
-                        var screenHeight2 = screenHeight;
-                        if (screenHeight > screenWidth)
+                        var DistanceX = TravelPosition.X - ScreenCenter.X;
+                        var DistanceY = TravelPosition.Y - LabelPosition.Y - 2f + LabelPositionYNegative - ScreenCenter.Y;
+                        var distance = (float)Math.Sqrt(DistanceX * DistanceX + DistanceY * DistanceY);
+
+                        var ScreenHeight2 = ScreenHeight;
+                        if (ScreenHeight > ScreenWidth)
                         {
-                            screenHeight2 = screenWidth;
+                            ScreenHeight2 = ScreenWidth;
                         }
-                        screenHeight2 = screenHeight2 / 2 - 30;
-                        if (screenHeight2 < 100)
+
+                        ScreenHeight2 = ScreenHeight2 / 2 - 30;
+                        if (ScreenHeight2 < 100)
                         {
-                            screenHeight2 = 100;
+                            ScreenHeight2 = 100;
                         }
-                        if (distance < screenHeight2)
+
+                        if (distance < ScreenHeight2)
                         {
-                            pingLabelPos.X = pingPos.X - pingLabelPos.X / 2f - screenPosition.X;
-                            pingLabelPos.Y = pingPos.Y - pingLabelPos.Y - 2f + pingLabelPosYNegative - screenPosition.Y;
+                            LabelPosition.X = TravelPosition.X - LabelPosition.X / 2f - ScreenPosition.X;
+                            LabelPosition.Y = TravelPosition.Y - LabelPosition.Y - 2f + LabelPositionYNegative - ScreenPosition.Y;
                         }
                         else
                         {
                             distance2 = distance;
-                            distance = screenHeight2 / distance;
-                            pingLabelPos.X = screenWidth / 2 + distanceX * distance - pingLabelPos.X / 2f;
-                            pingLabelPos.Y = screenHeight / 2 + distanceY * distance;
-                        }
-                        if (Main.LocalPlayer.gravDir == -1f)
-                        {
-                            pingLabelPos.Y = screenHeight - pingLabelPos.Y;
-                        }
-                        pingLabelPos *= 1f / uIScale;
-                        var pingLabelPos2 = Main.fontMouseText.MeasureString(travelRequirement.ID);
-                        pingLabelPos += pingLabelPos2 * (1f - uIScale) / 4f;
-                        if (distance2 > 0f)
-                        {
-                            var distanceTextValue = Language.GetTextValue("GameUI.PlayerDistance", (int)(distance2 / 16f * 2f));
-                            var distanceTextPosition = Main.fontMouseText.MeasureString(distanceTextValue);
-                            distanceTextPosition.X = pingLabelPos.X + pingLabelPos2.X / 2f - distanceTextPosition.X / 2f;
-                            distanceTextPosition.Y = pingLabelPos.Y + pingLabelPos2.Y / 2f - distanceTextPosition.Y / 2f - 20f;
-                            Main.spriteBatch.DrawString(Main.fontMouseText, distanceTextValue, new Vector2(distanceTextPosition.X - 2f, distanceTextPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                            Main.spriteBatch.DrawString(Main.fontMouseText, distanceTextValue, new Vector2(distanceTextPosition.X + 2f, distanceTextPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                            Main.spriteBatch.DrawString(Main.fontMouseText, distanceTextValue, new Vector2(distanceTextPosition.X, distanceTextPosition.Y - 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                            Main.spriteBatch.DrawString(Main.fontMouseText, distanceTextValue, new Vector2(distanceTextPosition.X, distanceTextPosition.Y + 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                            Main.spriteBatch.DrawString(Main.fontMouseText, distanceTextValue, distanceTextPosition, color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                            distance = ScreenHeight2 / distance;
+                            LabelPosition.X = ScreenWidth / 2 + DistanceX * distance - LabelPosition.X / 2f;
+                            LabelPosition.Y = ScreenHeight / 2 + DistanceY * distance;
                         }
 
-                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, new Vector2(pingLabelPos.X - 2f, pingLabelPos.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, new Vector2(pingLabelPos.X + 2f, pingLabelPos.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, new Vector2(pingLabelPos.X, pingLabelPos.Y - 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, new Vector2(pingLabelPos.X, pingLabelPos.Y + 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, pingLabelPos, color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        if (Main.LocalPlayer.gravDir == -1f)
+                        {
+                            LabelPosition.Y = ScreenHeight - LabelPosition.Y;
+                        }
+
+                        LabelPosition *= 1f / UIScale;
+                        var LabelPosition2 = Main.fontMouseText.MeasureString(travelRequirement.ID);
+                        LabelPosition += LabelPosition2 * (1f - UIScale) / 4f;
+                        if (distance2 > 0f)
+                        {
+                            var DistanceText = Language.GetTextValue("GameUI.PlayerDistance", (int)(distance2 / 16f * 2f));
+                            var DistanceTextPosition = Main.fontMouseText.MeasureString(DistanceText);
+                            DistanceTextPosition.X = LabelPosition.X + LabelPosition2.X / 2f - DistanceTextPosition.X / 2f;
+                            DistanceTextPosition.Y = LabelPosition.Y + LabelPosition2.Y / 2f - DistanceTextPosition.Y / 2f - 20f;
+
+                            // Draws the black outline around the distance value from the marker
+                            Main.spriteBatch.DrawString(Main.fontMouseText, DistanceText, new Vector2(DistanceTextPosition.X - 2f, DistanceTextPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                            Main.spriteBatch.DrawString(Main.fontMouseText, DistanceText, new Vector2(DistanceTextPosition.X + 2f, DistanceTextPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                            Main.spriteBatch.DrawString(Main.fontMouseText, DistanceText, new Vector2(DistanceTextPosition.X, DistanceTextPosition.Y - 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                            Main.spriteBatch.DrawString(Main.fontMouseText, DistanceText, new Vector2(DistanceTextPosition.X, DistanceTextPosition.Y + 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+
+                            // Draw the actual distance value from the marker
+                            Main.spriteBatch.DrawString(Main.fontMouseText, DistanceText, DistanceTextPosition, color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        }
+
+                        // Draw the black outline around the text for the location
+                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, new Vector2(LabelPosition.X - 2f, LabelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, new Vector2(LabelPosition.X + 2f, LabelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, new Vector2(LabelPosition.X, LabelPosition.Y - 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, new Vector2(LabelPosition.X, LabelPosition.Y + 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+
+                        // Draw the actual text for the location
+                        Main.spriteBatch.DrawString(Main.fontMouseText, travelRequirement.ID, LabelPosition, color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                     }
                 }
             }
@@ -198,7 +214,7 @@ namespace OvermorrowMod.Common
             if (Main.mapFullscreen || Main.mapStyle != 1) return;
 
             QuestMarker = ModContent.GetTexture(AssetDirectory.Textures + "QuestMarker");
-            
+
             var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
 
             foreach (var quest in modPlayer.CurrentQuests)
@@ -215,7 +231,7 @@ namespace OvermorrowMod.Common
                         var num14 = Main.miniMapWidth / Main.mapMinimapScale;
                         var num15 = Main.miniMapHeight / Main.mapMinimapScale;
                         var num12 = (int)num145 - num14 / 2f;
-                        var num60 = ((travelRequirement.location.X / 16f)  - num12) * Main.mapMinimapScale;
+                        var num60 = ((travelRequirement.location.X / 16f) - num12) * Main.mapMinimapScale;
                         var num13 = (int)num28 - num15 / 2f;
                         var num61 = ((travelRequirement.location.Y / 16f) - num13) * Main.mapMinimapScale;
                         var num3 = (float)Main.miniMapX;

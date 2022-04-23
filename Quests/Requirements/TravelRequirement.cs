@@ -38,6 +38,11 @@ namespace OvermorrowMod.Quests.Requirements
             {
                 QuestWorld.PlayerTraveled.Remove(ID);
             }
+
+            if (player.GetModPlayer<QuestPlayer>().SelectedLocation == ID)
+            {
+                player.GetModPlayer<QuestPlayer>().SelectedLocation = null;
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ namespace OvermorrowMod.Quests
     public class QuestPlayer : ModPlayer
     {
         public string PlayerUUID { get; private set; } = null;
+        public string SelectedLocation = null;
 
         private readonly List<BaseQuest> activeQuests = new List<BaseQuest>();
         public HashSet<string> CompletedQuests { get; } = new HashSet<string>();
