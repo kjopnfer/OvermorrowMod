@@ -18,6 +18,8 @@ using Terraria.Graphics.Effects;
 using OvermorrowMod.Content.WorldGeneration;
 using System.IO;
 using OvermorrowMod.Common.Netcode;
+using OvermorrowMod.Quests;
+using OvermorrowMod.Quests.Requirements;
 
 namespace OvermorrowMod.Common
 {
@@ -48,6 +50,78 @@ namespace OvermorrowMod.Common
         public Effect Whiteout;
 
         public static List<Texture2D> TrailTextures;
+
+        Texture2D QuestMarker;
+        public override void PostDrawFullscreenMap(ref string mouseText)
+        {
+            if (QuestMarker == null || QuestMarker.IsDisposed)
+            {
+                QuestMarker = ModContent.GetTexture(AssetDirectory.Textures + "QuestMarker");
+            }
+
+            var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+            foreach (var quest in modPlayer.CurrentQuests)
+            {
+                if (quest.Type != QuestType.Travel) continue;
+
+                foreach (IQuestRequirement requirement in quest.Requirements)
+                {
+                    // Check if the travel requirement isn't completed, if it isn't then:
+                    if (requirement is TravelRequirement travelRequirement && !QuestWorld.PlayerTraveled.Contains(travelRequirement.ID))
+                    {
+                        Vector2 MousePosition = new Vector2(Main.mouseX, Main.mouseY);
+                        Vector2 ScreenPosition = new Vector2(Main.screenWidth / 2, Main.screenHeight / 2);
+
+                        MousePosition -= ScreenPosition;
+                        MousePosition *= Main.UIScale;
+                        MousePosition += ScreenPosition;
+
+                        Vector2 MapPosition = Main.mapFullscreenPos * Main.mapFullscreenScale;
+                        Vector2 ScreenOrigin = ScreenPosition - MapPosition;
+
+                        ScreenOrigin += new Vector2(Main.mapFullscreenScale, Main.mapFullscreenScale) * 10;
+
+                        Vector2 MouseTile = (MousePosition - ScreenOrigin) / Main.mapFullscreenScale;
+                        MouseTile += Vector2.One * 10;
+
+                        float MapScale = Main.mapFullscreenScale / Main.UIScale;
+                        Vector2 MapCoordinates = Main.mapFullscreenPos * -MapScale;
+                        MapCoordinates += ScreenPosition;
+
+                        // Convert the world coordinates into map coordinates
+                        Vector2 DrawCoordinates = travelRequirement.location / 16;
+                        DrawCoordinates *= MapScale;
+                        DrawCoordinates += MapCoordinates;
+
+                        // Check the player's cursor
+                        float HoverRange = 32 / Main.mapFullscreenScale;
+                        if ((MouseTile - (travelRequirement.location / 16)).Length() <= HoverRange)
+                        {
+                            for (int i = 0; i < 4; i++)
+                            {
+                                Vector2 OffsetPositon = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * 3;
+                                Main.spriteBatch.Draw(QuestMarker, DrawCoordinates + OffsetPositon, null, Color.Red, 0, QuestMarker.Size() / 2, 1.07f, SpriteEffects.None, 1);
+                            }
+
+                            Main.spriteBatch.Draw(QuestMarker, DrawCoordinates, null, Color.White, 0, QuestMarker.Size() / 2, 1.05f, SpriteEffects.None, 1);
+                            
+                            if (Main.mouseLeft)
+                            {
+                                Main.PlaySound(SoundID.Item20, Main.LocalPlayer.position);
+                                Main.mapFullscreen = false;
+                                Main.PlaySound(SoundID.Item20, travelRequirement.location * 16);
+                            }
+                        }
+                        else
+                        {
+                            Main.spriteBatch.Draw(QuestMarker, DrawCoordinates, null, Color.White, 0, QuestMarker.Size() / 2, 1f, SpriteEffects.None, 1);
+                        }
+                    }
+                }
+            }
+
+            base.PostDrawFullscreenMap(ref mouseText);
+        }
 
         public override void UpdateMusic(ref int music, ref MusicPriority priority)
         {
@@ -86,7 +160,7 @@ namespace OvermorrowMod.Common
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
                 Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
-                
+
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
@@ -151,7 +225,7 @@ namespace OvermorrowMod.Common
                 Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
                 Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
             }
-            
+
 
             Altar = null;
             SandModeKey = null;

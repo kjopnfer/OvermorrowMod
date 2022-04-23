@@ -59,23 +59,9 @@ namespace OvermorrowMod.Quests
         {
             if (availableQuest != null)
             {
-                // If the Quest type is a Travel quest, spawn the travel marker for the player
-                if (availableQuest.Type == QuestType.Travel)
-                {
-                    foreach (IQuestRequirement requirement in availableQuest.Requirements)
-                    {
-                        if (requirement is TravelRequirement travelRequirement)
-                        {
-                            Vector2 SpawnLocation = travelRequirement.location;
-                            NPC.NewNPC((int)SpawnLocation.X, (int)SpawnLocation.Y, ModContent.NPCType<QuestMarker>());
-                        }
-                    }
-                }
+                // Set the delay between Quests based on the Quest
+                questCheckTick = availableQuest.QuestDelay;
             }
-
-            // Set the delay between Quests based on the Quest
-            questCheckTick = availableQuest.QuestDelay;
-
 
             availableQuest = null;
         }

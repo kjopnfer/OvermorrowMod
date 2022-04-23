@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -19,7 +20,7 @@ namespace OvermorrowMod.Quests.ModQuests
         {
             Requirements = new[]
             {
-                new TravelRequirement(new Vector2(Main.spawnTileX, Main.spawnTileY) * 16)
+                new TravelRequirement(new Vector2(Main.spawnTileX, Main.spawnTileY) * 16, "Main Spawn")
             };
             Rewards = new[]
             {
