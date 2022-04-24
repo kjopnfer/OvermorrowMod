@@ -135,13 +135,13 @@ namespace OvermorrowMod.Quests
                     {
                         if (MarkerCounter++ % 30 == 0)
                         {
-                            Particle.CreateParticle(Particle.ParticleType<Pulse2>(), travelRequirement.location, Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
+                            Particle.CreateParticle(Particle.ParticleType<Pulse2>(), travelRequirement.Location * 16f, Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
                         }
 
-                        if (Player.active && Player.Distance(travelRequirement.location) < 50)
+                        if (Player.active && Player.Distance(travelRequirement.Location * 16) < 50)
                         {
                             QuestSystem.PlayerTraveled.Add(travelRequirement.ID);
-                        }      
+                        }
                     }
                 }
             }

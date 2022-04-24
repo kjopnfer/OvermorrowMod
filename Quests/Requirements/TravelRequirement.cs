@@ -6,14 +6,20 @@ namespace OvermorrowMod.Quests.Requirements
 {
     public class TravelRequirement : IQuestRequirement
     {
-        public Vector2 location;
-        public string ID;
+        private Vector2? location = null;
+        public Vector2 Location { get
+            {
+                if (location == null) location = locationGenerator();
+                return location.Value;
+            } }
+        private readonly Func<Vector2> locationGenerator;
+        public string ID { get; }
 
         public bool completed = false;
 
-        public TravelRequirement(Vector2 location, string ID)
+        public TravelRequirement(Func<Vector2> locationGenerator, string ID)
         {
-            this.location = location;
+            this.locationGenerator = locationGenerator;
             this.ID = ID;
         }
 
@@ -43,6 +49,7 @@ namespace OvermorrowMod.Quests.Requirements
             {
                 player.GetModPlayer<QuestPlayer>().SelectedLocation = null;
             }
+            location = null;
         }
     }
 }
