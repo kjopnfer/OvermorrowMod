@@ -254,6 +254,15 @@ namespace OvermorrowMod.Core
             return false;
         }
 
+        public static void Kill(this NPC npc)
+        {
+            npc.life = 0;
+            npc.NPCLoot();
+            npc.active = false;
+
+            npc.netUpdate = true;
+        }
+
         public static float isLeft(Vector2 P0, Vector2 P1, Vector2 P2)
         {
             return ((P1.X - P0.X) * (P2.X - P0.X) - (P2.X - P0.X) * (P1.X - P0.X));

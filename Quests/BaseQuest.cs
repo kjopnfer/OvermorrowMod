@@ -17,7 +17,8 @@ namespace OvermorrowMod.Quests
     {
         Fetch,
         Housing,
-        Kill
+        Kill,
+        Travel
     }
 
     public abstract class BaseQuest
@@ -77,7 +78,7 @@ namespace OvermorrowMod.Quests
         /// Resets the kill count of the NPC within the Dictionary after completion
         /// </summary>
         /// <param name="player"></param>
-        private void ResetKillCount(Player player)
+        private void ResetEffects(Player player)
         {
             foreach (IQuestRequirement requirement in Requirements)
             {
@@ -95,10 +96,7 @@ namespace OvermorrowMod.Quests
 
             if (success)
             {
-                if (Type == QuestType.Kill)
-                {
-                    ResetKillCount(player);
-                }
+                ResetEffects(player);
 
                 GiveRewards(player);
                 Main.NewText("COMPLETED QUEST: " + QuestName, Color.Yellow);

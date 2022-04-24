@@ -17,10 +17,8 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common
 {
-    public class OvermorrowModFile : Mod
+    public partial class OvermorrowModFile : Mod
     {
-        // UI
-
         // Hotkeys
         public static ModKeybind SandModeKey;
         public static ModKeybind ToggleUI;
@@ -28,7 +26,6 @@ namespace OvermorrowMod.Common
 
         public static OvermorrowModFile Instance { get; set; }
         public OvermorrowModFile() => Instance = this;
-
 
         public Asset<Effect> BeamShader;
         public Asset<Effect> Ring;
@@ -119,7 +116,6 @@ namespace OvermorrowMod.Common
             Particle.Unload();
             Trail.Unload();
 
-
             SandModeKey = null;
             AmuletKey = null;
             ToggleUI = null;
@@ -184,7 +180,6 @@ namespace OvermorrowMod.Common
                 .AddTile(TileID.Anvils)
                 .Register();
         }
-
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {

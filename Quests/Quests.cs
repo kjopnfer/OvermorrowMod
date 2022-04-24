@@ -241,6 +241,7 @@ namespace OvermorrowMod.Quests
         public static void Unload()
         {
             QuestList.Clear();
+            QuestTypes.Clear();
         }
 
         // utils

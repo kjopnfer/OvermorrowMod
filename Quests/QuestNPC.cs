@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Quests.Requirements;
 using System;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace OvermorrowMod.Quests
             if (Main.netMode == NetmodeID.Server) throw new ArgumentException("GetCurrentQuest invoked on the server is invalid");
             isDoing = true;
             var currentModPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-            var pursuedQuest = currentModPlayer.QuestByNpc(npc.type);
+            var pursuedQuest = currentModPlayer.QuestByNPC(npc.type);
             if (pursuedQuest != null) return pursuedQuest;
             isDoing = false;
             return GetCurrentAvailableQuest(npc);
@@ -87,13 +88,7 @@ namespace OvermorrowMod.Quests
                     }
 
                     switch (quest.Type)
-                    {
-                        case QuestType.Fetch:
-                            if (frame >= 6 || frame <= 4)
-                            {
-                                frame = 4;
-                            }
-                            break;
+                    {                       
                         case QuestType.Housing:
                             if (frame >= 2)
                             {
@@ -101,9 +96,16 @@ namespace OvermorrowMod.Quests
                             }
                             break;
                         case QuestType.Kill:
+                        case QuestType.Travel:
                             if (frame >= 4 || frame <= 2)
                             {
                                 frame = 2;
+                            }
+                            break;
+                        case QuestType.Fetch:
+                            if (frame >= 6 || frame <= 4)
+                            {
+                                frame = 4;
                             }
                             break;
                     }
@@ -130,7 +132,6 @@ namespace OvermorrowMod.Quests
 
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
-
 
         public override void OnKill(NPC npc)
         {
@@ -168,7 +169,7 @@ namespace OvermorrowMod.Quests
                                             // Add the entry into the Dictionary if this is the first time they are killed
                                             KilledList.Add(npc.type, 1);
                                         }
-                                    }                                 
+                                    }
                                 }
                             }
 
@@ -190,7 +191,7 @@ namespace OvermorrowMod.Quests
                                         // Add the entry into the Dictionary if this is the first time they are killed
                                         KilledList.Add(npc.type, 1);
                                     }
-                                }        
+                                }
                             }
                         }
                     }
