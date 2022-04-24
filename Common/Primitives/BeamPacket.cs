@@ -11,7 +11,7 @@ namespace OvermorrowMod.Effects.Prim
     {
         public List<VertexPositionColorTexture> Vertices = new List<VertexPositionColorTexture>();
         public PrimitiveType Type = PrimitiveType.TriangleList;
-        public Effect Effect = OvermorrowModFile.Instance.BeamShader;
+        public Effect Effect = OvermorrowModFile.Instance.BeamShader.Value;
         public string Pass = "Basic";
         public int Count
         {

@@ -99,7 +99,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-            Effect effect = OvermorrowModFile.Instance.Whiteout;
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
             float progress = Utils.Clamp(Projectile.localAI[0]++, 0, 15f) / 15f;
             effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
             effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
@@ -236,7 +236,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             {
                 Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-                Effect effect = OvermorrowModFile.Instance.Whiteout;
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
 
                 float progress = Utils.Clamp(Projectile.localAI[0], 0, Delay) / Delay;
                 effect.Parameters["WhiteoutColor"].SetValue(new Color(244, 188, 91).ToVector3());
@@ -389,7 +389,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-            Effect effect = OvermorrowModFile.Instance.Whiteout;
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
             float progress = Utils.Clamp(Projectile.localAI[0]++, 0, 15f) / 15f;
             effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
             effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);

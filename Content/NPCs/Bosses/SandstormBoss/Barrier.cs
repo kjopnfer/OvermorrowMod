@@ -145,7 +145,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             {
                 spriteBatch.Reload(SpriteSortMode.Immediate);
 
-                Effect effect = OvermorrowModFile.Instance.Whiteout;
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 if (!Main.gamePaused) NPC.localAI[0]++;
 
                 float progress = Utils.Clamp(NPC.localAI[0], 0, 15f) / 15f;
@@ -197,7 +197,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         private void DrawRing(string texture, SpriteBatch spriteBatch, Vector2 position, float width, float height, float rotation, float prog, Color color)
         {
             var texRing = ModContent.Request<Texture2D>(texture).Value;
-            Effect effect = OvermorrowModFile.Instance.Ring;
+            Effect effect = OvermorrowModFile.Instance.Ring.Value;
 
             effect.Parameters["uProgress"].SetValue(rotation);
             effect.Parameters["uColor"].SetValue(color.ToVector3());

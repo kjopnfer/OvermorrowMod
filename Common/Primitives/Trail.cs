@@ -159,7 +159,7 @@ namespace OvermorrowMod.Common.Primitives
         {
             Positions = new TrailPositionBuffer(length);
             Texture = texture;
-            Effect = effect ?? OvermorrowModFile.Instance.TrailShader;
+            Effect = effect ?? OvermorrowModFile.Instance.TrailShader.Value;
         }
 
         public void AddVertex(Vector2 pos, Color color, Vector2 texCoord)

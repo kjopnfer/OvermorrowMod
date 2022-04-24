@@ -22,7 +22,7 @@ namespace OvermorrowMod.Common.DrawLayers
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
 
             Vector2 scale = new Vector2(6f, 3f);
-            DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Misc/Perlin").Value,
+            DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value,
                 drawPlayer.Center - Main.screenPosition + drawPlayer.Size * scale * 0.5f,
                 new Rectangle(0, 0, drawPlayer.width, drawPlayer.height),
                 Color.LightGreen,

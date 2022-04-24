@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Core;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,15 +30,15 @@ namespace OvermorrowMod.Common
         public OvermorrowModFile() => Instance = this;
 
 
-        public Effect BeamShader;
-        public Effect Ring;
-        public Effect Shockwave;
-        public Effect Shockwave2;
-        public Effect TrailShader;
-        public Effect TextShader;
-        public Effect Whiteout;
+        public Asset<Effect> BeamShader;
+        public Asset<Effect> Ring;
+        public Asset<Effect> Shockwave;
+        public Asset<Effect> Shockwave2;
+        public Asset<Effect> TrailShader;
+        public Asset<Effect> TextShader;
+        public Asset<Effect> Whiteout;
 
-        public static List<Texture2D> TrailTextures;
+        public static List<Asset<Texture2D>> TrailTextures;
 
         public override void Load()
         {
@@ -55,26 +56,26 @@ namespace OvermorrowMod.Common
                 // Main.logo2Texture = Instance.GetTexture("logo");
 
                 // Effects
-                BeamShader = ModContent.Request<Effect>("OvermorrowMod/Effects/Beam").Value;
-                Ring = ModContent.Request<Effect>("OvermorrowMod/Effects/Ring").Value;
-                Shockwave = ModContent.Request<Effect>("OvermorrowMod/Effects/Shockwave1").Value;
-                Shockwave2 = ModContent.Request<Effect>("OvermorrowMod/Effects/ShockwaveEffect").Value;
-                TextShader = ModContent.Request<Effect>("OvermorrowMod/Effects/TextShader").Value;
-                TrailShader = ModContent.Request<Effect>("OvermorrowMod/Effects/Trail").Value;
-                Whiteout = ModContent.Request<Effect>("OvermorrowMod/Effects/Whiteout").Value;
+                BeamShader = Assets.Request<Effect>("Effects/Beam");
+                Ring = Assets.Request<Effect>("Effects/Ring");
+                Shockwave = Assets.Request<Effect>("Effects/Shockwave1");
+                Shockwave2 = Assets.Request<Effect>("Effects/ShockwaveEffect");
+                TextShader = Assets.Request<Effect>("Effects/TextShader");
+                TrailShader = Assets.Request<Effect>("Effects/Trail");
+                Whiteout = Assets.Request<Effect>("Effects/Whiteout");
 
-                Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
-                Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
+                Ref<Effect> ref1 = new Ref<Effect>(Shockwave.Value);
+                Ref<Effect> ref2 = new Ref<Effect>(Shockwave2.Value);
 
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
 
 
-                TrailTextures = new List<Texture2D>();
+                TrailTextures = new List<Asset<Texture2D>>();
                 for (int i = 0; i < 7; i++)
                 {
-                    TrailTextures.Add(ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail" + i).Value);
+                    TrailTextures.Add(ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail" + i));
                 }
 
                 Terraria.GameContent.TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ChainKnife");

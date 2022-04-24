@@ -334,7 +334,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
 
             Vector2 scale = new Vector2(1.5f, 1f);
-            DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Misc/Perlin").Value,
+            DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value,
                 Projectile.Center - Main.screenPosition + Projectile.Size * scale * 0.5f,
                 new Rectangle(0, 0, Projectile.width, Projectile.height),
                 Color.LightGreen,

@@ -350,7 +350,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     color = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(NPC.localAI[0]++ / 15f));
                 }
 
-                DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Misc/Perlin").Value,
+                DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value,
                     NPC.Center - screenPos + NPC.Size * scale * 0.5f,
                     new Rectangle(0, 0, NPC.width, NPC.height),
                     Color.Yellow,
@@ -525,7 +525,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     color = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(NPC.localAI[0]++ / 15f));
                 }
 
-                DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Misc/Perlin").Value,
+                DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value,
                     NPC.Center - screenPos + NPC.Size * scale * 0.5f,
                     new Rectangle(0, 0, NPC.width, NPC.height),
                     Color.Yellow,
@@ -812,7 +812,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     color = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(NPC.localAI[0]++ / 15f));
                 }
 
-                DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Misc/Perlin").Value,
+                DrawData drawData = new DrawData(ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value,
                     NPC.Center - screenPos + NPC.Size * scale * 0.5f,
                     new Rectangle(0, 0, NPC.width, NPC.height),
                     Color.Yellow,

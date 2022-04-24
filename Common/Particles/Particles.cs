@@ -530,7 +530,7 @@ namespace OvermorrowMod.Common.Particles
         private void DrawRing(SpriteBatch spriteBatch, Vector2 position, float width, float height, float rotation, float prog, Color color)
         {
             var texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
-            Effect effect = OvermorrowModFile.Instance.Ring;
+            Effect effect = OvermorrowModFile.Instance.Ring.Value;
 
             effect.Parameters["uProgress"].SetValue(rotation);
             effect.Parameters["uColor"].SetValue(color.ToVector3());
