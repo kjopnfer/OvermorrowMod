@@ -21,9 +21,9 @@ namespace OvermorrowMod.Quests.Requirements
 
         public void ResetState(Player player)
         {
-            foreach (KillRequirement killRequirement in clauses)
+            foreach (IQuestRequirement requirement in clauses)
             {
-                killRequirement.ResetState(player);
+                requirement.ResetState(player);
             }
         }
     }
