@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override void SetDefaults()
         {
             item.damage = 38;
-            item.melee = true; //Im on meth
+            item.DamageType = DamageClass.Melee; //Im on meth
             item.width = 44;
             item.height = 44;
             item.useTime = 10;

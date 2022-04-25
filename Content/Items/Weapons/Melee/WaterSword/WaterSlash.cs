@@ -14,33 +14,33 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.WaterSword
 
         public override void SetDefaults()
         {
-            projectile.width = 22;
-            projectile.height = 22;
-            projectile.penetrate = 2;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.tileCollide = true;
-            projectile.timeLeft = 60;
-            projectile.melee = true;
+            Projectile.width = 22;
+            Projectile.height = 22;
+            Projectile.penetrate = 2;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.tileCollide = true;
+            Projectile.timeLeft = 60;
+            Projectile.DamageType = DamageClass.Melee;
 
-            drawOriginOffsetX = -5;
-            drawOriginOffsetY = -20;
+            DrawOriginOffsetX = -5;
+            DrawOriginOffsetY = -20;
         }
 
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation();
+            Projectile.rotation = Projectile.velocity.ToRotation();
 
-            // Make projectiles gradually disappear
-            if (projectile.timeLeft <= 20)
+            // Make Projectiles gradually disappear
+            if (Projectile.timeLeft <= 20)
             {
-                projectile.alpha += 10;
+                Projectile.alpha += 10;
             }
         }
 
         public override void Kill(int timeLeft)
         {
-            Vector2 origin = projectile.Center;
+            Vector2 origin = Projectile.Center;
             float radius = 15;
             int numLocations = 30;
             for (int i = 0; i < 30; i++)
@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.WaterSword
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Vector2 origin = projectile.Center;
+            Vector2 origin = Projectile.Center;
             float radius = 15;
             int numLocations = 30;
             for (int i = 0; i < 30; i++)

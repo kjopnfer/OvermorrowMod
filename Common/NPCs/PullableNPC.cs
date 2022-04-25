@@ -11,7 +11,7 @@ namespace OvermorrowMod.Common.NPCs
         public bool Grappled = false;
         protected bool CanBeGrappled = true;
         protected Projectile GrappleProjectile = null;
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.Meteor3;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.Meteor3;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {
@@ -20,12 +20,12 @@ namespace OvermorrowMod.Common.NPCs
 
         public override void SetDefaults()
         {
-            npc.aiStyle = -1;
-            npc.noGravity = true;
-            npc.knockBackResist = 0f;
-            npc.dontTakeDamageFromHostiles = true;
-            npc.friendly = false;
-            npc.chaseable = false;
+            NPC.aiStyle = -1;
+            NPC.noGravity = true;
+            NPC.knockBackResist = 0f;
+            NPC.dontTakeDamageFromHostiles = true;
+            NPC.friendly = false;
+            NPC.chaseable = false;
         }
 
         public override void AI()
@@ -41,7 +41,7 @@ namespace OvermorrowMod.Common.NPCs
 
             if (Grappled)
             {
-                npc.Center = GrappleProjectile.Center;
+                NPC.Center = GrappleProjectile.Center;
             }
 
             if (CanBeGrappled)
@@ -49,7 +49,7 @@ namespace OvermorrowMod.Common.NPCs
                 for (int i = 0; i < Main.maxProjectiles; i++)
                 {
                     Projectile projectile = Main.projectile[i];
-                    if (projectile.active && projectile.aiStyle == 7 && npc.Hitbox.Intersects(projectile.Hitbox))
+                    if (projectile.active && projectile.aiStyle == 7 && NPC.Hitbox.Intersects(projectile.Hitbox))
                     {
                         if (!Grappled && !projectile.GetGlobalProjectile<OvermorrowGlobalProjectile>().RetractSlow)
                         {

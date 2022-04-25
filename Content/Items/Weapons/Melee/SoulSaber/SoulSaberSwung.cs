@@ -1,11 +1,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.Buffs.Debuffs;
-using OvermorrowMod.Core;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
+using OvermorrowMod.Content.Buffs.Debuffs;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,52 +25,52 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
         public override string Texture => AssetDirectory.Melee + "SoulSaber/SoulSaber";
         public override void SetDefaults()
         {
-            projectile.timeLeft = 360;
-            projectile.width = 70;
-            projectile.height = 70;
-            projectile.melee = true;
-            projectile.tileCollide = false;
-            projectile.ignoreWater = true;
-            projectile.friendly = true;
-            projectile.penetrate = -1;
+            Projectile.timeLeft = 360;
+            Projectile.width = 70;
+            Projectile.height = 70;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
+            Projectile.friendly = true;
+            Projectile.penetrate = -1;
         }
 
         public override void AI()
         {
-            Player player = Main.player[projectile.owner];
-            if (projectile.ai[0]++ == 0 && projectile.ai[1] != -1)
+            Player player = Main.player[Projectile.owner];
+            if (Projectile.ai[0]++ == 0 && Projectile.ai[1] != -1)
             {
-                Projectile.NewProjectile(player.Center, Vector2.Zero, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, 0, -1f);
+                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), player.Center, Vector2.Zero, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, -1f);
             }
 
             if (player.channel)
             {
-                if (Main.mouseRight && projectile.ai[1] == 1)
+                if (Main.mouseRight && Projectile.ai[1] == 1)
                 {
-                    if (projectile.localAI[0]++ == 240)
+                    if (Projectile.localAI[0]++ == 240)
                     {
-                        Main.PlaySound(SoundID.DD2_BetsyFlameBreath, player.Center);
-                        Projectile.NewProjectile(player.Center, Vector2.Normalize(player.DirectionTo(Main.MouseWorld)) * 4, ModContent.ProjectileType<SoulFlameRing>(), projectile.damage, projectile.knockBack, projectile.owner, 0, -1f);
-                        projectile.localAI[0] = 0;
+                        SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath, player.Center);
+                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), player.Center, Vector2.Normalize(player.DirectionTo(Main.MouseWorld)) * 4, ModContent.ProjectileType<SoulFlameRing>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, -1f);
+                        Projectile.localAI[0] = 0;
                     }
 
                     Dust dust = Main.dust[Terraria.Dust.NewDust(player.Center - new Vector2(92, 76), 184, 152, DustID.Frost, 0f, -10f, 0, new Color(255, 255, 255), 0.5f)];
                     dust.noGravity = true;
                 }
 
-                Vector2 ProjectileRotation = (Vector2.UnitY * 80).RotatedBy(MathHelper.ToRadians(projectile.ai[0] += 15 * player.direction)) * projectile.ai[1];
-                projectile.Center = player.MountedCenter + ProjectileRotation;
-                projectile.rotation = projectile.DirectionTo(player.MountedCenter).ToRotation() + MathHelper.PiOver4 + MathHelper.Pi;
+                Vector2 ProjectileRotation = (Vector2.UnitY * 80).RotatedBy(MathHelper.ToRadians(Projectile.ai[0] += 15 * player.direction)) * Projectile.ai[1];
+                Projectile.Center = player.MountedCenter + ProjectileRotation;
+                Projectile.rotation = Projectile.DirectionTo(player.MountedCenter).ToRotation() + MathHelper.PiOver4 + MathHelper.Pi;
 
                 //player.itemTime = 5;
                 //player.itemAnimation = 5;
                 player.direction = player.direction == 1 ? 1 : -1;
 
-                projectile.timeLeft = 5;
+                Projectile.timeLeft = 5;
             }
             else
             {
-                projectile.Kill();
+                Projectile.Kill();
             }
         }
 
@@ -79,29 +80,29 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
             target.AddBuff(ModContent.BuffType<SoulFlame>(), 60 * 10);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
-            var player = Main.player[projectile.owner];
+            var player = Main.player[Projectile.owner];
 
             Vector2 mountedCenter = player.Center;
-            Texture2D chainTexture = ModContent.GetTexture(AssetDirectory.Chains + "Bones");
+            Texture2D chainTexture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
 
-            var drawPosition = projectile.Center;
+            var drawPosition = Projectile.Center;
             var remainingVectorToPlayer = mountedCenter - drawPosition;
 
             float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
 
-            if (projectile.alpha == 0)
+            if (Projectile.alpha == 0)
             {
                 int direction = -1;
 
-                if (projectile.Center.X < mountedCenter.X)
+                if (Projectile.Center.X < mountedCenter.X)
                     direction = 1;
 
                 player.itemRotation = (float)Math.Atan2(remainingVectorToPlayer.Y * direction, remainingVectorToPlayer.X * direction);
             }
 
-            // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
+            // This while loop draws the chain texture from the Projectile to the player, looping to draw the chain texture along the path
             while (true)
             {
                 float length = remainingVectorToPlayer.Length();
@@ -116,7 +117,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
 
                 // Finally, we draw the texture at the coordinates using the lighting information of the tile coordinates of the chain section
                 Color color = Lighting.GetColor((int)drawPosition.X / 16, (int)(drawPosition.Y / 16f));
-                spriteBatch.Draw(chainTexture, drawPosition - Main.screenPosition, null, color, rotation, chainTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
+                Main.EntitySpriteDraw(chainTexture, drawPosition - Main.screenPosition, null, color, rotation, chainTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0);
             }
 
             return true;

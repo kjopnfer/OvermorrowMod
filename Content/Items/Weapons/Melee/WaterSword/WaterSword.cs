@@ -15,29 +15,28 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.WaterSword
 
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Green;
-            item.UseSound = SoundID.Item1;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.damage = 20;
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.width = 56;
-            item.height = 54;
-            item.shoot = ModContent.ProjectileType<WaterSlash>();
-            item.shootSpeed = 8f;
-            item.knockBack = 2f;
-            item.melee = true;
-            item.autoReuse = true;
-            item.value = Item.sellPrice(gold: 1);
+            Item.rare = ItemRarityID.Green;
+            Item.UseSound = SoundID.Item1;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.damage = 20;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.width = 56;
+            Item.height = 54;
+            Item.shoot = ModContent.ProjectileType<WaterSlash>();
+            Item.shootSpeed = 8f;
+            Item.knockBack = 2f;
+            Item.DamageType = DamageClass.Melee;
+            Item.autoReuse = true;
+            Item.value = Item.sellPrice(gold: 1);
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<WaterBar>(), 9);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient<WaterBar>(9)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -28,36 +29,36 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SkullGun
 
         public override void SetDefaults()
         {
-            projectile.width = 2;
-            projectile.height = 20;
-            projectile.friendly = true;
-            projectile.ranged = true;
-            projectile.penetrate = 1;
-            projectile.timeLeft = 100;
-            projectile.alpha = 255;
-            projectile.extraUpdates = 1;
+            Projectile.width = 2;
+            Projectile.height = 20;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.penetrate = 1;
+            Projectile.timeLeft = 100;
+            Projectile.alpha = 255;
+            Projectile.extraUpdates = 1;
         }
 
         public override void AI()
         {
-            projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
-            if (projectile.localAI[0] == 0f)
+            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 1.57f;
+            if (Projectile.localAI[0] == 0f)
             {
-                AdjustMagnitude(ref projectile.velocity);
-                projectile.localAI[0] = 1f;
+                AdjustMagnitude(ref Projectile.velocity);
+                Projectile.localAI[0] = 1f;
             }
 
             Vector2 move = Vector2.Zero;
             float distance = 320f;
             bool target = false;
 
-            if (projectile.ai[0] > 20)
+            if (Projectile.ai[0] > 20)
             {
                 for (int k = 0; k < 200; k++)
                 {
                     if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
                     {
-                        Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                        Vector2 newMove = Main.npc[k].Center - Projectile.Center;
                         float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
                         if (distanceTo < distance)
                         {
@@ -72,11 +73,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SkullGun
             if (target)
             {
                 AdjustMagnitude(ref move);
-                projectile.velocity = (10 * projectile.velocity + move) / 11f;
-                AdjustMagnitude(ref projectile.velocity);
+                Projectile.velocity = (10 * Projectile.velocity + move) / 11f;
+                AdjustMagnitude(ref Projectile.velocity);
             }
 
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
         }
         private void AdjustMagnitude(ref Vector2 vector)
         {
@@ -87,28 +88,28 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SkullGun
             }
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override void PostDraw(Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.GetTexture("Terraria/Extra_89");
+            Texture2D SoulTexture = ModContent.Request<Texture2D>("Terraria/Images/Extra_89").Value;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
-            if (projectile.spriteDirection == -1)
+            if (Projectile.spriteDirection == -1)
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            int frameHeight = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-            int startY = frameHeight * projectile.frame;
+            int frameHeight = TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int startY = frameHeight * Projectile.frame;
             Rectangle sourceRectangle = new Rectangle(0, startY, SoulTexture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
 
             Main.spriteBatch.Draw(SoulTexture,
-                projectile.Center - Main.screenPosition,
-                null, new Color(196, 247, 258), projectile.rotation, SoulTexture.Size() / 2, projectile.scale * 1.2f, spriteEffects, 0f);
+                Projectile.Center - Main.screenPosition,
+                null, new Color(196, 247, 258), Projectile.rotation, SoulTexture.Size() / 2, Projectile.scale * 1.2f, spriteEffects, 0f);
         }
 
         public override void Kill(int timeLeft)
         {
-            Vector2 origin = projectile.Center;
+            Vector2 origin = Projectile.Center;
             float radius = 15;
             int numLocations = 30;
             for (int i = 0; i < 30; i++)

@@ -1,8 +1,9 @@
-﻿using Terraria;
-using Terraria.ID;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Threading;
+using Terraria;
+using Terraria.ID;
 
 namespace OvermorrowMod.Common.Base
 {
@@ -21,24 +22,33 @@ namespace OvermorrowMod.Common.Base
                 colorToLiquid[new Color(255, 255, 0)] = 2;
                 colorToLiquid[new Color(150, 150, 150)] = -2;
             }
+
+
             Color[] tileData = new Color[tileTex.Width * tileTex.Height];
-            tileTex.GetData(0, tileTex.Bounds, tileData, 0, tileTex.Width * tileTex.Height);
             Color[] wallData = (wallTex != null ? new Color[wallTex.Width * wallTex.Height] : null);
-            if (wallData != null) wallTex.GetData(0, wallTex.Bounds, wallData, 0, wallTex.Width * wallTex.Height);
             Color[] liquidData = (liquidTex != null ? new Color[liquidTex.Width * liquidTex.Height] : null);
-            if (liquidData != null) liquidTex.GetData(0, liquidTex.Bounds, liquidData, 0, liquidTex.Width * liquidTex.Height);
             Color[] slopeData = (slopeTex != null ? new Color[slopeTex.Width * slopeTex.Height] : null);
-            if (slopeData != null) slopeTex.GetData(0, slopeTex.Bounds, slopeData, 0, slopeTex.Width * slopeTex.Height);
+            var evt = new ManualResetEvent(false);
+            Main.QueueMainThreadAction(() =>
+            {
+                tileTex.GetData(0, tileTex.Bounds, tileData, 0, tileTex.Width * tileTex.Height);
+                if (wallData != null) wallTex.GetData(0, wallTex.Bounds, wallData, 0, wallTex.Width * wallTex.Height);
+                if (liquidData != null) liquidTex.GetData(0, liquidTex.Bounds, liquidData, 0, liquidTex.Width * liquidTex.Height);
+                if (slopeData != null) slopeTex.GetData(0, slopeTex.Bounds, slopeData, 0, slopeTex.Width * slopeTex.Height);
+                evt.Set();
+            });
+
+            evt.WaitOne();
 
             int x = 0, y = 0;
             TexGen gen = new TexGen(tileTex.Width, tileTex.Height);
             for (int m = 0; m < tileData.Length; m++)
             {
-                Color tileColor = tileData[m], wallColor = (wallTex == null ? Color.Black : wallData[m]), liquidColor = (liquidTex == null ? Color.Black : liquidData[m]),slopeColor = (slopeTex == null ? Color.Black : slopeData[m]);
+                Color tileColor = tileData[m], wallColor = (wallTex == null ? Color.Black : wallData[m]), liquidColor = (liquidTex == null ? Color.Black : liquidData[m]), slopeColor = (slopeTex == null ? Color.Black : slopeData[m]);
                 int tileID = (colorToTile.ContainsKey(tileColor) ? colorToTile[tileColor] : -1); //if no key assume no action
                 int wallID = (colorToWall != null && colorToWall.ContainsKey(wallColor) ? colorToWall[wallColor] : -1);
                 int liquidID = (colorToLiquid != null && colorToLiquid.ContainsKey(liquidColor) ? colorToLiquid[liquidColor] : -1);
-                int slopeID = (colorToSlopes != null && colorToSlopes.ContainsKey(slopeColor) ? colorToSlopes[slopeColor] : -2); 
+                int slopeID = (colorToSlopes != null && colorToSlopes.ContainsKey(slopeColor) ? colorToSlopes[slopeColor] : -2);
                 gen.tileGen[x, y] = new TileInfo(tileID, 0, wallID, liquidID, liquidID == -1 ? 0 : 255, slopeID);
                 gen.platformStyle = platformStyle;
                 x++;
@@ -51,8 +61,15 @@ namespace OvermorrowMod.Common.Base
         public static TexGen GetPlatformTexGenerator(Texture2D platformTex, Dictionary<Color, int> colorToPlatform) // platforms wont generate using above for some reason
         {
             Color[] platformData = new Color[platformTex.Width * platformTex.Height];
-            platformTex.GetData(0, platformTex.Bounds, platformData, 0, platformTex.Width * platformTex.Height);
+            var evt = new ManualResetEvent(false);
 
+            Main.QueueMainThreadAction(() =>
+            {
+                platformTex.GetData(0, platformTex.Bounds, platformData, 0, platformTex.Width * platformTex.Height);
+                evt.Set();
+            });
+
+            evt.WaitOne();
 
             int x = 0, y = 0;
             TexGen gen = new TexGen(platformTex.Width, platformTex.Height);
@@ -64,11 +81,11 @@ namespace OvermorrowMod.Common.Base
                 gen.tileGen[x, y] = new TileInfo(tileID, 0);
                 gen.platformStyle = 13;
                 x++;
-                if (x >= platformTex.Width) 
-                { 
-                    x = 0; y++; 
+                if (x >= platformTex.Width)
+                {
+                    x = 0; y++;
                 }
-                if (y >= platformTex.Height) 
+                if (y >= platformTex.Height)
                 {
                     break; //you've somehow reached the end of the texture! (this shouldn't happen!)
                 }
@@ -103,16 +120,19 @@ namespace OvermorrowMod.Common.Base
                         if (removeSlopes) info.slope = 0;
                         if (info.tileID == -1 && info.wallID == -1 && info.liquidType == -1 && info.wire == -1) continue;
                         if (info.tileID != -1 || info.wallID > -1 || info.wire > -1) BaseWorldGen.GenerateTile(x2, y2, info.tileID, info.wallID, (info.tileStyle != 0 ? info.tileStyle : info.tileID == TileID.Torches ? torchStyle : info.tileID == TileID.Platforms ? platformStyle : 0), info.tileID > -1, info.liquidAmt == 0, info.slope == 99 ? info.slope : info.slope, false, sync);
-                        if (info.slope == 99) Main.tile[x2, y2].halfBrick(true);
+                        if (info.slope == 99)
+                        {
+                            var tile = Main.tile[x2, y2];
+                            tile.IsHalfBlock = true;
+                        }
                         if (info.liquidType > -1)
                         {
                             BaseWorldGen.GenerateLiquid(x2, y2, info.liquidType, false, info.liquidAmt, sync);
                         }
                         else if (info.liquidType == -2)
                         {
-                            Main.tile[x1, y1].liquid = 0;
-                            Main.tile[x1, y1].lava(false);
-                            Main.tile[x1, y1].honey(false);
+                            var tile = Main.tile[x1, y1];
+                            tile.LiquidType = LiquidID.Water;
                         }
                     }
                 }
@@ -129,16 +149,19 @@ namespace OvermorrowMod.Common.Base
                         if (removeSlopes) info.slope = 0;
                         if (info.tileID == -1 && info.wallID == -1 && info.liquidType == -1 && info.wire == -1) continue;
                         if (info.tileID != -1 || info.wallID > -1 || info.wire > -1) BaseWorldGen.GenerateTile(x2, y2, info.tileID, info.wallID, (info.tileStyle != 0 ? info.tileStyle : info.tileID == TileID.Torches ? torchStyle : info.tileID == TileID.Platforms ? platformStyle : 0), info.tileID > -1, info.liquidAmt == 0, info.slope == 99 ? info.slope : info.slope, false, sync);
-                        if (info.slope == 99) Main.tile[x2, y2].halfBrick(true);
+                        if (info.slope == 99)
+                        {
+                            var tile = Main.tile[x2, y2];
+                            tile.IsHalfBlock = true;
+                        }
                         if (info.liquidType > -1)
                         {
                             BaseWorldGen.GenerateLiquid(x2, y2, info.liquidType, false, info.liquidAmt, sync);
                         }
                         else if (info.liquidType == -2)
                         {
-                            Main.tile[x1, y1].liquid = 0;
-                            Main.tile[x1, y1].lava(false);
-                            Main.tile[x1, y1].honey(false);
+                            var tile = Main.tile[x1, y1];
+                            tile.LiquidType = LiquidID.Water;
                         }
                     }
                 }

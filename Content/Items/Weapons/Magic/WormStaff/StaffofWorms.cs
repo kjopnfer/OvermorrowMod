@@ -10,31 +10,30 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
         {
             DisplayName.SetDefault("Staff of the Worms");
             Tooltip.SetDefault("Spits out worms");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Blue;
-            item.damage = 15;
-            item.magic = true;
-            item.noMelee = true;
-            item.mana = 7;
-            item.useTime = 28;
-            item.useAnimation = 28;
-            item.UseSound = mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Items/Hork");
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.autoReuse = true;
-            item.knockBack = 0;
-            item.shoot = mod.ProjectileType("WormT1");
-            item.shootSpeed = 16.7f;
+            Item.rare = ItemRarityID.Blue;
+            Item.damage = 15;
+            Item.DamageType = DamageClass.Magic;
+            Item.noMelee = true;
+            Item.mana = 7;
+            Item.useTime = 28;
+            Item.useAnimation = 28;
+            Item.UseSound = SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/Items/Hork");
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.knockBack = 0;
+            Item.shoot = ModContent.ProjectileType<WormT1>();
+            Item.shootSpeed = 16.7f;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(ItemID.DemoniteBar, 10);
-            recipe1.AddTile(TileID.Anvils);
-            recipe1.SetResult(this);
-            recipe1.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.DemoniteBar, 10)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

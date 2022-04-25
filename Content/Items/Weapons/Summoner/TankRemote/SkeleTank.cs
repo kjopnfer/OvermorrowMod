@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
 {
     public class SkeleTank : ModProjectile
     {
-        public override bool CanDamage() => false;
+        public override bool? CanDamage() => false;
 
         Vector2 NPCtarget;
         bool targetjump;
@@ -33,15 +33,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Skeletank");
-            Main.projFrames[projectile.type] = 10;
+            Main.projFrames[Projectile.type] = 10;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 22;
-            projectile.height = 40;
-            projectile.minion = true;
-            projectile.minionSlots = 1f;
+            Projectile.width = 22;
+            Projectile.height = 40;
+            Projectile.minion = true;
+            Projectile.minionSlots = 1f;
         }
 
 
@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
         {
 
 
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
             #region Active check
             if (player.dead || !player.active)
             {
@@ -57,11 +57,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
             }
             if (player.HasBuff(ModContent.BuffType<TankBuff>()))
             {
-                projectile.timeLeft = 2;
+                Projectile.timeLeft = 2;
             }
             #endregion
 
-            NumProj = Main.player[projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<SkeleTank>()];
+            NumProj = Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<SkeleTank>()];
             if (!PosCheck)
             {
                 PosPlay = NumProj;
@@ -71,20 +71,20 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
 
             if (!flying)
             {
-                if (projectile.velocity.Y < 7f)
+                if (Projectile.velocity.Y < 7f)
                 {
-                    projectile.velocity.Y += 0.4f;
+                    Projectile.velocity.Y += 0.4f;
                 }
 
 
-                if (projectile.velocity.Y > 7f)
+                if (Projectile.velocity.Y > 7f)
                 {
-                    projectile.velocity.Y = 7f;
+                    Projectile.velocity.Y = 7f;
                 }
             }
 
             float distanceFromTarget = 100f;
-            Vector2 targetCenter = projectile.position;
+            Vector2 targetCenter = Projectile.position;
             bool foundTarget = false;
             if (!foundTarget)
             {
@@ -94,7 +94,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
                     NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy() && Vector2.Distance(Main.MouseWorld, npc.Center) < 220f)
                     {
-                        float between = Vector2.Distance(npc.Center, projectile.Center);
+                        float between = Vector2.Distance(npc.Center, Projectile.Center);
                         bool closest = Vector2.Distance(Main.MouseWorld, targetCenter) > between;
                         bool inRange = between < distanceFromTarget;
 
@@ -113,8 +113,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
             {
                 if (!flying)
                 {
-                    projectile.rotation = 0f;
-                    if (NPCtarget.Y < projectile.Center.Y - 60)
+                    Projectile.rotation = 0f;
+                    if (NPCtarget.Y < Projectile.Center.Y - 60)
                     {
                         angle = true;
                     }
@@ -123,7 +123,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
                         angle = false;
                     }
 
-                    if (NPCtarget.Y < projectile.Center.Y - 100 && Vector2.Distance(new Vector2(projectile.Center.X, projectile.Center.X), new Vector2(NPCtarget.X, NPCtarget.X)) < 50f)
+                    if (NPCtarget.Y < Projectile.Center.Y - 100 && Vector2.Distance(new Vector2(Projectile.Center.X, Projectile.Center.X), new Vector2(NPCtarget.X, NPCtarget.X)) < 50f)
                     {
                         up = true;
                     }
@@ -141,19 +141,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
                         straight = false;
                     }
 
-                    if (projectile.velocity.Y < -7f)
+                    if (Projectile.velocity.Y < -7f)
                     {
-                        projectile.velocity.Y = -7f;
+                        Projectile.velocity.Y = -7f;
                     }
 
-                    if (projectile.velocity.X > 7f)
+                    if (Projectile.velocity.X > 7f)
                     {
-                        projectile.velocity.X = 7f;
+                        Projectile.velocity.X = 7f;
                     }
 
-                    if (projectile.velocity.X < -7f)
+                    if (Projectile.velocity.X < -7f)
                     {
-                        projectile.velocity.X = -7f;
+                        Projectile.velocity.X = -7f;
                     }
 
 
@@ -161,32 +161,32 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
 
                     targetjump = true;
 
-                    if (Vector2.Distance(new Vector2(projectile.Center.X, projectile.Center.X), new Vector2(NPCtarget.X, NPCtarget.X)) > Randompos + NPCtargetWidth)
+                    if (Vector2.Distance(new Vector2(Projectile.Center.X, Projectile.Center.X), new Vector2(NPCtarget.X, NPCtarget.X)) > Randompos + NPCtargetWidth)
                     {
-                        if (NPCtarget.X > projectile.Center.X)
+                        if (NPCtarget.X > Projectile.Center.X)
                         {
-                            projectile.spriteDirection = -1;
-                            projectile.velocity.X += 0.07f;
+                            Projectile.spriteDirection = -1;
+                            Projectile.velocity.X += 0.07f;
                         }
 
-                        if (NPCtarget.X < projectile.Center.X)
+                        if (NPCtarget.X < Projectile.Center.X)
                         {
-                            projectile.spriteDirection = 1;
-                            projectile.velocity.X -= 0.07f;
+                            Projectile.spriteDirection = 1;
+                            Projectile.velocity.X -= 0.07f;
                         }
                     }
                     else
                     {
-                        if (NPCtarget.X > projectile.Center.X)
+                        if (NPCtarget.X > Projectile.Center.X)
                         {
-                            projectile.spriteDirection = -1;
-                            projectile.velocity.X -= 0.07f;
+                            Projectile.spriteDirection = -1;
+                            Projectile.velocity.X -= 0.07f;
                         }
 
-                        if (NPCtarget.X < projectile.Center.X)
+                        if (NPCtarget.X < Projectile.Center.X)
                         {
-                            projectile.spriteDirection = 1;
-                            projectile.velocity.X += 0.07f;
+                            Projectile.spriteDirection = 1;
+                            Projectile.velocity.X += 0.07f;
                         }
                     }
 
@@ -194,12 +194,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
                     rockettimer++;
                     if (rockettimer > 49)
                     {
-                        Vector2 position = projectile.Center;
+                        Vector2 position = Projectile.Center;
                         Vector2 targetPosition = NPCtarget;
                         Vector2 direction = targetPosition - position;
                         direction.Normalize();
                         float speed2 = 14f;
-                        Projectile.NewProjectile(projectile.Center, direction * speed2, ModContent.ProjectileType<Tankrocket>(), projectile.damage, 1f, projectile.owner, 0f);
+                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, direction * speed2, ModContent.ProjectileType<Tankrocket>(), Projectile.damage, 1f, Projectile.owner, 0f);
                         rockettimer = 0;
                     }
 
@@ -217,28 +217,28 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
             {
                 targetjump = true;
 
-                projectile.spriteDirection = -Main.player[projectile.owner].direction;
+                Projectile.spriteDirection = -Main.player[Projectile.owner].direction;
                 if (!flying)
                 {
-                    projectile.rotation = 0f;
+                    Projectile.rotation = 0f;
                     straight = true;
                     angle = false;
                     up = false;
-                    Vector2 position = projectile.Center;
-                    Vector2 targetPosition = Main.player[projectile.owner].Center + new Vector2((PosPlay * 50 + 50) * -Main.player[projectile.owner].direction, 0);
+                    Vector2 position = Projectile.Center;
+                    Vector2 targetPosition = Main.player[Projectile.owner].Center + new Vector2((PosPlay * 50 + 50) * -Main.player[Projectile.owner].direction, 0);
                     Vector2 direction = targetPosition - position;
-                    projectile.velocity.X = direction.X / 10;
+                    Projectile.velocity.X = direction.X / 10;
                 }
-                if (Main.player[projectile.owner].Center.Y < projectile.Center.Y - 150f && !foundTarget)
+                if (Main.player[Projectile.owner].Center.Y < Projectile.Center.Y - 150f && !foundTarget)
                 {
                     flying = true;
                 }
 
 
 
-                if (Vector2.Distance(player.Center, projectile.Center) > 1300f)
+                if (Vector2.Distance(player.Center, Projectile.Center) > 1300f)
                 {
-                    projectile.position = player.Center;
+                    Projectile.position = player.Center;
                 }
 
 
@@ -249,29 +249,29 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
                 straight = false;
                 angle = false;
                 up = false;
-                Vector2 position = projectile.Center;
-                Vector2 targetPosition = Main.player[projectile.owner].Center + new Vector2((PosPlay * 50 + 50) * -Main.player[projectile.owner].direction, 10);
+                Vector2 position = Projectile.Center;
+                Vector2 targetPosition = Main.player[Projectile.owner].Center + new Vector2((PosPlay * 50 + 50) * -Main.player[Projectile.owner].direction, 10);
                 Vector2 direction = targetPosition - position;
-                projectile.velocity.X = direction.X / 10;
+                Projectile.velocity.X = direction.X / 10;
 
-                projectile.velocity.Y = direction.Y / 10;
-                projectile.rotation = projectile.velocity.X * 0.02f;
+                Projectile.velocity.Y = direction.Y / 10;
+                Projectile.rotation = Projectile.velocity.X * 0.02f;
 
 
 
-                projectile.frameCounter++;
-                if (projectile.frameCounter > 4) // Ticks per frame
+                Projectile.frameCounter++;
+                if (Projectile.frameCounter > 4) // Ticks per frame
                 {
-                    projectile.frameCounter = 0;
-                    projectile.frame += 1;
+                    Projectile.frameCounter = 0;
+                    Projectile.frame += 1;
                 }
-                if (projectile.frame > 9) // 6 is max # of frames
+                if (Projectile.frame > 9) // 6 is max # of frames
                 {
-                    projectile.frame = 7; // Reset back to default
+                    Projectile.frame = 7; // Reset back to default
                 }
-                if (projectile.frame < 7) // 6 is max # of frames
+                if (Projectile.frame < 7) // 6 is max # of frames
                 {
-                    projectile.frame = 7; // Reset back to default
+                    Projectile.frame = 7; // Reset back to default
                 }
             }
 
@@ -279,72 +279,71 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
 
             if (straight)
             {
-                projectile.frameCounter++;
-                if (projectile.frameCounter > 4) // Ticks per frame
+                Projectile.frameCounter++;
+                if (Projectile.frameCounter > 4) // Ticks per frame
                 {
-                    projectile.frameCounter = 0;
-                    projectile.frame += 1;
+                    Projectile.frameCounter = 0;
+                    Projectile.frame += 1;
                 }
-                if (projectile.frame > 1) // 6 is max # of frames
+                if (Projectile.frame > 1) // 6 is max # of frames
                 {
-                    projectile.frame = 0; // Reset back to default
+                    Projectile.frame = 0; // Reset back to default
                 }
-                if (projectile.frame < 0) // 6 is max # of frames
+                if (Projectile.frame < 0) // 6 is max # of frames
                 {
-                    projectile.frame = 0; // Reset back to default
+                    Projectile.frame = 0; // Reset back to default
                 }
             }
 
 
             if (angle)
             {
-                projectile.frameCounter++;
-                if (projectile.frameCounter > 4) // Ticks per frame
+                Projectile.frameCounter++;
+                if (Projectile.frameCounter > 4) // Ticks per frame
                 {
-                    projectile.frameCounter = 0;
-                    projectile.frame += 1;
+                    Projectile.frameCounter = 0;
+                    Projectile.frame += 1;
                 }
-                if (projectile.frame > 3) // 6 is max # of frames
+                if (Projectile.frame > 3) // 6 is max # of frames
                 {
-                    projectile.frame = 2; // Reset back to default
+                    Projectile.frame = 2; // Reset back to default
                 }
-                if (projectile.frame < 2) // 6 is max # of frames
+                if (Projectile.frame < 2) // 6 is max # of frames
                 {
-                    projectile.frame = 2; // Reset back to default
+                    Projectile.frame = 2; // Reset back to default
                 }
             }
 
 
             if (up)
             {
-                projectile.frameCounter++;
-                if (projectile.frameCounter > 4) // Ticks per frame
+                Projectile.frameCounter++;
+                if (Projectile.frameCounter > 4) // Ticks per frame
                 {
-                    projectile.frameCounter = 0;
-                    projectile.frame += 1;
+                    Projectile.frameCounter = 0;
+                    Projectile.frame += 1;
                 }
-                if (projectile.frame > 5) // 6 is max # of frames
+                if (Projectile.frame > 5) // 6 is max # of frames
                 {
-                    projectile.frame = 4; // Reset back to default
+                    Projectile.frame = 4; // Reset back to default
                 }
-                if (projectile.frame < 4) // 6 is max # of frames
+                if (Projectile.frame < 4) // 6 is max # of frames
                 {
-                    projectile.frame = 4; // Reset back to default
+                    Projectile.frame = 4; // Reset back to default
                 }
             }
         }
-
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough)
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
             fallThrough = false;
-            return base.TileCollideStyle(ref width, ref height, ref fallThrough);
+            return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            if (oldVelocity.X != projectile.velocity.X && targetjump)
+            if (oldVelocity.X != Projectile.velocity.X && targetjump)
             {
-                projectile.velocity.Y = -7f;
+                Projectile.velocity.Y = -7f;
             }
             flying = false;
             return false;

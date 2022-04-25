@@ -13,10 +13,10 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void SetDefaults()
         {
-            item.width = 32;
-            item.height = 34;
-            item.rare = ItemRarityID.Orange;
-            item.maxStack = 99;
+            Item.width = 32;
+            Item.height = 34;
+            Item.rare = ItemRarityID.Orange;
+            Item.maxStack = 99;
         }
     }
 }

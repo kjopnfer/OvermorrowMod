@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.Tiles.Ambient
 {
     public class BlueCrystalLeft : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Blue Crystal");
@@ -15,11 +15,11 @@ namespace OvermorrowMod.Content.Tiles.Ambient
             Main.tileSpelunker[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            soundType = SoundID.Tink;
-            soundStyle = 1;
-            minPick = 65;
+            SoundType = SoundID.Tink;
+            SoundStyle = 1;
+            MinPick = 65;
             AddMapEntry(new Color(102, 255, 255), name);
-            drop = ModContent.ItemType<Content.Items.Misc.BlueCrystal>();
+            ItemDrop = ModContent.ItemType<Content.Items.Misc.BlueCrystal>();
         }
 
         public override bool CanExplode(int i, int j)

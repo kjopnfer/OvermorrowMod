@@ -17,20 +17,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             base.SetDefaults();
 
-            npc.width = 100;
-            npc.height = 16;
-            npc.noTileCollide = true;
-            npc.dontCountMe = true;
+            NPC.width = 100;
+            NPC.height = 16;
+            NPC.noTileCollide = true;
+            NPC.dontCountMe = true;
         }
 
-        public ref float AICounter => ref npc.ai[0];
-        public ref float MiscCounter => ref npc.ai[1];
-        public ref float RotationCounter => ref npc.ai[2];
+        public ref float AICounter => ref NPC.ai[0];
+        public ref float MiscCounter => ref NPC.ai[1];
+        public ref float RotationCounter => ref NPC.ai[2];
         public override void AI()
         {
             base.AI();
 
-            npc.velocity = -Vector2.UnitX;
+            NPC.velocity = -Vector2.UnitX;
         }
     }
 
@@ -54,15 +54,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             base.SetDefaults();
 
-            npc.width = 100;
-            npc.height = 16;
-            npc.noTileCollide = true;
-            npc.dontCountMe = true;
+            NPC.width = 100;
+            NPC.height = 16;
+            NPC.noTileCollide = true;
+            NPC.dontCountMe = true;
         }
 
-        public ref float AICounter => ref npc.ai[0];
-        public ref float MiscCounter => ref npc.ai[1];
-        public ref float RotationCounter => ref npc.ai[2];
+        public ref float AICounter => ref NPC.ai[0];
+        public ref float MiscCounter => ref NPC.ai[1];
+        public ref float RotationCounter => ref NPC.ai[2];
         public override void AI()
         {
             base.AI();
@@ -70,15 +70,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             // Initialization step to save input into variables
             if (RunOnce)
             {
-                RotationCenter = new Vector2(npc.ai[0], npc.ai[1]);
-                RotationOffset = npc.ai[2];
-                Radius = npc.ai[3];
+                RotationCenter = new Vector2(NPC.ai[0], NPC.ai[1]);
+                RotationOffset = NPC.ai[2];
+                Radius = NPC.ai[3];
 
                 RunOnce = false;
-                npc.ai[0] = 0;
-                npc.ai[1] = 0;
-                npc.ai[2] = 0;
-                npc.ai[3] = 0;
+                NPC.ai[0] = 0;
+                NPC.ai[1] = 0;
+                NPC.ai[2] = 0;
+                NPC.ai[3] = 0;
             }
 
             // Code that runs after the projectiles have spawned in
@@ -94,7 +94,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 MiscCounter++;
             }
 
-            npc.Center = RotationCenter + new Vector2(Radius, 0).RotatedBy(RotationOffset + RotationCounter);
+            NPC.Center = RotationCenter + new Vector2(Radius, 0).RotatedBy(RotationOffset + RotationCounter);
         }
     }
 }

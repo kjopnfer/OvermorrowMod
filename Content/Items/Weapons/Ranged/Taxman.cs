@@ -1,8 +1,7 @@
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using System;
 using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged
 {
@@ -14,29 +13,28 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         }
         public override void SetDefaults()
         {
-            item.damage = 22;
-            item.width = 38;
-            item.height = 18;
-            item.ranged = true;
-            item.noMelee = true;
-            item.useTime = 11;
-            item.useAnimation = 11;
-            item.shoot = 10;
-            item.shootSpeed = 11f;
-            item.useAmmo = AmmoID.Bullet;
-            item.UseSound = SoundID.Item11;
-            item.useStyle = 5;
-            item.useTurn = true;
+            Item.damage = 22;
+            Item.width = 38;
+            Item.height = 18;
+            Item.DamageType = DamageClass.Ranged;
+            Item.noMelee = true;
+            Item.useTime = 11;
+            Item.useAnimation = 11;
+            Item.shoot = ProjectileID.PurificationPowder;
+            Item.shootSpeed = 11f;
+            Item.useAmmo = AmmoID.Bullet;
+            Item.UseSound = SoundID.Item11;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useTurn = true;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-		{
-			Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY)) * 25f;
-			if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
-			{
-				position += muzzleOffset;
-			}
-			return true;
-		}
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+        {
+            Vector2 muzzleOffset = Vector2.Normalize(velocity) * 25f;
+            if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
+            {
+                position += muzzleOffset;
+            }
+        }
     }
 }

@@ -18,11 +18,11 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            item.width = 18;
-            item.height = 24;
-            item.value = Item.buyPrice(0, 1, 50, 0);
-            item.rare = ItemRarityID.Orange;
-            item.accessory = true;
+            Item.width = 18;
+            Item.height = 24;
+            Item.value = Item.buyPrice(0, 1, 50, 0);
+            Item.rare = ItemRarityID.Orange;
+            Item.accessory = true;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<OvermorrowModPlayer>().DripplerEye = true;
-            player.rangedDamage += 0.05f;
+            player.GetDamage(DamageClass.Ranged) *= 0.05f;
         }
     }
 }

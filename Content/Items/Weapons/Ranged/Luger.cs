@@ -1,8 +1,7 @@
-using System;
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged
 {
@@ -15,29 +14,30 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         }
         public override void SetDefaults()
         {
-            item.damage = 18;
-            item.width = 38;
-            item.height = 24;
-            item.ranged = true;
-            item.noMelee = true;
-            item.useTime = 9;
-            item.useAnimation = 9;
-            item.useStyle = 5;
-            item.shoot = 10;
-            item.useAmmo = AmmoID.Bullet;
-            item.shootSpeed = 9f;
-            item.autoReuse = false;
-            item.UseSound = SoundID.Item11;
-            item.useTurn = true;
+            Item.damage = 18;
+            Item.width = 38;
+            Item.height = 24;
+            Item.DamageType = DamageClass.Ranged;
+            Item.noMelee = true;
+            Item.useTime = 9;
+            Item.useAnimation = 9;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.shoot = ProjectileID.PurificationPowder;
+            Item.useAmmo = AmmoID.Bullet;
+            Item.shootSpeed = 9f;
+            Item.autoReuse = false;
+            Item.UseSound = SoundID.Item11;
+            Item.useTurn = true;
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-		{
-			Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY)) * 25f;
-			if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
-			{
-				position += muzzleOffset;
-			}
-			return true;
-		}
+
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+        {
+            Vector2 muzzleOffset = Vector2.Normalize(velocity) * 25f;
+            if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
+            {
+                position += muzzleOffset;
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -16,16 +18,16 @@ namespace OvermorrowMod.Content.Items.Consumable
 
         public override void SetDefaults()
         {
-            item.width = 30;
-            item.height = 34;
-            item.rare = ItemRarityID.Green;
-            item.useAnimation = 45;
-            item.useTime = 45;
-            item.useStyle = ItemUseStyleID.HoldingUp;
-            item.maxStack = 20;
-            item.noMelee = true;
-            item.consumable = true;
-            item.autoReuse = false;
+            Item.width = 30;
+            Item.height = 34;
+            Item.rare = ItemRarityID.Green;
+            Item.useAnimation = 45;
+            Item.useTime = 45;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.maxStack = 20;
+            Item.noMelee = true;
+            Item.consumable = true;
+            Item.autoReuse = false;
         }
 
         public override bool CanUseItem(Player player)
@@ -34,11 +36,11 @@ namespace OvermorrowMod.Content.Items.Consumable
             return !Main.dayTime && !Main.bloodMoon;
         }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)
         {
             if (!Main.dayTime)
             {
-                Main.PlaySound(SoundID.Roar, player.position, 0);
+                SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
                 Main.bloodMoon = true;
                 if (Main.netMode == NetmodeID.SinglePlayer)
                 {
@@ -46,7 +48,7 @@ namespace OvermorrowMod.Content.Items.Consumable
                 }
                 else if (Main.netMode == NetmodeID.Server)
                 {
-                    NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("The Blood Moon is rising..."), new Color(50, 255, 130));
+                    ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("The Blood Moon is rising..."), new Color(50, 255, 130));
                 }
                 return true;
             }

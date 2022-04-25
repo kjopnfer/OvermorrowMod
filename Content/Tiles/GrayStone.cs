@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.Tiles
 {
     public class GrayStone : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -17,9 +17,9 @@ namespace OvermorrowMod.Content.Tiles
 
             Main.tileLighted[Type] = true;
 
-            minPick = 55;
-            mineResist = 2f;
-            drop = ModContent.ItemType<Items.Placeable.Tiles.GrayStone>();
+            MinPick = 55;
+            MineResist = 2f;
+            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.GrayStone>();
 
             AddMapEntry(new Color(100, 83, 83));
         }

@@ -12,9 +12,12 @@ using System;
 using System.Linq;
 using Terraria;
 using Terraria.GameContent.Events;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
+
+using static Terraria.ModLoader.ModContent;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
@@ -54,27 +57,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            npc.width = 114;
-            npc.height = 102;
-            npc.aiStyle = -1;
-            npc.damage = 21;
-            npc.defense = 12;
-            npc.lifeMax = 4100;
-            npc.HitSound = SoundID.NPCHit23;
-            npc.DeathSound = SoundID.NPCDeath39;
-            npc.knockBackResist = 0f;
-            npc.noGravity = true;
-            npc.noTileCollide = true;
-            npc.boss = true;
-            npc.chaseable = false;
-            npc.npcSlots = 10f;
-            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/SandstormBoss");
-            bossBag = ModContent.ItemType<SandstormBag>();
+            NPC.width = 114;
+            NPC.height = 102;
+            NPC.aiStyle = -1;
+            NPC.damage = 21;
+            NPC.defense = 12;
+            NPC.lifeMax = 4100;
+            NPC.HitSound = SoundID.NPCHit23;
+            NPC.DeathSound = SoundID.NPCDeath39;
+            NPC.knockBackResist = 0f;
+            NPC.noGravity = true;
+            NPC.noTileCollide = true;
+            NPC.boss = true;
+            NPC.chaseable = false;
+            NPC.npcSlots = 10f;
+            Music = MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/SandstormBoss");
         }
-        public ref float AICase => ref npc.ai[0];
-        public ref float GlobalCounter => ref npc.ai[1];
-        public ref float AICounter => ref npc.ai[2];
-        public ref float AICounter2 => ref npc.ai[3];
+        public ref float AICase => ref NPC.ai[0];
+        public ref float GlobalCounter => ref NPC.ai[1];
+        public ref float AICounter => ref NPC.ai[2];
+        public ref float AICounter2 => ref NPC.ai[3];
 
         public enum AIStates
         {
@@ -91,15 +93,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void AI()
         {
-            npc.TargetClosest(true);
-            Player player = Main.player[npc.target];
+            NPC.TargetClosest(true);
+            Player player = Main.player[NPC.target];
 
             if (RunOnce)
             {
-                NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SandstormBoss_Chest>(), 0, npc.whoAmI);
+                NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SandstormBoss_Chest>(), 0, NPC.whoAmI);
 
                 RunOnce = false;
-                npc.netUpdate = true;
+                NPC.netUpdate = true;
             }
 
             switch (AICase)
@@ -110,7 +112,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxProjectiles; i++)
                         {
                             Projectile Arena = Main.projectile[i];
-                            if (Arena.active && Arena.modProjectile is DharuudArena)
+                            if (Arena.active && Arena.ModProjectile is DharuudArena)
                             {
                                 ArenaCenter = Arena;
                             }
@@ -129,21 +131,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 case (int)AIStates.Selector:
                     if (AICounter++ <= 180)
                     {
-                        npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
-                        npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y - 50) > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+                        NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, (player.Center.X > NPC.Center.X ? 1 : -1) * 2, 0.05f);
+                        NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, (player.Center.Y - 50) > NPC.Center.Y ? 2.5f : -2.5f, 0.02f);
                     }
                     else if (AICounter > 180 && AICounter < 300)
                     {
-                        npc.velocity.X = MathHelper.Lerp(npc.velocity.X, (player.Center.X > npc.Center.X ? 1 : -1) * 2, 0.05f);
-                        npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, (player.Center.Y - 250) > npc.Center.Y ? 2.5f : -2.5f, 0.02f);
+                        NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, (player.Center.X > NPC.Center.X ? 1 : -1) * 2, 0.05f);
+                        NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, (player.Center.Y - 250) > NPC.Center.Y ? 2.5f : -2.5f, 0.02f);
                     }
 
-                    npc.spriteDirection = npc.direction;
+                    NPC.spriteDirection = NPC.direction;
 
                     // Chooses a random active minion to perform their attack
                     if (AICounter == 300)
                     {
-                        npc.velocity = Vector2.Zero;
+                        NPC.velocity = Vector2.Zero;
 
                         AttackHandler();
                     }
@@ -212,7 +214,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         if (GlobalCounter++ == 0)
                         {
                             MoveDirection = Main.rand.NextBool() ? -1 : 1;
-                            InitialPosition = npc.Center;
+                            InitialPosition = NPC.Center;
                             RandomOffset = new Vector2(Main.rand.Next(15, 20) * 10, Main.rand.Next(-5, 5) * 10);
                         }
 
@@ -220,8 +222,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         if (GlobalCounter <= 120)
                         {
-                            npc.spriteDirection = npc.direction;
-                            npc.Center = Vector2.Lerp(InitialPosition, player.Center + RandomOffset * -MoveDirection, Utils.Clamp(GlobalCounter, 0, 120) / 120f);
+                            NPC.spriteDirection = NPC.direction;
+                            NPC.Center = Vector2.Lerp(InitialPosition, player.Center + RandomOffset * -MoveDirection, Utils.Clamp(GlobalCounter, 0, 120) / 120f);
                         }
                         else
                         {
@@ -229,18 +231,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             {
                                 if (Main.rand.NextBool())
                                 {
-                                    npc.velocity = Vector2.UnitX * 20 * MoveDirection;
+                                    NPC.velocity = Vector2.UnitX * 20 * MoveDirection;
                                 }
                                 else
                                 {
-                                    npc.velocity = Vector2.UnitY * 20 * MoveDirection;
+                                    NPC.velocity = Vector2.UnitY * 20 * MoveDirection;
                                 }
                             }
                         }
 
                         if (GlobalCounter == 200)
                         {
-                            npc.velocity = Vector2.Zero;
+                            NPC.velocity = Vector2.Zero;
                         }
 
                         if (GlobalCounter == 220)
@@ -260,8 +262,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             int RuinID = RandomType.Get();
 
                             Vector2 RandomPosition = Desert.DesertArenaCenter + new Vector2(Main.rand.Next(-18, 18) * 38, 0);
-                            int RuinType = mod.NPCType("Ruin" + RuinID);
-                            NPC.NewNPC((int)RandomPosition.X, (int)RandomPosition.Y, RuinType, 0, 0f, Main.rand.Next(3, 8) * 128);
+                            int RuinType = Mod.Find<ModNPC>("Ruin" + RuinID).Type;
+                            NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)RandomPosition.X, (int)RandomPosition.Y, RuinType, 0, 0f, Main.rand.Next(3, 8) * 128);
                         }
                     }
 
@@ -270,7 +272,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < 2; i++)
                         {
                             float OffsetDirection = i == 0 ? 1 : -1;
-                            Projectile.NewProjectile(npc.Center, Vector2.UnitY, ModContent.ProjectileType<ExplodeOrb>(), 30, 6f, Main.myPlayer, npc.whoAmI, OffsetDirection);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.UnitY, ModContent.ProjectileType<ExplodeOrb>(), 30, 6f, Main.myPlayer, NPC.whoAmI, OffsetDirection);
                         }
 
                         /*for (int i = 0; i < 6; i++)
@@ -295,15 +297,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC RuinNPC = Main.npc[i];
-                            if (RuinNPC.active && RuinNPC.modNPC is Ruin)
+                            if (RuinNPC.active && RuinNPC.ModNPC is Ruin)
                             {
-                                ((Ruin)RuinNPC.modNPC).CanFall = true;
+                                ((Ruin)RuinNPC.ModNPC).CanFall = true;
 
-                                if (RuinNPC.modNPC is Ruin1) RuinNPC.velocity.Y = Main.rand.Next(5, 7);
+                                if (RuinNPC.ModNPC is Ruin1) RuinNPC.velocity.Y = Main.rand.Next(5, 7);
 
-                                if (RuinNPC.modNPC is Ruin2) RuinNPC.velocity.Y = Main.rand.Next(3, 6);
+                                if (RuinNPC.ModNPC is Ruin2) RuinNPC.velocity.Y = Main.rand.Next(3, 6);
 
-                                if (RuinNPC.modNPC is Ruin3) RuinNPC.velocity.Y = Main.rand.Next(7, 10);
+                                if (RuinNPC.ModNPC is Ruin3) RuinNPC.velocity.Y = Main.rand.Next(7, 10);
 
                                 RuinNPC.noGravity = false;
                             }
@@ -323,7 +325,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         Vector2 ArenaCenter = Desert.DesertArenaCenter + new Vector2(1 * 16, 2 * 16) - new Vector2(8, -8);
 
                         Vector2 RandomPosition = ArenaCenter + new Vector2(20 * 16 * (Main.rand.NextBool() ? 1 : -1), 10 * 16 * (Main.rand.NextBool() ? 1 : -1));
-                        Projectile.NewProjectile(RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), npc.damage, 3f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), NPC.damage, 3f, Main.myPlayer);
                     }
 
                     if (AICounter == 60)
@@ -347,7 +349,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (AICounter == 0)
                     {
                         RandomDirection = Main.rand.NextBool() ? -1 : 1;
-                        npc.netUpdate = true;
+                        NPC.netUpdate = true;
 
                         Vector2 ArenaCenter = Desert.DesertArenaCenter + new Vector2(1 * 16, 2 * 16) - new Vector2(8, -8);
 
@@ -356,19 +358,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         {
                             // TOP-DOWN MIDDLE
                             // Lower Right
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(10 * 16 + 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(10 * 16 + 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
 
                             // Upper Right
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(10 * 16 + 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(10 * 16 + 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
 
                             // LEFT-RIGHT INNER
                             // Left
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
                             // Right
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
 
                             // Right
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(25 * 16 + 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(25 * 16 + 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
                         }
                         else // <----
                         {
@@ -376,20 +378,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                             // TOP-DOWN MIDDLE
                             // Lower Left
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(-10 * 16 - 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-10 * 16 - 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
 
                             // Upper Left
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(-10 * 16 - 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-10 * 16 - 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
 
                             // LEFT-RIGHT INNER
                             // Left
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
                             // Right
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
 
                             // LEFT-RIGHT OUTER
                             // Left
-                            Projectile.NewProjectile(ArenaCenter + new Vector2(-25 * 16 - 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), npc.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-25 * 16 - 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
                         }
                     }
 
@@ -398,7 +400,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.rand.Next(2, 4); i++)
                         {
                             Vector2 RandomPosition = new Vector2(Main.rand.Next(700, 900) * RandomDirection, Main.rand.Next(-15, 15) * 30);
-                            Projectile.NewProjectile(Desert.DesertArenaCenter + RandomPosition, Vector2.UnitX * Main.rand.Next(5, 8) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), npc.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 70) * 12);
+                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), Desert.DesertArenaCenter + RandomPosition, Vector2.UnitX * Main.rand.Next(5, 8) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), NPC.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 70) * 12);
                         }
                     }
 
@@ -429,13 +431,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC BarrierNPC = Main.npc[i];
-                            if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
+                            if (BarrierNPC.active && BarrierNPC.ModNPC is Barrier)
                             {
-                                int Node = NPC.NewNPC((int)BarrierNPC.Center.X, (int)BarrierNPC.Center.Y, ModContent.NPCType<LightningNode>(), 0, LinkID, ArenaCenter.whoAmI);
+                                int Node = NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)BarrierNPC.Center.X, (int)BarrierNPC.Center.Y, ModContent.NPCType<LightningNode>(), 0, LinkID, ArenaCenter.whoAmI);
                                 if (Main.npc[Node].ai[0] == WeakLink)
                                 {
                                     Main.npc[Node].dontTakeDamage = false;
-                                    ((LightningNode)Main.npc[Node].modNPC).LinkColor = Color.Red;
+                                    ((LightningNode)Main.npc[Node].ModNPC).LinkColor = Color.Red;
                                 }
 
                                 LinkID++;
@@ -470,11 +472,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 for (int i = 0; i < Main.maxNPCs; i++)
                                 {
                                     NPC BarrierNPC = Main.npc[i];
-                                    if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
+                                    if (BarrierNPC.active && BarrierNPC.ModNPC is Barrier)
                                     {
-                                        if (((Barrier)BarrierNPC.modNPC).BarrierID == RandomID || ((Barrier)BarrierNPC.modNPC).BarrierID == RandomID + 4)
+                                        if (((Barrier)BarrierNPC.ModNPC).BarrierID == RandomID || ((Barrier)BarrierNPC.ModNPC).BarrierID == RandomID + 4)
                                         {
-                                            ((Barrier)BarrierNPC.modNPC).Shockwave = true;
+                                            ((Barrier)BarrierNPC.ModNPC).Shockwave = true;
                                         }
                                     }
                                 }
@@ -486,11 +488,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 for (int i = 0; i < Main.maxNPCs; i++)
                                 {
                                     NPC BarrierNPC = Main.npc[i];
-                                    if (BarrierNPC.active && BarrierNPC.modNPC is Barrier)
+                                    if (BarrierNPC.active && BarrierNPC.ModNPC is Barrier)
                                     {
-                                        if (((Barrier)BarrierNPC.modNPC).BarrierID == RandomID || ((Barrier)BarrierNPC.modNPC).BarrierID == RandomID - 4)
+                                        if (((Barrier)BarrierNPC.ModNPC).BarrierID == RandomID || ((Barrier)BarrierNPC.ModNPC).BarrierID == RandomID - 4)
                                         {
-                                            ((Barrier)BarrierNPC.modNPC).Shockwave = true;
+                                            ((Barrier)BarrierNPC.ModNPC).Shockwave = true;
                                         }
                                     }
                                 }
@@ -523,9 +525,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             foreach (NPC npc in Main.npc)
             {
-                if (!npc.active || !(npc.modNPC is Barrier)) continue;
+                if (!npc.active || !(npc.ModNPC is Barrier)) continue;
 
-                ((Barrier)npc.modNPC).Rotate = CanRotate;
+                ((Barrier)npc.ModNPC).Rotate = CanRotate;
             }
         }
 
@@ -542,9 +544,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     NPC npc = Main.npc[i];
                     if (npc.active && npc.type == ValidNPC[index])
                     {
-                        if (!((DharuudMinion)npc.modNPC).IsDisabled && !((DharuudMinion)npc.modNPC).Grappled && !((DharuudMinion)npc.modNPC).ReturnIdle)
+                        if (!((DharuudMinion)npc.ModNPC).IsDisabled && !((DharuudMinion)npc.ModNPC).Grappled && !((DharuudMinion)npc.ModNPC).ReturnIdle)
                         {
-                            ((DharuudMinion)npc.modNPC).ExecuteAttack = true;
+                            ((DharuudMinion)npc.ModNPC).ExecuteAttack = true;
                             return;
                         }
                     }
@@ -583,10 +585,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             }*/
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
             //for(int i = 0; i < 9; i++)
             //{
@@ -608,21 +610,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             //texture = ModContent.GetTexture(AssetDirectory.Textures + "magic_02");
             //Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Yellow, MathHelper.ToRadians(GlobalCounter), origin, 1.5f, SpriteEffects.None, 0f);
 
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            return base.PreDraw(spriteBatch, drawColor);
+            return base.PreDraw(spriteBatch, screenPos, drawColor);
         }
 
         int frame = 0;
         const int MAX_FRAMES = 11;
         const int TextureHeight = 50;
-        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/SandstormBoss_Arms");
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/SandstormBoss_Arms").Value;
 
-            npc.frameCounter++;
-            if (npc.frameCounter % 12f == 11f)
+            NPC.frameCounter++;
+            if (NPC.frameCounter % 12f == 11f)
             {
                 frame += 1;
             }
@@ -633,43 +635,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             }
 
             var DrawRectangle = new Rectangle(0, TextureHeight * frame, texture.Width, TextureHeight);
-            Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
-            Main.spriteBatch.Draw(texture, npc.Center + new Vector2(1, (npc.width / 2) + 224) - Main.screenPosition, DrawRectangle, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)(NPC.Center.Y / 16f));
+            spriteBatch.Draw(texture, NPC.Center + new Vector2(1, (NPC.width / 2) + 224) - screenPos, DrawRectangle, color, NPC.rotation, texture.Size() / 2f, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 
             //texture = ModContent.GetTexture("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/DharuudArmor");
             //Main.spriteBatch.Draw(texture, npc.Center + new Vector2(-2, 2) - Main.screenPosition, null, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 
         }
 
-        public override void NPCLoot()
+        public override void OnKill()
         {
             OvermorrowWorld.downedDarude = true;
-
-            if (Main.expertMode)
-            {
-                npc.DropBossBags();
-            }
-            else
-            {
-                int choice = Main.rand.Next(4);
-                // Always drops one of:
-                if (choice == 0) // Warrior
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandstormSpinner>());
-                }
-                else if (choice == 1) // Mage
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandStaff>());
-                }
-                else if (choice == 2) // Ranger
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SandThrower>());
-                }
-                else if (choice == 3) // Summoner
-                {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<DustStaff>());
-                }
-            }
 
             if (Sandstorm.Happening)
             {
@@ -680,20 +656,32 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             for (int num785 = 0; num785 < 4; num785++)
             {
-                Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 100, default(Color), 1.5f);
+                Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Sand, 0f, 0f, 100, default(Color), 1.5f);
             }
 
             for (int num788 = 0; num788 < 40; num788++)
             {
-                int num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 0, default(Color), 2.5f);
+                int num797 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Sand, 0f, 0f, 0, default(Color), 2.5f);
                 Main.dust[num797].noGravity = true;
                 Dust dust24 = Main.dust[num797];
                 dust24.velocity *= 3f;
-                num797 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Sand, 0f, 0f, 100, default(Color), 1.5f);
+                num797 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Sand, 0f, 0f, 100, default(Color), 1.5f);
                 dust24 = Main.dust[num797];
                 dust24.velocity *= 2f;
                 Main.dust[num797].noGravity = true;
             }
+        }
+
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ItemDropRule.BossBag(ItemType<SandstormBag>()));
+            var nonExpert = new LeadingConditionRule(new Conditions.NotExpert())
+                .OnSuccess(ItemDropRule.OneFromOptions(1,
+                    ItemType<SandstormSpinner>(),
+                    ItemType<SandStaff>(),
+                    ItemType<SandThrower>(),
+                    ItemType<DustStaff>()));
+            npcLoot.Add(nonExpert);
         }
 
         public override void BossLoot(ref string name, ref int potionType)

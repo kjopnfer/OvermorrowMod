@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Core;
 using OvermorrowMod.Content.Projectiles.Accessory;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,27 +18,27 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 16;
-            projectile.height = 16;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 420;
-            projectile.alpha = 255;
-            projectile.tileCollide = true;
-            projectile.magic = true;
+            Projectile.width = 16;
+            Projectile.height = 16;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 420;
+            Projectile.alpha = 255;
+            Projectile.tileCollide = true;
+            Projectile.DamageType = DamageClass.Magic;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
-            projectile.ai[0]++;
+            Lighting.AddLight(Projectile.Center, 1f, 0f, 0f);
+            Projectile.ai[0]++;
 
-            projectile.localAI[0] += 1f;
-            if (projectile.localAI[0] > 3f)
+            Projectile.localAI[0] += 1f;
+            if (Projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Blood, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 2.5f);
-                Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
+                int num1110 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X, Projectile.velocity.Y, 50, default(Color), 2.5f);
+                Main.dust[num1110].position = (Main.dust[num1110].position + Projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
                 dust81.velocity *= 0.5f;
@@ -47,12 +47,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            int projectiles = Main.rand.Next(3, 5);
-            for (int i = 0; i < projectiles; i++)
+            int Projectiles = Main.rand.Next(3, 5);
+            for (int i = 0; i < Projectiles; i++)
             {
-                Projectile.NewProjectile(projectile.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), projectile.damage / 2, 2, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / Projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), Projectile.damage / 2, 2, Main.myPlayer);
             }
-            projectile.Kill();
+            Projectile.Kill();
         }
     }
 }

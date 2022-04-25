@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
+using Terraria.ID;
 
 namespace OvermorrowMod.Quests.Rewards
 {
@@ -23,7 +20,7 @@ namespace OvermorrowMod.Quests.Rewards
 
         public void Give(Player player)
         {
-            player.QuickSpawnItem(type, stack);
+            player.QuickSpawnItem(player.GetItemSource_Misc(ItemSourceID.None), type, stack);
         }
     }
 }

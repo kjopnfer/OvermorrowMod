@@ -13,40 +13,40 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
 
         public override void SetDefaults()
         {
-            projectile.width = 50;
-            projectile.height = 50;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.timeLeft = 600;
-            projectile.penetrate = -1;
-            projectile.tileCollide = false;
+            Projectile.width = 50;
+            Projectile.height = 50;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.timeLeft = 600;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 0f, 0f, 0.5f);
+            Lighting.AddLight(Projectile.Center, 0f, 0f, 0.5f);
 
             // set npc as owner
-            NPC projectileOwner = Main.npc[(int)projectile.ai[0]];
+            NPC ProjectileOwner = Main.npc[(int)Projectile.ai[0]];
 
-            if (projectileOwner.active)
+            if (ProjectileOwner.active)
             {
-                projectile.timeLeft = 2;
+                Projectile.timeLeft = 2;
             }
 
             //Factors for calculations
-            double deg = (double)projectile.ai[1]; // rotation rate
+            double deg = (double)Projectile.ai[1]; // rotation rate
             double rad = deg * (Math.PI / 180); // convert degrees to radians
             double dist = 100; // distance from the owner
 
 
-            projectile.position.X = projectileOwner.Center.X - (int)(Math.Cos(rad) * dist) - projectile.width / 2;
-            projectile.position.Y = projectileOwner.Center.Y - (int)(Math.Sin(rad) * dist) - projectile.height / 2;
+            Projectile.position.X = ProjectileOwner.Center.X - (int)(Math.Cos(rad) * dist) - Projectile.width / 2;
+            Projectile.position.Y = ProjectileOwner.Center.Y - (int)(Math.Sin(rad) * dist) - Projectile.height / 2;
 
-            projectile.ai[1] += 0.5f;
+            Projectile.ai[1] += 0.5f;
 
             // orient sprite based on rotation
-            projectile.rotation = (float)rad;
+            Projectile.rotation = (float)rad;
 
 
             for (int i = 0; i < Main.maxProjectiles; i++)
@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                 Projectile incomingProjectile = Main.projectile[i];
                 if (incomingProjectile.active && incomingProjectile.friendly)
                 {
-                    if (projectile.Hitbox.Intersects(incomingProjectile.Hitbox))
+                    if (Projectile.Hitbox.Intersects(incomingProjectile.Hitbox))
                     {
                         incomingProjectile.velocity *= -1;
                         incomingProjectile.friendly = false;

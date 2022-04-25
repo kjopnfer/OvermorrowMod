@@ -66,10 +66,11 @@ namespace OvermorrowMod.Quests
             availableQuest = null;
         }
 
+
         private int frame = 0;
         private int frameCounter = 0;
         private int lerpTimer = 0;
-        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)
+        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             bool isDoing = false;
             var quest = GetCurrentQuest(npc, out isDoing);
@@ -113,7 +114,7 @@ namespace OvermorrowMod.Quests
                 }
                 #endregion
 
-                Texture2D texture = ModContent.GetTexture("OvermorrowMod/Quests/QuestAlert");
+                Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Quests/QuestAlert").Value;
                 Rectangle drawRectangle = new Rectangle(0, texture.Height / 6 * frame, texture.Width, texture.Height / 6);
                 float yOffset = MathHelper.Lerp(48, 52, (float)Math.Sin(lerpTimer / 15f));
 
@@ -129,10 +130,10 @@ namespace OvermorrowMod.Quests
                     0f);
             }
 
-            base.PostDraw(npc, spriteBatch, drawColor);
+            base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
 
-        public override void NPCLoot(NPC npc)
+        public override void OnKill(NPC npc)
         {
             // Like three for loops just to check if the NPC killed can count towards the player's quest, not sure if more optimal way?
             foreach (Player player in Main.player)
@@ -197,7 +198,7 @@ namespace OvermorrowMod.Quests
                 }
             }
 
-            base.NPCLoot(npc);
+            base.OnKill(npc);
         }
     }
 }

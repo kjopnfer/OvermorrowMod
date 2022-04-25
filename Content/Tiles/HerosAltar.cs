@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Tiles
     // If you can't figure out how to recreate a vanilla tile, see that guide for instructions on how to figure it out yourself.
     internal class HerosAltar : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             // Main.tileFlame[Type] = true; This breaks it.
             Main.tileLighted[Type] = true;
@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Tiles
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 18 };
             TileObjectData.addTile(Type);
             ModTranslation name = CreateMapEntryName();
-            minPick = 45;
+            MinPick = 45;
             name.SetDefault("Hero's Altar");
             AddMapEntry(new Color(253, 221, 3), name);
         }

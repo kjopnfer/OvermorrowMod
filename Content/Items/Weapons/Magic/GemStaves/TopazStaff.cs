@@ -10,37 +10,36 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GemStaves
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Greater Topaz Staff");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Orange;
-            item.mana = 7;
-            item.UseSound = SoundID.Item43;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 14;
-            item.useTurn = false;
-            item.useAnimation = 22;
-            item.useTime = 22;
-            item.width = 48;
-            item.height = 48;
-            item.shoot = ModContent.ProjectileType<TopazProj>();
-            item.shootSpeed = 9.5f;
-            item.knockBack = 4.5f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 1, silver: 75);
+            Item.rare = ItemRarityID.Orange;
+            Item.mana = 7;
+            Item.UseSound = SoundID.Item43;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 14;
+            Item.useTurn = false;
+            Item.useAnimation = 22;
+            Item.useTime = 22;
+            Item.width = 48;
+            Item.height = 48;
+            Item.shoot = ModContent.ProjectileType<TopazProj>();
+            Item.shootSpeed = 9.5f;
+            Item.knockBack = 4.5f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 1, silver: 75);
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.TopazStaff);
-            recipe.AddIngredient(ModContent.ItemType<ManaBar>(), 3);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.TopazStaff)
+                .AddIngredient<ManaBar>(3)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

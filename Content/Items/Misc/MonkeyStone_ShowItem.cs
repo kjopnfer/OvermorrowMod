@@ -1,8 +1,5 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,10 +15,10 @@ namespace OvermorrowMod.Content.Items.Misc
 
         public override void SetDefaults()
         {
-            item.width = 26;
-            item.height = 26;
-            item.rare = ItemRarityID.Blue;
-            item.maxStack = 1;
+            Item.width = 26;
+            Item.height = 26;
+            Item.rare = ItemRarityID.Blue;
+            Item.maxStack = 1;
         }
 
         public override bool ItemSpace(Player player) => true;

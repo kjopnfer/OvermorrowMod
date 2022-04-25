@@ -1,11 +1,10 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ObjectData;
-using Terraria.Localization;
-using Terraria.World.Generation;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ObjectData;
+using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Common.Base
 {
@@ -25,7 +24,7 @@ namespace OvermorrowMod.Common.Base
             for (int y = startY; y < Main.maxTilesY; y++)
             {
                 Tile tile = Main.tile[x, y];
-                if (tile != null && tile.nactive() && (!solid || Main.tileSolid[(int)tile.type])) { return y; }
+                if (tile != null && tile.HasUnactuatedTile && (!solid || Main.tileSolid[(int)tile.TileType])) { return y; }
             }
             return Main.maxTilesY;
         }
@@ -40,7 +39,7 @@ namespace OvermorrowMod.Common.Base
             for (int y = startY; y > 0; y--)
             {
                 Tile tile = Main.tile[x, y];
-                if (tile != null && tile.nactive() && (!solid || Main.tileSolid[(int)tile.type])) { return y; }
+                if (tile != null && tile.HasUnactuatedTile && (!solid || Main.tileSolid[(int)tile.TileType])) { return y; }
             }
             return 0;
         }
@@ -53,7 +52,7 @@ namespace OvermorrowMod.Common.Base
                 for (int x = startX; x > 0; x--)
                 {
                     Tile tile = Main.tile[x, y];
-                    if (tile != null && tile.nactive() && (!solid || Main.tileSolid[(int)tile.type])) { return x; }
+                    if (tile != null && tile.HasUnactuatedTile && (!solid || Main.tileSolid[(int)tile.TileType])) { return x; }
                 }
                 return 0;
             }
@@ -62,7 +61,7 @@ namespace OvermorrowMod.Common.Base
                 for (int x = startX; x < Main.maxTilesX; x++)
                 {
                     Tile tile = Main.tile[x, y];
-                    if (tile != null && tile.nactive() && (!solid || Main.tileSolid[(int)tile.type])) { return x; }
+                    if (tile != null && tile.HasUnactuatedTile && (!solid || Main.tileSolid[(int)tile.TileType])) { return x; }
                 }
                 return Main.maxTilesX;
             }
@@ -86,9 +85,9 @@ namespace OvermorrowMod.Common.Base
                 for (int y1 = radiusUp; y1 <= radiusDown; y1++)
                 {
                     double dist = Vector2.Distance(new Vector2(x1 * 16f + 8f, y1 * 16f + 8f), position);
-                    if (dist < distRad && Main.tile[x1, y1] != null && Main.tile[x1, y1].active())
+                    if (dist < distRad && Main.tile[x1, y1] != null && Main.tile[x1, y1].HasUnactuatedTile)
                     {
-                        int currentType = Main.tile[x1, y1].type;
+                        int currentType = Main.tile[x1, y1].TileType;
                         int index = 0;
                         if (BaseUtility.InArray(tiles, currentType, ref index))
                         {
@@ -129,12 +128,12 @@ namespace OvermorrowMod.Common.Base
         public static void GenerateLiquid(int x, int y, int liquidType, bool updateFlow = true, int liquidHeight = 255, bool sync = true)
         {
             liquidHeight = (int)MathHelper.Clamp(liquidHeight, 0, 255);
-            Main.tile[x, y].liquid = (byte)liquidHeight;
-            if (liquidType == 0) { Main.tile[x, y].lava(false); Main.tile[x, y].honey(false); }
-            else
-            if (liquidType == 1) { Main.tile[x, y].lava(true); Main.tile[x, y].honey(false); }
-            else
-            if (liquidType == 2) { Main.tile[x, y].lava(false); Main.tile[x, y].honey(true); }
+
+
+            var tile = Main.tile[x, y];
+            tile.LiquidAmount = (byte)liquidHeight;
+            tile.LiquidType = liquidType;
+
             if (updateFlow) { Liquid.AddWater(x, y); }
             if (sync && Main.netMode != NetmodeID.SinglePlayer) { NetMessage.SendTileSquare(-1, x, y, 1); }
         }
@@ -174,14 +173,14 @@ namespace OvermorrowMod.Common.Base
         {
             try
             {
-                if (Main.tile[x, y] == null) { Main.tile[x, y] = new Tile(); }
+                var tileInstance = Main.tile[x, y];
                 TileObjectData data = (tile <= -1 ? null : TileObjectData.GetTileData(tile, tileStyle, 0));
                 int width = (data == null ? 1 : data.Width);
                 int height = (data == null ? 1 : data.Height);
                 int tileWidth = (tile == -1 || data == null ? 1 : data.Width);
                 int tileHeight = (tile == -1 || data == null ? 1 : data.Height);
-                byte oldSlope = Main.tile[x, y].slope();
-                bool oldHalfBrick = Main.tile[x, y].halfBrick();
+                var oldSlope = tileInstance.Slope;
+                bool oldHalfBrick = tileInstance.IsHalfBlock;
                 if (tile != -1)
                 {
                     WorldGen.destroyObject = true;
@@ -195,12 +194,12 @@ namespace OvermorrowMod.Common.Base
                             {
                                 int x2 = (int)newPos.X + x1;
                                 int y2 = (int)newPos.Y + y1;
-                                if (x1 == 0 && y1 == 0 && Main.tile[x2, y2].type == 21) //is a chest, special case to prevent dupe glitch
+                                if (x1 == 0 && y1 == 0 && Main.tile[x2, y2].TileType == 21) //is a chest, special case to prevent dupe glitch
                                 {
                                     KillChestAndItems(x2, y2);
                                 }
-                                Main.tile[x, y].type = 0;
-                                Main.tile[x, y].active(false);
+                                tileInstance.TileType = 0;
+                                tileInstance.HasTile = false;
                                 if (!silent) { WorldGen.KillTile(x, y, false, false, true); }
                                 if (removeLiquid)
                                 {
@@ -229,13 +228,13 @@ namespace OvermorrowMod.Common.Base
                     {
                         if (tileWidth <= 1 && tileHeight <= 1 && !Main.tileFrameImportant[tile])
                         {
-                            Main.tile[x, y].type = (ushort)tile;
-                            Main.tile[x, y].active(true);
-                            if (slope == -2 && oldHalfBrick) { Main.tile[x, y].halfBrick(true); }
+                            tileInstance.TileType = (ushort)tile;
+                            tileInstance.HasTile = true;
+                            if (slope == -2 && oldHalfBrick || slope == -1) { tileInstance.IsHalfBlock = true; }
                             else
-                            if (slope == -1) { Main.tile[x, y].halfBrick(true); }
-                            else
-                            { Main.tile[x, y].slope(slope == -2 ? oldSlope : (byte)slope); }
+                            {
+                                tileInstance.Slope = slope == -2 ? oldSlope : (SlopeType)slope;
+                            }
                             WorldGen.SquareTileFrame(x, y, true);
                         }
                         else
@@ -266,13 +265,13 @@ namespace OvermorrowMod.Common.Base
                     }
                     else
                     {
-                        Main.tile[x, y].active(false);
+                        tileInstance.HasTile = false;
                     }
                 }
                 if (wall != -1)
                 {
                     if (wall == -2) { wall = 0; }
-                    Main.tile[x, y].wall = 0;
+                    tileInstance.WallType = 0;
                     WorldGen.PlaceWall(x, y, wall, true);
                 }
                 if (sync && Main.netMode != NetmodeID.SinglePlayer)
@@ -567,17 +566,18 @@ namespace OvermorrowMod.Common.Base
             {
                 for (int y = topY; y < bottomY; y++)
                 {
-                    if (Main.tile[x, y].type != 48 && Main.tile[x, y].type != 137 && Main.tile[x, y].type != 232 && Main.tile[x, y].type != 191 && Main.tile[x, y].type != 151 && Main.tile[x, y].type != 274)
+                    var tile = Main.tile[x, y];
+                    if (tile.TileType != 48 && tile.TileType != 137 && tile.TileType != 232 && tile.TileType != 191 && tile.TileType != 151 && tile.TileType != 274)
                     {
-                        if (!Main.tile[x, y - 1].active())
+                        if (!Main.tile[x, y - 1].HasTile)
                         {
                             if (WorldGen.SolidTile(x, y))
                             {
-                                if (!Main.tile[x - 1, y].halfBrick() && !Main.tile[x + 1, y].halfBrick() && Main.tile[x - 1, y].slope() == 0 && Main.tile[x + 1, y].slope() == 0)
+                                if (!Main.tile[x - 1, y].IsHalfBlock && !Main.tile[x + 1, y].IsHalfBlock && Main.tile[x - 1, y].Slope == SlopeType.Solid && Main.tile[x + 1, y].Slope == SlopeType.Solid)
                                 {
                                     if (WorldGen.SolidTile(x, y + 1))
                                     {
-                                        if (!WorldGen.SolidTile(x - 1, y) && !Main.tile[x - 1, y + 1].halfBrick() && WorldGen.SolidTile(x - 1, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x + 1, y - 1].active())
+                                        if (!WorldGen.SolidTile(x - 1, y) && !Main.tile[x - 1, y + 1].IsHalfBlock && WorldGen.SolidTile(x - 1, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x + 1, y - 1].HasTile)
                                         {
                                             if (WorldGen.genRand.Next(2) == 0)
                                             {
@@ -588,7 +588,7 @@ namespace OvermorrowMod.Common.Base
                                                 WorldGen.PoundTile(x, y);
                                             }
                                         }
-                                        else if (!WorldGen.SolidTile(x + 1, y) && !Main.tile[x + 1, y + 1].halfBrick() && WorldGen.SolidTile(x + 1, y + 1) && WorldGen.SolidTile(x - 1, y) && !Main.tile[x - 1, y - 1].active())
+                                        else if (!WorldGen.SolidTile(x + 1, y) && !Main.tile[x + 1, y + 1].IsHalfBlock && WorldGen.SolidTile(x + 1, y + 1) && WorldGen.SolidTile(x - 1, y) && !Main.tile[x - 1, y - 1].HasTile)
                                         {
                                             if (WorldGen.genRand.Next(2) == 0)
                                             {
@@ -599,27 +599,27 @@ namespace OvermorrowMod.Common.Base
                                                 WorldGen.PoundTile(x, y);
                                             }
                                         }
-                                        else if (WorldGen.SolidTile(x + 1, y + 1) && WorldGen.SolidTile(x - 1, y + 1) && !Main.tile[x + 1, y].active() && !Main.tile[x - 1, y].active())
+                                        else if (WorldGen.SolidTile(x + 1, y + 1) && WorldGen.SolidTile(x - 1, y + 1) && !Main.tile[x + 1, y].HasTile && !Main.tile[x - 1, y].HasTile)
                                         {
                                             WorldGen.PoundTile(x, y);
                                         }
                                         if (WorldGen.SolidTile(x, y))
                                         {
-                                            if (WorldGen.SolidTile(x - 1, y) && WorldGen.SolidTile(x + 1, y + 2) && !Main.tile[x + 1, y].active() && !Main.tile[x + 1, y + 1].active() && !Main.tile[x - 1, y - 1].active())
+                                            if (WorldGen.SolidTile(x - 1, y) && WorldGen.SolidTile(x + 1, y + 2) && !Main.tile[x + 1, y].HasTile && !Main.tile[x + 1, y + 1].HasTile && !Main.tile[x - 1, y - 1].HasTile)
                                             {
                                                 WorldGen.KillTile(x, y, false, false, false);
                                             }
-                                            else if (WorldGen.SolidTile(x + 1, y) && WorldGen.SolidTile(x - 1, y + 2) && !Main.tile[x - 1, y].active() && !Main.tile[x - 1, y + 1].active() && !Main.tile[x + 1, y - 1].active())
+                                            else if (WorldGen.SolidTile(x + 1, y) && WorldGen.SolidTile(x - 1, y + 2) && !Main.tile[x - 1, y].HasTile && !Main.tile[x - 1, y + 1].HasTile && !Main.tile[x + 1, y - 1].HasTile)
                                             {
                                                 WorldGen.KillTile(x, y, false, false, false);
                                             }
-                                            else if (!Main.tile[x - 1, y + 1].active() && !Main.tile[x - 1, y].active() && WorldGen.SolidTile(x + 1, y) && WorldGen.SolidTile(x, y + 2))
+                                            else if (!Main.tile[x - 1, y + 1].HasTile && !Main.tile[x - 1, y].HasTile && WorldGen.SolidTile(x + 1, y) && WorldGen.SolidTile(x, y + 2))
                                             {
                                                 if (WorldGen.genRand.Next(5) == 0) WorldGen.KillTile(x, y, false, false, false);
                                                 else if (WorldGen.genRand.Next(5) == 0) WorldGen.PoundTile(x, y);
                                                 else WorldGen.SlopeTile(x, y, 2);
                                             }
-                                            else if (!Main.tile[x + 1, y + 1].active() && !Main.tile[x + 1, y].active() && WorldGen.SolidTile(x - 1, y) && WorldGen.SolidTile(x, y + 2))
+                                            else if (!Main.tile[x + 1, y + 1].HasTile && !Main.tile[x + 1, y].HasTile && WorldGen.SolidTile(x - 1, y) && WorldGen.SolidTile(x, y + 2))
                                             {
                                                 if (WorldGen.genRand.Next(5) == 0)
                                                 {
@@ -636,17 +636,17 @@ namespace OvermorrowMod.Common.Base
                                             }
                                         }
                                     }
-                                    if (WorldGen.SolidTile(x, y) && !Main.tile[x - 1, y].active() && !Main.tile[x + 1, y].active())
+                                    if (WorldGen.SolidTile(x, y) && !Main.tile[x - 1, y].HasTile && !Main.tile[x + 1, y].HasTile)
                                     {
                                         WorldGen.KillTile(x, y, false, false, false);
                                     }
                                 }
                             }
-                            else if (!Main.tile[x, y].active() && Main.tile[x, y + 1].type != 151 && Main.tile[x, y + 1].type != 274)
+                            else if (!Main.tile[x, y].HasTile && Main.tile[x, y + 1].TileType != 151 && Main.tile[x, y + 1].TileType != 274)
                             {
-                                if (Main.tile[x + 1, y].type != 190 && Main.tile[x + 1, y].type != 48 && Main.tile[x + 1, y].type != 232 && WorldGen.SolidTile(x - 1, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x - 1, y].active() && !Main.tile[x + 1, y - 1].active())
+                                if (Main.tile[x + 1, y].TileType != 190 && Main.tile[x + 1, y].TileType != 48 && Main.tile[x + 1, y].TileType != 232 && WorldGen.SolidTile(x - 1, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x - 1, y].HasTile && !Main.tile[x + 1, y - 1].HasTile)
                                 {
-                                    WorldGen.PlaceTile(x, y, (int)Main.tile[x, y + 1].type, false, false, -1, 0);
+                                    WorldGen.PlaceTile(x, y, (int)Main.tile[x, y + 1].TileType, false, false, -1, 0);
                                     if (WorldGen.genRand.Next(2) == 0)
                                     {
                                         WorldGen.SlopeTile(x, y, 2);
@@ -656,9 +656,9 @@ namespace OvermorrowMod.Common.Base
                                         WorldGen.PoundTile(x, y);
                                     }
                                 }
-                                if (Main.tile[x - 1, y].type != 190 && Main.tile[x - 1, y].type != 48 && Main.tile[x - 1, y].type != 232 && WorldGen.SolidTile(x + 1, y + 1) && WorldGen.SolidTile(x - 1, y) && !Main.tile[x + 1, y].active() && !Main.tile[x - 1, y - 1].active())
+                                if (Main.tile[x - 1, y].TileType != 190 && Main.tile[x - 1, y].TileType != 48 && Main.tile[x - 1, y].TileType != 232 && WorldGen.SolidTile(x + 1, y + 1) && WorldGen.SolidTile(x - 1, y) && !Main.tile[x + 1, y].HasTile && !Main.tile[x - 1, y - 1].HasTile)
                                 {
-                                    WorldGen.PlaceTile(x, y, (int)Main.tile[x, y + 1].type, false, false, -1, 0);
+                                    WorldGen.PlaceTile(x, y, (int)Main.tile[x, y + 1].TileType, false, false, -1, 0);
                                     if (WorldGen.genRand.Next(2) == 0)
                                     {
                                         WorldGen.SlopeTile(x, y, 1);
@@ -670,7 +670,7 @@ namespace OvermorrowMod.Common.Base
                                 }
                             }
                         }
-                        else if (!Main.tile[x, y + 1].active() && WorldGen.genRand.Next(2) == 0 && WorldGen.SolidTile(x, y) && !Main.tile[x - 1, y].halfBrick() && !Main.tile[x + 1, y].halfBrick() && Main.tile[x - 1, y].slope() == 0 && Main.tile[x + 1, y].slope() == 0 && WorldGen.SolidTile(x, y - 1))
+                        else if (!Main.tile[x, y + 1].HasTile && WorldGen.genRand.Next(2) == 0 && WorldGen.SolidTile(x, y) && !Main.tile[x - 1, y].IsHalfBlock && !Main.tile[x + 1, y].IsHalfBlock && Main.tile[x - 1, y].Slope == 0 && Main.tile[x + 1, y].Slope == 0 && WorldGen.SolidTile(x, y - 1))
                         {
                             if (WorldGen.SolidTile(x - 1, y) && !WorldGen.SolidTile(x + 1, y) && WorldGen.SolidTile(x - 1, y - 1))
                             {
@@ -688,23 +688,23 @@ namespace OvermorrowMod.Common.Base
             {
                 for (int y = topY; y < bottomY; y++)
                 {
-                    if (WorldGen.genRand.Next(2) == 0 && !Main.tile[x, y - 1].active() && Main.tile[x, y].type != 137 && Main.tile[x, y].type != 48 && Main.tile[x, y].type != 232 && Main.tile[x, y].type != 191 && Main.tile[x, y].type != 151 && Main.tile[x, y].type != 274 && Main.tile[x, y].type != 75 && Main.tile[x, y].type != 76 && WorldGen.SolidTile(x, y) && Main.tile[x - 1, y].type != 137 && Main.tile[x + 1, y].type != 137)
+                    if (WorldGen.genRand.Next(2) == 0 && !Main.tile[x, y - 1].HasTile && Main.tile[x, y].TileType != 137 && Main.tile[x, y].TileType != 48 && Main.tile[x, y].TileType != 232 && Main.tile[x, y].TileType != 191 && Main.tile[x, y].TileType != 151 && Main.tile[x, y].TileType != 274 && Main.tile[x, y].TileType != 75 && Main.tile[x, y].TileType != 76 && WorldGen.SolidTile(x, y) && Main.tile[x - 1, y].TileType != 137 && Main.tile[x + 1, y].TileType != 137)
                     {
-                        if (WorldGen.SolidTile(x, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x - 1, y].active())
+                        if (WorldGen.SolidTile(x, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x - 1, y].HasTile)
                         {
                             WorldGen.SlopeTile(x, y, 2);
                         }
-                        if (WorldGen.SolidTile(x, y + 1) && WorldGen.SolidTile(x - 1, y) && !Main.tile[x + 1, y].active())
+                        if (WorldGen.SolidTile(x, y + 1) && WorldGen.SolidTile(x - 1, y) && !Main.tile[x + 1, y].HasTile)
                         {
                             WorldGen.SlopeTile(x, y, 1);
                         }
                     }
-                    if (Main.tile[x, y].slope() == 1 && !WorldGen.SolidTile(x - 1, y))
+                    if (Main.tile[x, y].Slope == SlopeType.SlopeDownLeft && !WorldGen.SolidTile(x - 1, y))
                     {
                         WorldGen.SlopeTile(x, y, 0);
                         WorldGen.PoundTile(x, y);
                     }
-                    if (Main.tile[x, y].slope() == 2 && !WorldGen.SolidTile(x + 1, y))
+                    if (Main.tile[x, y].Slope == SlopeType.SlopeDownRight && !WorldGen.SolidTile(x + 1, y))
                     {
                         WorldGen.SlopeTile(x, y, 0);
                         WorldGen.PoundTile(x, y);
@@ -712,92 +712,6 @@ namespace OvermorrowMod.Common.Base
                 }
             }
             Main.tileSolid[137] = true;
-        }
-
-        //fuck it, this is broken
-        public class GenHelper
-        {
-            public List<TileData> tiles = new List<TileData>();
-            public Action<int, int> generate;
-            public float rotation;
-            public int rotX, rotY;
-
-            public GenHelper(Action<int, int> gen) { generate = gen; }
-
-            public void Gen(int x, int y)
-            {
-                Gen(x, y, rotX, rotY, rotation);
-            }
-
-            public void Gen(int x, int y, int rotationX, int rotationY, float genRotation)
-            {
-                tiles.Clear();
-                Tile[,] tempTiles = Main.tile; //TODO: CHANGE THIS IT WONT WORK IN MULTIPLAYER
-                Main.tile = new Tile[Main.maxTilesX, Main.maxTilesY];
-                generate(x, y);
-                for (int x1 = 0; x1 < Main.maxTilesX; x1++)
-                {
-                    for (int y1 = 0; y1 < Main.maxTilesY; y1++)
-                    {
-                        Tile tile = Main.tile[x1, y1];
-                        if (tile != null) tiles.Add(new TileData(x1, y1, tile));
-                    }
-                }
-                Main.tile = tempTiles;
-
-                Vector2 rotVec = new Vector2((x + rotationX) * 16, (y + rotationY) * 16);
-
-                List<Point> points = new List<Point>();
-                Point? lastPoint = null;
-                foreach (TileData data in tiles)
-                {
-                    Vector2 rot = new Vector2(data.X * 16, data.Y * 16);
-                    rot = BaseUtility.RotateVector(rotVec, rot, genRotation);
-                    int x1 = (int)rot.X / 16, y1 = (int)rot.Y / 16;
-                    if (rot.X % 16 > 0) x1 -= 1; if (rot.Y % 16 > 0) y1 -= 1;
-                    Point point = new Point(x1, y1);
-                    /*if(points.Contains(point)) //this tile was set already, there's a hole
-					{
-						if(CheckTile(ref x1, ref y1, ref point, 0, 1)) { }
-						else if (CheckTile(ref x1, ref y1, ref point, 0, -1)) { }
-						else if (CheckTile(ref x1, ref y1, ref point, 1, 0)) { }
-						else if (CheckTile(ref x1, ref y1, ref point, -1, 0)) { }
-						else if (CheckTile(ref x1, ref y1, ref point, -1, -1)) { }
-						else if (CheckTile(ref x1, ref y1, ref point, -1, 1)) { }
-						else if (CheckTile(ref x1, ref y1, ref point, 1, -1)) { }
-						else if (CheckTile(ref x1, ref y1, ref point, 1, 1)) { }
-					}*/
-                    lastPoint = point;
-                    points.Add(point);
-                    Main.tile[x1, y1] = data.tile;
-                }
-                foreach (Point point in points) //tileframes
-                {
-                    WorldGen.TileFrame(point.X, point.Y, false, false);
-                    Tile tile = Main.tile[point.X, point.Y];
-                    if (tile != null && tile.wall > 0) Framing.WallFrame(point.X, point.Y, false);
-                }
-                points.Clear();
-            }
-
-            public bool CheckTile(ref int x, ref int y, ref Point point, int offsetX, int offsetY)
-            {
-                int validX = x + offsetX, validY = y + offsetY;
-                if (ValidTile(validX, validY)) { x = validX; y = validY; point = new Point(validX, validY); return true; }
-                return false;
-            }
-
-            public bool ValidTile(int x, int y)
-            {
-                return Main.tile[x, y] == null || (!Main.tile[x, y].active() && Main.tile[x, y].wall == 0);
-            }
-
-            public class TileData
-            {
-                public int X, Y;
-                public Tile tile;
-                public TileData(int i, int j, Tile t) { X = i; Y = j; tile = t; }
-            }
         }
     }
 
@@ -995,10 +909,9 @@ namespace OvermorrowMod.Common.Base
         public override bool Apply(Point origin, int x, int y, params object[] args)
         {
             if (x < 0 || x > Main.maxTilesX || y < 0 || y > Main.maxTilesY) return false;
-            if (GenBase._tiles[x, y] == null) GenBase._tiles[x, y] = new Tile();
             if (_canReplace == null || (_canReplace != null && _canReplace(x, y, GenBase._tiles[x, y])))
             {
-                GenBase._tiles[x, y].ResetToType(this._type);
+                _tiles[x, y].ResetToType(this._type);
                 if (this._doFraming)
                 {
                     WorldUtils.TileFrame(x, y, this._doNeighborFraming);
@@ -1020,7 +933,6 @@ namespace OvermorrowMod.Common.Base
         public override bool Apply(Point origin, int x, int y, params object[] args)
         {
             if (x < 0 || x > Main.maxTilesX || y < 0 || y > Main.maxTilesY) return false;
-            if (GenBase._tiles[x, y] == null) GenBase._tiles[x, y] = new Tile();
             Main.Map.UpdateLighting(x, y, (byte)Math.Max(Main.Map[x, y].Light, _brightness));
             return base.UnitApply(origin, x, y, args);
         }
@@ -1048,10 +960,9 @@ namespace OvermorrowMod.Common.Base
         public override bool Apply(Point origin, int x, int y, params object[] args)
         {
             if (x < 0 || x > Main.maxTilesX || y < 0 || y > Main.maxTilesY) return false;
-            if (GenBase._tiles[x, y] == null) GenBase._tiles[x, y] = new Tile();
             if (_canReplace == null || (_canReplace != null && _canReplace(x, y, GenBase._tiles[x, y])))
             {
-                GenBase._tiles[x, y].wall = this._type;
+                GenBase._tiles[x, y].WallType = this._type;
                 WorldGen.SquareWallFrame(x, y, true);
                 if (this._neighbors)
                 {
@@ -1098,14 +1009,14 @@ namespace OvermorrowMod.Common.Base
     {
         protected override bool CheckValidity(int x, int y)
         {
-            return GenBase._tiles[x, y].active() && GenBase._tiles[x, y].slope() == 0 && !GenBase._tiles[x, y].halfBrick();
+            return _tiles[x, y].HasTile && _tiles[x, y].Slope == SlopeType.Solid && !_tiles[x, y].IsHalfBlock;
         }
     }
     public class IsSloped : GenCondition
     {
         protected override bool CheckValidity(int x, int y)
         {
-            return GenBase._tiles[x, y].active() && (GenBase._tiles[x, y].slope() > 0 || GenBase._tiles[x, y].halfBrick());
+            return _tiles[x, y].HasTile && (_tiles[x, y].Slope > 0 || _tiles[x, y].IsHalfBlock);
         }
     }
     #endregion

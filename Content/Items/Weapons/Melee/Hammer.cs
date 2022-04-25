@@ -1,5 +1,5 @@
-﻿using Terraria.ID;
-using Terraria;
+﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee
@@ -14,18 +14,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
-            item.damage = 28;
-            item.width = 52;
-            item.height = 52;
-            item.melee = true;
-            item.autoReuse = false;
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.knockBack = 4;
-            item.value = Item.sellPrice(0, 0, 35, 0);
-            item.rare = ItemRarityID.Blue;
-            item.UseSound = SoundID.Item1;
+            Item.damage = 28;
+            Item.width = 52;
+            Item.height = 52;
+            Item.DamageType = DamageClass.Melee;
+            Item.autoReuse = false;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.knockBack = 4;
+            Item.value = Item.sellPrice(0, 0, 35, 0);
+            Item.rare = ItemRarityID.Blue;
+            Item.UseSound = SoundID.Item1;
         }
     }
 }

@@ -13,30 +13,30 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Dust Devil");
-            Main.projFrames[projectile.type] = 7;
-            ProjectileID.Sets.MinionTargettingFeature[projectile.type] = true;
+            Main.projFrames[Projectile.type] = 7;
+            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
 
-            Main.projPet[projectile.type] = true;
-            ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
-            ProjectileID.Sets.Homing[projectile.type] = true;
+            Main.projPet[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 46;
-            projectile.height = 38;
-            projectile.tileCollide = true;
-            projectile.friendly = true;
-            projectile.minion = true;
-            projectile.minionSlots = 1f;
-            projectile.penetrate = -1;
-            projectile.usesLocalNPCImmunity = true;
-            projectile.localNPCHitCooldown = 30;
+            Projectile.width = 46;
+            Projectile.height = 38;
+            Projectile.tileCollide = true;
+            Projectile.friendly = true;
+            Projectile.minion = true;
+            Projectile.minionSlots = 1f;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 30;
         }
 
         public override void AI()
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             #region Active check
             // This is the "active check", makes sure the minion is alive while the player is alive, and despawns if not
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
             }
             if (player.HasBuff(ModContent.BuffType<DustDevilBuff>()))
             {
-                projectile.timeLeft = 2;
+                Projectile.timeLeft = 2;
             }
             #endregion
 
@@ -55,22 +55,22 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
             idlePosition.Y -= 48f; // Go up 48 coordinates (three tiles from the center of the player)
 
             // If your minion doesn't aimlessly move around when it's idle, you need to "put" it into the line of other summoned minions
-            // The index is projectile.minionPos
-            float minionPositionOffsetX = (10 + projectile.minionPos * 40) * -player.direction;
+            // The index is Projectile.minionPos
+            float minionPositionOffsetX = (10 + Projectile.minionPos * 40) * -player.direction;
             idlePosition.X += minionPositionOffsetX; // Go behind the player
 
             // All of this code below this line is adapted from Spazmamini code (ID 388, aiStyle 66)
 
             // Teleport to player if distance is too big
-            Vector2 vectorToIdlePosition = idlePosition - projectile.Center;
+            Vector2 vectorToIdlePosition = idlePosition - Projectile.Center;
             float distanceToIdlePosition = vectorToIdlePosition.Length();
             if (Main.myPlayer == player.whoAmI && distanceToIdlePosition > 1000f)
             {
-                // Whenever you deal with non-regular events that change the behavior or position drastically, make sure to only run the code on the owner of the projectile,
+                // Whenever you deal with non-regular events that change the behavior or position drastically, make sure to only run the code on the owner of the Projectile,
                 // and then set netUpdate to true
-                projectile.position = idlePosition;
-                projectile.velocity *= 0.1f;
-                projectile.netUpdate = true;
+                Projectile.position = idlePosition;
+                Projectile.velocity *= 0.1f;
+                Projectile.netUpdate = true;
             }
 
             // If your minion is flying, you want to do this independently of any conditions
@@ -79,13 +79,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
             {
                 // Fix overlap with other minions
                 Projectile other = Main.projectile[i];
-                if (i != projectile.whoAmI && other.active && other.owner == projectile.owner && Math.Abs(projectile.position.X - other.position.X) + Math.Abs(projectile.position.Y - other.position.Y) < projectile.width)
+                if (i != Projectile.whoAmI && other.active && other.owner == Projectile.owner && Math.Abs(Projectile.position.X - other.position.X) + Math.Abs(Projectile.position.Y - other.position.Y) < Projectile.width)
                 {
-                    if (projectile.position.X < other.position.X) projectile.velocity.X -= overlapVelocity;
-                    else projectile.velocity.X += overlapVelocity;
+                    if (Projectile.position.X < other.position.X) Projectile.velocity.X -= overlapVelocity;
+                    else Projectile.velocity.X += overlapVelocity;
 
-                    if (projectile.position.Y < other.position.Y) projectile.velocity.Y -= overlapVelocity;
-                    else projectile.velocity.Y += overlapVelocity;
+                    if (Projectile.position.Y < other.position.Y) Projectile.velocity.Y -= overlapVelocity;
+                    else Projectile.velocity.Y += overlapVelocity;
                 }
             }
             #endregion
@@ -93,26 +93,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
             #region Find target
             // Starting search distance
             float distanceFromTarget = 2000f; // range of 700f
-            Vector2 targetCenter = projectile.position;
+            Vector2 targetCenter = Projectile.position;
             NPC targetNPC = null;
             bool foundTarget = false;
 
 
-            //projectile.spriteDirection = projectile.direction = (projectile.velocity.X > 0).ToDirectionInt();
-            if (projectile.velocity.X > 0f)
+            //Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+            if (Projectile.velocity.X > 0f)
             {
-                projectile.spriteDirection = projectile.direction = -1;
+                Projectile.spriteDirection = Projectile.direction = -1;
             }
-            else if (projectile.velocity.X < 0f)
+            else if (Projectile.velocity.X < 0f)
             {
-                projectile.spriteDirection = projectile.direction = 1;
+                Projectile.spriteDirection = Projectile.direction = 1;
             }
 
             // This code is required if your minion weapon has the targeting feature
             if (player.HasMinionAttackTargetNPC)
             {
                 NPC npc = Main.npc[player.MinionAttackTargetNPC];
-                float between = Vector2.Distance(npc.Center, projectile.Center);
+                float between = Vector2.Distance(npc.Center, Projectile.Center);
                 // Reasonable distance away so it doesn't target across multiple screens
                 if (between < 50f)
                 {
@@ -129,10 +129,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
                     NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy())
                     {
-                        float between = Vector2.Distance(npc.Center, projectile.Center); // distance between the npc and minion
-                        bool closest = Vector2.Distance(projectile.Center, targetCenter) > between; // targetcenter = npc center
+                        float between = Vector2.Distance(npc.Center, Projectile.Center); // distance between the npc and minion
+                        bool closest = Vector2.Distance(Projectile.Center, targetCenter) > between; // targetcenter = npc center
                         bool inRange = between < distanceFromTarget; // if the distance between npc and minion is less than 700
-                        bool lineOfSight = Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height);
+                        bool lineOfSight = Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height);
                         // Additional check for this specific minion behavior, otherwise it will stop attacking once it dashed through an enemy while flying though tiles afterwards
                         // The number depends on various parameters seen in the movement code below. Test different ones out until it works alright
                         bool closeThroughWall = between < 2000f;
@@ -151,7 +151,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
             // friendly needs to be set to false so it doesn't damage things like target dummies while idling
             // Both things depend on if it has a target or not, so it's just one assignment here
             // You don't need this assignment if your minion is shooting things instead of dealing contact damage
-            projectile.friendly = foundTarget;
+            Projectile.friendly = foundTarget;
             #endregion
 
             #region Movement
@@ -161,20 +161,20 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
 
             if (makeStorm)
             {
-                projectile.velocity = Vector2.Zero;
-                projectile.alpha = 255;
+                Projectile.velocity = Vector2.Zero;
+                Projectile.alpha = 255;
 
-                projectile.ai[0]++;
-                if (projectile.ai[0] == 240)
+                Projectile.ai[0]++;
+                if (Projectile.ai[0] == 240)
                 {
-                    projectile.ai[0] = 0;
+                    Projectile.ai[0] = 0;
                     makeStorm = false;
                 }
                 return;
             }
             else
             {
-                projectile.alpha = 0;
+                Projectile.alpha = 0;
             }
 
             if (foundTarget)
@@ -202,47 +202,47 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
                         // This is a simple movement formula using the two parameters and its desired direction to create a "homing" movement
                         vectorToIdlePosition.Normalize();
                         vectorToIdlePosition *= speed;
-                        projectile.velocity = (projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
+                        Projectile.velocity = (Projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
                     }
-                    else if (projectile.velocity == Vector2.Zero)
+                    else if (Projectile.velocity == Vector2.Zero)
                     {
                         // If there is a case where it's not moving at all, give it a little "poke"
-                        projectile.velocity.X = -0.15f;
-                        projectile.velocity.Y = -0.05f;
+                        Projectile.velocity.X = -0.15f;
+                        Projectile.velocity.Y = -0.05f;
                     }
                     // The immediate range around the target (so it doesn't latch onto it when close)
-                    /*Vector2 direction = targetCenter - projectile.Center;
+                    /*Vector2 direction = targetCenter - Projectile.Center;
                     direction.Normalize();
                     direction *= speed;
-                    projectile.velocity = (projectile.velocity * (inertia - 1) + direction) / inertia;*/
+                    Projectile.velocity = (Projectile.velocity * (inertia - 1) + direction) / inertia;*/
 
-                    if ((targetCenter - projectile.Center).X > 0f)
+                    if ((targetCenter - Projectile.Center).X > 0f)
                     {
-                        projectile.spriteDirection = projectile.direction = -1;
+                        Projectile.spriteDirection = Projectile.direction = -1;
                     }
-                    else if ((targetCenter - projectile.Center).X < 0f)
+                    else if ((targetCenter - Projectile.Center).X < 0f)
                     {
-                        projectile.spriteDirection = projectile.direction = 1;
+                        Projectile.spriteDirection = Projectile.direction = 1;
                     }
                 }
                 else
                 {
-                    bool lineOfSight = Collision.CanHitLine(projectile.position, projectile.width, projectile.height, targetNPC.position, targetNPC.width, targetNPC.height);
+                    bool lineOfSight = Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, targetNPC.position, targetNPC.width, targetNPC.height);
 
                     if (lineOfSight)
                     {
                         // The immediate range around the target (so it doesn't latch onto it when close)
-                        Vector2 direction = targetCenter - projectile.Center;
+                        Vector2 direction = targetCenter - Projectile.Center;
                         direction.Normalize();
                         direction *= speed;
-                        projectile.velocity = (projectile.velocity * (inertia - 1) + direction) / inertia;
+                        Projectile.velocity = (Projectile.velocity * (inertia - 1) + direction) / inertia;
 
 
 
                         if (distanceFromTarget <= 10 && Main.rand.Next(20) == 0)
                         {
                             makeStorm = true;
-                            int proj = Projectile.NewProjectile(projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, projectile.damage / 2, 0f, projectile.owner);
+                            int proj = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, Projectile.damage / 2, 0f, Projectile.owner);
                             Main.projectile[proj].timeLeft = 240;
                         }
                     }
@@ -268,13 +268,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
                             // This is a simple movement formula using the two parameters and its desired direction to create a "homing" movement
                             vectorToIdlePosition.Normalize();
                             vectorToIdlePosition *= speed;
-                            projectile.velocity = (projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
+                            Projectile.velocity = (Projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
                         }
-                        else if (projectile.velocity == Vector2.Zero)
+                        else if (Projectile.velocity == Vector2.Zero)
                         {
                             // If there is a case where it's not moving at all, give it a little "poke"
-                            projectile.velocity.X = -0.15f;
-                            projectile.velocity.Y = -0.05f;
+                            Projectile.velocity.X = -0.15f;
+                            Projectile.velocity.Y = -0.05f;
                         }
                     }
                 }
@@ -301,28 +301,28 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
                     // This is a simple movement formula using the two parameters and its desired direction to create a "homing" movement
                     vectorToIdlePosition.Normalize();
                     vectorToIdlePosition *= speed;
-                    projectile.velocity = (projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
+                    Projectile.velocity = (Projectile.velocity * (inertia - 1) + vectorToIdlePosition) / inertia;
                 }
-                else if (projectile.velocity == Vector2.Zero)
+                else if (Projectile.velocity == Vector2.Zero)
                 {
                     // If there is a case where it's not moving at all, give it a little "poke"
-                    projectile.velocity.X = -0.15f;
-                    projectile.velocity.Y = -0.05f;
+                    Projectile.velocity.X = -0.15f;
+                    Projectile.velocity.Y = -0.05f;
                 }
             }
             #endregion
 
             #region Animation and visuals
             // So it will lean slightly towards the direction it's moving
-            projectile.rotation = projectile.velocity.X * 0.05f;
+            Projectile.rotation = Projectile.velocity.X * 0.05f;
 
             // Loop through the 4 animation frames, spending 3 ticks on each.
-            if (++projectile.frameCounter >= 3)
+            if (++Projectile.frameCounter >= 3)
             {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                Projectile.frameCounter = 0;
+                if (++Projectile.frame >= Main.projFrames[Projectile.type])
                 {
-                    projectile.frame = 0;
+                    Projectile.frame = 0;
                 }
             }
             #endregion
@@ -335,10 +335,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
             return false;
         }
 
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough)
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
             fallThrough = true;
-            return base.TileCollideStyle(ref width, ref height, ref fallThrough);
+            return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
 
         public override bool MinionContactDamage()

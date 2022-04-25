@@ -16,48 +16,43 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DemonEye
         public override void SetDefaults()
         {
 
-            item.width = 32;
-            item.height = 32;
-            item.damage = 10;
-            item.summon = true;
-            item.noMelee = true;
-            item.UseSound = SoundID.Item82;
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.rare = ItemRarityID.Blue;
-            item.autoReuse = true;
-            item.knockBack = 0;
-            item.buffType = ModContent.BuffType<DemEyeBuff>();
-            item.shoot = ModContent.ProjectileType<EyeSummon>();
-            item.shootSpeed = 11f;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 10;
+            Item.DamageType = DamageClass.Summon;
+            Item.noMelee = true;
+            Item.UseSound = SoundID.Item82;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.rare = ItemRarityID.Blue;
+            Item.autoReuse = true;
+            Item.knockBack = 0;
+            Item.buffType = ModContent.BuffType<DemEyeBuff>();
+            Item.shoot = ModContent.ProjectileType<EyeSummon>();
+            Item.shootSpeed = 11f;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(ItemID.Lens, 10);
-            recipe1.AddTile(TileID.Anvils);
-            recipe1.SetResult(this);
-            recipe1.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.Lens, 10)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
 
-
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                player.AddBuff(item.buffType, 3600, true);
+                player.AddBuff(Item.buffType, 3600, true);
             }
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            // This is needed so the buff that keeps your minion alive and allows you to despawn it properly applies
-
-
             // Here you can change where the minion is spawned. Most vanilla minions spawn at the cursor position.
             position = Main.MouseWorld;
-            return true;
         }
+
     }
 }

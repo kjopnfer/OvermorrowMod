@@ -1,11 +1,13 @@
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.Utilities;
-using System;
 using OvermorrowMod.Core;
+using System;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee.HeavenBlade
 {
@@ -15,29 +17,31 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HeavenBlade
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Heaven's Blade");
-            ItemID.Sets.ItemNoGravity[item.type] = true;
+            ItemID.Sets.ItemNoGravity[Item.type] = true;
         }
         public override void SetDefaults()
         {
-            item.width = item.height = 60;
-            item.damage = 60;
-            item.melee = true;
-            item.noMelee = true;
-            item.noUseGraphic = true;
-            item.useAnimation = item.useTime = 20;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.shootSpeed = 1f;
-            item.rare = ItemRarityID.Yellow;
-            item.autoReuse = true;
-            item.shoot = ModContent.ProjectileType<HeavenBladeHeld>();
+            Item.width = Item.height = 60;
+            Item.damage = 60;
+            Item.DamageType = DamageClass.Melee;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.useAnimation = Item.useTime = 20;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.shootSpeed = 1f;
+            Item.rare = ItemRarityID.Yellow;
+            Item.autoReuse = true;
+            Item.shoot = ModContent.ProjectileType<HeavenBladeHeld>();
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int dir = currentAttack;
             currentAttack = -currentAttack;
-            Projectile.NewProjectile(position, new Vector2(speedX, speedY), type, damage, knockBack, player.whoAmI, 0, dir);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0, dir);
             return false;
         }
+
         /*public override bool UseItem(Player player)
         {
             OvermorrowModPlayer modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
@@ -46,9 +50,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HeavenBlade
         }*/
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Vector2 pos = item.Center -  Main.screenPosition;
-            Texture2D texture = Main.itemTexture[item.type];
-            Texture2D spot = ModContent.GetTexture(AssetDirectory.Textures + "Spotlight");
+            Vector2 pos = Item.Center - Main.screenPosition;
+            Texture2D texture = TextureAssets.Item[Item.type].Value;
+            Texture2D spot = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
             float alpha = 0.8f;
             float s = 0.5f * scale;
             spriteBatch.Reload(BlendState.Additive);
@@ -61,7 +65,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HeavenBlade
                     Color.Lerp(Color.White, Color.LightYellow, (float)i / 3) * alpha,
                     0f,
                     new Vector2(spot.Width, spot.Height) / 2,
-                    s * (1f + ((float)Math.Sin((Main.GlobalTime * 2) + (MathHelper.PiOver4 * i)) * 0.15f)),
+                    s * (1f + ((float)Math.Sin((Main.GlobalTimeWrappedHourly * 2) + (MathHelper.PiOver4 * i)) * 0.15f)),
                     SpriteEffects.None,
                     0f);
                 s *= 2;
@@ -71,13 +75,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HeavenBlade
             spriteBatch.Draw(texture, pos, null, Color.White, -MathHelper.PiOver4, new Vector2(texture.Width, texture.Height) / 2, scale, SpriteEffects.None, 0f);
             return false;
         }
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color ItemColor, Vector2 origin, float scale)
         {
             Vector2 pos = ModUtils.GetInventoryPosition(position, frame, origin, scale);
-            Texture2D texture = Main.itemTexture[item.type];
-            Texture2D flash = ModContent.GetTexture(AssetDirectory.Textures + "Flash2");
+            Texture2D texture = TextureAssets.Item[Item.type].Value;
+            Texture2D flash = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Flash2").Value;
             spriteBatch.Reload(BlendState.Additive);
-            UnifiedRandom rand = new UnifiedRandom(item.whoAmI);
+            UnifiedRandom rand = new UnifiedRandom(Item.whoAmI);
             for (int i = 0; i < 5; i++)
             {
                 float alpha = 0.3f + (0.15f * i);
@@ -88,7 +92,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HeavenBlade
                     pos,
                     null,
                     Color.LightYellow * alpha,
-                    Main.GlobalTime * r,
+                    Main.GlobalTimeWrappedHourly * r,
                     new Vector2(flash.Width / 2, flash.Height),
                     new Vector2(0.2f, s),
                     SpriteEffects.None,

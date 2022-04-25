@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -7,7 +8,7 @@ namespace OvermorrowMod.Content.Tiles.DesertTemple
 {
     public class ForbiddenVase : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileCut[Type] = true;
             Main.tileFrameImportant[Type] = true;
@@ -21,14 +22,14 @@ namespace OvermorrowMod.Content.Tiles.DesertTemple
             TileObjectData.newTile.RandomStyleRange = 4;
             TileObjectData.addTile(Type);
 
-            disableSmartCursor = true;
+            TileID.Sets.DisableSmartCursor[Type] = true;
 
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Large Pot");
             AddMapEntry(new Color(151, 79, 80), name);
         }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height)
+        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
         {
             offsetY = 2;
         }

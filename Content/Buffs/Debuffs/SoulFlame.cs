@@ -8,19 +8,15 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
 {
     public class SoulFlame : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.buffNoSave[Type] = true;
-            canBeCleared = false;
+            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
             DisplayName.SetDefault("Flame Test");
         }
 
-        public override bool Autoload(ref string name, ref string texture)
-        {
-            texture = "Terraria/Buff_" + BuffID.OnFire;
-            return true;
-        }
+        public override string Texture => "Terraria/Images/Buff_" + BuffID.OnFire;
 
         public override void Update(NPC npc, ref int buffIndex)
         {

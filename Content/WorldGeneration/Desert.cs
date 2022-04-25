@@ -1,34 +1,28 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.Tiles.Boss;
 using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.World.Generation;
+using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Content.WorldGeneration
 {
-    public class Desert : ModWorld
+    public class Desert : ModSystem
     {
         public static Vector2 DesertArenaCenter;
-
-        public override TagCompound Save()
+        public override void SaveWorldData(TagCompound tag)
         {
-            return new TagCompound
-            {
-                ["DesertArenaCenter"] = DesertArenaCenter
-            };
+            tag["DesertArenaCenter"] = DesertArenaCenter;
         }
 
-        public override void Load(TagCompound tag)
+        public override void LoadWorldData(TagCompound tag)
         {
             DesertArenaCenter = tag.Get<Vector2>("DesertArenaCenter");
         }
@@ -42,7 +36,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
-        private void GenerateTemple(GenerationProgress progress)
+        private void GenerateTemple(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Generate Desert Temple";
 
@@ -62,7 +56,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             // Check if the ground is solid before creating the temple
             Tile tile = Framing.GetTileSafely(x, y);
-            while (!tile.active() && tile.wall != WallID.Sandstone)
+            while (!tile.HasTile && tile.WallType != WallID.Sandstone)
             {
                 y++;
 
@@ -96,12 +90,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             };
 
             #region Temple Generation
-            Texture2D ClearMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/SurfaceTemple_Clear");
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/SurfaceTemple_Clear").Value;
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height / 2), true, true);
 
-            Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/SurfaceTemple");
-            Texture2D WallMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/SurfaceTemple_Walls");
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/SurfaceTemple").Value;
+            Texture2D WallMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/SurfaceTemple_Walls").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height / 2), true, true);
             #endregion
@@ -137,7 +131,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(93, 87, 68)] = WallID.SandstoneBrick,
             };
 
-            Texture2D TexMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/TempleTexture");
+            Texture2D TexMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/TempleTexture").Value;
 
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TexMap, TileMapping, TexMap, WallMapping);
             TileGen.Generate(x - (TileGen.width / 2), y - (TileGen.height / 2), true, true);

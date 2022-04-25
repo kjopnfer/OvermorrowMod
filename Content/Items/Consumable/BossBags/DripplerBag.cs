@@ -20,12 +20,12 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void SetDefaults()
         {
-            item.maxStack = 999;
-            item.consumable = true;
-            item.width = 36;
-            item.height = 36;
-            item.rare = ItemRarityID.Expert;
-            item.expert = true;
+            Item.maxStack = 999;
+            Item.consumable = true;
+            Item.width = 36;
+            Item.height = 36;
+            Item.rare = ItemRarityID.Expert;
+            Item.expert = true;
         }
 
         public override bool CanRightClick()
@@ -35,47 +35,48 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void OpenBossBag(Player player)
         {
-            player.TryGettingDevArmor();
-            player.TryGettingDevArmor();
+            var source = player.GetItemSource_OpenItem(Type);
+            player.TryGettingDevArmor(source);
+            player.TryGettingDevArmor(source);
 
             int choice = Main.rand.Next(4);
             // Always drops one of:
             if (choice == 0) // Mage
             {
-                player.QuickSpawnItem(ModContent.ItemType<ShatteredOrb>());
+                player.QuickSpawnItem(source, ModContent.ItemType<ShatteredOrb>());
             }
             else if (choice == 1) // Warrior
             {
-                player.QuickSpawnItem(ModContent.ItemType<BloodyTeeth>());
+                player.QuickSpawnItem(source, ModContent.ItemType<BloodyTeeth>());
             }
             else if (choice == 2) // Ranger
             {
-                player.QuickSpawnItem(ModContent.ItemType<DripplerEye>());
+                player.QuickSpawnItem(source, ModContent.ItemType<DripplerEye>());
             }
             else if (choice == 3) // Summoner
             {
-                player.QuickSpawnItem(ModContent.ItemType<SinisterBlood>());
+                player.QuickSpawnItem(source, ModContent.ItemType<SinisterBlood>());
             }
 
             if (Main.rand.Next(10) == 0) // Trophy Dropchance
             {
-                player.QuickSpawnItem(ModContent.ItemType<DripplerTrophy>());
+                player.QuickSpawnItem(source, ModContent.ItemType<DripplerTrophy>());
             }
 
             if (Main.rand.Next(7) == 0)
             {
-                player.QuickSpawnItem(ModContent.ItemType<DripMask>());
+                player.QuickSpawnItem(source, ModContent.ItemType<DripMask>());
             }
 
-            player.QuickSpawnItem(ModContent.ItemType<CancerInABottle>(), Main.rand.Next(6, 10));
+            player.QuickSpawnItem(source, ModContent.ItemType<CancerInABottle>(), Main.rand.Next(6, 10));
 
             int necklaceChance = Main.rand.Next(5);
             if (necklaceChance == 0)
             {
-                player.QuickSpawnItem(ItemID.SharkToothNecklace);
+                player.QuickSpawnItem(source, ItemID.SharkToothNecklace);
             }
 
-            player.QuickSpawnItem(ModContent.ItemType<BloodyHeart>());
+            player.QuickSpawnItem(source, ModContent.ItemType<BloodyHeart>());
         }
 
         public override int BossBagNPC => ModContent.NPCType<DripplerBoss>();

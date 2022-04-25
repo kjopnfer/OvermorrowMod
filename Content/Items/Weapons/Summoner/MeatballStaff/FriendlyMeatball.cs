@@ -16,32 +16,32 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
         private int NumProj = 0;
         private int CenterXPly = 5;
 
-        public override bool CanDamage() => false;
+        public override bool? CanDamage() => false;
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Friendly Meatball");
-            Main.projFrames[projectile.type] = 13;
-            ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
+            Main.projFrames[Projectile.type] = 13;
+            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
         }
         public override void SetDefaults()
         {
-            projectile.width = 32;
-            projectile.height = 40;
-            projectile.minion = true;
-            projectile.minionSlots = 0.5f;
-            projectile.friendly = true;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.netImportant = true;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 200000;
+            Projectile.width = 32;
+            Projectile.height = 40;
+            Projectile.minion = true;
+            Projectile.minionSlots = 0.5f;
+            Projectile.friendly = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.netImportant = true;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 200000;
         }
 
 
         public override void AI()
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             #region Active check
             if (player.dead || !player.active)
@@ -50,16 +50,16 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
             }
             if (player.HasBuff(ModContent.BuffType<MeatBallBuff>()))
             {
-                projectile.timeLeft = 2;
+                Projectile.timeLeft = 2;
             }
             #endregion
 
 
             float distanceFromTarget = 100f;
-            Vector2 targetCenter = projectile.position;
+            Vector2 targetCenter = Projectile.position;
             bool foundTarget = false;
 
-            projectile.tileCollide = false;
+            Projectile.tileCollide = false;
             if (!foundTarget)
             {
                 // This code is required either way, used for finding a target
@@ -68,8 +68,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
                     NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy())
                     {
-                        float between = Vector2.Distance(npc.Center, Main.player[projectile.owner].Center);
-                        bool closest = Vector2.Distance(projectile.Center, targetCenter) > between;
+                        float between = Vector2.Distance(npc.Center, Main.player[Projectile.owner].Center);
+                        bool closest = Vector2.Distance(Projectile.Center, targetCenter) > between;
                         bool inRange = between < distanceFromTarget;
 
                         if (((closest && inRange) || !foundTarget))
@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
                 }
             }
 
-            NumProj = Main.player[projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<FriendlyMeatball>()];
+            NumProj = Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<FriendlyMeatball>()];
             PosCheck++;
             if (PosCheck == 1)
             {
@@ -96,100 +96,100 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
 
             if (PosPlay == 0 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / 180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 0;
+                    Projectile.ai[1] = 0;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = 75 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = 75 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = 75 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = 75 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
 
-                    projectile.ai[1] += 2.5f;
+                    Projectile.ai[1] += 2.5f;
                 }
             }
 
 
             if (PosPlay == 1 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / 180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 0;
+                    Projectile.ai[1] = 0;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = -75 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = -75 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = -75 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = -75 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
 
-                    projectile.ai[1] += 2.5f;
+                    Projectile.ai[1] += 2.5f;
                 }
             }
 
 
             if (PosPlay == 2 && PosCheck == 2)
             {
-                projectile.ai[1] = 90;
+                Projectile.ai[1] = 90;
             }
 
             if (PosPlay == 2 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / -180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 90;
+                    Projectile.ai[1] = 90;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = -75 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = 75 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = -75 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = 75 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
 
-                    projectile.ai[1] += 2.5f;
+                    Projectile.ai[1] += 2.5f;
                 }
 
             }
 
             if (PosPlay == 3 && PosCheck == 2)
             {
-                projectile.ai[1] = 90;
+                Projectile.ai[1] = 90;
             }
 
             if (PosPlay == 3 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / -180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 90;
+                    Projectile.ai[1] = 90;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = 75 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = -75 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = 75 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = -75 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
-                    projectile.ai[1] += 2.5f;
+                    Projectile.ai[1] += 2.5f;
                 }
 
             }
@@ -198,107 +198,107 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
 
             if (PosPlay == 4 && PosCheck == 2)
             {
-                projectile.ai[1] = 120;
+                Projectile.ai[1] = 120;
             }
 
             if (PosPlay == 4 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / -180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 120;
+                    Projectile.ai[1] = 120;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
-                    projectile.ai[1] += 0.7f;
+                    Projectile.ai[1] += 0.7f;
                 }
             }
 
             if (PosPlay == 5 && PosCheck == 2)
             {
-                projectile.ai[1] = 240;
+                Projectile.ai[1] = 240;
             }
 
             if (PosPlay == 5 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / -180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 240;
+                    Projectile.ai[1] = 240;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
-                    projectile.ai[1] += 0.7f;
+                    Projectile.ai[1] += 0.7f;
                 }
             }
 
 
             if (PosPlay == 6 && PosCheck == 2)
             {
-                projectile.ai[1] = 360;
+                Projectile.ai[1] = 360;
             }
 
             if (PosPlay == 6 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / -180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 360;
+                    Projectile.ai[1] = 360;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
-                    projectile.ai[1] += 0.7f;
+                    Projectile.ai[1] += 0.7f;
                 }
 
             }
 
             if (PosPlay == 7 && PosCheck == 2)
             {
-                projectile.ai[1] = 60;
+                Projectile.ai[1] = 60;
             }
 
             if (PosPlay == 7 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / -180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 60;
+                    Projectile.ai[1] = 60;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
-                    projectile.ai[1] += 0.7f;
+                    Projectile.ai[1] += 0.7f;
                 }
 
             }
@@ -307,83 +307,83 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
 
             if (PosPlay == 8 && PosCheck == 2)
             {
-                projectile.ai[1] = 180;
+                Projectile.ai[1] = 180;
             }
             if (PosPlay == 8 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / -180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 180;
+                    Projectile.ai[1] = 180;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
-                    projectile.ai[1] += 0.7f;
+                    Projectile.ai[1] += 0.7f;
                 }
 
             }
 
             if (PosPlay == 9 && PosCheck == 2)
             {
-                projectile.ai[1] = 300;
+                Projectile.ai[1] = 300;
             }
             if (PosPlay == 9 && PosCheck > 2)
             {
-                double deg = (double)projectile.ai[1]; //The degrees, you can multiply projectile.ai[1] to make it orbit faster, may be choppy depending on the value
+                double deg = (double)Projectile.ai[1]; //The degrees, you can multiply Projectile.ai[1] to make it orbit faster, may be choppy depending on the value
                 double rad = deg * (Math.PI / -180); //Convert degrees to radians
                 if (NumProj > HasChecked + 1)
                 {
                     HasChecked += 1;
-                    projectile.ai[1] = 300;
+                    Projectile.ai[1] = 300;
                     deg = 0;
                     rad = 0;
                 }
                 else
                 {
 
-                    projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[projectile.owner].Center.X - projectile.width / 2 - CenterXPly;
-                    projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[projectile.owner].Center.Y - projectile.height / 2;
+                    Projectile.position.X = 125 * (float)Math.Cos(rad) + Main.player[Projectile.owner].Center.X - Projectile.width / 2 - CenterXPly;
+                    Projectile.position.Y = -125 * (float)Math.Sin(rad) + Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
-                    projectile.ai[1] += 0.7f;
+                    Projectile.ai[1] += 0.7f;
                 }
 
             }
 
             if (PosPlay == 10 && PosCheck > 2)
             {
-                projectile.Kill();
+                Projectile.Kill();
             }
             if (foundTarget)
             {
-                projectile.ai[0]++;
-                if (projectile.ai[0] == 110)
+                Projectile.ai[0]++;
+                if (Projectile.ai[0] == 110)
                 {
-                    Vector2 position = projectile.Center;
+                    Vector2 position = Projectile.Center;
                     Vector2 targetPosition = Rot;
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
                     float speed = 7f;
-                    Projectile.NewProjectile(projectile.Center, newpoint2 * speed, ModContent.ProjectileType<BloodSeeker>(), projectile.damage, 1f, projectile.owner, 0f);
-                    projectile.ai[0] = 0;
+                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, newpoint2 * speed, ModContent.ProjectileType<BloodSeeker>(), Projectile.damage, 1f, Projectile.owner, 0f);
+                    Projectile.ai[0] = 0;
                 }
             }
 
             // Loop through the 13 animation frames, spending 5 ticks on each.
-            if (++projectile.frameCounter >= 4)
+            if (++Projectile.frameCounter >= 4)
             {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                Projectile.frameCounter = 0;
+                if (++Projectile.frame >= Main.projFrames[Projectile.type])
                 {
-                    projectile.frame = 0;
+                    Projectile.frame = 0;
                 }
             }
         }

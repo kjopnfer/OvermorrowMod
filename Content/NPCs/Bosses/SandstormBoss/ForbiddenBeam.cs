@@ -1,13 +1,13 @@
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using OvermorrowMod.Effects.Prim;
 using OvermorrowMod.Common;
-using OvermorrowMod.Core;
-using System.Collections.Generic;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Core;
+using OvermorrowMod.Effects.Prim;
+using System;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public Player Target;
 
         protected const float MAX_TIME = 240;
-        public override bool CanDamage() => false;
+        public override bool? CanDamage() => false;
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
@@ -26,16 +26,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
         public override void SetDefaults()
         {
-            projectile.width = 25;
-            projectile.height = 5000;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.timeLeft = (int)MAX_TIME;
-            projectile.penetrate = -1;
-            projectile.usesLocalNPCImmunity = true;
-            projectile.localNPCHitCooldown = 10;
+            Projectile.width = 25;
+            Projectile.height = 5000;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = (int)MAX_TIME;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         // Cross Product: Where a = line point 1; b = line point 2; c = point to check against.
@@ -48,17 +48,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             if (RunOnce)
             {
-                Target = Main.player[(int)projectile.ai[0]];
+                Target = Main.player[(int)Projectile.ai[0]];
                 RunOnce = false;
             }
 
-            Vector2 end = projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000);
-            RotationDirection = isLeft(projectile.Center, end, Target.Center) ? 1 : -1;
+            Vector2 end = Projectile.Center + Projectile.velocity * TRay.CastLength(Projectile.Center, Projectile.velocity, 5000);
+            RotationDirection = isLeft(Projectile.Center, end, Target.Center) ? 1 : -1;
 
-            projectile.velocity = projectile.velocity.SafeNormalize(-Vector2.UnitY).RotatedBy(MathHelper.ToRadians(MathHelper.SmoothStep(0.5f, 0, projectile.timeLeft / MAX_TIME)) * RotationDirection);
+            Projectile.velocity = Projectile.velocity.SafeNormalize(-Vector2.UnitY).RotatedBy(MathHelper.ToRadians(MathHelper.SmoothStep(0.5f, 0, Projectile.timeLeft / MAX_TIME)) * RotationDirection);
 
-            float progress = Utils.InverseLerp(0, MAX_TIME, projectile.timeLeft);
-            projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
+            float progress = Utils.GetLerpValue(0, MAX_TIME, Projectile.timeLeft);
+            Projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
         }
 
         public override bool ShouldUpdatePosition()
@@ -68,39 +68,39 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float a = 0f;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, projectile.Center + projectile.velocity * projectile.height, projectile.width, ref a);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity * Projectile.height, Projectile.width, ref a);
         }
         public Color BeamColor = Color.Yellow;
 
-        public Texture2D TrailTexture1 = ModContent.GetTexture(AssetDirectory.FullTrail + "Trail0");
-        public Texture2D TrailTexture2 = ModContent.GetTexture(AssetDirectory.FullTrail + "Trail7");
-        public Texture2D TrailTexture3 = ModContent.GetTexture(AssetDirectory.FullTrail + "Trail1");
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public Texture2D TrailTexture1 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail0").Value;
+        public Texture2D TrailTexture2 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail7").Value;
+        public Texture2D TrailTexture3 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail1").Value;
+        public override bool PreDraw(ref Color lightColor)
         {
-            projectile.rotation += 0.3f;
+            Projectile.rotation += 0.3f;
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
             // make the beam slightly change scale with time
-            float mult = (0.55f + (float)Math.Sin(Main.GlobalTime/* * 2*/) * 0.1f);
+            float mult = (0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly/* * 2*/) * 0.1f);
             // base scale for the flash so it actually connects with beam
-            float scale = projectile.scale * 4 * mult;
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
+            float scale = Projectile.scale * 4 * mult;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0);
 
             //float scale = projectile.scale * 2 * mult;
             BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
-            Vector2 start = projectile.Center;
-            Vector2 end = projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000);
-            float width = projectile.width * projectile.scale;
+            Vector2 start = Projectile.Center;
+            Vector2 end = Projectile.Center + Projectile.velocity * TRay.CastLength(Projectile.Center, Projectile.velocity, 5000);
+            float width = Projectile.width * Projectile.scale;
             // offset so i can make the triangles
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             BeamColor = new Color(240, 231, 113);
             BeamPacket.SetTexture(0, TrailTexture1);
-            float off = -Main.GlobalTime % 1;
+            float off = -Main.GlobalTimeWrappedHourly % 1;
             // draw the flame part of the beam
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
             packet.Add(start - offset * 3 * mult, BeamColor, new Vector2(0 + off, 1));
@@ -138,15 +138,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             packet3.Add(end + offset * mult, BeamColor * alpha, new Vector2(1 + -off, 0));
             packet3.Send();
 
-            texture = ModContent.GetTexture(AssetDirectory.Textures + "Sunlight");
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Sunlight").Value;
 
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, BeamColor, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.25f, SpriteEffects.None, 0f);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, BeamColor, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.25f, SpriteEffects.None, 0);
 
-            texture = ModContent.GetTexture(AssetDirectory.Textures + "Sunlight");
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Sunlight").Value;
             for (int i = 0; i < 5; i++)
-                Main.spriteBatch.Draw(texture, end - Main.screenPosition, null, BeamColor, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, scale * 0.15f, SpriteEffects.None, 0f);
-
-
+                Main.EntitySpriteDraw(texture, end - Main.screenPosition, null, BeamColor, Projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, scale * 0.15f, SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -154,12 +152,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             return false;
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override void PostDraw(Color lightColor)
         {
-            if (!(projectile.modProjectile is SandFall))
+            if (!(Projectile.ModProjectile is SandFall))
             {
                 DelegateMethods.v3_1 = new Color(240, 231, 113).ToVector3();
-                Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000), projectile.width * projectile.scale, new Terraria.Utils.PerLinePoint(DelegateMethods.CastLight));
+                Terraria.Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * TRay.CastLength(Projectile.Center, Projectile.velocity, 5000), Projectile.width * Projectile.scale, new Terraria.Utils.TileActionAttempt(DelegateMethods.CastLight));
             }
         }
     }
@@ -169,41 +167,41 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public Vector2 CrossHairTarget;
         public override void SetDefaults()
         {
-            projectile.width = 25;
-            projectile.height = 5000;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.timeLeft = (int)MAX_TIME;
-            projectile.penetrate = -1;
-            projectile.usesLocalNPCImmunity = true;
-            projectile.localNPCHitCooldown = 10;
+            Projectile.width = 25;
+            Projectile.height = 5000;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = (int)MAX_TIME;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
             if (RunOnce)
             {
-                CrossHairTarget = new Vector2(projectile.ai[0], projectile.ai[1]);
+                CrossHairTarget = new Vector2(Projectile.ai[0], Projectile.ai[1]);
                 RunOnce = false;
             }
 
-            Vector2 end = projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000);
-            RotationDirection = isLeft(projectile.Center, end, CrossHairTarget) ? 1 : -1;
+            Vector2 end = Projectile.Center + Projectile.velocity * TRay.CastLength(Projectile.Center, Projectile.velocity, 5000);
+            RotationDirection = isLeft(Projectile.Center, end, CrossHairTarget) ? 1 : -1;
 
-            projectile.velocity = projectile.velocity.SafeNormalize(-Vector2.UnitY).RotatedBy(MathHelper.ToRadians(MathHelper.SmoothStep(0.5f, 0, projectile.timeLeft / MAX_TIME)) * RotationDirection);
+            Projectile.velocity = Projectile.velocity.SafeNormalize(-Vector2.UnitY).RotatedBy(MathHelper.ToRadians(MathHelper.SmoothStep(0.5f, 0, Projectile.timeLeft / MAX_TIME)) * RotationDirection);
 
-            float progress = Utils.InverseLerp(0, MAX_TIME, projectile.timeLeft);
-            projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
+            float progress = Utils.GetLerpValue(0, MAX_TIME, Projectile.timeLeft);
+            Projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
         }
     }
 
     public class ForbiddenBurst : ForbiddenBeam
     {
-        public Projectile Target;
+        public new Projectile Target;
 
-        private const float MAX_TIME = 20;
+        private new const float MAX_TIME = 20;
 
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
@@ -212,60 +210,60 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
         public override void SetDefaults()
         {
-            projectile.width = 25;
-            projectile.height = 5000;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.timeLeft = (int)MAX_TIME;
-            projectile.penetrate = -1;
-            projectile.usesLocalNPCImmunity = true;
-            projectile.localNPCHitCooldown = 10;
+            Projectile.width = 25;
+            Projectile.height = 5000;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = (int)MAX_TIME;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
-            if (projectile.ai[1] == 1)
+            if (Projectile.ai[1] == 1)
             {
-                projectile.friendly = true;
-                projectile.hostile = false;
+                Projectile.friendly = true;
+                Projectile.hostile = false;
             }
 
             if (RunOnce)
             {
-                Target = Main.projectile[(int)projectile.ai[0]];
+                Target = Main.projectile[(int)Projectile.ai[0]];
                 RunOnce = false;
             }
 
-            float progress = Utils.InverseLerp(0, MAX_TIME, projectile.timeLeft);
-            projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
+            float progress = Utils.GetLerpValue(0, MAX_TIME, Projectile.timeLeft);
+            Projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
         }
 
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
-            projectile.rotation += 0.3f;
+            Projectile.rotation += 0.3f;
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            float mult = (0.55f + (float)Math.Sin(Main.GlobalTime) * 0.1f);
-            float scale = projectile.scale * 4 * mult;
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
+            float mult = (0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.1f);
+            float scale = Projectile.scale * 4 * mult;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0);
 
             BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
-            Vector2 start = projectile.Center;
+            Vector2 start = Projectile.Center;
             Vector2 end = Target.Center;
 
-            float width = projectile.width * projectile.scale;
+            float width = Projectile.width * Projectile.scale;
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             BeamColor = new Color(240, 231, 113);
-            BeamPacket.SetTexture(0, ModContent.GetTexture(AssetDirectory.FullTrail + "Trail0"));
-            float off = -Main.GlobalTime % 1;
+            BeamPacket.SetTexture(0, ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail0").Value);
+            float off = -Main.GlobalTimeWrappedHourly % 1;
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
             packet.Add(start - offset * 3 * mult, BeamColor, new Vector2(0 + off, 1));
             packet.Add(end + offset * 3 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -278,7 +276,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             BeamColor = new Color(240, 231, 113);
             BeamPacket packet2 = new BeamPacket();
             packet2.Pass = "Texture";
-            BeamPacket.SetTexture(0, ModContent.GetTexture(AssetDirectory.FullTrail + "Trail7"));
+            BeamPacket.SetTexture(0, ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail7").Value);
             packet2.Add(start + offset * 2 * mult, BeamColor, new Vector2(0 + off, 0));
             packet2.Add(start - offset * 2 * mult, BeamColor, new Vector2(0 + off, 1));
             packet2.Add(end + offset * 2 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -291,7 +289,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             BeamColor = Color.White;
             BeamPacket packet3 = new BeamPacket();
             packet3.Pass = "Texture";
-            BeamPacket.SetTexture(0, ModContent.GetTexture(AssetDirectory.FullTrail + "Trail1"));
+            BeamPacket.SetTexture(0, ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail1").Value);
             float alpha = 1f;
             packet3.Add(start + offset * mult, BeamColor * alpha, new Vector2(0 + -off, 0));
             packet3.Add(start - offset * mult, BeamColor * alpha, new Vector2(0 + -off, 1));
@@ -302,13 +300,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             packet3.Add(end + offset * mult, BeamColor * alpha, new Vector2(1 + -off, 0));
             packet3.Send();
 
-            texture = ModContent.GetTexture(AssetDirectory.Textures + "Sunlight");
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Sunlight").Value;
 
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, BeamColor, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.25f, SpriteEffects.None, 0f);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, BeamColor, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.25f, SpriteEffects.None, 0);
 
-            texture = ModContent.GetTexture(AssetDirectory.Textures + "Sunlight");
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Sunlight").Value;
             for (int i = 0; i < 5; i++)
-                Main.spriteBatch.Draw(texture, end - Main.screenPosition, null, BeamColor, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, scale * 0.15f, SpriteEffects.None, 0f);
+                Main.EntitySpriteDraw(texture, end - Main.screenPosition, null, BeamColor, Projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, scale * 0.15f, SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -332,16 +330,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
         public override void SetDefaults()
         {
-            projectile.width = 25;
-            projectile.height = 5000;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.timeLeft = (int)MAX_TIME;
-            projectile.penetrate = -1;
-            projectile.usesLocalNPCImmunity = true;
-            projectile.localNPCHitCooldown = 10;
+            Projectile.width = 25;
+            Projectile.height = 5000;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = (int)MAX_TIME;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         // Cross Product: Where a = line point 1; b = line point 2; c = point to check against.
@@ -354,18 +352,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         {
             if (RunOnce)
             {
-                Target = Main.player[(int)projectile.ai[0]];
+                Target = Main.player[(int)Projectile.ai[0]];
                 RunOnce = false;
             }
 
-            Vector2 end = projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000);
-            RotationDirection = isLeft(projectile.Center, end, Target.Center) ? 1 : -1;
+            Vector2 end = Projectile.Center + Projectile.velocity * TRay.CastLength(Projectile.Center, Projectile.velocity, 5000);
+            RotationDirection = isLeft(Projectile.Center, end, Target.Center) ? 1 : -1;
 
             //projectile.velocity = projectile.velocity.SafeNormalize(-Vector2.UnitY).RotatedBy(MathHelper.ToRadians(MathHelper.SmoothStep(0.5f, 0, projectile.timeLeft / MAX_TIME)) * RotationDirection);
-            projectile.velocity = Vector2.UnitY;
+            Projectile.velocity = Vector2.UnitY;
 
-            float progress = Utils.InverseLerp(0, MAX_TIME, projectile.timeLeft);
-            projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
+            float progress = Utils.GetLerpValue(0, MAX_TIME, Projectile.timeLeft);
+            Projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
         }
 
         public override bool ShouldUpdatePosition()
@@ -375,35 +373,35 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float a = 0f;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, projectile.Center + projectile.velocity * projectile.height, projectile.width, ref a);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity * Projectile.height, Projectile.width, ref a);
         }
         public Color BeamColor = Color.Yellow;
 
-        public Texture2D TrailTexture1 = ModContent.GetTexture(AssetDirectory.FullTrail + "Trail0v2");
-        public Texture2D TrailTexture2 = ModContent.GetTexture(AssetDirectory.FullTrail + "Trail7");
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public Texture2D TrailTexture1 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail0v2").Value;
+        public Texture2D TrailTexture2 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail7").Value;
+        public override bool PreDraw(ref Color lightColor)
         {
-            projectile.rotation += 0.3f;
+            Projectile.rotation += 0.3f;
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
             // make the beam slightly change scale with time
-            float mult = 0.55f + (float)Math.Sin(Main.GlobalTime/* * 2*/) * 0.1f;
-            
+            float mult = 0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly/* * 2*/) * 0.1f;
+
             //float scale = projectile.scale * 2 * mult;
             BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
-            Vector2 start = projectile.Center;
-            Vector2 end = projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, 5000);
-            float width = projectile.width * projectile.scale;
+            Vector2 start = Projectile.Center;
+            Vector2 end = Projectile.Center + Projectile.velocity * TRay.CastLength(Projectile.Center, Projectile.velocity, 5000);
+            float width = Projectile.width * Projectile.scale;
             // offset so i can make the triangles
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             //BeamColor = Lighting.GetColor((int)projectile.Center.X, (int)projectile.Center.Y, new Color(95, 73, 50));
             BeamColor = new Color(95, 73, 50);
             BeamPacket.SetTexture(0, TrailTexture1);
-            float off = -Main.GlobalTime % 1;
+            float off = -Main.GlobalTimeWrappedHourly % 1;
             // draw the flame part of the beam
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
             packet.Add(start - offset * 3 * mult, BeamColor, new Vector2(0 + off, 1));
@@ -443,7 +441,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             return false;
         }
- 
+
     }
 
     public class SandFall2 : ForbiddenBeam
@@ -455,52 +453,52 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
         public override void SetDefaults()
         {
-            projectile.width = 100;
-            projectile.height = 250;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.timeLeft = 120;
-            projectile.penetrate = -1;
-            projectile.usesLocalNPCImmunity = true;
-            projectile.hide = true; // Prevents projectile from being drawn normally. Use in conjunction with DrawBehind.
-            projectile.localNPCHitCooldown = 10;
+            Projectile.width = 100;
+            Projectile.height = 250;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = 120;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.hide = true; // Prevents projectile from being drawn normally. Use in conjunction with DrawBehind.
+            Projectile.localNPCHitCooldown = 10;
         }
-        public override void DrawBehind(int index, List<int> drawCacheProjsBehindNPCsAndTiles, List<int> drawCacheProjsBehindNPCs, List<int> drawCacheProjsBehindProjectiles, List<int> drawCacheProjsOverWiresUI)
+
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
-            // Add this projectile to the list of projectiles that will be drawn BEFORE tiles and NPC are drawn. This makes the projectile appear to be BEHIND the tiles and NPC.
-            drawCacheProjsBehindNPCsAndTiles.Add(index);
+            behindNPCsAndTiles.Add(index);
         }
 
         public override void AI()
         {
             //projectile.velocity = projectile.velocity.SafeNormalize(-Vector2.UnitY).RotatedBy(MathHelper.ToRadians(MathHelper.SmoothStep(4, 1, projectile.timeLeft / 120f)));
-            float progress = Utils.InverseLerp(0, 120, projectile.timeLeft);
-            projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
+            float progress = Utils.GetLerpValue(0, 120, Projectile.timeLeft);
+            Projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
-            projectile.rotation += 0.3f;
+            Projectile.rotation += 0.3f;
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            float mult = (0.55f + (float)Math.Sin(Main.GlobalTime) * 0.1f);
+            float mult = (0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.1f);
 
             BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
-            Vector2 start = projectile.Center;
+            Vector2 start = Projectile.Center;
             //Vector2 end = projectile.Center + projectile.velocity * projectile.height;
-            Vector2 end = projectile.Center + projectile.velocity * TRay.CastLength(projectile.Center, projectile.velocity, projectile.height);
+            Vector2 end = Projectile.Center + Projectile.velocity * TRay.CastLength(Projectile.Center, Projectile.velocity, Projectile.height);
 
-            float width = projectile.width * projectile.scale;
+            float width = Projectile.width * Projectile.scale;
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             BeamColor = new Color(95, 73, 50);
-            BeamPacket.SetTexture(0, ModContent.GetTexture(AssetDirectory.FullTrail + "Trail0v2"));
-            float off = -Main.GlobalTime % 1;
+            BeamPacket.SetTexture(0, ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail0v2").Value);
+            float off = -Main.GlobalTimeWrappedHourly % 1;
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
             packet.Add(start - offset * 3 * mult, BeamColor, new Vector2(0 + off, 1));
             packet.Add(end + offset * 3 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -513,7 +511,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             BeamColor = new Color(180, 128, 70);
             BeamPacket packet2 = new BeamPacket();
             packet2.Pass = "Texture";
-            BeamPacket.SetTexture(0, ModContent.GetTexture(AssetDirectory.FullTrail + "Trail7"));
+            BeamPacket.SetTexture(0, ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail7").Value);
             packet2.Add(start + offset * 2 * mult, BeamColor, new Vector2(0 + off, 0));
             packet2.Add(start - offset * 2 * mult, BeamColor, new Vector2(0 + off, 1));
             packet2.Add(end + offset * 2 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -535,11 +533,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             return false;
         }
-
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            base.PostDraw(spriteBatch, lightColor);
-        }
     }
 
     public class GiantBeam : ForbiddenBeam
@@ -552,68 +545,68 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         }
         public override void SetDefaults()
         {
-            projectile.width = 200;
-            projectile.height = 2000;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.ignoreWater = true;
-            projectile.tileCollide = false;
-            projectile.timeLeft = 120;
-            projectile.penetrate = -1;
-            projectile.usesLocalNPCImmunity = true;
-            projectile.localNPCHitCooldown = 10;
+            Projectile.width = 200;
+            Projectile.height = 2000;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = 120;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
-            if (projectile.ai[1] == 1)
+            if (Projectile.ai[1] == 1)
             {
-                projectile.friendly = true;
-                projectile.hostile = false;
+                Projectile.friendly = true;
+                Projectile.hostile = false;
             }
 
             if (RunOnce)
             {
-                ParentNPC = Main.npc[(int)projectile.ai[0]];
+                ParentNPC = Main.npc[(int)Projectile.ai[0]];
                 RunOnce = false;
             }
 
             if (ParentNPC.active)
             {
-                projectile.Center = ParentNPC.Center + Vector2.UnitY * -750;
+                Projectile.Center = ParentNPC.Center + Vector2.UnitY * -750;
             }
             else
             {
-                projectile.Kill();
+                Projectile.Kill();
             }
 
             //projectile.velocity = projectile.velocity.SafeNormalize(-Vector2.UnitY).RotatedBy(MathHelper.ToRadians(MathHelper.SmoothStep(4, 1, projectile.timeLeft / 120f)));
-            float progress = Utils.InverseLerp(0, 120, projectile.timeLeft);
-            projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
+            float progress = Utils.GetLerpValue(0, 120, Projectile.timeLeft);
+            Projectile.scale = MathHelper.Clamp((float)Math.Sin(progress * Math.PI) * 2, 0, 1);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
-            projectile.rotation += 0.3f;
+            Projectile.rotation += 0.3f;
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            float mult = (0.55f + (float)Math.Sin(Main.GlobalTime * 2) * 0.1f);
-            float scale = projectile.scale * 4 * mult;
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0f);
+            float mult = (0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 0.1f);
+            float scale = Projectile.scale * 4 * mult;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.Yellow * 0.5f, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.5f, SpriteEffects.None, 0);
 
             BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
-            Vector2 start = projectile.Center;
-            Vector2 end = projectile.Center + projectile.velocity * projectile.height;
-            float width = projectile.width * projectile.scale;
+            Vector2 start = Projectile.Center;
+            Vector2 end = Projectile.Center + Projectile.velocity * Projectile.height;
+            float width = Projectile.width * Projectile.scale;
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             BeamColor = new Color(240, 231, 113);
-            BeamPacket.SetTexture(0, ModContent.GetTexture(AssetDirectory.FullTrail + "Trail0v2"));
-            float off = -Main.GlobalTime % 1;
+            BeamPacket.SetTexture(0, ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail0v2").Value);
+            float off = -Main.GlobalTimeWrappedHourly % 1;
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
             packet.Add(start - offset * 3 * mult, BeamColor, new Vector2(0 + off, 1));
             packet.Add(end + offset * 3 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -626,7 +619,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             BeamColor = new Color(240, 231, 113);
             BeamPacket packet2 = new BeamPacket();
             packet2.Pass = "Texture";
-            BeamPacket.SetTexture(0, ModContent.GetTexture(AssetDirectory.FullTrail + "Trail7"));
+            BeamPacket.SetTexture(0, ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail7").Value);
             packet2.Add(start + offset * 2 * mult, BeamColor, new Vector2(0 + off, 0));
             packet2.Add(start - offset * 2 * mult, BeamColor, new Vector2(0 + off, 1));
             packet2.Add(end + offset * 2 * mult, BeamColor, new Vector2(1 + off, 0));
@@ -639,7 +632,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             BeamColor = Color.White;
             BeamPacket packet3 = new BeamPacket();
             packet3.Pass = "Texture";
-            BeamPacket.SetTexture(0, ModContent.GetTexture(AssetDirectory.FullTrail + "Trail1"));
+            BeamPacket.SetTexture(0, ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail1").Value);
             float alpha = 1f;
             packet3.Add(start + offset * mult, BeamColor * alpha, new Vector2(0 + -off, 0));
             packet3.Add(start - offset * mult, BeamColor * alpha, new Vector2(0 + -off, 1));
@@ -650,13 +643,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             packet3.Add(end + offset * mult, BeamColor * alpha, new Vector2(1 + -off, 0));
             packet3.Send();
 
-            texture = ModContent.GetTexture(AssetDirectory.Textures + "Sunlight");
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Sunlight").Value;
 
-            Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, BeamColor, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.25f, SpriteEffects.None, 0f);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, BeamColor, 0, new Vector2(texture.Width, texture.Height) / 2, scale * 0.25f, SpriteEffects.None, 0);
 
-            texture = ModContent.GetTexture(AssetDirectory.Textures + "Sunlight");
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Sunlight").Value;
             for (int i = 0; i < 5; i++)
-                Main.spriteBatch.Draw(texture, end - Main.screenPosition, null, BeamColor, projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, scale * 0.15f, SpriteEffects.None, 0f);
+                Main.EntitySpriteDraw(texture, end - Main.screenPosition, null, BeamColor, Projectile.rotation, new Vector2(texture.Width, texture.Height) / 2, scale * 0.15f, SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);

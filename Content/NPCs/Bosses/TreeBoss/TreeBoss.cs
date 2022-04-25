@@ -1,10 +1,10 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
 using Terraria;
+using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using OvermorrowMod.Sounds.Music;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
 {
@@ -20,38 +20,38 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Iorich, the Guardian");
-            Main.npcFrameCount[npc.type] = 4;
+            Main.npcFrameCount[NPC.type] = 4;
         }
 
         public override void SetDefaults()
         {
             // Reduced size
-            npc.width = 203;
-            npc.height = 298;
+            NPC.width = 203;
+            NPC.height = 298;
 
             // Actual dimensions
             //npc.width = 372;
             //npc.height = 300;
 
-            npc.aiStyle = -1;
+            NPC.aiStyle = -1;
             //npc.damage = 31;
-            npc.damage = 0;
-            npc.defense = 14;
-            npc.lifeMax = 3300;
-            npc.HitSound = SoundID.NPCHit1;
-            npc.knockBackResist = 0f;
-            npc.noGravity = false;
-            npc.noTileCollide = false;
-            npc.boss = true;
-            npc.npcSlots = 10f;
+            NPC.damage = 0;
+            NPC.defense = 14;
+            NPC.lifeMax = 3300;
+            NPC.HitSound = SoundID.NPCHit1;
+            NPC.knockBackResist = 0f;
+            NPC.noGravity = false;
+            NPC.noTileCollide = false;
+            NPC.boss = true;
+            NPC.npcSlots = 10f;
             //music = MusicID.Boss5;
-            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/TreeMan1");
+            Music = MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/TreeMan1");
         }
 
         public override void ScaleExpertStats(int numPlayers, float bossLifeScale)
         {
-            npc.lifeMax = (int)(npc.lifeMax * bossLifeScale);
-            npc.defense = 17;
+            NPC.lifeMax = (int)(NPC.lifeMax * bossLifeScale);
+            NPC.defense = 17;
         }
 
         private void BossText(string text) // boss messages
@@ -62,7 +62,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
             }
             else if (Main.netMode == NetmodeID.Server)
             {
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Green);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(text), Color.Green);
             }
         }
 
@@ -70,59 +70,59 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
         {
             if (!OvermorrowWorld.downedTree && introMessage)
             {
-                npc.dontTakeDamage = true;
-                npc.netUpdate = true;
-                npc.ai[3]++;
+                NPC.dontTakeDamage = true;
+                NPC.netUpdate = true;
+                NPC.ai[3]++;
 
-                if (npc.ai[3] == 180)
+                if (NPC.ai[3] == 180)
                 {
                     BossText("I heed thy call.");
                 }
 
-                if (npc.ai[3] == 360)
+                if (NPC.ai[3] == 360)
                 {
                     BossText("Thou wishes to unlock the secrets of the Dryads?");
                 }
 
-                if (npc.ai[3] == 540)
+                if (NPC.ai[3] == 540)
                 {
                     BossText("Very well, I shalt test thy resolve.");
                 }
 
-                if (npc.ai[3] <= 600)
+                if (NPC.ai[3] <= 600)
                 {
                     return;
                 }
                 else
                 {
                     introMessage = false;
-                    npc.dontTakeDamage = false;
-                    npc.netUpdate = true;
+                    NPC.dontTakeDamage = false;
+                    NPC.netUpdate = true;
                 }
             }
 
-            Player player = Main.player[npc.target];
+            Player player = Main.player[NPC.target];
 
             // Handles Despawning
-            if (npc.target < 0 || npc.target == 255 || player.dead || !player.active)
+            if (NPC.target < 0 || NPC.target == 255 || player.dead || !player.active)
             {
-                npc.TargetClosest(false);
-                npc.direction = 1;
-                npc.velocity.Y = npc.velocity.Y - 0.1f;
-                if (npc.timeLeft > 20)
+                NPC.TargetClosest(false);
+                NPC.direction = 1;
+                NPC.velocity.Y = NPC.velocity.Y - 0.1f;
+                if (NPC.timeLeft > 20)
                 {
-                    npc.timeLeft = 20;
+                    NPC.timeLeft = 20;
                     return;
                 }
             }
 
             if (!player.active || player.dead)
             {
-                npc.TargetClosest(false);
-                npc.velocity.Y = 2000;
+                NPC.TargetClosest(false);
+                NPC.velocity.Y = 2000;
             }
 
-            if (npc.life <= npc.lifeMax * 0.5f)
+            if (NPC.life <= NPC.lifeMax * 0.5f)
             {
                 changedPhase2 = true;
             }
@@ -137,13 +137,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
             // Shoots a wave of thorns
 
 
-            switch (npc.ai[0])
+            switch (NPC.ai[0])
             {
                 case 0: // General case
                     // Do nothing
-                    if (npc.ai[1] == 30)
+                    if (NPC.ai[1] == 30)
                     {
-                        int randCeiling = npc.life <= npc.lifeMax * 0.5f ? 3 : 5;
+                        int randCeiling = NPC.life <= NPC.lifeMax * 0.5f ? 3 : 5;
                         int waveChance = Main.expertMode ? Main.rand.Next(0, randCeiling) : -1;
 
                         if (changedPhase2)
@@ -152,19 +152,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             {
                                 if (waveChance == 0)
                                 {
-                                    npc.ai[0] = 4;
-                                    npc.ai[1] = 0;
+                                    NPC.ai[0] = 4;
+                                    NPC.ai[1] = 0;
                                 }
                                 else
                                 {
-                                    npc.ai[0] = 2;
-                                    npc.ai[1] = 0;
+                                    NPC.ai[0] = 2;
+                                    NPC.ai[1] = 0;
                                 }
                             }
                             else // Default Non-expert mode version
                             {
-                                npc.ai[0] = 2;
-                                npc.ai[1] = 0;
+                                NPC.ai[0] = 2;
+                                NPC.ai[1] = 0;
                             }
                         }
                         else
@@ -173,30 +173,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             {
                                 if (waveChance == 0)
                                 {
-                                    npc.ai[0] = 4;
-                                    npc.ai[1] = 0;
+                                    NPC.ai[0] = 4;
+                                    NPC.ai[1] = 0;
                                 }
                                 else
                                 {
-                                    npc.ai[0] = 2;
-                                    npc.ai[1] = 0;
+                                    NPC.ai[0] = 2;
+                                    NPC.ai[1] = 0;
                                 }
                             }
                             else // Default Non-expert mode version
                             {
-                                npc.ai[0] = 2;
-                                npc.ai[1] = 0;
+                                NPC.ai[0] = 2;
+                                NPC.ai[1] = 0;
                             }
                         }
                     }
                     break;
                 case 1: // Spawn thorns
-                    if (npc.ai[1] % 60 == 0 && npc.ai[1] < 240)
+                    if (NPC.ai[1] % 60 == 0 && NPC.ai[1] < 240)
                     {
                         // Get the ground beneath the player
                         Vector2 playerPos = new Vector2(player.position.X / 16, player.position.Y / 16);
                         Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                        while (!tile.active() || tile.type == TileID.Trees)
+                        while (!tile.HasTile || tile.TileType == TileID.Trees)
                         {
                             playerPos.Y += 1;
                             tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
@@ -207,7 +207,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if (npc.ai[1] == 240)
+                    if (NPC.ai[1] == 240)
                     {
                         for (int i = 0; i < 3; i++)
                         {
@@ -215,14 +215,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
                             Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
                             Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                            while (!tile.active() || tile.type == TileID.Trees)
+                            while (!tile.HasTile || tile.TileType == TileID.Trees)
                             {
                                 playerPos.Y += 1;
                                 tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
                             }
 
                             Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                            while (!tile2.active() || tile2.type == TileID.Trees)
+                            while (!tile2.HasTile || tile2.TileType == TileID.Trees)
                             {
                                 playerPos2.Y += 1;
                                 tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
@@ -242,18 +242,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if (npc.ai[1] == 300)
+                    if (NPC.ai[1] == 300)
                     {
-                        npc.ai[0] = 0;
-                        npc.ai[1] = 1;
+                        NPC.ai[0] = 0;
+                        NPC.ai[1] = 1;
                     }
                     break;
                 case 2: // Shoot seeds
-                    if (npc.ai[1] % 75 == 0)
+                    if (NPC.ai[1] % 75 == 0)
                     {
-                        int numSeeds = npc.life <= npc.lifeMax * 0.25f ? 16 : 13;
+                        int numSeeds = NPC.life <= NPC.lifeMax * 0.25f ? 16 : 13;
                         float numberProjectiles = Main.rand.Next(7, numSeeds);
-                        Vector2 position = npc.Center;
+                        Vector2 position = NPC.Center;
                         int speedX = 1;
                         int speedY = Main.rand.Next(-25, -15);
                         float rotation = MathHelper.ToRadians(45);
@@ -268,25 +268,25 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if (npc.ai[1] == 300)
+                    if (NPC.ai[1] == 300)
                     {
                         if (changedPhase2)
                         {
-                            npc.ai[0] = 3;
-                            npc.ai[1] = 0;
+                            NPC.ai[0] = 3;
+                            NPC.ai[1] = 0;
                         }
                         else
                         {
-                            npc.ai[0] = 1;
-                            npc.ai[1] = 0;
+                            NPC.ai[0] = 1;
+                            NPC.ai[1] = 0;
                         }
                     }
                     break;
                 case 3: // Multiple thorns
-                    if (npc.ai[1] % 120 == 0)
+                    if (NPC.ai[1] % 120 == 0)
                     {
                         int randChoice = Main.rand.Next(2);
-                        npc.netUpdate = true;
+                        NPC.netUpdate = true;
                         if (randChoice == 0)
                         {
                             for (int i = 0; i < 3; i++)
@@ -295,14 +295,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                                 Vector2 playerPos = new Vector2((player.position.X - 30 * i) / 16, (player.position.Y) / 16);
                                 Vector2 playerPos2 = new Vector2((player.position.X + 30 * i) / 16, (player.position.Y) / 16);
                                 Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                                while (!tile.active() || tile.type == TileID.Trees)
+                                while (!tile.HasTile || tile.TileType == TileID.Trees)
                                 {
                                     playerPos.Y += 1;
                                     tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
                                 }
 
                                 Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                                while (!tile2.active() || tile2.type == TileID.Trees)
+                                while (!tile2.HasTile || tile2.TileType == TileID.Trees)
                                 {
                                     playerPos2.Y += 1;
                                     tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
@@ -329,14 +329,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                                 Vector2 playerPos = new Vector2((player.position.X - 90 * i) / 16, (player.position.Y) / 16);
                                 Vector2 playerPos2 = new Vector2((player.position.X + 90 * i) / 16, (player.position.Y) / 16);
                                 Tile tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
-                                while (!tile.active() || tile.type == TileID.Trees)
+                                while (!tile.HasTile || tile.TileType == TileID.Trees)
                                 {
                                     playerPos.Y += 1;
                                     tile = Framing.GetTileSafely((int)playerPos.X, (int)playerPos.Y);
                                 }
 
                                 Tile tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
-                                while (!tile2.active() || tile2.type == TileID.Trees)
+                                while (!tile2.HasTile || tile2.TileType == TileID.Trees)
                                 {
                                     playerPos2.Y += 1;
                                     tile2 = Framing.GetTileSafely((int)playerPos2.X, (int)playerPos2.Y);
@@ -357,28 +357,28 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if (npc.ai[1] == 320)
+                    if (NPC.ai[1] == 320)
                     {
-                        npc.ai[0] = 0;
-                        npc.ai[1] = 0;
+                        NPC.ai[0] = 0;
+                        NPC.ai[1] = 0;
                     }
                     break;
                 case 4: // Thorns wave
-                    if (npc.ai[1] % 15 == 0)
+                    if (NPC.ai[1] % 15 == 0)
                     {
                         // Get the ground beneath the player
-                        Vector2 npcPos = new Vector2((npc.position.X - 60 * bufferCount) / 16, npc.position.Y / 16);
+                        Vector2 npcPos = new Vector2((NPC.position.X - 60 * bufferCount) / 16, NPC.position.Y / 16);
                         Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                        while (!tile.active() || tile.type == TileID.Trees)
+                        while (!tile.HasTile || tile.TileType == TileID.Trees)
                         {
                             npcPos.Y += 1;
                             tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
                         }
 
                         // Same thing going right, I'm lazy
-                        Vector2 npcPos2 = new Vector2((npc.position.X + npc.width + (60 * bufferCount)) / 16, npc.position.Y / 16);
+                        Vector2 npcPos2 = new Vector2((NPC.position.X + NPC.width + (60 * bufferCount)) / 16, NPC.position.Y / 16);
                         Tile tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
-                        while (!tile2.active() || tile2.type == TileID.Trees)
+                        while (!tile2.HasTile || tile2.TileType == TileID.Trees)
                         {
                             npcPos2.Y += 1;
                             tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
@@ -393,31 +393,31 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                         }
                     }
 
-                    if (npc.ai[1] == 180)
+                    if (NPC.ai[1] == 180)
                     {
-                        npc.ai[0] = 5;//2;
-                        npc.ai[1] = 0;
+                        NPC.ai[0] = 5;//2;
+                        NPC.ai[1] = 0;
 
                         bufferCount = 0;
                     }
                     break;
                 case 5: // segmented thorns wave
                     {
-                        if (npc.ai[1] == 0)
+                        if (NPC.ai[1] == 0)
                         {
                             // Get the ground beneath the player
-                            Vector2 npcPos = new Vector2((npc.position.X - /*60*/ 500 * bufferCount) / 16, npc.position.Y / 16);
+                            Vector2 npcPos = new Vector2((NPC.position.X - /*60*/ 500 * bufferCount) / 16, NPC.position.Y / 16);
                             Tile tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
-                            while (!tile.active() || tile.type == TileID.Trees)
+                            while (!tile.HasTile || tile.TileType == TileID.Trees)
                             {
                                 npcPos.Y += 1;
                                 tile = Framing.GetTileSafely((int)npcPos.X, (int)npcPos.Y);
                             }
 
                             // Same thing going right, I'm lazy
-                            Vector2 npcPos2 = new Vector2((npc.position.X + npc.width + (/*60*/ 500 * bufferCount)) / 16, npc.position.Y / 16);
+                            Vector2 npcPos2 = new Vector2((NPC.position.X + NPC.width + (/*60*/ 500 * bufferCount)) / 16, NPC.position.Y / 16);
                             Tile tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
-                            while (!tile2.active() || tile2.type == TileID.Trees)
+                            while (!tile2.HasTile || tile2.TileType == TileID.Trees)
                             {
                                 npcPos2.Y += 1;
                                 tile2 = Framing.GetTileSafely((int)npcPos2.X, (int)npcPos2.Y);
@@ -432,10 +432,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                             }
                         }
 
-                        if (npc.ai[1] == 480)
+                        if (NPC.ai[1] == 480)
                         {
-                            npc.ai[0] = 2;
-                            npc.ai[1] = 0;
+                            NPC.ai[0] = 2;
+                            NPC.ai[1] = 0;
 
                             bufferCount = 0;
                         }
@@ -443,32 +443,32 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
                     break;
             }
 
-            npc.ai[1]++;
+            NPC.ai[1]++;
         }
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frameCounter++;
+            NPC.frameCounter++;
 
-            if (npc.frameCounter % 12f == 11f) // Ticks per frame
+            if (NPC.frameCounter % 12f == 11f) // Ticks per frame
             {
-                npc.frame.Y += frameHeight;
+                NPC.frame.Y += frameHeight;
             }
-            if (npc.frame.Y >= frameHeight * 4) // 4 is max # of frames
+            if (NPC.frame.Y >= frameHeight * 4) // 4 is max # of frames
             {
-                npc.frame.Y = 0; // Reset back to default
+                NPC.frame.Y = 0; // Reset back to default
             }
         }
 
         public override bool CheckDead()
         {
-            npc.boss = false;
+            NPC.boss = false;
             return base.CheckDead();
         }
 
-        public override void NPCLoot()
+        public override void OnKill()
         {
-            NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<TreeBossP2>(), 0, 0f, 0f, 0f, 0f);
+            NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<TreeBossP2>(), 0, 0f, 0f, 0f, 0f);
 
             // Spawn 2nd Phase
             if (Main.netMode == NetmodeID.SinglePlayer) // Singleplayer
@@ -477,7 +477,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
             }
             else if (Main.netMode == NetmodeID.Server) // Server
             {
-                NetMessage.BroadcastChatMessage(NetworkText.FromLiteral("Iorich has uprooted!"), Color.Green);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Iorich has uprooted!"), Color.Green);
             }
         }
     }

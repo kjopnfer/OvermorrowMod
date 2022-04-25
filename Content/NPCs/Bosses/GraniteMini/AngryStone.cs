@@ -10,6 +10,8 @@ using OvermorrowMod.Content.Items.Weapons.Melee.GraniteSpear;
 using OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -45,25 +47,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Gra-Knight");
-            Main.npcFrameCount[npc.type] = 8;
+            Main.npcFrameCount[NPC.type] = 8;
         }
 
         public override void SetDefaults()
         {
-            npc.width = 102;
-            npc.height = 102;
-            npc.noTileCollide = true;
-            npc.noGravity = true;
-            npc.aiStyle = -1;
-            npc.knockBackResist = 0f;
-            npc.damage = 45;//15;
-            npc.defense = 4;
-            npc.lifeMax = 4000;
-            npc.HitSound = SoundID.NPCHit4;
-            npc.value = Item.buyPrice(gold: 5);
-            npc.boss = true;
-            music = mod.GetSoundSlot(SoundType.Music, "Sounds/Music/STONEBROS");
-            bossBag = ModContent.ItemType<KnightBag>();
+            NPC.width = 102;
+            NPC.height = 102;
+            NPC.noTileCollide = true;
+            NPC.noGravity = true;
+            NPC.aiStyle = -1;
+            NPC.knockBackResist = 0f;
+            NPC.damage = 45;//15;
+            NPC.defense = 4;
+            NPC.lifeMax = 4000;
+            NPC.HitSound = SoundID.NPCHit4;
+            NPC.value = Item.buyPrice(gold: 5);
+            NPC.boss = true;
+            Music = MusicLoader.GetMusicSlot("OvermorrowMod/Sounds/Music/STONEBROS");
         }
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
@@ -75,7 +76,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
             // reset boolean
             OvermorrowWorld.downedKnight = false;
 
-            Player player = Main.player[npc.target];
+            Player player = Main.player[NPC.target];
 
             // Reset counters
             int countMinions = 0;
@@ -93,57 +94,57 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
             // AI [2] = 
             // AI [3] = 
 
-            if (npc.ai[3] > 0f && dead == true)
+            if (NPC.ai[3] > 0f && dead == true)
             {
-                npc.velocity = Vector2.Zero;
-                npc.rotation = 0;
+                NPC.velocity = Vector2.Zero;
+                NPC.rotation = 0;
 
-                if (npc.ai[2] > 0)
+                if (NPC.ai[2] > 0)
                 {
-                    npc.ai[2]--;
+                    NPC.ai[2]--;
                 }
                 else
                 {
-                    npc.dontTakeDamage = true;
-                    npc.ai[3]++; // Death timer
-                    npc.velocity.X *= 0.95f;
+                    NPC.dontTakeDamage = true;
+                    NPC.ai[3]++; // Death timer
+                    NPC.velocity.X *= 0.95f;
 
-                    if (npc.velocity.Y < 0.5f)
+                    if (NPC.velocity.Y < 0.5f)
                     {
-                        npc.velocity.Y = npc.velocity.Y + 0.01f;
+                        NPC.velocity.Y = NPC.velocity.Y + 0.01f;
                     }
 
-                    if (npc.velocity.X > 0.5f)
+                    if (NPC.velocity.X > 0.5f)
                     {
-                        npc.velocity.Y = npc.velocity.Y - 0.01f;
+                        NPC.velocity.Y = NPC.velocity.Y - 0.01f;
                     }
 
-                    if (npc.ai[3] > 120f)
+                    if (NPC.ai[3] > 120f)
                     {
-                        npc.Opacity = 1f - (npc.ai[3] - 120f) / 60f;
+                        NPC.Opacity = 1f - (NPC.ai[3] - 120f) / 60f;
                     }
 
-                    if (Main.rand.NextBool(5) && npc.ai[3] < 120f)
+                    if (Main.rand.NextBool(5) && NPC.ai[3] < 120f)
                     {
                         // This dust spawn adapted from the Pillar death code in vanilla.
                         for (int dustNumber = 0; dustNumber < 6; dustNumber++)
                         {
-                            Dust dust = Main.dust[Dust.NewDust(npc.Left, npc.width, npc.height / 2, DustID.UnusedWhiteBluePurple, 0f, 0f, 0, default(Color), 1f)];
-                            dust.position = npc.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(npc.width * 1.5f, npc.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
+                            Dust dust = Main.dust[Dust.NewDust(NPC.Left, NPC.width, NPC.height / 2, DustID.UnusedWhiteBluePurple, 0f, 0f, 0, default(Color), 1f)];
+                            dust.position = NPC.Center + Vector2.UnitY.RotatedByRandom(4.1887903213500977) * new Vector2(NPC.width * 1.5f, NPC.height * 1.1f) * 0.8f * (0.8f + Main.rand.NextFloat() * 0.2f);
                             dust.velocity.X = 0f;
-                            dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + npc.velocity.Y - 4f) * 3f;
+                            dust.velocity.Y = -Math.Abs(dust.velocity.Y - (float)dustNumber + NPC.velocity.Y - 4f) * 3f;
                             dust.noGravity = true;
                             dust.fadeIn = 1f;
                             dust.scale = 1f + Main.rand.NextFloat() + (float)dustNumber * 0.3f;
                         }
                     }
 
-                    if (npc.ai[3] == 90)
+                    if (NPC.ai[3] == 90)
                     {
-                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), npc.Center); // every half second while dying, play a sound
+                        SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), NPC.Center); // every half second while dying, play a sound
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
-                            float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                            float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
                             if (distance <= 600)
                             {
                                 //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
@@ -151,11 +152,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         }
                     }
 
-                    if (npc.ai[3] >= 180f)
+                    if (NPC.ai[3] >= 180f)
                     {
-                        npc.life = 0;
-                        npc.HitEffect(0, 0);
-                        npc.checkDead(); // This will trigger ModNPC.CheckDead the second time, causing the real death.
+                        NPC.life = 0;
+                        NPC.HitEffect(0, 0);
+                        NPC.checkDead(); // This will trigger ModNPC.CheckDead the second time, causing the real death.
                     }
                 }
                 return;
@@ -163,42 +164,42 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
 
 
 
-            if (npc.life <= npc.lifeMax * 0.5f || OvermorrowWorld.downedLady)
+            if (NPC.life <= NPC.lifeMax * 0.5f || OvermorrowWorld.downedLady)
             {
                 changedPhase2 = true;
             }
 
-            switch (npc.ai[0])
+            switch (NPC.ai[0])
             {
                 case -4: // half hp roar
                     if (!PlayerAlive(player)) { break; }
 
-                    npc.immortal = true;
-                    npc.dontTakeDamage = true;
-                    if (npc.ai[1] == 45)
+                    NPC.immortal = true;
+                    NPC.dontTakeDamage = true;
+                    if (NPC.ai[1] == 45)
                     {
-                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
+                        SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)NPC.Center.X, (int)NPC.Center.Y);
                     }
 
                     for (int i = 0; i < Main.maxPlayers; i++)
                     {
-                        float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                        float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
                         if (distance <= 600)
                         {
                             //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
                         }
                     }
 
-                    if (++npc.ai[1] > 240)
+                    if (++NPC.ai[1] > 240)
                     {
                         npcDashing = false;
-                        npc.dontTakeDamage = false;
-                        npc.immortal = false;
+                        NPC.dontTakeDamage = false;
+                        NPC.immortal = false;
                         changedPhase2Indicator = true;
-                        npc.ai[1] = 0;
-                        npc.ai[2] = 1;
-                        npc.ai[0] = -1;
-                        npc.ai[3] = 0;
+                        NPC.ai[1] = 0;
+                        NPC.ai[2] = 1;
+                        NPC.ai[0] = -1;
+                        NPC.ai[3] = 0;
                     }
                     break;
                 case -3: // spawn sequence
@@ -207,30 +208,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                     // reset boolean
                     OvermorrowWorld.downedKnight = false;
 
-                    npc.velocity = Vector2.UnitY * 0.7f;
-                    npc.dontTakeDamage = true;
+                    NPC.velocity = Vector2.UnitY * 0.7f;
+                    NPC.dontTakeDamage = true;
 
-                    if (++npc.ai[1] > 380)
+                    if (++NPC.ai[1] > 380)
                     {
                         // check if no minions
                         if (countMinions <= 0)
                         {
-                            npc.ai[0] = 1;
-                            npc.ai[1] = 0;
+                            NPC.ai[0] = 1;
+                            NPC.ai[1] = 0;
                         }
                         else
                         {
-                            npc.ai[0] = 0;
-                            npc.ai[1] = 0;
+                            NPC.ai[0] = 0;
+                            NPC.ai[1] = 0;
                         }
 
-                        npc.dontTakeDamage = false;
+                        NPC.dontTakeDamage = false;
                         player.GetModPlayer<OvermorrowModPlayer>().ShowText = false;
-                        npc.velocity = Vector2.Zero;
-                        Main.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)npc.Center.X, (int)npc.Center.Y);
+                        NPC.velocity = Vector2.Zero;
+                        SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)NPC.Center.X, (int)NPC.Center.Y);
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
-                            float distance = Vector2.Distance(npc.Center, Main.player[i].Center);
+                            float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
                             if (distance <= 600)
                             {
                                 //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 30;
@@ -244,7 +245,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                     if (!PlayerAlive(player)) { break; }
 
                     Vector2 moveTo = player.Center;
-                    var move = moveTo - npc.Center;
+                    var move = moveTo - NPC.Center;
                     var speed = 5;
 
                     float length = move.Length();
@@ -253,36 +254,36 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         move *= speed / length;
                     }
                     var turnResistance = 45;
-                    move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+                    move = (NPC.velocity * turnResistance + move) / (turnResistance + 1f);
                     length = move.Length();
                     if (length > 10)
                     {
                         move *= speed / length;
                     }
-                    npc.velocity.X = move.X;
-                    npc.velocity.Y = move.Y * .98f;
+                    NPC.velocity.X = move.X;
+                    NPC.velocity.Y = move.Y * .98f;
 
-                    if (++npc.ai[1] > (changedPhase2 ? 150 : 180))
+                    if (++NPC.ai[1] > (changedPhase2 ? 150 : 180))
                     {
                         if (changedPhase2 == true && changedPhase2Indicator == false)
                         {
-                            npc.ai[0] = -4;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -4;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
                         else
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -1;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
@@ -301,30 +302,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                             }
                             LastCase = RandomCase;
                             movement = false;
-                            npc.ai[0] = RandomCase;
+                            NPC.ai[0] = RandomCase;
                         }
                         else
                         {
                             movement = true;
-                            npc.ai[0] = -2;
+                            NPC.ai[0] = -2;
                         }
                     }
                     break;
                 case 0: // dash towards player
                     if (changedPhase2 && !changedPhase2Indicator)
                     {
-                        npc.ai[0] = -4;
-                        npc.ai[1] = 0;
+                        NPC.ai[0] = -4;
+                        NPC.ai[1] = 0;
                         break;
                     }
 
                     if (!PlayerAlive(player)) { break; }
 
-                    if (npc.ai[1] > 5 && npc.ai[1] < 30)
+                    if (NPC.ai[1] > 5 && NPC.ai[1] < 30)
                     {
-                        if (++npc.ai[2] % 5 == 0)
+                        if (++NPC.ai[2] % 5 == 0)
                         {
-                            Vector2 origin = npc.Center;
+                            Vector2 origin = NPC.Center;
                             float radius = 45;
                             int numLocations = 30;
                             for (int i = 0; i < 30; i++)
@@ -337,43 +338,43 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         }
                     }
 
-                    if (npc.ai[1] == 30)
+                    if (NPC.ai[1] == 30)
                     {
-                        if (Main.player[npc.target].Center.X < npc.Center.X && npcDashing == false)
+                        if (Main.player[NPC.target].Center.X < NPC.Center.X && npcDashing == false)
                         {
-                            npc.rotation = npc.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180)).ToRotation();
-                            npc.spriteDirection = -1;
+                            NPC.rotation = NPC.DirectionTo(player.Center).RotatedBy(MathHelper.ToRadians(180)).ToRotation();
+                            NPC.spriteDirection = -1;
                         }
                         else
                         {
-                            npc.rotation = npc.DirectionTo(player.Center).ToRotation();
+                            NPC.rotation = NPC.DirectionTo(player.Center).ToRotation();
                         }
-                        spriteDirectionStore = npc.spriteDirection;
+                        spriteDirectionStore = NPC.spriteDirection;
                         npcDashing = true;
                     }
 
-                    if (npc.ai[1] > 30 && npc.ai[1] < /*90*/ 60 && npc.ai[1] % /*10*/ 11 == 0 && changedPhase2 == true)
+                    if (NPC.ai[1] > 30 && NPC.ai[1] < /*90*/ 60 && NPC.ai[1] % /*10*/ 11 == 0 && changedPhase2 == true)
                     {
                         for (int i = -1; i < 1; i++)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(npc.rotation), ProjectileType<GranLaser>(), npc.damage / 3, 5f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(NPC.rotation), ProjectileType<GranLaser>(), NPC.damage / 3, 5f, Main.myPlayer);
                             }
                         }
                     }
 
-                    if (++npc.ai[1] == 30)
+                    if (++NPC.ai[1] == 30)
                     {
-                        npc.velocity = (changedPhase2 ? 12 : 8) * npc.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
+                        NPC.velocity = (changedPhase2 ? 12 : 8) * NPC.DirectionTo(new Vector2(Main.rand.NextFloat(player.Center.X - 25, player.Center.X + 25), Main.rand.NextFloat(player.Center.Y - 25, player.Center.Y + 25)));
                     }
-                    else if (npc.ai[1] > 60 && npc.ai[1] < 120)
+                    else if (NPC.ai[1] > 60 && NPC.ai[1] < 120)
                     {
-                        npc.velocity = new Vector2(MathHelper.Lerp(npc.velocity.X, 0, changedPhase2 ? 0.05f : 0.025f), MathHelper.Lerp(npc.velocity.Y, 0, changedPhase2 ? 0.05f : 0.025f));
+                        NPC.velocity = new Vector2(MathHelper.Lerp(NPC.velocity.X, 0, changedPhase2 ? 0.05f : 0.025f), MathHelper.Lerp(NPC.velocity.Y, 0, changedPhase2 ? 0.05f : 0.025f));
                     }
-                    else if (npc.ai[1] > 120)
+                    else if (NPC.ai[1] > 120)
                     {
-                        npc.ai[1] = 0;
+                        NPC.ai[1] = 0;
                         attackCounter++;
                         npcDashing = false;
                     }
@@ -381,23 +382,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                     {
                         if (changedPhase2 == true && changedPhase2Indicator == false)
                         {
-                            npc.ai[0] = -4;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -4;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
                         else
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -1;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
@@ -406,19 +407,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                 case 3: // telebombs
                     if (!PlayerAlive(player)) { break; }
 
-                    if (npc.ai[1] == 15)
+                    if (NPC.ai[1] == 15)
                     {
                         teleportPosition = player.Center + Main.rand.NextVector2Circular(333, 333);
 
-                        while (Main.tile[(int)teleportPosition.X / 16, (int)teleportPosition.Y / 16].active())
+                        while (Main.tile[(int)teleportPosition.X / 16, (int)teleportPosition.Y / 16].HasTile)
                         {
                             teleportPosition = player.Center + Main.rand.NextVector2Circular(333, 333);
                         }
                     }
 
-                    if (npc.ai[1] > 30)
+                    if (NPC.ai[1] > 30)
                     {
-                        if (++npc.ai[2] % 5 == 0)
+                        if (++NPC.ai[2] % 5 == 0)
                         {
                             Vector2 origin = teleportPosition;
                             float radius = 20;
@@ -432,41 +433,41 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                             }
                         }
                     }
-                    if (++npc.ai[1] > 90)
+                    if (++NPC.ai[1] > 90)
                     {
-                        npc.Teleport(teleportPosition + new Vector2(-51, -51), 206);
+                        NPC.Teleport(teleportPosition + new Vector2(-51, -51), 206);
                         int projectiles = 4 + (attackCounter * (changedPhase2 ? 3 : 2));
                         for (int j = 0; j < projectiles; j++)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), npc.damage / 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), NPC.damage / 2, 10f, Main.myPlayer);
                             }
                         }
                         attackCounter++;
-                        npc.ai[1] = 0;
+                        NPC.ai[1] = 0;
                     }
                     if (attackCounter == 4)
                     {
                         if (changedPhase2 == true && changedPhase2Indicator == false)
                         {
-                            npc.ai[0] = -4;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -4;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
                         else
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -1;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
@@ -475,16 +476,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                 case 2: // throwing lasers in patterns
                     if (!PlayerAlive(player)) { break; }
 
-                    if (npc.ai[2] == 0)
+                    if (NPC.ai[2] == 0)
                     {
                         direction = Main.rand.NextBool();
                         Direction = direction ? -1 : 1;
-                        npc.ai[2]++;
+                        NPC.ai[2]++;
                     }
 
-                    if (npc.ai[1] > 5 && npc.ai[1] < 40)
+                    if (NPC.ai[1] > 5 && NPC.ai[1] < 40)
                     {
-                        if (++npc.ai[2] % 5 == 0)
+                        if (++NPC.ai[2] % 5 == 0)
                         {
                             Vector2 origin = new Vector2(player.Center.X + (-600 * Direction), player.Center.Y);
                             float radius = 15;
@@ -499,21 +500,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         }
                     }
 
-                    if (npc.ai[1] > 40)
+                    if (NPC.ai[1] > 40)
                     {
-                        npc.position = new Vector2(player.Center.X + (-600 * Direction) - 51, player.Center.Y - 51);
+                        NPC.position = new Vector2(player.Center.X + (-600 * Direction) - 51, player.Center.Y - 51);
                     }
 
-                    if (++npc.ai[1] % (changedPhase2 ? 45 : 60) == 0)
+                    if (++NPC.ai[1] % (changedPhase2 ? 45 : 60) == 0)
                     {
-                        Vector2 direction = player.Center - npc.Center;
+                        Vector2 direction = player.Center - NPC.Center;
                         direction.Normalize();
                         int projectiles = Main.rand.Next(6, 12);
                         for (int i = projectiles * -1 / 2; i < projectiles / 2; i++)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(npc.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), npc.damage / 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), NPC.damage / 2, 10f, Main.myPlayer);
                             }
                         }
                         attackCounter++;
@@ -522,23 +523,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                     {
                         if (changedPhase2 == true && changedPhase2Indicator == false)
                         {
-                            npc.ai[0] = -4;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -4;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
                         else
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -1;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
@@ -547,23 +548,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                 case 1: // minions
                     if (changedPhase2 && !changedPhase2Indicator)
                     {
-                        npc.ai[0] = -4;
-                        npc.ai[1] = 0;
+                        NPC.ai[0] = -4;
+                        NPC.ai[1] = 0;
                         break;
                     }
 
                     if (!PlayerAlive(player)) { break; }
 
-                    if (npc.ai[2] == 0)
+                    if (NPC.ai[2] == 0)
                     {
                         direction = Main.rand.NextBool();
                         Direction = direction ? -1 : 1;
-                        npc.ai[2]++;
+                        NPC.ai[2]++;
                     }
 
-                    if (npc.ai[1] > 5 && npc.ai[1] < 240) //90)
+                    if (NPC.ai[1] > 5 && NPC.ai[1] < 240) //90)
                     {
-                        if (++npc.ai[2] % 5 == 0)
+                        if (++NPC.ai[2] % 5 == 0)
                         {
                             Vector2 origin1 = new Vector2(player.Center.X + 300 * Direction, player.Center.Y);
                             float radius1 = 7.5f; //15;
@@ -576,7 +577,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                                 Main.dust[dust].noGravity = true;
                             }
 
-                            if (npc.ai[1] > 5 && npc.ai[1] < 90)
+                            if (NPC.ai[1] > 5 && NPC.ai[1] < 90)
                             {
                                 Vector2 origin = new Vector2(player.Center.X + -300 * Direction, player.Center.Y);
                                 float radius = 15;
@@ -592,24 +593,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         }
                     }
 
-                    if (npc.ai[1] > 90)
+                    if (NPC.ai[1] > 90)
                     {
-                        npc.position = new Vector2(player.Center.X + -300 * Direction - 51, player.Center.Y - 51);
+                        NPC.position = new Vector2(player.Center.X + -300 * Direction - 51, player.Center.Y - 51);
                     }
 
-                    if (++npc.ai[1] % 120 == 0 && npc.ai[1] < 360)
+                    if (++NPC.ai[1] % 120 == 0 && NPC.ai[1] < 360)
                     {
                         for (int i = -1; i < 1; i++)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                NPC.NewNPC((int)((player.Center.X + 300 * Direction - 51) + (/*150*/ 75 + (/*300*/ 150 * i))), (int)npc.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
+                                NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)((player.Center.X + 300 * Direction - 51) + (/*150*/ 75 + (/*300*/ 150 * i))), (int)NPC.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
                             }
                         }
                         int count = 0;
                         for (int k = 0; k < 200; k++)
                         {
-                            if (Main.npc[k].active && Main.npc[k].type == mod.NPCType("GraniteMinibossMinion"))
+                            if (Main.npc[k].active && Main.npc[k].type == Mod.Find<ModNPC>("GraniteMinibossMinion").Type)
                             {
                                 if (count < 4)
                                 {
@@ -617,33 +618,33 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                                 }
                                 else
                                 {
-                                    ((GraniteMinibossMinion)Main.npc[k].modNPC).kill = true;
+                                    ((GraniteMinibossMinion)Main.npc[k].ModNPC).kill = true;
                                 }
                             }
                         }
                     }
 
-                    if (npc.ai[1] == 420)
+                    if (NPC.ai[1] == 420)
                     {
                         if (changedPhase2 == true && changedPhase2Indicator == false)
                         {
-                            npc.ai[0] = -4;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -4;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
                         else
                         {
-                            npc.ai[0] = -1;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            NPC.ai[0] = -1;
+                            NPC.ai[1] = 0;
+                            NPC.ai[2] = 0;
                             attackCounter = 0;
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = 0;
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = 0;
                             npcDashing = false;
                             teleportPosition = Vector2.Zero;
                         }
@@ -651,8 +652,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                     break;
 
             }
-            npc.spriteDirection = npc.direction;
-            npc.spriteDirection = 1;
+            NPC.spriteDirection = NPC.direction;
+            NPC.spriteDirection = 1;
 
             spritetimer++;
             if (spritetimer > 4)
@@ -670,14 +671,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
         {
             if (!player.active || player.dead)
             {
-                player = Main.player[npc.target];
-                npc.TargetClosest();
+                player = Main.player[NPC.target];
+                NPC.TargetClosest();
                 if (!player.active || player.dead)
                 {
-                    if (npc.timeLeft > 25)
+                    if (NPC.timeLeft > 25)
                     {
-                        npc.timeLeft = 25;
-                        npc.velocity = Vector2.UnitY * -7;
+                        NPC.timeLeft = 25;
+                        NPC.velocity = Vector2.UnitY * -7;
                     }
                 }
                 return false;
@@ -688,87 +689,78 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
             }
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = mod.GetTexture("Content/NPCs/Bosses/GraniteMini/AngryStone_Glow");
-            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X - 1, npc.Center.Y - Main.screenPosition.Y), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            Texture2D texture = Mod.Assets.Request<Texture2D>("Content/NPCs/Bosses/GraniteMini/AngryStone_Glow").Value;
+            spriteBatch.Draw(texture, new Vector2(NPC.Center.X - screenPos.X - 1, NPC.Center.Y - screenPos.Y), NPC.frame, Color.White, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frameCounter++;
+            NPC.frameCounter++;
 
-            if (npc.frameCounter % 6f == 5f)
+            if (NPC.frameCounter % 6f == 5f)
             {
-                npc.frame.Y += frameHeight;
+                NPC.frame.Y += frameHeight;
             }
-            if (npc.frame.Y >= frameHeight * 8) // 8 is max # of frames
+            if (NPC.frame.Y >= frameHeight * 8) // 8 is max # of frames
             {
-                npc.frame.Y = 0; // Reset back to default
+                NPC.frame.Y = 0; // Reset back to default
             }
 
-            if (Main.player[npc.target].Center.X < npc.Center.X && npcDashing == false)
+            if (Main.player[NPC.target].Center.X < NPC.Center.X && npcDashing == false)
             {
-                npc.spriteDirection = -1;
+                NPC.spriteDirection = -1;
             }
-            while (npcDashing == true && npc.spriteDirection != spriteDirectionStore)
+            while (npcDashing == true && NPC.spriteDirection != spriteDirectionStore)
             {
-                npc.spriteDirection = spriteDirectionStore;
+                NPC.spriteDirection = spriteDirectionStore;
             }
         }
 
         public override bool CheckDead()
         {
-            if (npc.ai[3] == 0f)
+            if (NPC.ai[3] == 0f)
             {
-                npc.ai[2] = 0;
+                NPC.ai[2] = 0;
                 dead = true;
-                npc.ai[3] = 1f;
-                npc.damage = 0;
-                npc.life = npc.lifeMax;
-                npc.dontTakeDamage = true;
-                npc.netUpdate = true;
+                NPC.ai[3] = 1f;
+                NPC.damage = 0;
+                NPC.life = NPC.lifeMax;
+                NPC.dontTakeDamage = true;
+                NPC.netUpdate = true;
                 return false;
             }
             return true;
         }
 
-        public override void NPCLoot()
+        public override void OnKill()
         {
             OvermorrowWorld.downedKnight = true;
+        }
 
-            if (Main.expertMode)
-            {
-                npc.DropBossBags();
-                return;
-            }
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ItemDropRule.BossBag(ItemType<KnightBag>()));
 
-            int choice = Main.rand.Next(4);
-            if (choice == 0) // Armor
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteHelmet>());
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteBreastplate>());
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<GraniteLeggings>());
-            }
-            else if (choice == 1) // Melee
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<GraniteSpear>());
-            }
-            else if (choice == 2) // Mage
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<GraniteBook>());
-            }
-            else if (choice == 3) // Summoner
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<GraniteStaff>());
-            }
+            var gearRule = new OneFromRulesRule(
+                1,
+                ItemDropRule.Common(ItemType<GraniteHelmet>())
+                    .OnSuccess(ItemDropRule.Common(ItemType<GraniteBreastplate>()))
+                    .OnSuccess(ItemDropRule.Common(ItemType<GraniteLeggings>())),
+                ItemDropRule.Common(ItemType<GraniteSpear>()),
+                ItemDropRule.Common(ItemType<GraniteBook>()),
+                ItemDropRule.Common(ItemType<GraniteStaff>())
+            );
 
-            Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<HeartStone>(), 2);
+            var nonExpert = new LeadingConditionRule(new Conditions.NotExpert())
+                .OnSuccess(ItemDropRule.Common(ItemType<HeartStone>(), 1, 2, 2))
+                .OnSuccess(ItemDropRule.Common(ItemType<GraniteTrophy>(), 10))
+                .OnSuccess(gearRule);
 
-            if (Main.rand.Next(10) == 0) // Trophy Dropchance
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<GraniteTrophy>());
-            }
+            npcLoot.Add(nonExpert);
+
+            base.ModifyNPCLoot(npcLoot);
         }
 
         public override void BossLoot(ref string name, ref int potionType)

@@ -16,60 +16,55 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SkullGun
 
         public override void SetDefaults()
         {
-            item.damage = 19;
-            item.ranged = true;
-            item.width = 40;
-            item.height = 25;
-            item.useTime = 7;
-            item.autoReuse = true;
-            item.useAnimation = 42;
-            item.reuseDelay = 75;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.noMelee = true;
-            item.knockBack = 4;
-            item.value = 10000;
-            item.rare = ItemRarityID.Green;
-            item.UseSound = SoundID.Item40;
-            item.shoot = ProjectileType<SpiritShot>();
-            item.autoReuse = false;
-            item.shootSpeed = 20.5f;
-            item.useAmmo = AmmoID.Bullet;
+            Item.damage = 19;
+            Item.DamageType = DamageClass.Ranged;
+            Item.width = 40;
+            Item.height = 25;
+            Item.useTime = 7;
+            Item.autoReuse = true;
+            Item.useAnimation = 42;
+            Item.reuseDelay = 75;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.noMelee = true;
+            Item.knockBack = 4;
+            Item.value = 10000;
+            Item.rare = ItemRarityID.Green;
+            Item.UseSound = SoundID.Item40;
+            Item.shoot = ProjectileType<SpiritShot>();
+            Item.autoReuse = false;
+            Item.shootSpeed = 20.5f;
+            Item.useAmmo = AmmoID.Bullet;
         }
 
-        public override bool ConsumeAmmo(Player player)
+        public override bool CanConsumeAmmo(Player player)
         {
-            return !(player.itemAnimation < item.useAnimation - 2);
+            return player.itemAnimation > Item.useAnimation - 2;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY)) * 15f;
+            Vector2 muzzleOffset = Vector2.Normalize(velocity) * 15f;
             if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
             {
                 position += muzzleOffset;
             }
 
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(45));
-            speedX = perturbedSpeed.X;
-            speedY = perturbedSpeed.Y;
+            velocity = velocity.RotatedByRandom(MathHelper.ToRadians(45));
 
             if (type == ProjectileID.Bullet)
             {
                 type = ProjectileType<SpiritShot>();
             }
-
-            return true;
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(ItemID.Handgun, 1);
-            recipe1.AddIngredient(ItemID.HellstoneBar, 20);
-            recipe1.AddIngredient(ItemID.Bone, 15);
-            recipe1.AddTile(TileID.Anvils);
-            recipe1.SetResult(this);
-            recipe1.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.Handgun, 1)
+                .AddIngredient(ItemID.HellstoneBar, 20)
+                .AddIngredient(ItemID.Bone, 15)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
         public override Vector2? HoldoutOffset()
         {

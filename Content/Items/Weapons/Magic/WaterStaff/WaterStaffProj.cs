@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,18 +14,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WaterStaff
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lacusite Bolt");
-            Main.projFrames[projectile.type] = 7;
+            Main.projFrames[Projectile.type] = 7;
         }
         public override void SetDefaults()
         {
-            projectile.width = 28;
-            projectile.height = 20;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 45;
-            projectile.tileCollide = true;
-            projectile.magic = true;
+            Projectile.width = 28;
+            Projectile.height = 20;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 45;
+            Projectile.tileCollide = true;
+            Projectile.DamageType = DamageClass.Magic;
         }
         int timer = 0;
         public override void SendExtraAI(BinaryWriter writer)
@@ -43,21 +44,21 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WaterStaff
         List<Projectile> owned = new List<Projectile>();
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation();
+            Projectile.rotation = Projectile.velocity.ToRotation();
 
-            if (++projectile.frameCounter >= 4)
+            if (++Projectile.frameCounter >= 4)
             {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                Projectile.frameCounter = 0;
+                if (++Projectile.frame >= Main.projFrames[Projectile.type])
                 {
-                    projectile.frame = 0;
+                    Projectile.frame = 0;
                 }
             }
         }
 
         public override void Kill(int timeLeft)
         {
-            Vector2 origin = projectile.Center;
+            Vector2 origin = Projectile.Center;
             float radius = 15;
             int numLocations = 30;
             for (int i = 0; i < 30; i++)
@@ -69,28 +70,28 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WaterStaff
             }
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override void PostDraw(Color lightColor)
         {
-            int num154 = Main.projectileTexture[projectile.type].Height / Main.projFrames[projectile.type];
-            int y2 = num154 * projectile.frame;
+            int num154 = TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y2 = num154 * Projectile.frame;
 
-            Texture2D texture = mod.GetTexture("Projectiles/Magic/WaterStaffProj_Glow");
-            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.projectileTexture[projectile.type].Width, num154);
-            spriteBatch.Draw
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/Projectiles/Magic/WaterStaffProj_Glow").Value;
+            Rectangle drawRectangle = new Rectangle(0, y2, TextureAssets.Projectile[Projectile.type].Value.Width, num154);
+            Main.EntitySpriteDraw
             (
                 texture,
                 new Vector2
                 (
-                    projectile.position.X - Main.screenPosition.X + projectile.width * 0.5f,
-                    projectile.position.Y - Main.screenPosition.Y + projectile.height - drawRectangle.Height * 0.5f
+                    Projectile.position.X - Main.screenPosition.X + Projectile.width * 0.5f,
+                    Projectile.position.Y - Main.screenPosition.Y + Projectile.height - drawRectangle.Height * 0.5f
                 ),
                 drawRectangle,
                 Color.White,
-                projectile.rotation,
+                Projectile.rotation,
                 new Vector2(drawRectangle.Width / 2, drawRectangle.Height / 2),
-                projectile.scale,
-                projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
-                0f
+                Projectile.scale,
+                Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                0
             );
         }
     }

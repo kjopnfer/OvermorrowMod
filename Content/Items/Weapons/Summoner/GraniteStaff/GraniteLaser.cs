@@ -8,12 +8,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
     {
         public override void SetDefaults()
         {
-            projectile.CloneDefaults(ProjectileID.EyeBeam);
-            aiType = ProjectileID.EyeBeam;
-            projectile.tileCollide = false;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.timeLeft = 150;
+            Projectile.CloneDefaults(ProjectileID.EyeBeam);
+            AIType = ProjectileID.EyeBeam;
+            Projectile.tileCollide = false;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.timeLeft = 150;
         }
 
         public override Color? GetAlpha(Color lightColor)

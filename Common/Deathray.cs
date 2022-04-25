@@ -18,36 +18,36 @@ namespace OvermorrowMod.Common
             this.MaxTime = MaxTime;
             this.laserColor = laserColor;
             this.LaserLength = LaserLength;
-            this.projectile.ai[0] = rotation;
+            this.Projectile.ai[0] = rotation;
             this.TexturePath = texture;
         }
         public float RotationalSpeed
         {
-            get => projectile.ai[0];
-            set => projectile.ai[0] = value;
+            get => Projectile.ai[0];
+            set => Projectile.ai[0] = value;
         }
         public override void SetDefaults()
         {
-            projectile.width = 10;
-            projectile.height = 10;
-            projectile.penetrate = -1;
-            projectile.tileCollide = false;
+            Projectile.width = 10;
+            Projectile.height = 10;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
         }
         public string TexturePath;
         public Color laserColor = Color.White; // just color
-        public Texture2D LaserBeginTexture => mod.GetTexture(TexturePath);//Main.projectileTexture[projectile.type];
-        public Texture2D LaserMiddleTexture => mod.GetTexture(TexturePath + "1");
-        public Texture2D LaserEndTexture => mod.GetTexture(TexturePath + "2");
+        public Texture2D LaserBeginTexture => ModContent.Request<Texture2D>(TexturePath).Value;//Main.projectileTexture[Projectile.type];
+        public Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>(TexturePath + "1").Value;
+        public Texture2D LaserEndTexture => ModContent.Request<Texture2D>(TexturePath + "2").Value;
         public float LaserLength = 1000; // laser lenght
-        public float timer { get { return projectile.localAI[0]; } set { projectile.localAI[0] = value; } }
+        public float timer { get { return Projectile.localAI[0]; } set { Projectile.localAI[0] = value; } }
         public float MaxTime = 0; // time the laser lasts
-        public void DrawLaser(SpriteBatch spriteBatch, Color beamColor, float scale)
+        public void DrawLaser(Color beamColor, float scale)
         {
-            spriteBatch.Draw(LaserBeginTexture, projectile.Center - Main.screenPosition, null, laserColor * projectile.Opacity, projectile.rotation, new Vector2(LaserBeginTexture.Width * scale, LaserBeginTexture.Height) / 2, new Vector2(scale, 1f), SpriteEffects.None, 0f);
+            Main.EntitySpriteDraw(LaserBeginTexture, Projectile.Center - Main.screenPosition, null, laserColor * Projectile.Opacity, Projectile.rotation, new Vector2(LaserBeginTexture.Width * scale, LaserBeginTexture.Height) / 2, new Vector2(scale, 1f), SpriteEffects.None, 0);
             float middleLaserLength = LaserLength;
             middleLaserLength -= (LaserBeginTexture.Height / 2 + LaserEndTexture.Height);
-            Vector2 centerOnLaser = projectile.Center;
-            centerOnLaser += projectile.velocity * LaserBeginTexture.Height / 2f;
+            Vector2 centerOnLaser = Projectile.Center;
+            centerOnLaser += Projectile.velocity * LaserBeginTexture.Height / 2f;
 
             if (middleLaserLength > 0f)
             {
@@ -55,16 +55,16 @@ namespace OvermorrowMod.Common
                 float incrementalBodyLength = 0f;
                 while (incrementalBodyLength + 1f < middleLaserLength)
                 {
-                    spriteBatch.Draw(LaserMiddleTexture, centerOnLaser - Main.screenPosition, null, laserColor * projectile.Opacity, projectile.rotation, new Vector2(LaserMiddleTexture.Width * scale, LaserMiddleTexture.Height) / 2f, new Vector2(scale, 1f), SpriteEffects.None, 0f);
+                    Main.EntitySpriteDraw(LaserMiddleTexture, centerOnLaser - Main.screenPosition, null, laserColor * Projectile.Opacity, Projectile.rotation, new Vector2(LaserMiddleTexture.Width * scale, LaserMiddleTexture.Height) / 2f, new Vector2(scale, 1f), SpriteEffects.None, 0);
                     incrementalBodyLength += laserOffset;
-                    centerOnLaser += projectile.velocity * laserOffset;
+                    centerOnLaser += Projectile.velocity * laserOffset;
                 }
             }
 
             if (Math.Abs(LaserLength - 2000) < 30f)
             {
                 Vector2 laserEndCenter = centerOnLaser - Main.screenPosition;
-                spriteBatch.Draw(LaserEndTexture, laserEndCenter, null, laserColor * projectile.Opacity, projectile.rotation, new Vector2(LaserEndTexture.Width * scale, LaserEndTexture.Height) / 2f, new Vector2(scale, 1f), SpriteEffects.None, 0f);
+                Main.EntitySpriteDraw(LaserEndTexture, laserEndCenter, null, laserColor * Projectile.Opacity, Projectile.rotation, new Vector2(LaserEndTexture.Width * scale, LaserEndTexture.Height) / 2f, new Vector2(scale, 1f), SpriteEffects.None, 0);
             }
         }
         public override void PostAI()
@@ -72,17 +72,17 @@ namespace OvermorrowMod.Common
             timer++;
             if (timer >= MaxTime)
             {
-                projectile.Kill();
+                Projectile.Kill();
             }
 
-            projectile.velocity = projectile.velocity.SafeNormalize(-Vector2.UnitY);
+            Projectile.velocity = Projectile.velocity.SafeNormalize(-Vector2.UnitY);
 
-            /*projectile.scale = (float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2;
-            if (projectile.scale > 1) projectile.scale = 1;*/
+            /*Projectile.scale = (float)Math.Sin(timer / MaxTime * MathHelper.Pi) * 2;
+            if (Projectile.scale > 1) Projectile.scale = 1;*/
 
-            float newDirection = projectile.velocity.ToRotation() + MathHelper.ToRadians(RotationalSpeed);
-            projectile.rotation = newDirection - MathHelper.PiOver2;
-            projectile.velocity = newDirection.ToRotationVector2();
+            float newDirection = Projectile.velocity.ToRotation() + MathHelper.ToRadians(RotationalSpeed);
+            Projectile.rotation = newDirection - MathHelper.PiOver2;
+            Projectile.velocity = newDirection.ToRotationVector2();
 
             /*float idealLaserLength = 2000;
             LaserLength = MathHelper.Lerp(LaserLength, idealLaserLength, 0.9f);*/
@@ -92,22 +92,22 @@ namespace OvermorrowMod.Common
         public override void CutTiles()
         {
             DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
-            Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + projectile.velocity * LaserLength, projectile.Size.Length() * projectile.scale, DelegateMethods.CutTiles);
+            Terraria.Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * LaserLength, Projectile.Size.Length() * Projectile.scale, DelegateMethods.CutTiles);
         }
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+
+        public override bool PreDraw(ref Color lightColor)
         {
-            DrawLaser(spriteBatch, laserColor, projectile.scale);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float _ = 0f;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projectile.Center, projectile.Center + projectile.velocity * LaserLength, projectile.Size.Length() * projectile.scale, ref _);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity * LaserLength, Projectile.Size.Length() * Projectile.scale, ref _);
         }
         private void CastLights()
         {
             DelegateMethods.v3_1 = laserColor.ToVector3();
-            Terraria.Utils.PlotTileLine(projectile.Center, projectile.Center + projectile.velocity * LaserLength, projectile.width * projectile.scale, new Terraria.Utils.PerLinePoint(DelegateMethods.CastLight));
+            Terraria.Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * LaserLength, Projectile.width * Projectile.scale, new Utils.TileActionAttempt(DelegateMethods.CastLight));
         }
         public override bool ShouldUpdatePosition() => false;
     }

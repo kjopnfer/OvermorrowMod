@@ -26,57 +26,57 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BarnabyStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 18;
-            projectile.height = 18;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = 4;
-            projectile.timeLeft = 410;
-            projectile.alpha = 255;
-            projectile.tileCollide = true;
-            projectile.magic = true;
-            projectile.ignoreWater = true;
+            Projectile.width = 18;
+            Projectile.height = 18;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = 4;
+            Projectile.timeLeft = 410;
+            Projectile.alpha = 255;
+            Projectile.tileCollide = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.ignoreWater = true;
         }
 
         public override void AI()
         {
-            // This runs once when the projectile is created
+            // This runs once when the Projectile is created
             if (initProperties)
             {
-                storeDirection = projectile.velocity.ToRotation();
-                if (Main.netMode != NetmodeID.Server && projectile.owner == Main.myPlayer)
+                storeDirection = Projectile.velocity.ToRotation();
+                if (Main.netMode != NetmodeID.Server && Projectile.owner == Main.myPlayer)
                 {
-                    // This spawns the child projectile that travels in the opposite direction
-                    if (projectile.ai[0] == 0)
+                    // This spawns the child Projectile that travels in the opposite direction
+                    if (Projectile.ai[0] == 0)
                     {
-                        childProjectile = Main.projectile[Projectile.NewProjectile(projectile.Center, projectile.velocity, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, 1, projectile.whoAmI)];
+                        childProjectile = Main.projectile[Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Projectile.velocity, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 1, Projectile.whoAmI)];
                     }
-                    else // This is the check that the child projectile enters in
+                    else // This is the check that the child Projectile enters in
                     {
-                        childProjectile = Main.projectile[(int)projectile.ai[1]];
+                        childProjectile = Main.projectile[(int)Projectile.ai[1]];
                     }
                 }
                 initProperties = false;
             }
 
             trigCounter += 2 * (float)Math.PI / period;
-            float r = amplitude * (float)Math.Sin(trigCounter) * (projectile.ai[0] == 0 ? 1 : -1);
+            float r = amplitude * (float)Math.Sin(trigCounter) * (Projectile.ai[0] == 0 ? 1 : -1);
             Vector2 instaVel = PolarVector(r - previousR, storeDirection + (float)Math.PI / 2);
-            projectile.position += instaVel;
+            Projectile.position += instaVel;
             previousR = r;
-            projectile.rotation = (projectile.velocity + instaVel).ToRotation() + (float)Math.PI / 27;
+            Projectile.rotation = (Projectile.velocity + instaVel).ToRotation() + (float)Math.PI / 27;
 
 
             for (int num1103 = 0; num1103 < 2; num1103++)
             {
-                int num1106 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.FireworkFountain_Blue, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 0.4f);
+                int num1106 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.FireworkFountain_Blue, Projectile.velocity.X, Projectile.velocity.Y, 50, default(Color), 0.4f);
                 switch (num1103)
                 {
                     case 0:
-                        Main.dust[num1106].position = (Main.dust[num1106].position + projectile.Center * 5f) / 6f;
+                        Main.dust[num1106].position = (Main.dust[num1106].position + Projectile.Center * 5f) / 6f;
                         break;
                     case 1:
-                        Main.dust[num1106].position = (Main.dust[num1106].position + (projectile.Center + projectile.velocity / 2f) * 5f) / 6f;
+                        Main.dust[num1106].position = (Main.dust[num1106].position + (Projectile.Center + Projectile.velocity / 2f) * 5f) / 6f;
                         break;
                 }
                 Dust dust81 = Main.dust[num1106];
@@ -86,34 +86,34 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BarnabyStaff
             }
 
             float radius = 30;
-            projectile.ai[1] += projectile.ai[0] == 0 ? 16 : -16;
+            Projectile.ai[1] += Projectile.ai[0] == 0 ? 16 : -16;
 
-            // Honestly after like 2 hours, I have no idea how to convert the movement of the dust to the movement of the projectiles
-            // So what this does is it just spams projectiles, over and over and over again that act as the hitbox for the dust.
+            // Honestly after like 2 hours, I have no idea how to convert the movement of the dust to the movement of the Projectiles
+            // So what this does is it just spams Projectiles, over and over and over again that act as the hitbox for the dust.
             for (int i = 0; i < 2; i++)
             {
-                Vector2 dustPos = projectile.Center + new Vector2(radius, 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[1]));
+                Vector2 dustPos = Projectile.Center + new Vector2(radius, 0).RotatedBy(MathHelper.ToRadians(i * 10 + Projectile.ai[1]));
                 Dust dust = Dust.NewDustPerfect(dustPos, 113, Vector2.Zero, 0, default, 1f);
                 dust.noGravity = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     if (i == 0)
                     {
-                        Projectile.NewProjectile(dustPos, Vector2.Zero, ModContent.ProjectileType<ManaDust>(), projectile.damage / 2, i, projectile.owner, projectile.whoAmI, 1);
+                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), dustPos, Vector2.Zero, ModContent.ProjectileType<ManaDust>(), Projectile.damage / 2, i, Projectile.owner, Projectile.whoAmI, 1);
                     }
                 }
             }
 
             for (int i = 0; i < 2; i++)
             {
-                Vector2 dustPos = projectile.Center - new Vector2(radius, 0).RotatedBy(MathHelper.ToRadians(i * 10 + projectile.ai[1]));
+                Vector2 dustPos = Projectile.Center - new Vector2(radius, 0).RotatedBy(MathHelper.ToRadians(i * 10 + Projectile.ai[1]));
                 Dust dust = Dust.NewDustPerfect(dustPos, 113, Vector2.Zero, 0, default, 1f);
                 dust.noGravity = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     if (i == 0)
                     {
-                        Projectile.NewProjectile(dustPos, Vector2.Zero, ModContent.ProjectileType<ManaDust>(), projectile.damage / 2, i, projectile.owner, projectile.whoAmI, 1);
+                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), dustPos, Vector2.Zero, ModContent.ProjectileType<ManaDust>(), Projectile.damage / 2, i, Projectile.owner, Projectile.whoAmI, 1);
                     }
                 }
             }
@@ -126,7 +126,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BarnabyStaff
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            target.immune[projectile.owner] = 6;
+            target.immune[Projectile.owner] = 6;
         }
     }
 }

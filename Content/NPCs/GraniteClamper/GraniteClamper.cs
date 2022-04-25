@@ -15,17 +15,17 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
 
         public override void SetDefaults()
         {
-            npc.width = 44;
-            npc.height = 42;
-            npc.damage = 40;
-            npc.defense = 9;
-            npc.lifeMax = 90;
-            npc.HitSound = SoundID.NPCHit4;
-            npc.DeathSound = SoundID.NPCDeath53;
-            npc.value = 60f;
-            npc.knockBackResist = 0f;
-            npc.noGravity = true;
-            npc.noTileCollide = true;
+            NPC.width = 44;
+            NPC.height = 42;
+            NPC.damage = 40;
+            NPC.defense = 9;
+            NPC.lifeMax = 90;
+            NPC.HitSound = SoundID.NPCHit4;
+            NPC.DeathSound = SoundID.NPCDeath53;
+            NPC.value = 60f;
+            NPC.knockBackResist = 0f;
+            NPC.noGravity = true;
+            NPC.noTileCollide = true;
         }
 
         public override void AI()
@@ -34,14 +34,14 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
             timer++;
             if (timer == 1)
             {
-                int proj = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 10, mod.ProjectileType("GraniteClamperHook"), 13, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
-                npc.netUpdate = true;
+                int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center.X, NPC.Center.Y, 0, 10, Mod.Find<ModProjectile>("GraniteClamperHook").Type, 13, 0.0f, Main.myPlayer, 0.0f, (float)NPC.whoAmI);
+                NPC.netUpdate = true;
             }
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == 368 ? 0.2f : 0f;
+            return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].TileType == 368 ? 0.2f : 0f;
         }
 
 

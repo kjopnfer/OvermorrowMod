@@ -23,24 +23,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            npc.width = 44;
-            npc.height = 48;
-            npc.aiStyle = -1;
-            npc.lifeMax = 1200;
-            npc.noGravity = true;
-            npc.noTileCollide = true;
-            npc.knockBackResist = 0f;
-            npc.chaseable = false;
-            npc.HitSound = SoundID.NPCHit4;
-            npc.friendly = false;
+            NPC.width = 44;
+            NPC.height = 48;
+            NPC.aiStyle = -1;
+            NPC.lifeMax = 1200;
+            NPC.noGravity = true;
+            NPC.noTileCollide = true;
+            NPC.knockBackResist = 0f;
+            NPC.chaseable = false;
+            NPC.HitSound = SoundID.NPCHit4;
+            NPC.friendly = false;
         }
 
         public override void AI()
         {
-            ParentNPC = Main.npc[(int)npc.ai[0]];
+            ParentNPC = Main.npc[(int)NPC.ai[0]];
 
-            npc.spriteDirection = ParentNPC.spriteDirection;
-            npc.Center = ParentNPC.Center;
+            NPC.spriteDirection = ParentNPC.spriteDirection;
+            NPC.Center = ParentNPC.Center;
         }
 
         public override bool? CanBeHitByItem(Player player, Item item)
@@ -67,18 +67,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Main.instance.DrawCacheNPCProjectiles.Add(index);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.GetTexture("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/SandstormBoss_Chest");
-            Color color = Lighting.GetColor((int)npc.Center.X / 16, (int)(npc.Center.Y / 16f));
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/SandstormBoss_Chest").Value;
+            Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)(NPC.Center.Y / 16f));
 
-            float DirectionOffset = npc.spriteDirection == 1 ? 0 : 2;
-            Main.spriteBatch.Draw(texture, npc.Center + new Vector2(DirectionOffset, 2) - Main.screenPosition, null, color, npc.rotation, texture.Size() / 2f, 1f, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            float DirectionOffset = NPC.spriteDirection == 1 ? 0 : 2;
+            spriteBatch.Draw(texture, NPC.Center + new Vector2(DirectionOffset, 2) - screenPos, null, color, NPC.rotation, texture.Size() / 2f, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 
             return false;
         }
 
-        public override void NPCLoot()
+        public override void OnKill()
         {
             if (Sandstorm.Happening)
             {

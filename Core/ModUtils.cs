@@ -138,7 +138,7 @@ namespace OvermorrowMod.Core
         }
         public static void Reload(this SpriteBatch spriteBatch, BlendState blendState = null, SpriteSortMode sortMode = default)
         {
-            if ((bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch))
+            if (spriteBatch.HasBegun())
             {
                 spriteBatch.End();
             }
@@ -152,7 +152,7 @@ namespace OvermorrowMod.Core
         }
         public static bool HasBegun(this SpriteBatch spriteBatch)
         {
-            return (bool)spriteBatch.GetType().GetField("inBeginEndPair", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch);
+            return (bool)spriteBatch.GetType().GetField("beginCalled", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch);
         }
         public static object GetField(this object obj, string name)
         {
@@ -225,7 +225,7 @@ namespace OvermorrowMod.Core
             Tile tile = Framing.GetTileSafely(i, j);
 
             Point16 coord = new Point16(i, j);
-            Point16 frame = new Point16(tile.frameX / 18, tile.frameY / 18);
+            Point16 frame = new Point16(tile.TileFrameX / 18, tile.TileFrameY / 18);
 
             return coord - frame;
         }

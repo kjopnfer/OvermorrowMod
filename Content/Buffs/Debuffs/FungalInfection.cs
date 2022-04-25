@@ -6,7 +6,7 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
 {
     public class FungalInfection : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Fungal Infection");
             Main.debuff[Type] = true;

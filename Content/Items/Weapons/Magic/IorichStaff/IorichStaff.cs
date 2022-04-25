@@ -14,29 +14,29 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
                 "Holding down shoot while locked onto enemies will create Spirit Daggers around them\n" +
                 "Converges towards the center after creating 8 Spirit Daggers\n" +
                 "'The veil of darkness did little to hide the inferno that devoured his people'");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
-            item.mana = 12;
-            item.UseSound = SoundID.Item8;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 30;
-            item.useTurn = false;
-            item.useAnimation = 32;
-            item.useTime = 32;
-            item.width = 56;
-            item.height = 60;
-            item.shoot = ModContent.ProjectileType<NatureBolt>();
-            item.shootSpeed = 9f;
-            item.knockBack = 3f;
-            item.magic = true;
-            item.channel = true;
-            item.value = Item.sellPrice(gold: 1, silver: 75);
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Orange;
+            Item.mana = 12;
+            Item.UseSound = SoundID.Item8;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 30;
+            Item.useTurn = false;
+            Item.useAnimation = 32;
+            Item.useTime = 32;
+            Item.width = 56;
+            Item.height = 60;
+            Item.shoot = ModContent.ProjectileType<NatureBolt>();
+            Item.shootSpeed = 9f;
+            Item.knockBack = 3f;
+            Item.DamageType = DamageClass.Magic;
+            Item.channel = true;
+            Item.value = Item.sellPrice(gold: 1, silver: 75);
         }
 
         public override bool CanUseItem(Player player)
@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
             return false;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool CanShoot(Player player)
         {
             return false;
         }
@@ -58,7 +58,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
         {
             if (player.ownedProjectileCounts[ModContent.ProjectileType<NatureBolt>()] <= 0)
             {
-                Projectile.NewProjectile(Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<NatureBolt>(), item.damage, 0f, player.whoAmI);
+                Projectile.NewProjectile(player.GetProjectileSource_Item(Item), Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<NatureBolt>(), Item.damage, 0f, player.whoAmI);
             }
         }
     }

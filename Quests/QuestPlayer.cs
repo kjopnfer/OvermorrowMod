@@ -21,7 +21,8 @@ namespace OvermorrowMod.Quests
         private readonly List<BaseQuest> activeQuests = new List<BaseQuest>();
         public HashSet<string> CompletedQuests { get; } = new HashSet<string>();
 
-        public IEnumerable<BaseQuest> CurrentQuests => activeQuests.Concat(Quests.PerPlayerActiveQuests[PlayerUUID]);
+        public IEnumerable<BaseQuest> CurrentQuests => activeQuests.Concat(
+            Quests.PerPlayerActiveQuests.GetValueOrDefault(PlayerUUID) ?? Enumerable.Empty<BaseQuest>());
 
         public HashSet<string> LocalCompletedQuests { get; } = new HashSet<string>();
 
@@ -34,7 +35,7 @@ namespace OvermorrowMod.Quests
 
         public void AddQuest(BaseQuest quest)
         {
-            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == player)
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == Player)
                 NetworkMessageHandler.Quests.TakeQuest(-1, -1, quest.QuestID);
             if (quest.Repeatability == QuestRepeatability.OncePerWorldPerPlayer || quest.Repeatability == QuestRepeatability.OncePerWorld)
             {
@@ -63,26 +64,23 @@ namespace OvermorrowMod.Quests
             // Should not happen!
             if (quest == null) throw new ArgumentException($"Player is not doing {questId}");
             // Send message to server if the quest is being completed for the current player
-            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == player)
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.LocalPlayer == Player)
                 NetworkMessageHandler.Quests.CompleteQuest(-1, -1, questId);
 
-            quest.CompleteQuest(player, true);
+            quest.CompleteQuest(Player, true);
             RemoveQuest(quest);
         }
-
-        public override TagCompound Save()
+        public override void SaveData(TagCompound tag)
         {
-            return new TagCompound
-            {
-                ["CompletedQuests"] = CompletedQuests.ToList(),
-                ["CurrentQuests"] = activeQuests.Select(q => q.QuestID).ToList(),
-                ["PlayerUUID"] = PlayerUUID,
-                ["KilledIDs"] = KilledNPCs.Keys.ToList(),
-                ["KilledCounts"] = KilledNPCs.Values.ToList(),
-            };
+            tag["CompletedQuests"] = CompletedQuests.ToList();
+            tag["CurrentQuests"] = activeQuests.Select(q => q.QuestID).ToList();
+            tag["PlayerUUID"] = PlayerUUID;
+            tag["KilledIDs"] = KilledNPCs.Keys.ToList();
+            tag["KilledCounts"] = KilledNPCs.Values.ToList();
+            base.SaveData(tag);
         }
 
-        public override void Load(TagCompound tag)
+        public override void LoadData(TagCompound tag)
         {
             CompletedQuests.Clear();
             activeQuests.Clear();
@@ -125,7 +123,7 @@ namespace OvermorrowMod.Quests
         int MarkerCounter = 0;
         public override void PreUpdate()
         {
-            var modPlayer = player.GetModPlayer<QuestPlayer>();
+            var modPlayer = Player.GetModPlayer<QuestPlayer>();
             foreach (var quest in modPlayer.CurrentQuests)
             {
                 if (quest.Type != QuestType.Travel) continue;
@@ -133,17 +131,17 @@ namespace OvermorrowMod.Quests
                 foreach (IQuestRequirement requirement in quest.Requirements)
                 {
                     // Check if the travel requirement isn't completed, if it isn't then:
-                    if (requirement is TravelRequirement travelRequirement && !QuestWorld.PlayerTraveled.Contains(travelRequirement.ID))
+                    if (requirement is TravelRequirement travelRequirement && !QuestSystem.PlayerTraveled.Contains(travelRequirement.ID))
                     {
                         if (MarkerCounter++ % 30 == 0)
                         {
-                            Particle.CreateParticle(Particle.ParticleType<Pulse2>(), travelRequirement.location, Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
+                            Particle.CreateParticle(Particle.ParticleType<Pulse2>(), travelRequirement.Location * 16f, Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
                         }
 
-                        if (player.active && player.Distance(travelRequirement.location) < 50)
+                        if (Player.active && Player.Distance(travelRequirement.Location * 16) < 50)
                         {
-                            QuestWorld.PlayerTraveled.Add(travelRequirement.ID);
-                        }      
+                            QuestSystem.PlayerTraveled.Add(travelRequirement.ID);
+                        }
                     }
                 }
             }

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Particles;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,44 +17,44 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
             DisplayName.SetDefault("Nature Crystal");
 
             // Afterimage effect
-            NPCID.Sets.TrailCacheLength[npc.type] = 10;    //The length of old position to be recorded
-            NPCID.Sets.TrailingMode[npc.type] = 2;        //The recording mode, this tracks rotation
+            NPCID.Sets.TrailCacheLength[NPC.type] = 10;    //The length of old position to be recorded
+            NPCID.Sets.TrailingMode[NPC.type] = 2;        //The recording mode, this tracks rotation
         }
         public override void SetDefaults()
         {
-            npc.width = 100;
-            npc.height = 168;
-            npc.lifeMax = 300;
-            npc.friendly = false;
-            npc.aiStyle = -1;
-            npc.timeLeft = 60 * 60;
-            npc.noTileCollide = true;
-            npc.HitSound = SoundID.DD2_WitherBeastCrystalImpact;
+            NPC.width = 100;
+            NPC.height = 168;
+            NPC.lifeMax = 300;
+            NPC.friendly = false;
+            NPC.aiStyle = -1;
+            NPC.timeLeft = 60 * 60;
+            NPC.noTileCollide = true;
+            NPC.HitSound = SoundID.DD2_WitherBeastCrystalImpact;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(npc.Center, 0f, 1f, 0f);
+            Lighting.AddLight(NPC.Center, 0f, 1f, 0f);
 
-            if (npc.ai[0]++ == 0)
+            if (NPC.ai[0]++ == 0)
             {
-                Main.PlaySound(SoundID.Item46, npc.Center);
+                SoundEngine.PlaySound(SoundID.Item46, NPC.Center);
 
                 for (int i = 0; i < 100; i++)
                 {
                     Vector2 RandomVelocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(20, 30);
-                    Dust.NewDust(npc.Center, 2, 2, DustID.TerraBlade, RandomVelocity.X, RandomVelocity.Y);
+                    Dust.NewDust(NPC.Center, 2, 2, DustID.TerraBlade, RandomVelocity.X, RandomVelocity.Y);
                 }
 
-                InitialPosition = npc.Center;
+                InitialPosition = NPC.Center;
             }
 
-            npc.Center = Vector2.Lerp(InitialPosition, InitialPosition + Vector2.UnitY * 20, (float)Math.Sin(npc.ai[0] / 60f));
+            NPC.Center = Vector2.Lerp(InitialPosition, InitialPosition + Vector2.UnitY * 20, (float)Math.Sin(NPC.ai[0] / 60f));
         }
 
-        public override bool? CanBeHitByProjectile(Projectile projectile)
+        public override bool? CanBeHitByProjectile(Projectile Projectile)
         {
-            if (projectile.type == ModContent.ProjectileType<IorichHarvesterProjectile>() && projectile.owner == npc.ai[1])
+            if (Projectile.type == ModContent.ProjectileType<IorichHarvesterProjectile>() && Projectile.owner == NPC.ai[1])
             {
                 return true;
             }
@@ -61,41 +62,41 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
             return false;
         }
 
-        public override void OnHitByProjectile(Projectile projectile, int damage, float knockback, bool crit)
+        public override void OnHitByProjectile(Projectile Projectile, int damage, float knockback, bool crit)
         {
-            npc.position += Vector2.Normalize(projectile.velocity);
+            NPC.position += Vector2.Normalize(Projectile.velocity);
 
-            Particle.CreateParticle(Particle.ParticleType<Pulse>(), projectile.Center, Vector2.Zero, Color.LightGreen, 0.5f, 0.5f);
+            Particle.CreateParticle(Particle.ParticleType<Pulse>(), Projectile.Center, Vector2.Zero, Color.LightGreen, 0.5f, 0.5f);
 
             for (int i = 0; i < Main.rand.Next(3, 6); i++)
             {
-                Particle.CreateParticle(Particle.ParticleType<Spark>(), projectile.Center, projectile.velocity, Color.LightGreen, 1, 1f);
+                Particle.CreateParticle(Particle.ParticleType<Spark>(), Projectile.Center, Projectile.velocity, Color.LightGreen, 1, 1f);
             }
         }
 
-        public override void NPCLoot()
+        public override void OnKill()
         {
-            Main.PlaySound(SoundID.DD2_WitherBeastDeath, npc.Center);
+            SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath, NPC.Center);
         }
 
         /*public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             Color color26 = Color.LightGreen;
-            Texture2D texture2D16 = mod.GetTexture("npcs/Melee/IorichHarvesterCrystal");
+            Texture2D texture2D16 = mod.GetTexture("NPCs/Melee/IorichHarvesterCrystal");
 
-            int num154 = Main.npcTexture[npc.type].Height / Main.projFrames[npc.type];
-            int y2 = num154 * npc.frame;
-            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.npcTexture[npc.type].Width, num154);
+            int num154 = Main.NPCTexture[NPC.type].Height / Main.projFrames[NPC.type];
+            int y2 = num154 * NPC.frame;
+            Rectangle drawRectangle = new Microsoft.Xna.Framework.Rectangle(0, y2, Main.NPCTexture[NPC.type].Width, num154);
 
             Vector2 origin2 = drawRectangle.Size() / 2f;
 
-            for (int i = 0; i < npcID.Sets.TrailCacheLength[npc.type]; i++)
+            for (int i = 0; i < NPCID.Sets.TrailCacheLength[NPC.type]; i++)
             {
                 Color color27 = color26;
-                color27 *= (float)(npcID.Sets.TrailCacheLength[npc.type] - i) / npcID.Sets.TrailCacheLength[npc.type];
-                Vector2 value4 = npc.oldPos[i];
-                float num165 = npc.oldRot[i];
-                Main.spriteBatch.Draw(texture2D16, value4 + npc.Size / 2f - Main.screenPosition + new Vector2(0, npc.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(drawRectangle), color27, num165, origin2, npc.scale, SpriteEffects.None, 0f);
+                color27 *= (float)(NPCID.Sets.TrailCacheLength[NPC.type] - i) / NPCID.Sets.TrailCacheLength[NPC.type];
+                Vector2 value4 = NPC.oldPos[i];
+                float num165 = NPC.oldRot[i];
+                Main.spriteBatch.Draw(texture2D16, value4 + NPC.Size / 2f - Main.screenPosition + new Vector2(0, NPC.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(drawRectangle), color27, num165, origin2, NPC.scale, SpriteEffects.None, 0f);
             }
 
             return base.PreDraw(spriteBatch, lightColor);
@@ -105,8 +106,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
     // This exists to prevent the player from spawning more of the above NPC
     public class IorichHarvesterCrystalProjectile : ModProjectile
     {
-        public override bool CanDamage() => false;
-        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public override bool? CanDamage() => false;
+        public override string Texture => "Terraria/Images/Item_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Nature Crystal");
@@ -114,19 +115,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
 
         public override void SetDefaults()
         {
-            projectile.width = 100;
-            projectile.height = 168;
-            projectile.friendly = true;
-            projectile.timeLeft = 60 * 60;
-            projectile.tileCollide = false;
-            projectile.alpha = 255;
+            Projectile.width = 100;
+            Projectile.height = 168;
+            Projectile.friendly = true;
+            Projectile.timeLeft = 60 * 60;
+            Projectile.tileCollide = false;
+            Projectile.alpha = 255;
         }
 
         public override void AI()
         {
-            if (Main.npc[(int)projectile.ai[0]].active)
+            if (Main.npc[(int)Projectile.ai[0]].active)
             {
-                projectile.timeLeft = 5;
+                Projectile.timeLeft = 5;
             }
         }
     }

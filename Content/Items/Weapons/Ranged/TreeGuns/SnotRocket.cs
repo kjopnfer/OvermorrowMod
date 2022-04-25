@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Core;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,26 +11,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
     {
         public override void SetDefaults()
         {
-            projectile.width = 14;
-            projectile.height = 14;
-            projectile.timeLeft = 200;
-            projectile.penetrate = 1;
-            projectile.friendly = true;
-            projectile.ranged = true;
-            projectile.tileCollide = true;
-            drawOffsetX = -6;
+            Projectile.width = 14;
+            Projectile.height = 14;
+            Projectile.timeLeft = 200;
+            Projectile.penetrate = 1;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.tileCollide = true;
+            DrawOffsetX = -6;
         }
 
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation();
+            Projectile.rotation = Projectile.velocity.ToRotation();
 
-            Terraria.Dust.NewDustPerfect(projectile.Center, 46, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
+            Terraria.Dust.NewDustPerfect(Projectile.Center, 46, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
         }
 
         public override void Kill(int timeLeft)
         {
-            Projectile.NewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<SnotExplosion>(), projectile.damage, 10f, projectile.owner);
+            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SnotExplosion>(), Projectile.damage, 10f, Projectile.owner);
         }
     }
 
@@ -38,36 +39,35 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
-            projectile.alpha = 255;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.hostile = true;
-            projectile.tileCollide = false;
-            projectile.width = 64;
-            projectile.height = 64;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 3;
+            Projectile.alpha = 255;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.hostile = true;
+            Projectile.tileCollide = false;
+            Projectile.width = 64;
+            Projectile.height = 64;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 3;
         }
 
         public override void Kill(int timeLeft)
         {
-
-            Vector2 position = projectile.Center;
-            Main.PlaySound(SoundID.NPCDeath1, (int)position.X, (int)position.Y);
+            Vector2 position = Projectile.Center;
+            SoundEngine.PlaySound(SoundID.NPCDeath1, (int)position.X, (int)position.Y);
 
             for (int num864 = 0; num864 < 30; num864++)
             {
-                int num865 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
+                int num865 = Dust.NewDust(new Vector2(position.X, position.Y), Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
                 Dust dust = Main.dust[num865];
                 dust.velocity *= 1.4f;
             }
             for (int num866 = 0; num866 < 20; num866++)
             {
-                int num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, DustID.ChlorophyteWeapon, 0f, 0f, 100, default(Color), 2.5f);
+                int num867 = Dust.NewDust(new Vector2(position.X, position.Y), Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, 0f, 0f, 100, default(Color), 2.5f);
                 Main.dust[num867].noGravity = true;
                 Dust dust = Main.dust[num867];
                 dust.velocity *= 3.5f;
-                num867 = Dust.NewDust(new Vector2(position.X, position.Y), projectile.width, projectile.height, DustID.ChlorophyteWeapon, 0f, 0f, 100, default(Color), 1f);
+                num867 = Dust.NewDust(new Vector2(position.X, position.Y), Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, 0f, 0f, 100, default(Color), 1f);
                 dust = Main.dust[num867];
                 dust.velocity *= 1.5f;
             }

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,7 +9,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
 {
     public class GlowWorms : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileCut[Type] = true;
             Main.tileLighted[Type] = true;
@@ -16,7 +17,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             Main.tileNoAttach[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileNoFail[Type] = true;
-            soundType = SoundID.Grass;
+            SoundType = SoundID.Grass;
             AddMapEntry(new Color(0, 200, 200));
         }
 
@@ -31,7 +32,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
         {
             // This recursively kills all the tiles below it
             Tile tile = Framing.GetTileSafely(i, j + 1);
-            if (tile.active() && tile.type == Type)
+            if (tile.HasTile && tile.TileType == Type)
             {
                 WorldGen.KillTile(i, j + 1);
             }
@@ -43,9 +44,9 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             int type = -1;
 
             // Get the tile that this is grown on
-            if (tileAbove.active() && !tileAbove.bottomSlope())
+            if (tileAbove.HasTile && !tileAbove.BottomSlope)
             {
-                type = tileAbove.type;
+                type = tileAbove.TileType;
             }
 
             // Check the that tile above is either the block it can grow on or itself
@@ -64,7 +65,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
         {
             Tile tileBelow = Framing.GetTileSafely(i, j + 1);
 
-            if (WorldGen.genRand.NextBool(2) && !tileBelow.active() && !tileBelow.lava())
+            if (WorldGen.genRand.NextBool(2) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
                 bool placeWorm = false;
                 int yTest = j;
@@ -72,11 +73,11 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
                 while (yTest > j - 10)
                 {
                     Tile testTile = Framing.GetTileSafely(i, yTest);
-                    if (testTile.bottomSlope())
+                    if (testTile.BottomSlope)
                     {
                         break;
                     }
-                    else if (!testTile.active() || testTile.type != ModContent.TileType<GlowBlock>())
+                    else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<GlowBlock>())
                     {
                         yTest--;
                         continue;
@@ -87,8 +88,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
 
                 if (placeWorm)
                 {
-                    tileBelow.type = Type;
-                    tileBelow.active(true);
+                    tileBelow.TileType = Type;
                     WorldGen.SquareTileFrame(i, j + 1, true);
                     if (Main.netMode == NetmodeID.Server)
                     {
@@ -98,10 +98,10 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             }
         }
 
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex)
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
             Tile tileBelow = Framing.GetTileSafely(i, j + 1);
-            if (!tileBelow.active())
+            if (!tileBelow.HasTile)
             {
                 if (Main.rand.NextFloat() < 0.001f)
                 {

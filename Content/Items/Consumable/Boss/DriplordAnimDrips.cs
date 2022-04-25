@@ -9,30 +9,30 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Small Drips");
-            Main.projFrames[projectile.type] = 4;
+            Main.projFrames[Projectile.type] = 4;
         }
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
-            projectile.tileCollide = false;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.timeLeft = 1800;
-            projectile.penetrate = -1;
-            //projectile.alpha = 255;
+            Projectile.width = 12;
+            Projectile.height = 12;
+            Projectile.tileCollide = false;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.timeLeft = 1800;
+            Projectile.penetrate = -1;
+            //Projectile.alpha = 255;
         }
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            Projectile owner = Main.projectile[(int)projectile.ai[1]];
+            Projectile owner = Main.projectile[(int)Projectile.ai[1]];
 
-            if (projectile.Distance(owner.Center) < 25)
+            if (Projectile.Distance(owner.Center) < 25)
             {
-                ((DriplordAnim)Main.projectile[(int)projectile.ai[1]].modProjectile).dripsdead += 1; //true;
-                ((DriplordAnim)Main.projectile[(int)projectile.ai[1]].modProjectile).scale += 0.03f; //true;
-                projectile.Kill();
+                ((DriplordAnim)Main.projectile[(int)Projectile.ai[1]].ModProjectile).dripsdead += 1; //true;
+                ((DriplordAnim)Main.projectile[(int)Projectile.ai[1]].ModProjectile).scale += 0.03f; //true;
+                Projectile.Kill();
             }
         }
     }

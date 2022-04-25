@@ -16,17 +16,17 @@ namespace OvermorrowMod.Content.Items.Armor.Marble
 
         public override void SetDefaults()
         {
-            item.width = 18;
-            item.height = 16;
-            item.value = Item.sellPrice(0, 1, 0, 0);
-            item.rare = ItemRarityID.Blue;
-            item.defense = 3;
+            Item.width = 18;
+            Item.height = 16;
+            Item.value = Item.sellPrice(0, 1, 0, 0);
+            Item.rare = ItemRarityID.Blue;
+            Item.defense = 3;
         }
 
         public override void UpdateEquip(Player player)
         {
             player.moveSpeed += 0.05f;
-            player.rangedDamage += 0.03f;
+            player.GetDamage(DamageClass.Ranged) += 0.03f;
             player.manaCost -= 0.15f;
         }
     }

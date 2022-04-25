@@ -17,12 +17,12 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
 
         public override void SetDefaults()
         {
-            item.width = 26;
-            item.height = 30;
-            item.value = Item.buyPrice(0, 5, 0, 0);
-            item.rare = ItemRarityID.Expert;
-            item.accessory = true;
-            item.expert = true;
+            Item.width = 26;
+            Item.height = 30;
+            Item.value = Item.buyPrice(0, 5, 0, 0);
+            Item.rare = ItemRarityID.Expert;
+            Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

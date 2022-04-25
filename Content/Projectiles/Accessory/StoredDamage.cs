@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using System;
@@ -18,7 +17,7 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
             return typeof(SoulTrail);
         }
 
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.LostSoulFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public float distance;
         public float movement;
         public float delta;
@@ -27,14 +26,14 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
 
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
-            projectile.friendly = true;
-            projectile.penetrate = -1;
-            projectile.tileCollide = false;
+            Projectile.width = 12;
+            Projectile.height = 12;
+            Projectile.friendly = true;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
             // projectile.alpha = 255;
-            projectile.ignoreWater = true;
-            projectile.timeLeft = 2;
+            Projectile.ignoreWater = true;
+            Projectile.timeLeft = 2;
         }
 
         public override void AI()
@@ -48,26 +47,22 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
                 movement = 20;
                 delta = 3;
             }
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             // Vector2 anchor = player.Center + new Vector2(0, -100);
             Vector2 anchor = player.Center;
 
             if (distance < 125)
             {
-                projectile.position = anchor + new Vector2(125 - distance, 0).RotatedBy(angle);
+                Projectile.position = anchor + new Vector2(125 - distance, 0).RotatedBy(angle);
                 distance += Math.Abs(movement);
                 movement -= delta;
 
-                Lighting.AddLight(projectile.position, 0.25f, 0.4f, 0.9f);
+                Lighting.AddLight(Projectile.position, 0.25f, 0.4f, 0.9f);
 
-                projectile.timeLeft = 30;
+                Projectile.timeLeft = 30;
 
             }
-        }
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            return base.PreDraw(spriteBatch, lightColor);
         }
     }
 }

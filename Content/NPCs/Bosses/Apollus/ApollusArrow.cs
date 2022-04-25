@@ -20,75 +20,75 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
         }
         public override void SetDefaults()
         {
-            projectile.width = 12;
-            projectile.height = 12;
-            projectile.hostile = true;
-            projectile.friendly = false;
-            projectile.tileCollide = false;
-            projectile.penetrate = 30;
-            projectile.timeLeft = 600;
-            projectile.light = 0.75f;
-            projectile.extraUpdates = 1;
-            projectile.ignoreWater = true;
+            Projectile.width = 12;
+            Projectile.height = 12;
+            Projectile.hostile = true;
+            Projectile.friendly = false;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = 30;
+            Projectile.timeLeft = 600;
+            Projectile.light = 0.75f;
+            Projectile.extraUpdates = 1;
+            Projectile.ignoreWater = true;
         }
 
         public override void AI()
         {
-            if (projectile.ai[0] == -1)
+            if (Projectile.ai[0] == -1)
             {
-                if (projectile.ai[1] != 0)
+                if (Projectile.ai[1] != 0)
                 {
                     gofast = true;
-                    wait = projectile.ai[1];
-                    projectile.ai[1] = 0;
+                    wait = Projectile.ai[1];
+                    Projectile.ai[1] = 0;
                 }
             }
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            Dust dust = Dust.NewDustPerfect(projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
-            Lighting.AddLight(projectile.Center, 0.5f, 0.5f, 0);
+            Dust dust = Dust.NewDustPerfect(Projectile.Center, 57, new Vector2(0f, 0f), 0, new Color(255, 255, 255), 1f);
+            Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 0);
 
-            if (projectile.ai[1] == 0)
+            if (Projectile.ai[1] == 0)
             {
-                projectile.ai[0]++;
+                Projectile.ai[0]++;
 
-                if (projectile.ai[0] < 15)
+                if (Projectile.ai[0] < 15)
                 {
-                    projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                    Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
                 }
 
-                if (projectile.ai[0] == 5)
+                if (Projectile.ai[0] == 5)
                 {
-                    storeVelocity = projectile.velocity;
-                    storeRotation = projectile.rotation;
+                    storeVelocity = Projectile.velocity;
+                    storeRotation = Projectile.rotation;
                 }
 
-                projectile.rotation = storeRotation;
+                Projectile.rotation = storeRotation;
 
-                if (projectile.ai[0] > 15 && projectile.velocity != Vector2.Zero)
+                if (Projectile.ai[0] > 15 && Projectile.velocity != Vector2.Zero)
                 {
-                    projectile.velocity = new Vector2(MathHelper.Lerp(projectile.velocity.X, 0, 0.25f), MathHelper.Lerp(projectile.velocity.Y, 0, 0.25f));
-                    if (projectile.velocity.X < 0.01 && projectile.velocity.Y < 0.01)
+                    Projectile.velocity = new Vector2(MathHelper.Lerp(Projectile.velocity.X, 0, 0.25f), MathHelper.Lerp(Projectile.velocity.Y, 0, 0.25f));
+                    if (Projectile.velocity.X < 0.01 && Projectile.velocity.Y < 0.01)
                     {
-                        projectile.velocity = Vector2.Zero;
+                        Projectile.velocity = Vector2.Zero;
                     }
                 }
 
-                if (projectile.velocity == Vector2.Zero)
+                if (Projectile.velocity == Vector2.Zero)
                 {
-                    projectile.ai[0] = 0;
-                    projectile.ai[1] = 1;
+                    Projectile.ai[0] = 0;
+                    Projectile.ai[1] = 1;
                 }
             }
             else
             {
-                projectile.ai[0]++;
-                projectile.rotation = storeRotation;
+                Projectile.ai[0]++;
+                Projectile.rotation = storeRotation;
 
-                if (projectile.ai[0] > 90 + (wait * -2))
+                if (Projectile.ai[0] > 90 + (wait * -2))
                 {
-                    projectile.velocity = new Vector2(MathHelper.Lerp(0, storeVelocity.X * 2, (gofast ? 1.5f : 0.4f)), MathHelper.Lerp(0, storeVelocity.Y * 2, (gofast ? 1.5f : 0.4f)));
-                    projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                    Projectile.velocity = new Vector2(MathHelper.Lerp(0, storeVelocity.X * 2, (gofast ? 1.5f : 0.4f)), MathHelper.Lerp(0, storeVelocity.Y * 2, (gofast ? 1.5f : 0.4f)));
+                    Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
                 }
             }
         }

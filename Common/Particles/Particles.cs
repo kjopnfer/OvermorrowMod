@@ -1,14 +1,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Core;
+using System;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Particles
 {
@@ -64,7 +64,7 @@ namespace OvermorrowMod.Common.Particles
         public void Draw(SpriteBatch spriteBatch)
         {
             // draw lightnings, draw alpha circle, draw extra small electric particles
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_" + ProjectileID.StardustTowerMark);
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value;
             for (int i = 0; i < previousSegments.Count - 1; i++)
             {
                 var seg1 = previousSegments[i];
@@ -270,9 +270,9 @@ namespace OvermorrowMod.Common.Particles
         public override string Texture => AssetDirectory.Textures + "Spotlight";
         public override void Update()
         {
-            particle.velocity.X += Main.windSpeed;
+            particle.velocity.X += Main.windSpeedCurrent;
             particle.velocity.Y -= 0.4f;
-            float progress = Utils.InverseLerp(0, particle.customData[0], particle.activeTime);
+            float progress = Utils.GetLerpValue(0, particle.customData[0], particle.activeTime);
             if (progress > 0.8f)
                 particle.alpha = (progress - 0.5f) * 2;
             if (particle.activeTime > particle.customData[0])
@@ -398,7 +398,7 @@ namespace OvermorrowMod.Common.Particles
                 particle.customData[0] = particle.scale;
             }
             else
-            particle.customData[0] = Main.rand.NextFloat(1f, 3f);
+                particle.customData[0] = Main.rand.NextFloat(1f, 3f);
             particle.scale = 0;
         }
         public override void Update()
@@ -408,7 +408,7 @@ namespace OvermorrowMod.Common.Particles
             particle.scale = MathHelper.Lerp(0f, particle.customData[0], p);
             particle.alpha = p;
             particle.velocity *= 0.99f;
-            particle.rotation = MathHelper.Pi / 2 +  particle.velocity.X / 10f;
+            particle.rotation = MathHelper.Pi / 2 + particle.velocity.X / 10f;
             if (particle.activeTime > maxTime) particle.Kill();
         }
         public override void Draw(SpriteBatch spriteBatch)
@@ -475,13 +475,13 @@ namespace OvermorrowMod.Common.Particles
         {
             // 0.05 == 20
             particle.velocity *= 0.98f;
-            particle.alpha = Terraria.Utils.InverseLerp(0f, 0.05f, particle.activeTime / 60f, clamped: true) * Terraria.Utils.InverseLerp(1f, 0.9f, particle.activeTime / 60f, clamped: true);
-            particle.scale = Terraria.Utils.InverseLerp(0f, 20f, particle.activeTime, clamped: true) * Terraria.Utils.InverseLerp(45f, 30f, particle.activeTime, clamped: true);
+            particle.alpha = Utils.GetLerpValue(0f, 0.05f, particle.activeTime / 60f, clamped: true) * Utils.GetLerpValue(1f, 0.9f, particle.activeTime / 60f, clamped: true);
+            particle.scale = Utils.GetLerpValue(0f, 20f, particle.activeTime, clamped: true) * Utils.GetLerpValue(45f, 30f, particle.activeTime, clamped: true);
             if (particle.activeTime > maxTime) particle.Kill();
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_644");
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_644").Value;
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             Color col = Color.White * particle.alpha * 0.9f;
             col.A /= 2;
@@ -504,7 +504,7 @@ namespace OvermorrowMod.Common.Particles
     {
         //public override string Texture => "Terraria/Projectile_" + ProjectileID.StardustTowerMark;
         public override string Texture => AssetDirectory.Textures + "PulseCircle";
-        public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
+        public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
         float maxTime = 60f;
         public override void OnSpawn()
         {
@@ -529,8 +529,8 @@ namespace OvermorrowMod.Common.Particles
 
         private void DrawRing(SpriteBatch spriteBatch, Vector2 position, float width, float height, float rotation, float prog, Color color)
         {
-            var texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
-            Effect effect = OvermorrowModFile.Instance.Ring;
+            var texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
+            Effect effect = OvermorrowModFile.Instance.Ring.Value;
 
             effect.Parameters["uProgress"].SetValue(rotation);
             effect.Parameters["uColor"].SetValue(color.ToVector3());
@@ -550,7 +550,7 @@ namespace OvermorrowMod.Common.Particles
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            
+
             //float progress = (float)particle.activeTime / maxTime;
             //DrawRing(spriteBatch, particle.position, 1, 1, Main.GameUpdateCount / 40f, 1f, new Color(244, 188, 91));
 
@@ -595,7 +595,7 @@ namespace OvermorrowMod.Common.Particles
         {
             spriteBatch.Reload(BlendState.Additive);
 
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "PulseCircle");
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
             Vector2 origin = new Vector2(texture.Width, texture.Height) / 2;
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
 
@@ -606,7 +606,7 @@ namespace OvermorrowMod.Common.Particles
     public class Shockwave2 : CustomParticle
     {
         public override string Texture => AssetDirectory.Textures + "Perlin";
-        public float maxSize {get {return particle.customData[0];} set{particle.customData[0] = value;}}
+        public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
         float maxTime = 60f;
         public override void OnSpawn()
         {
@@ -634,14 +634,14 @@ namespace OvermorrowMod.Common.Particles
             spriteBatch.Reload(SpriteSortMode.Immediate);
             Texture2D texture = Particle.ParticleTextures[particle.type];
             // make a new drawdata(spritebatch draw but saved inside a class)
-            DrawData data = new DrawData(texture, 
-                particle.position - Main.screenPosition, 
-                new Rectangle(0, 0, texture.Width, texture.Height), 
-                particle.color * particle.alpha, 
-                particle.rotation, 
+            DrawData data = new DrawData(texture,
+                particle.position - Main.screenPosition,
+                new Rectangle(0, 0, texture.Width, texture.Height),
+                particle.color * particle.alpha,
+                particle.rotation,
                 new Vector2(texture.Width, texture.Height) / 2,
-                scale, 
-                SpriteEffects.None, 
+                scale,
+                SpriteEffects.None,
             0);
             // vanilla effect used in pillar shield
             var effect = GameShaders.Misc["ForceField"];
@@ -650,7 +650,7 @@ namespace OvermorrowMod.Common.Particles
             // make it actually draw
             data.Draw(spriteBatch);
             // restart spritebatch again so effect doesnt continue to be applied
-			spriteBatch.Reload(SpriteSortMode.Deferred);
+            spriteBatch.Reload(SpriteSortMode.Deferred);
         }
     }
 }

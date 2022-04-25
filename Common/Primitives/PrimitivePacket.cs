@@ -13,7 +13,7 @@ namespace OvermorrowMod.Common.Primitives
         // Keep separate from vertices enumerable to avoid enumerating it.
         private readonly int vertexCount;
 
-        public Effect Effect = OvermorrowModFile.Instance.TrailShader;
+        public Effect Effect = OvermorrowModFile.Instance.TrailShader.Value;
         public string Pass = "Basic";
 
         public PrimitivePacket(IEnumerable<VertexPositionColorTexture> vertices, PrimitiveType type, int vertexCount)
@@ -23,21 +23,24 @@ namespace OvermorrowMod.Common.Primitives
             this.vertexCount = vertexCount;
         }
 
-        private int Count { get
+        private int Count
         {
-            switch (type)
+            get
             {
-                case PrimitiveType.LineList:
-                    return vertexCount / 2;
-                case PrimitiveType.LineStrip:
-                    return vertexCount - 1;
-                case PrimitiveType.TriangleList:
-                    return vertexCount / 3;
-                case PrimitiveType.TriangleStrip:
-                    return vertexCount - 2;
-                default: return 0;
+                switch (type)
+                {
+                    case PrimitiveType.LineList:
+                        return vertexCount / 2;
+                    case PrimitiveType.LineStrip:
+                        return vertexCount - 1;
+                    case PrimitiveType.TriangleList:
+                        return vertexCount / 3;
+                    case PrimitiveType.TriangleStrip:
+                        return vertexCount - 2;
+                    default: return 0;
+                }
             }
-        } }
+        }
 
         public void Send()
         {

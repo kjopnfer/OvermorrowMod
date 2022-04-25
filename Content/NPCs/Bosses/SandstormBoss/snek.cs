@@ -1,12 +1,13 @@
-using OvermorrowMod.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria;
-using Terraria.ModLoader;
-using System;
-using OvermorrowMod.Effects.Prim;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Core;
+using OvermorrowMod.Effects.Prim;
+using System;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 {
@@ -17,8 +18,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
      */
     public class snek : ModProjectile
     {
-        public ref float BarrierProgress => ref projectile.ai[0];
-        public override bool CanDamage() => false;
+        public ref float BarrierProgress => ref Projectile.ai[0];
+        public override bool? CanDamage() => false;
         public override bool ShouldUpdatePosition() => false;
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
@@ -28,8 +29,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetDefaults()
         {
-            projectile.width = projectile.height = 12;
-            projectile.timeLeft = 540;
+            Projectile.width = Projectile.height = 12;
+            Projectile.timeLeft = 540;
         }
 
         public override void AI()
@@ -42,11 +43,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             }
         }
 
-        public Texture2D TrailTexture1 = ModContent.GetTexture(AssetDirectory.FullTrail + "Trail0v2");
-        public Texture2D TrailTexture2 = ModContent.GetTexture(AssetDirectory.FullTrail + "Trail7");
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        public Texture2D TrailTexture1 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail0v2").Value;
+        public Texture2D TrailTexture2 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail7").Value;
+        public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Boss + "SandstormBoss/snek");
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "SandstormBoss/snek").Value;
             int progress = (int)(BarrierProgress / 240f * texture.Height);
 
             /* 
@@ -56,10 +57,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
              * That effectively renders DrawBehind useless and until the actual projectile's texture meets any visibly lighted tiles then it won't draw behind
              * The following code uses the DrawOrigin to not have to deal with sliding the texture through the tiles and instead moves the drawing area downwards to seem like it is sliding up
              */
-            spriteBatch.Draw(texture, new Rectangle((int)projectile.Center.X - texture.Width / 2 - (int)Main.screenPosition.X, (int)projectile.Center.Y - progress - (int)Main.screenPosition.Y, texture.Width, progress),
-            new Rectangle(0, 0, texture.Width, progress), lightColor);
+            Main.EntitySpriteDraw(new DrawData(texture,
+                new Rectangle(
+                    (int)Projectile.Center.X - texture.Width / 2 - (int)Main.screenPosition.X,
+                    (int)Projectile.Center.Y - progress - (int)Main.screenPosition.Y,
+                    texture.Width,
+                    progress),
+                new Rectangle(0, 0, texture.Width, progress),
+                lightColor));
 
-            Vector2 drawCenter = projectile.Center + Vector2.Lerp(new Vector2(62 - texture.Width / 2, 0), new Vector2(62 - texture.Width / 2, -188), progress / 240f);
+
+            Vector2 drawCenter = Projectile.Center + Vector2.Lerp(new Vector2(62 - texture.Width / 2, 0), new Vector2(62 - texture.Width / 2, -188), progress / 240f);
 
             if (BarrierProgress > 35)
             {
@@ -67,9 +75,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 DrawSand(drawCenter + Vector2.UnitX * 60);
             }
 
-            texture = ModContent.GetTexture(AssetDirectory.Boss + "SandstormBoss/snek_Front");
-            spriteBatch.Draw(texture, new Rectangle((int)projectile.Center.X - texture.Width / 2 - (int)Main.screenPosition.X, (int)projectile.Center.Y - progress - (int)Main.screenPosition.Y, texture.Width, progress),
-            new Rectangle(0, 0, texture.Width, progress), lightColor);
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "SandstormBoss/snek_Front").Value;
+            Main.EntitySpriteDraw(new DrawData(texture,
+                new Rectangle(
+                    (int)Projectile.Center.X - texture.Width / 2 - (int)Main.screenPosition.X,
+                    (int)Projectile.Center.Y - progress - (int)Main.screenPosition.Y,
+                    texture.Width,
+                    progress),
+                new Rectangle(0, 0, texture.Width, progress),
+                lightColor));
         }
 
         public void DrawSand(Vector2 drawCenter)
@@ -77,18 +91,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            float mult = 0.55f + (float)Math.Sin(Main.GlobalTime/* * 2*/) * 0.1f;
+            float mult = 0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly/* * 2*/) * 0.1f;
 
             BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";
             Vector2 start = drawCenter;
             Vector2 end = drawCenter + Vector2.UnitY * TRay.CastLength(drawCenter, Vector2.UnitY, 5000);
-            float width = 25 * projectile.scale;
+            float width = 25 * Projectile.scale;
             Vector2 offset = (start - end).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * width;
 
             Color BeamColor = new Color(95, 73, 50);
             BeamPacket.SetTexture(0, TrailTexture1);
-            float off = -Main.GlobalTime % 1;
+            float off = -Main.GlobalTimeWrappedHourly % 1;
             packet.Add(start + offset * 3 * mult, BeamColor, new Vector2(0 + off, 0));
             packet.Add(start - offset * 3 * mult, BeamColor, new Vector2(0 + off, 1));
             packet.Add(end + offset * 3 * mult, BeamColor, new Vector2(1 + off, 0));

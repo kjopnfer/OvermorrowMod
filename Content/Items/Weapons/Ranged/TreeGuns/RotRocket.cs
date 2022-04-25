@@ -15,30 +15,29 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
 
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Blue;
-            item.UseSound = SoundID.NPCHit1;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 20;
-            item.useAnimation = 39;
-            item.useTime = 39;
-            item.width = 60;
-            item.height = 34;
-            item.shoot = ModContent.ProjectileType<SnotRocket>();
-            item.shootSpeed = 12f;
-            item.knockBack = 10f;
-            item.ranged = true;
-            item.value = Item.sellPrice(gold: 1);
+            Item.rare = ItemRarityID.Blue;
+            Item.UseSound = SoundID.NPCHit1;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 20;
+            Item.useAnimation = 39;
+            Item.useTime = 39;
+            Item.width = 60;
+            Item.height = 34;
+            Item.shoot = ModContent.ProjectileType<SnotRocket>();
+            Item.shootSpeed = 12f;
+            Item.knockBack = 10f;
+            Item.DamageType = DamageClass.Ranged;
+            Item.value = Item.sellPrice(gold: 1);
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            Vector2 muzzleOffset = Vector2.Normalize(new Vector2(speedX, speedY)) * 43f;
+            Vector2 muzzleOffset = Vector2.Normalize(velocity) * 43f;
             if (Collision.CanHit(position, 0, 0, position + muzzleOffset, 0, 0))
             {
                 position += muzzleOffset;
             }
-
-            return base.Shoot(player, ref position, ref speedX, ref speedY, ref type, ref damage, ref knockBack);
         }
         public override Vector2? HoldoutOffset()
         {

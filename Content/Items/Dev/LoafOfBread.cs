@@ -1,8 +1,7 @@
-using System;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Dev
 {
@@ -16,17 +15,17 @@ namespace OvermorrowMod.Content.Items.Dev
 
         public override void SetDefaults()
         {
-            item.CloneDefaults(ItemID.UnluckyYarn);
+            Item.CloneDefaults(ItemID.UnluckyYarn);
 
-            item.shoot = ModContent.ProjectileType<LokiPet>();
-            item.buffType = ModContent.BuffType<LokiPetBuff>();
+            Item.shoot = ModContent.ProjectileType<LokiPet>();
+            Item.buffType = ModContent.BuffType<LokiPetBuff>();
         }
 
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle rect)
         {
             if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
             {
-                player.AddBuff(item.buffType, 3600, true);
+                player.AddBuff(Item.buffType, 3600, true);
             }
         }
 

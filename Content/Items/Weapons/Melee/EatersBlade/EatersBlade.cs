@@ -12,16 +12,16 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.EatersBlade
 
         public override void SetDefaults()
         {
-            item.damage = 10;
-            item.melee = true;
-            item.autoReuse = true;
-            item.useTime = 15;
-            item.useAnimation = 15;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.knockBack = 0.5f;
-            item.value = 10000;
-            item.rare = ItemRarityID.Blue;
-            item.UseSound = SoundID.Item1;
+            Item.damage = 10;
+            Item.DamageType = DamageClass.Melee;
+            Item.autoReuse = true;
+            Item.useTime = 15;
+            Item.useAnimation = 15;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.knockBack = 0.5f;
+            Item.value = 10000;
+            Item.rare = ItemRarityID.Blue;
+            Item.UseSound = SoundID.Item1;
         }
     }
 }

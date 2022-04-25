@@ -6,7 +6,7 @@ namespace OvermorrowMod.Common
 {
     public class OvermorrowGlobalItem : GlobalItem
     {
-        public override void ModifyWeaponDamage(Item item, Player player, ref float add, ref float mult, ref float flat)
+        public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage, ref float flat)
         {
             if (player.GetModPlayer<OvermorrowModPlayer>().SerpentTooth)
             {
@@ -31,10 +31,9 @@ namespace OvermorrowMod.Common
 
         public override void AddRecipes()
         {
-            ModRecipe Mirror = new ModRecipe(mod);
-            Mirror.AddIngredient(ItemID.RecallPotion, 7);
-            Mirror.SetResult(ItemID.MagicMirror);
-            Mirror.AddRecipe();
+            Mod.CreateRecipe(ItemID.MagicMirror)
+                .AddIngredient(ItemID.RecallPotion, 7)
+                .Register();
         }
     }
 }

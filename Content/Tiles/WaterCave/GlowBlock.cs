@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Tiles.Ambient;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,14 +15,14 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
         int Random = Main.rand.Next(1, 5);
 
 
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            mineResist = 2f;
-            drop = ModContent.ItemType<OvermorrowMod.Content.Items.Placeable.Tiles.GlowBlock>();
+            MineResist = 2f;
+            ItemDrop = ModContent.ItemType<OvermorrowMod.Content.Items.Placeable.Tiles.GlowBlock>();
             AddMapEntry(new Color(0, 25, 25));
 
             /*TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
@@ -59,7 +60,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             Tile tileRight = Framing.GetTileSafely(i + 1, j);
             Random = Main.rand.Next(1, 100);
 
-            if (!tileBelow.active())
+            if (!tileBelow.HasTile)
             {
                 if (Random == 4)
                 {
@@ -67,7 +68,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
                 }
             }
 
-            if (!tileLeft.active())
+            if (!tileLeft.HasTile)
             {
                 if (Random == 8)
                 {
@@ -75,14 +76,14 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
                 }
             }
 
-            if (!tileAbove.active())
+            if (!tileAbove.HasTile)
             {
                 if (Random == 6)
                 {
                     WorldGen.PlaceTile(i - 1, j, ModContent.TileType<BlueCrystalUp>());
                 }
             }
-            if (!tileRight.active())
+            if (!tileRight.HasTile)
             {
                 if (Random == 3)
                 {
@@ -91,14 +92,13 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             }
 
             // Grow plants
-            if (WorldGen.genRand.NextBool(2) && !tileAbove.active() && !tileBelow.lava())
+            if (WorldGen.genRand.NextBool(2) && !tileAbove.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-                if (!tile.bottomSlope() && !tile.topSlope() && !tile.halfBrick())
+                if (!tile.BottomSlope && !tile.TopSlope && !tile.IsHalfBlock)
                 {
-                    tileAbove.type = (ushort)ModContent.TileType<GlowPlants>();
-                    tileAbove.active(true);
-                    tileAbove.frameY = 0;
-                    tileAbove.frameX = (short)(WorldGen.genRand.Next(7) * 18); // 7 is the amount of plants in the sprite
+                    tileAbove.TileType = (ushort)ModContent.TileType<GlowPlants>();
+                    tileAbove.TileFrameY = 0;
+                    tileAbove.TileFrameX = (short)(WorldGen.genRand.Next(7) * 18); // 7 is the amount of plants in the sprite
                     WorldGen.SquareTileFrame(i, j - 1, true);
                     if (Main.netMode == NetmodeID.Server)
                     {
@@ -108,12 +108,11 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             }
 
             // Grow vines
-            if (WorldGen.genRand.NextBool(2) && !tileBelow.active() && !tileBelow.lava())
+            if (WorldGen.genRand.NextBool(2) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-                if (!tile.bottomSlope())
+                if (!tile.BottomSlope)
                 {
-                    tileBelow.type = (ushort)ModContent.TileType<GlowWorms>();
-                    tileBelow.active(true);
+                    tileBelow.TileType = (ushort)ModContent.TileType<GlowWorms>();
                     WorldGen.SquareTileFrame(i, j + 1, true);
                     if (Main.netMode == NetmodeID.Server)
                     {
@@ -123,10 +122,10 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             }
         }
 
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex)
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
             Tile tileAbove = Framing.GetTileSafely(i, j - 1);
-            if (!tileAbove.active() && tileAbove.liquid > 0)
+            if (!tileAbove.HasTile && tileAbove.LiquidAmount > 0)
             {
                 if (Main.rand.NextFloat() < 0.0001f)
                 {
@@ -141,8 +140,8 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             Tile tileBelow = Framing.GetTileSafely(i, j + 1);
             Tile tileLeft = Framing.GetTileSafely(i - 1, j);
             Tile tileRight = Framing.GetTileSafely(i + 1, j);
-            if (tileBelow.active() && tileAbove.active() && tileLeft.active() && tileRight.active() &&
-                tileBelow.type == Type && tileAbove.type == Type && tileLeft.type == Type && tileRight.type == Type)
+            if (tileBelow.HasTile && tileAbove.HasTile && tileLeft.HasTile && tileRight.HasTile &&
+                tileBelow.TileType == Type && tileAbove.TileType == Type && tileLeft.TileType == Type && tileRight.TileType == Type)
             {
                 if (Main.rand.NextFloat() < 0.0001f)
                 {

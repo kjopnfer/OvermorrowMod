@@ -8,15 +8,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
 {
     public class SpellboltPower : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.UnholyArrow; // until we've got a new texture
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.UnholyArrow; // until we've got a new texture
         public override void SetDefaults()
         {
-            projectile.width = 30;
-            projectile.height = 30;
-            projectile.friendly = true;
-            projectile.ranged = true;
-            projectile.penetrate = 1;
-            projectile.timeLeft = 600;
+            Projectile.width = 30;
+            Projectile.height = 30;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.penetrate = 1;
+            Projectile.timeLeft = 600;
         }
         public override void AI()
         {
@@ -28,7 +28,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
             {
                 if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
                 {
-                    Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                    Vector2 newMove = Main.npc[k].Center - Projectile.Center;
                     float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
 
                     if (distanceTo < distance)
@@ -43,12 +43,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.MarbleBow
             if (target)
             {
                 AdjustMagnitude(ref move);
-                projectile.velocity = (10 * projectile.velocity + move * 2f) / 11f;
-                AdjustMagnitude(ref projectile.velocity);
+                Projectile.velocity = (10 * Projectile.velocity + move * 2f) / 11f;
+                AdjustMagnitude(ref Projectile.velocity);
             }
 
-            projectile.rotation =
-                projectile.velocity.ToRotation() +
+            Projectile.rotation =
+                Projectile.velocity.ToRotation() +
                 MathHelper.ToRadians(90f);
         }
         private void AdjustMagnitude(ref Vector2 vector)

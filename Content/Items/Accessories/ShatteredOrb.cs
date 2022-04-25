@@ -17,17 +17,17 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            item.width = 28;
-            item.height = 34;
-            item.value = Item.buyPrice(0, 1, 50, 0);
-            item.rare = ItemRarityID.Orange;
-            item.accessory = true;
+            Item.width = 28;
+            Item.height = 34;
+            Item.value = Item.buyPrice(0, 1, 50, 0);
+            Item.rare = ItemRarityID.Orange;
+            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<OvermorrowModPlayer>().ShatteredOrb = true;
-            player.magicDamage += .05f;
+            player.GetDamage(DamageClass.Magic) += 0.05f;
         }
     }
 }

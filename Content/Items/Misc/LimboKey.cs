@@ -18,16 +18,16 @@ namespace OvermorrowMod.Content.Items.Misc
 
         public override void SetDefaults()
         {
-            item.width = 34;
-            item.height = 26;
-            item.rare = ItemRarityID.White;
-            item.maxStack = 1;
-            item.useTurn = true;
-            item.autoReuse = true;
-            item.useAnimation = 15;
-            item.useTime = 15;
-            item.consumable = false;
-            item.useStyle = ItemUseStyleID.SwingThrow;
+            Item.width = 34;
+            Item.height = 26;
+            Item.rare = ItemRarityID.White;
+            Item.maxStack = 1;
+            Item.useTurn = true;
+            Item.autoReuse = true;
+            Item.useAnimation = 15;
+            Item.useTime = 15;
+            Item.consumable = false;
+            Item.useStyle = ItemUseStyleID.Swing;
         }
 
         public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset)
@@ -36,14 +36,14 @@ namespace OvermorrowMod.Content.Items.Misc
             if (line.Name == "ItemName")
             {
                 spriteBatch.Reload(SpriteSortMode.Immediate);
-                Effect fx = OvermorrowModFile.Instance.TextShader;
-                Main.graphics.GraphicsDevice.Textures[0] = mod.GetTexture("Assets/Textures/Perlin");
+                Effect fx = OvermorrowModFile.Instance.TextShader.Value;
+                Main.graphics.GraphicsDevice.Textures[0] = ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/Perlin").Value;
                 fx.Parameters["uColor0"].SetValue(Color.Black.ToVector3());
                 //fx.Parameters["uColor1"].SetValue(Color.Black.ToVector3());
                 //fx.Parameters["uColor0"].SetValue(new Color(140, 48, 85).ToVector3());
                 //fx.Parameters["uColor1"].SetValue(new Color(176, 48, 62).ToVector3());
                 fx.Parameters["uColor1"].SetValue(Color.White.ToVector3());
-                fx.SafeSetParameter("uTime", Main.GlobalTime);
+                fx.SafeSetParameter("uTime", Main.GlobalTimeWrappedHourly);
                 //fx.CurrentTechnique.Passes["Noise"].Apply();
                 fx.CurrentTechnique.Passes[0].Apply();
 

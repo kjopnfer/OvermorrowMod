@@ -1,8 +1,7 @@
-using Terraria;
-using System;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged
 {
@@ -15,29 +14,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            item.width = 30;
-            item.height = 22;
-            item.ranged = true;
-            item.autoReuse = true;
-            item.useTime = 5;
-            item.useAnimation = 5;
-            item.useAmmo = AmmoID.Bullet;
-            item.damage = 6;
-            item.crit = 8;
-            item.useStyle = 5;
-            item.shootSpeed = 5f;
-            item.noMelee = true;
-            item.shoot = 10;
-            item.useTurn = true;
-            item.UseSound = SoundID.Item11;
+            Item.width = 30;
+            Item.height = 22;
+            Item.DamageType = DamageClass.Ranged;
+            Item.autoReuse = true;
+            Item.useTime = 5;
+            Item.useAnimation = 5;
+            Item.useAmmo = AmmoID.Bullet;
+            Item.damage = 6;
+            Item.crit = 8;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.shootSpeed = 5f;
+            Item.noMelee = true;
+            Item.shoot = ProjectileID.PurificationPowder;
+            Item.useTurn = true;
+            Item.UseSound = SoundID.Item11;
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
-		{
-			Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(20));
-			speedX = perturbedSpeed.X;
-			speedY = perturbedSpeed.Y;
-			return true;
-		}
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+        {
+            velocity = velocity.RotatedByRandom(MathHelper.ToRadians(20));
+        }
     }
 }

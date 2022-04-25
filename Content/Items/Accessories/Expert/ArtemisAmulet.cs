@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
 {
     public class ArtemisAmulet : ModItem
     {
-        //public override string Texture => "Terraria/Item_" + ItemID.CharmofMyths;
+        // public override string Texture => "Terraria/Images/Item_" + ItemID.CharmofMyths;
 
         public override void SetStaticDefaults()
         {
@@ -17,11 +17,11 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
         }
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 28;
-            item.value = 17500;
-            item.rare = ItemRarityID.Green;
-            item.accessory = true;
+            Item.width = 24;
+            Item.height = 28;
+            Item.value = 17500;
+            Item.rare = ItemRarityID.Green;
+            Item.accessory = true;
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {

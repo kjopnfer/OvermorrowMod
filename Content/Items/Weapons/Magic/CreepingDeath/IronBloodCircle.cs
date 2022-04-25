@@ -1,4 +1,5 @@
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Magic.CreepingDeath
@@ -12,30 +13,30 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.CreepingDeath
 
         public override void SetDefaults()
         {
-            projectile.width = 408; // from 200
-            projectile.height = 408;
-            projectile.friendly = true;
-            projectile.tileCollide = false;
-            projectile.penetrate = -1;
-            projectile.magic = true;
-            projectile.alpha = 0;
-            projectile.extraUpdates = 1;
-            projectile.timeLeft = 51;
+            Projectile.width = 408; // from 200
+            Projectile.height = 408;
+            Projectile.friendly = true;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.alpha = 0;
+            Projectile.extraUpdates = 1;
+            Projectile.timeLeft = 51;
         }
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 0.65f, 0f, 0f);
+            Lighting.AddLight(Projectile.Center, 0.65f, 0f, 0f);
 
-            projectile.Center = Main.player[projectile.owner].Center;
+            Projectile.Center = Main.player[Projectile.owner].Center;
 
-            projectile.scale = projectile.scale - 0.002f;
-            projectile.rotation = projectile.rotation + 1;
-            projectile.alpha = projectile.alpha + 5;
+            Projectile.scale = Projectile.scale - 0.002f;
+            Projectile.rotation = Projectile.rotation + 1;
+            Projectile.alpha = Projectile.alpha + 5;
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Projectile.NewProjectile(target.Center.X, target.Center.Y, -projectile.velocity.X, -projectile.velocity.Y, mod.ProjectileType("BloodIronReal"), projectile.damage, 1f, projectile.owner, 0f);
+            Projectile.NewProjectile(Projectile.GetProjectileSource_OnHit(target, ProjectileSourceID.None), target.Center.X, target.Center.Y, -Projectile.velocity.X, -Projectile.velocity.Y, ModContent.ProjectileType<BloodIronReal>(), Projectile.damage, 1f, Projectile.owner, 0f);
         }
     }
 }

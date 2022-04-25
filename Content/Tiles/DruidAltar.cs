@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Tiles
 {
     public class DruidAltar : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileLighted[Type] = true;
@@ -48,7 +48,7 @@ namespace OvermorrowMod.Content.Tiles
             base.PostDraw(i, j, spriteBatch);
         }
 
-        public override bool NewRightClick(int i, int j)
+        public override bool RightClick(int i, int j)
         {
             Player player = Main.LocalPlayer;
             Tile tile = Main.tile[i, j];
@@ -60,7 +60,7 @@ namespace OvermorrowMod.Content.Tiles
                 Main.NewText("on");
             }*/
 
-            return base.NewRightClick(i, j);
+            return base.RightClick(i, j);
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {

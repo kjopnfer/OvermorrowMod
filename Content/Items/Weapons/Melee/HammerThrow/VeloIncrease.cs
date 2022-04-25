@@ -16,28 +16,28 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HammerThrow
 
         public override void SetDefaults()
         {
-            projectile.width = 90;
-            projectile.height = 90;
-            projectile.timeLeft = 50;
-            projectile.alpha = 255;
-            projectile.penetrate = -1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.melee = true;
-            projectile.tileCollide = false;
-            projectile.ignoreWater = true;
+            Projectile.width = 90;
+            Projectile.height = 90;
+            Projectile.timeLeft = 50;
+            Projectile.alpha = 255;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
         }
         public override void AI()
         {
 
-            var player = Main.player[projectile.owner];
+            var player = Main.player[Projectile.owner];
 
 
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
             timer++;
             if (timer == 1)
             {
-                Vector2 position = Main.player[projectile.owner].Center;
+                Vector2 position = Main.player[Projectile.owner].Center;
                 Vector2 targetPosition = Main.MouseWorld;
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
@@ -49,26 +49,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.HammerThrow
             player.itemRotation = 360;
 
 
-            projectile.position.X = Main.player[projectile.owner].Center.X - projectile.width / 2;
-            projectile.position.Y = Main.player[projectile.owner].Center.Y - projectile.height / 2;
+            Projectile.position.X = Main.player[Projectile.owner].Center.X - Projectile.width / 2;
+            Projectile.position.Y = Main.player[Projectile.owner].Center.Y - Projectile.height / 2;
 
         }
 
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Main.player[projectile.owner].velocity = -Main.player[projectile.owner].velocity;
+            Main.player[Projectile.owner].velocity = -Main.player[Projectile.owner].velocity;
         }
 
 
         public override void Kill(int timeLeft)
         {
-            Main.player[projectile.owner].fullRotation = 0f;
+            Main.player[Projectile.owner].fullRotation = 0f;
 
 
-            if (Main.MouseWorld.X < Main.player[projectile.owner].Center.X)
+            if (Main.MouseWorld.X < Main.player[Projectile.owner].Center.X)
             {
-                Main.player[projectile.owner].direction = -1;
+                Main.player[Projectile.owner].direction = -1;
             }
         }
     }

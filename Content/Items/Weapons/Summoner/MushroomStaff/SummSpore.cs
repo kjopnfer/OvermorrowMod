@@ -15,36 +15,36 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MushroomStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 24;
-            projectile.height = 18;
-            projectile.timeLeft = 500;
-            projectile.penetrate = 1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.minion = true;
-            projectile.tileCollide = true;
-            projectile.ignoreWater = true;
+            Projectile.width = 24;
+            Projectile.height = 18;
+            Projectile.timeLeft = 500;
+            Projectile.penetrate = 1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.minion = true;
+            Projectile.tileCollide = true;
+            Projectile.ignoreWater = true;
         }
         public override void AI()
         {
-            projectile.velocity.Y += 0.2f;
-            if (projectile.velocity.Y > 3.5f)
+            Projectile.velocity.Y += 0.2f;
+            if (Projectile.velocity.Y > 3.5f)
             {
-                projectile.velocity.Y = 3.5f;
+                Projectile.velocity.Y = 3.5f;
             }
 
 
-            projectile.rotation = projectile.velocity.X * 0.24f;
-            Player player = Main.player[projectile.owner];
+            Projectile.rotation = Projectile.velocity.X * 0.24f;
+            Player player = Main.player[Projectile.owner];
 
 
 
-            if (projectile.velocity.Y > 0)
+            if (Projectile.velocity.Y > 0)
             {
-                if (projectile.localAI[0] == 0f)
+                if (Projectile.localAI[0] == 0f)
                 {
-                    AdjustMagnitude(ref projectile.velocity);
-                    projectile.localAI[0] = 1f;
+                    AdjustMagnitude(ref Projectile.velocity);
+                    Projectile.localAI[0] = 1f;
                 }
                 Vector2 move = Vector2.Zero;
                 float distance = 500f;
@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MushroomStaff
                 {
                     if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
                     {
-                        Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                        Vector2 newMove = Main.npc[k].Center - Projectile.Center;
                         float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
                         if (distanceTo < distance)
                         {
@@ -66,8 +66,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MushroomStaff
                 if (target)
                 {
                     AdjustMagnitude(ref move);
-                    projectile.velocity.X = (10 * projectile.velocity.X + move.X) / 11f;
-                    AdjustMagnitude(ref projectile.velocity);
+                    Projectile.velocity.X = (10 * Projectile.velocity.X + move.X) / 11f;
+                    AdjustMagnitude(ref Projectile.velocity);
                 }
             }
         }

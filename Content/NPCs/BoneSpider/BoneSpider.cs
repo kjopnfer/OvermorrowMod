@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.Items.Materials;
 using Terraria;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,42 +17,42 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Soulfire Creeper");
-            Main.npcFrameCount[npc.type] = 8;
+            Main.npcFrameCount[NPC.type] = 8;
         }
 
         public override void SetDefaults()
         {
-            npc.width = 76;
-            npc.height = 52;
-            npc.damage = 20;
-            npc.defense = 6;
-            npc.lifeMax = 200;
-            npc.HitSound = SoundID.NPCHit2;
-            npc.DeathSound = SoundID.NPCDeath2;
-            npc.value = 60f;
-            npc.knockBackResist = 0.25f;
-            npc.aiStyle = 3;
-            aiType = NPCID.GoblinScout;
+            NPC.width = 76;
+            NPC.height = 52;
+            NPC.damage = 20;
+            NPC.defense = 6;
+            NPC.lifeMax = 200;
+            NPC.HitSound = SoundID.NPCHit2;
+            NPC.DeathSound = SoundID.NPCDeath2;
+            NPC.value = 60f;
+            NPC.knockBackResist = 0.25f;
+            NPC.aiStyle = 3;
+            AIType = NPCID.GoblinScout;
         }
 
         public override void AI()
         {
-            npc.ai[0]++;
+            NPC.ai[0]++;
 
-            if (npc.ai[0] == 240)
+            if (NPC.ai[0] == 240)
             {
                 if (!isWalking)
                 {
-                    npc.aiStyle = 3;
+                    NPC.aiStyle = 3;
                     isWalking = true;
-                    npc.ai[0] = 0;
+                    NPC.ai[0] = 0;
                 }
                 else
                 {
-                    npc.velocity = Vector2.Zero;
-                    npc.aiStyle = -1;
+                    NPC.velocity = Vector2.Zero;
+                    NPC.aiStyle = -1;
                     isWalking = false;
-                    npc.ai[0] = 0;
+                    NPC.ai[0] = 0;
                 }
             }
 
@@ -80,9 +81,9 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
             else
             {
                 // Idle animation
-                if (npc.ai[0] == 120)
+                if (NPC.ai[0] == 120)
                 {
-                    Vector2 origin = npc.Center; // Origin of the circle
+                    Vector2 origin = NPC.Center; // Origin of the circle
                     float radius = 175; // Distance from the circle
                     int numSpawns = 3; // Points spawned on the circle
                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -90,7 +91,7 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
                         for (int i = 0; i < numSpawns; i++)
                         {
                             Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                            Projectile.NewProjectile(position, Vector2.Zero, ModContent.ProjectileType<BlueSpiderFire>(), npc.damage, 2f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSpawnSourceForNPCFromNPCAI(), position, Vector2.Zero, ModContent.ProjectileType<BlueSpiderFire>(), NPC.damage, 2f, Main.myPlayer);
                         }
                     }
                 }
@@ -119,23 +120,20 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
         {
             if (isWalking)
             {
-                npc.spriteDirection = npc.direction;
+                NPC.spriteDirection = NPC.direction;
             }
-            npc.frame.Y = frameHeight * frame;
+            NPC.frame.Y = frameHeight * frame;
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Color drawColor)
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = mod.GetTexture("NPCs/BoneSpider/BoneSpider_Glowmask");
-            spriteBatch.Draw(texture, new Vector2(npc.Center.X - Main.screenPosition.X, npc.Center.Y - Main.screenPosition.Y + 4), npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2f, npc.scale, npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/NPCs/BoneSpider/BoneSpider_Glowmask").Value;
+            spriteBatch.Draw(texture, new Vector2(NPC.Center.X - Main.screenPosition.X, NPC.Center.Y - Main.screenPosition.Y + 4), NPC.frame, Color.White, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
-        public override void NPCLoot()
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            if (Main.rand.Next(3) == 0)
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ModContent.ItemType<SoulFire>());
-            }
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SoulFire>(), 3));
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)

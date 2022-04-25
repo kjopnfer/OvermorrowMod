@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,39 +18,39 @@ namespace OvermorrowMod.Content.NPCs.Teleporter
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Test 2");
-            Main.npcFrameCount[npc.type] = 20;
+            Main.npcFrameCount[NPC.type] = 20;
         }
 
         public override void SetDefaults()
         {
-            npc.width = 34;
-            npc.height = 46;
-            npc.damage = 40;
-            npc.defense = 8;
-            npc.lifeMax = 120;
-            animationType = NPCID.ChaosElemental;
-            npc.HitSound = SoundID.Item2;
-            npc.DeathSound = SoundID.Item2;
-            npc.value = 5f;
-            npc.knockBackResist = 0.4f;
-            npc.aiStyle = 3;
-            aiType = NPCID.GoblinScout;
+            NPC.width = 34;
+            NPC.height = 46;
+            NPC.damage = 40;
+            NPC.defense = 8;
+            NPC.lifeMax = 120;
+            AnimationType = NPCID.ChaosElemental;
+            NPC.HitSound = SoundID.Item2;
+            NPC.DeathSound = SoundID.Item2;
+            NPC.value = 5f;
+            NPC.knockBackResist = 0.4f;
+            NPC.aiStyle = 3;
+            AIType = NPCID.GoblinScout;
         }
 
         public override void FindFrame(int frameHeight)
         {
-            npc.frame.Y = frameHeight * frame;
+            NPC.frame.Y = frameHeight * frame;
         }
 
         public override void AI()
         {
 
-            Player player = Main.player[npc.target];
-            if (npc.velocity.Y == 0)
+            Player player = Main.player[NPC.target];
+            if (NPC.velocity.Y == 0)
             {
                 AttTimer++;
             }
-            if (AttTimer > 175 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 80 && npc.velocity.Y == 0)
+            if (AttTimer > 175 && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 80 && NPC.velocity.Y == 0)
             {
                 frameTimer++;
 
@@ -58,8 +59,8 @@ namespace OvermorrowMod.Content.NPCs.Teleporter
                     frameTimer = 0;
                 }
 
-                npc.velocity.X *= 0.3f;
-                if (npc.velocity.X < 0.5f && npc.velocity.X > -0.5f)
+                NPC.velocity.X *= 0.3f;
+                if (NPC.velocity.X < 0.5f && NPC.velocity.X > -0.5f)
                 {
                     if (frame > 0 && frameTimer == 3)
                     {
@@ -75,19 +76,19 @@ namespace OvermorrowMod.Content.NPCs.Teleporter
                 ProjTimer++;
                 if (ProjTimer == 20)
                 {
-                    Vector2 position = npc.Center;
-                    Vector2 targetPosition = Main.player[npc.target].Center + new Vector2(0, -120);
+                    Vector2 position = NPC.Center;
+                    Vector2 targetPosition = Main.player[NPC.target].Center + new Vector2(0, -120);
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
-                    int proj = Projectile.NewProjectile(npc.Center, direction * 12f, mod.ProjectileType("Teleproj"), 0, 0.0f, Main.myPlayer, 0.0f, (float)npc.whoAmI);
-                    Main.PlaySound(SoundID.Item, npc.position, 19);
+                    int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, direction * 12f, Mod.Find<ModProjectile>("Teleproj").Type, 0, 0.0f, Main.myPlayer, 0.0f, (float)NPC.whoAmI);
+                    SoundEngine.PlaySound(SoundID.Item, NPC.position, 19);
                     frame = 4;
                 }
             }
             else
             {
                 frameTimer++;
-                if (npc.velocity.Y == 0)
+                if (NPC.velocity.Y == 0)
                 {
                     if (frameTimer > 3)
                     {
@@ -119,7 +120,7 @@ namespace OvermorrowMod.Content.NPCs.Teleporter
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].type == 367 ? 0.7f : 0f;
+            return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].TileType == 367 ? 0.7f : 0f;
         }
     }
 }

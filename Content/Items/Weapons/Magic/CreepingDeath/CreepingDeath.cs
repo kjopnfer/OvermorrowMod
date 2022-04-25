@@ -10,27 +10,27 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.CreepingDeath
         {
             DisplayName.SetDefault("Harvester of Sorrow");
             Tooltip.SetDefault("Shoots a blood ring around you.\nEnemies hit allow you to fires iron bolts\n'Language of the mad'");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.rare = ItemRarityID.Orange;
-            item.mana = 6;
-            item.UseSound = SoundID.Item43;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 19;
-            item.useTurn = false;
-            item.useAnimation = 35;
-            item.useTime = 35;
-            item.width = 48;
-            item.height = 48;
-            item.shoot = mod.ProjectileType("IronBloodCircle");
-            item.shootSpeed = 0f;
-            item.knockBack = 4.5f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 1, silver: 75);
+            Item.rare = ItemRarityID.Orange;
+            Item.mana = 6;
+            Item.UseSound = SoundID.Item43;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 19;
+            Item.useTurn = false;
+            Item.useAnimation = 35;
+            Item.useTime = 35;
+            Item.width = 48;
+            Item.height = 48;
+            Item.shoot = ModContent.ProjectileType<IronBloodCircle>();
+            Item.shootSpeed = 0f;
+            Item.knockBack = 4.5f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 1, silver: 75);
         }
     }
 }

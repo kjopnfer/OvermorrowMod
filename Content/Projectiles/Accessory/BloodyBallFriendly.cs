@@ -17,27 +17,27 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
 
         public override void SetDefaults()
         {
-            projectile.width = 16;
-            projectile.height = 16;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = 3;
-            projectile.timeLeft = 690;
-            projectile.alpha = 255;
-            projectile.tileCollide = true;
+            Projectile.width = 16;
+            Projectile.height = 16;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = 3;
+            Projectile.timeLeft = 690;
+            Projectile.alpha = 255;
+            Projectile.tileCollide = true;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 1f, 0f, 0f);
+            Lighting.AddLight(Projectile.Center, 1f, 0f, 0f);
 
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
 
-            projectile.localAI[0] += 1f;
-            if (projectile.localAI[0] > 3f)
+            Projectile.localAI[0] += 1f;
+            if (Projectile.localAI[0] > 3f)
             {
-                int num1110 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustID.Blood, projectile.velocity.X, projectile.velocity.Y, 50, default(Color), 1.6f);
-                Main.dust[num1110].position = (Main.dust[num1110].position + projectile.Center) / 2f;
+                int num1110 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X, Projectile.velocity.Y, 50, default(Color), 1.6f);
+                Main.dust[num1110].position = (Main.dust[num1110].position + Projectile.Center) / 2f;
                 Main.dust[num1110].noGravity = true;
                 Dust dust81 = Main.dust[num1110];
                 dust81.velocity *= 0.5f;

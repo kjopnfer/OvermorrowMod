@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,12 +12,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket
         Vector2 SavedPlyPos;
         public override void SetDefaults()
         {
-            projectile.width = 16;
-            projectile.height = 10;
-            projectile.friendly = true;
-            projectile.ranged = true;
-            projectile.penetrate = 1;
-            projectile.timeLeft = 500;
+            Projectile.width = 16;
+            Projectile.height = 10;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.penetrate = 1;
+            Projectile.timeLeft = 500;
         }
 
         public override void SetStaticDefaults()
@@ -26,10 +27,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket
 
         public override void AI()
         {
-            SavedPlyPos = Main.player[projectile.owner].Center;
-            projectile.velocity.X *= 0.98f;
-            projectile.velocity.Y += 0.45f;
-            projectile.rotation = projectile.velocity.ToRotation();
+            SavedPlyPos = Main.player[Projectile.owner].Center;
+            Projectile.velocity.X *= 0.98f;
+            Projectile.velocity.Y += 0.45f;
+            Projectile.rotation = Projectile.velocity.ToRotation();
 
 
 
@@ -38,12 +39,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket
             {
                 Vector2 spinningpoint7 = Vector2.UnitX * 0f;
                 spinningpoint7 += -Vector2.UnitY.RotatedBy((float)num117 * ((float)Math.PI * 2f / num116)) * new Vector2(1f, 4f);
-                spinningpoint7 = spinningpoint7.RotatedBy(projectile.velocity.ToRotation());
-                Vector2 position = projectile.Center;
+                spinningpoint7 = spinningpoint7.RotatedBy(Projectile.velocity.ToRotation());
+                Vector2 position = Projectile.Center;
                 Dust dust = Terraria.Dust.NewDustPerfect(position, 10, new Vector2(0f, 0f), 0, new Color(), 1f);
                 dust.noLight = true;
                 dust.noGravity = true;
-                dust.position = projectile.Center + spinningpoint7;
+                dust.position = Projectile.Center + spinningpoint7;
             }
 
 
@@ -58,11 +59,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket
 
         public override void Kill(int timeLeft)
         {
-            Main.player[projectile.owner].AddBuff(32, 60, true);
-            Main.player[projectile.owner].AddBuff(36, 60, true);
-            Main.player[projectile.owner].immuneTime = 5;
-            Main.player[projectile.owner].immune = true;
-            Vector2 position = projectile.Center + new Vector2(0, -10);
+            Main.player[Projectile.owner].AddBuff(32, 60, true);
+            Main.player[Projectile.owner].AddBuff(36, 60, true);
+            Main.player[Projectile.owner].immuneTime = 5;
+            Main.player[Projectile.owner].immune = true;
+            Vector2 position = Projectile.Center + new Vector2(0, -10);
             int radius = 5;     //this is the explosion radius, the highter is the value the bigger is the explosion
 
             for (int x = -radius; x <= radius; x++)
@@ -77,9 +78,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket
                     }
                 }
             }
-            Main.player[projectile.owner].position.X = projectile.Center.X - Main.player[projectile.owner].width;
-            Main.player[projectile.owner].position.Y = projectile.Center.Y - Main.player[projectile.owner].height - 10;
-            Main.PlaySound(SoundID.Item6, projectile.Center);
+            Main.player[Projectile.owner].position.X = Projectile.Center.X - Main.player[Projectile.owner].width;
+            Main.player[Projectile.owner].position.Y = Projectile.Center.Y - Main.player[Projectile.owner].height - 10;
+            SoundEngine.PlaySound(SoundID.Item6, Projectile.Center);
         }
     }
 }

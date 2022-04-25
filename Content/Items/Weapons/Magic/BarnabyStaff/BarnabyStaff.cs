@@ -1,7 +1,4 @@
 using OvermorrowMod.Content.Items.Weapons.Magic.GemStaves;
-using OvermorrowMod.Content.Items.Weapons.Magic.SandStaff;
-using OvermorrowMod.Content.Items.Weapons.Magic.WaterStaff;
-using OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,94 +12,48 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BarnabyStaff
             DisplayName.SetDefault("Manastorm Staff of Barnabus");
             Tooltip.SetDefault("Fires waves of raw mana to tear your enemies apart\n" +
                 "'His friends call him \"Barnaby Barnaby\" '");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Orange;
-            item.mana = 16;
-            item.UseSound = SoundID.Item8;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 37;
-            item.useTurn = false;
-            item.useAnimation = 32;
-            item.useTime = 32;
-            item.width = 76;
-            item.height = 76;
-            item.shoot = ModContent.ProjectileType<ManaWave>();
-            item.shootSpeed = 9f;
-            item.knockBack = 3f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 6, silver: 75);
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Orange;
+            Item.mana = 16;
+            Item.UseSound = SoundID.Item8;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 37;
+            Item.useTurn = false;
+            Item.useAnimation = 32;
+            Item.useTime = 32;
+            Item.width = 76;
+            Item.height = 76;
+            Item.shoot = ModContent.ProjectileType<ManaWave>();
+            Item.shootSpeed = 9f;
+            Item.knockBack = 3f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 6, silver: 75);
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
-            recipe.AddIngredient(ModContent.ItemType<AmethystStaff>());
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe BaseRecipe()
+            {
+                return CreateRecipe()
+                    .AddIngredient<SandStaff.SandStaff>()
+                    .AddIngredient<WaterStaff.WaterStaff>()
+                    .AddIngredient<BloodStaff.BloodStaff>()
+                    .AddTile(TileID.Anvils);
+            }
 
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
-            recipe.AddIngredient(ModContent.ItemType<TopazStaff>());
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
-            recipe.AddIngredient(ModContent.ItemType<SapphireStaff>());
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
-            recipe.AddIngredient(ModContent.ItemType<EmeraldStaff>());
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
-            recipe.AddIngredient(ModContent.ItemType<AmberStaff>());
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
-            recipe.AddIngredient(ModContent.ItemType<RubyStaff>());
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
-
-            recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<SandStaff.SandStaff>());
-            recipe.AddIngredient(ModContent.ItemType<WaterStaff.WaterStaff>());
-            recipe.AddIngredient(ModContent.ItemType<BloodStaff.BloodStaff>());
-            recipe.AddIngredient(ModContent.ItemType<DiamondStaff>());
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            BaseRecipe().AddIngredient<AmethystStaff>().Register();
+            BaseRecipe().AddIngredient<TopazStaff>().Register();
+            BaseRecipe().AddIngredient<SapphireStaff>().Register();
+            BaseRecipe().AddIngredient<EmeraldStaff>().Register();
+            BaseRecipe().AddIngredient<AmberStaff>().Register();
+            BaseRecipe().AddIngredient<RubyStaff>().Register();
+            BaseRecipe().AddIngredient<DiamondStaff>().Register();
         }
     }
 }

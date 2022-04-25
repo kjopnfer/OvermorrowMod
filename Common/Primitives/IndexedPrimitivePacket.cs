@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -14,7 +13,7 @@ namespace OvermorrowMod.Common.Primitives
         // Keep separate from vertices enumerable to avoid enumerating it.
         private readonly int vertexCount;
 
-        public Effect Effect = OvermorrowModFile.Instance.TrailShader;
+        public Effect Effect = OvermorrowModFile.Instance.TrailShader.Value;
         public string Pass = "Basic";
 
         public IndexedPrimitivePacket(IEnumerable<VertexPositionColorTexture> vertices, PrimitiveType type, int vertexCount)
@@ -93,7 +92,7 @@ namespace OvermorrowMod.Common.Primitives
                         }
                         return indexes;
                     }
-                    
+
                 case PrimitiveType.LineStrip:
                     {
                         var indexes = new short[count];
@@ -108,7 +107,7 @@ namespace OvermorrowMod.Common.Primitives
                         return indexes;
                     }
                 default: return new short[0];
-                    
+
             }
         }
         public void Send()

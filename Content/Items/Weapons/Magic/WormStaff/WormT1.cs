@@ -20,32 +20,32 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 18;
-            projectile.height = 18;
-            projectile.timeLeft = 2000;
-            projectile.penetrate = -1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.magic = true;
-            projectile.tileCollide = false;
-            projectile.ignoreWater = true;
+            Projectile.width = 18;
+            Projectile.height = 18;
+            Projectile.timeLeft = 2000;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
         }
         public override void AI()
         {
             Wtimer++;
             if (Wtimer == 1)
             {
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT2"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT2>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
             }
 
             if (!didHit)
             {
-                Player player = Main.player[projectile.owner];
-                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
-                if (projectile.localAI[0] == 0f)
+                Player player = Main.player[Projectile.owner];
+                Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 1.57f;
+                if (Projectile.localAI[0] == 0f)
                 {
-                    AdjustMagnitude(ref projectile.velocity);
-                    projectile.localAI[0] = 1f;
+                    AdjustMagnitude(ref Projectile.velocity);
+                    Projectile.localAI[0] = 1f;
                 }
                 Vector2 move = Vector2.Zero;
                 float distance = 400f;
@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
                 {
                     if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].friendly && Main.npc[k].lifeMax > 5)
                     {
-                        Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                        Vector2 newMove = Main.npc[k].Center - Projectile.Center;
                         float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
                         if (distanceTo < distance)
                         {
@@ -67,30 +67,30 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
                 if (target)
                 {
                     AdjustMagnitude(ref move);
-                    projectile.velocity += (10 * projectile.velocity + move) / 11f;
-                    AdjustMagnitude(ref projectile.velocity);
+                    Projectile.velocity += (10 * Projectile.velocity + move) / 11f;
+                    AdjustMagnitude(ref Projectile.velocity);
                 }
             }
-            if (projectile.velocity.X > 11)
+            if (Projectile.velocity.X > 11)
             {
-                projectile.velocity.X = 11;
+                Projectile.velocity.X = 11;
             }
-            if (projectile.velocity.X < -11)
+            if (Projectile.velocity.X < -11)
             {
-                projectile.velocity.X = -11;
-            }
-
-            if (projectile.velocity.Y > 11)
-            {
-                projectile.velocity.Y = 11;
-            }
-            if (projectile.velocity.Y < -11)
-            {
-                projectile.velocity.Y = -11;
+                Projectile.velocity.X = -11;
             }
 
-            projectile.velocity.Y = projectile.velocity.Y + 0.06f;
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            if (Projectile.velocity.Y > 11)
+            {
+                Projectile.velocity.Y = 11;
+            }
+            if (Projectile.velocity.Y < -11)
+            {
+                Projectile.velocity.Y = -11;
+            }
+
+            Projectile.velocity.Y = Projectile.velocity.Y + 0.06f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
         private void AdjustMagnitude(ref Vector2 vector)
@@ -105,7 +105,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             didHit = true;
-            projectile.tileCollide = false;
+            Projectile.tileCollide = false;
         }
     }
 
@@ -120,15 +120,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 18;
-            projectile.height = 18;
-            projectile.timeLeft = 2000;
-            projectile.penetrate = -1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.magic = true;
-            projectile.tileCollide = false;
-            projectile.ignoreWater = true;
+            Projectile.width = 18;
+            Projectile.height = 18;
+            Projectile.timeLeft = 2000;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
         }
 
 
@@ -139,25 +139,25 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
             timer++;
             if (timer == 1)
             {
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT3"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT3>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
             }
 
 
-            Projectile projectile2 = Main.projectile[(int)projectile.ai[0]];
-            if (projectile2.active && projectile2.type == mod.ProjectileType("WormT1"))
+            Projectile Projectile2 = Main.projectile[(int)Projectile.ai[0]];
+            if (Projectile2.active && Projectile2.type == ModContent.ProjectileType<WormT1>())
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                Projectile.rotation = Projectile.DirectionTo(Projectile2.Center).ToRotation();
                 // check if distance is over segment size (ps: adjust height to right value)
                 // direction from parent to me
-                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                Vector2 dir = Projectile2.DirectionTo(Projectile.Center);
                 // position where the distance between parent and me is exactly the segment length
-                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                Projectile.Center = Projectile2.Center + new Vector2(dir.X * Projectile2.height, dir.Y * Projectile2.width);
             }
             else
             {
                 // kil
-                projectile.Kill();
+                Projectile.Kill();
             }
         }
     }
@@ -174,15 +174,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 18;
-            projectile.height = 18;
-            projectile.timeLeft = 2000;
-            projectile.penetrate = -1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.magic = true;
-            projectile.tileCollide = false;
-            projectile.ignoreWater = true;
+            Projectile.width = 18;
+            Projectile.height = 18;
+            Projectile.timeLeft = 2000;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
         }
 
 
@@ -193,24 +193,24 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
             timer++;
             if (timer == 1)
             {
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT4"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT4>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
             }
 
-            Projectile projectile2 = Main.projectile[(int)projectile.ai[0]];
-            if (projectile2.active && projectile2.type == mod.ProjectileType("WormT2"))
+            Projectile Projectile2 = Main.projectile[(int)Projectile.ai[0]];
+            if (Projectile2.active && Projectile2.type == ModContent.ProjectileType<WormT2>())
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                Projectile.rotation = Projectile.DirectionTo(Projectile2.Center).ToRotation();
                 // check if distance is over segment size (ps: adjust height to right value)
                 // direction from parent to me
-                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                Vector2 dir = Projectile2.DirectionTo(Projectile.Center);
                 // position where the distance between parent and me is exactly the segment length
-                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                Projectile.Center = Projectile2.Center + new Vector2(dir.X * Projectile2.height, dir.Y * Projectile2.width);
             }
             else
             {
                 // kil
-                projectile.Kill();
+                Projectile.Kill();
             }
         }
     }
@@ -225,15 +225,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 18;
-            projectile.height = 18;
-            projectile.timeLeft = 2000;
-            projectile.penetrate = -1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.magic = true;
-            projectile.tileCollide = false;
-            projectile.ignoreWater = true;
+            Projectile.width = 18;
+            Projectile.height = 18;
+            Projectile.timeLeft = 2000;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
         }
 
 
@@ -241,31 +241,31 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
         public override void AI()
         {
 
-            if (Vector2.Distance(projectile.Center, Main.player[projectile.owner].Center) > 2000)
+            if (Vector2.Distance(Projectile.Center, Main.player[Projectile.owner].Center) > 2000)
             {
-                projectile.Kill();
+                Projectile.Kill();
             }
 
             timer++;
             if (timer == 1)
             {
-                Projectile.NewProjectile(projectile.Center.X, projectile.Center.Y, 0, 0, mod.ProjectileType("WormT5"), 10, 0f, Main.myPlayer, projectile.whoAmI, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT5>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
             }
-            Projectile projectile2 = Main.projectile[(int)projectile.ai[0]];
-            if (projectile2.active && projectile2.type == mod.ProjectileType("WormT3"))
+            Projectile Projectile2 = Main.projectile[(int)Projectile.ai[0]];
+            if (Projectile2.active && Projectile2.type == ModContent.ProjectileType<WormT3>())
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                Projectile.rotation = Projectile.DirectionTo(Projectile2.Center).ToRotation();
                 // check if distance is over segment size (ps: adjust height to right value)
                 // direction from parent to me
-                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                Vector2 dir = Projectile2.DirectionTo(Projectile.Center);
                 // position where the distance between parent and me is exactly the segment length
-                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                Projectile.Center = Projectile2.Center + new Vector2(dir.X * Projectile2.height, dir.Y * Projectile2.width);
             }
             else
             {
                 // kil
-                projectile.Kill();
+                Projectile.Kill();
             }
         }
     }
@@ -280,36 +280,36 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 18;
-            projectile.height = 18;
-            projectile.timeLeft = 2000;
-            projectile.penetrate = -1;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.magic = true;
-            projectile.tileCollide = false;
-            projectile.ignoreWater = true;
+            Projectile.width = 18;
+            Projectile.height = 18;
+            Projectile.timeLeft = 2000;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
         }
 
 
 
         public override void AI()
         {
-            Projectile projectile2 = Main.projectile[(int)projectile.ai[0]];
-            if (projectile2.active && projectile2.type == mod.ProjectileType("WormT4"))
+            Projectile Projectile2 = Main.projectile[(int)Projectile.ai[0]];
+            if (Projectile2.active && Projectile2.type == ModContent.ProjectileType<WormT4>())
             {
                 // set rotation to the parent segment
-                projectile.rotation = projectile.DirectionTo(projectile2.Center).ToRotation();
+                Projectile.rotation = Projectile.DirectionTo(Projectile2.Center).ToRotation();
                 // check if distance is over segment size (ps: adjust height to right value)
                 // direction from parent to me
-                Vector2 dir = projectile2.DirectionTo(projectile.Center);
+                Vector2 dir = Projectile2.DirectionTo(Projectile.Center);
                 // position where the distance between parent and me is exactly the segment length
-                projectile.Center = projectile2.Center + new Vector2(dir.X * projectile2.height, dir.Y * projectile2.width);
+                Projectile.Center = Projectile2.Center + new Vector2(dir.X * Projectile2.height, dir.Y * Projectile2.width);
             }
             else
             {
                 // kil
-                projectile.Kill();
+                Projectile.Kill();
             }
         }
     }

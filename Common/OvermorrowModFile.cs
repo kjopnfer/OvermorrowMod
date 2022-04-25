@@ -1,100 +1,81 @@
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Content.Buffs.Hexes;
+using OvermorrowMod.Common.Netcode;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Materials;
+using OvermorrowMod.Core;
+using ReLogic.Content;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
+using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.UI;
-using System;
-using OvermorrowMod.Core;
-using OvermorrowMod.Content.UI;
-using OvermorrowMod.Common.Particles;
-using Terraria.Graphics.Effects;
-using System.IO;
-using OvermorrowMod.Common.Netcode;
 
 namespace OvermorrowMod.Common
 {
     public partial class OvermorrowModFile : Mod
     {
         // Hotkeys
-        public static ModHotKey SandModeKey;
-        public static ModHotKey ToggleUI;
-        public static ModHotKey AmuletKey;
+        public static ModKeybind SandModeKey;
+        public static ModKeybind ToggleUI;
+        public static ModKeybind AmuletKey;
 
         public static OvermorrowModFile Instance { get; set; }
         public OvermorrowModFile() => Instance = this;
 
-        public Effect BeamShader;
-        public Effect Ring;
-        public Effect Shockwave;
-        public Effect Shockwave2;
-        public Effect TrailShader;
-        public Effect TextShader;
-        public Effect Whiteout;
+        public Asset<Effect> BeamShader;
+        public Asset<Effect> Ring;
+        public Asset<Effect> Shockwave;
+        public Asset<Effect> Shockwave2;
+        public Asset<Effect> TrailShader;
+        public Asset<Effect> TextShader;
+        public Asset<Effect> Whiteout;
 
-        public static List<Texture2D> TrailTextures;
-
-        public override void UpdateMusic(ref int music, ref MusicPriority priority)
-        {
-            if (Main.myPlayer != -1 && !Main.gameMenu)
-            {
-                if (Main.player[Main.myPlayer].active && Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>().ZoneWaterCave)
-                {
-                    music = this.GetSoundSlot(SoundType.Music, "Sounds/Music/WaterBiomeMusic");
-                    priority = MusicPriority.BiomeHigh;
-                }
-            }
-        }
+        public static List<Asset<Texture2D>> TrailTextures;
 
         public override void Load()
         {
             //Terraria.ModLoader.IO.TagSerializer.AddSerializer(new VectorSerializer());
 
             // Keys
-            SandModeKey = RegisterHotKey("Swap Sand Mode", "Q");
-            AmuletKey = RegisterHotKey("Artemis Amulet Attack", "C");
-            ToggleUI = RegisterHotKey("Toggle UI", "R"); // This is for debugging
+            SandModeKey = KeybindLoader.RegisterKeybind(this, "Swap Sand Mode", "Q");
+            AmuletKey = KeybindLoader.RegisterKeybind(this, "Artemis Amulet Attack", "C");
+            ToggleUI = KeybindLoader.RegisterKeybind(this, "Toggle UI", "R"); // This is for debugging
 
             if (!Main.dedServ)
             {
-                Main.logoTexture = Instance.GetTexture("logo");
-                Main.logo2Texture = Instance.GetTexture("logo");
+                // TODO: These are gone, need to figure out what to do.
+                // Main.logoTexture = Instance.GetTexture("logo");
+                // Main.logo2Texture = Instance.GetTexture("logo");
 
                 // Effects
-                BeamShader = GetEffect("Effects/Beam");
-                Ring = GetEffect("Effects/Ring");
-                Shockwave = GetEffect("Effects/Shockwave1");
-                Shockwave2 = GetEffect("Effects/ShockwaveEffect");
-                TextShader = GetEffect("Effects/TextShader");
-                TrailShader = GetEffect("Effects/Trail");
-                Whiteout = GetEffect("Effects/Whiteout");
+                BeamShader = Assets.Request<Effect>("Effects/Beam");
+                Ring = Assets.Request<Effect>("Effects/Ring");
+                Shockwave = Assets.Request<Effect>("Effects/Shockwave1");
+                Shockwave2 = Assets.Request<Effect>("Effects/ShockwaveEffect");
+                TextShader = Assets.Request<Effect>("Effects/TextShader");
+                TrailShader = Assets.Request<Effect>("Effects/Trail");
+                Whiteout = Assets.Request<Effect>("Effects/Whiteout");
 
-                Ref<Effect> ref1 = new Ref<Effect>(Shockwave);
-                Ref<Effect> ref2 = new Ref<Effect>(Shockwave2);
+                Ref<Effect> ref1 = new Ref<Effect>(Shockwave.Value);
+                Ref<Effect> ref2 = new Ref<Effect>(Shockwave2.Value);
 
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
 
 
-                TrailTextures = new List<Texture2D>();
+                TrailTextures = new List<Asset<Texture2D>>();
                 for (int i = 0; i < 7; i++)
                 {
-                    TrailTextures.Add(GetTexture(AssetDirectory.Trails + "Trail" + i));
+                    TrailTextures.Add(ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail" + i));
                 }
 
-                AltarUI = new UserInterface();
-
-                MyInterface = new UserInterface();
-
-                Altar = new AltarUI();
-                Altar.Activate();
-
-                Main.itemTexture[ItemID.ChainKnife] = ModContent.GetTexture(AssetDirectory.Textures + "ChainKnife");
+                Terraria.GameContent.TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ChainKnife");
                 if (Main.hardMode)
                 {
                     //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");
@@ -135,115 +116,69 @@ namespace OvermorrowMod.Common
             Particle.Unload();
             Trail.Unload();
 
-            if (!Main.dedServ)
-            {
-                Main.logoTexture = ModContent.GetTexture("Terraria/Logo");
-                Main.logo2Texture = ModContent.GetTexture("Terraria/Logo2");
-            }
-
-
-            Altar = null;
             SandModeKey = null;
             AmuletKey = null;
             ToggleUI = null;
 
         }
 
-        public override void PostUpdateEverything()
-        {
-            Trail.UpdateTrails();
-        }
-
-        public override void PostSetupContent()
-        {
-            if (Main.gameMenu && Main.menuMode >= 0 && !Main.dedServ)
-            {
-                if (Main.LogoB <= 255)
-                {
-                    Main.logoTexture = Instance.GetTexture("logo");
-                }
-
-                if (Main.LogoB < 10 || (!Main.dayTime && Main.LogoA <= 255))
-                {
-                    Main.logo2Texture = Instance.GetTexture("logo");
-                }
-            }
-        }
-
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(this);
-            recipe.AddIngredient(ItemID.Chain, 6);
-            recipe.AddRecipeGroup("IronBar", 1);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(ItemID.ChainKnife);
-            recipe.AddRecipe();
+            CreateRecipe(ItemID.ChainKnife)
+                .AddIngredient(ItemID.Chain, 6)
+                .AddRecipeGroup("IronBar", 1)
+                .AddTile(TileID.Anvils)
+                .Register();
 
-            recipe = new ModRecipe(this);
-            recipe.AddIngredient(ItemID.Silk, 6);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 3);
-            recipe.AddTile(TileID.Loom);
-            recipe.SetResult(ItemID.HermesBoots);
-            recipe.AddRecipe();
+            CreateRecipe(ItemID.HermesBoots)
+                .AddIngredient(ItemID.Silk, 6)
+                .AddIngredient<EruditeOrb>(3)
+                .AddTile(TileID.Loom)
+                .Register();
 
-            recipe = new ModRecipe(this);
-            recipe.AddIngredient(ItemID.HermesBoots);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 3);
-            recipe.AddTile(TileID.Loom);
-            recipe.SetResult(ItemID.WaterWalkingBoots);
-            recipe.AddRecipe();
+            CreateRecipe(ItemID.WaterWalkingBoots)
+                .AddIngredient(ItemID.HermesBoots)
+                .AddIngredient<EruditeOrb>(3)
+                .AddTile(TileID.Loom)
+                .Register();
 
-            recipe = new ModRecipe(this);
-            recipe.AddIngredient(ItemID.Bottle);
-            recipe.AddIngredient(ItemID.Cloud, 10);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 3);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(ItemID.CloudinaBottle);
-            recipe.AddRecipe();
+            CreateRecipe(ItemID.CloudinaBottle)
+                .AddIngredient(ItemID.Bottle)
+                .AddIngredient(ItemID.Cloud, 10)
+                .AddIngredient<EruditeOrb>(3)
+                .AddTile(TileID.Anvils)
+                .Register();
 
-            recipe = new ModRecipe(this);
-            recipe.AddIngredient(ItemID.GoldBar, 10);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 2);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(ItemID.LuckyHorseshoe);
-            recipe.AddRecipe();
+            CreateRecipe(ItemID.LuckyHorseshoe)
+                .AddIngredient(ItemID.GoldBar, 10)
+                .AddIngredient<EruditeOrb>(2)
+                .AddTile(TileID.Anvils)
+                .Register();
 
-            recipe = new ModRecipe(this);
-            recipe.AddIngredient(ItemID.PlatinumBar, 10);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 2);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(ItemID.LuckyHorseshoe);
-            recipe.AddRecipe();
+            CreateRecipe(ItemID.LuckyHorseshoe)
+                .AddIngredient(ItemID.PlatinumBar, 10)
+                .AddIngredient<EruditeOrb>(2)
+                .AddTile(TileID.Anvils)
+                .Register();
 
-            recipe = new ModRecipe(this);
-            recipe.AddRecipeGroup("IronBar", 8);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 2);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(ItemID.ClimbingClaws);
-            recipe.AddRecipe();
+            CreateRecipe(ItemID.ClimbingClaws)
+                .AddRecipeGroup("IronBar", 8)
+                .AddIngredient<EruditeOrb>(2)
+                .AddTile(TileID.Anvils)
+                .Register();
 
-            recipe = new ModRecipe(this);
-            recipe.AddRecipeGroup("IronBar", 8);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 3);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(ItemID.ShoeSpikes);
-            recipe.AddRecipe();
+            CreateRecipe(ItemID.ShoeSpikes)
+                .AddRecipeGroup("IronBar", 8)
+                .AddIngredient<EruditeOrb>(2)
+                .AddTile(TileID.Anvils)
+                .Register();
 
-            recipe = new ModRecipe(this);
-            recipe.AddIngredient(ItemID.Coral, 6);
-            recipe.AddIngredient(ItemID.Starfish, 4);
-            recipe.AddIngredient(ModContent.ItemType<EruditeOrb>(), 2);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(ItemID.JellyfishNecklace);
-            recipe.AddRecipe();
-        }
-
-        public override void PreUpdateEntities()
-        {
-            if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
-            {
-                Particle.UpdateParticles();
-            }
+            CreateRecipe(ItemID.JellyfishNecklace)
+                .AddIngredient(ItemID.Coral, 6)
+                .AddIngredient(ItemID.Starfish, 4)
+                .AddIngredient<EruditeOrb>(2)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
 
         public override void HandlePacket(BinaryReader reader, int whoAmI)

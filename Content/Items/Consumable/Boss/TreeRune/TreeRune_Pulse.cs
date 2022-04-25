@@ -1,7 +1,5 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Consumable.Boss.TreeRune
@@ -15,29 +13,29 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss.TreeRune
 
         public override void SetDefaults()
         {
-            projectile.width = 96;
-            projectile.height = 96;
-            projectile.tileCollide = false;
-            projectile.hostile = false;
-            projectile.friendly = true;
-            projectile.timeLeft = 25;
-            projectile.penetrate = -1;
-            projectile.scale = 1;
+            Projectile.width = 96;
+            Projectile.height = 96;
+            Projectile.tileCollide = false;
+            Projectile.hostile = false;
+            Projectile.friendly = true;
+            Projectile.timeLeft = 25;
+            Projectile.penetrate = -1;
+            Projectile.scale = 1;
         }
         public override void AI()
         {
             // Invert the scale
-            if (projectile.ai[0] == 1)
+            if (Projectile.ai[0] == 1)
             {
-                projectile.scale = MathHelper.Lerp(0, 8, projectile.timeLeft / 25f);
+                Projectile.scale = MathHelper.Lerp(0, 8, Projectile.timeLeft / 25f);
             }
             else
             {
-                projectile.scale = MathHelper.Lerp(4, 0, projectile.timeLeft / 25f);
+                Projectile.scale = MathHelper.Lerp(4, 0, Projectile.timeLeft / 25f);
             }
-            projectile.alpha = (int)MathHelper.Lerp(255, 0, Utils.Clamp(projectile.timeLeft, 0, 25) / 25f);
+            Projectile.alpha = (int)MathHelper.Lerp(255, 0, Utils.Clamp(Projectile.timeLeft, 0, 25) / 25f);
         }
 
-        public override Color? GetAlpha(Color lightColor) => Color.White * (MathHelper.Lerp(1, 0, projectile.alpha / 255f));
+        public override Color? GetAlpha(Color lightColor) => Color.White * (MathHelper.Lerp(1, 0, Projectile.alpha / 255f));
     }
 }

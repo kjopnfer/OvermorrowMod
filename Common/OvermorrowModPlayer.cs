@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
+using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Content.Projectiles.Accessory;
 using System;
 using Terraria;
@@ -86,7 +87,7 @@ namespace OvermorrowMod.Common
         public bool shroomBuff;
         public bool treeBuff;
         public bool vineBuff;
-        public bool windBuff;
+        // public bool windBuff;
 
         // Misc
         public int BowEnergyCount = 0;
@@ -131,7 +132,7 @@ namespace OvermorrowMod.Common
             shroomBuff = false;
             treeBuff = false;
             vineBuff = false;
-            windBuff = false;
+            // windBuff = false;
             MouseLampPlay = false;
 
             minionCounts = 0;
@@ -139,9 +140,9 @@ namespace OvermorrowMod.Common
             bool dashAccessoryEquipped = false;
 
             //This is the loop used in vanilla to update/check the not-vanity accessories
-            for (int i = 3; i < 8 + player.extraAccessorySlots; i++)
+            for (int i = 3; i < 8 + Player.extraAccessorySlots; i++)
             {
-                Item item = player.armor[i];
+                Item item = Player.armor[i];
 
                 //Set the flag for the ExampleDashAccessory being equipped if we have it equipped OR immediately return if any of the accessories are
                 // one of the higher-priority ones
@@ -153,14 +154,14 @@ namespace OvermorrowMod.Common
 
             //If we don't have the ExampleDashAccessory equipped or the player has the Solor armor set equipped, return immediately
             //Also return if the player is currently on a mount, since dashes on a mount look weird, or if the dash was already activated
-            if (!dashAccessoryEquipped || player.setSolar || player.mount.Active || DashActive)
+            if (!dashAccessoryEquipped || Player.setSolar || Player.mount.Active || DashActive)
                 return;
 
             //When a directional key is pressed and released, vanilla starts a 15 tick (1/4 second) timer during which a second press activates a dash
             //If the timers are set to 15, then this is the first press just processed by the vanilla logic.  Otherwise, it's a double-tap
-            if (player.controlRight && player.releaseRight && player.doubleTapCardinalTimer[DashRight] < 15)
+            if (Player.controlRight && Player.releaseRight && Player.doubleTapCardinalTimer[DashRight] < 15)
                 DashDir = DashRight;
-            else if (player.controlLeft && player.releaseLeft && player.doubleTapCardinalTimer[DashLeft] < 15)
+            else if (Player.controlLeft && Player.releaseLeft && Player.doubleTapCardinalTimer[DashLeft] < 15)
                 DashDir = DashLeft;
             else
                 return;  //No dash was activated, return
@@ -186,16 +187,16 @@ namespace OvermorrowMod.Common
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
         {
-            if (BMSet && item.melee)
+            if (BMSet && item.DamageType == DamageClass.Melee)
             {
-                player.statMana += damage / 2;
-                player.ManaEffect(damage / 2);
+                Player.statMana += damage / 2;
+                Player.ManaEffect(damage / 2);
             }
 
             if (BloodyTeeth)
             {
                 int bleedChance = Main.rand.Next(4);
-                if (bleedChance == 0 && item.melee)
+                if (bleedChance == 0 && item.DamageType == DamageClass.Melee)
                 {
                     target.AddHex(Hex.HexType<Bleeding>(), 60 * 6);
                 }
@@ -204,10 +205,10 @@ namespace OvermorrowMod.Common
 
         public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
         {
-            if (BMSet && proj.melee)
+            if (BMSet && proj.DamageType == DamageClass.Melee)
             {
-                player.statMana += damage / 5;
-                player.ManaEffect(damage / 5);
+                Player.statMana += damage / 5;
+                Player.ManaEffect(damage / 5);
             }
         }
 
@@ -216,14 +217,14 @@ namespace OvermorrowMod.Common
             if (BloodyHeart)
             {
                 int projectiles = 3;
-                if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
+                if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == Player.whoAmI)
                 {
                     for (int i = 0; i < projectiles; i++)
                     {
-                        Projectile.NewProjectile(player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, player.whoAmI);
+                        Projectile.NewProjectile(Player.GetProjectileSource_OnHurt(null, ProjectileSourceID.None), Player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, Player.whoAmI);
                     }
                 }
-                NPC.NewNPC((int)player.position.X, (int)player.position.Y, mod.NPCType("BloodHeal"));
+                NPC.NewNPC(null, (int)Player.position.X, (int)Player.position.Y, ModContent.NPCType<BloodHeal>());
             }
         }
 
@@ -250,7 +251,7 @@ namespace OvermorrowMod.Common
                     }
                 }
 
-                float hitDirection = (float)Math.Atan2(player.Center.Y - npc.Center.Y, player.Center.X - npc.Center.X);
+                float hitDirection = (float)Math.Atan2(Player.Center.Y - npc.Center.Y, Player.Center.X - npc.Center.X);
                 npc.StrikeNPC((int)storedDamage, 3f, (int)hitDirection);
 
                 storedDamage = 0;
@@ -300,35 +301,35 @@ namespace OvermorrowMod.Common
         {
             if (Bloodmana)
             {
-                if (player.statMana < player.statManaMax)
+                if (Player.statMana < Player.statManaMax)
                 {
-                    int ManaDMG = player.statManaMax - player.statMana;
+                    int ManaDMG = Player.statManaMax - Player.statMana;
 
                     if (ManaDMG > 5)
                     {
-                        player.statLife = player.statLife - ManaDMG / 2;
-                        CombatText.NewText(player.getRect(), Color.Red, ManaDMG / 2);
+                        Player.statLife = Player.statLife - ManaDMG / 2;
+                        CombatText.NewText(Player.getRect(), Color.Red, ManaDMG / 2);
                     }
                     else
                     {
-                        player.statLife = player.statLife - ManaDMG;
-                        CombatText.NewText(player.getRect(), Color.Red, ManaDMG);
+                        Player.statLife = Player.statLife - ManaDMG;
+                        CombatText.NewText(Player.getRect(), Color.Red, ManaDMG);
 
-                        if (player.statLife < 0)
+                        if (Player.statLife < 0)
                         {
-                            player.Hurt(
-                                PlayerDeathReason.ByCustomReason($"{player.name} drank too deply from the blood mana ring."),
+                            Player.Hurt(
+                                PlayerDeathReason.ByCustomReason($"{Player.name} drank too deply from the blood mana ring."),
                                 0,
                                 0);
                         }
                     }
 
 
-                    player.statMana = player.statManaMax;
+                    Player.statMana = Player.statManaMax;
                 }
-                if (player.statMana > player.statManaMax)
+                if (Player.statMana > Player.statManaMax)
                 {
-                    player.statMana = player.statManaMax;
+                    Player.statMana = Player.statManaMax;
                 }
             }
             if (amuletCounter > 0)
@@ -342,29 +343,30 @@ namespace OvermorrowMod.Common
             PlatformTimer--;
         }
 
-        public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
+
+        public override void UpdateEquips()
         {
             if (DripplerEye)
             {
-                player.rangedCrit += dripplerStack;
+                Player.GetCritChance(DamageClass.Ranged) += dripplerStack;
             }
 
             if (StormScale) // Create sparks while moving, increase defense if health is below 50%
             {
-                if (player.statLife <= player.statLifeMax2 * 0.5f)
+                if (Player.statLife <= Player.statLifeMax2 * 0.5f)
                 {
-                    player.statDefense += 5;
+                    Player.statDefense += 5;
                 }
 
-                if (player.velocity.X != 0 || player.velocity.Y != 0)
+                if (Player.velocity.X != 0 || Player.velocity.Y != 0)
                 {
                     if (sparkCounter % 30 == 0)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == player.whoAmI)
+                        if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == Player.whoAmI)
                         {
                             for (int i = 0; i < Main.rand.Next(1, 3); i++)
                             {
-                                Projectile.NewProjectile(player.Center.X, player.Center.Y + Main.rand.Next(-15, 18), 0, 0, ModContent.ProjectileType<ElectricSparksFriendly>(), 20, 1, player.whoAmI, 0, 0);
+                                Projectile.NewProjectile(Player.GetProjectileSource_Misc(ProjectileID.None), Player.Center.X, Player.Center.Y + Main.rand.Next(-15, 18), 0, 0, ModContent.ProjectileType<ElectricSparksFriendly>(), 20, 1, Player.whoAmI, 0, 0);
                             }
                         }
                     }
@@ -374,10 +376,10 @@ namespace OvermorrowMod.Common
 
             if (TreeNecklace)
             {
-                Lighting.AddLight(player.Center, 0f, 1.5f, 0f);
+                Lighting.AddLight(Player.Center, 0f, 1.5f, 0f);
 
                 // The player is standing still
-                if (player.velocity == Vector2.Zero)
+                if (Player.velocity == Vector2.Zero)
                 {
                     treeCounter++;
                     if (treeCounter % 60 == 0 && treeDefenseStack <= 15)
@@ -391,37 +393,38 @@ namespace OvermorrowMod.Common
                     treeDefenseStack = 0;
                 }
 
-                player.statDefense += treeDefenseStack;
+                Player.statDefense += treeDefenseStack;
             }
 
 
             if (graniteSpearBuff)
             {
-                player.minionDamage += .1f;
+                var damage = Player.GetDamage(DamageClass.Summon) += 0.1f;
             }
 
-            if (windBuff)
+            /* Unused?
+             * if (windBuff)
             {
-                if (player.HeldItem.ranged)
+                if (Player.HeldItem.DamageType == DamageClass.Ranged)
                 {
-                    player.moveSpeed += 0.85f;
+                    Player.moveSpeed += 0.85f;
                     TrailTimer++;
-                    if (TrailTimer > 3 && player.velocity.X > 0 || TrailTimer > 3 && player.velocity.X < 0 || TrailTimer > 3 && player.velocity.Y < 0 || TrailTimer > 3 && player.velocity.Y > 0)
+                    if (TrailTimer > 3 && Player.velocity.X > 0 || TrailTimer > 3 && Player.velocity.X < 0 || TrailTimer > 3 && Player.velocity.Y < 0 || TrailTimer > 3 && Player.velocity.Y > 0)
                     {
-                        Projectile.NewProjectile(player.Center.X, player.Center.Y, player.velocity.X, player.velocity.Y, mod.ProjectileType("PlayerMoveWave"), 15, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(Player.GetProjectileSource_Buff(Player.FindBuffIndex(ModContent.BuffType<WindBuff>()), Player.Center.X, Player.Center.Y, Player.velocity.X, Player.velocity.Y, ModContent.ProjectileType<PlayerMoveWave>(), 15, 0, Main.myPlayer);
                         TrailTimer = 0;
                     }
                 }
-            }
+            } */
 
             if (slimeBuff)
             {
-                player.jumpSpeedBoost += 3f;
+                Player.jumpSpeedBoost += 3f;
             }
 
             if (goldWind)
             {
-                player.moveSpeed += 1f;
+                Player.moveSpeed += 1f;
             }
         }
 
@@ -430,13 +433,13 @@ namespace OvermorrowMod.Common
             if (treeBuff)
             {
                 // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 2 life gained per second.
-                player.lifeRegen += 4;
+                Player.lifeRegen += 4;
             }
         }
 
         public override void PostUpdateRunSpeeds()
         {
-            if (player.pulley && DashType > 0)
+            if (Player.pulley && DashType > 0)
             {
                 DashMovement();
             }
@@ -444,9 +447,9 @@ namespace OvermorrowMod.Common
 
         public override void PostUpdateEquips()
         {
-            if (player.mount.Active || player.mount.Cart)
+            if (Player.mount.Active || Player.mount.Cart)
             {
-                player.dashDelay = 10;
+                Player.dashDelay = 10;
                 DashType = 0;
             }
 
@@ -464,14 +467,14 @@ namespace OvermorrowMod.Common
                     }
                 }
 
-                player.statDefense += 1 * minionCounts;
-                player.meleeDamage += 0.03f * minionCounts;
+                Player.statDefense += 1 * minionCounts;
+                var damage = Player.GetDamage(DamageClass.Melee) += 0.03f * minionCounts;
             }
         }
 
         private bool IsInRange(Vector2 coordinates)
         {
-            float distance = Vector2.Distance(coordinates, player.Center);
+            float distance = Vector2.Distance(coordinates, Player.Center);
             if (distance <= 80)
             {
                 return true;
@@ -490,9 +493,9 @@ namespace OvermorrowMod.Common
                 slimeCounter--;
             }
 
-            if (player.justJumped && slimeBuff && slimeCounter == 0)
+            if (Player.justJumped && slimeBuff && slimeCounter == 0)
             {
-                Vector2 vector4 = new Vector2(player.position.X + (float)player.width * 0.5f, player.position.Y + (float)player.height * 0.5f);
+                Vector2 vector4 = new Vector2(Player.position.X + (float)Player.width * 0.5f, Player.position.Y + (float)Player.height * 0.5f);
 
                 for (int j = 0; j < 5; j++)
                 {
@@ -501,14 +504,14 @@ namespace OvermorrowMod.Common
                     vector5.Y *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
                     vector5.Normalize();
                     vector5 *= 4f + (float)Main.rand.Next(-50, 51) * 0.01f;
-                    int proj = Projectile.NewProjectile(vector4.X, vector4.Y, vector5.X, vector5.Y, ProjectileID.SpikedSlimeSpike, 16, 0f, Main.myPlayer);
+                    int proj = Projectile.NewProjectile(null, vector4.X, vector4.Y, vector5.X, vector5.Y, ProjectileID.SpikedSlimeSpike, 16, 0f, Main.myPlayer);
 
                     Main.projectile[proj].friendly = true;
                     Main.projectile[proj].hostile = false;
                 }
 
-                player.statLife += 2;
-                player.HealEffect(2);
+                Player.statLife += 2;
+                Player.HealEffect(2);
                 slimeCounter = 45;
             }
 
@@ -530,7 +533,7 @@ namespace OvermorrowMod.Common
             {
                 Vector2 position = Main.MouseWorld;
 
-                Projectile.NewProjectile(position, new Vector2(0), ModContent.ProjectileType<ArtemisRune>(), 0, 5f, Main.myPlayer);
+                Projectile.NewProjectile(null, position, new Vector2(0), ModContent.ProjectileType<ArtemisRune>(), 0, 5f, Main.myPlayer);
 
                 amuletCounter = 900;
             }
@@ -543,7 +546,7 @@ namespace OvermorrowMod.Common
 
             if (UIToggled && IsInRange(AltarCoordinates))
             {
-                ModContent.GetInstance<OvermorrowModFile>().ShowAltar();
+                ModContent.GetInstance<OvermorrowModSystem>().ShowAltar();
             }
             /*else
             {
@@ -554,199 +557,199 @@ namespace OvermorrowMod.Common
         public void DashMovement()
         {
             int cShoe = 0;
-            if (DashType == 1 && player.eocDash > 0)
+            if (DashType == 1 && Player.eocDash > 0)
             {
-                if (player.eocHit < 0)
+                if (Player.eocHit < 0)
                 {
-                    Rectangle dashHitbox = new Rectangle((int)((double)player.position.X + (double)player.velocity.X * 0.5 - 4.0), (int)((double)player.position.Y + (double)player.velocity.Y * 0.5 - 4.0), player.width + 8, player.height + 8);
+                    Rectangle dashHitbox = new Rectangle((int)((double)Player.position.X + (double)Player.velocity.X * 0.5 - 4.0), (int)((double)Player.position.Y + (double)Player.velocity.Y * 0.5 - 4.0), Player.width + 8, Player.height + 8);
                     for (int i = 0; i < 200; i++)
                     {
-                        if (!(Main.npc[i]).active || Main.npc[i].dontTakeDamage || Main.npc[i].friendly || Main.npc[i].immune[(player).whoAmI] > 0)
+                        if (!(Main.npc[i]).active || Main.npc[i].dontTakeDamage || Main.npc[i].friendly || Main.npc[i].immune[(Player).whoAmI] > 0)
                         {
                             continue;
                         }
 
                         NPC npc = Main.npc[i];
                         Rectangle npcHitbox = npc.getRect();
-                        if (dashHitbox.Intersects(npcHitbox) && (npc.noTileCollide || player.CanHit(npc)))
+                        if (dashHitbox.Intersects(npcHitbox) && (npc.noTileCollide || Player.CanHit(npc)))
                         {
-                            float damage = 36f * player.meleeDamage;
+                            float damage = 36f * Player.GetDamage(DamageClass.Melee);
                             float knockback = 9f;
                             bool crit = false;
 
-                            if (player.kbGlove)
+                            if (Player.kbGlove)
                             {
                                 knockback *= 2f;
                             }
 
-                            if (player.kbBuff)
+                            if (Player.kbBuff)
                             {
                                 knockback *= 1.5f;
                             }
 
-                            if (Main.rand.Next(100) < player.meleeCrit)
+                            if (Main.rand.Next(100) < Player.GetCritChance(DamageClass.Melee))
                             {
                                 crit = true;
                             }
 
-                            int direction = player.direction;
+                            int direction = Player.direction;
 
-                            if (player.velocity.X < 0f)
+                            if (Player.velocity.X < 0f)
                             {
                                 direction = -1;
                             }
-                            if (player.velocity.X > 0f)
+                            if (Player.velocity.X > 0f)
                             {
                                 direction = 1;
                             }
 
-                            if (player.whoAmI == Main.myPlayer)
+                            if (Player.whoAmI == Main.myPlayer)
                             {
-                                player.ApplyDamageToNPC(npc, (int)damage, knockback, direction, crit);
+                                Player.ApplyDamageToNPC(npc, (int)damage, knockback, direction, crit);
                             }
 
-                            player.eocDash = 10;
-                            player.dashDelay = 30;
-                            player.velocity.X = (0f - (float)direction) * 9f;
-                            player.velocity.Y = -4f;
-                            player.immune = true;
-                            player.immuneNoBlink = true;
-                            player.immuneTime = 4;
-                            player.eocHit = i;
+                            Player.eocDash = 10;
+                            Player.dashDelay = 30;
+                            Player.velocity.X = (0f - (float)direction) * 9f;
+                            Player.velocity.Y = -4f;
+                            Player.immune = true;
+                            Player.immuneNoBlink = true;
+                            Player.immuneTime = 4;
+                            Player.eocHit = i;
                         }
                     }
                 }
-                else if ((!player.controlLeft || player.velocity.X >= 0f) && (!player.controlRight || player.velocity.X <= 0f))
+                else if ((!Player.controlLeft || Player.velocity.X >= 0f) && (!Player.controlRight || Player.velocity.X <= 0f))
                 {
-                    player.velocity.X *= 0.95f;
+                    Player.velocity.X *= 0.95f;
                 }
             }
 
-            if (player.dashDelay > 0)
+            if (Player.dashDelay > 0)
             {
-                if (player.eocDash > 0)
+                if (Player.eocDash > 0)
                 {
-                    player.eocDash--;
+                    Player.eocDash--;
                 }
-                if (player.eocDash == 0)
+                if (Player.eocDash == 0)
                 {
-                    player.eocHit = -1;
+                    Player.eocHit = -1;
                 }
-                player.dashDelay--;
+                Player.dashDelay--;
             }
-            else if (player.dashDelay < 0)
+            else if (Player.dashDelay < 0)
             {
                 float num47 = 12f;
                 float num46 = 0.992f;
-                float num45 = Math.Max(player.accRunSpeed, player.maxRunSpeed);
+                float num45 = Math.Max(Player.accRunSpeed, Player.maxRunSpeed);
                 float num44 = 0.96f;
                 int num43 = 20;
-                if (player.dash == 1)
+                if (Player.dash == 1)
                 {
                     for (int n = 0; n < 2; n++)
                     {
-                        int num42 = (player.velocity.Y != 0f) ? Dust.NewDust(new Vector2(player.position.X, player.position.Y + (float)(player.height / 2) - 8f), player.width, 16, DustID.Smoke, 0f, 0f, 100, default(Color), 1.4f) : Dust.NewDust(new Vector2(player.position.X, player.position.Y + (float)player.height - 4f), player.width, 8, DustID.Smoke, 0f, 0f, 100, default(Color), 1.4f);
+                        int num42 = (Player.velocity.Y != 0f) ? Dust.NewDust(new Vector2(Player.position.X, Player.position.Y + (float)(Player.height / 2) - 8f), Player.width, 16, DustID.Smoke, 0f, 0f, 100, default(Color), 1.4f) : Dust.NewDust(new Vector2(Player.position.X, Player.position.Y + (float)Player.height - 4f), Player.width, 8, DustID.Smoke, 0f, 0f, 100, default(Color), 1.4f);
                         Main.dust[num42].velocity *= 0.1f;
                         Main.dust[num42].scale *= 1f + (float)Main.rand.Next(20) * 0.01f;
-                        Main.dust[num42].shader = GameShaders.Armor.GetSecondaryShader(cShoe, player);
+                        Main.dust[num42].shader = GameShaders.Armor.GetSecondaryShader(cShoe, Player);
                     }
                 }
 
-                if (player.dash <= 0)
+                if (Player.dash <= 0)
                 {
                     return;
                 }
 
-                if (player.velocity.X > num47 || player.velocity.X < 0f - num47)
+                if (Player.velocity.X > num47 || Player.velocity.X < 0f - num47)
                 {
-                    player.velocity.X *= num46;
+                    Player.velocity.X *= num46;
                     return;
                 }
-                if (player.velocity.X > num45 || player.velocity.X < 0f - num45)
+                if (Player.velocity.X > num45 || Player.velocity.X < 0f - num45)
                 {
-                    player.velocity.X *= num44;
+                    Player.velocity.X *= num44;
                     return;
                 }
-                player.dashDelay = num43;
-                if (player.velocity.X < 0f)
+                Player.dashDelay = num43;
+                if (Player.velocity.X < 0f)
                 {
-                    player.velocity.X = 0f - num45;
+                    Player.velocity.X = 0f - num45;
                 }
-                else if (player.velocity.X > 0f)
+                else if (Player.velocity.X > 0f)
                 {
-                    player.velocity.X = num45;
+                    Player.velocity.X = num45;
                 }
             }
             else
             {
-                if (player.dash <= 0 || player.mount.Active)
+                if (Player.dash <= 0 || Player.mount.Active)
                 {
                     return;
                 }
-                if (player.dash == 1)
+                if (Player.dash == 1)
                 {
                     int num36 = 0;
                     bool flag5 = false;
-                    if (player.dashTime > 0)
+                    if (Player.dashTime > 0)
                     {
-                        player.dashTime--;
+                        Player.dashTime--;
                     }
-                    if (player.dashTime < 0)
+                    if (Player.dashTime < 0)
                     {
-                        player.dashTime++;
+                        Player.dashTime++;
                     }
-                    if (player.controlRight && player.releaseRight)
+                    if (Player.controlRight && Player.releaseRight)
                     {
-                        if (player.dashTime > 0)
+                        if (Player.dashTime > 0)
                         {
                             num36 = 1;
                             flag5 = true;
-                            player.dashTime = 0;
+                            Player.dashTime = 0;
                         }
                         else
                         {
-                            player.dashTime = 15;
+                            Player.dashTime = 15;
                         }
                     }
-                    else if (player.controlLeft && player.releaseLeft)
+                    else if (Player.controlLeft && Player.releaseLeft)
                     {
-                        if (player.dashTime < 0)
+                        if (Player.dashTime < 0)
                         {
                             num36 = -1;
                             flag5 = true;
-                            player.dashTime = 0;
+                            Player.dashTime = 0;
                         }
                         else
                         {
-                            player.dashTime = -15;
+                            Player.dashTime = -15;
                         }
                     }
                     if (flag5)
                     {
-                        player.velocity.X = 16.9f * (float)num36;
-                        Point point11 = (player.Center + new Vector2(num36 * player.width / 2 + 2, player.gravDir * (0f - (float)player.height) / 2f + player.gravDir * 2f)).ToTileCoordinates();
-                        Point point10 = (player.Center + new Vector2(num36 * player.width / 2 + 2, 0f)).ToTileCoordinates();
+                        Player.velocity.X = 16.9f * (float)num36;
+                        Point point11 = (Player.Center + new Vector2(num36 * Player.width / 2 + 2, Player.gravDir * (0f - (float)Player.height) / 2f + Player.gravDir * 2f)).ToTileCoordinates();
+                        Point point10 = (Player.Center + new Vector2(num36 * Player.width / 2 + 2, 0f)).ToTileCoordinates();
                         if (WorldGen.SolidOrSlopedTile(point11.X, point11.Y) || WorldGen.SolidOrSlopedTile(point10.X, point10.Y))
                         {
-                            player.velocity.X /= 2f;
+                            Player.velocity.X /= 2f;
                         }
-                        player.dashDelay = -1;
+                        Player.dashDelay = -1;
                         for (int num35 = 0; num35 < 20; num35++)
                         {
-                            int num31 = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, DustID.Smoke, 0f, 0f, 100, default(Color), 2f);
+                            int num31 = Dust.NewDust(new Vector2(Player.position.X, Player.position.Y), Player.width, Player.height, DustID.Smoke, 0f, 0f, 100, default(Color), 2f);
                             Dust expr_CDB_cp_0 = Main.dust[num31];
                             expr_CDB_cp_0.position.X = expr_CDB_cp_0.position.X + (float)Main.rand.Next(-5, 6);
                             Dust expr_D02_cp_0 = Main.dust[num31];
                             expr_D02_cp_0.position.Y = expr_D02_cp_0.position.Y + (float)Main.rand.Next(-5, 6);
                             Main.dust[num31].velocity *= 0.2f;
                             Main.dust[num31].scale *= 1f + (float)Main.rand.Next(20) * 0.01f;
-                            Main.dust[num31].shader = GameShaders.Armor.GetSecondaryShader(cShoe, player);
+                            Main.dust[num31].shader = GameShaders.Armor.GetSecondaryShader(cShoe, Player);
                         }
-                        int num33 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 34f), default(Vector2), Main.rand.Next(61, 64));
+                        int num33 = Gore.NewGore(new Vector2(Player.position.X + (float)(Player.width / 2) - 24f, Player.position.Y + (float)(Player.height / 2) - 34f), default(Vector2), Main.rand.Next(61, 64));
                         Main.gore[num33].velocity.X = (float)Main.rand.Next(-50, 51) * 0.01f;
                         Main.gore[num33].velocity.Y = (float)Main.rand.Next(-50, 51) * 0.01f;
                         Main.gore[num33].velocity *= 0.4f;
-                        num33 = Gore.NewGore(new Vector2(player.position.X + (float)(player.width / 2) - 24f, player.position.Y + (float)(player.height / 2) - 14f), default(Vector2), Main.rand.Next(61, 64));
+                        num33 = Gore.NewGore(new Vector2(Player.position.X + (float)(Player.width / 2) - 24f, Player.position.Y + (float)(Player.height / 2) - 14f), default(Vector2), Main.rand.Next(61, 64));
                         Main.gore[num33].velocity.X = (float)Main.rand.Next(-50, 51) * 0.01f;
                         Main.gore[num33].velocity.Y = (float)Main.rand.Next(-50, 51) * 0.01f;
                         Main.gore[num33].velocity *= 0.4f;

@@ -20,7 +20,7 @@ namespace OvermorrowMod.Quests.ModQuests
         {
             Requirements = new[]
             {
-                new TravelRequirement(new Vector2(Main.spawnTileX, Main.spawnTileY) * 16, "Main Spawn")
+                new TravelRequirement(() => new Vector2(Main.spawnTileX, Main.spawnTileY), "Main Spawn")
             };
             Rewards = new[]
             {

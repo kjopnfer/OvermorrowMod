@@ -1,10 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Core;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -28,7 +29,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
 
         public Color ProjectileColor = new Color(54, 255, 64);
         public override string Texture => AssetDirectory.Empty;
-        public override bool CanDamage() => Converge ? true : false;
+        public override bool? CanDamage() => Converge;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Spirit Blades");
@@ -36,56 +37,56 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 24;
-            projectile.height = 24;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = 1;
-            projectile.tileCollide = false;
-            projectile.alpha = 255;
-            projectile.ignoreWater = true;
-            projectile.timeLeft = 180;
+            Projectile.width = 24;
+            Projectile.height = 24;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = 1;
+            Projectile.tileCollide = false;
+            Projectile.alpha = 255;
+            Projectile.ignoreWater = true;
+            Projectile.timeLeft = 180;
         }
 
         public override void AI()
         {
             if (RunOnce)
             {
-                StartingRotation = projectile.ai[0];
-                Radius = projectile.ai[1];
+                StartingRotation = Projectile.ai[0];
+                Radius = Projectile.ai[1];
 
-                projectile.ai[0] = 0;
-                projectile.ai[1] = 0;
+                Projectile.ai[0] = 0;
+                Projectile.ai[1] = 0;
 
                 RunOnce = false;
             }
 
             #region Dust Code
-            if (projectile.ai[1] == 0)
+            if (Projectile.ai[1] == 0)
             {
-                Main.PlaySound(SoundID.Item25, projectile.Center);
+                SoundEngine.PlaySound(SoundID.Item25, Projectile.Center);
 
-                Vector2 vector23 = projectile.Center + Vector2.One * -20f;
+                Vector2 vector23 = Projectile.Center + Vector2.One * -20f;
                 int num137 = 40;
                 int num138 = num137;
                 for (int num139 = 0; num139 < 4; num139++)
                 {
                     int num140 = Dust.NewDust(vector23, num137, num138, 89, 0f, 0f, 100, default(Color), 0.25f);
-                    Main.dust[num140].position = projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
+                    Main.dust[num140].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
                 }
 
                 for (int num141 = 0; num141 < 10; num141++)
                 {
                     int num142 = Dust.NewDust(vector23, num137, num138, 107, 0f, 0f, 200, default(Color), 0.7f);
-                    Main.dust[num142].position = projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
+                    Main.dust[num142].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
                     Main.dust[num142].noGravity = true;
                     Main.dust[num142].noLight = true;
                     Dust dust = Main.dust[num142];
                     dust.velocity *= 3f;
                     dust = Main.dust[num142];
-                    dust.velocity += projectile.DirectionTo(Main.dust[num142].position) * (2f + Main.rand.NextFloat() * 4f);
+                    dust.velocity += Projectile.DirectionTo(Main.dust[num142].position) * (2f + Main.rand.NextFloat() * 4f);
                     num142 = Dust.NewDust(vector23, num137, num138, 107, 0f, 0f, 100, default(Color), 0.25f);
-                    Main.dust[num142].position = projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
+                    Main.dust[num142].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * num137 / 2f;
                     dust = Main.dust[num142];
                     dust.velocity *= 2f;
                     Main.dust[num142].noGravity = true;
@@ -93,45 +94,45 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
                     Main.dust[num142].color = Color.Crimson * 0.5f;
                     Main.dust[num142].noLight = true;
                     dust = Main.dust[num142];
-                    dust.velocity += projectile.DirectionTo(Main.dust[num142].position) * 8f;
+                    dust.velocity += Projectile.DirectionTo(Main.dust[num142].position) * 8f;
                 }
 
                 for (int num143 = 0; num143 < 10; num143++)
                 {
                     int num144 = Dust.NewDust(vector23, num137, num138, 107, 0f, 0f, 0, default(Color), 0.7f);
-                    Main.dust[num144].position = projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy(projectile.velocity.ToRotation()) * num137 / 2f;
+                    Main.dust[num144].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy(Projectile.velocity.ToRotation()) * num137 / 2f;
                     Main.dust[num144].noGravity = true;
                     Main.dust[num144].noLight = true;
                     Dust dust = Main.dust[num144];
                     dust.velocity *= 3f;
                     dust = Main.dust[num144];
-                    dust.velocity += projectile.DirectionTo(Main.dust[num144].position) * 2f;
+                    dust.velocity += Projectile.DirectionTo(Main.dust[num144].position) * 2f;
                 }
 
                 for (int num145 = 0; num145 < 50; num145++)
                 {
                     int num146 = Dust.NewDust(vector23, num137, num138, 89, 0f, 0f, 0, default(Color), 0.25f);
-                    Main.dust[num146].position = projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy(projectile.velocity.ToRotation()) * num137 / 2f;
+                    Main.dust[num146].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy(Projectile.velocity.ToRotation()) * num137 / 2f;
                     Main.dust[num146].noGravity = true;
                     Dust dust = Main.dust[num146];
                     dust.velocity *= 3f;
                     dust = Main.dust[num146];
-                    dust.velocity += projectile.DirectionTo(Main.dust[num146].position) * 3f;
+                    dust.velocity += Projectile.DirectionTo(Main.dust[num146].position) * 3f;
                 }
             }
             #endregion
 
             if (!RotationCenter.active)
             {
-                projectile.Kill();
+                Projectile.Kill();
             }
 
-            if (projectile.timeLeft > 80)
+            if (Projectile.timeLeft > 80)
             {
-                projectile.rotation = projectile.DirectionTo(RotationCenter.Center).ToRotation();
+                Projectile.rotation = Projectile.DirectionTo(RotationCenter.Center).ToRotation();
 
-                double RotationCounter = MathHelper.Lerp(StartingRotation, StartingRotation + (MathHelper.TwoPi + MathHelper.ToRadians(RandomOffset)), Utils.Clamp(projectile.ai[0]++, 0, 100f) / (100f));
-                projectile.Center = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(RotationCounter);
+                double RotationCounter = MathHelper.Lerp(StartingRotation, StartingRotation + (MathHelper.TwoPi + MathHelper.ToRadians(RandomOffset)), Utils.Clamp(Projectile.ai[0]++, 0, 100f) / (100f));
+                Projectile.Center = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(RotationCounter);
                 OldPosition = RotationCenter.Center;
             }
             else
@@ -139,47 +140,47 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
                 Ready = true;
                 if (!Converge)
                 {
-                    projectile.rotation = projectile.DirectionTo(RotationCenter.Center).ToRotation();
+                    Projectile.rotation = Projectile.DirectionTo(RotationCenter.Center).ToRotation();
 
-                    double RotationCounter = MathHelper.Lerp(StartingRotation, StartingRotation + (MathHelper.TwoPi + MathHelper.ToRadians(RandomOffset)), Utils.Clamp(projectile.ai[0]++, 0, 100f) / (100f));
-                    projectile.Center = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(RotationCounter);
+                    double RotationCounter = MathHelper.Lerp(StartingRotation, StartingRotation + (MathHelper.TwoPi + MathHelper.ToRadians(RandomOffset)), Utils.Clamp(Projectile.ai[0]++, 0, 100f) / (100f));
+                    Projectile.Center = RotationCenter.Center + new Vector2(Radius, 0).RotatedBy(RotationCounter);
                     OldPosition = RotationCenter.Center;
 
-                    projectile.timeLeft = 80;
+                    Projectile.timeLeft = 80;
                 }
                 else
                 {
-                    projectile.extraUpdates = 10;
+                    Projectile.extraUpdates = 10;
 
-                    if (projectile.timeLeft == 55)
+                    if (Projectile.timeLeft == 55)
                     {
-                        Main.PlaySound(SoundID.DD2_PhantomPhoenixShot, projectile.Center);
-                        projectile.velocity = Vector2.Normalize(OldPosition - projectile.Center) * 12;
+                        SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, Projectile.Center);
+                        Projectile.velocity = Vector2.Normalize(OldPosition - Projectile.Center) * 12;
                     }
                 }
             }
 
-            projectile.ai[1]++;
-            projectile.localAI[0]++;
+            Projectile.ai[1]++;
+            Projectile.localAI[0]++;
         }
 
         public override bool? CanCutTiles() => false;
 
-        public override void PostDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.GetTexture("Terraria/Projectile_644");
+            Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_644").Value;
             Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
 
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor * 0.5f, projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.4f, 2f), SpriteEffects.None, 0);
-            spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor * 0.5f, projectile.rotation, drawOrigin, new Vector2(0.4f, 1f), SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor * 0.5f, Projectile.rotation + MathHelper.PiOver2, drawOrigin, new Vector2(0.4f, 2f), SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Rectangle?(rect), ProjectileColor * 0.5f, Projectile.rotation, drawOrigin, new Vector2(0.4f, 1f), SpriteEffects.None, 0);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D SoulTexture = ModContent.GetTexture("Terraria/Extra_89");
+            Texture2D SoulTexture = ModContent.Request<Texture2D>("Terraria/Images/Extra_89").Value;
 
-            Main.spriteBatch.Draw(SoulTexture, projectile.Center - Main.screenPosition, null, ProjectileColor, projectile.rotation + MathHelper.PiOver2, SoulTexture.Size() / 2, new Vector2(0.5f, 1), SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(SoulTexture, Projectile.Center - Main.screenPosition, null, ProjectileColor, Projectile.rotation + MathHelper.PiOver2, SoulTexture.Size() / 2, new Vector2(0.5f, 1), SpriteEffects.None, 0f);
 
             return false;
         }
@@ -189,7 +190,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
             for (int i = 0; i < 15; i++)
             {
                 Vector2 RandomVelocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(5, 15);
-                Dust.NewDust(projectile.Center, 2, 2, DustID.TerraBlade, RandomVelocity.X, RandomVelocity.Y);
+                Dust.NewDust(Projectile.Center, 2, 2, DustID.TerraBlade, RandomVelocity.X, RandomVelocity.Y);
             }
         }
     }

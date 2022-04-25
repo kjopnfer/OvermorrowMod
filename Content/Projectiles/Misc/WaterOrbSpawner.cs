@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Core;
 using OvermorrowMod.Content.Items.Consumable;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,26 +19,26 @@ namespace OvermorrowMod.Content.Projectiles.Misc
 
         public override void SetDefaults()
         {
-            projectile.width = 16;
-            projectile.height = 16;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 120;
-            projectile.alpha = 255;
-            projectile.tileCollide = false;
+            Projectile.width = 16;
+            Projectile.height = 16;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 120;
+            Projectile.alpha = 255;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
 
-            if (projectile.ai[0] % 8 == 0)
+            if (Projectile.ai[0] % 8 == 0)
             {
                 radius--;
             }
 
-            Vector2 origin = projectile.Center;
+            Vector2 origin = Projectile.Center;
             int numLocations = 30;
             for (int i = 0; i < 30; i++)
             {
@@ -51,7 +51,7 @@ namespace OvermorrowMod.Content.Projectiles.Misc
 
         public override void Kill(int timeLeft)
         {
-            int item = Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, ModContent.ItemType<WaterOrb>());
+            int item = Item.NewItem(Projectile.GetItemSource_DropAsItem(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<WaterOrb>());
 
             if (Main.netMode != NetmodeID.SinglePlayer)
                 NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item);

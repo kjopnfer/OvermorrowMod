@@ -12,43 +12,41 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WaterStaff
         {
             DisplayName.SetDefault("Lacusite Staff");
             Tooltip.SetDefault("'If you can't handle me at my worst, obey your thirst'");
-            Item.staff[item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.rare = ItemRarityID.Blue;
-            item.mana = 9;
-            item.UseSound = SoundID.Item21;
-            item.noMelee = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            item.damage = 16;
-            item.useTurn = false;
-            item.useAnimation = 16;
-            item.useTime = 16;
-            item.width = 50;
-            item.height = 56;
-            item.shoot = ModContent.ProjectileType<WaterStaffProj>();
-            item.shootSpeed = 8f;
-            item.knockBack = 3f;
-            item.magic = true;
-            item.value = Item.sellPrice(gold: 1, silver: 75);
+            Item.autoReuse = true;
+            Item.rare = ItemRarityID.Blue;
+            Item.mana = 9;
+            Item.UseSound = SoundID.Item21;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.damage = 16;
+            Item.useTurn = false;
+            Item.useAnimation = 16;
+            Item.useTime = 16;
+            Item.width = 50;
+            Item.height = 56;
+            Item.shoot = ModContent.ProjectileType<WaterStaffProj>();
+            Item.shootSpeed = 8f;
+            Item.knockBack = 3f;
+            Item.DamageType = DamageClass.Magic;
+            Item.value = Item.sellPrice(gold: 1, silver: 75);
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            Vector2 perturbedSpeed = new Vector2(speedX, speedY).RotatedByRandom(MathHelper.ToRadians(30));
-            speedX = perturbedSpeed.X;
-            speedY = perturbedSpeed.Y;
-            return true;
+            Vector2 perturbedSpeed = velocity.RotatedByRandom(MathHelper.ToRadians(30));
+            velocity = perturbedSpeed;
         }
+
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<WaterBar>(), 7);
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient<WaterBar>(7)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

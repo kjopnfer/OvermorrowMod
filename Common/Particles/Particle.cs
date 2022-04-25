@@ -1,9 +1,9 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod.Common.Particles
 {
@@ -50,7 +50,7 @@ namespace OvermorrowMod.Common.Particles
                 CustomParticle particle = (CustomParticle)Activator.CreateInstance(type);
                 particle.mod = OvermorrowModFile.Instance;
                 CustomParticle.CustomParticles.Add(id, particle);
-                Texture2D texture = particle.Texture == null ? ModContent.GetTexture(type.FullName.Replace('.', '/')) : ModContent.GetTexture(particle.Texture);
+                var texture = ModContent.Request<Texture2D>(particle.Texture ?? type.FullName.Replace('.', '/')).Value;
                 ParticleTextures.Add(id, texture);
                 ParticleNames.Add(id, type.Name);
             }

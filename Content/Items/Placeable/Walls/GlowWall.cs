@@ -14,31 +14,24 @@ namespace OvermorrowMod.Content.Items.Placeable.Walls
 
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 22;
-            item.maxStack = 999;
-            item.useTurn = true;
-            item.autoReuse = true;
-            item.useAnimation = 15;
-            item.useTime = 10;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.consumable = true;
-            item.createWall = ModContent.WallType<GlowWallWall>();
+            Item.width = 24;
+            Item.height = 22;
+            Item.maxStack = 999;
+            Item.useTurn = true;
+            Item.autoReuse = true;
+            Item.useAnimation = 15;
+            Item.useTime = 10;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.consumable = true;
+            Item.createWall = ModContent.WallType<GlowWallWall>();
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<GlowBlock>());
-            recipe.AddTile(TileID.WorkBenches);
-            recipe.SetResult(this, 4);
-            recipe.AddRecipe();
-
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(this, 4);
-            recipe1.AddTile(TileID.WorkBenches);
-            recipe1.SetResult(ModContent.ItemType<GlowBlock>());
-            recipe1.AddRecipe();
+            CreateRecipe(4)
+                .AddIngredient<GlowBlock>()
+                .AddTile(TileID.WorkBenches)
+                .Register();
         }
     }
 }

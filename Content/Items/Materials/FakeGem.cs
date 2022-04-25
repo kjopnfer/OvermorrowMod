@@ -22,15 +22,15 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 28;
-            item.rare = ItemRarityID.Red;
-            item.maxStack = 999;
-            item.useTurn = true;
-            item.autoReuse = true;
-            item.useAnimation = 15;
-            item.useTime = 10;
-            item.useStyle = ItemUseStyleID.SwingThrow;
+            Item.width = 24;
+            Item.height = 28;
+            Item.rare = ItemRarityID.Red;
+            Item.maxStack = 999;
+            Item.useTurn = true;
+            Item.autoReuse = true;
+            Item.useAnimation = 15;
+            Item.useTime = 10;
+            Item.useStyle = ItemUseStyleID.Swing;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -61,14 +61,14 @@ namespace OvermorrowMod.Content.Items.Materials
             if (line.Name == "ItemName")
             {
                 spriteBatch.Reload(SpriteSortMode.Immediate);
-                Effect fx = OvermorrowModFile.Instance.TextShader;
-                Main.graphics.GraphicsDevice.Textures[0] = mod.GetTexture("Assets/Textures/Perlin");
+                Effect fx = OvermorrowModFile.Instance.TextShader.Value;
+                Main.graphics.GraphicsDevice.Textures[0] = ModContent.Request<Texture2D>("OvermorrowMod/Assets/Textures/Perlin").Value;
                 fx.Parameters["uColor0"].SetValue(Color.DarkRed.ToVector3());
                 //fx.Parameters["uColor1"].SetValue(Color.Black.ToVector3());
                 //fx.Parameters["uColor0"].SetValue(new Color(140, 48, 85).ToVector3());
                 //fx.Parameters["uColor1"].SetValue(new Color(176, 48, 62).ToVector3());
                 fx.Parameters["uColor1"].SetValue(Color.Purple.ToVector3());
-                fx.SafeSetParameter("uTime", Main.GlobalTime);
+                fx.SafeSetParameter("uTime", Main.GlobalTimeWrappedHourly);
                 //fx.CurrentTechnique.Passes["Noise"].Apply();
                 fx.CurrentTechnique.Passes[2].Apply();
 
@@ -92,14 +92,14 @@ namespace OvermorrowMod.Content.Items.Materials
 
             glowCounter++;
 
-            Texture2D texture = ModContent.GetTexture(AssetDirectory.Textures + "Glow");
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Glow").Value;
             Rectangle rect = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            spriteBatch.Draw(texture, item.Center - Main.screenPosition, new Rectangle?(rect), glowColor, rotation, drawOrigin, glowScale, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, Item.Center - Main.screenPosition, new Rectangle?(rect), glowColor, rotation, drawOrigin, glowScale, SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -110,7 +110,7 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void PostUpdate()
         {
-            Lighting.AddLight(item.Center, 1f, 0f, 0f);
+            Lighting.AddLight(Item.Center, 1f, 0f, 0f);
         }
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 
@@ -12,7 +13,7 @@ namespace OvermorrowMod.Content.UI
     {
         internal string HoverText;
 
-        public HoverImageButton(Texture2D texture, string hoverText) : base(texture)
+        public HoverImageButton(Asset<Texture2D> texture, string hoverText) : base(texture)
         {
             HoverText = hoverText;
         }

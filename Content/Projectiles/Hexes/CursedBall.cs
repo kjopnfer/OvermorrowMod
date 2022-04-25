@@ -1,6 +1,4 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Common.Primitives;
-using OvermorrowMod.Common.Primitives.Trails;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -10,7 +8,7 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
 {
     public class CursedBall : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.CursedFlameFriendly;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.CursedFlameFriendly;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Cursed Fireball");
@@ -18,21 +16,21 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
 
         public override void SetDefaults()
         {
-            projectile.width = 16;
-            projectile.height = 16;
-            projectile.friendly = true;
-            projectile.hostile = false;
-            projectile.penetrate = 1;
-            projectile.timeLeft = 600;
-            projectile.tileCollide = false;
+            Projectile.width = 16;
+            Projectile.height = 16;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+            Projectile.penetrate = 1;
+            Projectile.timeLeft = 600;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
-            projectile.spriteDirection = projectile.direction;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+            Projectile.spriteDirection = Projectile.direction;
 
-            if (projectile.ai[0] > 60)
+            if (Projectile.ai[0] > 60)
             {
                 Vector2 move = Vector2.Zero;
                 float distance = 1000f;
@@ -41,7 +39,7 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
                 {
                     if (Main.npc[k].CanBeChasedBy(this))
                     {
-                        Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                        Vector2 newMove = Main.npc[k].Center - Projectile.Center;
                         float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
                         if (distanceTo < distance)
                         {
@@ -55,32 +53,32 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
                 if (target)
                 {
                     AdjustMagnitude(ref move);
-                    projectile.velocity = (20 * projectile.velocity + move) / 11f;
-                    AdjustMagnitude(ref projectile.velocity);
+                    Projectile.velocity = (20 * Projectile.velocity + move) / 11f;
+                    AdjustMagnitude(ref Projectile.velocity);
                 }
             }
 
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
 
-            int num98 = Dust.NewDust(new Vector2(projectile.position.X + projectile.velocity.X, projectile.position.Y + projectile.velocity.Y), projectile.width, projectile.height, DustID.CursedTorch, projectile.velocity.X, projectile.velocity.Y, 100, default(Color), 2f * projectile.scale);
+            int num98 = Dust.NewDust(new Vector2(Projectile.position.X + Projectile.velocity.X, Projectile.position.Y + Projectile.velocity.Y), Projectile.width, Projectile.height, DustID.CursedTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, default(Color), 2f * Projectile.scale);
             Main.dust[num98].noGravity = true;
 
-            projectile.localAI[0]++;
-            if (projectile.localAI[0] % 15 == 0)
+            Projectile.localAI[0]++;
+            if (Projectile.localAI[0] % 15 == 0)
             {
                 DelegateMethods.v3_1 = new Vector3(0.6f, 1f, 1f) * 0.2f;
-                Utils.PlotTileLine(projectile.Center, projectile.Center + projectile.velocity * 10f, 8f, DelegateMethods.CastLightOpen);
+                Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * 10f, 8f, DelegateMethods.CastLightOpen);
                 float num108 = 16f;
                 for (int num109 = 0; (float)num109 < num108; num109++)
                 {
                     Vector2 spinningpoint5 = Vector2.UnitX * 0f;
                     spinningpoint5 += -Vector2.UnitY.RotatedBy((float)num109 * ((float)Math.PI * 2f / num108)) * new Vector2(1f, 4f);
-                    spinningpoint5 = spinningpoint5.RotatedBy(projectile.velocity.ToRotation());
-                    int num110 = Dust.NewDust(projectile.Center, 0, 0, DustID.CursedTorch);
+                    spinningpoint5 = spinningpoint5.RotatedBy(Projectile.velocity.ToRotation());
+                    int num110 = Dust.NewDust(Projectile.Center, 0, 0, DustID.CursedTorch);
                     Main.dust[num110].scale = 1.5f;
                     Main.dust[num110].noGravity = true;
-                    Main.dust[num110].position = projectile.Center + spinningpoint5;
-                    Main.dust[num110].velocity = projectile.velocity * 0f + spinningpoint5.SafeNormalize(Vector2.UnitY) * 1f;
+                    Main.dust[num110].position = Projectile.Center + spinningpoint5;
+                    Main.dust[num110].velocity = Projectile.velocity * 0f + spinningpoint5.SafeNormalize(Vector2.UnitY) * 1f;
                 }
             }
 
@@ -96,9 +94,9 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
             }
         }
 
-        public override bool CanDamage()
+        public override bool? CanDamage()
         {
-            if (projectile.ai[0] < 60)
+            if (Projectile.ai[0] < 60)
             {
                 return false;
             }
@@ -115,7 +113,7 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
 
         public override void Kill(int timeLeft)
         {
-            Vector2 origin = projectile.Center;
+            Vector2 origin = Projectile.Center;
             float radius = 15;
             int numLocations = 30;
             for (int i = 0; i < 30; i++)

@@ -18,12 +18,12 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            item.width = 24;
-            item.height = 28;
-            item.value = 12500;
-            item.rare = ItemRarityID.Green;
-            item.accessory = true;
-            item.defense = 3;
+            Item.width = 24;
+            Item.height = 28;
+            Item.value = 12500;
+            Item.rare = ItemRarityID.Green;
+            Item.accessory = true;
+            Item.defense = 3;
         }
 
         // how much damage is stored each time
@@ -37,9 +37,9 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             // Creating beams of light
-            if (player.HeldItem.magic && player.itemAnimation > 0 && player.itemAnimation % 7 == 0)
+            if (player.HeldItem.CountsAsClass(DamageClass.Magic) && player.itemAnimation > 0 && player.itemAnimation % 7 == 0)
             {
-                Projectile.NewProjectile(player.Center, new Vector2(0), ModContent.ProjectileType<StoredDamage>(), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
+                Projectile.NewProjectile(player.GetProjectileSource_Accessory(Item), player.Center, new Vector2(0), ModContent.ProjectileType<StoredDamage>(), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
 
                 if (player.GetModPlayer<OvermorrowModPlayer>().storedDamage < damageCap)
                 {

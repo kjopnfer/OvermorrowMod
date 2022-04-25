@@ -17,16 +17,16 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
 
         public override void SetDefaults()
         {
-            item.width = 38;
-            item.height = 38;
-            item.rare = ItemRarityID.Green;
-            item.useAnimation = 45;
-            item.useTime = 45;
-            item.useStyle = ItemUseStyleID.HoldingUp;
-            item.maxStack = 20;
-            item.noMelee = true;
-            item.consumable = true;
-            item.autoReuse = false;
+            Item.width = 38;
+            Item.height = 38;
+            Item.rare = ItemRarityID.Green;
+            Item.useAnimation = 45;
+            Item.useTime = 45;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.maxStack = 20;
+            Item.noMelee = true;
+            Item.consumable = true;
+            Item.autoReuse = false;
         }
 
         public override bool CanUseItem(Player player)
@@ -35,11 +35,11 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
             return !NPC.AnyNPCs(ModContent.NPCType</*StormDrake*/StormDrake>()) && player.ZoneSkyHeight;
         }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)
         {
             if (player.ZoneSkyHeight)
             {
-                Projectile.NewProjectile(player.Center + Vector2.UnitY * -75, Vector2.Zero, ModContent.ProjectileType<StormDrakeAnim>(), 0, 0, Main.myPlayer, 0, 900);
+                Projectile.NewProjectile(null, player.Center + Vector2.UnitY * -75, Vector2.Zero, ModContent.ProjectileType<StormDrakeAnim>(), 0, 0, Main.myPlayer, 0, 900);
                 return true;
             }
             return false;
@@ -47,11 +47,10 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ModContent.ItemType<HarpyLeg>(), 4);
-            recipe.AddTile(TileID.DemonAltar);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient<HarpyLeg>(4)
+                .AddTile(TileID.DemonAltar)
+                .Register();
         }
     }
 }

@@ -16,18 +16,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
 
         public override void SetDefaults()
         {
-            projectile.width = 20;
-            projectile.height = 20;
-            projectile.friendly = true;
-            projectile.tileCollide = true;
+            Projectile.width = 20;
+            Projectile.height = 20;
+            Projectile.friendly = true;
+            Projectile.tileCollide = true;
         }
 
         public override void AI()
         {
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
 
             float distanceFromTarget = 130f;
-            Vector2 targetCenter = projectile.Center;
+            Vector2 targetCenter = Projectile.Center;
             bool foundTarget = false;
             if (!foundTarget)
             {
@@ -37,14 +37,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
                     NPC target = Main.npc[i];
                     if (target.CanBeChasedBy())
                     {
-                        float between = Vector2.Distance(target.Center, projectile.Center);
-                        bool closest = Vector2.Distance(projectile.Center, targetCenter) > between;
+                        float between = Vector2.Distance(target.Center, Projectile.Center);
+                        bool closest = Vector2.Distance(Projectile.Center, targetCenter) > between;
                         bool inRange = between < distanceFromTarget;
 
-                        if (between < 21 && projectile.ai[0] > 0)
+                        if (between < 21 && Projectile.ai[0] > 0)
                         {
-                            target.StrikeNPC(projectile.damage, 1, 0);
-                            projectile.ai[0] = -25;
+                            target.StrikeNPC(Projectile.damage, 1, 0);
+                            Projectile.ai[0] = -25;
                         }
 
                         if (((closest && inRange) || !foundTarget))
@@ -61,52 +61,52 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
 
             if (foundTarget)
             {
-                projectile.rotation = projectile.velocity.X * 0.03f;
+                Projectile.rotation = Projectile.velocity.X * 0.03f;
 
-                if (NPCtargetX > projectile.Center.X)
+                if (NPCtargetX > Projectile.Center.X)
                 {
-                    projectile.velocity.X += 0.5f;
+                    Projectile.velocity.X += 0.5f;
                 }
 
-                if (NPCtargetX < projectile.Center.X)
+                if (NPCtargetX < Projectile.Center.X)
                 {
-                    projectile.velocity.X -= 0.5f;
+                    Projectile.velocity.X -= 0.5f;
                 }
 
-                if (NPCtargetY > projectile.Center.Y)
+                if (NPCtargetY > Projectile.Center.Y)
                 {
-                    projectile.velocity.Y += 0.5f;
+                    Projectile.velocity.Y += 0.5f;
                 }
-                if (NPCtargetY < projectile.Center.Y)
+                if (NPCtargetY < Projectile.Center.Y)
                 {
-                    projectile.velocity.Y -= 0.5f;
-                }
-
-                if (projectile.velocity.Y < -6.5f)
-                {
-                    projectile.velocity.Y = -6.5f;
+                    Projectile.velocity.Y -= 0.5f;
                 }
 
-                if (projectile.velocity.Y > 6.5f)
+                if (Projectile.velocity.Y < -6.5f)
                 {
-                    projectile.velocity.Y = 6.5f;
+                    Projectile.velocity.Y = -6.5f;
+                }
+
+                if (Projectile.velocity.Y > 6.5f)
+                {
+                    Projectile.velocity.Y = 6.5f;
                 }
 
 
-                if (projectile.velocity.X < -6.5f)
+                if (Projectile.velocity.X < -6.5f)
                 {
-                    projectile.velocity.X = -6.5f;
+                    Projectile.velocity.X = -6.5f;
                 }
 
-                if (projectile.velocity.X > 6.5f)
+                if (Projectile.velocity.X > 6.5f)
                 {
-                    projectile.velocity.X = 6.5f;
+                    Projectile.velocity.X = 6.5f;
                 }
             }
             else
             {
-                projectile.rotation = 0;
-                projectile.velocity.Y -= 0.9f;
+                Projectile.rotation = 0;
+                Projectile.velocity.Y -= 0.9f;
             }
         }
     }

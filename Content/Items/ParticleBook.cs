@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items
 {
     public class ParticleBook : ModItem
     {
-        public override string Texture => "Terraria/Item_" + ItemID.Book;
+        public override string Texture => "Terraria/Images/Item_" + ItemID.Book;
         public int currentType;
 
         public override void SetStaticDefaults()
@@ -19,16 +19,16 @@ namespace OvermorrowMod.Content.Items
 
         public override void SetDefaults()
         {
-            item.autoReuse = true;
-            item.useStyle = ItemUseStyleID.HoldingOut;
-            Item.staff[item.type] = true;
-            item.consumable = false;
-            item.useAnimation = 5;
-            item.useTime = 5;
-            item.maxStack = 1;
+            Item.autoReuse = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.staff[Item.type] = true;
+            Item.consumable = false;
+            Item.useAnimation = 5;
+            Item.useTime = 5;
+            Item.maxStack = 1;
         }
         public override bool AltFunctionUse(Player player) => true;
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)
         {
             if (player.altFunctionUse == 2)
             {
@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.Items
             {
                 Particle.CreateParticle(currentType, Main.MouseWorld, Vector2.Zero, Color.White, 1, 1, 0, 1f);
             }
-            return true;
+            return null;
         }
     }
 }

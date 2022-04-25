@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
-using OvermorrowMod.Core;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -26,49 +26,49 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lightning Ball");
-            Main.projFrames[projectile.type] = 5;
+            Main.projFrames[Projectile.type] = 5;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 38;
-            projectile.height = 38;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 265;//400;//450;
-            projectile.tileCollide = false;
+            Projectile.width = 38;
+            Projectile.height = 38;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 265;//400;//450;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            if (projectile.ai[0] == 0)
+            if (Projectile.ai[0] == 0)
             {
-                center = projectile.Center;
+                center = Projectile.Center;
             }
 
-            Lighting.AddLight(projectile.Center, 0, 0.5f, 0.5f);
-            int num434 = Dust.NewDust(projectile.Center, 0, 0, DustID.Vortex, 0f, 0f, 100);
+            Lighting.AddLight(Projectile.Center, 0, 0.5f, 0.5f);
+            int num434 = Dust.NewDust(Projectile.Center, 0, 0, DustID.Vortex, 0f, 0f, 100);
             Main.dust[num434].noLight = true;
             Main.dust[num434].noGravity = true;
-            Main.dust[num434].velocity = projectile.velocity;
+            Main.dust[num434].velocity = Projectile.velocity;
             Main.dust[num434].position -= Vector2.One * 4f;
             Main.dust[num434].scale = 0.8f;
 
-            if (++projectile.frameCounter >= 5)
+            if (++Projectile.frameCounter >= 5)
             {
-                projectile.frameCounter = 0;
-                if (++projectile.frame >= Main.projFrames[projectile.type])
+                Projectile.frameCounter = 0;
+                if (++Projectile.frame >= Main.projFrames[Projectile.type])
                 {
-                    projectile.frame = 0;
+                    Projectile.frame = 0;
                 }
             }
 
-            projectile.position = center + new Vector2(projectile.ai[0], 0).RotatedBy(MathHelper.ToRadians(projectile.ai[1] * direction));
-            projectile.position -= new Vector2(projectile.width / 2, projectile.height / 2);
+            Projectile.position = center + new Vector2(Projectile.ai[0], 0).RotatedBy(MathHelper.ToRadians(Projectile.ai[1] * direction));
+            Projectile.position -= new Vector2(Projectile.width / 2, Projectile.height / 2);
 
-            projectile.ai[0] += 6.5f * Multiplier;//3;//2.5f;//2;//1;
-            projectile.ai[1] += 1.125f * Multiplier;//1.25f;//1.5f;//2;//1;
+            Projectile.ai[0] += 6.5f * Multiplier;//3;//2.5f;//2;//1;
+            Projectile.ai[1] += 1.125f * Multiplier;//1.25f;//1.5f;//2;//1;
         }
 
         public override Color? GetAlpha(Color lightColor)

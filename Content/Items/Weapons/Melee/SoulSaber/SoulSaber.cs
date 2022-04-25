@@ -1,8 +1,9 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Items.Materials;
+using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Content.Items.Materials;
-using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
 {
@@ -19,29 +20,29 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
 
         public override void SetDefaults()
         {
-            item.width = 32;
-            item.height = 32;
-            item.damage = 32;
-            item.melee = true;
-            item.noMelee = true;
-            item.useTime = 12;
-            item.useAnimation = 12;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.autoReuse = true;
-            item.knockBack = 0;
-            item.shoot = ModContent.ProjectileType<SoulSpin>();
-            item.shootSpeed = 11f;
-            item.channel = true;
-            item.noUseGraphic = true;
-            item.rare = ItemRarityID.Green;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 32;
+            Item.DamageType = DamageClass.Melee;
+            Item.noMelee = true;
+            Item.useTime = 12;
+            Item.useAnimation = 12;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.autoReuse = true;
+            Item.knockBack = 0;
+            Item.shoot = ModContent.ProjectileType<SoulSpin>();
+            Item.shootSpeed = 11f;
+            Item.channel = true;
+            Item.noUseGraphic = true;
+            Item.rare = ItemRarityID.Green;
 
         }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.ownedProjectileCounts[type] < 2)
             {
-                Projectile.NewProjectile(player.Center, Vector2.Zero, type, damage, knockBack, player.whoAmI, 0f, 1);
+                Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 1);
             }
 
             return false;
@@ -49,12 +50,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
 
         public override void AddRecipes() //prolly needs a change
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.Bone, 35);
-            recipe.AddIngredient(ModContent.ItemType<SoulFire>(), 1); //idk how this is obtained so...
-            recipe.AddTile(TileID.Anvils);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.Bone, 35)
+                .AddIngredient<SoulFire>()
+                .AddTile(TileID.Anvils)
+                .Register();
         }
     }
 }

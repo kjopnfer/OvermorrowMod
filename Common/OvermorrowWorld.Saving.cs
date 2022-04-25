@@ -1,22 +1,10 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper;
-using OvermorrowMod.Content.Tiles;
-using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
-using OvermorrowMod.Content.Tiles.TrapOre;
+using OvermorrowMod.Content.NPCs.Shades;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Terraria;
-using Terraria.GameContent.Generation;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.World.Generation;
-using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
-using OvermorrowMod.Content.Tiles.DesertTemple;
-using OvermorrowMod.Content.Tiles.Ores;
-using OvermorrowMod.Content.NPCs.Shades;
 
 namespace OvermorrowMod.Common
 {
@@ -38,7 +26,7 @@ namespace OvermorrowMod.Common
         }
     }*/
 
-    public partial class OvermorrowWorld : ModWorld
+    public partial class OvermorrowWorld : ModSystem
     {
         // Bosses
         public static bool downedDarude;
@@ -52,7 +40,7 @@ namespace OvermorrowMod.Common
         public static List<int> SavedShades = new List<int>();
         public static List<Vector2> ShadePositions = new List<Vector2>();
 
-        public override void Initialize()
+        public override void OnWorldLoad()
         {
             #region Boss Downed Flags
             downedTree = false;
@@ -66,11 +54,11 @@ namespace OvermorrowMod.Common
             for (int i = 0; i < SavedShades.Count; i++)
             {
                 Vector2 SpawnPosition = ShadePositions[i];
-                NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, SavedShades[i]);
+                NPC.NewNPC(NPC.GetSpawnSourceForNaturalSpawn(), (int)SpawnPosition.X, (int)SpawnPosition.Y, SavedShades[i]);
             }
         }
 
-        public override TagCompound Save()
+        public override void SaveWorldData(TagCompound tag)
         {
             #region Boss Downed Flags
             var downed = new List<string>();
@@ -103,7 +91,7 @@ namespace OvermorrowMod.Common
             // Save active NPCs and their current positions into the list
             foreach (NPC npc in Main.npc)
             {
-                if (npc.active && npc != null && npc.modNPC is ShadeOrb)
+                if (npc.active && npc != null && npc.ModNPC is ShadeOrb)
                 {
                     SavedShades.Add(npc.type);
                     ShadePositions.Add(npc.position);
@@ -111,16 +99,14 @@ namespace OvermorrowMod.Common
             }
             #endregion
 
-            return new TagCompound
-            {
-                ["downed"] = downed,
-                ["SavedShades"] = SavedShades,
-                ["ShadePositions"] = ShadePositions
-            };
+            tag["downed"] = downed;
+            tag["SavedShades"] = SavedShades;
+            tag["ShadePositions"] = ShadePositions;
 
+            base.SaveWorldData(tag);
         }
 
-        public override void Load(TagCompound tag)
+        public override void LoadWorldData(TagCompound tag)
         {
             #region Boss Downed Flags
             var downed = tag.GetList<string>("downed");
@@ -132,23 +118,6 @@ namespace OvermorrowMod.Common
 
             SavedShades = tag.Get<List<int>>("SavedShades");
             ShadePositions = tag.Get<List<Vector2>>("ShadePositions");
-        }
-
-        public override void LoadLegacy(BinaryReader reader)
-        {
-            int loadVersion = reader.ReadInt32();
-            if (loadVersion == 0)
-            {
-                BitsByte flags = reader.ReadByte();
-                downedTree = flags[0];
-                downedDarude = flags[1];
-                downedDrippler = flags[2];
-                downedDrake = flags[3];
-            }
-            else
-            {
-                mod.Logger.WarnFormat("Overmorrow: Unknown loadVersion: {0}", loadVersion);
-            }
         }
 
         public override void NetSend(BinaryWriter writer)

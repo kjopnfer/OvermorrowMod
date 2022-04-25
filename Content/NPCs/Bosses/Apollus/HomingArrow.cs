@@ -8,33 +8,33 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
 {
     public class HomingArrow : ModProjectile
     {
-        public override string Texture => "Terraria/Projectile_" + ProjectileID.BoneArrow;
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.BoneArrow;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Arrow");
-            ProjectileID.Sets.Homing[projectile.type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
         }
         public override void SetDefaults()
         {
-            projectile.width = 32;
-            projectile.height = 32;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.tileCollide = false;
-            projectile.penetrate = 30;
-            projectile.timeLeft = 240;
-            projectile.light = 0.75f;
-            projectile.extraUpdates = 1;
-            projectile.ignoreWater = true;
+            Projectile.width = 32;
+            Projectile.height = 32;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = 30;
+            Projectile.timeLeft = 240;
+            Projectile.light = 0.75f;
+            Projectile.extraUpdates = 1;
+            Projectile.ignoreWater = true;
         }
         public override void AI()
         {
-            Player player = Main.player[projectile.owner];
-            projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + 1.57f;
-            if (projectile.localAI[0] == 0f)
+            Player player = Main.player[Projectile.owner];
+            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 1.57f;
+            if (Projectile.localAI[0] == 0f)
             {
-                AdjustMagnitude(ref projectile.velocity);
-                projectile.localAI[0] = 1f;
+                AdjustMagnitude(ref Projectile.velocity);
+                Projectile.localAI[0] = 1f;
             }
             Vector2 move = Vector2.Zero;
             float distance = 400f;
@@ -43,7 +43,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
             {
                 if (Main.npc[k].active && !Main.npc[k].dontTakeDamage && !Main.npc[k].townNPC && Main.npc[k].friendly)
                 {
-                    Vector2 newMove = Main.npc[k].Center - projectile.Center;
+                    Vector2 newMove = Main.npc[k].Center - Projectile.Center;
                     float distanceTo = (float)Math.Sqrt(newMove.X * newMove.X + newMove.Y * newMove.Y);
                     if (distanceTo < distance)
                     {
@@ -56,8 +56,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
             if (target)
             {
                 AdjustMagnitude(ref move);
-                projectile.velocity = (10 * projectile.velocity + move) / 11f;
-                AdjustMagnitude(ref projectile.velocity);
+                Projectile.velocity = (10 * Projectile.velocity + move) / 11f;
+                AdjustMagnitude(ref Projectile.velocity);
             }
         }
         private void AdjustMagnitude(ref Vector2 vector)

@@ -15,11 +15,11 @@ namespace OvermorrowMod.Content.Items.Accessories
 
         public override void SetDefaults()
         {
-            item.width = 34;
-            item.height = 32;
-            item.value = Item.buyPrice(0, 1, 50, 0);
-            item.rare = ItemRarityID.Orange;
-            item.accessory = true;
+            Item.width = 34;
+            Item.height = 32;
+            Item.value = Item.buyPrice(0, 1, 50, 0);
+            Item.rare = ItemRarityID.Orange;
+            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -27,21 +27,18 @@ namespace OvermorrowMod.Content.Items.Accessories
             player.GetModPlayer<OvermorrowModPlayer>().PredatorTalisman = true;
 
             player.armorPenetration += 5;
-            player.magicCrit += 5;
-            player.meleeCrit += 5;
-            player.rangedCrit += 5;
-            player.thrownCrit += 5;
+            player.GetCritChance(DamageClass.Generic) += 5;
+            player.GetDamage(DamageClass.Generic) += 3;
         }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemID.SharkToothNecklace);
-            recipe.AddIngredient(ModContent.ItemType<AnglerTooth>());
-            recipe.AddIngredient(ModContent.ItemType<SerpentTooth>());
-            recipe.AddTile(TileID.TinkerersWorkbench);
-            recipe.SetResult(this, 1);
-            recipe.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.SharkToothNecklace)
+                .AddIngredient<AnglerTooth>()
+                .AddIngredient<SerpentTooth>()
+                .AddTile(TileID.TinkerersWorkbench)
+                .Register();
         }
     }
 }

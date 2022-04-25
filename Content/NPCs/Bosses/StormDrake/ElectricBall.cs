@@ -25,58 +25,58 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Lightning Ball");
-            Main.projFrames[projectile.type] = 5;
+            Main.projFrames[Projectile.type] = 5;
         }
 
         public override void SetDefaults()
         {
-            projectile.width = 38;
-            projectile.height = 38;
-            projectile.friendly = false;
-            projectile.hostile = true;
-            projectile.penetrate = -1;
-            projectile.timeLeft = 600;
-            projectile.tileCollide = false;
+            Projectile.width = 38;
+            Projectile.height = 38;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 600;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            Lighting.AddLight(projectile.Center, 0, 0.5f, 0.5f);
+            Lighting.AddLight(Projectile.Center, 0, 0.5f, 0.5f);
 
             // Parent projectile will have passed in the ID (projectile.whoAmI) for the projectile through AI fields when spawned
-            if (Main.projectile[(int)projectile.ai[0]].active && !getParent)
+            if (Main.projectile[(int)Projectile.ai[0]].active && !getParent)
             {
-                parentProjectile = Main.projectile[(int)projectile.ai[0]];
+                parentProjectile = Main.projectile[(int)Projectile.ai[0]];
                 getParent = true;
-                projectile.ai[0] = 0;
+                Projectile.ai[0] = 0;
             }
 
-            int num434 = Dust.NewDust(projectile.Center, 0, 0, DustID.Vortex, 0f, 0f, 100);
+            int num434 = Dust.NewDust(Projectile.Center, 0, 0, DustID.Vortex, 0f, 0f, 100);
             Main.dust[num434].noLight = true;
             Main.dust[num434].noGravity = true;
-            Main.dust[num434].velocity = projectile.velocity;
+            Main.dust[num434].velocity = Projectile.velocity;
             Main.dust[num434].position -= Vector2.One * 4f;
             Main.dust[num434].scale = 0.8f;
 
-            if (++projectile.frameCounter >= 5)
+            if (++Projectile.frameCounter >= 5)
             {
-                projectile.frameCounter = 0;
+                Projectile.frameCounter = 0;
                 //if (++projectile.frame >= Main.projFrames[projectile.type])
                 {
-                    projectile.frame = 0;
+                    Projectile.frame = 0;
                 }
             }
 
 
-            if (projectile.ai[0] < 180)
+            if (Projectile.ai[0] < 180)
             {
-                radius = MathHelper.Lerp(0, 250, projectile.ai[0] / 180);
+                radius = MathHelper.Lerp(0, 250, Projectile.ai[0] / 180);
             }
 
-            projectile.ai[0]++;
+            Projectile.ai[0]++;
 
             // Orbit around the parent projectile
-            DoProjectile_OrbitPosition(projectile, parentProjectile.Center, radius);
+            DoProjectile_OrbitPosition(Projectile, parentProjectile.Center, radius);
         }
 
         public void DoProjectile_OrbitPosition(Projectile modProjectile, Vector2 position, double distance, double speed = 1.75)

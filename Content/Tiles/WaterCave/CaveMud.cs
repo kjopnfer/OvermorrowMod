@@ -8,14 +8,14 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
 {
     public class CaveMud : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = false;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            drop = ModContent.ItemType<Items.Placeable.Tiles.CaveMud>();
-            mineResist = 2f;
+            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.CaveMud>();
+            MineResist = 2f;
             AddMapEntry(new Color(79, 86, 97));
         }
 
@@ -26,12 +26,11 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             Tile tileAbove = Framing.GetTileSafely(i, j - 1);
 
             // Grow vines
-            if (WorldGen.genRand.NextBool(2) && !tileBelow.active() && !tileBelow.lava())
+            if (WorldGen.genRand.NextBool(2) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-                if (!tile.bottomSlope())
+                if (!tile.BottomSlope)
                 {
-                    tileBelow.type = (ushort)ModContent.TileType<GlowWorms>();
-                    tileBelow.active(true);
+                    tileBelow.TileType = (ushort)ModContent.TileType<GlowWorms>();
                     WorldGen.SquareTileFrame(i, j + 1, true);
                     if (Main.netMode == NetmodeID.Server)
                     {
@@ -41,14 +40,13 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             }
 
             // Grow plants
-            if (WorldGen.genRand.NextBool(2) && !tileAbove.active() && !tileBelow.lava())
+            if (WorldGen.genRand.NextBool(2) && !tileAbove.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-                if (!tile.bottomSlope() && !tile.topSlope() && !tile.halfBrick())
+                if (!tile.BottomSlope && !tile.TopSlope && !tile.IsHalfBlock)
                 {
-                    tileAbove.type = (ushort)ModContent.TileType<GlowPlants>();
-                    tileAbove.active(true);
-                    tileAbove.frameY = 0;
-                    tileAbove.frameX = (short)(WorldGen.genRand.Next(7) * 18); // 7 is the amount of plants in the sprite
+                    tileAbove.TileType = (ushort)ModContent.TileType<GlowPlants>();
+                    tileAbove.TileFrameY = 0;
+                    tileAbove.TileFrameX = (short)(WorldGen.genRand.Next(7) * 18); // 7 is the amount of plants in the sprite
                     WorldGen.SquareTileFrame(i, j + 1, true);
                     if (Main.netMode == NetmodeID.Server)
                     {

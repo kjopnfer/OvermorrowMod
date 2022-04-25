@@ -10,21 +10,21 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.Bonerang
         public override string Texture => AssetDirectory.Melee + "Bonerang/Bonerang";
         public override void SetDefaults()
         {
-            item.melee = true;
-            item.noMelee = true;
-            item.damage = 30;
-            item.useTime = 20;
-            item.useAnimation = 20;
-            item.useStyle = ItemUseStyleID.SwingThrow;
-            item.knockBack = 0.9f;
-            item.rare = ItemRarityID.Orange;
-            item.crit = 4;
-            item.noUseGraphic = true;
-            item.UseSound = SoundID.Item19;
-            item.autoReuse = true;
-            item.shoot = ModContent.ProjectileType<Bonerang>();
-            item.shootSpeed = 17.6f;
-            item.value = Item.sellPrice(0, 1, 0, 0);
+            Item.DamageType = DamageClass.Melee;
+            Item.noMelee = true;
+            Item.damage = 30;
+            Item.useTime = 20;
+            Item.useAnimation = 20;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.knockBack = 0.9f;
+            Item.rare = ItemRarityID.Orange;
+            Item.crit = 4;
+            Item.noUseGraphic = true;
+            Item.UseSound = SoundID.Item19;
+            Item.autoReuse = true;
+            Item.shoot = ModContent.ProjectileType<Bonerang>();
+            Item.shootSpeed = 17.6f;
+            Item.value = Item.sellPrice(0, 1, 0, 0);
         }
 
         public override void SetStaticDefaults()
@@ -35,11 +35,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.Bonerang
 
         public override void AddRecipes()
         {
-            ModRecipe recipe1 = new ModRecipe(mod);
-            recipe1.AddIngredient(ItemID.Bone, 69);
-            recipe1.AddTile(TileID.Anvils);
-            recipe1.SetResult(this);
-            recipe1.AddRecipe();
+            CreateRecipe()
+                .AddIngredient(ItemID.Bone, 69)
+                .AddTile(TileID.Anvils)
+                .Register();
         }
 
         public override bool CanUseItem(Player player)

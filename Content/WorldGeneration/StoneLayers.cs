@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
 using OvermorrowMod.Content.NPCs.Shades;
-using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient;
 using OvermorrowMod.Content.Tiles.Underground;
 using OvermorrowMod.Core;
@@ -14,13 +13,14 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
-using Terraria.World.Generation;
+using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Content.WorldGeneration
 {
-    public class StoneLayers : ModWorld
+    public class StoneLayers : ModSystem
     {
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.WorldGeneration
         }
 
         #region World Generation
-        private void ShadeShack(GenerationProgress progress)
+        private void ShadeShack(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Ripping Off Minecraft";
 
@@ -59,7 +59,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                 // This shit doesn't actually check blocks properly
                 Tile tile = Framing.GetTileSafely(x, y);
-                while (!shack.Place(new Point(x, y), WorldGen.structures) && !tile.active())
+                while (!shack.Place(new Point(x, y), WorldGen.structures) && !tile.HasTile)
                 {
                     x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
                     y = WorldGen.genRand.Next((int)(WorldGen.rockLayer - 50), Main.maxTilesY - 200);
@@ -69,7 +69,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
-        private void MoleMines(GenerationProgress progress)
+        private void MoleMines(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Digging out Moleman Mines";
             int[] ValidTiles = { TileID.Mud, TileID.Stone, TileID.IceBlock, TileID.Granite, TileID.Sandstone, ModContent.TileType<CrunchyStone>() };
@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                 // This shit doesn't actually check blocks properly
                 Tile tile = Framing.GetTileSafely(x, y);
-                while (!mine.Place(new Point(x, y), WorldGen.structures) && !tile.active() && !ValidTiles.Contains(tile.type))
+                while (!mine.Place(new Point(x, y), WorldGen.structures) && !tile.HasTile && !ValidTiles.Contains(tile.TileType))
                 {
                     x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
                     y = WorldGen.genRand.Next((int)(WorldGen.rockLayer - 50), Main.maxTilesY - 200);
@@ -93,7 +93,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
-        private void CrawlerNests(GenerationProgress progress)
+        private void CrawlerNests(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Creating Crawler Nests";
 
@@ -105,7 +105,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 CrawlerNest nest = new CrawlerNest();
                 Tile tile = Framing.GetTileSafely(x, y);
 
-                while (!nest.Place(new Point(x, y), WorldGen.structures) && tile.type != ModContent.TileType<CrunchyStone>())
+                while (!nest.Place(new Point(x, y), WorldGen.structures) && tile.TileType != ModContent.TileType<CrunchyStone>())
                 {
                     x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
                     y = WorldGen.genRand.Next(Main.maxTilesY - 400, Main.maxTilesY - 200);
@@ -115,7 +115,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
-        private void RockLayers(GenerationProgress progress)
+        private void RockLayers(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Generating Rock Layers";
 
@@ -127,14 +127,14 @@ namespace OvermorrowMod.Content.WorldGeneration
                     if (y > WorldGen.lavaLine - 100 && y < Main.maxTilesY)
                     {
                         Tile tile = Framing.GetTileSafely(x, y);
-                        if (tile.type == TileID.Stone)
+                        if (tile.TileType == TileID.Stone)
                         {
-                            tile.type = (ushort)ModContent.TileType<CrunchyStone>();
+                            tile.TileType = (ushort)ModContent.TileType<CrunchyStone>();
                         }
 
-                        if (tile.type == TileID.Dirt)
+                        if (tile.TileType == TileID.Dirt)
                         {
-                            tile.type = (ushort)TileID.Ash;
+                            tile.TileType = (ushort)TileID.Ash;
                         }
                     }
                 }
@@ -161,9 +161,9 @@ namespace OvermorrowMod.Content.WorldGeneration
                         if (y > Main.worldSurface && y < WorldGen.lavaLine - 100)
                         {
                             Tile tile = Framing.GetTileSafely(x, y);
-                            if (tile.type == TileID.Stone)
+                            if (tile.TileType == TileID.Stone)
                             {
-                                tile.type = (ushort)ModContent.TileType<SmoothStone>();
+                                tile.TileType = (ushort)ModContent.TileType<SmoothStone>();
                             }
                         }
                     }
@@ -194,8 +194,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(34, 31, 32)] = -2,
             };
 
-            Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/CrawlerNest");
-            Texture2D LiquidMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/CrawlerNest_Liquids");
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CrawlerNest").Value;
+            Texture2D LiquidMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CrawlerNest_Liquids").Value;
 
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(TileMap, TileRemoval);
             TileClear.Generate(origin.X - (TileClear.width / 2), origin.Y - (TileClear.height / 2), true, true);
@@ -206,9 +206,12 @@ namespace OvermorrowMod.Content.WorldGeneration
 
 
             #region Miscellaneous 
-            Main.tile[origin.X - (TileClear.width / 2) + 9, origin.Y - (TileClear.height / 2) + 13].halfBrick(true);
-            Main.tile[origin.X - (TileClear.width / 2) + 17, origin.Y - (TileClear.height / 2) + 10].halfBrick(true);
-            Main.tile[origin.X - (TileClear.width / 2) + 39, origin.Y - (TileClear.height / 2) + 13].halfBrick(true);
+            var tile = Main.tile[origin.X - (TileClear.width / 2) + 9, origin.Y - (TileClear.height / 2) + 13];
+            tile.IsHalfBlock = true;
+            tile = Main.tile[origin.X - (TileClear.width / 2) + 17, origin.Y - (TileClear.height / 2) + 10];
+            tile.IsHalfBlock = true;
+            tile = Main.tile[origin.X - (TileClear.width / 2) + 39, origin.Y - (TileClear.height / 2) + 13];
+            tile.IsHalfBlock = true;
 
             ModUtils.PlaceObject(origin.X - (TileClear.width / 2) + 23, origin.Y - (TileClear.height / 2) + 23, (ushort)ModContent.TileType<RockEgg>());
 
@@ -245,7 +248,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     break;
             }
 
-            int StoneType = Main.tile[origin.X, origin.Y].type;
+            int StoneType = Main.tile[origin.X, origin.Y].TileType;
             int WoodType = TileID.WoodBlock;
             switch (StoneType)
             {
@@ -284,8 +287,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(50, 41, 45)] = -2,
             };
 
-            Texture2D ClearMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/MoleMine_" + MineType + "_Clear");
-            Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/MoleMine_" + MineType);
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/MoleMine_" + MineType + "_Clear").Value;
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/MoleMine_" + MineType).Value;
 
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval);
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, null, null);
@@ -411,7 +414,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     switch (Main.rand.Next(2))
                     {
                         case 0:
-                            if (WorldGen.GoldTierOre == TileID.Gold)
+                            if (WorldGen.SavedOreTiers.Gold == TileID.Gold)
                             {
                                 itemsToAdd.Add((ItemID.GoldBar, Main.rand.Next(9, 15)));
                             }
@@ -421,7 +424,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                             }
                             break;
                         case 1:
-                            if (WorldGen.SilverTierOre == TileID.Silver)
+                            if (WorldGen.SavedOreTiers.Silver == TileID.Silver)
                             {
                                 itemsToAdd.Add((ItemID.SilverBar, Main.rand.Next(9, 15)));
                             }
@@ -520,7 +523,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     switch (Main.rand.Next(2))
                     {
                         case 0:
-                            if (WorldGen.GoldTierOre == TileID.Gold)
+                            if (WorldGen.SavedOreTiers.Gold == TileID.Gold)
                             {
                                 itemsToAdd.Add((ItemID.GoldBar, Main.rand.Next(9, 15)));
                             }
@@ -530,7 +533,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                             }
                             break;
                         case 1:
-                            if (WorldGen.SilverTierOre == TileID.Silver)
+                            if (WorldGen.SavedOreTiers.Silver == TileID.Silver)
                             {
                                 itemsToAdd.Add((ItemID.SilverBar, Main.rand.Next(9, 15)));
                             }
@@ -615,8 +618,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(50, 41, 45)] = -2,
             };
 
-            Texture2D ClearMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/ShadeShack_Clear");
-            Texture2D TileMap = ModContent.GetTexture(AssetDirectory.WorldGen + "Textures/ShadeShack");
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/ShadeShack_Clear").Value;
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/ShadeShack").Value;
 
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval);
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping);
@@ -663,7 +666,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             // Spawns and saves the Shade Orb, these need to be added into the list so that they load properly
             Vector2 SpawnPosition = (new Vector2(x + 17, y + 17) * 16) + new Vector2(8, 8);
-            int npc = NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<ShadeOrb>());
+            int npc = NPC.NewNPC(NPC.GetSpawnSourceForNaturalSpawn(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<ShadeOrb>());
 
             OvermorrowWorld.SavedShades.Add(npc);
             OvermorrowWorld.ShadePositions.Add(Main.npc[npc].Center);
