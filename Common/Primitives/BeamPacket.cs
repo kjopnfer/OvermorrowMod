@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Terraria;
 
-namespace OvermorrowMod.Effects.Prim
+namespace OvermorrowMod.Common.Primitives
 {
     public class BeamPacket
     {

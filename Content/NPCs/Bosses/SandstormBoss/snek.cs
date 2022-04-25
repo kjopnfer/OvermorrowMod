@@ -2,8 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Core;
-using OvermorrowMod.Effects.Prim;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -18,7 +18,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
      */
     public class snek : ModProjectile
     {
-        public ref float BarrierProgress => ref Projectile.ai[0];
         public override bool? CanDamage() => false;
         public override bool ShouldUpdatePosition() => false;
         public override string Texture => AssetDirectory.Empty;
@@ -33,6 +32,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Projectile.timeLeft = 540;
         }
 
+        public ref float BarrierProgress => ref Projectile.ai[0];
+        public ref float BeamCounter => ref Projectile.ai[1];
         public override void AI()
         {
             // TODO: Set the projectile to persist while the boss is active or a condition is met
@@ -43,6 +44,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             }
         }
 
+        public float BeamTimer => BeamCounter % 400;
         public Texture2D TrailTexture1 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail0v2").Value;
         public Texture2D TrailTexture2 = ModContent.Request<Texture2D>(AssetDirectory.FullTrail + "Trail7").Value;
         public override void PostDraw(Color lightColor)
@@ -91,7 +93,39 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-            float mult = 0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly/* * 2*/) * 0.1f;
+            /*var effect = OvermorrowModFile.Instance.Assets.Request<Effect>("Effects/GlowingDust").Value;
+            effect.Parameters["uColor"].SetValue(Color.White.ToVector3());
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(default, default, default, default, default, effect, Main.GameViewMatrix.ZoomMatrix);
+
+            var texBeam = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail0v2").Value;
+            var texBeam2 = ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail7").Value;
+
+            Vector2 origin = new Vector2(0, texBeam.Height / 2);
+            Vector2 origin2 = new Vector2(0, texBeam2.Height / 2);
+
+            float height = texBeam.Height / 2f;
+
+            Vector2 start = drawCenter;
+            Vector2 end = drawCenter + Vector2.UnitY * TRay.CastLength(drawCenter, Vector2.UnitY, 5000);
+            int width = (int)(start - end).Length();
+
+            var pos = Projectile.Center - Main.screenPosition;
+
+            var target = new Rectangle((int)pos.X, (int)pos.Y, width, (int)(height * 1.2f));
+            var target2 = new Rectangle((int)pos.X, (int)pos.Y, width, (int)height);
+
+            var source = new Rectangle((int)(((BeamCounter) / 20f) * -texBeam.Width), 0, texBeam.Width, texBeam.Height);
+            var source2 = new Rectangle((int)(((BeamCounter) / 45f) * -texBeam2.Width), 0, texBeam2.Width, texBeam2.Height);
+
+            Main.spriteBatch.Draw(texBeam, target, source, new Color(95, 73, 50), 0f, origin, 0, 0);
+            Main.spriteBatch.Draw(texBeam2, target2, source2, new Color(180, 128, 70) * 0.5f, 0f, origin2, 0, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(default, default, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);*/
+
+            float mult = 0.55f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.1f;
 
             BeamPacket packet = new BeamPacket();
             packet.Pass = "Texture";

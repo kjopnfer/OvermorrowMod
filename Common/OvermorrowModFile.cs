@@ -46,6 +46,8 @@ namespace OvermorrowMod.Common
             AmuletKey = KeybindLoader.RegisterKeybind(this, "Artemis Amulet Attack", "C");
             ToggleUI = KeybindLoader.RegisterKeybind(this, "Toggle UI", "R"); // This is for debugging
 
+            ShaderLoader.Load();
+
             if (!Main.dedServ)
             {
                 // TODO: These are gone, need to figure out what to do.
