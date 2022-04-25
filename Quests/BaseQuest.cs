@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Quests.State;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -89,46 +90,17 @@ namespace OvermorrowMod.Quests
         public void CompleteQuest(Player player, bool success)
         {
             var modPlayer = player.GetModPlayer<QuestPlayer>();
-            if (Repeatability == QuestRepeatability.OncePerPlayer && modPlayer.CompletedQuests.Contains(QuestID)) success = false;
-            if (Repeatability == QuestRepeatability.OncePerWorld && Quests.GlobalCompletedQuests.Contains(QuestID)) success = false;
-            if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer
-                && Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(QuestID)) success = false;
+            if (Quests.State.HasCompletedQuest(modPlayer, this)) success = false;
+            var state = Quests.State.GetActiveQuestState(modPlayer, this);
+            if (state == null) success = false;
 
             if (success)
             {
                 ResetEffects(player);
-
                 GiveRewards(player);
                 Main.NewText("COMPLETED QUEST: " + QuestName, Color.Yellow);
             }
-            modPlayer.RemoveQuest(this);
-            if (Repeatability == QuestRepeatability.OncePerPlayer)
-            {
-                modPlayer.CompletedQuests.Add(QuestID);
-            }
-            else if (Repeatability == QuestRepeatability.OncePerWorld)
-            {
-                // For per-world quests any duplicates must be terminated here.
-                Quests.GlobalCompletedQuests.Add(QuestID);
-                for (int i = 0; i < Main.maxPlayers; i++)
-                {
-                    var p = Main.player[i];
-                    if (!p.active || p == player) continue;
-
-                    var extModPlayer = p.GetModPlayer<QuestPlayer>();
-                    foreach (var quest in extModPlayer.CurrentQuests)
-                    {
-                        if (quest.QuestID == QuestID)
-                        {
-                            quest.CompleteQuest(p, false);
-                        }
-                    }
-                }
-            }
-            else if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer)
-            {
-                Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Add(QuestID);
-            }
+            Quests.State.CompleteQuest(modPlayer, this);
         }
 
         /// <summary>
@@ -167,11 +139,13 @@ namespace OvermorrowMod.Quests
             var modPlayer = player.GetModPlayer<QuestPlayer>();
             // Is the player currently doing this quest?
             if (modPlayer.CurrentQuests.Any(q => q.QuestID == QuestID)) return false;
-            if (Repeatability == QuestRepeatability.OncePerPlayer && modPlayer.CompletedQuests.Contains(QuestID)) return false;
-            if (Repeatability == QuestRepeatability.OncePerWorld && Quests.GlobalCompletedQuests.Contains(QuestID)) return false;
-            if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer
-                && Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(QuestID)) return false;
+            if (Quests.State.HasCompletedQuest(modPlayer, this)) return false;
             return true;
+        }
+
+        public virtual BaseQuestState GetNewState()
+        {
+            return new BaseQuestState(this, Requirements.Select(req => req.GetNewState()).Where(req => req != null).ToList());
         }
     }
 }

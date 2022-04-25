@@ -47,12 +47,6 @@ namespace OvermorrowMod.Quests
             }
         }
 
-        public void RemoveQuest(BaseQuest quest)
-        {
-            activeQuests.Remove(quest);
-            Quests.PerPlayerActiveQuests[PlayerUUID].Remove(quest);
-        }
-
         public BaseQuest QuestByNPC(int npcId)
         {
             return CurrentQuests.FirstOrDefault(q => npcId == q.QuestGiver);

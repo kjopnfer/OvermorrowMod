@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OvermorrowMod.Quests.State;
+using System;
 using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
@@ -8,12 +9,15 @@ namespace OvermorrowMod.Quests.Requirements
         private readonly int type;
         private readonly int stack;
 
-        public ItemRequirement(int type, int stack)
+        public string ID { get; }
+
+        public ItemRequirement(int type, int stack, string id)
         {
             if (stack <= 0) throw new ArgumentException($"Invalid stack size: {stack}");
             if (type <= 0) throw new ArgumentException($"Invalid type: {type}");
             this.stack = stack;
             this.type = type;
+            ID = id;
         }
 
         public string Description => $"#{stack} {Lang.GetItemNameValue(type)}";
@@ -30,5 +34,10 @@ namespace OvermorrowMod.Quests.Requirements
         }
 
         public void ResetState(Player player) { }
+
+        public BaseRequirementState GetNewState()
+        {
+            return null;
+        }
     }
 }

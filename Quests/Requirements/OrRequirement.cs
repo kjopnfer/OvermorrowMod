@@ -7,9 +7,12 @@ namespace OvermorrowMod.Quests.Requirements
     {
         public IQuestRequirement[] clauses;
 
-        public OrRequirement(params IQuestRequirement[] clauses)
+        public string ID { get; }
+
+        public OrRequirement(string id, params IQuestRequirement[] clauses)
         {
             this.clauses = clauses;
+            ID = id;
         }
 
         public string Description => $"One of {string.Join(" or ", clauses.Select(c => c.Description))}";
@@ -21,9 +24,9 @@ namespace OvermorrowMod.Quests.Requirements
 
         public void ResetState(Player player)
         {
-            foreach (KillRequirement killRequirement in clauses)
+            foreach (var req in clauses)
             {
-                killRequirement.ResetState(player);
+                req.ResetState(player);
             }
         }
     }

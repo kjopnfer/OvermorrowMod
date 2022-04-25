@@ -65,6 +65,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 {
                     NPC.position.Y += 1;
                     tile = Framing.GetTileSafely((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+                    if (NPC.Center.X >= Main.tile.Width * 16 || NPC.Center.Y >= Main.tile.Height) break;
                 }
 
                 NPC.position.Y += Main.rand.Next(4, 8) * 20;

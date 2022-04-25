@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests.Requirements;
+using OvermorrowMod.Quests.State;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,6 @@ namespace OvermorrowMod.Quests
 {
     public class QuestSystem : ModSystem
     {
-        public static List<string> PlayerTraveled = new List<string>();
-
         public override void PreUpdateNPCs()
         {
             if (Main.netMode != NetmodeID.Server && Main.LocalPlayer.talkNPC == -1) Quests.ResetUI();
@@ -29,56 +28,23 @@ namespace OvermorrowMod.Quests
 
         public override void SaveWorldData(TagCompound tag)
         {
-            tag["globalCompletedQuests"] = Quests.GlobalCompletedQuests.ToList();
-            tag["perPlayerCompletedQuestsKeys"] = Quests.PerPlayerCompletedQuests.Keys.ToList();
-            tag["perPlayerCompletedQuestsValues"] = Quests.PerPlayerCompletedQuests.Values.Select(v => v.ToList()).ToList();
-            tag["perPlayerActiveQuestsKeys"] = Quests.PerPlayerActiveQuests.Keys.ToList();
-            tag["perPlayerActiveQuestsValues"] = Quests.PerPlayerActiveQuests.Values
-                    .Select(v => v.Select(q => q.QuestID).ToList()).ToList();
-            tag["PlayerTraveled"] = PlayerTraveled;
+            var toSave = Quests.State.GetPerPlayerQuestsForWorld();
+            tag["questStatesKeys"] = toSave.Keys.ToList();
+            tag["questStatesValues"] = toSave.Values.ToList();
+            tag["globalCompletedQuests"] = Quests.State.GetWorldQuestsToSave();
         }
 
         public override void LoadWorldData(TagCompound tag)
         {
-            Quests.GlobalCompletedQuests.Clear();
-            var quests = tag.GetList<string>("globalCompletedQuests");
+            Quests.State.Reset();
 
-            var validGlobals = quests.Where(qid => Quests.QuestList.TryGetValue(qid, out var quest)
-                && quest.Repeatability == QuestRepeatability.OncePerWorld);
-            foreach (var q in validGlobals) Quests.GlobalCompletedQuests.Add(q);
+            var globalCompleted = tag.GetList<string>("globalCompletedQuests");
+            var questStateKeys = tag.GetList<string>("questStatesKeys");
+            var questStateValues = tag.GetList<List<TagCompound>>("questStatesValues");
 
-            foreach (var kvp in Quests.PerPlayerCompletedQuests) kvp.Value.Clear();
+            var questStates = questStateKeys.Zip(questStateValues).ToDictionary(pair => pair.First, pair => (IEnumerable<TagCompound>)pair.Second);
 
-            var keys = tag.GetList<string>("perPlayerCompletedQuestsKeys");
-            var values = tag.GetList<List<string>>("perPlayerCompletedQuestsValues");
-            foreach (var pair in keys.Zip(values, (k, v) => (k, v)))
-            {
-                var valid = pair.v.Where(qid => Quests.QuestList.TryGetValue(qid, out var quest)
-                    && quest.Repeatability == QuestRepeatability.OncePerWorldPerPlayer);
-
-                Quests.PerPlayerCompletedQuests[pair.k] = new HashSet<string>(valid);
-            }
-
-            foreach (var kvp in Quests.PerPlayerActiveQuests) kvp.Value.Clear();
-
-            var activeKeys = tag.GetList<string>("perPlayerActiveQuestsKeys");
-            var activeValues = tag.GetList<List<string>>("perPlayerActiveQuestsValues");
-            foreach (var pair in activeKeys.Zip(activeValues, (k, v) => (k, v)))
-            {
-                var qlist = pair.v.Select(qid => Quests.QuestList.TryGetValue(qid, out var quest) ? quest : null)
-                    .Where(q => q != null
-                        && (q.Repeatability == QuestRepeatability.OncePerWorld
-                        || q.Repeatability == QuestRepeatability.OncePerWorldPerPlayer))
-                    .ToList();
-                Quests.PerPlayerActiveQuests[pair.k] = qlist;
-            }
-
-            // Stores the places the player has traveled in order to persist the Travel quest data
-            var TraveledList = tag.GetList<string>("PlayerTraveled");
-            foreach (var Location in TraveledList)
-            {
-                PlayerTraveled.Add(Location);
-            }
+            Quests.State.LoadWorld(questStates, globalCompleted);
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -99,14 +65,17 @@ namespace OvermorrowMod.Quests
             }
 
             var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+
+
+
             foreach (var quest in modPlayer.CurrentQuests)
             {
                 if (quest.Type != QuestType.Travel) continue;
 
-                foreach (IQuestRequirement requirement in quest.Requirements)
+                foreach (var requirement in quest.Requirements.OfType<TravelRequirement>())
                 {
-                    if (requirement is TravelRequirement travelRequirement && modPlayer.SelectedLocation == travelRequirement.ID
-                        && !PlayerTraveled.Contains(travelRequirement.ID))
+                    if (modPlayer.SelectedLocation == requirement.ID && 
+                        !(Quests.State.GetActiveQuestState(modPlayer, quest).RequirementStates[requirement.ID] as TravelRequirementState).Traveled)
                     {
                         PlayerInput.SetZoom_World();
                         var screenWidth = Main.screenWidth;
@@ -115,7 +84,7 @@ namespace OvermorrowMod.Quests
                         PlayerInput.SetZoom_UI();
                         var uiScale = Main.UIScale;
                         
-                        var labelPosition = FontAssets.MouseText.Value.MeasureString(travelRequirement.ID);
+                        var labelPosition = FontAssets.MouseText.Value.MeasureString(requirement.ID);
                         var labelPositionYNegative = 0f;
                         if (Main.LocalPlayer.chatOverhead.timeLeft > 0)
                         {
@@ -123,7 +92,7 @@ namespace OvermorrowMod.Quests
                         }
 
                         var screenCenter = new Vector2(screenWidth / 2 + screenPosition.X, screenHeight / 2 + screenPosition.Y);
-                        var travelPosition = travelRequirement.Location * 16f;
+                        var travelPosition = requirement.Location * 16f;
                         travelPosition += (travelPosition - screenCenter) * (Main.GameViewMatrix.Zoom - Vector2.One);
 
                         var distance2 = 0f;
@@ -163,7 +132,7 @@ namespace OvermorrowMod.Quests
                         }
 
                         labelPosition *= 1f / uiScale;
-                        var LabelPosition2 = FontAssets.MouseText.Value.MeasureString(travelRequirement.ID);
+                        var LabelPosition2 = FontAssets.MouseText.Value.MeasureString(requirement.ID);
                         labelPosition += LabelPosition2 * (1f - uiScale) / 4f;
                         if (distance2 > 0f)
                         {
@@ -183,13 +152,13 @@ namespace OvermorrowMod.Quests
                         }
 
                         // Draw the black outline around the text for the location
-                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, travelRequirement.ID, new Vector2(labelPosition.X - 2f, labelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, travelRequirement.ID, new Vector2(labelPosition.X + 2f, labelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, travelRequirement.ID, new Vector2(labelPosition.X, labelPosition.Y - 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, travelRequirement.ID, new Vector2(labelPosition.X, labelPosition.Y + 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, new Vector2(labelPosition.X - 2f, labelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, new Vector2(labelPosition.X + 2f, labelPosition.Y), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, new Vector2(labelPosition.X, labelPosition.Y - 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, new Vector2(labelPosition.X, labelPosition.Y + 2f), Color.Black, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
 
                         // Draw the actual text for the location
-                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, travelRequirement.ID, labelPosition, color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                        Main.spriteBatch.DrawString(FontAssets.MouseText.Value, requirement.ID, labelPosition, color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                     }
                 }
             }

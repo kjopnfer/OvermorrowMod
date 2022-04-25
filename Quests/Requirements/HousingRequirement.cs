@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OvermorrowMod.Quests.State;
+using System;
 using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
@@ -6,11 +7,13 @@ namespace OvermorrowMod.Quests.Requirements
     public class HousingRequirement : IQuestRequirement
     {
         private readonly int npcType;
+        public string ID { get; }
 
-        public HousingRequirement(int npcType)
+        public HousingRequirement(int npcType, string id)
         {
             if (npcType <= 0) throw new ArgumentException($"Invalid NPC Type: {npcType}");
             this.npcType = npcType;
+            ID = id;
         }
 
         public string Description => $"{Lang.GetNPCNameValue(npcType)} must have a home";
@@ -28,5 +31,10 @@ namespace OvermorrowMod.Quests.Requirements
         }
 
         public void ResetState(Player player) { }
+
+        public BaseRequirementState GetNewState()
+        {
+            return null;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OvermorrowMod.Quests.State;
+using System;
 using System.Collections.Generic;
 using Terraria;
 
@@ -9,11 +10,14 @@ namespace OvermorrowMod.Quests.Requirements
         public readonly List<int> type;
         public readonly int amount;
 
-        public KillRequirement(List<int> type, int amount)
+        public string ID { get; }
+
+        public KillRequirement(List<int> type, int amount, string id)
         {
             if (amount <= 0) throw new ArgumentException($"Invalid amount: {amount}");
             this.type = type;
             this.amount = amount;
+            ID = id;
         }
 
         // I don't know how to show each of the required types, lol
@@ -41,6 +45,11 @@ namespace OvermorrowMod.Quests.Requirements
             {
                 if (KilledList.ContainsKey(ID)) KilledList[ID] = 0;
             }
+        }
+
+        public BaseRequirementState GetNewState()
+        {
+            return new KillRequirementState(this);
         }
     }
 }

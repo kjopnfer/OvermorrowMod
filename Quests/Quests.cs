@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Quests.State;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
@@ -18,14 +19,8 @@ namespace OvermorrowMod.Quests
         public static Dictionary<string, BaseQuest> QuestList = new Dictionary<string, BaseQuest>();
 
         private static Dictionary<Type, BaseQuest> QuestTypes = new Dictionary<Type, BaseQuest>();
-        public static HashSet<string> GlobalCompletedQuests = new HashSet<string>();
 
-        public static Dictionary<string, HashSet<string>> PerPlayerCompletedQuests { get; }
-            = new Dictionary<string, HashSet<string>>();
-
-
-        public static Dictionary<string, List<BaseQuest>> PerPlayerActiveQuests { get; }
-            = new Dictionary<string, List<BaseQuest>>();
+        public static QuestsState State { get; } = new QuestsState();
 
 
         private static bool hoverButton = false;
@@ -48,33 +43,9 @@ namespace OvermorrowMod.Quests
             On.Terraria.Main.DrawNPCChatButtons += Main_DrawNPCChatButtons;
         }
 
-        public static IEnumerable<BaseQuest> GetAllActiveQuests()
-        {
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                var player = Main.player[i];
-                if (!player.active) continue;
-
-                var modPlayer = player.GetModPlayer<QuestPlayer>();
-                foreach (var q in modPlayer.CurrentQuests)
-                {
-                    yield return q;
-                }
-            }
-        }
-
         public static void ClearAllCompletedQuests()
         {
-            GlobalCompletedQuests.Clear();
-            foreach (var kvp in PerPlayerCompletedQuests)
-            {
-                kvp.Value.Clear();
-            }
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                if (!Main.player[i].active) continue;
-                Main.player[i].GetModPlayer<QuestPlayer>().CompletedQuests.Clear();
-            }
+            State.Reset();
         }
 
         public static void ResetUI()
@@ -256,9 +227,7 @@ namespace OvermorrowMod.Quests
             var modPlayer = player.GetModPlayer<QuestPlayer>();
             var quest = GetQuest<T>();
             return quest.Repeatability == QuestRepeatability.Repeatable
-                || GlobalCompletedQuests.Contains(quest.QuestID)
-                || modPlayer.CompletedQuests.Contains(quest.QuestID)
-                || PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(quest.QuestID);
+                || State.HasCompletedQuest(modPlayer, quest);
         }
     }
 }
