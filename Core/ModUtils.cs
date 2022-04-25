@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
 using Terraria.ID;
+using Terraria.UI;
 
 namespace OvermorrowMod.Core
 {
@@ -309,6 +310,15 @@ namespace OvermorrowMod.Core
 
             return array;
             //return Shuffle<T>(new List<T>(array)).ToArray();
+        }
+
+        public static void AddElement(UIElement element, int x, int y, int width, int height, UIElement appendTo)
+        {
+            element.Left.Set(x, 0);
+            element.Top.Set(y, 0);
+            element.Width.Set(width, 0);
+            element.Height.Set(height, 0);
+            appendTo.Append(element);
         }
     }
 }

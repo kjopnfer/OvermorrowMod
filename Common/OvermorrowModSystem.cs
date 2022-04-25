@@ -16,8 +16,11 @@ namespace OvermorrowMod.Common
         private GameTime _lastUpdateUiGameTime;
         internal UserInterface MyInterface;
         internal UserInterface AltarUI;
+        internal UserInterface BookInterface;
 
         internal AltarUI Altar;
+        internal BookUI BookUI;
+
         public override void PostUpdateEverything()
         {
             Trail.UpdateTrails();
@@ -33,6 +36,12 @@ namespace OvermorrowMod.Common
 
                 Altar = new AltarUI();
                 Altar.Activate();
+
+                BookUI = new BookUI();
+                BookUI.Activate();
+
+                BookInterface = new UserInterface();
+                BookInterface.SetState(BookUI);
             }
         }
 
@@ -47,6 +56,11 @@ namespace OvermorrowMod.Common
             if (AltarUI?.CurrentState != null && !Main.gameMenu)
             {
                 AltarUI.Update(gameTime);
+            }
+
+            if (BookUI.Visible)
+            {
+                BookInterface?.Update(gameTime);
             }
         }
 
@@ -112,6 +126,17 @@ namespace OvermorrowMod.Common
             int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (mouseTextIndex != -1)
             {
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                    "OvermorrowMod: Book",
+                    delegate
+                    {
+                        if (BookUI.Visible)
+                        {
+                            BookInterface.Draw(Main.spriteBatch, new GameTime());
+                        }
+                        return true;
+                    }, InterfaceScaleType.UI));
+
                 layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
                        "OvermorrowMod: AltarUI",
                        delegate
