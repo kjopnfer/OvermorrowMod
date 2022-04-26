@@ -17,6 +17,7 @@ namespace OvermorrowMod.Quests.ModQuests
             Requirements = new[]
             {
                 new OrRequirement(
+                    "ore_or",
                     new ItemRequirement(ItemID.CopperOre, 40),
                     new ItemRequirement(ItemID.TinOre, 40))
             };

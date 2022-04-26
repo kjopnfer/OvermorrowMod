@@ -1,33 +1,18 @@
-﻿using System.Linq;
+﻿using OvermorrowMod.Quests.State;
+using System.Linq;
 using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
 {
-    public class OrRequirement : IQuestRequirement
+    public class OrRequirement : BaseCompositeRequirement
     {
-        public IQuestRequirement[] clauses;
+        public OrRequirement(string id, params IQuestRequirement[] clauses) : base(clauses, id) { }
 
-        public string ID { get; }
+        public override string Description => $"One of {string.Join(" or ", Clauses.Select(c => c.Description))}";
 
-        public OrRequirement(string id, params IQuestRequirement[] clauses)
+        public override bool IsCompleted(QuestPlayer player, BaseQuestState state)
         {
-            this.clauses = clauses;
-            ID = id;
-        }
-
-        public string Description => $"One of {string.Join(" or ", clauses.Select(c => c.Description))}";
-
-        public bool IsCompleted(Player player)
-        {
-            return clauses.Any(c => c.IsCompleted(player));
-        }
-
-        public void ResetState(Player player)
-        {
-            foreach (var req in clauses)
-            {
-                req.ResetState(player);
-            }
+            return Clauses.Any(c => c.IsCompleted(player, state));
         }
     }
 }

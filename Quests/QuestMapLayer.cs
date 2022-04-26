@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests.Requirements;
+using OvermorrowMod.Quests.State;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
@@ -27,22 +28,21 @@ namespace OvermorrowMod.Quests
 
             var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
 
-            foreach (var quest in modPlayer.CurrentQuests.Where(q => q.Type == QuestType.Travel))
+            foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<TravelRequirementState>(modPlayer))
             {
-                foreach (var requirement in quest.Requirements.OfType<TravelRequirement>())
-                {
-                    if (QuestSystem.PlayerTraveled.Contains(requirement.ID)) continue;
+                if (req.Traveled) continue;
 
-                    if (context.Draw(questMarker.Value, requirement.Location, Color.White, new SpriteFrame(1, 1, 0, 0), 1f, 1.5f, Alignment.Center).IsMouseOver)
+                var requirement = req.Requirement as TravelRequirement;
+
+                if (context.Draw(questMarker.Value, requirement.Location, Color.White, new SpriteFrame(1, 1, 0, 0), 1f, 1.5f, Alignment.Center).IsMouseOver)
+                {
+                    text = requirement.ID;
+                    if (Main.mouseLeft)
                     {
-                        text = requirement.ID;
-                        if (Main.mouseLeft)
-                        {
-                            SoundEngine.PlaySound(SoundID.Item20, Main.LocalPlayer.position);
-                            modPlayer.SelectedLocation = requirement.ID;
-                            Main.mapFullscreen = false;
-                            SoundEngine.PlaySound(SoundID.Item20, requirement.Location * 16);
-                        }
+                        SoundEngine.PlaySound(SoundID.Item20, Main.LocalPlayer.position);
+                        modPlayer.SelectedLocation = requirement.ID;
+                        Main.mapFullscreen = false;
+                        SoundEngine.PlaySound(SoundID.Item20, requirement.Location * 16);
                     }
                 }
             }

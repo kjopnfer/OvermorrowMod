@@ -23,28 +23,21 @@ namespace OvermorrowMod.Quests.Requirements
         // I don't know how to show each of the required types, lol
         public string Description => $"#{amount} {Lang.GetNPCNameValue(type[0])}";
 
-        public bool IsCompleted(Player player)
+        public bool IsCompleted(QuestPlayer player, BaseQuestState state)
         {
-            int remaining = amount;
-            var KilledList = player.GetModPlayer<QuestPlayer>().KilledNPCs;
+            var reqState = state.GetRequirementState(this) as KillRequirementState;
 
-            foreach (int ID in type)
+            int remaining = amount;
+            foreach (int id in type)
             {
-                if (KilledList.ContainsKey(ID)) remaining -= KilledList[ID];
+                if (reqState.NumKilled.TryGetValue(id, out int value)) remaining -= value;
             }
 
-            if (remaining <= 0) return true;
-
-            return false;
+            return remaining <= 0;
         }
 
         public void ResetState(Player player)
         {
-            var KilledList = player.GetModPlayer<QuestPlayer>().KilledNPCs;
-            foreach (int ID in type)
-            {
-                if (KilledList.ContainsKey(ID)) KilledList[ID] = 0;
-            }
         }
 
         public BaseRequirementState GetNewState()

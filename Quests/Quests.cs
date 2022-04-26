@@ -61,9 +61,12 @@ namespace OvermorrowMod.Quests
             if (nextButton && dialogueCounter >= quest.DialogueCount) return "Accept";
             else if (nextButton) return "Next";
 
+
             if (isDoing)
             {
-                return quest.CheckRequirements(player) ? "Turn In" : "Quest";
+                var modPlayer = player.GetModPlayer<QuestPlayer>();
+                var state = State.GetActiveQuestState(modPlayer, quest);
+                return quest.CheckRequirements(modPlayer, state) ? "Turn In" : "Quest";
             }
             return "Quest";
         }
@@ -78,9 +81,11 @@ namespace OvermorrowMod.Quests
         {
             if (isDoing)
             {
-                if (quest.CheckRequirements(player))
+                var modPlayer = player.GetModPlayer<QuestPlayer>();
+                var state = State.GetActiveQuestState(modPlayer, quest);
+                if (quest.CheckRequirements(modPlayer, state))
                 {
-                    quest.CompleteQuest(player, true);
+                    questPlayer.CompleteQuest(quest.QuestID);
                     SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/QuestTurnIn"), npc.Center);
 
                     if (quest.EndDialogueCount > 0)

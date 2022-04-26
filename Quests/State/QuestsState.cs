@@ -12,16 +12,25 @@ namespace OvermorrowMod.Quests.State
         private Dictionary<string, Dictionary<string, BaseQuestState>> StatesByPlayer { get; } =
             new Dictionary<string, Dictionary<string, BaseQuestState>>();
         private HashSet<string> CompletedWorldQuests { get; } = new HashSet<string>();
-        private Dictionary<string, HashSet<string>> PerPlayerCompletedQuests { get; } = new Dictionary<string, HashSet<string>>();
 
         public IEnumerable<BaseQuestState> GetActiveQuests(QuestPlayer player)
         {
-            return StatesByPlayer.GetValueOrDefault(player.PlayerUUID)?.Values.Where(state => !state.Completed).ToList();
+            return StatesByPlayer.GetValueOrDefault(player.PlayerUUID)?.Values?.Where(state => !state.Completed)?.ToList()
+                ?? Enumerable.Empty<BaseQuestState>();
         }
 
         public void CompleteQuest(QuestPlayer player, BaseQuest quest)
         {
-            StatesByPlayer[player.PlayerUUID][quest.QuestID].Completed = true;
+            if (!StatesByPlayer.TryGetValue(player.PlayerUUID, out var playerQuests))
+            {
+                StatesByPlayer[player.PlayerUUID] = playerQuests = new Dictionary<string, BaseQuestState>();
+            }
+            if (!playerQuests.TryGetValue(quest.QuestID, out var state))
+            {
+                playerQuests[quest.QuestID] = state = quest.GetNewState();
+            }
+            state.Completed = true;
+
             if (quest.Repeatability == QuestRepeatability.OncePerWorld)
             {
                 CompletedWorldQuests.Add(quest.QuestID);
@@ -33,14 +42,15 @@ namespace OvermorrowMod.Quests.State
                     q.Quest.CompleteQuest(player.Player, false);
                 }
             }
-            else
+        }
+
+        public void AddQuest(QuestPlayer player, BaseQuest quest)
+        {
+            if (!StatesByPlayer.TryGetValue(player.PlayerUUID, out var playerQuests))
             {
-                if (!PerPlayerCompletedQuests.TryGetValue(player.PlayerUUID, out var compQuests))
-                {
-                    PerPlayerCompletedQuests[player.PlayerUUID] = compQuests = new HashSet<string>();
-                }
-                compQuests.Add(quest.QuestID);
+                StatesByPlayer[player.PlayerUUID] = playerQuests = new Dictionary<string, BaseQuestState>();
             }
+            playerQuests[quest.QuestID] = quest.GetNewState();
         }
 
         public BaseQuestState GetActiveQuestState(QuestPlayer player, BaseQuest quest)
@@ -56,8 +66,17 @@ namespace OvermorrowMod.Quests.State
             }
             else
             {
-                return PerPlayerCompletedQuests.TryGetValue(player.PlayerUUID, out var compQuests) && compQuests.Contains(quest.QuestID);
+                return StatesByPlayer.TryGetValue(player.PlayerUUID, out var quests)
+                    && quests.TryGetValue(quest.QuestID, out var questState)
+                    && questState.Completed;
             }
+        }
+
+        public bool IsDoingQuest(QuestPlayer player, string questID)
+        {
+            return StatesByPlayer.TryGetValue(player.PlayerUUID, out var quests)
+                && quests.TryGetValue(questID, out var questState)
+                && questState.Completed;
         }
 
         public IEnumerable<string> GetWorldQuestsToSave()
@@ -82,10 +101,9 @@ namespace OvermorrowMod.Quests.State
         public void Reset()
         {
             CompletedWorldQuests.Clear();
-            foreach (var kvp in PerPlayerCompletedQuests) kvp.Value.Clear();
             foreach (var kvp in StatesByPlayer)
             {
-                foreach (var state in kvp.Value) state.Value.Reset();
+                kvp.Value.Clear();
             }
         }
 
@@ -97,10 +115,6 @@ namespace OvermorrowMod.Quests.State
                 {
                     StatesByPlayer[kvp.Key] = playerQuests = new Dictionary<string, BaseQuestState>();
                 }
-                if (!PerPlayerCompletedQuests.TryGetValue(kvp.Key, out var perPlayerCompleted))
-                {
-                    PerPlayerCompletedQuests[kvp.Key] = perPlayerCompleted = new HashSet<string>();
-                }
                 foreach (var tag in kvp.Value)
                 {
                     var questID = tag.GetString("questID");
@@ -111,10 +125,6 @@ namespace OvermorrowMod.Quests.State
                         var state = quest.GetNewState();
                         state.Load(tag);
                         playerQuests[questID] = state;
-                        if (state.Completed)
-                        {
-                            perPlayerCompleted.Add(questID);
-                        }
                     }
                 }
             }
@@ -126,6 +136,36 @@ namespace OvermorrowMod.Quests.State
                     CompletedWorldQuests.Add(id);
                 }
             }
+        }
+
+        public void LoadPlayer(QuestPlayer player, IEnumerable<TagCompound> playerQuests)
+        {
+            if (!StatesByPlayer.TryGetValue(player.PlayerUUID, out var playerStates))
+            {
+                StatesByPlayer[player.PlayerUUID] = playerStates = new Dictionary<string, BaseQuestState>();
+            }
+
+            foreach (var questTag in playerQuests)
+            {
+                var questID = questTag.GetString("questID");
+                if (Quests.QuestList.TryGetValue(questID, out var quest))
+                {
+                    if (quest.Repeatability == QuestRepeatability.OncePerWorld || quest.Repeatability == QuestRepeatability.OncePerWorldPerPlayer) continue;
+
+                    var state = quest.GetNewState();
+                    state.Load(questTag);
+                    playerStates[questID] = state;
+                }
+            }
+        }
+
+        public IEnumerable<(BaseQuestState, T)> GetActiveRequirementsOfType<T>(QuestPlayer player) where T : BaseRequirementState
+        {
+            return GetActiveQuests(player).SelectMany(q =>
+                q.Quest.GetActiveRequirements()
+                .Select(req => q.GetRequirementState(req))
+                .OfType<T>()
+                .Select(reqState => (q, reqState)));
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Quests.Requirements;
+using OvermorrowMod.Quests.State;
 using System;
 using System.Linq;
 using Terraria;
@@ -50,7 +51,7 @@ namespace OvermorrowMod.Quests
             isDoing = true;
             var currentModPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             var pursuedQuest = currentModPlayer.QuestByNPC(npc.type);
-            if (pursuedQuest != null) return pursuedQuest;
+            if (pursuedQuest != null) return pursuedQuest.Quest;
             isDoing = false;
             return GetCurrentAvailableQuest(npc);
         }
@@ -143,55 +144,18 @@ namespace OvermorrowMod.Quests
                 var modPlayer = player.GetModPlayer<QuestPlayer>();
                 if (npc.playerInteraction[player.whoAmI])
                 {
-                    foreach (var quest in modPlayer.CurrentQuests)
+                    foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<KillRequirementState>(modPlayer))
                     {
-                        if (quest.Type != QuestType.Kill) continue;
-                        foreach (IQuestRequirement requirement in quest.Requirements)
+                        var requirement = req.Requirement as KillRequirement;
+                        if (requirement.type.Contains(npc.type))
                         {
-                            if (requirement is OrRequirement orRequirement)
+                            if (req.NumKilled.ContainsKey(npc.type))
                             {
-                                foreach (KillRequirement kill in orRequirement.clauses)
-                                {
-                                    var KilledList = modPlayer.KilledNPCs;
-
-                                    foreach (int type in kill.type)
-                                    {
-                                        if (type != npc.type) continue;
-
-                                        // Check if the player has the entry of the killed NPC stored to increment their kill counter
-                                        if (KilledList.ContainsKey(type))
-                                        {
-                                            KilledList[npc.type]++;
-                                            Main.NewText(npc.type + ": " + KilledList[npc.type]);
-                                        }
-                                        else
-                                        {
-                                            // Add the entry into the Dictionary if this is the first time they are killed
-                                            KilledList.Add(npc.type, 1);
-                                        }
-                                    }
-                                }
+                                req.NumKilled[npc.type]++;
                             }
-
-                            if (requirement is KillRequirement killRequirement)
+                            else
                             {
-                                foreach (int type in killRequirement.type)
-                                {
-                                    if (type != npc.type) continue;
-
-                                    var KilledList = modPlayer.KilledNPCs;
-
-                                    // Check if the player has the entry of the killed NPC stored to increment their kill counter
-                                    if (KilledList.ContainsKey(npc.type))
-                                    {
-                                        KilledList[npc.type]++;
-                                    }
-                                    else
-                                    {
-                                        // Add the entry into the Dictionary if this is the first time they are killed
-                                        KilledList.Add(npc.type, 1);
-                                    }
-                                }
+                                req.NumKilled[npc.type] = 1;
                             }
                         }
                     }

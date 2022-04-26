@@ -16,39 +16,33 @@ namespace OvermorrowMod.Quests
         private void LogActiveQuests(CommandCaller caller)
         {
             if (caller.Player == null) return;
-            Main.NewText($"Active quests: {string.Join(", ", caller.Player.GetModPlayer<QuestPlayer>().CurrentQuests.Select(q => q.QuestName))}");
+            Main.NewText($"Active quests: {string.Join(", ", caller.Player.GetModPlayer<QuestPlayer>().CurrentQuests.Select(q => q.Quest.QuestName))}");
         }
 
         private void LogFinishedQuests(CommandCaller caller)
         {
-            var globalQuestNames = Quests.GlobalCompletedQuests.Select(qid => Quests.QuestList[qid].QuestName);
+            var globalQuestNames = Quests.State.GetWorldQuestsToSave().Select(qid => Quests.QuestList[qid].QuestName);
             Main.NewText($"Globally completed quests: {string.Join(", ", globalQuestNames)}");
             if (caller.Player != null)
             {
                 var modPlayer = caller.Player.GetModPlayer<QuestPlayer>();
-                var localQuestNames = modPlayer.CompletedQuests.Select(qid => Quests.QuestList[qid].QuestName);
+                var completedQuests = Quests.State.GetPerPlayerQuests(modPlayer).Where(q => q.Completed);
+
+                var localQuestNames = completedQuests.Where(q => q.Quest.Repeatability == QuestRepeatability.OncePerPlayer).Select(q => q.Quest.QuestName);
                 Main.NewText($"Player completed quests: {string.Join(", ", localQuestNames)}");
 
-                var worldLocalQuestNames = Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Select(qid => Quests.QuestList[qid].QuestName);
+                var worldLocalQuestNames = completedQuests.Where(q => q.Quest.Repeatability == QuestRepeatability.OncePerWorldPerPlayer).Select(q => q.Quest.QuestName);
                 Main.NewText($"Per player per world completed quests: {string.Join(", ", worldLocalQuestNames)}");
             }
         }
 
         private void LogUnfinishedQuests(CommandCaller caller)
         {
-            IEnumerable<string> finishedQuestIds = Quests.GlobalCompletedQuests;
-            if (caller.Player != null)
-            {
-                var modPlayer = caller.Player.GetModPlayer<QuestPlayer>();
-                finishedQuestIds = finishedQuestIds
-                    .Concat(modPlayer.CompletedQuests)
-                    .Concat(Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID]);
-            }
-            var finishedQuestSet = new HashSet<string>(finishedQuestIds);
-            var remainingQuests = Quests.QuestList.Values.Where(q => !finishedQuestSet.Contains(q.QuestID));
-            var unfinishedQuestNames = remainingQuests.Select(q => q.QuestName);
+            if (caller.Player == null) return;
+            var modPlayer = caller.Player.GetModPlayer<QuestPlayer>();
+            var unfinishedQuests = Quests.QuestList.Where(q => !Quests.State.HasCompletedQuest(modPlayer, q.Value)).Select(q => q.Value.QuestName);
 
-            Main.NewText($"Remaining unfinished or repeatable quests: {string.Join(", ", unfinishedQuestNames)}");
+            Main.NewText($"Remaining unfinished or repeatable quests: {string.Join(", ", unfinishedQuests)}");
         }
 
         private void List(CommandCaller caller, string[] args)
