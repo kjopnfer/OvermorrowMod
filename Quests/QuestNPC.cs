@@ -147,7 +147,7 @@ namespace OvermorrowMod.Quests
                     foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<KillRequirementState>(modPlayer))
                     {
                         var requirement = req.Requirement as KillRequirement;
-                        if (requirement.type.Contains(npc.type))
+                        if (requirement.NPCTypes.Contains(npc.type))
                         {
                             if (req.NumKilled.ContainsKey(npc.type))
                             {
