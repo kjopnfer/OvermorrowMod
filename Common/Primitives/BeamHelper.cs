@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 
-namespace OvermorrowMod.Effects.Prim
+namespace OvermorrowMod.Common.Primitives
 {
     public class MatrixCollection
     {
@@ -33,10 +33,7 @@ namespace OvermorrowMod.Effects.Prim
             Matrix Projection = Matrix.CreateOrthographic(width, height, 0, 1000);
             return View * Projection;
         }
-        public static Vector3 ToVector3(this Vector2 vec)
-        {
-            return new Vector3(vec.X, vec.Y, 0);
-        }
+
         public static Vector2 GetRotation(IReadOnlyList<Vector2> oldPos, int index)
         {
             if (oldPos.Count == 1)
