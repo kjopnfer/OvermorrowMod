@@ -20,6 +20,7 @@ namespace OvermorrowMod.Common
 
         internal AltarUI Altar;
         internal BookUI BookUI;
+        internal QuestLog QuestLog;
 
         public override void PostUpdateEverything()
         {
@@ -40,6 +41,9 @@ namespace OvermorrowMod.Common
                 BookUI = new BookUI();
                 BookUI.Activate();
 
+                QuestLog = new QuestLog();
+                QuestLog.Activate();
+
                 BookInterface = new UserInterface();
                 BookInterface.SetState(BookUI);
             }
@@ -58,10 +62,20 @@ namespace OvermorrowMod.Common
                 AltarUI.Update(gameTime);
             }
 
-            if (BookUI.Visible)
+            if (BookInterface?.CurrentState != null && !Main.gameMenu)
+            {
+                BookInterface.Update(gameTime);
+            }
+
+            /*if (BookUI.Visible)
             {
                 BookInterface?.Update(gameTime);
-            }
+            }*/
+
+            /*if (BookInterface?.CurrentState == QuestLog)
+            {
+                BookInterface?.Update(gameTime);
+            }*/
         }
 
         internal void BossTitle(int BossID)
