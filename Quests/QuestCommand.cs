@@ -79,7 +79,7 @@ namespace OvermorrowMod.Quests
             BaseQuest quest = null;
             if (!Quests.QuestList.TryGetValue(args[1], out quest))
             {
-                quest = Quests.QuestList.Values.FirstOrDefault(q => q.QuestName == args[1]);
+                quest = Quests.QuestList.Values.FirstOrDefault(q => q.QuestName.Replace(' ', '_').ToLower() == args[1].ToLower());
             }
 
             if (quest == null)
