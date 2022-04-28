@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Quests.Requirements;
+using OvermorrowMod.Quests.State;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -89,56 +91,27 @@ namespace OvermorrowMod.Quests
         public void CompleteQuest(Player player, bool success)
         {
             var modPlayer = player.GetModPlayer<QuestPlayer>();
-            if (Repeatability == QuestRepeatability.OncePerPlayer && modPlayer.CompletedQuests.Contains(QuestID)) success = false;
-            if (Repeatability == QuestRepeatability.OncePerWorld && Quests.GlobalCompletedQuests.Contains(QuestID)) success = false;
-            if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer
-                && Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(QuestID)) success = false;
+            if (Quests.State.HasCompletedQuest(modPlayer, this)) success = false;
+            var state = Quests.State.GetActiveQuestState(modPlayer, this);
+            if (state == null) success = false;
 
             if (success)
             {
                 ResetEffects(player);
-
                 GiveRewards(player);
                 Main.NewText("COMPLETED QUEST: " + QuestName, Color.Yellow);
             }
-            modPlayer.RemoveQuest(this);
-            if (Repeatability == QuestRepeatability.OncePerPlayer)
-            {
-                modPlayer.CompletedQuests.Add(QuestID);
-            }
-            else if (Repeatability == QuestRepeatability.OncePerWorld)
-            {
-                // For per-world quests any duplicates must be terminated here.
-                Quests.GlobalCompletedQuests.Add(QuestID);
-                for (int i = 0; i < Main.maxPlayers; i++)
-                {
-                    var p = Main.player[i];
-                    if (!p.active || p == player) continue;
-
-                    var extModPlayer = p.GetModPlayer<QuestPlayer>();
-                    foreach (var quest in extModPlayer.CurrentQuests)
-                    {
-                        if (quest.QuestID == QuestID)
-                        {
-                            quest.CompleteQuest(p, false);
-                        }
-                    }
-                }
-            }
-            else if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer)
-            {
-                Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Add(QuestID);
-            }
+            Quests.State.CompleteQuest(modPlayer, this);
         }
 
         /// <summary>
         /// Returns true if all quest goals are completed by the given player.
         /// </summary>
-        public bool CheckRequirements(Player player)
+        public bool CheckRequirements(QuestPlayer player, BaseQuestState state)
         {
             foreach (var requirement in Requirements)
             {
-                if (!requirement.IsCompleted(player)) return false;
+                if (!requirement.IsCompleted(player, state)) return false;
             }
             return true;
         }
@@ -166,12 +139,57 @@ namespace OvermorrowMod.Quests
             if (!IsValidFor(player)) return false;
             var modPlayer = player.GetModPlayer<QuestPlayer>();
             // Is the player currently doing this quest?
-            if (modPlayer.CurrentQuests.Any(q => q.QuestID == QuestID)) return false;
-            if (Repeatability == QuestRepeatability.OncePerPlayer && modPlayer.CompletedQuests.Contains(QuestID)) return false;
-            if (Repeatability == QuestRepeatability.OncePerWorld && Quests.GlobalCompletedQuests.Contains(QuestID)) return false;
-            if (Repeatability == QuestRepeatability.OncePerWorldPerPlayer
-                && Quests.PerPlayerCompletedQuests[modPlayer.PlayerUUID].Contains(QuestID)) return false;
+            if (Quests.State.IsDoingQuest(modPlayer, QuestID)) return false;
+            if (Quests.State.HasCompletedQuest(modPlayer, this)) return false;
             return true;
+        }
+
+        public virtual BaseQuestState GetNewState()
+        {
+            return new BaseQuestState(this, GetActiveRequirements().Select(req => req.GetNewState()).Where(req => req != null).ToList());
+        }
+
+        private IEnumerable<IQuestRequirement> GetRequirements(IQuestRequirement source)
+        {
+            if (source is BaseCompositeRequirement composite)
+            {
+                foreach (var req in composite.Clauses)
+                {
+                    foreach (var req2 in GetRequirements(req))
+                    {
+                        yield return req2;
+                    }
+                }
+            }
+            else
+            {
+                yield return source;
+            }
+        }
+
+        /// <summary>
+        /// Returns all requirements except Composite requirements, instead unwrapping those.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<IQuestRequirement> GetActiveRequirements()
+        {
+            foreach (var req in Requirements)
+            {
+                foreach (var req2 in GetRequirements(req))
+                {
+                    yield return req2;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Return all active requirements of the given type
+        /// </summary>
+        /// <typeparam name="T">Requirement type</typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetActiveRequirementsOfType<T>() where T : IQuestRequirement
+        {
+            return GetActiveRequirements().OfType<T>();
         }
     }
 }
