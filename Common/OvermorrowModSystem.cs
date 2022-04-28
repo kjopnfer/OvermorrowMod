@@ -144,7 +144,7 @@ namespace OvermorrowMod.Common
                     "OvermorrowMod: Book",
                     delegate
                     {
-                        if (BookUI.Visible)
+                        if (BookUI.Visible || BookInterface?.CurrentState == QuestLog)
                         {
                             BookInterface.Draw(Main.spriteBatch, new GameTime());
                         }

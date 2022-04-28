@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core;
+using OvermorrowMod.Quests;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
@@ -26,11 +27,6 @@ namespace OvermorrowMod.Content.UI
             ModUtils.AddElement(BookButton, 570, 274, 34, 38, this);
             BookButton.OnClick += BookClicked;
             BookButton.SetVisibility(1, 1);
-
-            //ModUtils.AddElement(Back, Main.screenWidth / 2, Main.screenHeight / 2, 500, 500, this);
-            //
-            //ModUtils.AddElement(ExitButton, 454, 4, 32, 32, Back);
-            //ExitButton.OnClick += Exit;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -57,12 +53,9 @@ namespace OvermorrowMod.Content.UI
             var state = ModContent.GetInstance<OvermorrowModSystem>().QuestLog;
             ModContent.GetInstance<OvermorrowModSystem>().BookInterface?.SetState(state);
 
+            Main.playerInventory = false;
+            //Main.LocalPlayer.ToggleInv();
             //Open = true;
-        }
-
-        private void Exit(UIMouseEvent evt, UIElement listeningElement)
-        {
-            Open = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -76,49 +69,104 @@ namespace OvermorrowMod.Content.UI
         }
     }
 
-    /*internal class QuestLog : UIElement
-    {
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White);
-            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
-
-            base.Draw(spriteBatch);
-        }
-    }*/
-
     internal class QuestLog : UIState
     {
-        private BookPanel Panel = new BookPanel();
-        private UIPanel panel = new UIPanel();
+        private BookPanel BackPanel = new BookPanel();
+        private UIElement LeftPanel = new UIElement();
+        private UIElement RightPanel = new UIElement();
+
+        private UIPanel LeftPage = new UIPanel();
+        private UIPanel RightPage = new UIPanel();
+
+        private UIList QuestList = new UIList();
+        private UIScrollbar ScrollBar = new UIScrollbar();
+
         private UIImageButton ExitButton = new UIImageButton(ModContent.Request<Texture2D>(AssetDirectory.UI + "QuestBook_Exit"));
 
         public override void OnInitialize()
         {
-            ModUtils.AddElement(Panel, Main.screenWidth / 2, Main.screenHeight / 2, 750, 500, this);
-            ModUtils.AddElement(ExitButton, 454, 4, 32, 32, Panel);
+            ModUtils.AddElement(BackPanel, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
+
+            ModUtils.AddElement(LeftPanel, 0, 0, 346, 500, BackPanel);
+            LeftPanel.SetPadding(0);
+
+            ModUtils.AddElement(RightPanel, 380, 0, 346, 500, BackPanel);
+            RightPanel.SetPadding(0);
+
+            ModUtils.AddElement(LeftPage, 0, 0, 346, 500, LeftPanel);
+            ModUtils.AddElement(RightPage, 0, 0, 346, 500, RightPanel);
+
+            ModUtils.AddElement(QuestList, 0, 0, 120, 390, LeftPanel);
+            QuestList.ListPadding = 2;
+
+            ModUtils.AddElement(ScrollBar, 0, 0, 18, 390, LeftPanel);
+            ScrollBar.SetView(0, 410);
+            QuestList.SetScrollbar(ScrollBar);
+
+            ModUtils.AddElement(ExitButton, 188, 4, 32, 32, RightPanel);
+
+            UpdateList();         
+
             ExitButton.OnClick += Exit;
+        }
+
+        private void AddEntry(UIElement element, float offY)
+        {
+            element.Left.Set(0, 0);
+            element.Top.Set(offY, 0);
+            element.Width.Set(120, 0);
+            element.Height.Set(28, 0);
+            QuestList.Add(element);
         }
 
         private void Exit(UIMouseEvent evt, UIElement listeningElement)
         {
             var state = ModContent.GetInstance<OvermorrowModSystem>().BookUI;
             ModContent.GetInstance<OvermorrowModSystem>().BookInterface?.SetState(state);
-
-            //ModContent.GetInstance<OvermorrowModSystem>().HideMyUI();
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        private void UpdateList()
         {
-            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White);
-            //Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+            QuestList.Clear();
 
-            base.Draw(spriteBatch);
+            for (int i = 0; i < 25; i++)
+            {
+                QuestList.Add(new UIText("TEST1"));
+                QuestList.Add(new UIText("AFHAF"));
+            }
+
+            if (!Main.gameMenu)
+            {
+                AddEntry(new UIText("TEST1"), 0);
+                AddEntry(new UIText("TEST2"), 0);
+
+                var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+                foreach (var quest in modPlayer.CompletedQuests)
+                {
+                    UIText text = new UIText(quest.ToString());
+                    AddEntry(text, 0);
+                }
+
+                foreach (var quest in Quests.Quests.GlobalCompletedQuests)
+                {
+                    UIText text = new UIText("TEST");
+                    AddEntry(text, 0);
+                }
+
+                foreach (var quest in Quests.Quests.PerPlayerCompletedQuests)
+                {
+                    UIText text = new UIText("Test");
+                    AddEntry(text, 0);
+                }
+            }
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch)
+        public override void Update(GameTime gameTime)
         {
-            base.DrawSelf(spriteBatch);
+            base.Update(gameTime);
+
+            // You're not allowed to open the inventory if the book is OPEN
+            Main.playerInventory = false;
         }
     }
 }
