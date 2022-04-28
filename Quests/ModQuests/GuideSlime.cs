@@ -18,14 +18,15 @@ namespace OvermorrowMod.Quests.ModQuests
             Requirements = new[]
             {
                 new OrRequirement(
+                    "slime_or",
                     new KillRequirement(new List<int>(){
                         NPCID.BlueSlime,
                         NPCID.Bunny,
                         NPCID.BirdRed
-                    }, 3),
+                    }, 3, "slime_kill_1"),
                     new KillRequirement(new List<int>(){
                         NPCID.Grasshopper,               
-                    }, 3)
+                    }, 3, "slime_kill_2")
                 )
             };
             Rewards = new[]
