@@ -54,8 +54,6 @@ namespace OvermorrowMod.Content.UI
             ModContent.GetInstance<OvermorrowModSystem>().BookInterface?.SetState(state);
 
             Main.playerInventory = false;
-            //Main.LocalPlayer.ToggleInv();
-            //Open = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -71,6 +69,8 @@ namespace OvermorrowMod.Content.UI
 
     internal class QuestLog : UIState
     {
+        public BaseQuest FocusQuest = null;
+
         private BookPanel BackPanel = new BookPanel();
         private UIElement LeftPanel = new UIElement();
         private UIElement RightPanel = new UIElement();
@@ -83,6 +83,10 @@ namespace OvermorrowMod.Content.UI
 
         private UIImageButton ExitButton = new UIImageButton(ModContent.Request<Texture2D>(AssetDirectory.UI + "QuestBook_Exit"));
 
+        private UIText QuestTitle = new UIText("");
+        private UIText QuestGiver = new UIText("");
+        private UIText QuestType = new UIText("");
+
         public override void OnInitialize()
         {
             ModUtils.AddElement(BackPanel, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
@@ -93,26 +97,34 @@ namespace OvermorrowMod.Content.UI
             ModUtils.AddElement(RightPanel, 380, 0, 346, 500, BackPanel);
             RightPanel.SetPadding(0);
 
-            ModUtils.AddElement(LeftPage, 0, 0, 346, 500, LeftPanel);
-            ModUtils.AddElement(RightPage, 0, 0, 346, 500, RightPanel);
+            //ModUtils.AddElement(LeftPage, 0, 0, 346, 500, LeftPanel);
+            //ModUtils.AddElement(RightPage, 0, 0, 346, 500, RightPanel);
 
-            ModUtils.AddElement(QuestList, 0, 0, 120, 390, LeftPanel);
+            ModUtils.AddElement(QuestList, 0, 20, 150, 410, LeftPanel);
             QuestList.ListPadding = 2;
 
-            ModUtils.AddElement(ScrollBar, 0, 0, 18, 390, LeftPanel);
+            ModUtils.AddElement(ScrollBar, 0, 20, 18, 410, LeftPanel);
             ScrollBar.SetView(0, 410);
             QuestList.SetScrollbar(ScrollBar);
 
             ModUtils.AddElement(ExitButton, 188, 4, 32, 32, RightPanel);
 
-            UpdateList();         
+
+            #region Right Page
+            ModUtils.AddElement(QuestTitle, 173, 50, 32, 32, RightPanel);
+            ModUtils.AddElement(QuestGiver, 173, 65, 32, 32, RightPanel);
+            ModUtils.AddElement(QuestType, 173, 80, 32, 32, RightPanel);
+
+            #endregion
+
+            UpdateList();
 
             ExitButton.OnClick += Exit;
         }
 
         private void AddEntry(UIElement element, float offY)
         {
-            element.Left.Set(0, 0);
+            element.Left.Set(40, 0);
             element.Top.Set(offY, 0);
             element.Width.Set(120, 0);
             element.Height.Set(28, 0);
@@ -129,44 +141,72 @@ namespace OvermorrowMod.Content.UI
         {
             QuestList.Clear();
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 5; i++)
             {
-                QuestList.Add(new UIText("TEST1"));
-                QuestList.Add(new UIText("AFHAF"));
-            }
-
-            if (!Main.gameMenu)
-            {
-                AddEntry(new UIText("TEST1"), 0);
-                AddEntry(new UIText("TEST2"), 0);
-
-                var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-                foreach (var quest in modPlayer.CompletedQuests)
+                foreach (var Quest in Quests.Quests.QuestList.Values)
                 {
-                    UIText text = new UIText(quest.ToString());
-                    AddEntry(text, 0);
+                    //QuestEntry entry = new QuestEntry(Quest.QuestName);
+                    QuestEntry entry = new QuestEntry(Quest);
+                    AddEntry(entry, 0);
                 }
 
-                foreach (var quest in Quests.Quests.GlobalCompletedQuests)
-                {
-                    UIText text = new UIText("TEST");
-                    AddEntry(text, 0);
-                }
-
-                foreach (var quest in Quests.Quests.PerPlayerCompletedQuests)
-                {
-                    UIText text = new UIText("Test");
-                    AddEntry(text, 0);
-                }
             }
         }
 
-        public override void Update(GameTime gameTime)
+        private void UpdatePage()
+        {
+            if (FocusQuest != null)
+            {
+                QuestTitle.SetText(FocusQuest.QuestName);
+                QuestGiver.SetText(Lang.GetNPCNameValue(FocusQuest.QuestGiver));
+                QuestType.SetText(FocusQuest.Type.ToString());
+            }
+        }
+
+        public override void Update(GameTime gameTime)  
         {
             base.Update(gameTime);
 
+            UpdateList();
+            UpdatePage();
+
             // You're not allowed to open the inventory if the book is OPEN
             Main.playerInventory = false;
+        }
+    }
+
+    internal class QuestEntry : UIElement
+    {
+        private BaseQuest questEntry;
+
+        public QuestEntry(BaseQuest quest)
+        {
+            questEntry = quest;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+
+            Utils.DrawBorderString(spriteBatch, questEntry.QuestName, pos, IsMouseHovering ? Color.Blue : Color.Red);
+        }
+
+        public override void MouseDown(UIMouseEvent evt)
+        {
+            Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
+
+            //if (!(Parent.Parent is BookPanel)) return;
+
+            Main.NewText("pass back " + questEntry.QuestName);
+            ModContent.GetInstance<OvermorrowModSystem>().QuestLog.FocusQuest = questEntry;
+
+            //if (Parent.Parent is BookPanel) Main.NewText("A");
+            //
+            //if (Parent.Parent.Parent is BookPanel) Main.NewText("B");
+            //
+            //if (Parent.Parent.Parent.Parent is BookPanel) Main.NewText("C");
+            //
+            //if (Parent is BookPanel) Main.NewText("D");
         }
     }
 }
