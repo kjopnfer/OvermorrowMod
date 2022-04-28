@@ -60,6 +60,7 @@ namespace OvermorrowMod.Quests
         public override void LoadData(TagCompound tag)
         {
             PlayerUUID = tag.GetString("PlayerUUID");
+            if (PlayerUUID == null) PlayerUUID = Guid.NewGuid().ToString();
 
             var questStates = tag.GetList<TagCompound>("questStates");
             Quests.State.LoadPlayer(this, questStates);
