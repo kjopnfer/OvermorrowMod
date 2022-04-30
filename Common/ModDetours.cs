@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
+using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -19,14 +20,45 @@ namespace OvermorrowMod.Common
             On.Terraria.Player.Update_NPCCollision += UpdateNPCCollision;
             On.Terraria.Player.SlopingCollision += PlatformCollision;
             On.Terraria.Main.DrawInterface += DrawParticles;
+            On.Terraria.Main.DrawDust += DrawOverlay;
+        }
+
+        // Test for blurred overlay
+        private static void DrawOverlay(On.Terraria.Main.orig_DrawDust orig, Main self)
+        {
+            var effect = OvermorrowModFile.Instance.RadialBlur.Value;
+            var texture = OvermorrowModFile.Instance.BlurTestTexture.Value;
+
+            var data = Primitives.PrimitiveHelper.GetRectangleStrip(new Rectangle(Main.spawnTileX * 16 - 200, Main.spawnTileY * 16 - 200, 400, 400));
+
+            effect.SafeSetParameter("WVP", Primitives.PrimitiveHelper.GetMatrix());
+            effect.SafeSetParameter("img0", texture);
+            effect.SafeSetParameter("blurOrigin", new Vector2(Main.screenWidth / 2, Main.screenHeight / 2));
+            // Relevant parameters. Radius is radius in pixels of the blur effect, no blur beyond that.
+            effect.SafeSetParameter("blurRadius", 100);
+            // Intensity is the "hardness" parameter of the blur. Distance to origin is converted to a number between 0 and 1, then
+            // this number is applied as an exponent. Higher is harder.
+            effect.SafeSetParameter("blurIntensity", 4);
+            effect.CurrentTechnique.Passes["Blur"].Apply();
+
+            GraphicsDevice device = Main.graphics.GraphicsDevice;
+            RasterizerState rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.None;
+            device.RasterizerState = rasterizerState;
+            device.Textures[0] = texture;
+
+            device.DrawUserPrimitives(PrimitiveType.TriangleStrip, data, 0, 4);
+
+            orig(self);
         }
 
         public static void Unload()
         {
             //On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
             On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
-            //On.Terraria.Player.SlopingCollision -= PlatformCollision;
+            On.Terraria.Player.SlopingCollision -= PlatformCollision;
             On.Terraria.Main.DrawInterface -= DrawParticles;
+            On.Terraria.Main.DrawDust -= DrawOverlay;
         }
 
         public static void DrawParticles(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)
