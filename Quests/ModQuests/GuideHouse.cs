@@ -17,6 +17,8 @@ namespace OvermorrowMod.Quests.ModQuests
         public override QuestType Type => QuestType.Housing;
         public override int QuestGiver => NPCID.Guide;
 
+        public override string QuestDescription => "test quest description ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh eeeeeeee ooooooooo audio jungle";
+
         public override void SetDefaults()
         {
             Requirements = new[]

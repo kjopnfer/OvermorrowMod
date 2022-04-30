@@ -86,6 +86,8 @@ namespace OvermorrowMod.Content.UI
         private UIText QuestTitle = new UIText("");
         private UIText QuestGiver = new UIText("");
         private UIText QuestType = new UIText("");
+        private TextWrapper QuestDescription = new TextWrapper("", 346);
+
 
         public override void OnInitialize()
         {
@@ -114,6 +116,7 @@ namespace OvermorrowMod.Content.UI
             ModUtils.AddElement(QuestTitle, 173, 50, 32, 32, RightPanel);
             ModUtils.AddElement(QuestGiver, 173, 65, 32, 32, RightPanel);
             ModUtils.AddElement(QuestType, 173, 80, 32, 32, RightPanel);
+            ModUtils.AddElement(QuestDescription, 0, 95, 346, 96, RightPanel);
 
             #endregion
 
@@ -126,7 +129,7 @@ namespace OvermorrowMod.Content.UI
         {
             element.Left.Set(40, 0);
             element.Top.Set(offY, 0);
-            element.Width.Set(120, 0);
+            element.Width.Set(150, 0);
             element.Height.Set(28, 0);
             QuestList.Add(element);
         }
@@ -135,6 +138,8 @@ namespace OvermorrowMod.Content.UI
         {
             var state = ModContent.GetInstance<OvermorrowModSystem>().BookUI;
             ModContent.GetInstance<OvermorrowModSystem>().BookInterface?.SetState(state);
+
+            FocusQuest = null;
         }
 
         private void UpdateList()
@@ -160,6 +165,8 @@ namespace OvermorrowMod.Content.UI
                 QuestTitle.SetText(FocusQuest.QuestName);
                 QuestGiver.SetText(Lang.GetNPCNameValue(FocusQuest.QuestGiver));
                 QuestType.SetText(FocusQuest.Type.ToString());
+                QuestDescription.text = FocusQuest.QuestDescription;
+                //QuestDescription.SetText(FocusQuest.QuestDescription);
             }
         }
 
@@ -195,18 +202,8 @@ namespace OvermorrowMod.Content.UI
         {
             Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
 
-            //if (!(Parent.Parent is BookPanel)) return;
-
             Main.NewText("pass back " + questEntry.QuestName);
             ModContent.GetInstance<OvermorrowModSystem>().QuestLog.FocusQuest = questEntry;
-
-            //if (Parent.Parent is BookPanel) Main.NewText("A");
-            //
-            //if (Parent.Parent.Parent is BookPanel) Main.NewText("B");
-            //
-            //if (Parent.Parent.Parent.Parent is BookPanel) Main.NewText("C");
-            //
-            //if (Parent is BookPanel) Main.NewText("D");
         }
     }
 }

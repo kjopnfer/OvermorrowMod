@@ -36,6 +36,7 @@ namespace OvermorrowMod.Quests
         public virtual QuestType Type => QuestType.Fetch;
         public virtual QuestRepeatability Repeatability => QuestRepeatability.OncePerPlayer;
         public virtual int QuestDelay => 600;
+        public virtual string QuestDescription => "";
         public virtual void SetDefaults()
         {
             Requirements = Enumerable.Empty<IQuestRequirement>();

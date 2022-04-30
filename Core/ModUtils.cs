@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -310,6 +311,47 @@ namespace OvermorrowMod.Core
 
             return array;
             //return Shuffle<T>(new List<T>(array)).ToArray();
+        }
+
+
+        /**
+         * Adapted from Spirit Mod source code
+         */
+        public static string WrapText(DynamicSpriteFont font, string text, float maxLineWidth, float fontScale = 1f)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+
+            string[] lines = text.Split('\n');
+            string newText = "";
+            float currentWidth = 0f;
+            float spaceWidth = font.MeasureString(" ").X * fontScale;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                string[] words = line.Split(' ');
+                foreach (string word in words)
+                {
+                    Vector2 wordSize = font.MeasureString(word) * fontScale;
+
+                    if (currentWidth + wordSize.X < maxLineWidth)
+                    {
+                        newText += word + " ";
+                        currentWidth += wordSize.X + spaceWidth;
+                        continue;
+                    }
+
+                    newText += Environment.NewLine + word + " ";
+                    currentWidth = wordSize.X + spaceWidth;
+                }
+                currentWidth = 0f;
+                if (i < lines.Length - 1)
+                {
+                    newText += "\n";
+                }
+            }
+
+            return newText;
         }
 
         public static void AddElement(UIElement element, int x, int y, int width, int height, UIElement appendTo)
