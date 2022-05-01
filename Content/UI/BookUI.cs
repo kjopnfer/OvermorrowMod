@@ -86,8 +86,8 @@ namespace OvermorrowMod.Content.UI
         private UIText QuestTitle = new UIText("");
         private UIText QuestGiver = new UIText("");
         private UIText QuestType = new UIText("");
-        private TextWrapper QuestDescription = new TextWrapper("", 346);
-
+        private UITextWrapper QuestDescription = new UITextWrapper("", 346);
+        private UIItemContainer test = new UIItemContainer(ItemID.GoldCoin, 60);
 
         public override void OnInitialize()
         {
@@ -117,6 +117,7 @@ namespace OvermorrowMod.Content.UI
             ModUtils.AddElement(QuestGiver, 173, 65, 32, 32, RightPanel);
             ModUtils.AddElement(QuestType, 173, 80, 32, 32, RightPanel);
             ModUtils.AddElement(QuestDescription, 0, 95, 346, 96, RightPanel);
+            ModUtils.AddElement(test, 173, 140, 32, 32, RightPanel);
 
             #endregion
 
