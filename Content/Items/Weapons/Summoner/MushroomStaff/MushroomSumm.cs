@@ -91,7 +91,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MushroomStaff
                     Vector2 newpoint5 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(10f));
 
                     float speed = 10f;
-                    var source = Projectile.GetProjectileSource_FromThis();
+                    var source = Projectile.GetSource_FromAI();
                     Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, newpoint1.X * speed, newpoint1.Y * speed + Random, ModContent.ProjectileType<SummSpore>(), Projectile.damage, 1f, Projectile.owner, 0f);
                     Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed + Random2, ModContent.ProjectileType<SummSpore>(), Projectile.damage, 1f, Projectile.owner, 0f);
                     Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, newpoint3.X * speed, newpoint3.Y * speed + Random3, ModContent.ProjectileType<SummSpore>(), Projectile.damage, 1f, Projectile.owner, 0f);

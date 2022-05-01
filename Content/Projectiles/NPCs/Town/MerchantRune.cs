@@ -70,7 +70,7 @@ namespace OvermorrowMod.Content.Projectiles.NPCs.Town
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 4, ProjectileType<MerchantSpike>(), Projectile.damage, 3f, Main.myPlayer);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.One.RotatedByRandom(Math.PI) * 4, ProjectileType<MerchantSpike>(), Projectile.damage, 3f, Main.myPlayer);
 
                             Projectile.Kill();
                         }

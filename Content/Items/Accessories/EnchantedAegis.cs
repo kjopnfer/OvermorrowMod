@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.Items.Accessories
             // Creating beams of light
             if (player.HeldItem.CountsAsClass(DamageClass.Magic) && player.itemAnimation > 0 && player.itemAnimation % 7 == 0)
             {
-                Projectile.NewProjectile(player.GetProjectileSource_Accessory(Item), player.Center, new Vector2(0), ModContent.ProjectileType<StoredDamage>(), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
+                Projectile.NewProjectile(player.GetSource_Accessory(Item), player.Center, new Vector2(0), ModContent.ProjectileType<StoredDamage>(), 0, 0f, player.whoAmI, Main.rand.Next(70, 95), 0f);
 
                 if (player.GetModPlayer<OvermorrowModPlayer>().storedDamage < damageCap)
                 {

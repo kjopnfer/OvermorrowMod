@@ -20,7 +20,7 @@ namespace OvermorrowMod.Quests.Rewards
 
         public void Give(Player player)
         {
-            player.QuickSpawnItem(player.GetItemSource_Misc(ItemSourceID.None), type, stack);
+            player.QuickSpawnItem(player.GetSource_GiftOrReward("overmorrowquest"), type, stack);
         }
     }
 }

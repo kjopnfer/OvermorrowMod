@@ -93,7 +93,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                                             {
                                                 if (Main.player[k].active && !Main.player[k].dead)
                                                 {
-                                                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Projectile.DirectionTo(Main.player[k].Center) * shootSpeed, ModContent.ProjectileType<ApollusArrowNormal>(), 13, 3f, Main.myPlayer, 0, 0);
+                                                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.DirectionTo(Main.player[k].Center) * shootSpeed, ModContent.ProjectileType<ApollusArrowNormal>(), 13, 3f, Main.myPlayer, 0, 0);
                                                 }
                                                 distance = distanceTo;
                                             }
@@ -111,7 +111,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                                 {
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), Projectile.damage, 10f, Main.myPlayer);
+                                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ApollusGravityArrow>(), Projectile.damage, 10f, Main.myPlayer);
                                     }
                                 }
                             }
@@ -152,7 +152,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalStore, Main.rand.Next(-3, 3) * directionalStore), ProjectileType<ApollusArrowNormal>(), Projectile.damage, 2, Main.myPlayer);
+                                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(Main.rand.Next(-5, -3) * directionalStore, Main.rand.Next(-3, 3) * directionalStore), ProjectileType<ApollusArrowNormal>(), Projectile.damage, 2, Main.myPlayer);
                                 }
                             }
                         }

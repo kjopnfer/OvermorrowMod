@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
 
         public override void Kill(int timeLeft)
         {
-            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BloodExplosion>(), Projectile.damage, 10f, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BloodExplosion>(), Projectile.damage, 10f, Projectile.owner);
         }
     }
 }

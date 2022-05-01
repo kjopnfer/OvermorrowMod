@@ -50,9 +50,9 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
                     sandMode = "Defense";
                 }
 
-                if (line.mod == "Terraria" && line.Name == "Tooltip3")
+                if (line.Mod == "Terraria" && line.Name == "Tooltip3")
                 {
-                    line.text = "Press [" + hotkey + "] to swap to " + sandMode + " mode";
+                    line.Text = "Press [" + hotkey + "] to swap to " + sandMode + " mode";
                 }
             }
         }

@@ -67,7 +67,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
                         int RotationAngle = Main.rand.Next(6, 10);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<IorichSummonEnergy>(), 0, 0f, Projectile.owner, RotationDirection, RotationAngle);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<IorichSummonEnergy>(), 0, 0f, Projectile.owner, RotationDirection, RotationAngle);
                         }
                     }
                 }
@@ -85,10 +85,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
                             Vector2 RandomPosition = Projectile.Center + new Vector2(Main.rand.Next(-70, -60) * Projectile.direction, Main.rand.Next(-50, 50));
                             Vector2 RandomVelocity = Vector2.Normalize(Projectile.DirectionTo(Main.MouseWorld)).RotatedBy(MathHelper.ToRadians(Main.rand.Next(20, 45))) * Main.rand.Next(6, 9);
 
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), RandomPosition, RandomVelocity, ModContent.ProjectileType<IorichSummonStar>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, -1);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), RandomPosition, RandomVelocity, ModContent.ProjectileType<IorichSummonStar>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, -1);
 
                             RandomVelocity = Vector2.Normalize(Projectile.DirectionTo(Main.MouseWorld)).RotatedBy(MathHelper.ToRadians(-Main.rand.Next(20, 45))) * Main.rand.Next(6, 9);
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), RandomPosition, RandomVelocity, ModContent.ProjectileType<IorichSummonStar>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), RandomPosition, RandomVelocity, ModContent.ProjectileType<IorichSummonStar>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1);
                         }
                     }
                 }

@@ -69,7 +69,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             break;
                     }
 
-                    NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)SpawnRotation.X, (int)SpawnRotation.Y, NPCType, 0, Projectile.whoAmI, 0f, 120 * i);
+                    NPC.NewNPC(Projectile.GetSource_FromAI(), (int)SpawnRotation.X, (int)SpawnRotation.Y, NPCType, 0, Projectile.whoAmI, 0f, 120 * i);
                 }
 
                 //int proj = Projectile.NewProjectile(projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, 0, 0f, projectile.owner);
@@ -88,7 +88,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     float Rotation = BarrierCounter * MathHelper.PiOver4;
 
                     Vector2 SpawnPosition = Projectile.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation);
-                    int BarrierNPC = NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Barrier>(), 0, Projectile.Center.X, Projectile.Center.Y, Rotation, RADIUS);
+                    int BarrierNPC = NPC.NewNPC(Projectile.GetSource_FromAI(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Barrier>(), 0, Projectile.Center.X, Projectile.Center.Y, Rotation, RADIUS);
 
                     // Goes from 1 - 8, add 1 to offset the counter that starts at 0
                     ((Barrier)Main.npc[BarrierNPC].ModNPC).BarrierID = BarrierCounter + 1;
@@ -97,8 +97,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     {
                         RADIUS = 275;
                         SpawnPosition = Projectile.Center + new Vector2(RADIUS, 0).RotatedBy(Rotation);
-                        NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Spin>(), 0, Projectile.Center.X, Projectile.Center.Y, Rotation, RADIUS);
-                        NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Spin>(), 0, Projectile.Center.X, Projectile.Center.Y, 2 * Rotation, RADIUS);
+                        NPC.NewNPC(Projectile.GetSource_FromAI(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Spin>(), 0, Projectile.Center.X, Projectile.Center.Y, Rotation, RADIUS);
+                        NPC.NewNPC(Projectile.GetSource_FromAI(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Spin>(), 0, Projectile.Center.X, Projectile.Center.Y, 2 * Rotation, RADIUS);
                     }
 
                     BarrierCounter++;
@@ -126,7 +126,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     }
                 }
 
-                NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)Projectile.Center.X, (int)Projectile.Center.Y, ModContent.NPCType<SandstormBoss>(), 0, -1f, 0f, 0f, 0f, 255);
+                NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, ModContent.NPCType<SandstormBoss>(), 0, -1f, 0f, 0f, 0f, 255);
 
                 Vector2 origin = new Vector2((int)Projectile.Center.X, (int)(Projectile.Center.Y));
                 float radius = 100;

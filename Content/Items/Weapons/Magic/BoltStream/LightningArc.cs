@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BoltStream
                     if (npc.active && npc.HasBuff(ModContent.BuffType<LightningMarked>()) && target.Distance(npc.Center) < StartingRadius)
                     {
                         // Insert targeted npc in ai0, if jumping from npcs, input starting npc as ai0 and ending npc as ai1
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_OnHit(target, ProjectileSourceID.None), target.Center, Vector2.Zero, ModContent.ProjectileType<LightningArc>(), Projectile.damage, 6f, Projectile.owner, target.whoAmI, npc.whoAmI);
+                        Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, ModContent.ProjectileType<LightningArc>(), Projectile.damage, 6f, Projectile.owner, target.whoAmI, npc.whoAmI);
                         FoundTarget = true;
                         break;
                     }

@@ -41,17 +41,17 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
                     int num510 = 6;
                     int num511 = Dust.NewDust(Projectile.position + Vector2.One * 6f, Projectile.width - num510 * 2, Projectile.height - num510 * 2, DustID.t_Slime, 0f, 0f, num508, newColor2, 1.2f);
                     Dust dust;
-                    if (Main.rand.Next(2) == 0)
+                    if (Main.rand.NextBool(2))
                     {
                         dust = Main.dust[num511];
                         dust.alpha += 25;
                     }
-                    if (Main.rand.Next(2) == 0)
+                    if (Main.rand.NextBool(2))
                     {
                         dust = Main.dust[num511];
                         dust.alpha += 25;
                     }
-                    if (Main.rand.Next(2) == 0)
+                    if (Main.rand.NextBool(2))
                     {
                         dust = Main.dust[num511];
                         dust.alpha += 25;
@@ -67,7 +67,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
                     dust = Main.dust[num511];
                     dust.velocity *= 0.2f;
                 }
-                if (Main.rand.Next(4) == 0)
+                if (Main.rand.NextBool(4))
                 {
                     int num512 = 6;
                     int num513 = Dust.NewDust(Projectile.position + Vector2.One * 6f, Projectile.width - num512 * 2, Projectile.height - num512 * 2, DustID.t_Slime, 0f, 0f, num508, newColor2, 1.2f);

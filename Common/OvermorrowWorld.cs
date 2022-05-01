@@ -31,9 +31,7 @@ namespace OvermorrowMod.Common
 
         // Biomes
 
-        private bool placedBook = false;
         private bool placedGranite = false;
-        private bool placedPearl = false;
         private bool placedtele = false;
         private bool placedclaw = false;
 
@@ -78,7 +76,7 @@ namespace OvermorrowMod.Common
                     }
                     else
                     {
-                        if (Main.rand.Next(3) == 1)
+                        if (Main.rand.NextBool(3))
                         {
                             for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
                             {
@@ -114,7 +112,7 @@ namespace OvermorrowMod.Common
                     }
                     else
                     {
-                        if (Main.rand.Next(2) == 1)
+                        if (Main.rand.NextBool(2))
                         {
                             for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
                             {
@@ -150,7 +148,7 @@ namespace OvermorrowMod.Common
                     }
                     else
                     {
-                        if (Main.rand.Next(2) == 1)
+                        if (Main.rand.NextBool(2))
                         {
                             for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
                             {
@@ -485,22 +483,22 @@ namespace OvermorrowMod.Common
                     {
                         if (j > randSize - 20)
                         {
-                            if (WorldGen.genRand.Next(2100) == 0)
+                            if (WorldGen.genRand.NextBool(2100))
                             {
                                 WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
                             }
                         }
                         else
                         {
-                            if (WorldGen.genRand.Next(2800) == 0)
+                            if (WorldGen.genRand.NextBool(2800))
                             {
                                 WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
                             }
                         }
 
-                        if (WorldGen.genRand.Next(3000) == 0)
+                        if (WorldGen.genRand.NextBool(3000))
                         {
-                            WorldGen.digTunnel(xAxis, yAxis, WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.Next(30, 40), Main.rand.Next(2, 6), Main.rand.Next(10) == 0 ? true : false);
+                            WorldGen.digTunnel(xAxis, yAxis, WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.Next(30, 40), Main.rand.Next(2, 6), Main.rand.NextBool(10));
                         }
                     }
                 }
@@ -516,22 +514,22 @@ namespace OvermorrowMod.Common
                     {
                         if (j > randSize - 20)
                         {
-                            if (WorldGen.genRand.Next(2100) == 0)
+                            if (WorldGen.genRand.NextBool(2100))
                             {
                                 WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
                             }
                         }
                         else
                         {
-                            if (WorldGen.genRand.Next(2800) == 0)
+                            if (WorldGen.genRand.NextBool(2800))
                             {
                                 WorldUtils.Gen(new Point(xAxis, yAxis), new Shapes.Circle(WorldGen.genRand.Next(2, 5)), Actions.Chain(new Modifiers.Blotches(8, 0.4), new Actions.ClearTile(frameNeighbors: true)));
                             }
                         }
 
-                        if (WorldGen.genRand.Next(3000) == 0)
+                        if (WorldGen.genRand.NextBool(3000))
                         {
-                            WorldGen.digTunnel(xAxis, yAxis, WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.Next(30, 40), Main.rand.Next(2, 6), Main.rand.Next(10) == 0 ? true : false);
+                            WorldGen.digTunnel(xAxis, yAxis, WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.NextFloat(-1, 1), WorldGen.genRand.Next(30, 40), Main.rand.Next(2, 6), Main.rand.NextBool(10));
                         }
                     }
                 }

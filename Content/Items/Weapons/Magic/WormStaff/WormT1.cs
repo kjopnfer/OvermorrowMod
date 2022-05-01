@@ -35,7 +35,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
             Wtimer++;
             if (Wtimer == 1)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT2>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT2>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
             }
 
             if (!didHit)
@@ -139,7 +139,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
             timer++;
             if (timer == 1)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT3>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT3>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
             }
 
 
@@ -193,7 +193,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
             timer++;
             if (timer == 1)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT4>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT4>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
             }
 
             Projectile Projectile2 = Main.projectile[(int)Projectile.ai[0]];
@@ -249,7 +249,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
             timer++;
             if (timer == 1)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT5>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ModContent.ProjectileType<WormT5>(), 10, 0f, Main.myPlayer, Projectile.whoAmI, Main.myPlayer);
             }
             Projectile Projectile2 = Main.projectile[(int)Projectile.ai[0]];
             if (Projectile2.active && Projectile2.type == ModContent.ProjectileType<WormT3>())

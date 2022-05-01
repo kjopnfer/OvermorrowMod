@@ -99,7 +99,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                     for (int i = 0; i < 7; i++)
                     {
                         // AI[0] is the ID of the parent projectile, AI[1] is the degree of the initial position in a circle 
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall>(), storeDamage, 1, Main.myPlayer, Projectile.whoAmI, 30f * i);
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall>(), storeDamage, 1, Main.myPlayer, Projectile.whoAmI, 30f * i);
                     }
                 }
                 spawnedProjectiles = true;

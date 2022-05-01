@@ -35,7 +35,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
         }
         public override void Kill(int timeLeft)
         {
-            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<TestLightning>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<TestLightning>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
         }
     }
 
@@ -68,7 +68,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                     //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 20;
                 }
             }
-            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<TestLightning>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<TestLightning>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
         }
     }
 
@@ -110,7 +110,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
         }
         public override void Kill(int timeLeft)
         {
-            int proj = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<TestLightning5>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+            int proj = Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<TestLightning5>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             ((TestLightning5)Main.projectile[proj].ModProjectile).RotateBy = RotateBy;
 
         }

@@ -6,26 +6,27 @@ namespace OvermorrowMod.Common
 {
     public class OvermorrowGlobalItem : GlobalItem
     {
-        public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage, ref float flat)
+
+        public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage)
         {
             if (player.GetModPlayer<OvermorrowModPlayer>().SerpentTooth)
             {
-                flat += 5;
+                damage.Flat += 5;
             }
 
             if (player.GetModPlayer<OvermorrowModPlayer>().PredatorTalisman)
             {
-                flat += 3;
+                damage.Flat += 3;
             }
 
             if (player.GetModPlayer<OvermorrowModPlayer>().EruditeDamage)
             {
-                flat += 2;
+                damage.Flat += 2;
             }
 
             if (player.GetModPlayer<OvermorrowModPlayer>().moonBuff)
             {
-                flat += 4;
+                damage.Flat += 4;
             }
         }
 

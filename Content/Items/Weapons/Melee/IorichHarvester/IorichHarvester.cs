@@ -62,7 +62,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(MathHelper.Pi * i);
-                    int proj = Projectile.NewProjectile(player.GetProjectileSource_Item(Item), player.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<IorichHarvesterSpinner>(), 0, 0f, player.whoAmI, MathHelper.Pi * i, RADIUS);
+                    int proj = Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<IorichHarvesterSpinner>(), 0, 0f, player.whoAmI, MathHelper.Pi * i, RADIUS);
                     ((IorichHarvesterSpinner)Main.projectile[proj].ModProjectile).RotationCenter = player;
                 }
             }
@@ -88,7 +88,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
                     player.GetModPlayer<OvermorrowModPlayer>().ScytheHitCount = 0;
 
                     int npc = NPC.NewNPC(null, (int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<IorichHarvesterCrystal>(), 0, 0f, player.whoAmI);
-                    Projectile.NewProjectile(player.GetProjectileSource_Item(Item), Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<IorichHarvesterCrystalProjectile>(), 0, 0f, player.whoAmI, npc);
+                    Projectile.NewProjectile(player.GetSource_ItemUse(Item), Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<IorichHarvesterCrystalProjectile>(), 0, 0f, player.whoAmI, npc);
                 }
 
                 return false;

@@ -239,10 +239,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff
 
 
 
-                        if (distanceFromTarget <= 10 && Main.rand.Next(20) == 0)
+                        if (distanceFromTarget <= 10 && Main.rand.NextBool(20))
                         {
                             makeStorm = true;
-                            int proj = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, Projectile.damage / 2, 0f, Projectile.owner);
+                            int proj = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ProjectileID.SandnadoFriendly, Projectile.damage / 2, 0f, Projectile.owner);
                             Main.projectile[proj].timeLeft = 240;
                         }
                     }

@@ -58,7 +58,7 @@ namespace OvermorrowMod.Content.NPCs.SalamanderHunter
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return spawnInfo.player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()) ? 0.08f : 0f;
+            return spawnInfo.Player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()) ? 0.08f : 0f;
         }
     }
 }

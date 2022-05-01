@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.Tiles.TrapOre
             for (int i = 0; i < Main.rand.Next(1, 3); i++)
             {
                 Vector2 randPos = new Vector2(Projectile.Center.X + Main.rand.Next(-10, 10) * 50, Projectile.Center.Y + Main.rand.Next(-10, 10) * 50);
-                NPC.NewNPC(Projectile.GetProjectileSource_FromThis(), (int)randPos.X, (int)randPos.Y, NPCID.Wraith);
+                NPC.NewNPC(Projectile.GetSource_Death(), (int)randPos.X, (int)randPos.Y, NPCID.Wraith);
             }
         }
     }

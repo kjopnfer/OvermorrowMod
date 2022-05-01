@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
 
         public override void Kill(int timeLeft)
         {
-            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SnotExplosion>(), Projectile.damage, 10f, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SnotExplosion>(), Projectile.damage, 10f, Projectile.owner);
         }
     }
 
@@ -78,22 +78,23 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
                 {
                     num869 = 0.8f;
                 }
-                int num870 = Gore.NewGore(new Vector2(position.X, position.Y), default(Vector2), Main.rand.Next(61, 64));
+                var source = Projectile.GetSource_Death();
+                int num870 = Gore.NewGore(source, new Vector2(position.X, position.Y), default(Vector2), Main.rand.Next(61, 64));
                 Gore gore = Main.gore[num870];
                 gore.velocity *= num869;
                 Main.gore[num870].velocity.X += 1f;
                 Main.gore[num870].velocity.Y += 1f;
-                num870 = Gore.NewGore(new Vector2(position.X, position.Y), default(Vector2), Main.rand.Next(61, 64));
+                num870 = Gore.NewGore(source, new Vector2(position.X, position.Y), default(Vector2), Main.rand.Next(61, 64));
                 gore = Main.gore[num870];
                 gore.velocity *= num869;
                 Main.gore[num870].velocity.X -= 1f;
                 Main.gore[num870].velocity.Y += 1f;
-                num870 = Gore.NewGore(new Vector2(position.X, position.Y), default(Vector2), Main.rand.Next(61, 64));
+                num870 = Gore.NewGore(source, new Vector2(position.X, position.Y), default(Vector2), Main.rand.Next(61, 64));
                 gore = Main.gore[num870];
                 gore.velocity *= num869;
                 Main.gore[num870].velocity.X += 1f;
                 Main.gore[num870].velocity.Y -= 1f;
-                num870 = Gore.NewGore(new Vector2(position.X, position.Y), default(Vector2), Main.rand.Next(61, 64));
+                num870 = Gore.NewGore(source, new Vector2(position.X, position.Y), default(Vector2), Main.rand.Next(61, 64));
                 gore = Main.gore[num870];
                 gore.velocity *= num869;
                 Main.gore[num870].velocity.X -= 1f;

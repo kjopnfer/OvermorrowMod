@@ -43,7 +43,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Hemanemesis
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<BloodyBallGravity>(), 12, 10f, Main.myPlayer, 0, 10);
+                        Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<BloodyBallGravity>(), 12, 10f, Main.myPlayer, 0, 10);
                     }
                 }
             }

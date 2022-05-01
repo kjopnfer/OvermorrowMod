@@ -144,7 +144,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                 for (int i = 0; i < numLocations; i++)
                 {
                     Vector2 position = NPC.Center + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numLocations * i)) * radius;
-                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), position, Vector2.Zero, ProjectileType<HostileReflectile>(), 0, 0f, Main.myPlayer, NPC.whoAmI, 120 * i);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), position, Vector2.Zero, ProjectileType<HostileReflectile>(), 0, 0f, Main.myPlayer, NPC.whoAmI, 120 * i);
                 }
                 spawnedShields = true;
             }
@@ -264,7 +264,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), NPC.damage / 2, 0f, Main.myPlayer, -10, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X, player.Center.Y - 100f, 0f, 0f, ProjectileType<ArrowRuneCircle>(), NPC.damage / 2, 0f, Main.myPlayer, -10, NPC.whoAmI);
                             }
                         }
 
@@ -308,7 +308,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, new Vector2(0f, 8.5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + (NPC.ai[2] * 30) + random), ProjectileType<ApollusArrow>(), NPC.damage / 2, 10f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0f, 8.5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + (NPC.ai[2] * 30) + random), ProjectileType<ApollusArrow>(), NPC.damage / 2, 10f, Main.myPlayer);
                                 }
                             }
                             NPC.ai[2] += 1;
@@ -351,7 +351,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectileDirect(NPC.GetSpawnSource_ForProjectile(), NPC.Center, NPC.DirectionTo(playerCenterSnapShot) * 5f, ProjectileType<ApollusArrowTwo>(), NPC.damage / 2, /*12*/ 6, Main.myPlayer, 0, NPC.ai[3]);
+                                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(playerCenterSnapShot) * 5f, ProjectileType<ApollusArrowTwo>(), NPC.damage / 2, /*12*/ 6, Main.myPlayer, 0, NPC.ai[3]);
                                 }
                             }
                             Vector2 origin = NPC.Center;
@@ -388,7 +388,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                projalt = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + NPC.Center + new Vector2(-35 + (566 * NPC.spriteDirection), -35), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), NPC.damage / 2, direction ? -1 : 1, Main.myPlayer, -20, NPC.whoAmI);
+                                projalt = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.Center + new Vector2(-35 + (566 * NPC.spriteDirection), -35), Vector2.Zero, ProjectileType<ArrowRuneCircle>(), NPC.damage / 2, direction ? -1 : 1, Main.myPlayer, -20, NPC.whoAmI);
                             }
                         }
 

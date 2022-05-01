@@ -55,13 +55,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower
 				{
 					num920 = 75;
 				}*/
-                if (num920 == 6 || Main.rand.Next(2) == 0)
+                if (num920 == 6 || Main.rand.NextBool(2))
                 {
                     for (int num927 = 0; num927 < 1; num927++)
                     {
                         int num929 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Sand, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
                         Dust dust81;
-                        if (Main.rand.Next(3) != 0 || (num920 == 75 && Main.rand.Next(3) == 0))
+                        if (!Main.rand.NextBool(3)|| (num920 == 75 && Main.rand.NextBool(3)))
                         {
                             Main.dust[num929].noGravity = true;
                             dust81 = Main.dust[num929];

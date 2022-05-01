@@ -36,7 +36,7 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
 
         public override void OpenBossBag(Player player)
         {
-            var source = player.GetItemSource_OpenItem(Type);
+            var source = player.GetSource_OpenItem(Type);
             player.TryGettingDevArmor(source);
             player.TryGettingDevArmor(source);
 
@@ -57,7 +57,7 @@ namespace OvermorrowMod.Content.Items.Consumable.BossBags
             }
 
 
-            if (Main.rand.Next(10) == 0) // Trophy Dropchance
+            if (Main.rand.NextBool(10)) // Trophy Dropchance
             {
                 player.QuickSpawnItem(source, ModContent.ItemType<DrakeTrophy>());
             }

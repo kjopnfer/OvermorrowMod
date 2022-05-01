@@ -61,15 +61,15 @@ namespace OvermorrowMod.Content.NPCs
         {
             if (experttimer < 120)
             {
-                Item.NewItem(NPC.GetItemSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, 58);
+                Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, 58);
             }
             if (experttimer < 180)
             {
-                Item.NewItem(NPC.GetItemSource_Loot(), (int)NPC.position.X + 7, (int)NPC.position.Y, NPC.width, NPC.height, 58);
+                Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X + 7, (int)NPC.position.Y, NPC.width, NPC.height, 58);
             }
             if (experttimer < 240)
             {
-                Item.NewItem(NPC.GetItemSource_Loot(), (int)NPC.position.X - 7, (int)NPC.position.Y, NPC.width, NPC.height, 58);
+                Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X - 7, (int)NPC.position.Y, NPC.width, NPC.height, 58);
             }
         }
     }

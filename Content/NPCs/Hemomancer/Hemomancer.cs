@@ -167,14 +167,14 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
                         direction.Normalize();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(0, -20), direction * speed, ModContent.ProjectileType<SplittingBlood_Hemomancer>(), NPC.damage / 2, 3f, Main.myPlayer, 0, 0);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0, -20), direction * speed, ModContent.ProjectileType<SplittingBlood_Hemomancer>(), NPC.damage / 2, 3f, Main.myPlayer, 0, 0);
                         }
                     }
                 }
             }
 
             // NPC Dust
-            if (Main.rand.Next(3) != 0)
+            if (!Main.rand.NextBool(3))
             {
                 int num327 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y + 2f), NPC.width, NPC.height, DustID.Blood, NPC.velocity.X * 0.2f, NPC.velocity.Y * 0.2f, 100, default(Color), 0.9f);
                 Main.dust[num327].noGravity = true;
@@ -214,11 +214,12 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Bone, 2.5f * (float)hitDirection, -2.5f);
             }
 
-            Gore.NewGore(NPC.position, NPC.velocity, 42, NPC.scale);
-            Gore.NewGore(new Vector2(NPC.position.X, NPC.position.Y + 20f), NPC.velocity, 43, NPC.scale);
-            Gore.NewGore(new Vector2(NPC.position.X, NPC.position.Y + 20f), NPC.velocity, 43, NPC.scale);
-            Gore.NewGore(new Vector2(NPC.position.X, NPC.position.Y + 34f), NPC.velocity, 44, NPC.scale);
-            Gore.NewGore(new Vector2(NPC.position.X, NPC.position.Y + 34f), NPC.velocity, 44, NPC.scale);
+            var source = NPC.GetSource_OnHurt(null);
+            Gore.NewGore(source, NPC.position, NPC.velocity, 42, NPC.scale);
+            Gore.NewGore(source, new Vector2(NPC.position.X, NPC.position.Y + 20f), NPC.velocity, 43, NPC.scale);
+            Gore.NewGore(source, new Vector2(NPC.position.X, NPC.position.Y + 20f), NPC.velocity, 43, NPC.scale);
+            Gore.NewGore(source, new Vector2(NPC.position.X, NPC.position.Y + 34f), NPC.velocity, 44, NPC.scale);
+            Gore.NewGore(source, new Vector2(NPC.position.X, NPC.position.Y + 34f), NPC.velocity, 44, NPC.scale);
         }
 
         public override void FindFrame(int frameHeight)
@@ -245,7 +246,7 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
                     return 0f;
                 }
             }
-            return spawnInfo.player.ZoneDungeon ? 0.025f : 0f;
+            return spawnInfo.Player.ZoneDungeon ? 0.025f : 0f;
         }
     }
 }

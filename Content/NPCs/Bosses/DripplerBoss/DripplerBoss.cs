@@ -235,7 +235,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                         }
                         if (countDripplers > 0 && !changedPhase3)
                         {
-                            if (Main.rand.Next(100) == 0 && circleCooldown == 0 && !OvermorrowWorld.DripplerCircle)
+                            if (Main.rand.NextBool(100) && circleCooldown == 0 && !OvermorrowWorld.DripplerCircle)
                             {
                                 OvermorrowWorld.DripplerCircle = true;
                             }
@@ -281,7 +281,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                             {
                                 if (NPC.ai[1] % 135 == 0)
                                 {
-                                    var source = NPC.GetSpawnSource_ForProjectile();
+                                    var source = NPC.GetSource_FromAI();
                                     // I'm lazy
                                     Projectile.NewProjectile(source, NPC.Center.X, NPC.Center.Y, -10f, 0f, ModContent.ProjectileType<SplittingBlood>(), NPC.damage / 3, 2f, Main.myPlayer, 0f, 0f);
                                     Projectile.NewProjectile(source, NPC.Center.X, NPC.Center.Y, 0f, 10f, ModContent.ProjectileType<SplittingBlood>(), NPC.damage / 3, 2f, Main.myPlayer, 0f, 0f);
@@ -331,7 +331,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                         {
                             for (int i = 0; i < 5; i++)
                             {
-                                NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, NPC.whoAmI, 350);
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, NPC.whoAmI, 350);
                             }
                         }
                     }
@@ -372,7 +372,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                                 for (int i = 0; i < 5; i++)
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                                    NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, NPC.whoAmI, radius);
+                                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<RotatingDriplad>(), 0, 60f * i, NPC.whoAmI, radius);
                                 }
                             }
                         }
@@ -418,7 +418,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                                 {
                                     Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
                                     // Pass in AI[0] for Dripplers
-                                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 0, NPC.whoAmI);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), position.X, position.Y, 0, 0, ModContent.ProjectileType<DripplerSpawner>(), 0, 0f, Main.myPlayer, 0, NPC.whoAmI);
                                 }
                             }
                         }
@@ -472,12 +472,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 2.5f * (float)hitDirection, -2.5f);
             }
-
-            Gore.NewGore(NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss1").Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss2").Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss3").Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
+            var source = NPC.GetSource_OnHit(null);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss1").Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss2").Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss3").Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Find<ModGore>("Assets/Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
         }
 
         public override bool StrikeNPC(ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
@@ -545,15 +545,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
             OvermorrowWorld.DripladShoot = false;
             OvermorrowWorld.loomingdripplerdeadcount = 0;
 
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss1").Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss1").Type, NPC.scale);
+            var source = NPC.GetSource_Death();
+
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss1").Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss1").Type, NPC.scale);
             for (int i = 0; i < 2; i++)
             {
-                Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss2").Type, NPC.scale);
-                Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss3").Type, NPC.scale);
+                Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss2").Type, NPC.scale);
+                Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss3").Type, NPC.scale);
             }
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/DripplerBoss" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

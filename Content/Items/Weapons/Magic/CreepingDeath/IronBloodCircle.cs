@@ -36,7 +36,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.CreepingDeath
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Projectile.NewProjectile(Projectile.GetProjectileSource_OnHit(target, ProjectileSourceID.None), target.Center.X, target.Center.Y, -Projectile.velocity.X, -Projectile.velocity.Y, ModContent.ProjectileType<BloodIronReal>(), Projectile.damage, 1f, Projectile.owner, 0f);
+            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center.X, target.Center.Y, -Projectile.velocity.X, -Projectile.velocity.Y, ModContent.ProjectileType<BloodIronReal>(), Projectile.damage, 1f, Projectile.owner, 0f);
         }
     }
 }

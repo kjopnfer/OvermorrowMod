@@ -90,7 +90,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, NPC.DirectionTo(player.Center) * 7.5f, ProjectileType<GranLaser>(), NPC.damage, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(player.Center) * 7.5f, ProjectileType<GranLaser>(), NPC.damage, 10f, Main.myPlayer);
                             }
                             NPC.ai[2]++;
                         }

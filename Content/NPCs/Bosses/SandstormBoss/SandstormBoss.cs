@@ -98,7 +98,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             if (RunOnce)
             {
-                NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SandstormBoss_Chest>(), 0, NPC.whoAmI);
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SandstormBoss_Chest>(), 0, NPC.whoAmI);
 
                 RunOnce = false;
                 NPC.netUpdate = true;
@@ -263,7 +263,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                             Vector2 RandomPosition = Desert.DesertArenaCenter + new Vector2(Main.rand.Next(-18, 18) * 38, 0);
                             int RuinType = Mod.Find<ModNPC>("Ruin" + RuinID).Type;
-                            NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)RandomPosition.X, (int)RandomPosition.Y, RuinType, 0, 0f, Main.rand.Next(3, 8) * 128);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)RandomPosition.X, (int)RandomPosition.Y, RuinType, 0, 0f, Main.rand.Next(3, 8) * 128);
                         }
                     }
 
@@ -272,7 +272,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < 2; i++)
                         {
                             float OffsetDirection = i == 0 ? 1 : -1;
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.UnitY, ModContent.ProjectileType<ExplodeOrb>(), 30, 6f, Main.myPlayer, NPC.whoAmI, OffsetDirection);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitY, ModContent.ProjectileType<ExplodeOrb>(), 30, 6f, Main.myPlayer, NPC.whoAmI, OffsetDirection);
                         }
 
                         /*for (int i = 0; i < 6; i++)
@@ -325,7 +325,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         Vector2 ArenaCenter = Desert.DesertArenaCenter + new Vector2(1 * 16, 2 * 16) - new Vector2(8, -8);
 
                         Vector2 RandomPosition = ArenaCenter + new Vector2(20 * 16 * (Main.rand.NextBool() ? 1 : -1), 10 * 16 * (Main.rand.NextBool() ? 1 : -1));
-                        Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), NPC.damage, 3f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<SandVortex>(), NPC.damage, 3f, Main.myPlayer);
                     }
 
                     if (AICounter == 60)
@@ -358,19 +358,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         {
                             // TOP-DOWN MIDDLE
                             // Lower Right
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(10 * 16 + 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(10 * 16 + 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
 
                             // Upper Right
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(10 * 16 + 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(10 * 16 + 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
 
                             // LEFT-RIGHT INNER
                             // Left
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
                             // Right
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
 
                             // Right
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(25 * 16 + 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(25 * 16 + 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
                         }
                         else // <----
                         {
@@ -378,20 +378,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                             // TOP-DOWN MIDDLE
                             // Lower Left
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-10 * 16 - 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(-10 * 16 - 48, (15 * 16) - 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
 
                             // Upper Left
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-10 * 16 - 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(-10 * 16 - 48, (-15 * 16) + 8), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
 
                             // LEFT-RIGHT INNER
                             // Left
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(-12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, 1);
                             // Right
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(12 * 16, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
 
                             // LEFT-RIGHT OUTER
                             // Left
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), ArenaCenter + new Vector2(-25 * 16 - 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), ArenaCenter + new Vector2(-25 * 16 - 47, 8 + 1), Vector2.Zero, ModContent.ProjectileType<PlatformTelegraph>(), NPC.damage, 3f, Main.myPlayer, 0, -1);
                         }
                     }
 
@@ -400,7 +400,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < Main.rand.Next(2, 4); i++)
                         {
                             Vector2 RandomPosition = new Vector2(Main.rand.Next(700, 900) * RandomDirection, Main.rand.Next(-15, 15) * 30);
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), Desert.DesertArenaCenter + RandomPosition, Vector2.UnitX * Main.rand.Next(5, 8) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), NPC.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 70) * 12);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), Desert.DesertArenaCenter + RandomPosition, Vector2.UnitX * Main.rand.Next(5, 8) * -RandomDirection, ModContent.ProjectileType<HorizontalFragment>(), NPC.damage, 3f, Main.myPlayer, 0, Main.rand.Next(60, 70) * 12);
                         }
                     }
 
@@ -433,7 +433,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             NPC BarrierNPC = Main.npc[i];
                             if (BarrierNPC.active && BarrierNPC.ModNPC is Barrier)
                             {
-                                int Node = NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)BarrierNPC.Center.X, (int)BarrierNPC.Center.Y, ModContent.NPCType<LightningNode>(), 0, LinkID, ArenaCenter.whoAmI);
+                                int Node = NPC.NewNPC(NPC.GetSource_FromAI(), (int)BarrierNPC.Center.X, (int)BarrierNPC.Center.Y, ModContent.NPCType<LightningNode>(), 0, LinkID, ArenaCenter.whoAmI);
                                 if (Main.npc[Node].ai[0] == WeakLink)
                                 {
                                     Main.npc[Node].dontTakeDamage = false;

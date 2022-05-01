@@ -42,7 +42,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public bool Rotate = false;
 
         private float RotationOffset;
-        private float InitialRadius;
         private float Radius;
 
         public override void SetStaticDefaults()

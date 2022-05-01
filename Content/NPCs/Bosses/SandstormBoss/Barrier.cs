@@ -123,7 +123,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (MiscCounter2 == 125)
                     {
                         //Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), npc.Center, Vector2.Zero, Color.Yellow);
-                        Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, NPC.DirectionTo(RotationCenter) * 2, ModContent.ProjectileType<BarrierWave>(), 50, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(RotationCenter) * 2, ModContent.ProjectileType<BarrierWave>(), 50, 0f, Main.myPlayer);
 
                         Shockwave = false;
                         MiscCounter2 = 0;

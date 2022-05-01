@@ -237,7 +237,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Ruptor
             Vector2 eee = Projectile.Center;
             Vector2 value1 = new Vector2(0f, 0f);
             SoundEngine.PlaySound(SoundID.Item64, (int)eee.X, (int)eee.Y);
-            int explode = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, value1.X, value1.Y, ProjectileID.Grenade, savedDMG * 3, 3f, Projectile.owner, 0f);
+            int explode = Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center.X, Projectile.Center.Y, value1.X, value1.Y, ProjectileID.Grenade, savedDMG * 3, 3f, Projectile.owner, 0f);
             Main.projectile[explode].timeLeft = 0;
             {
                 Dust.NewDust(eee, 5, 5, DustID.FlameBurst, 0.0f, 0.0f, 120, new Color(), 0.8f);  //this is the dust that will spawn after the explosion

@@ -254,7 +254,7 @@ namespace OvermorrowMod.Content.NPCs.CaveFish
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return spawnInfo.player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()) ? 0.05f : 0f;
+            return spawnInfo.Player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()) ? 0.05f : 0f;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
             Player player = Main.player[Projectile.owner];
             if (Projectile.ai[0]++ == 0 && Projectile.ai[1] != -1)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), player.Center, Vector2.Zero, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, -1f);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.Center, Vector2.Zero, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, -1f);
             }
 
             if (player.channel)
@@ -50,7 +50,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SoulSaber
                     if (Projectile.localAI[0]++ == 240)
                     {
                         SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath, player.Center);
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), player.Center, Vector2.Normalize(player.DirectionTo(Main.MouseWorld)) * 4, ModContent.ProjectileType<SoulFlameRing>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, -1f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.Center, Vector2.Normalize(player.DirectionTo(Main.MouseWorld)) * 4, ModContent.ProjectileType<SoulFlameRing>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, -1f);
                         Projectile.localAI[0] = 0;
                     }
 

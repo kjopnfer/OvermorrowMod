@@ -58,7 +58,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
         {
             if (player.ownedProjectileCounts[ModContent.ProjectileType<NatureBolt>()] <= 0)
             {
-                Projectile.NewProjectile(player.GetProjectileSource_Item(Item), Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<NatureBolt>(), Item.damage, 0f, player.whoAmI);
+                Projectile.NewProjectile(Item.GetSource_FromThis(), Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<NatureBolt>(), Item.damage, 0f, player.whoAmI);
             }
         }
     }

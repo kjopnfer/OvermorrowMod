@@ -58,7 +58,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.Bonerang
                 {
                     flametimer++;
                     int DMG = Projectile.damage / 2 - 3;
-                    var source = Projectile.GetProjectileSource_FromThis();
+                    var source = Projectile.GetSource_FromAI();
                     Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, 7, -7, ModContent.ProjectileType<BoneProj>(), DMG, 3f, Projectile.owner, 0f);
                     Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, 7, 7, ModContent.ProjectileType<BoneProj>(), DMG, 3f, Projectile.owner, 0f);
                     Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, -7, 7, ModContent.ProjectileType<BoneProj>(), DMG, 3f, Projectile.owner, 0f);

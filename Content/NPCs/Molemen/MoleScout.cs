@@ -149,7 +149,7 @@ namespace OvermorrowMod.Content.NPCs.Molemen
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.spawnTileY <= WorldGen.lavaLine - 100 && spawnInfo.spawnTileY > Main.rockLayer)
+            if (spawnInfo.SpawnTileY <= WorldGen.lavaLine - 100 && spawnInfo.SpawnTileY > Main.rockLayer)
             {
                 return 0.5f;
             }
@@ -159,7 +159,7 @@ namespace OvermorrowMod.Content.NPCs.Molemen
 
         public override int SpawnNPC(int tileX, int tileY)
         {
-            return NPC.NewNPC(NPC.GetSpawnSourceForNaturalSpawn(), tileX * 16, tileY * 16, NPC.type);
+            return NPC.NewNPC(Entity.GetSource_NaturalSpawn(), tileX * 16, tileY * 16, NPC.type);
         }
     }
 }

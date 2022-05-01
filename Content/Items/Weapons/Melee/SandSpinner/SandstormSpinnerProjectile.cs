@@ -52,7 +52,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.SandSpinner
                 for (int i = 0; i < 3; i++)
                 {
                     // AI[0] is the ID of the parent Projectile, AI[1] is the degree of the initial position in a circle 
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<YoyoSand>(), Projectile.damage / 2, 1, Projectile.owner, Projectile.whoAmI, 70f * i);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<YoyoSand>(), Projectile.damage / 2, 1, Projectile.owner, Projectile.whoAmI, 70f * i);
                 }
                 //}
                 spawnedProjectiles = true;
