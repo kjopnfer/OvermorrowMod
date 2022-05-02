@@ -2,7 +2,6 @@ namespace OvermorrowMod.Common.NPCs
 {
     public class PushBlock : PushableNPC
     {
-        bool RunOnce = true;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("A");

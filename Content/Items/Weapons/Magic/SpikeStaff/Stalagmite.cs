@@ -95,7 +95,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.SpikeStaff
                     float speed = 11;
                     SoundEngine.PlaySound(SoundID.Item, Projectile.position, 8);
                     charge = true;
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, direction.X * speed, direction.Y * speed, ModContent.ProjectileType<ShotSpike>(), Projectile.damage, 0f, Projectile.owner, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, direction.X * speed, direction.Y * speed, ModContent.ProjectileType<ShotSpike>(), Projectile.damage, 0f, Projectile.owner, 0f);
                 }
                 Projectile.Kill();
             }

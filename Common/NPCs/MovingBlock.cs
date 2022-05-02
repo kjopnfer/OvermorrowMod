@@ -40,7 +40,7 @@ namespace OvermorrowMod.Common.NPCs
             {
                 if (RunOnce)
                 {
-                    NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)NPC.Center.X, (int)(NPC.Center.Y - 75), ModContent.NPCType<MovingBlock>());
+                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y - 75), ModContent.NPCType<MovingBlock>());
                     RunOnce = false;
                 }
             }
@@ -49,7 +49,6 @@ namespace OvermorrowMod.Common.NPCs
 
     public class MovingBlock2 : CollideableNPC
     {
-        bool RunOnce = true;
         public override string Texture => "OvermorrowMod/Common/NPCs/MovingBlock";
         public override void SetStaticDefaults()
         {

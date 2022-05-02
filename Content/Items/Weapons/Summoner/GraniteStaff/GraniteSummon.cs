@@ -200,7 +200,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.GraniteStaff
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(1.5f));
                     float speed = Random + 20f;
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<GraniteLaser>(), Projectile.damage, 1f, Projectile.owner, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<GraniteLaser>(), Projectile.damage, 1f, Projectile.owner, 0f);
                     timer = 0;
                 }
             }

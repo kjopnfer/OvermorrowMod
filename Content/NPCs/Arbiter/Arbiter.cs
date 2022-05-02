@@ -185,15 +185,15 @@ namespace OvermorrowMod.Content.NPCs.Arbiter
                         NPC.ai[3] = (float)NPC.whoAmI;
                         NPC.realLife = NPC.whoAmI;
                         NPC.ai[2] = (float)Main.rand.Next(minLength, maxLength + 1);
-                        NPC.ai[0] = (float)NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)(NPC.position.X + (float)(NPC.width / 2)), (int)(NPC.position.Y + (float)NPC.height), bodyType, NPC.whoAmI);
+                        NPC.ai[0] = (float)NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.position.X + (float)(NPC.width / 2)), (int)(NPC.position.Y + (float)NPC.height), bodyType, NPC.whoAmI);
                     }
                     else if (NPC.ai[2] > 0f)
                     {
-                        NPC.ai[0] = (float)NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)(NPC.position.X + (float)(NPC.width / 2)), (int)(NPC.position.Y + (float)NPC.height), NPC.type, NPC.whoAmI);
+                        NPC.ai[0] = (float)NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.position.X + (float)(NPC.width / 2)), (int)(NPC.position.Y + (float)NPC.height), NPC.type, NPC.whoAmI);
                     }
                     else
                     {
-                        NPC.ai[0] = (float)NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)(NPC.position.X + (float)(NPC.width / 2)), (int)(NPC.position.Y + (float)NPC.height), tailType, NPC.whoAmI);
+                        NPC.ai[0] = (float)NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.position.X + (float)(NPC.width / 2)), (int)(NPC.position.Y + (float)NPC.height), tailType, NPC.whoAmI);
                     }
                     Main.npc[(int)NPC.ai[0]].ai[3] = NPC.ai[3];
                     Main.npc[(int)NPC.ai[0]].realLife = NPC.realLife;

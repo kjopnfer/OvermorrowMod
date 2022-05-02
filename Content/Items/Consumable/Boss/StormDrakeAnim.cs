@@ -46,9 +46,9 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                     {
                         if (Projectile.ai[1] == 0)
                         {
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, (Vector2.UnitY * -1).RotatedBy(MathHelper.ToRadians(-20)), ModContent.ProjectileType<TestLightning4>(), Projectile.damage, 2, Main.myPlayer, 0, Projectile.whoAmI);
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.UnitY * -1, ModContent.ProjectileType<TestLightning4>(), Projectile.damage, 2, Main.myPlayer, 0, Projectile.whoAmI);
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, (Vector2.UnitY * -1).RotatedBy(MathHelper.ToRadians(20)), ModContent.ProjectileType<TestLightning4>(), Projectile.damage, 2, Main.myPlayer, 0, Projectile.whoAmI);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, (Vector2.UnitY * -1).RotatedBy(MathHelper.ToRadians(-20)), ModContent.ProjectileType<TestLightning4>(), Projectile.damage, 2, Main.myPlayer, 0, Projectile.whoAmI);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.UnitY * -1, ModContent.ProjectileType<TestLightning4>(), Projectile.damage, 2, Main.myPlayer, 0, Projectile.whoAmI);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, (Vector2.UnitY * -1).RotatedBy(MathHelper.ToRadians(20)), ModContent.ProjectileType<TestLightning4>(), Projectile.damage, 2, Main.myPlayer, 0, Projectile.whoAmI);
                         }
 
 
@@ -67,7 +67,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                             //player.GetModPlayer<OvermorrowModPlayer>().TitleID = 2;
                             //player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
                             SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
-                            NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)Projectile.Center.X, (int)(Projectile.Center.Y + 146), ModContent.NPCType<StormDrake>(), 0, -3f, -3f, 0f, 0f, 255);
+                            NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)(Projectile.Center.Y + 146), ModContent.NPCType<StormDrake>(), 0, -3f, -3f, 0f, 0f, 255);
                             /*Vector2 origin = new Vector2((int)Projectile.Center.X, (int)(Projectile.Center.Y));
                             float radius = 100;
                             int numLocations = 200;

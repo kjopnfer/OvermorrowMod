@@ -31,7 +31,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
 
         public override void Kill(int timeLeft)
         {
-            int explode = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ProjectileID.RocketSnowmanI, Projectile.damage, 3f, Projectile.owner, 0f);
+            int explode = Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center.X, Projectile.Center.Y, 0, 0, ProjectileID.RocketSnowmanI, Projectile.damage, 3f, Projectile.owner, 0f);
             Main.projectile[explode].timeLeft = 0;
             Main.projectile[explode].friendly = true;
             Main.projectile[explode].hostile = false;

@@ -60,12 +60,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             NPC NodeNPC = Main.npc[i];
                             if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
 
                             if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
                         }
                         break;
@@ -75,12 +75,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             NPC NodeNPC = Main.npc[i];
                             if (NodeNPC.active && NodeNPC.ai[0] == SelfID + 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
 
                             if (NodeNPC.active && NodeNPC.ai[0] == 8 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
                         }
                         break;
@@ -90,12 +90,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                             NPC NodeNPC = Main.npc[i];
                             if (NodeNPC.active && NodeNPC.ai[0] == 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
 
                             if (NodeNPC.active && NodeNPC.ai[0] == SelfID - 1 && NodeNPC.ModNPC is LightningNode)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<LightningLink>(), 35, 5f, Main.myPlayer, NPC.whoAmI, NodeNPC.whoAmI);
                             }
                         }
                         break;

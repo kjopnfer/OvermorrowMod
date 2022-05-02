@@ -44,7 +44,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.ShroomThrower
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            if (Main.rand.Next(7) == 3)
+            if (Main.rand.NextBool(7))
             {
                 target.AddBuff(ModContent.BuffType<FungalInfection>(), 400);
             }

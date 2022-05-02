@@ -119,10 +119,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             if (Projectile.timeLeft == RandomDelay)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.UnitY, ModContent.ProjectileType<AncientElectricitiy>(), 20, 5f, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.UnitY, ModContent.ProjectileType<AncientElectricitiy>(), 20, 5f, Main.myPlayer);
 
                 Vector2 end = Projectile.Center + (Vector2.UnitY * TRay.CastLength(Projectile.Center, Vector2.UnitY, 5000));
-                NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)(end.X), (int)(end.Y), ModContent.NPCType<Pillar>());
+                NPC.NewNPC(Projectile.GetSource_FromAI(), (int)(end.X), (int)(end.Y), ModContent.NPCType<Pillar>());
             }
         }
 
@@ -252,7 +252,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
             if (NPC.ai[0] == 60)
             {
-                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PillarShot>(), 40, 0f, Main.myPlayer);
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PillarShot>(), 40, 0f, Main.myPlayer);
             }
         }
 

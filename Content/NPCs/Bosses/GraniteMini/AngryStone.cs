@@ -359,7 +359,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(NPC.rotation), ProjectileType<GranLaser>(), NPC.damage / 3, 5f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0, 5 + (10 * i)).RotatedBy(NPC.rotation), ProjectileType<GranLaser>(), NPC.damage / 3, 5f, Main.myPlayer);
                             }
                         }
                     }
@@ -441,7 +441,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), NPC.damage / 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ProjectileType<GranLaser>(), NPC.damage / 2, 10f, Main.myPlayer);
                             }
                         }
                         attackCounter++;
@@ -514,7 +514,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), NPC.damage / 2, 10f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction.RotatedBy(i * 3) * (changedPhase2 ? 7f : 5f), ProjectileType<GranLaser>(), NPC.damage / 2, 10f, Main.myPlayer);
                             }
                         }
                         attackCounter++;
@@ -604,7 +604,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.GraniteMini
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)((player.Center.X + 300 * Direction - 51) + (/*150*/ 75 + (/*300*/ 150 * i))), (int)NPC.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)((player.Center.X + 300 * Direction - 51) + (/*150*/ 75 + (/*300*/ 150 * i))), (int)NPC.Center.Y, NPCType<GraniteMinibossMinion>(), 0, 0, 0, changedPhase2 ? 1 : 0);
                             }
                         }
                         int count = 0;

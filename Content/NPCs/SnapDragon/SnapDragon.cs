@@ -93,14 +93,14 @@ namespace OvermorrowMod.Content.NPCs.SnapDragon
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return spawnInfo.player.InModBiome(ModContent.GetInstance<WaterCaveBiome>())
-                && Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].TileType == ModContent.TileType<GlowBlock>()
+            return spawnInfo.Player.InModBiome(ModContent.GetInstance<WaterCaveBiome>())
+                && Main.tile[spawnInfo.SpawnTileX, spawnInfo.SpawnTileY].TileType == ModContent.TileType<GlowBlock>()
                 ? 0.02f : 0.0f;
         }
 
         public override int SpawnNPC(int tileX, int tileY)
         {
-            return NPC.NewNPC(NPC.GetSpawnSourceForNaturalSpawn(), tileX * 16 + 8, tileY * 16, NPC.type, 0, tileX, tileY);
+            return NPC.NewNPC(Entity.GetSource_NaturalSpawn(), tileX * 16 + 8, tileY * 16, NPC.type, 0, tileX, tileY);
         }
     }
 }

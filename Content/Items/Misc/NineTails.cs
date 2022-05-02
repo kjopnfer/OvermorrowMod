@@ -38,7 +38,7 @@ namespace OvermorrowMod.Content.Items.Misc
             {
                 if (line.Name == "ItemName")
                 {
-                    string text = line.text;
+                    string text = line.Text;
                     string text2 = "";
                     for (int ind = 0; ind < text.Length; ind++)
                     {
@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.Items.Misc
                         }
                         text2 += ch;
                     }
-                    line.text = text2;
+                    line.Text = text2;
                 }
             }
         }
@@ -73,11 +73,11 @@ namespace OvermorrowMod.Content.Items.Misc
 
                 if (Main.rand.NextBool(30))
                 {
-                    Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.Lerp(Color.Red, Color.Transparent, 0.95f), 1f, Main.rand.NextFloat(-0.5f, 0.5f), Main.rand.NextFloat(-0.5f, 0.5f));
+                    Utils.DrawBorderString(spriteBatch, line.Text, new Vector2(line.X, line.Y), Color.Lerp(Color.Red, Color.Transparent, 0.95f), 1f, Main.rand.NextFloat(-0.5f, 0.5f), Main.rand.NextFloat(-0.5f, 0.5f));
                 }
                 //Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.Lerp(Color.Orange, Color.Transparent, 0.95f), 1f, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0);
-                Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.Lerp(Color.Orange, Color.Transparent, 0.95f), 1f, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0);
-                Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.White, 1f, Main.rand.NextBool(60) ? Main.rand.NextFloat(-0.45f, 0.45f) : 0);
+                Utils.DrawBorderString(spriteBatch, line.Text, new Vector2(line.X, line.Y), Color.Lerp(Color.Orange, Color.Transparent, 0.95f), 1f, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0, Main.rand.NextBool(30) ? Main.rand.NextFloat(-0.5f, 0.5f) : 0);
+                Utils.DrawBorderString(spriteBatch, line.Text, new Vector2(line.X, line.Y), Color.White, 1f, Main.rand.NextBool(60) ? Main.rand.NextFloat(-0.45f, 0.45f) : 0);
                 spriteBatch.Reload(SpriteSortMode.Deferred);
                 return false;
             }

@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         {
             player.GetModPlayer<OvermorrowModPlayer>().PredatorTalisman = true;
 
-            player.armorPenetration += 5;
+            player.GetArmorPenetration(DamageClass.Generic) += 5;
             player.GetCritChance(DamageClass.Generic) += 5;
             player.GetDamage(DamageClass.Generic) += 3;
         }

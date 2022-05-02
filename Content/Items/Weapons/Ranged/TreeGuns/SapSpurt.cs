@@ -64,7 +64,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ModContent.ProjectileType<SapSpurt2>(), (Projectile.damage / 2) - 1, 10f, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ModContent.ProjectileType<SapSpurt2>(), (Projectile.damage / 2) - 1, 10f, Main.myPlayer);
                 }
             }
         }

@@ -468,7 +468,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.TreeBoss
 
         public override void OnKill()
         {
-            NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<TreeBossP2>(), 0, 0f, 0f, 0f, 0f);
+            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<TreeBossP2>(), 0, 0f, 0f, 0f, 0f);
 
             // Spawn 2nd Phase
             if (Main.netMode == NetmodeID.SinglePlayer) // Singleplayer

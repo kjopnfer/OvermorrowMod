@@ -112,6 +112,10 @@ namespace OvermorrowMod.Core
         {
             if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
         }
+        public static void SafeSetParameter(this Effect effect, string name, Vector2 value)
+        {
+            if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value);
+        }
         public static void SafeSetParameter(this Effect effect, string name, Color value)
         {
             if (effect.HasParameter(name)) effect.Parameters[name].SetValue(value.ToVector3());

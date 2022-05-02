@@ -50,7 +50,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BloodStaff
             int Projectiles = Main.rand.Next(3, 5);
             for (int i = 0; i < Projectiles; i++)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / Projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), Projectile.damage / 2, 2, Main.myPlayer);
+                Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / Projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), Projectile.damage / 2, 2, Main.myPlayer);
             }
             Projectile.Kill();
         }

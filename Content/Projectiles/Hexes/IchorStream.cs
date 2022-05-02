@@ -78,7 +78,7 @@ namespace OvermorrowMod.Content.Projectiles.Hexes
                 Main.dust[num114].position.Y -= num112;
             }
 
-            if (Main.rand.Next(8) == 0)
+            if (Main.rand.NextBool(8))
             {
                 int num115 = 16;
                 int num116 = Dust.NewDust(new Vector2(Projectile.position.X + (float)num115, Projectile.position.Y + (float)num115), Projectile.width - num115 * 2, Projectile.height - num115 * 2, DustID.Ichor, 0f, 0f, 100, default(Color), 0.5f);

@@ -53,11 +53,13 @@ namespace OvermorrowMod.Content.NPCs.Town
             return NPC.downedBoss2 && Main.player.Any(x => x.active);
         }
 
-        public override string TownNPCName()
+        public override List<string> SetNPCNameList()
         {
-            string[] names = { "Daniel", "Frederick", "Mark", "John", "Billy", "Manny", "Jerry", "Dylan", "Thomas",
-            "Johnathan", "Roman", "Michael", "Scott", "James", "Ben", "Danny", "Austin", "Texas", "Mississippi" };
-            return Main.rand.Next(names);
+            return new List<string>
+            {
+                "Daniel", "Frederick", "Mark", "John", "Billy", "Manny", "Jerry", "Dylan", "Thomas",
+                "Johnathan", "Roman", "Michael", "Scott", "James", "Ben", "Danny", "Austin", "Texas", "Mississippi"
+            };
         }
 
         public override string GetChat()

@@ -136,7 +136,7 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
                     SoundEngine.PlaySound(SoundID.NPCHit19, (int)Projectile.position.X, (int)Projectile.position.Y);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, delta * 2, ModContent.ProjectileType<BloodyBallFriendly>(), Projectile.damage, 0f, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, delta * 2, ModContent.ProjectileType<BloodyBallFriendly>(), Projectile.damage, 0f, Projectile.owner);
                         Projectile.netUpdate = true;
                     }
                 }

@@ -65,7 +65,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
                         Vector2 RandomPosition = player.Center + new Vector2(200, 0).RotatedBy(-RandomRotation);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<IorichBowEnergy>(), 0, 0f, Main.myPlayer, player.whoAmI);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<IorichBowEnergy>(), 0, 0f, Main.myPlayer, player.whoAmI);
                         }
 
                         EnergySpawnCounter++;
@@ -88,7 +88,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
                     {
                         if (Projectile.ai[1] == 0)
                         {
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TreeRune_Pulse>(), 0, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TreeRune_Pulse>(), 0, 0f, Main.myPlayer);
 
                             player.statLife += 5;
                             player.HealEffect(5);
@@ -97,14 +97,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.IorichBow
                         if (Projectile.ai[1] % 5 == 0)
                         {
                             SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, Projectile.Center);
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, ProjectileVelocity * 4, ModContent.ProjectileType<IorichBowArrow>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, ProjectileVelocity * 4, ModContent.ProjectileType<IorichBowArrow>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         }
                     }
                     else
                     {
                         if (Projectile.ai[1] == 0)
                         {
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, ProjectileVelocity * 4, player.HeldItem.ammo, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, ProjectileVelocity * 4, player.HeldItem.ammo, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         }
                     }
 

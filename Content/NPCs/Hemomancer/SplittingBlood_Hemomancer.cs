@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.NPCs.Hemomancer
             {
                 for (int i = 0; i < projectiles; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BloodyBall>(), Projectile.damage / 2, 2, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BloodyBall>(), Projectile.damage / 2, 2, Main.myPlayer);
                 }
             }
         }

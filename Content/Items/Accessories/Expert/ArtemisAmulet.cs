@@ -31,7 +31,7 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
         {
             foreach (TooltipLine tooltip in tooltips)
             {
-                if (tooltip.mod == "Terraria" && tooltip.Name == "Tooltip1")
+                if (tooltip.Mod == "Terraria" && tooltip.Name == "Tooltip1")
                 {
                     string bind = "";
                     var keys = OvermorrowModFile.AmuletKey.GetAssignedKeys();
@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.Items.Accessories.Expert
                     {
                         bind = key;
                     }
-                    tooltip.text = $"Press [{bind}] to summon the rune";
+                    tooltip.Text = $"Press [{bind}] to summon the rune";
                 }
             }
         }

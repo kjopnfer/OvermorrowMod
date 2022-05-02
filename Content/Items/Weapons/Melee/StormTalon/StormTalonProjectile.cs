@@ -77,7 +77,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.StormTalon
 
             if (Projectile.ai[1] % ProjectileSpawnRate == 0)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<StormTalonSparks>(), (Projectile.damage / 4) + 2, 1, Projectile.owner, 0, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<StormTalonSparks>(), (Projectile.damage / 4) + 2, 1, Projectile.owner, 0, 0);
             }
 
             // When we reach the end of the animation, we can kill the spear Projectile

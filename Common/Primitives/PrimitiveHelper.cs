@@ -53,6 +53,22 @@ namespace OvermorrowMod.Common.Primitives
             return new VertexPositionColorTexture((position - Main.screenPosition).ToVector3(), color, TexCoord);
         }
 
+        public static VertexPositionTexture AsVertex(Vector2 position, Vector2 TexCoord)
+        {
+            return new VertexPositionTexture((position - Main.screenPosition).ToVector3(), TexCoord);
+        }
+
+        public static VertexPositionTexture[] GetRectangleStrip(Rectangle rect)
+        {
+            return new VertexPositionTexture[]
+            {
+                AsVertex(rect.BottomLeft(), new Vector2(0, 1)),
+                AsVertex(rect.TopLeft(), new Vector2(0, 0)),
+                AsVertex(rect.BottomRight(), new Vector2(1, 1)),
+                AsVertex(rect.TopRight(), new Vector2(1, 0)),
+            };
+        }
+
         public static void SetTexture(int index, Texture2D texture)
         {
             Main.graphics.GraphicsDevice.Textures[index] = texture;

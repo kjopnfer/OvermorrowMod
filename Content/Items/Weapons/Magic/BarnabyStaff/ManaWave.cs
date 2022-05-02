@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BarnabyStaff
                     // This spawns the child Projectile that travels in the opposite direction
                     if (Projectile.ai[0] == 0)
                     {
-                        childProjectile = Main.projectile[Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Projectile.velocity, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 1, Projectile.whoAmI)];
+                        childProjectile = Main.projectile[Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 1, Projectile.whoAmI)];
                     }
                     else // This is the check that the child Projectile enters in
                     {
@@ -99,7 +99,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BarnabyStaff
                 {
                     if (i == 0)
                     {
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), dustPos, Vector2.Zero, ModContent.ProjectileType<ManaDust>(), Projectile.damage / 2, i, Projectile.owner, Projectile.whoAmI, 1);
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), dustPos, Vector2.Zero, ModContent.ProjectileType<ManaDust>(), Projectile.damage / 2, i, Projectile.owner, Projectile.whoAmI, 1);
                     }
                 }
             }
@@ -113,7 +113,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.BarnabyStaff
                 {
                     if (i == 0)
                     {
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), dustPos, Vector2.Zero, ModContent.ProjectileType<ManaDust>(), Projectile.damage / 2, i, Projectile.owner, Projectile.whoAmI, 1);
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), dustPos, Vector2.Zero, ModContent.ProjectileType<ManaDust>(), Projectile.damage / 2, i, Projectile.owner, Projectile.whoAmI, 1);
                     }
                 }
             }

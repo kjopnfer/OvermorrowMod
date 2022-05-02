@@ -35,7 +35,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.CreepingDeath
             Projectile.ai[0]++;
             if (Projectile.ai[0] == 2)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Projectile.velocity.X / 7, Projectile.velocity.Y / 7, ModContent.ProjectileType<BloodIronDraw>(), Projectile.damage, 1f, Projectile.owner, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, Projectile.velocity.X / 7, Projectile.velocity.Y / 7, ModContent.ProjectileType<BloodIronDraw>(), Projectile.damage, 1f, Projectile.owner, 0f);
                 Projectile.ai[0] = 0;
             }
         }
@@ -48,7 +48,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.CreepingDeath
             float speed = 8f;
             int type = ModContent.ProjectileType<IronBolt>();
             int damage = Projectile.damage;
-            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), position, direction * speed, type, damage, 4f, Main.myPlayer);
+            Projectile.NewProjectile(Projectile.GetSource_Death(), position, direction * speed, type, damage, 4f, Main.myPlayer);
         }
     }
 }

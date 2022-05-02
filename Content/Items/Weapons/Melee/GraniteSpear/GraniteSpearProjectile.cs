@@ -57,7 +57,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteSpear
             {
                 if (movementFactor == 0f) // When initially thrown out, the ai0 will be 0f
                 {
-                    int proj = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, Projectile.velocity * 4, ModContent.ProjectileType<GraniteSpike>(), Projectile.damage, 2f, Projectile.owner);
+                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 4, ModContent.ProjectileType<GraniteSpike>(), Projectile.damage, 2f, Projectile.owner);
                     Main.projectile[proj].DamageType = DamageClass.Melee;
 
                     movementFactor = 3f; // Make sure the spear moves forward when initially thrown out
@@ -119,7 +119,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.GraniteSpear
                 for (int i = 0; i < 3; i++)
                 {
                     // AI[0] is the ID of the parent Projectile, AI[1] is the degree of the initial position in a circle 
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<GraniteSpearElectricity>(), Projectile.damage / 2, 1, Projectile.owner, Projectile.whoAmI, 120f * i);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(0, 0), ModContent.ProjectileType<GraniteSpearElectricity>(), Projectile.damage / 2, 1, Projectile.owner, Projectile.whoAmI, 120f * i);
                 }
                 //}
                 spawnedProjectiles = true;

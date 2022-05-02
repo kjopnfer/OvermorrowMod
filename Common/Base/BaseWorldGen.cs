@@ -282,7 +282,7 @@ namespace OvermorrowMod.Common.Base
                     NetMessage.SendTileSquare(-1, x + (int)(size * 0.5F), y + (int)(size * 0.5F), size + 1);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 //ErrorLogger.Log("TILEGEN ERROR: " + e.Message); ErrorLogger.Log(e.StackTrace); ErrorLogger.Log("--------");
             }
@@ -579,7 +579,7 @@ namespace OvermorrowMod.Common.Base
                                     {
                                         if (!WorldGen.SolidTile(x - 1, y) && !Main.tile[x - 1, y + 1].IsHalfBlock && WorldGen.SolidTile(x - 1, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x + 1, y - 1].HasTile)
                                         {
-                                            if (WorldGen.genRand.Next(2) == 0)
+                                            if (WorldGen.genRand.NextBool(2))
                                             {
                                                 WorldGen.SlopeTile(x, y, 2);
                                             }
@@ -590,7 +590,7 @@ namespace OvermorrowMod.Common.Base
                                         }
                                         else if (!WorldGen.SolidTile(x + 1, y) && !Main.tile[x + 1, y + 1].IsHalfBlock && WorldGen.SolidTile(x + 1, y + 1) && WorldGen.SolidTile(x - 1, y) && !Main.tile[x - 1, y - 1].HasTile)
                                         {
-                                            if (WorldGen.genRand.Next(2) == 0)
+                                            if (WorldGen.genRand.NextBool(2))
                                             {
                                                 WorldGen.SlopeTile(x, y, 1);
                                             }
@@ -615,17 +615,17 @@ namespace OvermorrowMod.Common.Base
                                             }
                                             else if (!Main.tile[x - 1, y + 1].HasTile && !Main.tile[x - 1, y].HasTile && WorldGen.SolidTile(x + 1, y) && WorldGen.SolidTile(x, y + 2))
                                             {
-                                                if (WorldGen.genRand.Next(5) == 0) WorldGen.KillTile(x, y, false, false, false);
-                                                else if (WorldGen.genRand.Next(5) == 0) WorldGen.PoundTile(x, y);
+                                                if (WorldGen.genRand.NextBool(5)) WorldGen.KillTile(x, y, false, false, false);
+                                                else if (WorldGen.genRand.NextBool(5)) WorldGen.PoundTile(x, y);
                                                 else WorldGen.SlopeTile(x, y, 2);
                                             }
                                             else if (!Main.tile[x + 1, y + 1].HasTile && !Main.tile[x + 1, y].HasTile && WorldGen.SolidTile(x - 1, y) && WorldGen.SolidTile(x, y + 2))
                                             {
-                                                if (WorldGen.genRand.Next(5) == 0)
+                                                if (WorldGen.genRand.NextBool(5))
                                                 {
                                                     WorldGen.KillTile(x, y, false, false, false);
                                                 }
-                                                else if (WorldGen.genRand.Next(5) == 0)
+                                                else if (WorldGen.genRand.NextBool(5))
                                                 {
                                                     WorldGen.PoundTile(x, y);
                                                 }
@@ -647,7 +647,7 @@ namespace OvermorrowMod.Common.Base
                                 if (Main.tile[x + 1, y].TileType != 190 && Main.tile[x + 1, y].TileType != 48 && Main.tile[x + 1, y].TileType != 232 && WorldGen.SolidTile(x - 1, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x - 1, y].HasTile && !Main.tile[x + 1, y - 1].HasTile)
                                 {
                                     WorldGen.PlaceTile(x, y, (int)Main.tile[x, y + 1].TileType, false, false, -1, 0);
-                                    if (WorldGen.genRand.Next(2) == 0)
+                                    if (WorldGen.genRand.NextBool(2))
                                     {
                                         WorldGen.SlopeTile(x, y, 2);
                                     }
@@ -659,7 +659,7 @@ namespace OvermorrowMod.Common.Base
                                 if (Main.tile[x - 1, y].TileType != 190 && Main.tile[x - 1, y].TileType != 48 && Main.tile[x - 1, y].TileType != 232 && WorldGen.SolidTile(x + 1, y + 1) && WorldGen.SolidTile(x - 1, y) && !Main.tile[x + 1, y].HasTile && !Main.tile[x - 1, y - 1].HasTile)
                                 {
                                     WorldGen.PlaceTile(x, y, (int)Main.tile[x, y + 1].TileType, false, false, -1, 0);
-                                    if (WorldGen.genRand.Next(2) == 0)
+                                    if (WorldGen.genRand.NextBool(2))
                                     {
                                         WorldGen.SlopeTile(x, y, 1);
                                     }
@@ -670,7 +670,7 @@ namespace OvermorrowMod.Common.Base
                                 }
                             }
                         }
-                        else if (!Main.tile[x, y + 1].HasTile && WorldGen.genRand.Next(2) == 0 && WorldGen.SolidTile(x, y) && !Main.tile[x - 1, y].IsHalfBlock && !Main.tile[x + 1, y].IsHalfBlock && Main.tile[x - 1, y].Slope == 0 && Main.tile[x + 1, y].Slope == 0 && WorldGen.SolidTile(x, y - 1))
+                        else if (!Main.tile[x, y + 1].HasTile && WorldGen.genRand.NextBool(2) && WorldGen.SolidTile(x, y) && !Main.tile[x - 1, y].IsHalfBlock && !Main.tile[x + 1, y].IsHalfBlock && Main.tile[x - 1, y].Slope == 0 && Main.tile[x + 1, y].Slope == 0 && WorldGen.SolidTile(x, y - 1))
                         {
                             if (WorldGen.SolidTile(x - 1, y) && !WorldGen.SolidTile(x + 1, y) && WorldGen.SolidTile(x - 1, y - 1))
                             {
@@ -688,7 +688,7 @@ namespace OvermorrowMod.Common.Base
             {
                 for (int y = topY; y < bottomY; y++)
                 {
-                    if (WorldGen.genRand.Next(2) == 0 && !Main.tile[x, y - 1].HasTile && Main.tile[x, y].TileType != 137 && Main.tile[x, y].TileType != 48 && Main.tile[x, y].TileType != 232 && Main.tile[x, y].TileType != 191 && Main.tile[x, y].TileType != 151 && Main.tile[x, y].TileType != 274 && Main.tile[x, y].TileType != 75 && Main.tile[x, y].TileType != 76 && WorldGen.SolidTile(x, y) && Main.tile[x - 1, y].TileType != 137 && Main.tile[x + 1, y].TileType != 137)
+                    if (WorldGen.genRand.NextBool(2) && !Main.tile[x, y - 1].HasTile && Main.tile[x, y].TileType != 137 && Main.tile[x, y].TileType != 48 && Main.tile[x, y].TileType != 232 && Main.tile[x, y].TileType != 191 && Main.tile[x, y].TileType != 151 && Main.tile[x, y].TileType != 274 && Main.tile[x, y].TileType != 75 && Main.tile[x, y].TileType != 76 && WorldGen.SolidTile(x, y) && Main.tile[x - 1, y].TileType != 137 && Main.tile[x + 1, y].TileType != 137)
                     {
                         if (WorldGen.SolidTile(x, y + 1) && WorldGen.SolidTile(x + 1, y) && !Main.tile[x - 1, y].HasTile)
                         {
@@ -790,7 +790,7 @@ namespace OvermorrowMod.Common.Base
                 int y = trueOrigin.Y + (startheight - height);
                 if (variance != 0)
                 {
-                    y += (Main.rand.Next(2) == 0 ? -Main.rand.Next(variance) : Main.rand.Next(variance));
+                    y += (Main.rand.NextBool(2) ? -Main.rand.Next(variance) : Main.rand.Next(variance));
                 }
                 if (randomHeading != 0)
                 {
@@ -858,7 +858,7 @@ namespace OvermorrowMod.Common.Base
                 int y = trueOrigin.Y + (dir ? m : -m);
                 if (variance != 0)
                 {
-                    x += (Main.rand.Next(2) == 0 ? -Main.rand.Next(variance) : Main.rand.Next(variance));
+                    x += (Main.rand.NextBool(2) ? -Main.rand.Next(variance) : Main.rand.Next(variance));
                 }
                 if (randomHeading != 0)
                 {

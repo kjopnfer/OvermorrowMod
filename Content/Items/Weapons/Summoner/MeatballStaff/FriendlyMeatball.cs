@@ -372,7 +372,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.MeatballStaff
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
                     float speed = 7f;
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, newpoint2 * speed, ModContent.ProjectileType<BloodSeeker>(), Projectile.damage, 1f, Projectile.owner, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, newpoint2 * speed, ModContent.ProjectileType<BloodSeeker>(), Projectile.damage, 1f, Projectile.owner, 0f);
                     Projectile.ai[0] = 0;
                 }
             }

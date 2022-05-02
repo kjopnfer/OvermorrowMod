@@ -60,7 +60,7 @@ namespace OvermorrowMod.Common
                     int randChoice = Main.rand.Next(2);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        var source = projectile.GetProjectileSource_FromThis();
+                        var source = projectile.GetSource_FromThis();
                         if (randChoice == 0)
                         {
                             Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, -6f, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);

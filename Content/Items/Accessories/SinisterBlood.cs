@@ -31,7 +31,7 @@ namespace OvermorrowMod.Content.Items.Accessories
             {
                 return;
             }
-            Projectile.NewProjectile(player.GetProjectileSource_Accessory(Item), player.position.X, player.position.Y, 0f, 0f, ModContent.ProjectileType<DripplerFriendly>(), 20, 1.25f, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(player.GetSource_Accessory(Item), player.position.X, player.position.Y, 0f, 0f, ModContent.ProjectileType<DripplerFriendly>(), 20, 1.25f, player.whoAmI, 0f, 0f);
         }
     }
 }

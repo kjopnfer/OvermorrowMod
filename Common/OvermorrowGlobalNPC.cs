@@ -36,7 +36,7 @@ namespace OvermorrowMod.Common
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
-            Player player = spawnInfo.player;
+            Player player = spawnInfo.Player;
             if (player.InModBiome(ModContent.GetInstance<WaterCaveBiome>()))
             {
                 pool.Clear();
@@ -173,9 +173,9 @@ namespace OvermorrowMod.Common
             Player owner = Main.player[projectile.owner];
             if (owner.GetModPlayer<OvermorrowModPlayer>().ArmBracer && (projectile.minion == true || projectile.DamageType == DamageClass.Magic))
             {
-                if (Main.rand.Next(6) == 0 && owner.GetModPlayer<OvermorrowModPlayer>().sandCount < 10)
+                if (Main.rand.NextBool(6) && owner.GetModPlayer<OvermorrowModPlayer>().sandCount < 10)
                 {
-                    Projectile.NewProjectile(projectile.GetProjectileSource_FromThis(), owner.Center, Vector2.Zero, ModContent.ProjectileType<SandBallFriendly>(), 24, 2f, projectile.owner, Main.rand.Next(60, 95), Main.rand.Next(3, 6));
+                    Projectile.NewProjectile(projectile.GetSource_OnHit(npc), owner.Center, Vector2.Zero, ModContent.ProjectileType<SandBallFriendly>(), 24, 2f, projectile.owner, Main.rand.Next(60, 95), Main.rand.Next(3, 6));
                     owner.GetModPlayer<OvermorrowModPlayer>().sandCount++;
                 }
             }
@@ -186,7 +186,7 @@ namespace OvermorrowMod.Common
                 {
                     if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
                     {
-                        Projectile.NewProjectile(projectile.GetProjectileSource_FromThis(), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
+                        Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
                     }
                 }
             }
@@ -199,7 +199,7 @@ namespace OvermorrowMod.Common
                     {
                         for (int i = 0; i < 2; i++)
                         {
-                            Projectile.NewProjectile(projectile.GetProjectileSource_FromThis(), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<IchorStream>(), 12, 2f, owner.whoAmI);
+                            Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<IchorStream>(), 12, 2f, owner.whoAmI);
                         }
                     }
                 }
@@ -249,7 +249,7 @@ namespace OvermorrowMod.Common
                     direction.Normalize();
                     float speed = 0f;
                     Vector2 perturbedSpeed = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
-                    Projectile.NewProjectile(npc.GetSpawnSourceForProjectileNPC(), npc.Center.X + Main.rand.Next(-75, 76) - npc.width / 2, npc.Center.Y + Main.rand.Next(-75, 76) - npc.height / 2, perturbedSpeed.X * speed, perturbedSpeed.Y * speed, ProjectileID.TruffleSpore, npc.defense + 5, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + Main.rand.Next(-75, 76) - npc.width / 2, npc.Center.Y + Main.rand.Next(-75, 76) - npc.height / 2, perturbedSpeed.X * speed, perturbedSpeed.Y * speed, ProjectileID.TruffleSpore, npc.defense + 5, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
                     FungiTime = 0;
                 }
             }

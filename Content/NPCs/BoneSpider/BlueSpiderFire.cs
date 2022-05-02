@@ -59,7 +59,7 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
             }
 
             Projectile.localAI[0]++;
-            if (Projectile.localAI[0] > 3f && Main.rand.Next(3) == 0)
+            if (Projectile.localAI[0] > 3f && Main.rand.NextBool(3))
             {
                 int num1110 = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X, Projectile.velocity.Y, 50, default(Color), 0.5f);
             }

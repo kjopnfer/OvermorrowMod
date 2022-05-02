@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
 
                         if (Projectile.ai[1] <= 0)
                         {
-                            NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)Projectile.position.X, (int)(Projectile.position.Y), ModContent.NPCType<AngryStone>(), 0, -3f, 0f, 0f, 0f, 255);
+                            NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.position.X, (int)(Projectile.position.Y), ModContent.NPCType<AngryStone>(), 0, -3f, 0f, 0f, 0f, 255);
                             Player Projectileowner = Main.player[Projectile.owner];
                             //Projectileowner.GetModPlayer<OvermorrowModPlayer>().TitleID = 5;
                             //Projectileowner.GetModPlayer<OvermorrowModPlayer>().FocusBoss = false;
@@ -81,7 +81,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
 
                         if (Projectile.ai[1] <= 0)
                         {
-                            NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)Projectile.position.X, (int)(Projectile.position.Y), ModContent.NPCType<ApollusBoss>(), 0, -1f, 0f, 0f, 0f, 255);
+                            NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.position.X, (int)(Projectile.position.Y), ModContent.NPCType<ApollusBoss>(), 0, -1f, 0f, 0f, 0f, 255);
                             Projectile.Kill();
                         }
                     }

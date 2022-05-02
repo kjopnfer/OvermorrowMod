@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
         public override void Kill(int timeLeft)
         {
             // Im lazy
-            var source = Projectile.GetProjectileSource_FromThis();
+            var source = Projectile.GetSource_Death();
             Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, -6f, 6f, ModContent.ProjectileType<BloodyBall>(), Projectile.damage, 2f, Main.myPlayer, 0f, 0f);
             Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, 6, 6f, ModContent.ProjectileType<BloodyBall>(), Projectile.damage, 2f, Main.myPlayer, 0f, 0f);
             Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, 6f, -6f, ModContent.ProjectileType<BloodyBall>(), Projectile.damage, 2f, Main.myPlayer, 0f, 0f);
