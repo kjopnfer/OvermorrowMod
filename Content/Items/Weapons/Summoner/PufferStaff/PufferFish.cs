@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.PufferStaff
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(7f));
                     float speed = 15.5f + (Random * 0.10f);
                     SoundEngine.PlaySound(SoundID.Item, Projectile.position, 85);
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<PuffBubble>(), Projectile.damage, 1f, Projectile.owner, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, newpoint2.X * speed, newpoint2.Y * speed, ModContent.ProjectileType<PuffBubble>(), Projectile.damage, 1f, Projectile.owner, 0f);
                     timer = 0;
                 }
             }

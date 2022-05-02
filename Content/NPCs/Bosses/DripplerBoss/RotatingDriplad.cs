@@ -127,7 +127,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, parentNPC.DirectionTo(NPC.Center) * 7, ModContent.ProjectileType<BloodyBall>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, parentNPC.DirectionTo(NPC.Center) * 7, ModContent.ProjectileType<BloodyBall>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
                             }
                         }
 
@@ -143,7 +143,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, /*direction * shootSpeed*/ parentNPC.DirectionFrom(NPC.Center) * 7, ModContent.ProjectileType<BloodyBall>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, /*direction * shootSpeed*/ parentNPC.DirectionFrom(NPC.Center) * 7, ModContent.ProjectileType<BloodyBall>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
                             }
                         }
 
@@ -160,7 +160,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                                 ShootTarget = player.Center + Main.rand.NextVector2Circular(50, 50);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, NPC.DirectionTo(ShootTarget) * 5, ModContent.ProjectileType<BloodyBall>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(ShootTarget) * 5, ModContent.ProjectileType<BloodyBall>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);
                                 }
                             }
 
@@ -178,7 +178,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                                 ShootTarget = new Vector2((((NPC.Center.X - player.Center.X) * 0.75f) * -1) + NPC.Center.X, NPC.Center.Y - 150);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, NPC.DirectionTo(ShootTarget) * 7.5f, ModContent.ProjectileType<BloodyBallGravity>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0/*1*/);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(ShootTarget) * 7.5f, ModContent.ProjectileType<BloodyBallGravity>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0/*1*/);
                                 }
                             }
 
@@ -243,12 +243,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 2.5f * (float)hitDirection, -2.5f);
             }
-
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad1").Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad2").Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad3").Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
-            Gore.NewGore(NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
+            var source = NPC.GetSource_OnHurt(null);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad1").Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad2").Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad3").Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
+            Gore.NewGore(source, NPC.position, NPC.velocity, Mod.Find<ModGore>("Gores/Driplad" + (Main.rand.Next(1, 4)).ToString()).Type, NPC.scale);
         }
 
         public override void FindFrame(int frameHeight)

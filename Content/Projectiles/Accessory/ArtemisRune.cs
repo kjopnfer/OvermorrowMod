@@ -64,7 +64,7 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ArtemisArrow>(), 75, 3f, Main.myPlayer);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-3, 3), Main.rand.Next(-5, -3), ProjectileType<ArtemisArrow>(), 75, 3f, Main.myPlayer);
                         }
                     }
                 }

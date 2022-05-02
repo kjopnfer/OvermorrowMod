@@ -100,7 +100,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.ThunderClap
                     {
                         Vector2 shootVelocity = targetPos - Projectile.Center;
                         shootVelocity.Normalize();
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<LightningBurst>(), 36, 10f, Projectile.owner, targetNPC, Projectile.whoAmI);
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, shootVelocity, ModContent.ProjectileType<LightningBurst>(), 36, 10f, Projectile.owner, targetNPC, Projectile.whoAmI);
                     }
 
                     // If we reach maxChainLength, we change behavior.
@@ -120,8 +120,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.ThunderClap
             else if (Projectile.ai[0] == 1f)
             {
                 // When ai[0] == 1f, the Projectile has either hit a tile or has reached maxChainLength, so now we retract the Projectile
-                float elasticFactorA = 14f / player.meleeSpeed;
-                float elasticFactorB = 0.9f / player.meleeSpeed;
+                float elasticFactorA = 14f / player.GetAttackSpeed(DamageClass.Melee);
+                float elasticFactorB = 0.9f / player.GetAttackSpeed(DamageClass.Melee);
                 float maxStretchLength = 300f; // This is the furthest the flail can stretch before being forced to retract. Make sure that this is a bit less than maxChainLength so you don't accidentally reach maxStretchLength on the initial throw.
 
                 if (Projectile.ai[1] == 1f)

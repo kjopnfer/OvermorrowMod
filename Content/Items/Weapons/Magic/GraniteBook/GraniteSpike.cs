@@ -45,12 +45,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GraniteBook
 
         public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
-            Main.player[Projectile.owner].armorPenetration += 5;
+            Main.player[Projectile.owner].GetArmorPenetration(DamageClass.Generic) += 5;
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Main.player[Projectile.owner].armorPenetration -= 5;
+            Main.player[Projectile.owner].GetArmorPenetration(DamageClass.Generic) -= 5;
         }
     }
 }

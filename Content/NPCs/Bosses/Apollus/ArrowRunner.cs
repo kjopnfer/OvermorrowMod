@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
             {
                 for (int j = 0; j < Projectiles; j++)
                 {
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(0f, -6f).RotatedBy(j * MathHelper.ToRadians(360f) / Projectiles), ModContent.ProjectileType<HomingArrow>(), 2, 10f, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(0f, -6f).RotatedBy(j * MathHelper.ToRadians(360f) / Projectiles), ModContent.ProjectileType<HomingArrow>(), 2, 10f, Main.myPlayer);
                 }
             }
         }

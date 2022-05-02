@@ -44,7 +44,7 @@ namespace OvermorrowMod.Content.NPCs.Shades
                 if (++AICounter % 300 == 0)
                 {
                     Vector2 SpawnPosition = NPC.Center;
-                    NPC.NewNPC(NPC.GetSpawnSourceForNPCFromNPCAI(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Shade>());
+                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<Shade>());
                 }
             }
         }

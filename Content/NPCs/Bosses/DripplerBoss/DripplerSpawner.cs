@@ -38,7 +38,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int spawnedNPC = NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)(Projectile.Center.X), (int)(Projectile.Center.Y), ModContent.NPCType<LoomingDrippler>(), 0, 0, Projectile.ai[1]);
+                    int spawnedNPC = NPC.NewNPC(Projectile.GetSource_Death(), (int)(Projectile.Center.X), (int)(Projectile.Center.Y), ModContent.NPCType<LoomingDrippler>(), 0, 0, Projectile.ai[1]);
 
                     if (Main.netMode == NetmodeID.Server)
                     {

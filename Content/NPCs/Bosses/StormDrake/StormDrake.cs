@@ -192,7 +192,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             {
                                 for (int i = -2; i < 9; i++)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(25 * (i * NPC.spriteDirection), -60), Vector2.UnitY * -1, ModContent.ProjectileType<TestLightning4>(), 0, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(25 * (i * NPC.spriteDirection), -60), Vector2.UnitY * -1, ModContent.ProjectileType<TestLightning4>(), 0, 2, Main.myPlayer, 0, NPC.whoAmI);
                                 }
                             }
 
@@ -236,7 +236,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 int projectiles = 12;
                                 for (int j = 0; j < projectiles; j++)
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(0f, 75f).RotatedBy(j * MathHelper.TwoPi / projectiles), new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ModContent.ProjectileType<LightningPhaseChangeWarning>(), NPC.damage / 2, 10f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0f, 75f).RotatedBy(j * MathHelper.TwoPi / projectiles), new Vector2(0f, 5f).RotatedBy(j * MathHelper.TwoPi / projectiles), ModContent.ProjectileType<LightningPhaseChangeWarning>(), NPC.damage / 2, 10f, Main.myPlayer);
                                     ((LightningPhaseChangeWarning)Main.projectile[proj].ModProjectile).RotateBy = 0.375f;
                                 }
                             }
@@ -248,7 +248,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 int projectiles = 12;
                                 for (int j = 0; j < projectiles; j++)
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(0f, 75f).RotatedBy((j * MathHelper.TwoPi / projectiles) + MathHelper.ToRadians(25)), new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + 45), ModContent.ProjectileType<LightningPhaseChangeWarning>(), NPC.damage / 2, 10f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0f, 75f).RotatedBy((j * MathHelper.TwoPi / projectiles) + MathHelper.ToRadians(25)), new Vector2(0f, 5f).RotatedBy((j * MathHelper.TwoPi / projectiles) + 45), ModContent.ProjectileType<LightningPhaseChangeWarning>(), NPC.damage / 2, 10f, Main.myPlayer);
                                     ((LightningPhaseChangeWarning)Main.projectile[proj].ModProjectile).RotateBy = -0.375f;
                                 }
                             }
@@ -335,7 +335,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             AICounter2 = 0;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                myProjectileStore = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(160 * NPC.spriteDirection, -40), (Vector2.UnitX * NPC.spriteDirection).RotatedBy(MathHelper.ToRadians((NPC.spriteDirection == 1) ? 315 : 45)), ModContent.ProjectileType<LaserBreathWarning>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                myProjectileStore = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(160 * NPC.spriteDirection, -40), (Vector2.UnitX * NPC.spriteDirection).RotatedBy(MathHelper.ToRadians((NPC.spriteDirection == 1) ? 315 : 45)), ModContent.ProjectileType<LaserBreathWarning>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
                             }
                             ((LaserBreathWarning)Main.projectile[myProjectileStore].ModProjectile).Direction = NPC.spriteDirection;
                         }
@@ -363,13 +363,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             // Spawn lightning
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                myProjectileStore = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(187 * NPC.spriteDirection, -49), NPC.velocity, ModContent.ProjectileType<TestLightning2>(), NPC.damage * 2, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                myProjectileStore = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(187 * NPC.spriteDirection, -49), NPC.velocity, ModContent.ProjectileType<TestLightning2>(), NPC.damage * 2, 2, Main.myPlayer, 0, NPC.whoAmI);
                             }
                             ((TestLightning2)Main.projectile[myProjectileStore].ModProjectile).Direction = NPC.spriteDirection;
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                myProjectileStore2 = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(187 * NPC.spriteDirection, -49), NPC.velocity, ModContent.ProjectileType<TestLightning2>(), NPC.damage * 2, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                myProjectileStore2 = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(187 * NPC.spriteDirection, -49), NPC.velocity, ModContent.ProjectileType<TestLightning2>(), NPC.damage * 2, 2, Main.myPlayer, 0, NPC.whoAmI);
                             }
                             ((TestLightning2)Main.projectile[myProjectileStore2].ModProjectile).Direction = NPC.spriteDirection;
 
@@ -432,7 +432,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(170 * NPC.spriteDirection, -45), NPC.DirectionTo(player.Center) * 6f, ModContent.ProjectileType<ElectricBallRadialLightning>(), NPC.damage / 2, 2, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(170 * NPC.spriteDirection, -45), NPC.DirectionTo(player.Center) * 6f, ModContent.ProjectileType<ElectricBallRadialLightning>(), NPC.damage / 2, 2, Main.myPlayer);
                             }
                         }
                         if (AICounter > 1 && AICounter < 900 && NPC.Distance(player.Center + new Vector2(450 * (NPC.spriteDirection * -1), 0)) > 75)
@@ -486,7 +486,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(160 * NPC.spriteDirection, -40), Vector2.UnitX * NPC.spriteDirection, ModContent.ProjectileType<ElectricBallCenter>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(160 * NPC.spriteDirection, -40), Vector2.UnitX * NPC.spriteDirection, ModContent.ProjectileType<ElectricBallCenter>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
                             }
                         }
                         if (AICounter > 1 && AICounter < 600 && NPC.Distance(player.Center + new Vector2(450 * (NPC.spriteDirection * -1), 0)) > 75)
@@ -579,7 +579,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), NPC.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), NPC.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
                                     ((ElectricBall2)Main.projectile[proj].ModProjectile).direction = NPC.spriteDirection;
                                 }
                             }
@@ -590,7 +590,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 {
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), NPC.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), NPC.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
                                         ((ElectricBall2)Main.projectile[proj].ModProjectile).direction = NPC.spriteDirection * -1;
                                         ((ElectricBall2)Main.projectile[proj].ModProjectile).Multiplier = 0.5f;
                                     }
@@ -599,7 +599,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
 
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
-                                if (Main.rand.Next(2) == 0)
+                                if (Main.rand.NextBool(2))
                                 {
                                     SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/woosh"), Main.player[i].position);
                                 }
@@ -707,7 +707,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), NPC.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), NPC.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
                                     ((ElectricBall2)Main.projectile[proj].ModProjectile).direction = NPC.spriteDirection;
                                 }
                             }
@@ -718,7 +718,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 {
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), NPC.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
+                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<ElectricBall2>(), NPC.damage / 3, 2, Main.myPlayer, 0, MathHelper.ToDegrees(j * MathHelper.TwoPi / projectiles));
                                         ((ElectricBall2)Main.projectile[proj].ModProjectile).direction = NPC.spriteDirection;
                                         ((ElectricBall2)Main.projectile[proj].ModProjectile).Multiplier = 0.5f * -1;
                                     }
@@ -730,7 +730,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
                                 if (distance <= 6400)
                                 {
-                                    if (Main.rand.Next(2) == 0)
+                                    if (Main.rand.NextBool(2))
                                     {
                                         SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/woosh"), Main.player[i].position);
                                     }
@@ -799,7 +799,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             }
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
                             }
                             relativeX += 1;
                         }
@@ -826,7 +826,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             }
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
                             }
                             relativeX -= 1;
                         }
@@ -875,7 +875,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + new Vector2(160 * NPC.spriteDirection, -40), NPC.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<LaserWarning2>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(160 * NPC.spriteDirection, -40), NPC.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<LaserWarning2>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
                             }
                             AICounter2 = 0;
                         }
@@ -909,7 +909,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), player.Center + new Vector2(Main.rand.NextFloat(-200, 200), -500), Vector2.UnitY, ModContent.ProjectileType<LaserWarning2>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + new Vector2(Main.rand.NextFloat(-200, 200), -500), Vector2.UnitY, ModContent.ProjectileType<LaserWarning2>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
                             }
                             AICounter2 = 0;
                         }
@@ -956,10 +956,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                     }
                 }
 
-                Gore.NewGore(NPC.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, Mod.Find<ModGore>("Assets/Gores/DrakeHead").Type, NPC.scale);
-                Gore.NewGore(NPC.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, Mod.Find<ModGore>("Assets/Gores/DrakeWing").Type, NPC.scale);
-                Gore.NewGore(NPC.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, Mod.Find<ModGore>("Assets/Gores/DrakeLeg").Type, NPC.scale);
-                Gore.NewGore(NPC.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, Mod.Find<ModGore>("Assets/Gores/DrakeTail").Type, NPC.scale);
+                var source = NPC.GetSource_Death();
+                Gore.NewGore(source, NPC.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, Mod.Find<ModGore>("Assets/Gores/DrakeHead").Type, NPC.scale);
+                Gore.NewGore(source, NPC.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, Mod.Find<ModGore>("Assets/Gores/DrakeWing").Type, NPC.scale);
+                Gore.NewGore(source, NPC.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, Mod.Find<ModGore>("Assets/Gores/DrakeLeg").Type, NPC.scale);
+                Gore.NewGore(source, NPC.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Vector2.Zero, Mod.Find<ModGore>("Assets/Gores/DrakeTail").Type, NPC.scale);
             }
         }
 

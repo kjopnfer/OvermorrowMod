@@ -91,7 +91,7 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
                         for (int i = 0; i < numSpawns; i++)
                         {
                             Vector2 position = origin + Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numSpawns * i)) * radius;
-                            Projectile.NewProjectile(NPC.GetSpawnSourceForNPCFromNPCAI(), position, Vector2.Zero, ModContent.ProjectileType<BlueSpiderFire>(), NPC.damage, 2f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), position, Vector2.Zero, ModContent.ProjectileType<BlueSpiderFire>(), NPC.damage, 2f, Main.myPlayer);
                         }
                     }
                 }
@@ -138,7 +138,7 @@ namespace OvermorrowMod.Content.NPCs.BoneSpider
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return spawnInfo.player.ZoneDungeon ? 0.025f : 0f;
+            return spawnInfo.Player.ZoneDungeon ? 0.025f : 0f;
         }
     }
 }

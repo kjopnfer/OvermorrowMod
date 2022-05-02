@@ -30,9 +30,9 @@ namespace OvermorrowMod.Content.Items.Accessories
             foreach (TooltipLine line in tooltips)
             {
                 Player player = Main.LocalPlayer;
-                if (line.mod == "Terraria" && line.Name == "Tooltip2")
+                if (line.Mod == "Terraria" && line.Name == "Tooltip2")
                 {
-                    line.text = "[" + player.GetModPlayer<OvermorrowModPlayer>().dripplerStack + " out of 25]";
+                    line.Text = "[" + player.GetModPlayer<OvermorrowModPlayer>().dripplerStack + " out of 25]";
                 }
             }
         }

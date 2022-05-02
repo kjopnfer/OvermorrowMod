@@ -34,14 +34,14 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
             timer++;
             if (timer == 1)
             {
-                int proj = Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center.X, NPC.Center.Y, 0, 10, Mod.Find<ModProjectile>("GraniteClamperHook").Type, 13, 0.0f, Main.myPlayer, 0.0f, (float)NPC.whoAmI);
+                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y, 0, 10, Mod.Find<ModProjectile>("GraniteClamperHook").Type, 13, 0.0f, Main.myPlayer, 0.0f, (float)NPC.whoAmI);
                 NPC.netUpdate = true;
             }
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return Main.tile[spawnInfo.spawnTileX, spawnInfo.spawnTileY].TileType == 368 ? 0.2f : 0f;
+            return Main.tile[spawnInfo.SpawnTileX, spawnInfo.SpawnTileY].TileType == 368 ? 0.2f : 0f;
         }
 
 

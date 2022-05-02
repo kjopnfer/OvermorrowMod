@@ -35,7 +35,6 @@ namespace OvermorrowMod.Common
         public bool graniteSet;
         private int minionCounts;
         public bool MarbleTrail;
-        int TrailTimer = 0;
         public bool SkyArmor;
 
 
@@ -221,7 +220,7 @@ namespace OvermorrowMod.Common
                 {
                     for (int i = 0; i < projectiles; i++)
                     {
-                        Projectile.NewProjectile(Player.GetProjectileSource_OnHurt(null, ProjectileSourceID.None), Player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, Player.whoAmI);
+                        Projectile.NewProjectile(Player.GetSource_OnHurt(null), Player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, Player.whoAmI);
                     }
                 }
                 NPC.NewNPC(null, (int)Player.position.X, (int)Player.position.Y, ModContent.NPCType<BloodHeal>());
@@ -366,7 +365,7 @@ namespace OvermorrowMod.Common
                         {
                             for (int i = 0; i < Main.rand.Next(1, 3); i++)
                             {
-                                Projectile.NewProjectile(Player.GetProjectileSource_Misc(ProjectileID.None), Player.Center.X, Player.Center.Y + Main.rand.Next(-15, 18), 0, 0, ModContent.ProjectileType<ElectricSparksFriendly>(), 20, 1, Player.whoAmI, 0, 0);
+                                Projectile.NewProjectile(Player.GetSource_Misc("OvermorrowStormScale"), Player.Center.X, Player.Center.Y + Main.rand.Next(-15, 18), 0, 0, ModContent.ProjectileType<ElectricSparksFriendly>(), 20, 1, Player.whoAmI, 0, 0);
                             }
                         }
                     }
@@ -573,7 +572,7 @@ namespace OvermorrowMod.Common
                         Rectangle npcHitbox = npc.getRect();
                         if (dashHitbox.Intersects(npcHitbox) && (npc.noTileCollide || Player.CanHit(npc)))
                         {
-                            float damage = 36f * Player.GetDamage(DamageClass.Melee);
+                            float damage = Player.GetTotalDamage(DamageClass.Melee).ApplyTo(36f);
                             float knockback = 9f;
                             bool crit = false;
 
@@ -745,11 +744,13 @@ namespace OvermorrowMod.Common
                             Main.dust[num31].scale *= 1f + (float)Main.rand.Next(20) * 0.01f;
                             Main.dust[num31].shader = GameShaders.Armor.GetSecondaryShader(cShoe, Player);
                         }
-                        int num33 = Gore.NewGore(new Vector2(Player.position.X + (float)(Player.width / 2) - 24f, Player.position.Y + (float)(Player.height / 2) - 34f), default(Vector2), Main.rand.Next(61, 64));
+                        var source = Player.GetSource_Misc("OvermorrowDash");
+
+                        int num33 = Gore.NewGore(source, new Vector2(Player.position.X + (float)(Player.width / 2) - 24f, Player.position.Y + (float)(Player.height / 2) - 34f), default(Vector2), Main.rand.Next(61, 64));
                         Main.gore[num33].velocity.X = (float)Main.rand.Next(-50, 51) * 0.01f;
                         Main.gore[num33].velocity.Y = (float)Main.rand.Next(-50, 51) * 0.01f;
                         Main.gore[num33].velocity *= 0.4f;
-                        num33 = Gore.NewGore(new Vector2(Player.position.X + (float)(Player.width / 2) - 24f, Player.position.Y + (float)(Player.height / 2) - 14f), default(Vector2), Main.rand.Next(61, 64));
+                        num33 = Gore.NewGore(source, new Vector2(Player.position.X + (float)(Player.width / 2) - 24f, Player.position.Y + (float)(Player.height / 2) - 14f), default(Vector2), Main.rand.Next(61, 64));
                         Main.gore[num33].velocity.X = (float)Main.rand.Next(-50, 51) * 0.01f;
                         Main.gore[num33].velocity.Y = (float)Main.rand.Next(-50, 51) * 0.01f;
                         Main.gore[num33].velocity *= 0.4f;

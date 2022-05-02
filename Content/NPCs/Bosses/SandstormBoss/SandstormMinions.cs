@@ -110,7 +110,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
                         Rectangle rectangle = new Rectangle((int)player.Center.X, player.Hitbox.Top - 5, 2, 2);
                         CombatText.NewText(rectangle, Color.Yellow, "Picked up Artifact!", true);
-                        Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), player.Center, Vector2.Zero, ModContent.ProjectileType<PlayerCrosshair>(), 0, 0f, player.whoAmI, NPC.whoAmI);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<PlayerCrosshair>(), 0, 0f, player.whoAmI, NPC.whoAmI);
                     }
                 }
 
@@ -268,7 +268,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     float RandomOffset = /*MathHelper.ToRadians(Main.rand.Next(-3, 3)) * 20*/MathHelper.PiOver4 * RotationCenter.direction;
                     NPC.netUpdate = true;
 
-                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, (NPC.DirectionTo(player.Center).ToRotation() + RandomOffset).ToRotationVector2(), ModContent.ProjectileType<ForbiddenBeam>(), 60, 6f, Main.myPlayer, player.whoAmI);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, (NPC.DirectionTo(player.Center).ToRotation() + RandomOffset).ToRotationVector2(), ModContent.ProjectileType<ForbiddenBeam>(), 60, 6f, Main.myPlayer, player.whoAmI);
                 }
 
                 if (AttackCounter++ > 360 && AttackCounter <= 480)
@@ -305,7 +305,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     float RandomOffset = /*MathHelper.ToRadians(Main.rand.Next(-3, 3)) * 20*/MathHelper.ToRadians(20) * ParentPlayer.direction;
                     NPC.netUpdate = true;
 
-                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, (NPC.DirectionTo(ShootPosition).ToRotation() + RandomOffset).ToRotationVector2(), ModContent.ProjectileType<ForbiddenBeamFriendly>(), 60, 6f, Main.myPlayer, ShootPosition.X, ShootPosition.Y);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, (NPC.DirectionTo(ShootPosition).ToRotation() + RandomOffset).ToRotationVector2(), ModContent.ProjectileType<ForbiddenBeamFriendly>(), 60, 6f, Main.myPlayer, ShootPosition.X, ShootPosition.Y);
                 }
 
                 if (AttackCounter++ > 360 && AttackCounter <= 480)
@@ -431,7 +431,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (AttackCounter == 120)
                     {
                         FiringBeam = true;
-                        Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + Vector2.UnitY * -750, Vector2.UnitY, ModContent.ProjectileType<GiantBeam>(), 60, 6f, Main.myPlayer, NPC.whoAmI);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * -750, Vector2.UnitY, ModContent.ProjectileType<GiantBeam>(), 60, 6f, Main.myPlayer, NPC.whoAmI);
                     }
 
                     InitialPosition = NPC.Center;
@@ -473,7 +473,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     if (AttackCounter == 120)
                     {
                         FiringBeam = true;
-                        Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center + Vector2.UnitY * -750, Vector2.UnitY, ModContent.ProjectileType<GiantBeam>(), 60, 6f, Main.myPlayer, NPC.whoAmI, 1);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * -750, Vector2.UnitY, ModContent.ProjectileType<GiantBeam>(), 60, 6f, Main.myPlayer, NPC.whoAmI, 1);
                     }
 
                     InitialPosition = NPC.Center;
@@ -626,7 +626,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < 3; i++)
                         {
                             Vector2 Velocity = Vector2.Normalize(NPC.DirectionTo(player.Center).RotatedByRandom(MathHelper.PiOver4));
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Velocity, ModContent.ProjectileType<Crosshair>(), 60, 6f, Main.myPlayer, 0, 1200);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Velocity, ModContent.ProjectileType<Crosshair>(), 60, 6f, Main.myPlayer, 0, 1200);
                         }
                     }
 
@@ -652,11 +652,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 }
 
                                 Vector2 ShootPosition = NPC.DirectionTo(projectile.Center).ToRotation().ToRotationVector2();
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, NPC.DirectionTo(projectile.Center).ToRotation().ToRotationVector2(), ModContent.ProjectileType<ForbiddenBurst>(), 60, 6f, Main.myPlayer, projectile.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(projectile.Center).ToRotation().ToRotationVector2(), ModContent.ProjectileType<ForbiddenBurst>(), 60, 6f, Main.myPlayer, projectile.whoAmI);
 
                                 if (Main.expertMode)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), projectile.Center, Vector2.Zero, ModContent.ProjectileType<HeatCircle>(), 60, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectile.Center, Vector2.Zero, ModContent.ProjectileType<HeatCircle>(), 60, 0f, Main.myPlayer);
                                 }
 
                                 NPC.velocity = -Vector2.Normalize(ShootPosition) * 4;
@@ -717,7 +717,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                         for (int i = 0; i < 3; i++)
                         {
                             Vector2 Velocity = Vector2.Normalize(NPC.DirectionTo(ShootPosition).RotatedByRandom(MathHelper.ToRadians(15)));
-                            Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, Velocity, ModContent.ProjectileType<Crosshair>(), 60, 6f, Main.myPlayer, 0, 600);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Velocity, ModContent.ProjectileType<Crosshair>(), 60, 6f, Main.myPlayer, 0, 600);
                         }
                     }
 
@@ -743,7 +743,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                                 }
 
                                 Vector2 ShootPosition = NPC.DirectionTo(projectile.Center).ToRotation().ToRotationVector2();
-                                Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, NPC.DirectionTo(projectile.Center).ToRotation().ToRotationVector2(), ModContent.ProjectileType<ForbiddenBurst>(), 60, 6f, Main.myPlayer, projectile.whoAmI, 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(projectile.Center).ToRotation().ToRotationVector2(), ModContent.ProjectileType<ForbiddenBurst>(), 60, 6f, Main.myPlayer, projectile.whoAmI, 1);
 
                                 NPC.velocity = -Vector2.Normalize(ShootPosition) * 4;
                                 AttackCounter = 0;

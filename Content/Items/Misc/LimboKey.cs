@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.Items.Misc
                 //fx.CurrentTechnique.Passes["Noise"].Apply();
                 fx.CurrentTechnique.Passes[0].Apply();
 
-                Utils.DrawBorderString(spriteBatch, line.text, new Vector2(line.X, line.Y), Color.White, 1f);
+                Utils.DrawBorderString(spriteBatch, line.Text, new Vector2(line.X, line.Y), Color.White, 1f);
                 spriteBatch.Reload(SpriteSortMode.Deferred);
                 return false;
             }

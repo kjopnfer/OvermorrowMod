@@ -69,7 +69,7 @@ namespace OvermorrowMod.Content.Projectiles.Censers
 
             if (++Projectile.ai[1] % 20 == 0 && Projectile.ai[0] > 45)
             {
-                Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, -Projectile.DirectionTo(owner.Center), ProjectileID.ToxicCloud, 15, 0f, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, -Projectile.DirectionTo(owner.Center), ProjectileID.ToxicCloud, 15, 0f, Projectile.owner);
             }
         }
 

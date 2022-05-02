@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Vector2 position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 1000;//500;
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), position, Projectile.DirectionFrom(position) * /*12*/ 16, ModContent.ProjectileType<DriplordAnimDrips>(), 0, 0f, Main.myPlayer, 0, Projectile.whoAmI);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), position, Projectile.DirectionFrom(position) * /*12*/ 16, ModContent.ProjectileType<DriplordAnimDrips>(), 0, 0f, Main.myPlayer, 0, Projectile.whoAmI);
                 }
                 Projectile.ai[1]++;
             }
@@ -79,7 +79,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                         ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Dripplord, the Bloody Assimilator has awoken!"), new Color(175, 75, 255));
                     }
 
-                    NPC.NewNPC(Projectile.GetNPCSource_FromThis(), (int)Projectile.Center.X, (int)Projectile.Center.Y + 205, ModContent.NPCType<DripplerBoss>(), 0, 0f, 0f, 0f, 0f, 255);
+                    NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y + 205, ModContent.NPCType<DripplerBoss>(), 0, 0f, 0f, 0f, 0f, 255);
                     SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
                     Projectile.Kill();
                 }

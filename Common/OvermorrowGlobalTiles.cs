@@ -12,7 +12,7 @@ namespace OvermorrowMod.Common
         {
             if (Main.netMode != NetmodeID.MultiplayerClient && !WorldGen.noTileActions && !WorldGen.gen)
             {
-                if (Main.rand.Next(6) == 0)
+                if (Main.rand.NextBool(6))
                 {
                     // Normal Trees
                     if (type == TileID.Trees && Main.tile[i, j + 1].TileType == TileID.Grass)

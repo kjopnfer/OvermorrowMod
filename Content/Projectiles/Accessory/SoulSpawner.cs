@@ -33,7 +33,7 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
             {
                 Projectile.ai[0]++;
 
-                int item = Item.NewItem(Projectile.GetItemSource_FromThis(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<ReaperFlame>());
+                int item = Item.NewItem(Projectile.GetSource_FromAI(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<ReaperFlame>());
 
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item);

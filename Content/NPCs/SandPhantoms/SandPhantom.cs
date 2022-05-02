@@ -175,7 +175,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
 
                     if (AICounter++ == 120)
                     {
-                        Projectile.NewProjectile(NPC.GetSpawnSource_ForProjectile(), NPC.Center, NPC.DirectionTo(player.Center) * 2, ModContent.ProjectileType<PhantomSword>(), 30, 3f, Main.myPlayer, 0, NPC.whoAmI);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(player.Center) * 2, ModContent.ProjectileType<PhantomSword>(), 30, 3f, Main.myPlayer, 0, NPC.whoAmI);
                     }
 
                     if (!ThrewSword)
@@ -340,7 +340,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return Sandstorm.Happening && spawnInfo.player.ZoneDesert ? 0.025f : 0f;
+            return Sandstorm.Happening && spawnInfo.Player.ZoneDesert ? 0.025f : 0f;
         }
     }
 }

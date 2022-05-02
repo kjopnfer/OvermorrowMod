@@ -199,7 +199,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.TankRemote
                         Vector2 direction = targetPosition - position;
                         direction.Normalize();
                         float speed2 = 14f;
-                        Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, direction * speed2, ModContent.ProjectileType<Tankrocket>(), Projectile.damage, 1f, Projectile.owner, 0f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, direction * speed2, ModContent.ProjectileType<Tankrocket>(), Projectile.damage, 1f, Projectile.owner, 0f);
                         rockettimer = 0;
                     }
 

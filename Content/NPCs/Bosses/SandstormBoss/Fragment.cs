@@ -312,7 +312,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 for (int i = 0; i < 8; i++)
                 {
                     Vector2 RotationPosition = Projectile.Center + new Vector2(0, 250).RotatedBy(i * (360 / 8));
-                    Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), RotationPosition, Vector2.Zero, ModContent.ProjectileType<SpinningFragment>(), Projectile.damage, 4f, Main.myPlayer, Projectile.whoAmI, i * (360 / 8));
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), RotationPosition, Vector2.Zero, ModContent.ProjectileType<SpinningFragment>(), Projectile.damage, 4f, Main.myPlayer, Projectile.whoAmI, i * (360 / 8));
                 }
             }
         }

@@ -120,7 +120,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.IorichStaff
                         float Rotation = RotationDirection * (int)values[(int)Projectile.ai[0]++] * MathHelper.PiOver4;
                         Vector2 SpawnLocation = new Vector2(RADIUS, 0).RotatedBy(Rotation + RotationOffset);
 
-                        int proj = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), target.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<NatureSpike>(), Projectile.damage, 0f, Projectile.owner, Rotation + RotationOffset, RADIUS);
+                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center + SpawnLocation, Vector2.Zero, ModContent.ProjectileType<NatureSpike>(), Projectile.damage, 0f, Projectile.owner, Rotation + RotationOffset, RADIUS);
                         ((NatureSpike)Main.projectile[proj].ModProjectile).RotationCenter = target;
                         ((NatureSpike)Main.projectile[proj].ModProjectile).RandomOffset = RandomOffset;
                     }

@@ -54,7 +54,7 @@ namespace OvermorrowMod.Common
             for (int i = 0; i < SavedShades.Count; i++)
             {
                 Vector2 SpawnPosition = ShadePositions[i];
-                NPC.NewNPC(NPC.GetSpawnSourceForNaturalSpawn(), (int)SpawnPosition.X, (int)SpawnPosition.Y, SavedShades[i]);
+                NPC.NewNPC(Entity.GetSource_NaturalSpawn(), (int)SpawnPosition.X, (int)SpawnPosition.Y, SavedShades[i]);
             }
         }
 

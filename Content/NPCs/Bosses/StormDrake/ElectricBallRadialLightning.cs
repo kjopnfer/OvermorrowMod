@@ -72,7 +72,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int proj = Projectile.NewProjectile(Projectile.GetProjectileSource_FromThis(), Projectile.Center, new Vector2(0.01f, 0.01f).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<LaserWarning>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                                int proj = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(0.01f, 0.01f).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<LaserWarning>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                                 ((LaserWarning)Main.projectile[proj].ModProjectile).killearly = true;
                                 ((LaserWarning)Main.projectile[proj].ModProjectile).waittime = 100;
                             }

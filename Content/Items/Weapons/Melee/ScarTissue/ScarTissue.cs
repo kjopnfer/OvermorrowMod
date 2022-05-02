@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.ScarTissue
 
         public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
         {
-            Projectile.NewProjectile(player.GetProjectileSource_OnHit(target, ProjectileSourceID.None), target.Center.X, target.Center.Y, target.velocity.X, target.velocity.Y, ModContent.ProjectileType<Scar>(), 5, 0, player.whoAmI);
+            Projectile.NewProjectile(player.GetSource_OnHit(target), target.Center.X, target.Center.Y, target.velocity.X, target.velocity.Y, ModContent.ProjectileType<Scar>(), 5, 0, player.whoAmI);
         }
     }
 }
