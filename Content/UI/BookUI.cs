@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
+using OvermorrowMod.Quests.Rewards;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
@@ -87,7 +88,7 @@ namespace OvermorrowMod.Content.UI
         private UIText QuestGiver = new UIText("");
         private UIText QuestType = new UIText("");
         private UITextWrapper QuestDescription = new UITextWrapper("", 346);
-        private UIItemContainer test = new UIItemContainer(ItemID.GoldCoin, 60);
+        private RewardList RewardList = new RewardList();
 
         public override void OnInitialize()
         {
@@ -117,7 +118,20 @@ namespace OvermorrowMod.Content.UI
             ModUtils.AddElement(QuestGiver, 173, 65, 32, 32, RightPanel);
             ModUtils.AddElement(QuestType, 173, 80, 32, 32, RightPanel);
             ModUtils.AddElement(QuestDescription, 0, 95, 346, 96, RightPanel);
-            ModUtils.AddElement(test, 173, 140, 32, 32, RightPanel);
+
+            //ModUtils.AddElement(RewardList, 173, 155, 32, 32, RightPanel);
+            ModUtils.AddElement(RewardList, 0, 344, 0, 1f, 44, 0f, RightPanel);
+            RewardList.ListPadding = 4f;
+            RewardList.ItemSize = new Vector2(42);
+
+            //RewardList = new RewardList();
+            //RewardList.Top.Set(444f, 0f);
+            //RewardList.Height.Set(44f, 0f);
+            //RewardList.Width.Set(0f, 1f);
+            //RewardList.padding = 4f;
+            //RewardList.ItemSize = new Vector2(42);
+            //RightPanel.Append(RewardList);
+            //ModUtils.AddElement(test, 173, 140, 32, 32, RightPanel);
 
             #endregion
 
@@ -167,11 +181,19 @@ namespace OvermorrowMod.Content.UI
                 QuestGiver.SetText(Lang.GetNPCNameValue(FocusQuest.QuestGiver));
                 QuestType.SetText(FocusQuest.Type.ToString());
                 QuestDescription.text = FocusQuest.QuestDescription;
+
+                RewardList.Clear();
+                foreach (var reward in FocusQuest.Rewards)
+                {
+                    if (!(reward is ItemReward item)) continue;
+
+                    RewardList.Add(new UIItemContainer(item.type, item.stack));
+                }
                 //QuestDescription.SetText(FocusQuest.QuestDescription);
             }
         }
 
-        public override void Update(GameTime gameTime)  
+        public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 

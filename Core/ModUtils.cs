@@ -362,5 +362,14 @@ namespace OvermorrowMod.Core
             element.Height.Set(height, 0);
             appendTo.Append(element);
         }
+
+        public static void AddElement(UIElement element, int x, int y, int width, float widthPercent, int height, float heightPercent, UIElement appendTo)
+        {
+            element.Left.Set(x, 0);
+            element.Top.Set(y, 0);
+            element.Width.Set(width, widthPercent);
+            element.Height.Set(height, heightPercent);
+            appendTo.Append(element);
+        }
     }
 }

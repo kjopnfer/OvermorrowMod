@@ -26,7 +26,7 @@ namespace OvermorrowMod.Quests
     public abstract class BaseQuest
     {
         public virtual IEnumerable<IQuestRequirement> Requirements { get; set; }
-        protected virtual IEnumerable<IQuestReward> Rewards { get; set; }
+        public virtual IEnumerable<IQuestReward> Rewards { get; set; }
         protected virtual List<string> QuestDialogue { get; } = new List<string>();
         protected virtual List<string> QuestHint { get; } = new List<string>();
         protected virtual List<string> QuestEndDialogue { get; } = new List<string>();

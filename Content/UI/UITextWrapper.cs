@@ -1,13 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Core;
-using ReLogic.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.GameInput;
 using Terraria.UI;
-using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Content.UI
 {

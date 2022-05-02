@@ -6,8 +6,8 @@ namespace OvermorrowMod.Quests.Rewards
 {
     public class ItemReward : IQuestReward
     {
-        private readonly int type;
-        private readonly int stack;
+        public readonly int type;
+        public readonly int stack;
 
         public ItemReward(int type, int stack)
         {
