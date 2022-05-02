@@ -62,7 +62,6 @@ namespace OvermorrowMod.Content.UI
 			{
 				_innerList.Append(item);
 			}
-			//UpdateOrder();
 			UpdateScrollbar();
 			_innerList.Recalculate();
 		}
@@ -116,13 +115,13 @@ namespace OvermorrowMod.Content.UI
 
 		public override void Recalculate()
 		{
-			Recalculate();
+			base.Recalculate();
 			UpdateScrollbar();
 		}
 
 		public override void RecalculateChildren()
 		{
-			RecalculateChildren();
+			base.RecalculateChildren();
 
 			float myWidth = GetDimensions().Width;
 
@@ -166,7 +165,7 @@ namespace OvermorrowMod.Content.UI
 
 		public override void ScrollWheel(UIScrollWheelEvent evt)
 		{
-			ScrollWheel(evt);
+			base.ScrollWheel(evt);
 			if (_scrollbar != null)
 			{
 				UIScrollbar viewPosition = _scrollbar;
@@ -204,7 +203,7 @@ namespace OvermorrowMod.Content.UI
 			{
 				return;
 			}
-			_scrollbar.SetView(GetInnerDimensions().Height, _innerListHeight);
+			_scrollbar.SetView(base.GetInnerDimensions().Height, _innerListHeight);
 		}
 
 		public delegate bool ElementSearchMethod(UIElement element);
