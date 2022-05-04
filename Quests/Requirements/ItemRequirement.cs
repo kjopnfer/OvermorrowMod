@@ -20,7 +20,18 @@ namespace OvermorrowMod.Quests.Requirements
             ID = null;
         }
 
-        public string Description => $"#{stack} {Lang.GetItemNameValue(type)}";
+        public string Description => $"{GetItemCount(Main.LocalPlayer)}/{stack} {Lang.GetItemNameValue(type)}";
+
+        public int GetItemCount(Player player)
+        {
+            int count = 0;
+            foreach (var item in player.inventory)
+            {
+                if (item.type == type && item.stack > 0) count += item.stack;
+            }
+
+            return count;
+        }
 
         public bool IsCompleted(QuestPlayer player, BaseQuestState state)
         {

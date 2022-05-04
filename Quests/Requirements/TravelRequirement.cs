@@ -22,7 +22,7 @@ namespace OvermorrowMod.Quests.Requirements
             this.ID = ID;
         }
 
-        public string Description => $"Travel to {location}";
+        public string Description => $"Travel to {ID}";
 
         public bool IsCompleted(QuestPlayer player, BaseQuestState state)
         {

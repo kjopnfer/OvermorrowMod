@@ -34,7 +34,7 @@ namespace OvermorrowMod.Quests.ModQuests
             QuestEndDialogue.Add("Excellent! Here is your reward!");
         }
 
-        protected override bool IsValidFor(Player player)
+        public override bool IsValidFor(Player player)
         {
             return Quests.HasCompletedQuest<GuideSlime>(player);
         }

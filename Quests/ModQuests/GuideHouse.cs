@@ -44,7 +44,7 @@ namespace OvermorrowMod.Quests.ModQuests
                 "There's a lot to find which will help you with your journey");
         }
 
-        protected override bool IsValidFor(Player player)
+        public override bool IsValidFor(Player player)
         {
             // This is how we do quest dependencies, you could have multiple statements like this.
             if (!Quests.HasCompletedQuest<GuideTutorial2>(player)) return false;

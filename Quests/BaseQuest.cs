@@ -121,7 +121,7 @@ namespace OvermorrowMod.Quests
         /// Return true if the given player is allowed to accept this quest in general.
         /// Ignore whether the quest has already been completed.
         /// </summary>
-        protected virtual bool IsValidFor(Player player)
+        public virtual bool IsValidFor(Player player)
         {
             return true;
         }

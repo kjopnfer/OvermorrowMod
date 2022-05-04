@@ -8,7 +8,7 @@ namespace OvermorrowMod.Quests.Requirements
     {
         public OrRequirement(string id, params IQuestRequirement[] clauses) : base(clauses, id) { }
 
-        public override string Description => $"One of {string.Join(" or ", Clauses.Select(c => c.Description))}";
+        public override string Description => $"{string.Join(" or ", Clauses.Select(c => c.Description))}";
 
         public override bool IsCompleted(QuestPlayer player, BaseQuestState state)
         {

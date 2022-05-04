@@ -4,6 +4,8 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Quests.Rewards;
+using OvermorrowMod.Quests.State;
+using ReLogic.Graphics;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
@@ -82,10 +84,15 @@ namespace OvermorrowMod.Content.UI
         private UIList QuestList = new UIList();
         private UIScrollbar ScrollBar = new UIScrollbar();
 
+        private UIList TaskList = new UIList();
+
         private UIImageButton ExitButton = new UIImageButton(ModContent.Request<Texture2D>(AssetDirectory.UI + "QuestBook_Exit"));
 
-        private UIText QuestTitle = new UIText("");
+        private LargeText QuestTitle = new LargeText("", Color.White);
+        //private UIText QuestTitle = new UIText("");
         private UIText QuestGiver = new UIText("");
+        private HeadDisplay NPCHead = new HeadDisplay(-1);
+
         private UIText QuestType = new UIText("");
         private UITextWrapper QuestDescription = new UITextWrapper("", 346);
         private RewardList RewardList = new RewardList();
@@ -103,34 +110,35 @@ namespace OvermorrowMod.Content.UI
             //ModUtils.AddElement(LeftPage, 0, 0, 346, 500, LeftPanel);
             //ModUtils.AddElement(RightPage, 0, 0, 346, 500, RightPanel);
 
-            ModUtils.AddElement(QuestList, 0, 20, 150, 410, LeftPanel);
+            #region Left Page
+            ModUtils.AddElement(QuestList, 0, 20, 350, 410, LeftPanel);
             QuestList.ListPadding = 2;
 
             ModUtils.AddElement(ScrollBar, 0, 20, 18, 410, LeftPanel);
             ScrollBar.SetView(0, 410);
             QuestList.SetScrollbar(ScrollBar);
-
-            ModUtils.AddElement(ExitButton, 188, 4, 32, 32, RightPanel);
-
+            #endregion
 
             #region Right Page
-            ModUtils.AddElement(QuestTitle, 173, 50, 32, 32, RightPanel);
-            ModUtils.AddElement(QuestGiver, 173, 65, 32, 32, RightPanel);
-            ModUtils.AddElement(QuestType, 173, 80, 32, 32, RightPanel);
-            ModUtils.AddElement(QuestDescription, 0, 95, 346, 96, RightPanel);
+            ModUtils.AddElement(QuestTitle, 0 /*173*/, 50, 32, 32, RightPanel);
+            QuestTitle.HAlign = 0.5f;
+
+            ModUtils.AddElement(QuestGiver, 0 /*173*/, 90, 32, 32, RightPanel);
+
+            ModUtils.AddElement(QuestType, 0 /*173*/, 115, 32, 32, RightPanel);
+            ModUtils.AddElement(NPCHead, 46, 84, 32, 32, RightPanel);
+
+            ModUtils.AddElement(QuestDescription, 0, 135, 346, 96, RightPanel);
+
+            ModUtils.AddElement(TaskList, 0, 225, 346, 96, RightPanel);
 
             //ModUtils.AddElement(RewardList, 173, 155, 32, 32, RightPanel);
-            ModUtils.AddElement(RewardList, 0, 344, 0, 1f, 44, 0f, RightPanel);
+            ModUtils.AddElement(RewardList, 0, 360, 0, 1f, 44, 0f, RightPanel);
             RewardList.ListPadding = 4f;
             RewardList.ItemSize = new Vector2(42);
 
-            //RewardList = new RewardList();
-            //RewardList.Top.Set(444f, 0f);
-            //RewardList.Height.Set(44f, 0f);
-            //RewardList.Width.Set(0f, 1f);
-            //RewardList.padding = 4f;
-            //RewardList.ItemSize = new Vector2(42);
-            //RightPanel.Append(RewardList);
+            ModUtils.AddElement(ExitButton, 188, 4, 32, 32, RightPanel);
+
             //ModUtils.AddElement(test, 173, 140, 32, 32, RightPanel);
 
             #endregion
@@ -144,17 +152,26 @@ namespace OvermorrowMod.Content.UI
         {
             element.Left.Set(40, 0);
             element.Top.Set(offY, 0);
-            element.Width.Set(150, 0);
-            element.Height.Set(28, 0);
+            element.Width.Set(350, 0);
+            element.Height.Set(24, 0);
             QuestList.Add(element);
+        }
+
+        private void AddTask(UIElement element, float offY)
+        {
+            element.Left.Set(0, 0);
+            element.Top.Set(offY, 0);
+            element.Width.Set(TaskList.Width.Pixels, 0);
+            element.Height.Set(28, 0);
+            TaskList.Add(element);
         }
 
         private void Exit(UIMouseEvent evt, UIElement listeningElement)
         {
+            FocusQuest = null;
+
             var state = ModContent.GetInstance<OvermorrowModSystem>().BookUI;
             ModContent.GetInstance<OvermorrowModSystem>().BookInterface?.SetState(state);
-
-            FocusQuest = null;
         }
 
         private void UpdateList()
@@ -178,9 +195,19 @@ namespace OvermorrowMod.Content.UI
             if (FocusQuest != null)
             {
                 QuestTitle.SetText(FocusQuest.QuestName);
-                QuestGiver.SetText(Lang.GetNPCNameValue(FocusQuest.QuestGiver));
-                QuestType.SetText(FocusQuest.Type.ToString());
-                QuestDescription.text = FocusQuest.QuestDescription;
+                //QuestGiver.SetText("NPC: " + Lang.GetNPCNameValue(FocusQuest.QuestGiver));
+                QuestGiver.SetText("NPC: ");
+                NPCHead.SetHead(FocusQuest.QuestGiver);
+
+                QuestType.SetText("Type: " + FocusQuest.Type.ToString());
+                QuestDescription.text = "Description:\n" + FocusQuest.QuestDescription;
+
+                TaskList.Clear();
+                foreach (var task in FocusQuest.Requirements)
+                {
+                    AddTask(new UITextWrapper(task.Description, (int)TaskList.Width.Pixels), 0);
+                    //AddTask(new TaskEntry(task.Description), 0);
+                }
 
                 RewardList.Clear();
                 foreach (var reward in FocusQuest.Rewards)
@@ -201,13 +228,119 @@ namespace OvermorrowMod.Content.UI
             UpdatePage();
 
             // You're not allowed to open the inventory if the book is OPEN
-            Main.playerInventory = false;
+            //Main.playerInventory = false;
+        }
+    }
+
+    internal class LargeText : UIElement
+    {
+        private string text;
+        private Color color;
+
+        public LargeText(string text, Color color)
+        {
+            this.text = text;
+            this.color = color;
+        }
+
+        public void SetText(string text)
+        {
+            this.text = text;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            //Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft() - new Vector2(GetDimensions().ToRectangle().Width, 0);
+            DynamicSpriteFontExtensionMethods.DrawString(spriteBatch, FontAssets.DeathText.Value, text, pos, color, 0f, Vector2.Zero, 0.6f, 0, 0f);
+        }
+    }
+
+    internal class HeadDisplay : UIElement
+    {
+        private int NPC;
+
+        public HeadDisplay(int NPC)
+        {
+            this.NPC = NPC;
+        }
+
+        public void SetHead(int ID)
+        {
+            NPC = ID;
+        }
+
+        /// <summary>
+        /// Converts the NPC ID into the corresponding ID for the NPC head texture, hardcoded cause fuck vanilla
+        /// </summary>
+        /// <param name="NPC"></param>
+        /// <returns></returns>
+        private int TextureID(int NPC)
+        {
+            switch (NPC)
+            {
+                case NPCID.Guide: return 1;
+                case NPCID.Merchant: return 2;
+                case NPCID.Nurse: return 3;
+                case NPCID.Demolitionist: return 4;
+                case NPCID.Dryad: return 5;
+                case NPCID.ArmsDealer: return 6;
+                case NPCID.Clothier: return 7;
+                case NPCID.Mechanic: return 8;
+                case NPCID.GoblinTinkerer: return 9;
+                case NPCID.Wizard: return 10;
+                case NPCID.Truffle: return 12;
+                case NPCID.Steampunker: return 13;
+                case NPCID.DyeTrader: return 14;
+                case NPCID.PartyGirl: return 15;
+                case NPCID.Cyborg: return 16;
+                case NPCID.Painter: return 17;
+                case NPCID.WitchDoctor: return 18;
+                case NPCID.Pirate: return 19;
+                case NPCID.Stylist: return 20;
+                case NPCID.TravellingMerchant: return 21;
+                case NPCID.TaxCollector: return 23;
+                case NPCID.Golfer: return 25;
+                case NPCID.BestiaryGirl: return 26;
+                default: return 0;
+            }
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (NPC != -1)
+            {
+                Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+                spriteBatch.Draw(TextureAssets.NpcHead[TextureID(NPC)].Value, pos, Color.White);
+
+                if (ContainsPoint(Main.MouseScreen))
+                {
+                    Utils.DrawBorderString(spriteBatch, Lang.GetNPCNameValue(NPC), Main.MouseScreen + Vector2.One * 16, Main.MouseTextColorReal, 1f);
+                }
+            }
+        }
+    }
+
+    internal class TaskEntry : UIElement
+    {
+        private string text;
+        public TaskEntry(string text)
+        {
+            this.text = text;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+
+            Utils.DrawBorderString(spriteBatch, text, pos, Color.White);
         }
     }
 
     internal class QuestEntry : UIElement
     {
         private BaseQuest questEntry;
+        //public static QuestsState State { get; } = new QuestsState();
 
         public QuestEntry(BaseQuest quest)
         {
@@ -217,15 +350,31 @@ namespace OvermorrowMod.Content.UI
         public override void Draw(SpriteBatch spriteBatch)
         {
             Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+            var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
 
-            Utils.DrawBorderString(spriteBatch, questEntry.QuestName, pos, IsMouseHovering ? Color.Blue : Color.Red);
+            bool isHovering = ContainsPoint(Main.MouseScreen);
+
+            if (isHovering)
+            {
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
+            }
+
+            // If the Quest isn't valid for a player (it is not unlocked yet), mark it as black. Otherwise,
+            // if the player has completed a Quest, mark it as green. Otherwise, mark it as red.
+            var stringColor = questEntry.IsValidFor(Main.LocalPlayer) ? (Quests.Quests.State.HasCompletedQuest(modPlayer, questEntry) ? (isHovering ? Color.LimeGreen : Color.Green) : (isHovering ? Color.Pink : Color.Red)) : Color.Black;
+            if (modPlayer.IsDoingQuest(questEntry.QuestID))
+            {
+                // If the player is currently doing this Quest, mark it as yellow.
+                stringColor = Color.Yellow;
+            }
+
+            Utils.DrawBorderString(spriteBatch, questEntry.QuestName, pos, stringColor);
         }
 
         public override void MouseDown(UIMouseEvent evt)
         {
             Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
 
-            Main.NewText("pass back " + questEntry.QuestName);
             ModContent.GetInstance<OvermorrowModSystem>().QuestLog.FocusQuest = questEntry;
         }
     }

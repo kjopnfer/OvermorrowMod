@@ -44,7 +44,7 @@ namespace OvermorrowMod.Quests.ModQuests
             QuestEndDialogue.Add("Wow, nice work.");
         }
 
-        protected override bool IsValidFor(Player player)
+        public override bool IsValidFor(Player player)
         {
             return Quests.HasCompletedQuest<GuideTravel>(player);
         }

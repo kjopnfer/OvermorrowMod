@@ -21,8 +21,15 @@ namespace OvermorrowMod.Quests.Requirements
             ID = id;
         }
 
-        // I don't know how to show each of the required types, lol
-        public string Description => $"#{TargetNumber} from any of {string.Join(", ", NPCTypes.Select(typ => Lang.GetNPCNameValue(typ)))}";
+        public string Description => $"{GetKillCount()}/{TargetNumber} from any of {string.Join(", ", NPCTypes.Select(typ => Lang.GetNPCNameValue(typ)))}";
+
+        private int GetKillCount()
+        {
+            //var state = BaseQuest.GetNewState();
+            //var reqState = state.GetRequirementState(this) as KillRequirementState;
+
+            return 0;
+        }
 
         public bool IsCompleted(QuestPlayer player, BaseQuestState state)
         {
