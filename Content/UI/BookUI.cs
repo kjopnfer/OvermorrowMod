@@ -250,8 +250,10 @@ namespace OvermorrowMod.Content.UI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            DynamicSpriteFont value = FontAssets.MouseText.Value;
+            Vector2 length = value.MeasureString(text);
             //Vector2 pos = GetDimensions().ToRectangle().TopLeft();
-            Vector2 pos = GetDimensions().ToRectangle().TopLeft() - new Vector2(GetDimensions().ToRectangle().Width, 0);
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft() - length / 2/*new Vector2(GetDimensions().ToRectangle().Width / 2, 0)*/;
             DynamicSpriteFontExtensionMethods.DrawString(spriteBatch, FontAssets.DeathText.Value, text, pos, color, 0f, Vector2.Zero, 0.6f, 0, 0f);
         }
     }
