@@ -10,25 +10,38 @@ namespace OvermorrowMod.Quests.Requirements
     {
         public List<int> NPCTypes { get; }
         public int TargetNumber { get; }
-
         public string ID { get; }
 
-        public KillRequirement(List<int> type, int amount, string id)
+        private BaseQuest quest;
+
+        public KillRequirement(List<int> type, int amount, string id, BaseQuest quest)
         {
             if (amount <= 0) throw new ArgumentException($"Invalid amount: {amount}");
             NPCTypes = type;
             TargetNumber = amount;
             ID = id;
+
+            this.quest = quest;
         }
 
         public string Description => $"{GetKillCount()}/{TargetNumber} from any of {string.Join(", ", NPCTypes.Select(typ => Lang.GetNPCNameValue(typ)))}";
 
         private int GetKillCount()
         {
-            //var state = BaseQuest.GetNewState();
-            //var reqState = state.GetRequirementState(this) as KillRequirementState;
+            var modPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+            var state = Quests.State.GetActiveQuestState(modPlayer, quest);
 
-            return 0;
+            if (state == null) return 0;
+
+            var reqState = state.GetRequirementState(this) as KillRequirementState;
+
+            int count = 0;
+            foreach (int id in NPCTypes)
+            {
+                if (reqState.NumKilled.TryGetValue(id, out int value)) count += value;
+            }
+
+            return count;
         }
 
         public bool IsCompleted(QuestPlayer player, BaseQuestState state)

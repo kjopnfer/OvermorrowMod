@@ -76,7 +76,7 @@ namespace OvermorrowMod.Quests.State
         {
             return StatesByPlayer.TryGetValue(player.PlayerUUID, out var quests)
                 && quests.TryGetValue(questID, out var questState)
-                && questState.Completed;
+                && !questState.Completed;
         }
 
         public IEnumerable<string> GetWorldQuestsToSave()

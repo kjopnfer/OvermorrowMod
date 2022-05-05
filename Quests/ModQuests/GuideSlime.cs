@@ -23,10 +23,10 @@ namespace OvermorrowMod.Quests.ModQuests
                         NPCID.BlueSlime,
                         NPCID.Bunny,
                         NPCID.BirdRed
-                    }, 3, "slime_kill_1"),
+                    }, 3, "slime_kill_1", this),
                     new KillRequirement(new List<int>(){
                         NPCID.Grasshopper,               
-                    }, 3, "slime_kill_2")
+                    }, 3, "slime_kill_2", this)
                 )
             };
             Rewards = new[]
