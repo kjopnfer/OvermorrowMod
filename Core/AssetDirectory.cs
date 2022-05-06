@@ -13,6 +13,8 @@ namespace OvermorrowMod.Core
 
         public const string UI = Textures + "UI/";
 
+        public const string Bestiary = Textures + "Bestiary/";
+
         public const string Trails = Assets + "Textures/Trails/";
         public const string FullTrail = Assets + "Textures/Trails/"; // Uhh, this includes the ModFolder
 
