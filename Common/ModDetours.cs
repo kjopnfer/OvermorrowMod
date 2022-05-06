@@ -47,7 +47,7 @@ namespace OvermorrowMod.Common
             device.RasterizerState = rasterizerState;
             device.Textures[0] = texture;
 
-            device.DrawUserPrimitives(PrimitiveType.TriangleStrip, data, 0, 4);
+            //device.DrawUserPrimitives(PrimitiveType.TriangleStrip, data, 0, 4);
 
             orig(self);
         }
