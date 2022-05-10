@@ -168,12 +168,12 @@ namespace OvermorrowMod.Core
             return (float)Math.Sqrt(mag.X * mag.X + mag.Y * mag.Y);
         }
 
-        public static void Move(this NPC npc, Vector2 pos, float speed, float divider)
-        {
-            Vector2 vel = npc.DirectionTo(pos) * speed;
-            npc.velocity = (npc.velocity * divider + vel) / (divider + 1);
-        }
-
+        /// <summary>
+        /// Moves the npc to a Vector2.
+        /// The lower the turnResistance, the less time it takes to adjust direction.
+        /// Example: npc.Move(new Vector2(100, 0), 10, 14);
+        /// toPlayer makes the vector consider the player.Center for you.
+        /// </summary>
         public static void Move(this NPC npc, Vector2 vector, float speed, float turnResistance = 10f,
             bool toPlayer = false)
         {

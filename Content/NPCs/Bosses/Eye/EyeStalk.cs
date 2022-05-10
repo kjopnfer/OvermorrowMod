@@ -20,8 +20,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public int StalkID;
         public int ParentIndex;
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
+        private float InitialRotation;
 
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Seer");
@@ -71,8 +72,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             float LerpCounter = (float)Math.Sin(MiscCounter++ / LerpTime);
             NPC.Center = parent.Center + Vector2.Lerp(StalkPosition.RotatedBy(parent.rotation), (StalkPosition + Vector2.UnitY * IdleDistance).RotatedBy(parent.rotation), LerpCounter);
-            //NPC.rotation = parent.rotation + MathHelper.Pi;
             NPC.rotation = NPC.DirectionTo(Main.player[parent.target].Center).ToRotation() + MathHelper.PiOver2;
+
+            switch (parent.ai[0])
+            {
+                case (float)EyeOfCthulhu.AIStates.Tear:
+                    if (parent.ai[1] >= 120)
+                    {
+                        if (MiscCounter == 0)
+                        {
+                            InitialRotation = NPC.DirectionTo(Main.player[parent.target].Center).ToRotation() + MathHelper.PiOver2;
+                        }
+
+                        Main.NewText("rotating small");
+                        float ToRotation = NPC.DirectionTo(NPC.Center + Vector2.UnitY * 50).ToRotation() + MathHelper.PiOver2;
+                        NPC.rotation = MathHelper.Lerp(InitialRotation, ToRotation, Utils.Clamp(MiscCounter++, 0, 60) / 60f);
+
+                        if (AICounter % 10 == 0 && parent.ai[2] > 60)
+                        {
+                            Main.NewText("bruh");
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitY * 5, ProjectileID.GreenLaser, NPC.damage, 2f, Main.myPlayer);
+                        }
+                    }
+                    break;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -105,10 +128,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             for (int i = 0; i < iterations; i++)
             {
-                Texture2D chainTexture = i % 2 == 0 ? ModContent.Request<Texture2D>(AssetDirectory.NPC + "Seer/SeerBody").Value : ModContent.Request<Texture2D>(AssetDirectory.NPC + "Seer/SeerBodyAlt").Value;
-                if (i == iterations - 2)
+                Texture2D chainTexture = i % 2 == 0 ? ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/StalkBody").Value : ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/StalkBodyAlt").Value;
+                if (i == 5)
                 {
-                    chainTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Seer/SeerStemBulb").Value;
+                    chainTexture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/StalkBodyBulb").Value;
                 }
 
                 float progress = i / iterations;

@@ -11,7 +11,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
     {
         public override bool InstancePerEntity => true;
 
+        bool Temp = true;
+
+        private int MoveDirection = 1;
+
+        private float InitialRotation;
+        private int TearDirection = 1;
+
+        private int RotateDirection = 1;
         private Vector2 InitialPosition;
+
+        public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) => false;
 
         public override void SetDefaults(NPC npc)
         {
@@ -23,7 +33,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public enum AIStates
         {
             Intro = -1,
-            Selector = 0
+            Selector = 0,
+            Tear = 1
         }
 
         public override bool PreAI(NPC npc)
@@ -33,6 +44,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
 
+            npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2;
+
+            npc.defense = 12;
             foreach (NPC minion in Main.npc)
             {
                 if (minion.ModNPC is EyeStalk)
@@ -47,7 +61,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     //npc.Center = player.Center - new Vector2(0, 50);
                     break;
                 case (float)AIStates.Selector:
-                    if (npc.ai[1]++ == 0)
+                    if (npc.ai[1]++ == 0 && Temp)
                     {
                         for (int i = 1; i <= 4; i++)
                         {
@@ -66,43 +80,82 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 NetMessage.SendData(MessageID.SyncNPC, number: index);
                             }
                         }
+
+                        Temp = false;
+                    }
+
+                    if (npc.ai[1] % 360 == 0)
+                    {
+                        RotateDirection = Main.rand.NextBool() ? 1 : -1;
+                    }
+
+                    Dust.NewDust(player.Center + Vector2.UnitY.RotatedBy(MathHelper.ToRadians(npc.ai[2] += (0.25f * RotateDirection))) * 500, 1, 1, DustID.Adamantite);
+                    npc.Move(player.Center + Vector2.UnitY.RotatedBy(MathHelper.ToRadians(npc.ai[2] += (0.25f * RotateDirection))) * 500, 2.5f, 1);
+
+                    if (npc.ai[1] == 360)
+                    {
+                        npc.ai[0] = (float)AIStates.Tear;
+                        npc.ai[1] = 0;
+                        npc.ai[2] = 0;
+                    }
+
+                    break;
+                case (float)AIStates.Tear:
+                    if (npc.ai[1]++ == 0)
+                    {
+                        npc.velocity = Vector2.Zero;
+                        InitialPosition = npc.Center;
+                        TearDirection = Main.rand.NextBool() ? 1 : -1;
+
+                        MoveDirection = TearDirection;
+                    }
+
+                    if (npc.ai[1] <= 120)
+                    {
+                        npc.Center = Vector2.Lerp(InitialPosition, player.Center + new Vector2(500 * TearDirection, -250), npc.ai[1] / 180f);
+                    }
+
+                    if (npc.ai[1] >= 120)
+                    {
+                        float ToRotation = npc.DirectionTo(npc.Center + Vector2.UnitY * 50).ToRotation() - MathHelper.PiOver2;
+
+                        if (npc.ai[2] == 0)
+                        {
+                            InitialRotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2;
+                        }
+
+                        npc.rotation = MathHelper.Lerp(InitialRotation, ToRotation, Utils.Clamp(npc.ai[2]++, 0, 60) / 60f);
+
+                        // Each second, swap the direction that the NPC is moving if the player somehow gets through the barrage
+                        if (npc.ai[1] % 60 == 0) MoveDirection = player.Center.X > npc.Center.X ? -1 : 1;
+
+                        npc.Move(npc.Center - (Vector2.UnitX * 2 * MoveDirection), 4, 10);
+                    }
+
+                    if (npc.ai[1] == 420)
+                    {
+                        npc.ai[0] = (float)AIStates.Selector;
+                        npc.ai[1] = 0;
+                        npc.ai[2] = 0;
                     }
                     break;
-
             }
 
-            npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2;
 
             return false;
         }
 
-        /*public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Vector2 mountedCenter = npc.Center;
-            Texture2D chainTexture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
-
-            var drawPosition = npc.Center + new Vector2(0, 50);
-            var remainingVectorToPlayer = mountedCenter - drawPosition;
-
-            float rotation = remainingVectorToPlayer.ToRotation() - MathHelper.PiOver2;
-            float CHAIN_LENGTH = 8;
-
-            float distance = Vector2.Distance(npc.Center, npc.Center + new Vector2(0, 50));
-            float iterations = distance / CHAIN_LENGTH;
-
-            Vector2 midPoint1 = npc.Center + new Vector2(25, 25).RotatedBy(NPC.DirectionTo(player.Center).ToRotation() + MathHelper.PiOver2);
-            Vector2 midPoint2 = drawPosition - new Vector2(-25, 25).RotatedBy(NPC.DirectionTo(player.Center).ToRotation() + MathHelper.PiOver2);
-
-            for (int i = 0; i < iterations; i++)
+            if (npc.type == NPCID.EyeofCthulhu)
             {
-                float progress = i / iterations;
-                Color color = Lighting.GetColor((int)drawPosition.X / 16, (int)(drawPosition.Y / 16f));
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
+                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, drawColor, npc.rotation, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
-                Vector2 position = ModUtils.Bezier(npc.Center, drawPosition, midPoint1, midPoint2, progress);
-                Main.EntitySpriteDraw(chainTexture, position - Main.screenPosition, null, color, rotation, chainTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0);
+                return false;
             }
 
             return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
-        }*/
+        }
     }
 }
