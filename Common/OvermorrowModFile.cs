@@ -31,6 +31,8 @@ namespace OvermorrowMod.Common
         public Asset<Effect> Ring;
         public Asset<Effect> Shockwave;
         public Asset<Effect> Shockwave2;
+        public Asset<Effect> Tentacle;
+        public Asset<Effect> TentacleBlack;
         public Asset<Effect> TrailShader;
         public Asset<Effect> TextShader;
         public Asset<Effect> Whiteout;
@@ -61,6 +63,8 @@ namespace OvermorrowMod.Common
                 Ring = Assets.Request<Effect>("Effects/Ring");
                 Shockwave = Assets.Request<Effect>("Effects/Shockwave1");
                 Shockwave2 = Assets.Request<Effect>("Effects/ShockwaveEffect");
+                Tentacle = Assets.Request<Effect>("Effects/Tentacle");
+                TentacleBlack = Assets.Request<Effect>("Effects/TentacleBlack");
                 TextShader = Assets.Request<Effect>("Effects/TextShader");
                 TrailShader = Assets.Request<Effect>("Effects/Trail");
                 Whiteout = Assets.Request<Effect>("Effects/Whiteout");
@@ -109,6 +113,8 @@ namespace OvermorrowMod.Common
             BeamShader = null;
             Ring = null;
             Shockwave = null;
+            Tentacle = null;
+            TentacleBlack = null;
             TrailShader = null;
             TextShader = null;
             Whiteout = null;

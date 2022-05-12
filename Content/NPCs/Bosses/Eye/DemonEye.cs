@@ -10,7 +10,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
     public class DemonEye : ModProjectile
     {
-
         private List<Vector2> telegraphPositions;
         private Vector2 originalCenter;
         private Vector2 originalVelocity;
@@ -29,6 +28,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             DisplayName.SetDefault("Test");
         }
+
         public override void SetDefaults()
         {
             Projectile.height = Projectile.width = 24;
