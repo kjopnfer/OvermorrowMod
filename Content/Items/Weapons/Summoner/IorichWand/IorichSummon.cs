@@ -209,7 +209,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
         }
 
         public override string Texture => "Terraria/Images/Item_" + ProjectileID.LostSoulFriendly;
-        public Color ProjectileColor = Main.DiscoColor;
+        public Color ProjectileColor;
 
         public override void SetStaticDefaults()
         {
@@ -225,6 +225,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.IorichWand
             Projectile.penetrate = 1;
             Projectile.timeLeft = 240;
             Projectile.extraUpdates = 1;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            ProjectileColor = Main.DiscoColor;
+
+            base.OnSpawn(source);
         }
 
         public override void AI()
