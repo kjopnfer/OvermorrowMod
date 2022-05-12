@@ -33,6 +33,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             NPC.width = NPC.height = 24;
             NPC.aiStyle = -1;
             NPC.lifeMax = 300;
+            NPC.defense = 16;
             NPC.knockBackResist = 1.25f;
             NPC.friendly = false;
             NPC.noTileCollide = true;
@@ -142,6 +143,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
 
             return base.PreDraw(spriteBatch, screenPos, drawColor);
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeStalk_Glow").Value;
+            spriteBatch.Draw(texture, NPC.Center - screenPos, null, Color.White, NPC.rotation, texture.Size() / 2, NPC.scale, SpriteEffects.None, 0);
         }
 
         public override void OnKill()

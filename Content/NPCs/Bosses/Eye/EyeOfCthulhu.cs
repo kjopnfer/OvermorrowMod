@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
+using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -25,16 +27,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         public override void SetDefaults(NPC npc)
         {
-            if (npc.type != NPCID.EyeofCthulhu) return;
+            if (npc.type == NPCID.ServantofCthulhu)
+            {
+                npc.aiStyle = NPCID.DemonEye;
+                npc.noTileCollide = true;
+            }
 
-            npc.lifeMax = 3200;
+            if (npc.type == NPCID.EyeofCthulhu)
+            {
+                npc.lifeMax = 3200;
+            }
         }
 
         public enum AIStates
         {
             Intro = -1,
             Selector = 0,
-            Tear = 1
+            Tear = 1,
+            Minions = 2
         }
 
         public override bool PreAI(NPC npc)
@@ -94,7 +104,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     if (npc.ai[1] == 360)
                     {
-                        npc.ai[0] = (float)AIStates.Tear;
+                        //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;
+                        npc.ai[0] = (float)AIStates.Minions;
+
                         npc.ai[1] = 0;
                         npc.ai[2] = 0;
                     }
@@ -139,6 +151,42 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         npc.ai[2] = 0;
                     }
                     break;
+                case (float)AIStates.Minions:
+                    if (npc.ai[1]++ == 0)
+                    {
+                        npc.velocity = Vector2.Zero;
+                    }
+
+                    if (npc.ai[1] % 15 == 0)
+                    {
+                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-8, -4)) * 25;
+
+                        Vector2 velocity = Vector2.UnitY /** Main.rand.NextFloat(0.25f, 1f)*/;
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), RandomPosition, velocity, ModContent.ProjectileType<DemonEye>(), npc.damage, 0f, Main.myPlayer, 0, Main.rand.NextFloat(-1f, 1f));
+                    }
+
+                    /*if (npc.ai[1] == 180)
+                    {
+                        for (int i = 0; i < Main.rand.Next(4, 7); i++)
+                        {
+                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-8, -4)) * 25;
+                            var entitySource = npc.GetSource_FromAI();
+                            int index = NPC.NewNPC(entitySource, (int)RandomPosition.X, (int)RandomPosition.Y, NPCID.ServantofCthulhu);
+
+                            if (Main.netMode == NetmodeID.Server && index < Main.maxNPCs)
+                            {
+                                NetMessage.SendData(MessageID.SyncNPC, number: index);
+                            }
+                        }
+                    }*/
+
+                    if (npc.ai[1] == 360)
+                    {
+                        npc.ai[0] = (float)AIStates.Selector;
+                        npc.ai[1] = 0;
+                        npc.ai[2] = 0;
+                    }
+                    break;
             }
 
 
@@ -150,12 +198,38 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.type == NPCID.EyeofCthulhu)
             {
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
-                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, drawColor, npc.rotation, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
+                if (npc.ai[0] == (float)AIStates.Minions && npc.ai[1] > 120 && npc.ai[1] < 180)
+                {
+                    int amount = 5;
+                    //float progress = (float)Math.Sin(npc.localAI[1]++ / 30f);
+                    float progress = Utils.Clamp(npc.ai[1] - 120f, 0, 60) / 60f;
+
+                    for (int i = 0; i < amount; i++)
+                    {
+                        float scaleAmount = i / (float)amount;
+                        float scale = 1f + progress * scaleAmount;
+                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Cyan * (1f - progress), npc.rotation, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
+                    }
+
+                }
+          
+                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, drawColor, npc.rotation, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
                 return false;
             }
 
             return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+        }
+
+        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (npc.type == NPCID.EyeofCthulhu)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu_Glow").Value;
+                spriteBatch.Draw(texture, npc.Center - screenPos, null, Color.White, npc.rotation, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+            }
+
+            base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
     }
 }
