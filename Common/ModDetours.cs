@@ -2,11 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,6 +23,83 @@ namespace OvermorrowMod.Common
             On.Terraria.Player.SlopingCollision += PlatformCollision;
             On.Terraria.Main.DrawInterface += DrawParticles;
             On.Terraria.Main.DrawDust += DrawOverlay;
+
+            //On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
+            //Main.OnResolutionChanged += Main_OnResolutionChanged;
+        }
+
+        public static void Unload()
+        {
+            //On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
+            On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
+            On.Terraria.Player.SlopingCollision -= PlatformCollision;
+            On.Terraria.Main.DrawInterface -= DrawParticles;
+            On.Terraria.Main.DrawDust -= DrawOverlay;
+
+            //On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
+            //Main.OnResolutionChanged -= Main_OnResolutionChanged;
+        }
+
+        private static void Main_OnResolutionChanged(Vector2 obj)
+        {
+            OvermorrowModFile.Instance.CreateRender();
+        }
+
+        private static void FilterManager_EndCapture(On.Terraria.Graphics.Effects.FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
+        {
+            GraphicsDevice gd = Main.instance.GraphicsDevice;
+            SpriteBatch sb = Main.spriteBatch;
+
+            //gd.SetRenderTarget(Main.screenTargetSwap);
+            //gd.Clear(Color.Transparent);
+            //sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            //sb.End();
+
+            //gd.SetRenderTarget(OvermorrowModFile.Instance.Render);
+            //gd.Clear(Color.Transparent);
+            //sb.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            //CosmicFlame.DrawAll(sb);
+            //sb.End();
+
+            gd.SetRenderTarget(Main.screenTargetSwap);
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            sb.End();
+
+            gd.SetRenderTarget(OvermorrowModFile.Instance.Render);
+            gd.Clear(Color.Transparent);
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            sb.Draw(TextureAssets.MagicPixel.Value, new Vector2(800, 500), new Rectangle(0, 0, 50, 50), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            sb.End();
+
+            gd.SetRenderTarget(Main.screenTarget);
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+            sb.Draw(OvermorrowModFile.Instance.Render, Vector2.Zero, Color.White);
+            sb.End();
+
+            foreach (Projectile proj in Main.projectile)
+            {
+                if (proj.type == ModContent.ProjectileType<DarkTest>() && proj.active)
+                {
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+                    sb.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * proj.ai[1]);
+                    sb.End();
+
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                    Player player = Main.player[Main.myPlayer];
+                    Main.PlayerRenderer.DrawPlayer(Main.Camera, player, player.position, 0, Vector2.Zero);
+                    sb.End();
+                }
+
+                if (proj.active)
+                {
+                    Main.NewText("bruh");
+                }
+            }
+
+            orig(self, finalTexture, screenTarget1, screenTarget2, clearColor);
         }
 
         // Test for blurred overlay
@@ -50,15 +129,6 @@ namespace OvermorrowMod.Common
             //device.DrawUserPrimitives(PrimitiveType.TriangleStrip, data, 0, 4);
 
             orig(self);
-        }
-
-        public static void Unload()
-        {
-            //On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
-            On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
-            On.Terraria.Player.SlopingCollision -= PlatformCollision;
-            On.Terraria.Main.DrawInterface -= DrawParticles;
-            On.Terraria.Main.DrawDust -= DrawOverlay;
         }
 
         public static void DrawParticles(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)

@@ -1,15 +1,18 @@
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Netcode;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Materials;
+using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Core;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -27,6 +30,8 @@ namespace OvermorrowMod.Common
         public static OvermorrowModFile Instance { get; set; }
         public OvermorrowModFile() => Instance = this;
 
+        public RenderTarget2D Render;
+
         public Asset<Effect> BeamShader;
         public Asset<Effect> Ring;
         public Asset<Effect> Shockwave;
@@ -43,8 +48,6 @@ namespace OvermorrowMod.Common
 
         public override void Load()
         {
-            //Terraria.ModLoader.IO.TagSerializer.AddSerializer(new VectorSerializer());
-
             // Keys
             SandModeKey = KeybindLoader.RegisterKeybind(this, "Swap Sand Mode", "Q");
             AmuletKey = KeybindLoader.RegisterKeybind(this, "Artemis Amulet Attack", "C");
@@ -78,7 +81,6 @@ namespace OvermorrowMod.Common
 
                 Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
 
-
                 TrailTextures = new List<Asset<Texture2D>>();
                 for (int i = 0; i < 7; i++)
                 {
@@ -86,12 +88,13 @@ namespace OvermorrowMod.Common
                 }
 
                 Terraria.GameContent.TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ChainKnife");
-                if (Main.hardMode)
-                {
-                    //Main.itemTexture[ModContent.ItemType<HerosBlade>()] = ModContent.GetTexture("OvermorrowMod/Items/Weapons/PreHardmode/Melee/HerosBlade_Tier_2");
-                }
             }
             ModDetours.Load();
+
+            On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
+            Main.OnResolutionChanged += Main_OnResolutionChanged;
+            CreateRender();
+
             ModUtils.Load(false);
             HexLoader.Load(false);
             ILEdits.Load();
@@ -104,6 +107,8 @@ namespace OvermorrowMod.Common
                 HexLoader.TryRegisteringHex(type);
                 Particle.TryRegisteringParticle(type);
             }
+
+            base.Load();
         }
 
         public override void Unload()
@@ -121,6 +126,9 @@ namespace OvermorrowMod.Common
 
             TrailTextures = null;
             ModDetours.Unload();
+            On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
+            Main.OnResolutionChanged -= Main_OnResolutionChanged;
+
             ModUtils.Load(true);
             HexLoader.Load(true);
             Quests.Quests.Unload();
@@ -132,6 +140,7 @@ namespace OvermorrowMod.Common
             AmuletKey = null;
             ToggleUI = null;
 
+            base.Unload();
         }
 
         public override void AddRecipes()
@@ -193,9 +202,80 @@ namespace OvermorrowMod.Common
                 .Register();
         }
 
+        public void CreateRender()
+        {
+            Main.QueueMainThreadAction(() =>
+            {
+                Render = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
+            });
+        }
+
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             NetworkMessageHandler.HandlePacket(reader, whoAmI);
         }
+
+        private void Main_OnResolutionChanged(Vector2 obj)
+        {
+            CreateRender();
+        }
+
+        private void FilterManager_EndCapture(On.Terraria.Graphics.Effects.FilterManager.orig_EndCapture orig, FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
+        {
+            GraphicsDevice gd = Main.instance.GraphicsDevice;
+            SpriteBatch sb = Main.spriteBatch;
+
+            //gd.SetRenderTarget(Main.screenTargetSwap);
+            //gd.Clear(Color.Transparent);
+            //sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            //sb.End();
+
+            //gd.SetRenderTarget(OvermorrowModFile.Instance.Render);
+            //gd.Clear(Color.Transparent);
+            //sb.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            //CosmicFlame.DrawAll(sb);
+            //sb.End();
+
+            gd.SetRenderTarget(Main.screenTargetSwap);
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            sb.End();
+
+            gd.SetRenderTarget(Render);
+            gd.Clear(Color.Transparent);
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            sb.Draw(TextureAssets.MagicPixel.Value, new Vector2(800, 500), new Rectangle(0, 0, 50, 50), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            sb.End();
+
+            gd.SetRenderTarget(Main.screenTarget);
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+            sb.Draw(Render, Vector2.Zero, Color.White);
+            sb.End();
+
+            foreach (Projectile proj in Main.projectile)
+            {
+                if (proj.type == ModContent.ProjectileType<DarkTest>() && proj.active)
+                {
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+                    sb.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * proj.ai[1]);
+                    sb.End();
+
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                    Player player = Main.player[Main.myPlayer];
+                    Main.PlayerRenderer.DrawPlayer(Main.Camera, player, player.position, 0, Vector2.Zero);
+                    sb.End();
+                }
+
+                if (proj.active)
+                {
+                    Main.NewText("bruh");
+                }
+            }
+
+            orig(self, finalTexture, screenTarget1, screenTarget2, clearColor);
+        }
+
     }
 }

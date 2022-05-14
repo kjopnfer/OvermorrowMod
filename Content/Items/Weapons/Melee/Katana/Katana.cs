@@ -49,7 +49,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.Katana
                     currentAttack = -currentAttack;
                     Particle.CreateParticle(Particle.ParticleType<Slash>(), position, velocity, new Color(56, 38, 208), 1f, 0.5f);
                     Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0, dir);
-
                 }
             }
             else

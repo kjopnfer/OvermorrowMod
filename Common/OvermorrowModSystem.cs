@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Content.UI;
 using ReLogic.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 
@@ -105,6 +108,32 @@ namespace OvermorrowMod.Common
 
             DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, FontAssets.DeathText.Value, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
             DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, FontAssets.DeathText.Value, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
+        }
+
+        public override void PostDrawTiles()
+        {
+            SpriteBatch sb = Main.spriteBatch;
+
+            //sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            //sb.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * proj.ai[1]);
+            //sb.End();
+
+            foreach (NPC npc in Main.npc)
+            {
+                if (npc.type == NPCID.EyeofCthulhu && npc.active)
+                {
+                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+                    sb.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black * npc.ai[3]);
+                    sb.End();
+
+                    //sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                    //Player player = Main.player[Main.myPlayer];
+                    //Main.PlayerRenderer.DrawPlayer(Main.Camera, player, player.position, 0, Vector2.Zero);
+                    //sb.End();
+                }
+            }
+
+            base.PostDrawTiles();
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)

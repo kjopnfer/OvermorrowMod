@@ -23,6 +23,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private int RotateDirection = 1;
         private Vector2 InitialPosition;
 
+        private bool TransitionPhase = false;
+
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) => false;
 
         public override void SetDefaults(NPC npc)
@@ -39,13 +41,29 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
         }
 
+        public override void OnSpawn(NPC npc, IEntitySource source)
+        {
+            npc.ai[0] = 0;
+            npc.ai[1] = 0;
+            npc.ai[2] = 0;
+            npc.ai[3] = 0;
+
+            base.OnSpawn(npc, source);
+        }
+
         public enum AIStates
         {
+            Transition = -2,
             Intro = -1,
             Selector = 0,
             Tear = 1,
             Minions = 2
         }
+
+        // ai[0] - AI Case
+        // ai[1] - AI Counter
+        // ai[2] - Secondary AI Counter
+        // ai[3] - Miscellaneous (VFX) Counter
 
         public override bool PreAI(NPC npc)
         {
@@ -65,8 +83,60 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
             }
 
+            if (npc.life <= npc.lifeMax * 0.5f && !TransitionPhase)
+            {
+                npc.dontTakeDamage = true;
+                npc.velocity = Vector2.Zero;
+                npc.ai[0] = (float)AIStates.Transition;
+
+                if (npc.ai[3] < 1f)
+                {
+                    npc.ai[3] += 0.05f;
+                }
+                else
+                {
+                    TransitionPhase = true;
+                    npc.ai[1] = 0;
+                    npc.ai[2] = 0;
+                }
+            }
+
             switch (npc.ai[0])
             {
+                case (float)AIStates.Transition:
+                    if (TransitionPhase)
+                    {
+                        if (++npc.ai[1] % 15 == 0 && npc.ai[1] < 540)
+                        {
+
+                            Vector2 RandomPosition = player.Center + new Vector2(Main.rand.Next(-9, 7) + 1, Main.rand.Next(-7, 5) + 1) * 75;
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
+
+                            if (Main.rand.NextBool(4))
+                            {
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), player.position, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
+                            }
+                        }
+
+                        if (npc.ai[1] >= /*870*/750)
+                        {
+
+                            if (npc.ai[3] > 0)
+                            {
+                                npc.ai[3] -= 0.05f;
+                            }
+                            else
+                            {
+                                npc.dontTakeDamage = false;
+
+                                npc.ai[0] = (float)AIStates.Selector;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                                npc.ai[3] = 0;
+                            }
+                        }
+                    }
+                    break;
                 case (float)AIStates.Intro:
                     //npc.Center = player.Center - new Vector2(0, 50);
                     break;
@@ -88,6 +158,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             if (Main.netMode == NetmodeID.Server && index < Main.maxNPCs)
                             {
                                 NetMessage.SendData(MessageID.SyncNPC, number: index);
+                            }
+                        }
+
+                        // Long tentacles
+                        for (int i = 0; i <= 3; i++)
+                        {
+                            int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
+                            Projectile proj = Main.projectile[projectileIndex];
+                            if (proj.ModProjectile is EyeTentacle tentacle)
+                            {
+                                tentacle.value = Main.rand.Next(0, 3) * 50;
+                                tentacle.parentID = npc.whoAmI;
+                            }
+                        }
+
+                        // Short tentacles
+                        for (int i = 0; i <= 3; i++)
+                        {
+                            int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(2, 4) * 15, Main.rand.NextFloat(4f, 5f));
+                            Projectile proj = Main.projectile[projectileIndex];
+                            if (proj.ModProjectile is EyeTentacle tentacle)
+                            {
+                                tentacle.value = Main.rand.Next(0, 3) * 50;
+                                tentacle.parentID = npc.whoAmI;
                             }
                         }
 
@@ -213,7 +307,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
 
                 }
-          
+
                 spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, drawColor, npc.rotation, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
                 return false;
             }
