@@ -68,7 +68,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Projectile.timeLeft = 420;
                 }
 
-                Projectile.velocity = -npc.DirectionTo(npc.Center + Vector2.UnitY.RotatedBy(npc.rotation));
+                Projectile.velocity = -npc.DirectionTo(npc.Center + Vector2.UnitY.RotatedBy(npc.rotation - MathHelper.PiOver4));
 
                 //if (npc.velocity != Vector2.Zero)
                 //    Projectile.velocity = -npc.velocity;

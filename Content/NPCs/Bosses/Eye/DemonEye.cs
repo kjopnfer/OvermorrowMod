@@ -17,8 +17,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private bool runOnce = true;
         private bool[] ignoreTiles;
 
-        private float Direction1 = 0;
-        private float Direction2 = 0;
+        private float turnResistance = 0;
+
         private float maxTime = 480;
 
         public ref float AICounter => ref Projectile.ai[0];
@@ -60,8 +60,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (runOnce)
             {
-                Direction1 = Projectile.ai[1];
-                Direction2 = Direction1;
+                turnResistance = Projectile.ai[1];
 
                 // Initialize the tiles that should be ignored when calculating the movement
                 // Set the tile type to false if you want to recalculate the movement if it "hits" a block
@@ -92,14 +91,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 if (originalVelocity != initialVelocity)
                 {
                     originalVelocity = -initialVelocity;
-                    Direction1 = -Direction1;
+                    turnResistance = -turnResistance;
                 }
 
                 // Cap the interval for acceleration
                 if (AICounter < 420)
                     originalVelocity *= veloMult;
 
-                originalVelocity = originalVelocity.RotatedBy(MathHelper.ToRadians(rotateMod * Direction1));
+                originalVelocity = originalVelocity.RotatedBy(MathHelper.ToRadians(rotateMod * turnResistance));
                 telegraphPositions.Add(originalCenter);
             }
 
@@ -113,11 +112,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 if (Projectile.velocity != initialVelocity)
                 {
                     Projectile.velocity = -initialVelocity;
-                    Direction2 = -Direction2;
+                    turnResistance = -turnResistance;
                 }
 
                 Projectile.velocity *= veloMult;
-                Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(rotateMod * Direction2));
+                Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(rotateMod * turnResistance));
             }
             else if (telegraphPositions.Count >= 1)
                 telegraphPositions.RemoveAt(0);
@@ -137,7 +136,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Vector2 toPos = from - to;
                     float rotation = toPos.ToRotation();
                     Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/LineIndicator").Value;
-                    Main.EntitySpriteDraw(texture, from - Main.screenPosition, null, Color.Cyan * alphaMult, rotation, new Vector2(1, 1), 1f, SpriteEffects.None, 0);
+                    Main.EntitySpriteDraw(texture, from - Main.screenPosition, null, Color.Orange * alphaMult, rotation, new Vector2(1, 1), 1f, SpriteEffects.None, 0);
                     from = to;
                 }
             }

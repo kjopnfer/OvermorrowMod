@@ -261,6 +261,7 @@ namespace OvermorrowMod.Core
         public static void Kill(this NPC npc)
         {
             npc.life = 0;
+            npc.HitEffect();
             npc.NPCLoot();
             npc.active = false;
 
