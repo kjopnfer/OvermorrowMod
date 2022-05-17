@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
@@ -141,46 +142,66 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             var normalizedRotation = npc.rotation % MathHelper.TwoPi;
 
-            /*float lowerAngle = (normalizedRotation + MathHelper.PiOver4) - MathHelper.PiOver4;
-            float upperAngle = (normalizedRotation + MathHelper.PiOver4) + MathHelper.PiOver4;*/
             float lowerAngle = normalizedRotation - MathHelper.PiOver4;
             float upperAngle = normalizedRotation + MathHelper.PiOver4;
 
             //Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.One.RotatedBy(lowerAngle) * 6, ProjectileID.DeathLaser, 0, 2f, Main.myPlayer);
             //Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.One.RotatedBy(npc.rotation) * 6, ProjectileID.PurpleLaser, 0, 2f, Main.myPlayer);
             //Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.One.RotatedBy(upperAngle) * 6, ProjectileID.GreenLaser, 0, 2f, Main.myPlayer);
-
-            var playerAngle = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver4;
-
-            // Stupid code that checks if the player is in a specific area because the calculations get all stupid
-            // I can't explain this properly, just know that once playerAngle reaches a certain area the values all get completely swapped
-            // This code effectively takes into account that specific area and reconverts it back to the correct values
-            if (npc.rotation > 0)
+    
+            foreach (Player targetPlayer in Main.player)
             {
-                if (playerAngle <= 0)
-                {
-                    playerAngle += MathHelper.TwoPi;
-                }
-            }
-            else
-            {
-                if (playerAngle >= 0)
-                {
-                    playerAngle -= MathHelper.TwoPi;
-                }
-            }
+                if (!targetPlayer.active || targetPlayer.dead || npc.Distance(targetPlayer.Center) > 400) continue;
 
-            /*if (npc.Distance(player.Center) < 400)
-            {
-                if (playerAngle >= lowerAngle && playerAngle <= upperAngle)
+                var playerAngle = npc.DirectionTo(targetPlayer.Center).ToRotation() - MathHelper.PiOver4;
+
+                // Stupid code that checks if the player is in a specific area because the calculations get all stupid
+                // I can't explain this properly, just know that once playerAngle reaches a certain area the values all get completely swapped
+                // This code effectively takes into account that specific area and reconverts it back to the correct values
+                if (npc.rotation > 0)
                 {
-                    Main.NewText("in range: " + playerAngle + " npc: " + normalizedRotation + " lower:" + lowerAngle + " higher: " + upperAngle, Color.Red);
+                    if (playerAngle <= 0)
+                    {
+                        playerAngle += MathHelper.TwoPi;
+                    }
                 }
                 else
                 {
-                    Main.NewText("player angle: " + playerAngle + " npc: " + normalizedRotation + " lower:" + lowerAngle + " higher: " + upperAngle);
+                    if (playerAngle >= 0)
+                    {
+                        playerAngle -= MathHelper.TwoPi;
+                    }
                 }
-            }*/
+
+                if (playerAngle >= lowerAngle && playerAngle <= upperAngle)
+                {
+                    targetPlayer.AddBuff(ModContent.BuffType<Paralyzed>(), 360);
+                }
+
+                /*
+                if (playerAngle >= lowerAngle && playerAngle <= upperAngle)
+                {
+                    float PullStrength = MathHelper.Lerp(.65f, .25f, npc.Distance(targetPlayer.Center) / 400f);
+                    float Direction = (npc.Center - targetPlayer.Center).ToRotation();
+                    float HorizontalPull = (float)Math.Cos(Direction) * PullStrength;
+                    float VerticalPull = (float)Math.Sin(Direction) * PullStrength;
+
+                    targetPlayer.velocity += new Vector2(HorizontalPull, VerticalPull);
+                }*/
+            }
+
+            for (int _ = 0; _ < 2; _++)
+            {
+                var rot = npc.rotation + Main.rand.NextFloat(-MathHelper.PiOver4 + 0.2f, MathHelper.PiOver4 - 0.2f);
+
+                Vector2 RandomPosition = npc.Center + Vector2.One.RotatedBy(rot + MathHelper.Pi) * -Main.rand.Next(200, 250);
+                Vector2 Direction = Vector2.Normalize(npc.Center - RandomPosition);
+
+                int DustSpeed = 30;
+
+                int dust = Dust.NewDust(RandomPosition, 1, 1, DustID.Cloud, Direction.X * DustSpeed, Direction.Y * DustSpeed, 0, default, Main.rand.NextFloat(1, 1.5f));
+                Main.dust[dust].noGravity = true;
+            }
 
             foreach (NPC servant in Main.npc)
             {
@@ -440,16 +461,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         }
 
-                        /*for (int _ = 0; _ < 10; _++)
+                        for (int _ = 0; _ < 10; _++)
                         {
-                            Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(150, 250), 0).RotatedByRandom(MathHelper.TwoPi);
+                            Vector2 RandomPosition = npc.Center + new Vector2(npc.width * 1.25f, -npc.height * 1.25f).RotatedByRandom(MathHelper.PiOver2);
                             Vector2 Direction = Vector2.Normalize(npc.Center - RandomPosition);
 
-                            int DustSpeed = npc.ai[0] > 180 ? 20 : 10;
+                            int DustSpeed = 20;
 
-                            int dust = Dust.NewDust(RandomPosition, 2, 2, DustID.Sand, Direction.X * DustSpeed, Direction.Y * DustSpeed);
+                            int dust = Dust.NewDust(RandomPosition, 2, 2, DustID.AmberBolt, Direction.X * DustSpeed, Direction.Y * DustSpeed);
                             Main.dust[dust].noGravity = true;
-                        }*/
+                        }
                     }
                     break;
             }
@@ -490,18 +511,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (npc.type == NPCID.EyeofCthulhu)
-            {
+            {             
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu_Glow").Value;
+                spriteBatch.Draw(texture, npc.Center - screenPos, null, Color.White, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+
                 spriteBatch.Reload(BlendState.Additive);
 
                 float alpha = MathHelper.Lerp(0.65f, 0.8f, (float)Math.Sin(npc.localAI[0]++ / 20f));
-
-                Texture2D tell = ModContent.Request<Texture2D>(AssetDirectory.Textures + "EyeTell").Value;
-                spriteBatch.Draw(tell, npc.Center + new Vector2(npc.width * 1.25f, -npc.height * 1.25f).RotatedBy(npc.rotation + MathHelper.PiOver2) - Main.screenPosition, null, Color.Orange * alpha, npc.rotation - MathHelper.PiOver4, tell.Size() / 2, new Vector2(4f, 4f), SpriteEffects.None, 0);
+                Texture2D spotlight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "EyeTell").Value;
+                //spriteBatch.Draw(tell, npc.Center + new Vector2(npc.width * 1.25f, -npc.height * 1.25f).RotatedBy(npc.rotation + MathHelper.PiOver2) - Main.screenPosition, null, new Color(255, 200, 46) * alpha, npc.rotation - MathHelper.PiOver4, tell.Size() / 2, new Vector2(4f, 4f), SpriteEffects.None, 0);
+                spriteBatch.Draw(spotlight, npc.Center + new Vector2(npc.width * 1.52f, -npc.height * 1.35f).RotatedBy(npc.rotation + MathHelper.PiOver2) - Main.screenPosition, null, new Color(255, 200, 46) * alpha, npc.rotation - MathHelper.PiOver4, spotlight.Size() / 2, 1f, SpriteEffects.None, 0);
 
                 spriteBatch.Reload(BlendState.AlphaBlend);
-
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu_Glow").Value;
-                spriteBatch.Draw(texture, npc.Center - screenPos, null, Color.White, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
             }
 
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);

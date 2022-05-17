@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.NPCs;
@@ -342,7 +343,6 @@ namespace OvermorrowMod.Common
             PlatformTimer--;
         }
 
-
         public override void UpdateEquips()
         {
             if (DripplerEye)
@@ -434,6 +434,23 @@ namespace OvermorrowMod.Common
                 // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 2 life gained per second.
                 Player.lifeRegen += 4;
             }
+        }
+
+        public override void PreUpdateMovement()
+        {
+            if (Player.HasBuff(ModContent.BuffType<Paralyzed>()))
+            {
+                if (Player.controlJump)
+                {
+                    Player.velocity.Y = 0;
+                }
+
+                if (Player.mount.Active) Player.QuickMount();
+
+                Player.velocity.X = 0;
+            }
+
+            base.PreUpdateMovement();
         }
 
         public override void PostUpdateRunSpeeds()
