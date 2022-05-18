@@ -33,6 +33,8 @@ namespace OvermorrowMod.Common
         public RenderTarget2D Render;
 
         public Asset<Effect> BeamShader;
+        public Asset<Effect> Flash;
+        public Asset<Effect> RadialBlur;
         public Asset<Effect> Ring;
         public Asset<Effect> Shockwave;
         public Asset<Effect> Shockwave2;
@@ -41,7 +43,7 @@ namespace OvermorrowMod.Common
         public Asset<Effect> TrailShader;
         public Asset<Effect> TextShader;
         public Asset<Effect> Whiteout;
-        public Asset<Effect> RadialBlur;
+
         public Asset<Texture2D> BlurTestTexture;
 
         public static List<Asset<Texture2D>> TrailTextures;
@@ -63,6 +65,7 @@ namespace OvermorrowMod.Common
 
                 // Effects
                 BeamShader = Assets.Request<Effect>("Effects/Beam");
+                Flash = Assets.Request<Effect>("Effects/Flash");
                 Ring = Assets.Request<Effect>("Effects/Ring");
                 Shockwave = Assets.Request<Effect>("Effects/Shockwave1");
                 Shockwave2 = Assets.Request<Effect>("Effects/ShockwaveEffect");
@@ -116,6 +119,8 @@ namespace OvermorrowMod.Common
             Instance = null;
 
             BeamShader = null;
+            Flash = null;
+            RadialBlur = null;
             Ring = null;
             Shockwave = null;
             Tentacle = null;
