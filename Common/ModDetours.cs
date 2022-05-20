@@ -24,8 +24,9 @@ namespace OvermorrowMod.Common
             On.Terraria.Main.DrawInterface += DrawParticles;
             On.Terraria.Main.DrawDust += DrawOverlay;
 
-            //On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
-            //Main.OnResolutionChanged += Main_OnResolutionChanged;
+            On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
+            Main.OnResolutionChanged += Main_OnResolutionChanged;
+            OvermorrowModFile.Instance.CreateRender();
         }
 
         public static void Unload()
@@ -36,8 +37,8 @@ namespace OvermorrowMod.Common
             On.Terraria.Main.DrawInterface -= DrawParticles;
             On.Terraria.Main.DrawDust -= DrawOverlay;
 
-            //On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
-            //Main.OnResolutionChanged -= Main_OnResolutionChanged;
+            On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
+            Main.OnResolutionChanged -= Main_OnResolutionChanged;
         }
 
         private static void Main_OnResolutionChanged(Vector2 obj)
@@ -47,8 +48,12 @@ namespace OvermorrowMod.Common
 
         private static void FilterManager_EndCapture(On.Terraria.Graphics.Effects.FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
         {
-            GraphicsDevice gd = Main.instance.GraphicsDevice;
-            SpriteBatch sb = Main.spriteBatch;
+            // Swap Render Target
+            // Set New Render Target
+            // Swap Back to screenTarget
+
+            GraphicsDevice graphicsDevice = Main.instance.GraphicsDevice;
+            SpriteBatch spriteBatch = Main.spriteBatch;
 
             //gd.SetRenderTarget(Main.screenTargetSwap);
             //gd.Clear(Color.Transparent);
@@ -62,42 +67,31 @@ namespace OvermorrowMod.Common
             //CosmicFlame.DrawAll(sb);
             //sb.End();
 
-            gd.SetRenderTarget(Main.screenTargetSwap);
-            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-            sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-            sb.End();
+            graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            spriteBatch.End();
 
-            gd.SetRenderTarget(OvermorrowModFile.Instance.Render);
-            gd.Clear(Color.Transparent);
-            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            sb.Draw(TextureAssets.MagicPixel.Value, new Vector2(800, 500), new Rectangle(0, 0, 50, 50), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-            sb.End();
+            graphicsDevice.SetRenderTarget(OvermorrowModFile.Instance.Render);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            //sb.Draw(TextureAssets.MagicPixel.Value, new Vector2(800, 500), new Rectangle(0, 0, 50, 50), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            DarkVortex.DrawAll(spriteBatch);
+            spriteBatch.End();
 
-            gd.SetRenderTarget(Main.screenTarget);
-            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-            sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-            sb.Draw(OvermorrowModFile.Instance.Render, Vector2.Zero, Color.White);
-            sb.End();
-
-            foreach (Projectile proj in Main.projectile)
-            {
-                if (proj.type == ModContent.ProjectileType<DarkTest>() && proj.active)
-                {
-                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                    sb.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * proj.ai[1]);
-                    sb.End();
-
-                    sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-                    Player player = Main.player[Main.myPlayer];
-                    Main.PlayerRenderer.DrawPlayer(Main.Camera, player, player.position, 0, Vector2.Zero);
-                    sb.End();
-                }
-
-                if (proj.active)
-                {
-                    Main.NewText("bruh");
-                }
-            }
+            graphicsDevice.SetRenderTarget(Main.screenTarget);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            //graphicsDevice.Textures[1] = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Cosmic").Value;
+            graphicsDevice.Textures[1] = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/Test").Value;
+            OvermorrowModFile.BigTentacle.CurrentTechnique.Passes[0].Apply();
+            OvermorrowModFile.BigTentacle.Parameters["m"].SetValue(0.62f);
+            OvermorrowModFile.BigTentacle.Parameters["n"].SetValue(0.01f);
+            spriteBatch.Draw(OvermorrowModFile.Instance.Render, Vector2.Zero, Color.White);
+            spriteBatch.End();
 
             orig(self, finalTexture, screenTarget1, screenTarget2, clearColor);
         }

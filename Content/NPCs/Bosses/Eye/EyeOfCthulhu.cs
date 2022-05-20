@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria.Graphics.Effects;
 using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Core;
 using System;
@@ -56,10 +57,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.type == NPCID.EyeofCthulhu)
             {
                 npc.rotation = -MathHelper.PiOver2;
-                npc.ai[0] = 0;
+                npc.ai[0] = (float)AIStates.Intro;
                 npc.ai[1] = 0;
                 npc.ai[2] = 0;
                 npc.ai[3] = 0;
+
+                npc.localAI[2] = 0;
             }
 
             base.OnSpawn(npc, source);
@@ -79,8 +82,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         // ai[1] - AI Counter
         // ai[2] - Secondary AI Counter
         // ai[3] - Miscellaneous (VFX) Counter
-
-
         public override bool PreAI(NPC npc)
         {
             if (npc.type == NPCID.ServantofCthulhu)
@@ -115,6 +116,28 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 if (minion.ModNPC is EyeStalk)
                 {
                     npc.defense = 32;
+                }
+            }
+
+            //float progress = MathHelper.Lerp(0, 1 / 3f, (float)Math.Sin(npc.localAI[2]++ / 30f));
+            //float progress = -0.106f;
+
+            float darkIncrease = MathHelper.Lerp(-0.01f, -0.08f, Utils.Clamp(npc.localAI[2]++, 0, 14400f) / 14400f);
+            float progress = MathHelper.Lerp(darkIncrease, -0.06f - darkIncrease, (float)Math.Sin(npc.localAI[2]++ / 60f));
+            //float progress = MathHelper.Lerp(-0.066f, -0.106f, (float)Math.Sin(npc.localAI[2]++ / 30f));
+
+
+            if (Main.netMode != NetmodeID.Server)
+            {
+                if (!Filters.Scene["Flash"].IsActive())
+                {
+                    Filters.Scene.Activate("Flash");
+                }
+
+                if (Filters.Scene["Flash"].IsActive())
+                {
+                    Filters.Scene["Flash"].GetShader().UseTargetPosition(npc.Center);
+                    Filters.Scene["Flash"].GetShader().UseIntensity(progress);
                 }
             }
 
@@ -178,88 +201,39 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
             }
 
-            for (int _ = 0; _ < 2; _++)
-            {
-                var rot = npc.rotation + Main.rand.NextFloat(-MathHelper.PiOver4 + 0.2f, MathHelper.PiOver4 - 0.2f);
-
-                Vector2 RandomPosition = npc.Center + Vector2.One.RotatedBy(rot + MathHelper.Pi) * -Main.rand.Next(200, 250);
-                Vector2 Direction = Vector2.Normalize(npc.Center - RandomPosition);
-
-                int DustSpeed = 30;
-
-                int dust = Dust.NewDust(RandomPosition, 1, 1, DustID.Cloud, Direction.X * DustSpeed, Direction.Y * DustSpeed, 0, default, Main.rand.NextFloat(1, 1.5f));
-                Main.dust[dust].noGravity = true;
-            }
-
-            foreach (NPC servant in Main.npc)
-            {
-                if (!servant.active || servant.type != NPCID.ServantofCthulhu && npc.Distance(servant.Center) < 400) continue;
-
-                var npcAngle = npc.DirectionTo(servant.Center).ToRotation() - MathHelper.PiOver4;
-
-                if (npc.rotation > 0)
-                {
-                    if (npcAngle <= 0)
-                    {
-                        npcAngle += MathHelper.TwoPi;
-                    }
-                }
-                else
-                {
-                    if (npcAngle >= 0)
-                    {
-                        npcAngle -= MathHelper.TwoPi;
-                    }
-                }
-
-                if (npcAngle >= lowerAngle && npcAngle <= upperAngle)
-                {
-                    float PullStrength = MathHelper.Lerp(.65f, .25f, npc.Distance(servant.Center) / 400f);
-                    float Direction = (npc.Center - servant.Center).ToRotation();
-                    float HorizontalPull = (float)Math.Cos(Direction) * PullStrength;
-                    float VerticalPull = (float)Math.Sin(Direction) * PullStrength;
-
-                    servant.velocity += new Vector2(HorizontalPull, VerticalPull);
-                }
-            }
-
             switch (npc.ai[0])
             {
                 case (float)AIStates.Transition:
                     Transition(npc, player);
                     break;
                 case (float)AIStates.Intro:
-                    break;
-                case (float)AIStates.Selector:
-                    if (npc.ai[1]++ == 0 && Temp)
+                    // Long tentacles
+                    for (int i = 0; i <= 3; i++)
                     {
-                        // Long tentacles
-                        for (int i = 0; i <= 3; i++)
+                        int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
+                        Projectile proj = Main.projectile[projectileIndex];
+                        if (proj.ModProjectile is EyeTentacle tentacle)
                         {
-                            int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
-                            Projectile proj = Main.projectile[projectileIndex];
-                            if (proj.ModProjectile is EyeTentacle tentacle)
-                            {
-                                tentacle.value = Main.rand.Next(0, 3) * 50;
-                                tentacle.parentID = npc.whoAmI;
-                            }
+                            tentacle.value = Main.rand.Next(0, 3) * 50;
+                            tentacle.parentID = npc.whoAmI;
                         }
-
-                        // Short tentacles
-                        for (int i = 0; i <= 3; i++)
-                        {
-                            int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(2, 4) * 15, Main.rand.NextFloat(4f, 5f));
-                            Projectile proj = Main.projectile[projectileIndex];
-                            if (proj.ModProjectile is EyeTentacle tentacle)
-                            {
-                                tentacle.value = Main.rand.Next(0, 3) * 50;
-                                tentacle.parentID = npc.whoAmI;
-                            }
-                        }
-
-                        Temp = false;
                     }
 
+                    // Short tentacles
+                    for (int i = 0; i <= 3; i++)
+                    {
+                        int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(2, 4) * 15, Main.rand.NextFloat(4f, 5f));
+                        Projectile proj = Main.projectile[projectileIndex];
+                        if (proj.ModProjectile is EyeTentacle tentacle)
+                        {
+                            tentacle.value = Main.rand.Next(0, 3) * 50;
+                            tentacle.parentID = npc.whoAmI;
+                        }
+                    }
+
+                    npc.ai[0] = (float)AIStates.Selector;
+                    break;
+                case (float)AIStates.Selector:
                     if (npc.ai[1] % 120 == 0)
                     {
                         if (Main.rand.NextBool())
@@ -358,32 +332,51 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     if (npc.ai[1] == 360)
                     {
-                        foreach (Player target in Main.player)
+                        foreach (NPC servant in Main.npc)
                         {
-                            if (!target.active) continue;
+                            if (!servant.active || servant.type != NPCID.ServantofCthulhu && npc.Distance(servant.Center) < 400) continue;
 
-                            if (npc.Distance(target.Center) < 200 && Collision.CanHit(npc.Center, 1, 1, target.Center, 1, 1))
+                            var npcAngle = npc.DirectionTo(servant.Center).ToRotation() - MathHelper.PiOver4;
+
+                            if (npc.rotation > 0)
                             {
-                                float PullStrength = npc.ai[0] >= 180 ? .25f : .165f;
-                                float Direction = (npc.Center - target.Center).ToRotation();
-                                float HorizontalPull = (float)Math.Cos(Direction) * PullStrength;
-                                float VerticalPull = (float)Math.Sin(Direction) * (2 * PullStrength);
-
-                                target.velocity += new Vector2(HorizontalPull, VerticalPull);
+                                if (npcAngle <= 0)
+                                {
+                                    npcAngle += MathHelper.TwoPi;
+                                }
+                            }
+                            else
+                            {
+                                if (npcAngle >= 0)
+                                {
+                                    npcAngle -= MathHelper.TwoPi;
+                                }
                             }
 
+                            if (npcAngle >= lowerAngle && npcAngle <= upperAngle)
+                            {
+                                float PullStrength = MathHelper.Lerp(.65f, .25f, npc.Distance(servant.Center) / 400f);
+                                float Direction = (npc.Center - servant.Center).ToRotation();
+                                float HorizontalPull = (float)Math.Cos(Direction) * PullStrength;
+                                float VerticalPull = (float)Math.Sin(Direction) * PullStrength;
+
+                                servant.velocity += new Vector2(HorizontalPull, VerticalPull);
+                            }
                         }
 
-                        for (int _ = 0; _ < 10; _++)
+                        // dust for mouth suck
+                        /*for (int _ = 0; _ < 2; _++)
                         {
-                            Vector2 RandomPosition = npc.Center + new Vector2(npc.width * 1.25f, -npc.height * 1.25f).RotatedByRandom(MathHelper.PiOver2);
+                            var rot = npc.rotation + Main.rand.NextFloat(-MathHelper.PiOver4 + 0.2f, MathHelper.PiOver4 - 0.2f);
+
+                            Vector2 RandomPosition = npc.Center + Vector2.One.RotatedBy(rot + MathHelper.Pi) * -Main.rand.Next(200, 250);
                             Vector2 Direction = Vector2.Normalize(npc.Center - RandomPosition);
 
-                            int DustSpeed = 20;
+                            int DustSpeed = 30;
 
-                            int dust = Dust.NewDust(RandomPosition, 2, 2, DustID.AmberBolt, Direction.X * DustSpeed, Direction.Y * DustSpeed);
+                            int dust = Dust.NewDust(RandomPosition, 1, 1, DustID.Cloud, Direction.X * DustSpeed, Direction.Y * DustSpeed, 0, default, Main.rand.NextFloat(1, 1.5f));
                             Main.dust[dust].noGravity = true;
-                        }
+                        }*/
                     }
                     break;
             }
@@ -430,11 +423,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 spriteBatch.Reload(BlendState.Additive);
 
-                if (npc.ai[1] >= 60 && npc.ai[1] <= 120)
-                {
-
-                }
-
                 if (npc.ai[1] >= 120 && npc.ai[1] <= 300)
                 {
                     float alpha = MathHelper.Lerp(0.65f, 0.8f, (float)Math.Sin(npc.localAI[0]++ / 20f));
@@ -448,4 +436,55 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
     }
+
+
+    /*public class ShockwaveExplosion : ModProjectile
+    {
+        private int rippleCount = 3;
+        private int rippleSize = 5;
+        private int rippleSpeed = 45;
+        private float distortStrength = 100f;
+
+        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
+        public override bool CanDamage() => false;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Shockwave");
+        }
+
+        public override void SetDefaults()
+        {
+            projectile.width = 2;
+            projectile.height = 2;
+            projectile.alpha = 255;
+            projectile.friendly = true;
+            projectile.timeLeft = 180;
+        }
+
+        public override void AI()
+        {
+            if (projectile.ai[0]++ == 0)
+            {
+                if (Main.netMode != NetmodeID.Server && !Filters.Scene["Shockwave"].IsActive())
+                {
+                    Filters.Scene.Activate("Shockwave", projectile.Center).GetShader().UseColor(rippleCount, rippleSize, rippleSpeed).UseTargetPosition(projectile.Center);
+                }
+            }
+
+            if (Main.netMode != NetmodeID.Server && Filters.Scene["Shockwave"].IsActive())
+            {
+                float progress = (180f - projectile.timeLeft) / 60f; // Will range from -3 to 3, 0 being the point where the bomb explodes.
+                Filters.Scene["Shockwave"].GetShader().UseProgress(progress).UseOpacity(distortStrength * (1 - progress / 3f));
+            }
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            if (Main.netMode != NetmodeID.Server && Filters.Scene["Shockwave"].IsActive())
+            {
+                Filters.Scene["Shockwave"].Deactivate();
+            }
+        }
+    }*/
+
 }

@@ -46,6 +46,8 @@ namespace OvermorrowMod.Common
 
         public Asset<Texture2D> BlurTestTexture;
 
+        public static Effect BigTentacle;
+
         public static List<Asset<Texture2D>> TrailTextures;
 
         public override void Load()
@@ -77,12 +79,18 @@ namespace OvermorrowMod.Common
                 RadialBlur = Assets.Request<Effect>("Effects/CenterBlurShader");
                 BlurTestTexture = Assets.Request<Texture2D>("Effects/testpattern");
 
+                BigTentacle = Assets.Request<Effect>("Effects/BigTentacle", AssetRequestMode.ImmediateLoad).Value;
+
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave.Value);
                 Ref<Effect> ref2 = new Ref<Effect>(Shockwave2.Value);
+                Ref<Effect> ref3 = new Ref<Effect>(Flash.Value);
 
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
 
                 Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
+
+                Ref<Effect> filterRef = new Ref<Effect>(Assets.Request<Effect>("Effects/Flash").Value);
+                Filters.Scene["Flash"] = new Filter(new ScreenShaderData(filterRef, "ScreenFlash"), EffectPriority.VeryHigh);
 
                 TrailTextures = new List<Asset<Texture2D>>();
                 for (int i = 0; i < 7; i++)
@@ -90,13 +98,14 @@ namespace OvermorrowMod.Common
                     TrailTextures.Add(ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail" + i));
                 }
 
-                Terraria.GameContent.TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ChainKnife");
+                TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ChainKnife");
             }
+
             ModDetours.Load();
 
-            On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
-            Main.OnResolutionChanged += Main_OnResolutionChanged;
-            CreateRender();
+            //On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
+            //Main.OnResolutionChanged += Main_OnResolutionChanged;
+            //CreateRender();
 
             ModUtils.Load(false);
             HexLoader.Load(false);
@@ -118,6 +127,7 @@ namespace OvermorrowMod.Common
         {
             Instance = null;
 
+            BigTentacle = null;
             BeamShader = null;
             Flash = null;
             RadialBlur = null;
@@ -131,8 +141,8 @@ namespace OvermorrowMod.Common
 
             TrailTextures = null;
             ModDetours.Unload();
-            On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
-            Main.OnResolutionChanged -= Main_OnResolutionChanged;
+            //On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
+            //Main.OnResolutionChanged -= Main_OnResolutionChanged;
 
             ModUtils.Load(true);
             HexLoader.Load(true);
@@ -259,7 +269,7 @@ namespace OvermorrowMod.Common
             sb.Draw(Render, Vector2.Zero, Color.White);
             sb.End();
 
-            foreach (Projectile proj in Main.projectile)
+            /*foreach (Projectile proj in Main.projectile)
             {
                 if (proj.type == ModContent.ProjectileType<DarkTest>() && proj.active)
                 {
@@ -277,7 +287,7 @@ namespace OvermorrowMod.Common
                 {
                     Main.NewText("bruh");
                 }
-            }
+            }*/
 
             orig(self, finalTexture, screenTarget1, screenTarget2, clearColor);
         }
