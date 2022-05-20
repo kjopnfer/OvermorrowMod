@@ -113,7 +113,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             npc.defense = 12;
             foreach (NPC minion in Main.npc)
             {
-                if (minion.ModNPC is EyeStalk)
+                if (minion.ModNPC is VortexEye)
                 {
                     npc.defense = 32;
                 }
@@ -234,7 +234,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.ai[0] = (float)AIStates.Selector;
                     break;
                 case (float)AIStates.Selector:
-                    if (npc.ai[1] % 120 == 0)
+                    if (++npc.ai[1] % 120 == 0)
                     {
                         if (Main.rand.NextBool())
                         {

@@ -76,7 +76,7 @@ namespace OvermorrowMod.Common
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             //sb.Draw(TextureAssets.MagicPixel.Value, new Vector2(800, 500), new Rectangle(0, 0, 50, 50), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-            DarkVortex.DrawAll(spriteBatch);
+            //DarkVortex.DrawAll(spriteBatch);
             spriteBatch.End();
 
             graphicsDevice.SetRenderTarget(Main.screenTarget);
