@@ -11,6 +11,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
     public class VortexEye : ModNPC
     {
+        Vector2 InitialPosition;
+
         public float IdleDistance;
         public float LerpTime;
 
@@ -45,23 +47,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         public override void AI()
         {
-            AICounter++;
-
-            //Main.NewText((float)Math.Sin(AICounter / 60f));
-
-
             NPC parent = Main.npc[ParentIndex];
+
+            if (AICounter++ == 0)
+            {
+                InitialPosition = NPC.Center;
+            }
+
+            NPC.Center = InitialPosition + new Vector2(MathHelper.Lerp(-50, 50, (float)Math.Sin((AICounter) / 60f) / 2 + 0.5f), 0).RotatedBy(NPC.DirectionTo(parent.Center).ToRotation() - MathHelper.PiOver2);
+            //AICounter++;
+
+            Main.NewText((float)Math.Sin((AICounter) / 120f) / 2 + 0.5f);
+
+
 
             float distance = Vector2.Distance(parent.Center, NPC.Center);
 
             if (Main.mouseRight) NPC.Center = Main.MouseWorld;
 
-            NPC.rotation = NPC.DirectionTo(Main.MouseWorld).ToRotation();
+            //NPC.rotation = NPC.DirectionTo(Main.MouseWorld).ToRotation();
 
-            int dust = Dust.NewDust(NPC.Center + new Vector2(0, distance / 2f).RotatedBy(NPC.DirectionTo(parent.Center).ToRotation() - MathHelper.PiOver2), 1, 1, DustID.Adamantite);
-            Main.dust[dust].noGravity = true;
+            //int dust = Dust.NewDust(NPC.Center + new Vector2(0, distance / 2f).RotatedBy(NPC.DirectionTo(parent.Center).ToRotation() - MathHelper.PiOver2), 1, 1, DustID.Adamantite);
+            //Main.dust[dust].noGravity = true;
 
-            dust = Dust.NewDust(parent.Center, 1, 1, DustID.Adamantite);
+            int dust = Dust.NewDust(parent.Center, 1, 1, DustID.Adamantite);
             Main.dust[dust].noGravity = true;
         }
 
@@ -73,7 +82,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Vector2 mountedCenter = parent.Center;
             float distance = Vector2.Distance(parent.Center, NPC.Center);
 
-            Vector2 MidPoint = NPC.Center + new Vector2(0, distance / 2f).RotatedBy(NPC.DirectionTo(mountedCenter).ToRotation() - MathHelper.PiOver2);
+            Vector2 MidPoint = NPC.Center + new Vector2(MathHelper.Lerp(-50, 50, (float)Math.Sin((AICounter + 30f) / 60f) / 2 + 0.5f), distance / 2f).RotatedBy(NPC.DirectionTo(mountedCenter).ToRotation() - MathHelper.PiOver2);
+            Vector2 StaticMidPoint = NPC.Center + new Vector2(0, distance / 2f).RotatedBy(NPC.DirectionTo(mountedCenter).ToRotation() - MathHelper.PiOver2);
+
+            int dust = Dust.NewDust(MidPoint, 1, 1, DustID.Adamantite);
+            Main.dust[dust].noGravity = true;
 
             var drawPosition = NPC.Center;
             var remainingVectorToParent = MidPoint - drawPosition;
@@ -82,19 +95,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             distance = Vector2.Distance(MidPoint, NPC.Center);
             float iterations = distance / CHAIN_LENGTH;
 
-            float bendFactor = 0;
-
             // Draw from NPC to MidPoint
             // X and Y are reversed, increasing X increases the height for some apparent reason
             // Draw influenced by NPC rotation
             //Vector2 midPoint2 = NPC.Center + new Vector2(50, 50).RotatedBy(NPC.DirectionTo(MidPoint).ToRotation() + NPC.rotation);
-            Vector2 midPoint2 = NPC.Center + new Vector2(50, MathHelper.Lerp(50, -50, (float)Math.Sin(AICounter / 90f) / 2 + 0.5f)).RotatedBy(NPC.DirectionTo(MidPoint).ToRotation());
-            Vector2 midPoint1 = MidPoint + new Vector2(-50, MathHelper.Lerp(-50, 50, (float)Math.Sin(AICounter / 60f) / 2 + 0.5f)).RotatedBy(NPC.DirectionTo(MidPoint).ToRotation());
+            Vector2 midPoint2 = NPC.Center + new Vector2(25, MathHelper.Lerp(50, -50, (float)Math.Sin((AICounter) / 60f) / 2 + 0.5f)).RotatedBy(NPC.DirectionTo(StaticMidPoint).ToRotation());
+            Vector2 midPoint1 = StaticMidPoint + new Vector2(-25, MathHelper.Lerp(50, -50, (float)Math.Sin((AICounter + 30f) / 60f) / 2 + 0.5f)).RotatedBy(NPC.DirectionTo(StaticMidPoint).ToRotation());
 
-            int dust = Dust.NewDust(midPoint1, 1, 1, DustID.Orichalcum);
+            NPC.rotation = NPC.DirectionTo(midPoint2).ToRotation();
+            // green
+            dust = Dust.NewDust(midPoint2, 1, 1, 157);
             Main.dust[dust].noGravity = true;
 
-            dust = Dust.NewDust(midPoint2, 1, 1, DustID.Orichalcum);
+            // yellow
+            dust = Dust.NewDust(midPoint1, 1, 1, 204);
             Main.dust[dust].noGravity = true;
 
             for (int i = 0; i < iterations; i++)
@@ -113,13 +127,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
 
             // Draw from MidPoint to Parent
-            Vector2 midPoint4 = MidPoint + new Vector2(50, MathHelper.Lerp(50, -50, (float)Math.Sin(AICounter / 90f) / 2 + 0.5f)).RotatedBy(NPC.DirectionTo(MidPoint).ToRotation());
-            Vector2 midPoint3 = mountedCenter + new Vector2(-50, MathHelper.Lerp(-50, 50, (float)Math.Sin(AICounter / 60f) / 2 + 0.5f)).RotatedBy(NPC.DirectionTo(MidPoint).ToRotation());
+            Vector2 midPoint4 = StaticMidPoint + new Vector2(25, MathHelper.Lerp(50, -50, (float)Math.Sin((AICounter + 45f) / 60f) / 2 + 0.5f)).RotatedBy(NPC.DirectionTo(StaticMidPoint).ToRotation());
+            Vector2 midPoint3 = mountedCenter + new Vector2(-25, MathHelper.Lerp(50, -50, (float)Math.Sin((AICounter + 60f) / 60f) / 2 + 0.5f)).RotatedBy(NPC.DirectionTo(StaticMidPoint).ToRotation());
 
-            dust = Dust.NewDust(midPoint3, 1, 1, DustID.Palladium);
+            // blue
+            dust = Dust.NewDust(midPoint3, 1, 1, 68);
             Main.dust[dust].noGravity = true;
 
-            dust = Dust.NewDust(midPoint4, 1, 1, DustID.Palladium);
+            // purple
+            dust = Dust.NewDust(midPoint4, 1, 1, 70);
             Main.dust[dust].noGravity = true;
 
             drawPosition = MidPoint;
@@ -145,7 +161,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeStalk").Value;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation + MathHelper.PiOver2, texture.Size() / 2, NPC.scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation - MathHelper.PiOver2, texture.Size() / 2, NPC.scale, SpriteEffects.None, 0);
 
 
             return false;
