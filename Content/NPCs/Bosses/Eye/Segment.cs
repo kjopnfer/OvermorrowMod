@@ -67,13 +67,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             return outgoing;
         }
 
-        public void Move()
+        public void Move(float Rate)
         {
             float MinAngle = -0.05f;
             float MaxAngle = 0.05f;
 
             SelfAngle = Map((float)Math.Sin(Time), -1, 1, MaxAngle, MinAngle);
-            Time += 0.03f;
+            //Time += 0.03f;
+            Time += Rate;
         }
 
         public void Update()
@@ -103,7 +104,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         public void Draw(SpriteBatch spriteBatch, Texture2D texture)
         {
-            spriteBatch.Draw(texture, StartPoint - Main.screenPosition, null, Color.Wheat, Angle - MathHelper.PiOver2, texture.Size() / 2, 1f, SpriteEffects.None, 0);
+            Color color = Lighting.GetColor((int)StartPoint.X / 16, (int)(StartPoint.Y / 16f));
+            spriteBatch.Draw(texture, StartPoint - Main.screenPosition, null, color, Angle - MathHelper.PiOver2, texture.Size() / 2, 1f, SpriteEffects.None, 0);
         }
     }
 }
