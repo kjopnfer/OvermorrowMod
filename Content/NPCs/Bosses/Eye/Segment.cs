@@ -102,10 +102,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             EndPoint = new Vector2(StartPoint.X + xChange, StartPoint.Y + yChange);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Texture2D texture)
+        public void Draw(SpriteBatch spriteBatch, Texture2D texture, Color drawColor)
         {
-            Color color = Lighting.GetColor((int)StartPoint.X / 16, (int)(StartPoint.Y / 16f));
-            spriteBatch.Draw(texture, StartPoint - Main.screenPosition, null, color, Angle - MathHelper.PiOver2, texture.Size() / 2, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, StartPoint - Main.screenPosition, null, drawColor, Angle - MathHelper.PiOver2, texture.Size() / 2, 1f, SpriteEffects.None, 0);
         }
     }
 }

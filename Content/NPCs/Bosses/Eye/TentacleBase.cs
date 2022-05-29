@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,6 +11,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
     public class VortexEye : ModNPC
     {
+        private float Rotation;
         public override bool CheckActive() => false;
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
@@ -35,8 +37,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Main.instance.DrawCacheNPCProjectiles.Add(index);
         }
 
+        public enum AIStates
+        {
+            Death = -2,
+            Panic = -1,
+            Idle = 0
+        }
+
         public ref float ParentID => ref NPC.ai[0];
-        public ref float Rotation => ref NPC.ai[1];
+        public ref float AICounter => ref NPC.ai[1];
+        public ref float DeathFlag => ref NPC.ai[2];
+        public ref float AICase => ref NPC.ai[3];
+
+        public override void OnSpawn(Terraria.DataStructures.IEntitySource source)
+        {
+            Rotation = NPC.ai[1];
+            NPC.ai[1] = 0;
+
+            base.OnSpawn(source);
+        }
+
         public override void AI()
         {
             NPC parent = Main.npc[(int)ParentID];
@@ -47,16 +67,74 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 NPC.active = false;
             }
 
-            NPC.Center = ((TentacleBase)parent.ModNPC).LastPosition;
+            NPC.Center = ((TentacleBase)parent.ModNPC).lastPosition;
             NPC.rotation = Rotation;
+
+            switch (AICase)
+            {
+                case (float)AIStates.Panic:
+                    if (AICounter++ == 240)
+                    {
+                        AICase = (float)AIStates.Death;
+                        AICounter = 0;
+                    }
+                    break;
+                case (float)AIStates.Death:
+                    if (AICounter++ == 120)
+                    {
+                        NPC.life = 0;
+                        NPC.HitEffect(0, 0);
+                        DeathFlag = 1;
+                        NPC.checkDead();
+                    }
+                    break;
+                case (float)AIStates.Idle:
+                    break;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+
+            if (AICase == (float)AIStates.Death)
+            {
+                var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
+
+                deathShader.UseOpacity(1f);
+                if (AICounter > 30f)
+                {
+                    deathShader.UseOpacity(1f - (AICounter - 30f) / 90f);
+                    Main.NewText(1f - (AICounter - 30f) / 90f);
+                }
+
+                deathShader.Apply(null);
+            }
+
             Texture2D eye = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeStalk").Value;
-            spriteBatch.Draw(eye, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation + MathHelper.PiOver2, eye.Size() / 2, NPC.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(eye, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation + MathHelper.PiOver2, eye.Size() / 2, NPC.scale, SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
 
             return false;
+        }
+
+        public override bool CheckDead()
+        {
+            if (DeathFlag == 0)
+            {
+                AICase = (float)AIStates.Panic;
+
+                NPC.life = NPC.lifeMax;
+                NPC.dontTakeDamage = true;
+                NPC.netUpdate = true;
+
+                return false;
+            }
+
+            return true;
         }
 
         public override void OnKill()
@@ -68,9 +146,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
     public class TentacleBase : ModNPC
     {
-        private NPC Child;
+        private NPC child;
         private Segment Tentacle;
-        public Vector2 LastPosition;
+        public Vector2 lastPosition;
 
         public override string Texture => AssetDirectory.Boss + "Eye/EyeOfCthulhu";
         public override void SetDefaults()
@@ -117,14 +195,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 nextSegment.Move(NPC.ai[2] == 1 ? 0.03f : -0.03f);
                 nextSegment.Update();
 
-                LastPosition = nextSegment.EndPoint;
+                lastPosition = nextSegment.EndPoint;
                 nextSegment = nextSegment.Child;
             }
 
             var entitySource = NPC.GetSource_FromAI();
             int index = NPC.NewNPC(entitySource, (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<VortexEye>(), 0, NPC.whoAmI, rotation);
 
-            Child = Main.npc[index];
+            child = Main.npc[index];
 
             if (Main.netMode == NetmodeID.Server && index < Main.maxNPCs)
             {
@@ -138,11 +216,27 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             NPC npc = Main.npc[(int)NPC.ai[0]];
 
-            if (!npc.active || npc == null || !Child.active) npc.active = false;
+            if (!npc.active || npc == null || !child.active) npc.active = false;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+
+            if (child.ai[3] == (float)VortexEye.AIStates.Death)
+            {
+                var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
+
+                deathShader.UseOpacity(1f);
+                if (child.ai[1] > 30f)
+                {
+                    deathShader.UseOpacity(1f - (child.ai[1] - 30f) / 90f);
+                }
+
+                deathShader.Apply(null);
+            }
+
             int counter = 0;
 
             Segment nextSegment = Tentacle;
@@ -165,16 +259,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         break;
                 }
 
-                if (!Main.gamePaused) nextSegment.Move(NPC.ai[2] == 1 ? 0.03f : -0.03f);
+                float moveDirection = NPC.ai[2] == 1 ? 1 : -1;
+
+                float rotationSpeed = child.ai[3] == (float)VortexEye.AIStates.Panic ? 0.09f : 0.03f;
+                if (child.ai[3] == (float)VortexEye.AIStates.Death) rotationSpeed = 0;
+
+                if (!Main.gamePaused) nextSegment.Move(rotationSpeed * moveDirection);
+                Color color = Lighting.GetColor((int)(nextSegment.StartPoint.X / 16), (int)(nextSegment.StartPoint.Y / 16f));
 
                 nextSegment.Update();
-                nextSegment.Draw(spriteBatch, texture);
+                nextSegment.Draw(spriteBatch, texture, color);
 
-                LastPosition = nextSegment.EndPoint;
+                lastPosition = nextSegment.EndPoint;
                 nextSegment = nextSegment.Child;
 
                 counter++;
             }
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
+
 
             return false;
         }
@@ -238,7 +342,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
             }
 
-            if (!stayAlive) NPC.active = false;
+            if (!stayAlive)
+            {
+                if (NPC.scale <= 0) NPC.active = false;
+
+                NPC.scale -= 0.005f;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
