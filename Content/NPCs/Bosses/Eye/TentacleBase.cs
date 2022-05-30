@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
@@ -57,13 +58,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             base.OnSpawn(source);
         }
 
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            if (Main.netMode == NetmodeID.Server)
+            {
+                return;
+            }
+
+            if (NPC.life <= 0 && AICase == (float)AIStates.Death)
+            {
+                var source = NPC.GetSource_Death();
+                Gore.NewGore(source, NPC.Center, Vector2.Zero, Mod.Find<ModGore>("EyeStalk").Type, NPC.scale);
+            }
+        }
+
         public override void AI()
         {
             NPC parent = Main.npc[(int)ParentID];
 
             if (parent == null || !parent.active)
             {
-                Main.NewText("nope");
                 NPC.active = false;
             }
 
@@ -100,7 +114,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (AICase == (float)AIStates.Death)
             {
-                var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
+                /*var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
 
                 deathShader.UseOpacity(1f);
                 if (AICounter > 30f)
@@ -109,16 +123,28 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Main.NewText(1f - (AICounter - 30f) / 90f);
                 }
 
-                deathShader.Apply(null);
+                deathShader.Apply(null);*/
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                float progress = Utils.Clamp(AICounter, 0, 90) / 90f;
+                effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
+                effect.Parameters["WhiteoutProgress"].SetValue(progress);
+                effect.CurrentTechnique.Passes["Whiteout"].Apply();
             }
 
             Texture2D eye = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeStalk").Value;
             Main.spriteBatch.Draw(eye, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation + MathHelper.PiOver2, eye.Size() / 2, NPC.scale, SpriteEffects.None, 0);
 
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
 
             return false;
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeStalk_Glow").Value;
+            spriteBatch.Draw(texture, NPC.Center - screenPos, null, Color.White, NPC.rotation + MathHelper.PiOver2, texture.Size() / 2, NPC.scale, SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
         }
 
         public override bool CheckDead()
@@ -140,7 +166,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override void OnKill()
         {
             NPC parent = Main.npc[(int)ParentID];
-            parent.active = false;
+            parent.life = 0;
+            parent.HitEffect(0, 0);
+            parent.checkDead();
         }
     }
 
@@ -164,6 +192,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             NPC.dontTakeDamage = true;
             NPC.dontCountMe = true;
         }
+
         public override void DrawBehind(int index)
         {
             NPC.hide = true;
@@ -175,7 +204,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             float time = Main.rand.NextFloat(1f);
             float offset = Main.rand.NextFloat(0.1f, 0.15f);
             float rotation = NPC.ai[1];
-            Main.NewText("spawn rotation:" + rotation);
 
             Tentacle = new Segment(NPC.Center, 5, rotation, time);
             Segment current = Tentacle;
@@ -216,7 +244,53 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             NPC npc = Main.npc[(int)NPC.ai[0]];
 
-            if (!npc.active || npc == null || !child.active) npc.active = false;
+            if (!npc.active || npc == null) npc.active = false;
+
+            if (!child.active)
+            {
+                NPC.life = 0;
+                NPC.HitEffect(0, 0);
+                NPC.checkDead();
+            }
+        }
+
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            if (Main.netMode == NetmodeID.Server)
+            {
+                return;
+            }
+
+            if (NPC.life <= 0)
+            {
+                //Main.NewText("wtf");
+
+                int counter = 0;
+
+                var source = NPC.GetSource_Death();
+                Segment nextSegment = Tentacle;
+                while (nextSegment != null)
+                {
+                    switch (counter % 4)
+                    {
+                        case 0:
+                            Gore.NewGore(source, nextSegment.StartPoint, Vector2.Zero, Mod.Find<ModGore>("StalkBodyL1").Type, NPC.scale);
+                            break;
+                        case 1:
+                            Gore.NewGore(source, nextSegment.StartPoint, Vector2.Zero, Mod.Find<ModGore>("StalkBodyL2").Type, NPC.scale);
+                            break;
+                        case 2:
+                            Gore.NewGore(source, nextSegment.StartPoint, Vector2.Zero, Mod.Find<ModGore>("StalkBodyR1").Type, NPC.scale);
+                            break;
+                        case 3:
+                            Gore.NewGore(source, nextSegment.StartPoint, Vector2.Zero, Mod.Find<ModGore>("StalkBodyR2").Type, NPC.scale);
+                            break;
+                    }
+
+                    nextSegment = nextSegment.Child;
+                    counter++;
+                }
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -226,7 +300,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (child.ai[3] == (float)VortexEye.AIStates.Death)
             {
-                var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
+                /*var deathShader = GameShaders.Misc["OvermorrowMod: DeathAnimation"];
 
                 deathShader.UseOpacity(1f);
                 if (child.ai[1] > 30f)
@@ -234,7 +308,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     deathShader.UseOpacity(1f - (child.ai[1] - 30f) / 90f);
                 }
 
-                deathShader.Apply(null);
+                deathShader.Apply(null);*/
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                float progress = Utils.Clamp(child.ai[1], 0, 90) / 90f;
+                effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
+                effect.Parameters["WhiteoutProgress"].SetValue(progress);
+                effect.CurrentTechnique.Passes["Whiteout"].Apply();
             }
 
             int counter = 0;
@@ -260,11 +339,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
 
                 float moveDirection = NPC.ai[2] == 1 ? 1 : -1;
-
                 float rotationSpeed = child.ai[3] == (float)VortexEye.AIStates.Panic ? 0.09f : 0.03f;
-                if (child.ai[3] == (float)VortexEye.AIStates.Death) rotationSpeed = 0;
+                if (child.ai[3] == (float)VortexEye.AIStates.Death) rotationSpeed = MathHelper.Lerp(0.09f, 0, Utils.Clamp(child.ai[1], 0, 60) / 60f);
 
                 if (!Main.gamePaused) nextSegment.Move(rotationSpeed * moveDirection);
+                //Color color = counter < 5 ? Color.Transparent : Lighting.GetColor((int)(nextSegment.StartPoint.X / 16), (int)(nextSegment.StartPoint.Y / 16f));
                 Color color = Lighting.GetColor((int)(nextSegment.StartPoint.X / 16), (int)(nextSegment.StartPoint.Y / 16f));
 
                 nextSegment.Update();
@@ -315,10 +394,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             {
                 float rotation = MathHelper.ToRadians(120f * i);
                 float swayDirection = Main.rand.NextBool() ? 1 : -1;
-                Main.NewText("rotation: " + rotation);
 
                 var entitySource = NPC.GetSource_FromAI();
-                int index = NPC.NewNPC(entitySource, (int)NPC.Center.X, (int)NPC.Center.Y + 16, ModContent.NPCType<TentacleBase>(), 0, NPC.whoAmI, rotation, swayDirection);
+                Vector2 offset = new Vector2(20, 0).RotatedBy(rotation);
+                int index = NPC.NewNPC(entitySource, (int)(NPC.Center.X + offset.X), (int)(NPC.Center.Y + offset.Y) + 16, ModContent.NPCType<TentacleBase>(), 0, NPC.whoAmI, rotation, swayDirection);
                 Eyes.Add(index);
 
                 if (Main.netMode == NetmodeID.Server && index < Main.maxNPCs)
@@ -353,10 +432,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation, texture.Size() / 2, NPC.scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation, texture.Size() / 2, NPC.scale * 1.1f, SpriteEffects.None, 0);
 
             texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation * 0.5f, texture.Size() / 2, NPC.scale * 1.25f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation * 0.5f, texture.Size() / 2, NPC.scale * 1.35f, SpriteEffects.None, 0);
 
             return false;
         }

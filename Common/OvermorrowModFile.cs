@@ -33,7 +33,7 @@ namespace OvermorrowMod.Common
         public RenderTarget2D Render;
 
         public Asset<Effect> BeamShader;
-        //public Asset<Effect> Dissolve;
+        public Asset<Effect> Dissolve;
         public Asset<Effect> Flash;
         public Asset<Effect> RadialBlur;
         public Asset<Effect> Ring;
@@ -48,7 +48,7 @@ namespace OvermorrowMod.Common
         public Asset<Texture2D> BlurTestTexture;
 
         public static Effect BigTentacle;
-        public static Effect Dissolve;
+        //public static Effect Dissolve;
 
         public static List<Asset<Texture2D>> TrailTextures;
 
@@ -69,7 +69,7 @@ namespace OvermorrowMod.Common
 
                 // Effects
                 BeamShader = Assets.Request<Effect>("Effects/Beam");
-                //Dissolve = Assets.Request<Effect>("Effects/Dissolve");
+                Dissolve = Assets.Request<Effect>("Effects/Dissolve");
                 Flash = Assets.Request<Effect>("Effects/Flash");
                 Ring = Assets.Request<Effect>("Effects/Ring");
                 Shockwave = Assets.Request<Effect>("Effects/Shockwave1");
@@ -83,12 +83,12 @@ namespace OvermorrowMod.Common
                 BlurTestTexture = Assets.Request<Texture2D>("Effects/testpattern");
 
                 BigTentacle = Assets.Request<Effect>("Effects/BigTentacle", AssetRequestMode.ImmediateLoad).Value;
-                Dissolve = Assets.Request<Effect>("Effects/Dissolve", AssetRequestMode.ImmediateLoad).Value;
+                //Dissolve = Assets.Request<Effect>("Effects/Dissolve", AssetRequestMode.ImmediateLoad).Value;
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave.Value);
                 Ref<Effect> ref2 = new Ref<Effect>(Shockwave2.Value);
                 Ref<Effect> ref3 = new Ref<Effect>(Flash.Value);
-                Ref<Effect> ref4 = new Ref<Effect>(Dissolve);
+                Ref<Effect> ref4 = new Ref<Effect>(Dissolve.Value);
 
                 GameShaders.Misc["OvermorrowMod: Shockwave"] = new MiscShaderData(ref1, "ForceField");
                 GameShaders.Misc["OvermorrowMod: DeathAnimation"] = new MiscShaderData(ref4, "DeathAnimation").UseImage0("Images/Misc/Perlin");

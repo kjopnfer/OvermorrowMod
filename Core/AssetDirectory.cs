@@ -9,6 +9,8 @@ namespace OvermorrowMod.Core
 
         public const string Textures = Assets + "Textures/";
 
+        public const string Gores = Assets + "Gores/";
+
         public const string Chains = Textures + "Chains/";
 
         public const string UI = Textures + "UI/";
