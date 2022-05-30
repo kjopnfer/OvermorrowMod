@@ -55,7 +55,12 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                         if (Projectile.ai[1] == 260)
                         {
                             Player player = Main.player[Projectile.owner];
-                            SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/woow"), player.position);
+                            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/woow")
+                            {
+                                Volume = 0.9f,
+                                PitchVariance = 0.2f,
+                                MaxInstances = 3,
+                            }, player.position);
                         }
 
                         if (Projectile.ai[1]++ > 300)
@@ -66,7 +71,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                             //player.GetModPlayer<OvermorrowModPlayer>().ScreenShake = 50;
                             //player.GetModPlayer<OvermorrowModPlayer>().TitleID = 2;
                             //player.GetModPlayer<OvermorrowModPlayer>().ShowText = true;
-                            SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
+                            SoundEngine.PlaySound(SoundID.Roar, player.position);
                             NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)(Projectile.Center.Y + 146), ModContent.NPCType<StormDrake>(), 0, -3f, -3f, 0f, 0f, 255);
                             /*Vector2 origin = new Vector2((int)Projectile.Center.X, (int)(Projectile.Center.Y));
                             float radius = 100;

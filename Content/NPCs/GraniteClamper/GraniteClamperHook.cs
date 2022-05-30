@@ -52,7 +52,7 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
                 Vector2 direction = targetPosition - position;
                 direction.Normalize();
                 Projectile.velocity = direction * 5f;
-                SoundEngine.PlaySound(SoundID.Item, npc.position, 99);
+                SoundEngine.PlaySound(SoundID.Item99, npc.position);
                 timer = 0;
             }
 

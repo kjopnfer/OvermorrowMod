@@ -86,7 +86,12 @@ namespace OvermorrowMod.Quests
                 if (quest.CheckRequirements(modPlayer, state))
                 {
                     questPlayer.CompleteQuest(quest.QuestID);
-                    SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/QuestTurnIn"), npc.Center);
+                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
+                    {
+                        Volume = 0.9f,
+                        PitchVariance = 0.2f,
+                        MaxInstances = 3,
+                    }, npc.Center);
 
                     if (quest.EndDialogueCount > 0)
                     {
@@ -132,7 +137,12 @@ namespace OvermorrowMod.Quests
                 questPlayer.AddQuest(quest);
                 questNpc.TakeQuest();
 
-                SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/QuestAccept"), npc.Center);
+                SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
+                {
+                    Volume = 0.9f,
+                    PitchVariance = 0.2f,
+                    MaxInstances = 3,
+                }, npc.Center);
 
                 // Run the Quest Accepted UI
                 Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);

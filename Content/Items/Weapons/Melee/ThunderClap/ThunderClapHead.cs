@@ -208,7 +208,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.ThunderClap
                 Projectile.netUpdate = true;
                 Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
                 // Play the sound
-                SoundEngine.PlaySound(SoundID.Dig, (int)Projectile.position.X, (int)Projectile.position.Y);
+                SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
             }
 
             return false;

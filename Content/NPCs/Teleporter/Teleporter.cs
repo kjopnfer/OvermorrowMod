@@ -80,8 +80,8 @@ namespace OvermorrowMod.Content.NPCs.Teleporter
                     Vector2 targetPosition = Main.player[NPC.target].Center + new Vector2(0, -120);
                     Vector2 direction = targetPosition - position;
                     direction.Normalize();
-                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction * 12f, Mod.Find<ModProjectile>("Teleproj").Type, 0, 0.0f, Main.myPlayer, 0.0f, (float)NPC.whoAmI);
-                    SoundEngine.PlaySound(SoundID.Item, NPC.position, 19);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction * 12f, Mod.Find<ModProjectile>("Teleproj").Type, 0, 0.0f, Main.myPlayer, 0.0f, (float)NPC.whoAmI);
+                    SoundEngine.PlaySound(SoundID.Item19, NPC.position);
                     frame = 4;
                 }
             }

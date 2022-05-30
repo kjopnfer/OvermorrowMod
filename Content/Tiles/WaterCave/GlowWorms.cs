@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             Main.tileNoAttach[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileNoFail[Type] = true;
-            SoundType = SoundID.Grass;
+            HitSound = SoundID.Grass;
             AddMapEntry(new Color(0, 200, 200));
         }
 

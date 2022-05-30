@@ -56,7 +56,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss.TreeRune
                 }
 
                 NPC.NewNPC(null, (int)player.position.X, (int)(player.position.Y - 50f), ModContent.NPCType<TreeBoss>(), 0, 0f, 0f, 0f, 0f, 255);
-                SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
+                SoundEngine.PlaySound(SoundID.Roar, player.position);
                 return true;
             }
             return false;
