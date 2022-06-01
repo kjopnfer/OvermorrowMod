@@ -8,6 +8,8 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.GameContent;
+using OvermorrowMod.Common;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
@@ -31,6 +33,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             switch (npc.type)
             {
+                case NPCID.ServantofCthulhu:
+                    return npc.ai[0] != -1;
                 case NPCID.EyeofCthulhu:
                     return false;
             }
@@ -49,6 +53,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 case NPCID.ServantofCthulhu:
                     npc.lifeMax = 60;
                     break;
+            }
+        }
+
+        public override void DrawBehind(NPC npc, int index)
+        {
+            if (npc.type == NPCID.ServantofCthulhu)
+            {
+                npc.hide = true;
+                Main.instance.DrawCacheNPCProjectiles.Add(index);
             }
         }
 
@@ -86,6 +99,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
+                // When the AI is set to -1, the NPC will not deal damage for 1.5 seconds
+                // This is set whenever they are spawned from the portals
+                if (npc.ai[0] == -1)
+                {
+                    if (npc.ai[1]++ > 90) npc.ai[0] = 0;
+                }
+
                 foreach (NPC boss in Main.npc)
                 {
                     if (!boss.active || boss.type != NPCID.EyeofCthulhu) continue;
@@ -98,7 +118,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         npc.HitEffect(0, npc.damage);
                         npc.Kill();
                     }
-                }
+                }            
 
                 return true;
             }
@@ -328,8 +348,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
                     break;
                 case (float)AIStates.Suck:
-
-
                     if (npc.ai[1] == 360)
                     {
                         foreach (NPC servant in Main.npc)
@@ -387,28 +405,50 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if (npc.type == NPCID.EyeofCthulhu)
+            Texture2D texture;
+            float progress;
+
+            switch (npc.type)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
+                case NPCID.ServantofCthulhu:
+                    spriteBatch.Reload(SpriteSortMode.Immediate);
 
-                if (npc.ai[0] == (float)AIStates.Minions && npc.ai[1] > 120 && npc.ai[1] < 180)
-                {
-                    int amount = 5;
-                    //float progress = (float)Math.Sin(npc.localAI[1]++ / 30f);
-                    float progress = Utils.Clamp(npc.ai[1] - 120f, 0, 60) / 60f;
+                    texture = TextureAssets.Npc[npc.type].Value;
 
-                    for (int i = 0; i < amount; i++)
+                    if (npc.ai[1] < 90)
                     {
-                        float scaleAmount = i / (float)amount;
-                        float scale = 1f + progress * scaleAmount;
-                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
+                        Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                        progress = Utils.Clamp(npc.ai[1], 0, 90) / 90f;
+                        effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
+                        effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+                        effect.CurrentTechnique.Passes["Whiteout"].Apply();
                     }
 
-                }
+                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, drawColor, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
-                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, drawColor, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                    spriteBatch.Reload(SpriteSortMode.Deferred);
 
-                return false;
+                    return false;
+                case NPCID.EyeofCthulhu:
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
+
+                    if (npc.ai[0] == (float)AIStates.Minions && npc.ai[1] > 120 && npc.ai[1] < 180)
+                    {
+                        int amount = 5;
+                        //float progress = (float)Math.Sin(npc.localAI[1]++ / 30f);
+                        progress = Utils.Clamp(npc.ai[1] - 120f, 0, 60) / 60f;
+
+                        for (int i = 0; i < amount; i++)
+                        {
+                            float scaleAmount = i / (float)amount;
+                            float scale = 1f + progress * scaleAmount;
+                            spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
+                        }
+                    }
+
+                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, drawColor, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+
+                    return false;            
             }
 
             return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
@@ -436,55 +476,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
     }
-
-
-    /*public class ShockwaveExplosion : ModProjectile
-    {
-        private int rippleCount = 3;
-        private int rippleSize = 5;
-        private int rippleSpeed = 45;
-        private float distortStrength = 100f;
-
-        public override string Texture => "Terraria/Item_" + ProjectileID.LostSoulFriendly;
-        public override bool CanDamage() => false;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Shockwave");
-        }
-
-        public override void SetDefaults()
-        {
-            projectile.width = 2;
-            projectile.height = 2;
-            projectile.alpha = 255;
-            projectile.friendly = true;
-            projectile.timeLeft = 180;
-        }
-
-        public override void AI()
-        {
-            if (projectile.ai[0]++ == 0)
-            {
-                if (Main.netMode != NetmodeID.Server && !Filters.Scene["Shockwave"].IsActive())
-                {
-                    Filters.Scene.Activate("Shockwave", projectile.Center).GetShader().UseColor(rippleCount, rippleSize, rippleSpeed).UseTargetPosition(projectile.Center);
-                }
-            }
-
-            if (Main.netMode != NetmodeID.Server && Filters.Scene["Shockwave"].IsActive())
-            {
-                float progress = (180f - projectile.timeLeft) / 60f; // Will range from -3 to 3, 0 being the point where the bomb explodes.
-                Filters.Scene["Shockwave"].GetShader().UseProgress(progress).UseOpacity(distortStrength * (1 - progress / 3f));
-            }
-        }
-
-        public override void Kill(int timeLeft)
-        {
-            if (Main.netMode != NetmodeID.Server && Filters.Scene["Shockwave"].IsActive())
-            {
-                Filters.Scene["Shockwave"].Deactivate();
-            }
-        }
-    }*/
-
 }

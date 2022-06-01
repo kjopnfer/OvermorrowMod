@@ -407,6 +407,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
         }
 
+        public ref float AICounter => ref NPC.ai[0];
+        public ref float WaveCounter => ref NPC.ai[1];
+
         public override void AI()
         {
             NPC.rotation += 0.03f;
@@ -414,10 +417,28 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             bool stayAlive = false;
             foreach (int index in Eyes)
             {
-                if (Main.npc[index].active)
+                if (Main.npc[index].active && Main.npc[index].type == ModContent.NPCType<TentacleBase>())
                 {
                     stayAlive = true;
                     break;
+                }
+            }
+
+            if (WaveCounter >= 300 && WaveCounter <= 540)
+            {
+                if (WaveCounter >= 540) WaveCounter = 0;
+
+                if (AICounter % 60 == 0 && stayAlive)
+                {
+                    var entitySource = NPC.GetSource_FromAI();
+                    int eye = NPC.NewNPC(entitySource, (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.ServantofCthulhu, 0, -1);
+
+                    Main.npc[eye].velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 5;
+
+                    if (Main.netMode == NetmodeID.Server && eye < Main.maxNPCs)
+                    {
+                        NetMessage.SendData(MessageID.SyncNPC, number: eye);
+                    }
                 }
             }
 
@@ -427,6 +448,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 NPC.scale -= 0.005f;
             }
+
+            WaveCounter++;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
