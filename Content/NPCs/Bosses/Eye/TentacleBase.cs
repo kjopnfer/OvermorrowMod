@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria.Graphics.Effects;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
@@ -424,11 +425,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
             }
 
+            foreach (Player player in Main.player)
+            {
+                if (player.active)
+                {
+                    if (NPC.Distance(player.Center) < 600)
+                    {
+                        Filters.Scene.Activate("EyeVortex", player.position);
+                    }
+                    else
+                    {
+                        Filters.Scene.Deactivate("EyeVortex", player.position);
+                    }
+                }
+            }
+
             if (WaveCounter >= 300 && WaveCounter <= 540)
             {
                 if (WaveCounter >= 540) WaveCounter = 0;
 
-                if (AICounter % 60 == 0 && stayAlive)
+                if (AICounter++ % 60 == 0 && stayAlive)
                 {
                     var entitySource = NPC.GetSource_FromAI();
                     int eye = NPC.NewNPC(entitySource, (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.ServantofCthulhu, 0, -1);
@@ -444,7 +460,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (!stayAlive)
             {
-                if (NPC.scale <= 0) NPC.active = false;
+                if (NPC.scale <= 0)
+                {
+                    foreach (Player player in Main.player)
+                    {
+                        if (NPC.Distance(player.Center) < 600) Filters.Scene.Deactivate("EyeVortex", player.position);
+                    }
+
+                    NPC.active = false;
+                }
 
                 NPC.scale -= 0.005f;
             }

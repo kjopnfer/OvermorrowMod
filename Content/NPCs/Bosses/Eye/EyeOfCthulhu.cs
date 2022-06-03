@@ -51,7 +51,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.lifeMax = 3200;
                     break;
                 case NPCID.ServantofCthulhu:
-                    npc.lifeMax = 60;
+                    npc.lifeMax = 12;
                     break;
             }
         }
@@ -417,11 +417,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     if (npc.ai[1] < 90)
                     {
-                        Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-                        progress = Utils.Clamp(npc.ai[1], 0, 90) / 90f;
-                        effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
-                        effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
-                        effect.CurrentTechnique.Passes["Whiteout"].Apply();
+                        //Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                        //progress = Utils.Clamp(npc.ai[1], 0, 90) / 90f;
+                        //effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
+                        //effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+                        //effect.CurrentTechnique.Passes["Whiteout"].Apply();
                     }
 
                     spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, drawColor, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);

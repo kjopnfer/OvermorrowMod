@@ -94,6 +94,8 @@ namespace OvermorrowMod.Common
                 GameShaders.Misc["OvermorrowMod: DeathAnimation"] = new MiscShaderData(ref4, "DeathAnimation").UseImage0("Images/Misc/Perlin");
 
                 Filters.Scene["Shockwave"] = new Filter(new ScreenShaderData(ref2, "Shockwave"), EffectPriority.VeryHigh);
+                //Filters.Scene["EyeVortex"] = new Filter(new ScreenShaderData("FilterMiniTower").UseColor(0.271f, 0.278f, 0.322f).UseOpacity(0.75f), EffectPriority.VeryHigh);
+                Filters.Scene["EyeVortex"] = new Filter(new ScreenShaderData("FilterMiniTower").UseColor(0f, 0f, 0f).UseOpacity(0.6f), EffectPriority.VeryHigh);
 
                 Ref<Effect> filterRef = new Ref<Effect>(Assets.Request<Effect>("Effects/Flash").Value);
                 Filters.Scene["Flash"] = new Filter(new ScreenShaderData(filterRef, "ScreenFlash"), EffectPriority.VeryHigh);
