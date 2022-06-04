@@ -501,14 +501,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
+            float increase = MathHelper.Lerp(1.35f, 2.25f, Utils.Clamp(DeathCounter, 0, 240) / 240f);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, new Color(60, 3, 79), NPC.rotation * 0.5f, texture.Size() / 2, NPC.scale * increase, SpriteEffects.None, 0);
 
-            float increase = MathHelper.Lerp(1.1f, 2f, Utils.Clamp(DeathCounter, 0, 240) / 240f);
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
+            increase = MathHelper.Lerp(1.1f, 2f, Utils.Clamp(DeathCounter, 0, 240) / 240f);
             spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation, texture.Size() / 2, NPC.scale * increase, SpriteEffects.None, 0);
-
-            increase = MathHelper.Lerp(1.35f, 2.25f, Utils.Clamp(DeathCounter, 0, 240) / 240f);
-            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation * 0.5f, texture.Size() / 2, NPC.scale * increase, SpriteEffects.None, 0);
 
             if (DeathCounter >= 240)
             {
