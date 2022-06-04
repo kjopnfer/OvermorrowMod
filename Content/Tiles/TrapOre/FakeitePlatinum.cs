@@ -28,8 +28,7 @@ namespace OvermorrowMod.Content.Tiles.TrapOre
             ItemDrop = ModContent.ItemType<FakeGem>();
             AddMapEntry(new Color(100, 0, 0), name);
             DustType = DustID.Copper;
-            SoundType = SoundID.Tink;
-            SoundStyle = 1;
+            HitSound = SoundID.Tink;
             MineResist = 2f;
             MinPick = 1;
         }

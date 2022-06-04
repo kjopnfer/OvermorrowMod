@@ -61,7 +61,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
 
                 if (Projectile.ai[0] == 239)
                 {
-                    SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)Projectile.position.X, (int)Projectile.position.Y);
+                    SoundEngine.PlaySound(SoundID.Roar, Projectile.position);
                 }
             }
             else // Launch at the nearest player

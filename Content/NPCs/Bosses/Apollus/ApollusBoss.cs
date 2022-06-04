@@ -115,7 +115,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
 
                     if (NPC.ai[3] == 90)
                     {
-                        SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), NPC.Center); // every half second while dying, play a sound
+                        SoundEngine.PlaySound(SoundID.NPCDeath10, NPC.Center);
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
                             float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
@@ -194,7 +194,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                         NPC.immortal = true;
                         if (NPC.ai[1] == 45)
                         {
-                            SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)NPC.Center.X, (int)NPC.Center.Y);
+                            SoundEngine.PlaySound(SoundID.NPCDeath10, NPC.Center);
                         }
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
@@ -235,7 +235,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Apollus
                             player.GetModPlayer<OvermorrowModPlayer>().ShowText = false;
                             NPC.dontTakeDamage = false;
                             NPC.velocity = Vector2.Zero;
-                            SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)NPC.Center.X, (int)NPC.Center.Y);
+                            SoundEngine.PlaySound(SoundID.NPCDeath10, NPC.Center);
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);

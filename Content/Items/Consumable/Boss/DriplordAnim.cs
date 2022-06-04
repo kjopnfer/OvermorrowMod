@@ -80,7 +80,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                     }
 
                     NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y + 205, ModContent.NPCType<DripplerBoss>(), 0, 0f, 0f, 0f, 0f, 255);
-                    SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
+                    SoundEngine.PlaySound(SoundID.Roar, player.position);
                     Projectile.Kill();
                 }
             }

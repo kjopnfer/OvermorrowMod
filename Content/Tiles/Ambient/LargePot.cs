@@ -38,7 +38,7 @@ namespace OvermorrowMod.Content.Tiles.Ambient
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             // TODO: Put shit here
-            SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(13, 0));
+            SoundEngine.PlaySound(SoundID.Item27);
             for (int k = 0; k < 8; k++)
             {
                 Dust.NewDust(new Vector2(i * 16, j * 16 - 10), 54, 16, DustID.Dirt, 0.0f, -1, 0, new Color(), 0.5f);

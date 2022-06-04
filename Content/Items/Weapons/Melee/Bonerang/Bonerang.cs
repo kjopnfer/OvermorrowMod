@@ -86,7 +86,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.Bonerang
             flametimer++;
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
             Vector2 eee = Projectile.Center;
-            SoundEngine.PlaySound(SoundID.NPCHit, Projectile.position, 2);
+            SoundEngine.PlaySound(SoundID.NPCHit2, Projectile.position);
             {
                 ComingBack = true;
             }
@@ -110,7 +110,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.Bonerang
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            SoundEngine.PlaySound(SoundID.NPCHit, Projectile.position, 2);
+            SoundEngine.PlaySound(SoundID.NPCHit2, Projectile.position);
             ComingBack = true;
             flametimer++;
         }

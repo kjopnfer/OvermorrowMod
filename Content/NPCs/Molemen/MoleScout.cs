@@ -159,7 +159,7 @@ namespace OvermorrowMod.Content.NPCs.Molemen
 
         public override int SpawnNPC(int tileX, int tileY)
         {
-            return NPC.NewNPC(Entity.GetSource_NaturalSpawn(), tileX * 16, tileY * 16, NPC.type);
+            return NPC.NewNPC(Terraria.Entity.GetSource_NaturalSpawn(), tileX * 16, tileY * 16, NPC.type);
         }
     }
 }

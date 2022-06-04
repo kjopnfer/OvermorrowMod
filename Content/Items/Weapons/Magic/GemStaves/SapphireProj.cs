@@ -83,8 +83,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.GemStaves
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-            Vector2 eee = Projectile.Center;
-            SoundEngine.PlaySound(SoundID.Item27, (int)eee.X, (int)eee.Y);
+            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             ComingBack = true;
             return false;
         }

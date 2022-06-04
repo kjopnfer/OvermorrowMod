@@ -98,7 +98,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
             if (NPC.life <= 0)
             {
                 NPC.NPCLoot();
-                SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)NPC.Center.X, (int)NPC.Center.Y);
+                SoundEngine.PlaySound(SoundID.NPCDeath10, NPC.Center);
             }
 
             // Reinitialize variables if the previous checks didn't get them
@@ -313,7 +313,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                     if (NPC.ai[1] == 140)
                     {
                         // Wall of Flesh scream sound
-                        SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)NPC.Center.X, (int)NPC.Center.Y);
+                        SoundEngine.PlaySound(SoundID.NPCDeath10, NPC.Center);
                         for (int i = 0; i < Main.maxPlayers; i++)
                         {
                             float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
@@ -354,7 +354,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                         if (NPC.ai[1] == 90)
                         {
                             // Wall of Flesh scream sound
-                            SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)NPC.Center.X, (int)NPC.Center.Y);
+                            SoundEngine.PlaySound(SoundID.NPCDeath10, NPC.Center);
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
@@ -398,7 +398,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                         if (NPC.ai[1] == 90)
                         {
                             // Wall of Flesh scream sound
-                            SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.NPCKilled, 10), (int)NPC.Center.X, (int)NPC.Center.Y);
+                            SoundEngine.PlaySound(SoundID.NPCDeath10, NPC.Center);
                             //float rotation = MathHelper.ToRadians(360);
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {

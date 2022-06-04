@@ -133,7 +133,7 @@ namespace OvermorrowMod.Content.Projectiles.Accessory
 
                 if (Projectile.ai[0] % randDelay == 0 && lineOfSight) // prevent from instantly shooting when spawned
                 {
-                    SoundEngine.PlaySound(SoundID.NPCHit19, (int)Projectile.position.X, (int)Projectile.position.Y);
+                    SoundEngine.PlaySound(SoundID.NPCHit19, Projectile.position);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, delta * 2, ModContent.ProjectileType<BloodyBallFriendly>(), Projectile.damage, 0f, Projectile.owner);

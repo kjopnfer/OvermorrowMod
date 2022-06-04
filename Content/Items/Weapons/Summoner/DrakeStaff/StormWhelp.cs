@@ -229,7 +229,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.DrakeStaff
 
                     if (Projectile.ai[0] % randDelay == 0 && lineOfSight) // prevent from instantly shooting when spawned
                     {
-                        SoundEngine.PlaySound(SoundID.Item109, (int)Projectile.position.X, (int)Projectile.position.Y);
+                        SoundEngine.PlaySound(SoundID.Item109, Projectile.position);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, delta, ModContent.ProjectileType<LightningBreathFriendly>(), Projectile.damage / 2, 0f, Projectile.owner);

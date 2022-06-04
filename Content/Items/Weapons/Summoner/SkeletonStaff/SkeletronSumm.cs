@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Summoner.SkeletonStaff
                     direction.Normalize();
                     Vector2 newpoint2 = new Vector2(direction.X, direction.Y).RotatedBy(MathHelper.ToRadians(Flamerot));
                     float speed = 15.5f;
-                    SoundEngine.PlaySound(SoundID.Item, Projectile.position, 34);
+                    SoundEngine.PlaySound(SoundID.Item34, Projectile.position);
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + new Vector2(0, 10).RotatedBy(MathHelper.ToRadians(Projectile.rotation)), newpoint2 * speed, ModContent.ProjectileType<SpritFlame>(), Projectile.damage, 1f, Projectile.owner, 0f);
 
                     if (up)

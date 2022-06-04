@@ -53,7 +53,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
         public override void Kill(int timeLeft)
         {
             Vector2 position = Projectile.Center;
-            SoundEngine.PlaySound(SoundID.NPCDeath1, (int)position.X, (int)position.Y);
+            SoundEngine.PlaySound(SoundID.NPCDeath1, position);
 
             for (int num864 = 0; num864 < 30; num864++)
             {
