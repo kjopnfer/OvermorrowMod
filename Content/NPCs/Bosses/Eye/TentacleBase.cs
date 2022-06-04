@@ -410,7 +410,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         public ref float AICounter => ref NPC.ai[0];
         public ref float WaveCounter => ref NPC.ai[1];
-
+        public ref float DeathCounter => ref NPC.ai[2];
+        public ref float SpookyEye => ref NPC.ai[3];
         public override void AI()
         {
             NPC.rotation += 0.03f;
@@ -460,17 +461,39 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (!stayAlive)
             {
-                if (NPC.scale <= 0)
+                if (DeathCounter == 0)
                 {
                     foreach (Player player in Main.player)
                     {
-                        if (NPC.Distance(player.Center) < 600) Filters.Scene.Deactivate("EyeVortex", player.position);
+                        if (NPC.Distance(player.Center) < 900)
+                        {
+                            player.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(NPC.Center, 120, 300, 120);
+                        }
                     }
-
-                    NPC.active = false;
                 }
 
-                NPC.scale -= 0.005f;
+                if (DeathCounter++ >= 360)
+                {
+                    if (NPC.scale <= 0)
+                    {
+                        foreach (Player player in Main.player)
+                        {
+                            if (NPC.Distance(player.Center) < 600) Filters.Scene.Deactivate("EyeVortex", player.position);
+                        }
+
+                        NPC.active = false;
+                    }
+
+                    NPC.scale -= 0.005f;
+                    if (SpookyEye > 0) SpookyEye--;
+                }
+                else
+                {
+                    if (DeathCounter >= 240)
+                    {
+                        if (SpookyEye < 30) SpookyEye++;
+                    }
+                }
             }
 
             WaveCounter++;
@@ -479,10 +502,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation, texture.Size() / 2, NPC.scale * 1.1f, SpriteEffects.None, 0);
 
+            float increase = MathHelper.Lerp(1.1f, 2f, Utils.Clamp(DeathCounter, 0, 240) / 240f);
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation, texture.Size() / 2, NPC.scale * increase, SpriteEffects.None, 0);
+
+            increase = MathHelper.Lerp(1.35f, 2.25f, Utils.Clamp(DeathCounter, 0, 240) / 240f);
             texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
-            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation * 0.5f, texture.Size() / 2, NPC.scale * 1.35f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, Color.Black, NPC.rotation * 0.5f, texture.Size() / 2, NPC.scale * increase, SpriteEffects.None, 0);
+
+            if (DeathCounter >= 240)
+            {
+                texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/Iris").Value;
+
+                Color color = Color.Lerp(Color.Transparent, Color.White, Utils.Clamp(SpookyEye, 0, 30) / 30f);
+                spriteBatch.Draw(texture, NPC.Center - Main.screenPosition, null, color, 0f, texture.Size() / 2, 1f, SpriteEffects.None, 0);
+            }
 
             return false;
         }
