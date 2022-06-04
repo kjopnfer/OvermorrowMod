@@ -21,8 +21,7 @@ namespace OvermorrowMod.Content.Tiles.Ores
             Main.tileMerge[Type][TileID.Stone] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            SoundType = SoundID.Tink;
-            SoundStyle = 1;
+            HitSound = SoundID.Tink;
             MinPick = 40;
             ItemDrop = ModContent.ItemType<EruditeOre>();
             AddMapEntry(new Color(51, 204, 51), name);
@@ -34,7 +33,7 @@ namespace OvermorrowMod.Content.Tiles.Ores
             int distance = (int)Vector2.Distance(new Vector2(i * 16, j * 16), player.Center);
             if (distance < 54)
             {
-                SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(21, 1));
+                SoundEngine.PlaySound(SoundID.Item27);
             }
         }
 

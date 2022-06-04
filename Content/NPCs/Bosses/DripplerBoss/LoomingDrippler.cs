@@ -194,7 +194,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                                         delta = new Vector2(0f, 5f);
                                     }
 
-                                    SoundEngine.PlaySound(SoundID.Item17, (int)NPC.Center.X, (int)NPC.Center.Y);
+                                    SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
                                         for (int i = 0; i < numberProjectiles; i++)
@@ -207,7 +207,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.DripplerBoss
                                 }
                                 else
                                 {
-                                    SoundEngine.PlaySound(SoundID.Item17, (int)NPC.Center.X, (int)NPC.Center.Y);
+                                    SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
                                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(Main.player[NPC.target].Center) * shootSpeed, ModContent.ProjectileType<BloodyBall>(), NPC.damage / /*3*/ 2, 3f, Main.myPlayer, 0, 0);

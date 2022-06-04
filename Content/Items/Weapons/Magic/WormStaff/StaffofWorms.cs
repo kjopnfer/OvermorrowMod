@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,7 +22,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.WormStaff
             Item.mana = 7;
             Item.useTime = 28;
             Item.useAnimation = 28;
-            Item.UseSound = SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/Items/Hork");
+            Item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/Items/Hork")
+            {
+                Volume = 0.9f,
+                PitchVariance = 0.2f,
+                MaxInstances = 3,
+            };
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
             Item.knockBack = 0;

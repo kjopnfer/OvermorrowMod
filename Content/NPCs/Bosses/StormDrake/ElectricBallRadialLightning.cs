@@ -68,15 +68,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                     break;
                 case 1:
                     {
-                        if (Projectile.ai[1] % /*5*/ 4 == 0 && Projectile.ai[1] <= 144/*180*/)
+                        /*if (Projectile.ai[1] % 4 == 0 && Projectile.ai[1] <= 144)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int proj = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(0.01f, 0.01f).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<LaserWarning>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                                ((LaserWarning)Main.projectile[proj].ModProjectile).killearly = true;
-                                ((LaserWarning)Main.projectile[proj].ModProjectile).waittime = 100;
+                                //((LaserWarning)Main.projectile[proj].ModProjectile).killearly = true;
+                                //((LaserWarning)Main.projectile[proj].ModProjectile).waittime = 100;
                             }
-                        }
+                        }*/
 
                         if (Projectile.ai[1] > /*180*/ 144 && Projectile.timeLeft > 90)
                         {
@@ -84,14 +84,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         }
                         if (Projectile.ai[1] > 200)
                         {
-                            for (int i = 0; i < Main.maxProjectiles; i++)
+                            /*for (int i = 0; i < Main.maxProjectiles; i++)
                             {
                                 if (Main.projectile[i].active && Main.projectile[i].type == Mod.Find<ModProjectile>("LaserWarning").Type && ((LaserWarning)Main.projectile[i].ModProjectile).killearly == true)
                                 {
-                                    ((LaserWarning)Main.projectile[i].ModProjectile).killnow = true;
+                                    //((LaserWarning)Main.projectile[i].ModProjectile).killnow = true;
                                     Main.projectile[i].Kill();
                                 }
-                            }
+                            }*/
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(Projectile.Center, Main.player[i].Center);

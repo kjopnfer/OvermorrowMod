@@ -219,7 +219,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         else if (AICounter == 280)
                         {
                             Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), NPC.Center, Vector2.Zero, Color.LightCyan, 1, 4, 0, 1f);
-                            SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)NPC.position.X, (int)NPC.position.Y);
+                            SoundEngine.PlaySound(SoundID.Roar, NPC.position);
                             for (int i = 0; i < Main.maxPlayers; i++)
                             {
                                 float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
@@ -229,7 +229,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 }
                             }
                         }
-                        else if (AICounter == 480)
+                        /*else if (AICounter == 480)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -252,7 +252,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                     ((LightningPhaseChangeWarning)Main.projectile[proj].ModProjectile).RotateBy = -0.375f;
                                 }
                             }
-                        }
+                        }*/
                         else if (AICounter == 1080)
                         {
                             canPulse = false;
@@ -330,7 +330,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         }
 
                         // Lightning Indicator
-                        if (AICounter++ == 1)
+                        /*if (AICounter++ == 1)
                         {
                             AICounter2 = 0;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -350,7 +350,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             {
                                 NPC.Move(player.Center + new Vector2(450 * (NPC.spriteDirection * -1), 0), 20, 2);
                             }
-                        }
+                        }*/
 
                         // Spawn Lightning Laser Beam
                         if (AICounter == 180)
@@ -562,7 +562,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
 
                                 if (AICounter == 181)
                                 {
-                                    SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)NPC.position.X, (int)NPC.position.Y);
+                                    SoundEngine.PlaySound(SoundID.Roar, NPC.position);
                                 }
                             }
                             else
@@ -601,11 +601,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             {
                                 if (Main.rand.NextBool(2))
                                 {
-                                    SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/woosh"), Main.player[i].position);
+                                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/woosh")
+                                    {
+                                        Volume = 0.9f,
+                                        PitchVariance = 0.2f,
+                                        MaxInstances = 3,
+                                    }, Main.player[i].position);
                                 }
                                 else
                                 {
-                                    SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/flep"), Main.player[i].position);
+                                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/flep")
+                                    {
+                                        Volume = 0.9f,
+                                        PitchVariance = 0.2f,
+                                        MaxInstances = 3,
+                                    }, Main.player[i].position);
                                 }
 
                                 float distance = Vector2.Distance(NPC.Center, Main.player[i].Center);
@@ -690,7 +700,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
 
                                 if (AICounter == 201)
                                 {
-                                    SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(SoundID.Roar, 0), (int)NPC.position.X, (int)NPC.position.Y);
+                                    SoundEngine.PlaySound(SoundID.Roar, NPC.position);
                                 }
                             }
                             else
@@ -732,11 +742,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                                 {
                                     if (Main.rand.NextBool(2))
                                     {
-                                        SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/woosh"), Main.player[i].position);
+                                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/woosh")
+                                        {
+                                            Volume = 0.9f,
+                                            PitchVariance = 0.2f,
+                                            MaxInstances = 3,
+                                        }, Main.player[i].position);
                                     }
                                     else
                                     {
-                                        SoundEngine.PlaySound(SoundLoader.GetLegacySoundSlot("OvermorrowMod/Sounds/NPC/flep"), Main.player[i].position);
+                                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/flep")
+                                        {
+                                            Volume = 0.9f,
+                                            PitchVariance = 0.2f,
+                                            MaxInstances = 3,
+                                        }, Main.player[i].position);
                                     }
                                     //Main.player[i].GetModPlayer<OvermorrowModPlayer>().ScreenShake = 25;
                                 }
@@ -799,7 +819,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             }
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
+                                //Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
                             }
                             relativeX += 1;
                         }
@@ -826,7 +846,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                             }
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
+                                //Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(PlayerCenterStore.X + (200 * relativeX), PlayerCenterStore.Y - 650), Vector2.UnitY * 5, ModContent.ProjectileType<LaserWarning2>(), 17, 1f, Main.myPlayer, 0, 1);
                             }
                             relativeX -= 1;
                         }
@@ -875,7 +895,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(160 * NPC.spriteDirection, -40), NPC.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<LaserWarning2>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                //Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(160 * NPC.spriteDirection, -40), NPC.DirectionTo(player.Center) * 7.5f, ModContent.ProjectileType<LaserWarning2>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
                             }
                             AICounter2 = 0;
                         }
@@ -909,7 +929,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.StormDrake
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + new Vector2(Main.rand.NextFloat(-200, 200), -500), Vector2.UnitY, ModContent.ProjectileType<LaserWarning2>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
+                                //Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + new Vector2(Main.rand.NextFloat(-200, 200), -500), Vector2.UnitY, ModContent.ProjectileType<LaserWarning2>(), NPC.damage, 2, Main.myPlayer, 0, NPC.whoAmI);
                             }
                             AICounter2 = 0;
                         }

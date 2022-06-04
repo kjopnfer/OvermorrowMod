@@ -142,7 +142,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee.IorichHarvester
             HitTile = true;
             Projectile.netUpdate = true;
 
-            SoundEngine.PlaySound(SoundID.Dig, (int)Projectile.position.X, (int)Projectile.position.Y);
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
             return false;
         }
     }

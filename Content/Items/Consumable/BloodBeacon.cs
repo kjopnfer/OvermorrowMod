@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.Items.Consumable
         {
             if (!Main.dayTime)
             {
-                SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
+                SoundEngine.PlaySound(SoundID.Roar, player.position);
                 Main.bloodMoon = true;
                 if (Main.netMode == NetmodeID.SinglePlayer)
                 {

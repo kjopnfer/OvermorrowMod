@@ -15,8 +15,7 @@ namespace OvermorrowMod.Content.Tiles.Ambient
             Main.tileSpelunker[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            SoundType = SoundID.Tink;
-            SoundStyle = 1;
+            HitSound = SoundID.Tink;
             MinPick = 65;
             AddMapEntry(new Color(102, 255, 255), name);
             ItemDrop = ModContent.ItemType<Content.Items.Misc.BlueCrystal>();

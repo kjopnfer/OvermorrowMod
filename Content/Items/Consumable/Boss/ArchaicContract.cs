@@ -57,7 +57,7 @@ namespace OvermorrowMod.Content.Items.Consumable.Boss
                 ((SSBAnim)Main.projectile[graknightSummonIdentity].ModProjectile).graknightSummonIdentity = graknightSummonIdentity;
                 ((SSBAnim)Main.projectile[apollusSummonIdentity].ModProjectile).apollusSummonIdentity = apollusSummonIdentity;
 
-                SoundEngine.PlaySound(SoundID.Roar, player.position, 0);
+                SoundEngine.PlaySound(SoundID.Roar, player.position);
                 return true;
             }
             return false;

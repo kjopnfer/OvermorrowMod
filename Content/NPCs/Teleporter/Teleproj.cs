@@ -37,10 +37,8 @@ namespace OvermorrowMod.Content.NPCs.Teleporter
             {
                 npc.Center = Projectile.Center;
                 Projectile.Kill();
-                SoundEngine.PlaySound(SoundID.Item, npc.position, 9);
+                SoundEngine.PlaySound(SoundID.Item9, npc.position);
             }
-
-
 
             float num116 = 16f;
             for (int num117 = 0; (float)num117 < 16; num117++)

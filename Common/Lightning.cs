@@ -153,7 +153,7 @@ namespace OvermorrowMod.Common
         {
             SafeSetDefaults();
             Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-            Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
+            Positions = CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
@@ -165,8 +165,8 @@ namespace OvermorrowMod.Common
             {
                 Projectile.velocity = Projectile.velocity.SafeNormalize(-Vector2.UnitY);
                 Startup = true;
-                Positions = Lightning.CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
-                SoundEngine.PlaySound(SoundID.Item, (int)Projectile.Center.X, (int)Projectile.Center.Y, 122, 0.5f, -0.5f);
+                Positions = CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
+                SoundEngine.PlaySound(SoundID.Item, Projectile.Center);
             }
             return true;
         }

@@ -74,7 +74,7 @@ namespace OvermorrowMod.Content.Tiles.Ambient
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            SoundEngine.PlaySound(new Terraria.Audio.LegacySoundStyle(2, 27));
+            SoundEngine.PlaySound(SoundID.Item27);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
