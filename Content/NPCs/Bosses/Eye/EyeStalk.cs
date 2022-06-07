@@ -77,7 +77,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             switch (parent.ai[0])
             {
-                case (float)EyeOfCthulhu.AIStates.Tear:
+                case (float)EyeOfCthulhu.AIStates.Portal:
                     if (parent.ai[1] >= 120)
                     {
                         if (MiscCounter == 0)

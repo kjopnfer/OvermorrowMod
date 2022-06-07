@@ -10,6 +10,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameContent;
 using OvermorrowMod.Common;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
@@ -28,6 +29,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private Vector2 InitialPosition;
 
         private bool TransitionPhase = false;
+
+        private List<Projectile> TentacleList;
 
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
@@ -69,6 +72,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.EyeofCthulhu)
             {
+                TentacleList = new List<Projectile>();
+
                 npc.rotation = -MathHelper.PiOver2;
                 npc.ai[0] = (float)AIStates.Intro;
                 npc.ai[1] = 0;
@@ -86,7 +91,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Transition = -2,
             Intro = -1,
             Selector = 0,
-            Tear = 1,
+            Portal = 1,
             Minions = 2,
             Suck = 3
         }
@@ -118,7 +123,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         npc.HitEffect(0, npc.damage);
                         npc.Kill();
                     }
-                }            
+                }
 
                 return true;
             }
@@ -128,7 +133,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
 
-            npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver4;
+            if (npc.ai[0] != (float)AIStates.Portal)
+                npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver4;
 
             npc.defense = 12;
             foreach (NPC minion in Main.npc)
@@ -147,7 +153,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             //float progress = MathHelper.Lerp(-0.066f, -0.106f, (float)Math.Sin(npc.localAI[2]++ / 30f));
 
 
-            if (Main.netMode != NetmodeID.Server)
+            /*if (Main.netMode != NetmodeID.Server)
             {
                 if (!Filters.Scene["Flash"].IsActive())
                 {
@@ -159,7 +165,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Filters.Scene["Flash"].GetShader().UseTargetPosition(npc.Center);
                     Filters.Scene["Flash"].GetShader().UseIntensity(progress);
                 }
-            }
+            }*/
 
             if (npc.life > npc.lifeMax) npc.life = npc.lifeMax;
 
@@ -180,8 +186,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.ai[2] = 0;
                 }
             }
-
-            npc.rotation += 0.0125f;
 
             var normalizedRotation = npc.rotation % MathHelper.TwoPi;
 
@@ -237,6 +241,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             tentacle.value = Main.rand.Next(0, 3) * 50;
                             tentacle.parentID = npc.whoAmI;
                         }
+
+                        TentacleList.Add(proj);
                     }
 
                     // Short tentacles
@@ -249,6 +255,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             tentacle.value = Main.rand.Next(0, 3) * 50;
                             tentacle.parentID = npc.whoAmI;
                         }
+
+                        TentacleList.Add(proj);
                     }
 
                     npc.ai[0] = (float)AIStates.Selector;
@@ -281,49 +289,56 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (npc.ai[1] == 360)
                     {
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;
-                        //npc.ai[0] = (float)AIStates.Minions;
+                        npc.ai[0] = (float)AIStates.Portal;
 
                         npc.ai[1] = 0;
                     }
 
                     break;
-                case (float)AIStates.Tear:
+                case (float)AIStates.Portal:
                     if (npc.ai[1]++ == 0)
                     {
                         npc.velocity = Vector2.Zero;
-                        InitialPosition = npc.Center;
-                        TearDirection = Main.rand.NextBool() ? 1 : -1;
-
-                        MoveDirection = TearDirection;
                     }
 
-                    if (npc.ai[1] <= 120)
+                    if (npc.ai[1] > 45)
                     {
-                        npc.Center = Vector2.Lerp(InitialPosition, player.Center + new Vector2(500 * TearDirection, -250), npc.ai[1] / 180f);
-                    }
-
-                    if (npc.ai[1] >= 120)
-                    {
-                        float ToRotation = npc.DirectionTo(npc.Center + Vector2.UnitY * 50).ToRotation() - MathHelper.PiOver2;
-
-                        if (npc.ai[2] == 0)
+                        foreach (Projectile projectile in TentacleList)
                         {
-                            InitialRotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2;
+                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            {
+                                tentacle.lockGrow = true;
+                                if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length--;
+                            }
                         }
-
-                        npc.rotation = MathHelper.Lerp(InitialRotation, ToRotation, Utils.Clamp(npc.ai[2]++, 0, 60) / 60f);
-
-                        // Each second, swap the direction that the NPC is moving if the player somehow gets through the barrage
-                        if (npc.ai[1] % 60 == 0) MoveDirection = player.Center.X > npc.Center.X ? -1 : 1;
-
-                        npc.Move(npc.Center - (Vector2.UnitX * 2 * MoveDirection), 4, 10);
                     }
 
-                    if (npc.ai[1] == 420)
+                    if (npc.ai[1] > 300 && npc.alpha < 255)
                     {
-                        npc.ai[0] = (float)AIStates.Selector;
-                        npc.ai[1] = 0;
-                        npc.ai[2] = 0;
+                        npc.alpha += 5;
+                    }
+
+                    if (npc.ai[1] >= 450)
+                    {
+                        npc.rotation += MathHelper.Lerp(0.09f, 0.03f, Utils.Clamp(npc.ai[1] - 450, 0, 120) / 120f);
+                    }
+                    else
+                    {
+                        npc.rotation += MathHelper.Lerp(0.03f, 0.09f, Utils.Clamp(npc.ai[1], 0, 120) / 120f);
+                    }
+
+                    // From 240 to 420 is when the portal fully opens
+                    // Hold for half a second
+                    if (npc.ai[1] >= 420 + 30)
+                    {
+
+                        // Close after a second
+                        if (npc.ai[1] == 630)
+                        {
+                            npc.ai[0] = (float)AIStates.Selector;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                        }
                     }
                     break;
                 case (float)AIStates.Minions:
@@ -407,6 +422,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             Texture2D texture;
             float progress;
+            float scale;
 
             switch (npc.type)
             {
@@ -430,6 +446,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     return false;
                 case NPCID.EyeofCthulhu:
+                    #region Portal
+                    if (npc.ai[0] == (float)AIStates.Portal && npc.ai[1] > 240)
+                    {
+                        scale = MathHelper.Lerp(0, 2.25f, Utils.Clamp(npc.ai[1] - 240, 0, 180) / 180f);
+
+                        if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.25f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
+
+                        texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
+                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, new Color(60, 3, 79), npc.rotation * 0.5f, texture.Size() / 2, scale, SpriteEffects.None, 0);
+
+                        texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
+                        scale = MathHelper.Lerp(0, 2f, Utils.Clamp(npc.ai[1] - 240, 0, 180) / 180f);
+                        if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.2f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
+
+                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Black, npc.rotation, texture.Size() / 2, scale, SpriteEffects.None, 0);
+                    }
+                    #endregion
+
                     texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
 
                     if (npc.ai[0] == (float)AIStates.Minions && npc.ai[1] > 120 && npc.ai[1] < 180)
@@ -441,14 +475,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         for (int i = 0; i < amount; i++)
                         {
                             float scaleAmount = i / (float)amount;
-                            float scale = 1f + progress * scaleAmount;
+                            scale = 1f + progress * scaleAmount;
                             spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
                         }
                     }
 
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, drawColor, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                    Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
+                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
-                    return false;            
+                    return false;
             }
 
             return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
@@ -458,16 +493,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.EyeofCthulhu)
             {
+                #region Glowmask
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu_Glow").Value;
-                spriteBatch.Draw(texture, npc.Center - screenPos, null, Color.White, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                Color color = Color.Lerp(Color.White, Color.Transparent, npc.alpha / 255f);
+                spriteBatch.Draw(texture, npc.Center - screenPos, null, color, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                #endregion
 
                 spriteBatch.Reload(BlendState.Additive);
 
                 if (npc.ai[1] >= 120 && npc.ai[1] <= 300)
                 {
-                    float alpha = MathHelper.Lerp(0.65f, 0.8f, (float)Math.Sin(npc.localAI[0]++ / 20f));
                     Texture2D spotlight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "EyeTell").Value;
-                    spriteBatch.Draw(spotlight, npc.Center + new Vector2(npc.width * 1.52f, -npc.height * 1.35f).RotatedBy(npc.rotation + MathHelper.PiOver2) - Main.screenPosition, null, new Color(255, 200, 46) * alpha, npc.rotation - MathHelper.PiOver4, spotlight.Size() / 2, 1f, SpriteEffects.None, 0);
+                    float lightAlpha = MathHelper.Lerp(0.65f, 0.8f, (float)Math.Sin(npc.localAI[0]++ / 20f));
+
+                    spriteBatch.Draw(spotlight, npc.Center + new Vector2(npc.width * 1.52f, -npc.height * 1.35f).RotatedBy(npc.rotation + MathHelper.PiOver2) - Main.screenPosition, null, new Color(255, 200, 46) * lightAlpha, npc.rotation - MathHelper.PiOver4, spotlight.Size() / 2, 1f, SpriteEffects.None, 0);
                 }
 
                 spriteBatch.Reload(BlendState.AlphaBlend);

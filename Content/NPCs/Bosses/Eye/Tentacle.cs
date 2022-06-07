@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 using OvermorrowMod.Core;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Primitives;
+using Terraria.DataStructures;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
@@ -17,9 +18,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private bool RunOnce = true;
         private List<float> rots;
 
-        public int len;
+        public int length;
         public int parentID = -1;
 
+        public bool lockGrow = false;
         public override bool ShouldUpdatePosition() => false;
         public override string Texture => AssetDirectory.Trails + "Trail1";
         public override void SetStaticDefaults()
@@ -38,7 +40,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Projectile.hide = true;
 
             rots = new List<float>();
-            len = 0;
+            length = 0;
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
@@ -88,14 +90,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                     }
 
-                    if (len < Projectile.ai[0] && Projectile.timeLeft > 50)
+                    // AI 0 indicates the maximum length, and should not be adjusted
+                    // Adjust the length instead if you want to control the tentacle size
+                    // The lockGrow boolean is for when the boss wants to manually control the size without the projectile interfering
+                    if (length < Projectile.ai[0] && Projectile.timeLeft > 50 && !lockGrow)
                     {
-                        len++;
+                        length++;
                     }
 
-                    if (len >= 0 && Projectile.timeLeft <= 50)
+                    if (length >= 0 && Projectile.timeLeft <= 50)
                     {
-                        len -= 5;
+                        length -= 5;
                     }
                 }
             }
@@ -104,9 +109,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool PreDraw(ref Color lightColor)
         {
             List<VertexInfo> bars = new List<VertexInfo>();
-            for (int i = 1; i < len; i++)
+            for (int i = 1; i < length; i++)
             {
-                float factor = i / (float)len;
+                float factor = i / (float)length;
                 Vector2 v0 = Projectile.Center + Utils.RotatedBy(new Vector2((float)(5 * (i - 1)), 0f), rots[i - 1]);
                 Vector2 v1 = Projectile.Center + Utils.RotatedBy(new Vector2((float)(5 * i), 0f), rots[i]);
                 Vector2 normaldir = v1 - v0;
@@ -120,7 +125,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (bars.Count > 2)
             {
                 Main.spriteBatch.End();
-                Main.spriteBatch.Begin((SpriteSortMode)1, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone);
 
                 Effect effect = OvermorrowModFile.Instance.TentacleBlack.Value;
 
@@ -130,10 +135,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 effect.Parameters[0].SetValue(model * projection);
                 effect.CurrentTechnique.Passes[0].Apply();
 
-                Main.instance.GraphicsDevice.Textures[0] = (Texture)(object)ModContent.Request<Texture2D>(Texture, (AssetRequestMode)2).Value;
-                Main.instance.GraphicsDevice.DrawUserPrimitives((PrimitiveType)1, bars.ToArray(), 0, bars.Count - 2);
+                Main.instance.GraphicsDevice.Textures[0] = ModContent.Request<Texture2D>(Texture, AssetRequestMode.AsyncLoad).Value;
+                Main.instance.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, bars.ToArray(), 0, bars.Count - 2);
                 Main.spriteBatch.End();
-                Main.spriteBatch.Begin(0, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, (Effect)null, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             }
 
             return false;
@@ -141,9 +146,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            for (int i = 1; i < len; i++)
+            for (int i = 1; i < length; i++)
             {
-                float factor = i / (float)len;
+                float factor = i / (float)length;
                 float w = (Projectile.ai[0] == 400 ? 28 : 32f) * MathHelper.SmoothStep(0.8f, 0.1f, factor);
                 if (Collision.CheckAABBvAABBCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - new Vector2(w, w) + Utils.RotatedBy(new Vector2((float)(5 * i), 0f), rots[i]), new Vector2(w, w) * 2f))
                 {
@@ -154,17 +159,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             return false;
         }
     }
-
-
     internal class Tentacle : ModProjectile
     {
-        public override string Texture => AssetDirectory.Textures + "Tentacle";
+        public override string Texture => AssetDirectory.Trails + "Trail1";
         private List<float> rots;
 
         public int len;
+        float value;
 
+        public override bool ShouldUpdatePosition() => false;
         public override void SetStaticDefaults()
         {
+            DisplayName.SetDefault("Color Tentacle");
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
         }
 
@@ -181,47 +187,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             len = 0;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            List<VertexInfo> bars = new List<VertexInfo>();
-            for (int i = 1; i < len; i++)
-            {
-                float factor = (float)i / (float)len;
-                Vector2 v0 = Projectile.Center + Utils.RotatedBy(new Vector2((float)(5 * (i - 1)), 0f), rots[i - 1]);
-                Vector2 v1 = Projectile.Center + Utils.RotatedBy(new Vector2((float)(5 * i), 0f), rots[i]);
-                Vector2 normaldir = v1 - v0;
-                normaldir = new Vector2(normaldir.Y, 0f - normaldir.X);
-                ((Vector2)(normaldir)).Normalize();
-                float w = (Projectile.ai[0] == 400 ? 28 : 32f) * MathHelper.SmoothStep(0.8f, 0.1f, factor);
-                bars.Add(new VertexInfo(v1 + w * normaldir, Color.White, new Vector3(factor, 0f, 0f)));
-                bars.Add(new VertexInfo(v1 - w * normaldir, Color.White, new Vector3(factor, 1f, 0f)));
-            }
-            if (bars.Count > 2)
-            {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin((SpriteSortMode)1, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone);
-
-                Effect effect = OvermorrowModFile.Instance.Tentacle.Value;
-
-                Matrix projection = Matrix.CreateOrthographicOffCenter(0f, (float)Main.screenWidth, (float)Main.screenHeight, 0f, 0f, 1f);
-                Matrix model = Matrix.CreateTranslation(new Vector3(0f - Main.screenPosition.X, 0f - Main.screenPosition.Y, 0f)) * Main.GameViewMatrix.ZoomMatrix;
-
-                effect.Parameters[0].SetValue(model * projection);
-                effect.CurrentTechnique.Passes[0].Apply();
-
-                ((Game)Main.instance).GraphicsDevice.Textures[0] = (Texture)(object)ModContent.Request<Texture2D>(Texture, (AssetRequestMode)2).Value;
-                ((Game)Main.instance).GraphicsDevice.DrawUserPrimitives<VertexInfo>((PrimitiveType)1, bars.ToArray(), 0, bars.Count - 2);
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin((SpriteSortMode)0, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, (Effect)null, Main.GameViewMatrix.TransformationMatrix);
-            }
-            return false;
-        }
-
-        public override bool ShouldUpdatePosition()
-        {
-            return false;
-        }
-        float value;
         public override void AI()
         {
             for (int i = 0; i < 3; i++)
@@ -249,6 +214,43 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
         }
 
+        public override bool PreDraw(ref Color lightColor)
+        {
+            List<VertexInfo> bars = new List<VertexInfo>();
+            for (int i = 1; i < len; i++)
+            {
+                float factor = (float)i / (float)len;
+                Vector2 v0 = Projectile.Center + Utils.RotatedBy(new Vector2((float)(5 * (i - 1)), 0f), rots[i - 1]);
+                Vector2 v1 = Projectile.Center + Utils.RotatedBy(new Vector2((float)(5 * i), 0f), rots[i]);
+                Vector2 normaldir = v1 - v0;
+                normaldir = new Vector2(normaldir.Y, 0f - normaldir.X);
+                ((Vector2)(normaldir)).Normalize();
+                float w = (Projectile.ai[0] == 400 ? 28 : 32f) * MathHelper.SmoothStep(0.8f, 0.1f, factor);
+                bars.Add(new VertexInfo(v1 + w * normaldir, Color.Red, new Vector3(factor, 0f, 0f)));
+                bars.Add(new VertexInfo(v1 - w * normaldir, Color.Red, new Vector3(factor, 1f, 0f)));
+            }
+
+            if (bars.Count > 2)
+            {
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin((SpriteSortMode)1, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone);
+
+                Effect effect = OvermorrowModFile.Instance.Tentacle.Value;
+
+                Matrix projection = Matrix.CreateOrthographicOffCenter(0f, (float)Main.screenWidth, (float)Main.screenHeight, 0f, 0f, 1f);
+                Matrix model = Matrix.CreateTranslation(new Vector3(0f - Main.screenPosition.X, 0f - Main.screenPosition.Y, 0f)) * Main.GameViewMatrix.ZoomMatrix;
+
+                effect.Parameters[0].SetValue(model * projection);
+                effect.CurrentTechnique.Passes[0].Apply();
+
+                ((Game)Main.instance).GraphicsDevice.Textures[0] = (Texture)(object)ModContent.Request<Texture2D>(Texture, (AssetRequestMode)2).Value;
+                ((Game)Main.instance).GraphicsDevice.DrawUserPrimitives<VertexInfo>((PrimitiveType)1, bars.ToArray(), 0, bars.Count - 2);
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin((SpriteSortMode)0, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, (Effect)null, Main.GameViewMatrix.TransformationMatrix);
+            }
+            return false;
+        }
+
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             for (int i = 1; i < len; i++)
@@ -263,6 +265,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             return false;
         }
     }
+
     internal class SmolTentacle : ModProjectile
     {
         public override string Texture => AssetDirectory.Textures + "Laser";
@@ -330,8 +333,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 normaldir = new Vector2(normaldir.Y, 0f - normaldir.X);
                 ((Vector2)(normaldir)).Normalize();
                 float w = (Projectile.ai[0] == 400 ? 28 : 32f) * MathHelper.SmoothStep(0.8f, 0.1f, factor);
-                bars.Add(new VertexInfo(v1 + w * normaldir, Color.White, new Vector3(factor, 0f, 0f)));
-                bars.Add(new VertexInfo(v1 - w * normaldir, Color.White, new Vector3(factor, 1f, 0f)));
+                bars.Add(new VertexInfo(v1 + w * normaldir, Color.Red, new Vector3(factor, 0f, 0f)));
+                bars.Add(new VertexInfo(v1 - w * normaldir, Color.Red, new Vector3(factor, 1f, 0f)));
             }
             if (bars.Count > 2)
             {
