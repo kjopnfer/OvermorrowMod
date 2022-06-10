@@ -31,6 +31,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private bool TransitionPhase = false;
 
         private List<Projectile> TentacleList;
+        public List<Vector2> TrailPositions;
 
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
@@ -73,6 +74,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.type == NPCID.EyeofCthulhu)
             {
                 TentacleList = new List<Projectile>();
+                TrailPositions = new List<Vector2>();
 
                 npc.rotation = -MathHelper.PiOver2;
                 npc.ai[0] = (float)AIStates.Intro;
@@ -104,24 +106,38 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
-                // When the AI is set to -1, the NPC will not deal damage for 1.5 seconds
-                // This is set whenever they are spawned from the portals
-                if (npc.ai[0] == -1)
+                if (npc.ai[1] == 420)
                 {
-                    if (npc.ai[1]++ > 90) npc.ai[0] = 0;
-                }
-
-                foreach (NPC boss in Main.npc)
-                {
-                    if (!boss.active || boss.type != NPCID.EyeofCthulhu) continue;
-
-                    if (npc.Hitbox.Intersects(boss.Hitbox))
+                    NPC parent = Main.npc[(int)npc.ai[2]];
+                    if (parent.active && parent.type == NPCID.EyeofCthulhu)
                     {
-                        boss.HealEffect(npc.life);
-                        boss.life += npc.life;
+                        if (npc.ai[0]++ < parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions.Count - 1)
+                        {
+                            npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]];
+                        }
+                    }
+                }
+                else
+                {
+                    // When the AI is set to -1, the NPC will not deal damage for 1.5 seconds
+                    // This is set whenever they are spawned from the portals
+                    if (npc.ai[0] == -1)
+                    {
+                        if (npc.ai[1]++ > 90) npc.ai[0] = 0;
+                    }
 
-                        npc.HitEffect(0, npc.damage);
-                        npc.Kill();
+                    foreach (NPC boss in Main.npc)
+                    {
+                        if (!boss.active || boss.type != NPCID.EyeofCthulhu) continue;
+
+                        if (npc.Hitbox.Intersects(boss.Hitbox))
+                        {
+                            boss.HealEffect(npc.life);
+                            boss.life += npc.life;
+
+                            npc.HitEffect(0, npc.damage);
+                            npc.Kill();
+                        }
                     }
                 }
 
@@ -296,7 +312,29 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     break;
                 case (float)AIStates.Portal:
-                    if (npc.ai[1]++ == 0)
+                    if (npc.ai[1] == 0)
+                    {
+                        npc.velocity = Vector2.Zero;
+                        npc.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f;
+                    }
+                    // recording time
+                    if (npc.ai[1]++ < 480)
+                    {
+                        if (npc.ai[1] % 60 == 0)
+                        {
+                            npc.velocity = Vector2.Zero;
+                            npc.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f;
+                        }
+
+                        TrailPositions.Add(npc.Center);
+                    }
+
+                    if (npc.ai[1] == 480)
+                    {
+                        npc.velocity = Vector2.Zero;
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI);
+                    }
+                    /*if (npc.ai[1]++ == 0)
                     {
                         npc.velocity = Vector2.Zero;
                     }
@@ -320,26 +358,31 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     if (npc.ai[1] >= 450)
                     {
-                        npc.rotation += MathHelper.Lerp(0.09f, 0.03f, Utils.Clamp(npc.ai[1] - 450, 0, 120) / 120f);
+                        npc.rotation += MathHelper.Lerp(0.12f, 0.03f, Utils.Clamp(npc.ai[1] - 450, 0, 120) / 120f);
                     }
                     else
                     {
-                        npc.rotation += MathHelper.Lerp(0.03f, 0.09f, Utils.Clamp(npc.ai[1], 0, 120) / 120f);
+                        npc.rotation += MathHelper.Lerp(0.03f, 0.12f, Utils.Clamp(npc.ai[1], 0, 120) / 120f);
                     }
 
                     // From 240 to 420 is when the portal fully opens
                     // Hold for half a second
                     if (npc.ai[1] >= 420 + 30)
                     {
+                        npc.dontTakeDamage = true;
+                        npc.ShowNameOnHover = false;
 
                         // Close after a second
                         if (npc.ai[1] == 630)
                         {
+                            npc.ShowNameOnHover = true;
+                            npc.dontTakeDamage = false;
+
                             npc.ai[0] = (float)AIStates.Selector;
                             npc.ai[1] = 0;
                             npc.ai[2] = 0;
                         }
-                    }
+                    }*/
                     break;
                 case (float)AIStates.Minions:
                     if (npc.ai[1]++ == 0)
@@ -447,20 +490,22 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     return false;
                 case NPCID.EyeofCthulhu:
                     #region Portal
-                    if (npc.ai[0] == (float)AIStates.Portal && npc.ai[1] > 240)
+                    if (npc.ai[0] == (float)AIStates.Portal && npc.ai[1] > 200)
                     {
-                        scale = MathHelper.Lerp(0, 2.25f, Utils.Clamp(npc.ai[1] - 240, 0, 180) / 180f);
+                        scale = MathHelper.Lerp(0, 2.25f, Utils.Clamp(npc.ai[1] - 200, 0, 180) / 180f);
 
                         if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.25f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
 
+                        npc.localAI[1] += 0.065f;
+
                         texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
-                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, new Color(60, 3, 79), npc.rotation * 0.5f, texture.Size() / 2, scale, SpriteEffects.None, 0);
+                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, new Color(60, 3, 79), npc.localAI[1] * 0.5f, texture.Size() / 2, scale, SpriteEffects.None, 0);
 
                         texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
                         scale = MathHelper.Lerp(0, 2f, Utils.Clamp(npc.ai[1] - 240, 0, 180) / 180f);
                         if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.2f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
 
-                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Black, npc.rotation, texture.Size() / 2, scale, SpriteEffects.None, 0);
+                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Black, npc.localAI[1], texture.Size() / 2, scale, SpriteEffects.None, 0);
                     }
                     #endregion
 
@@ -469,7 +514,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (npc.ai[0] == (float)AIStates.Minions && npc.ai[1] > 120 && npc.ai[1] < 180)
                     {
                         int amount = 5;
-                        //float progress = (float)Math.Sin(npc.localAI[1]++ / 30f);
                         progress = Utils.Clamp(npc.ai[1] - 120f, 0, 60) / 60f;
 
                         for (int i = 0; i < amount; i++)
