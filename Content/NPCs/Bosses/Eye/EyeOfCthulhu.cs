@@ -98,6 +98,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Suck = 3
         }
 
+        Vector2 TrailOffset;
         // ai[0] - AI Case
         // ai[1] - AI Counter
         // ai[2] - Secondary AI Counter
@@ -108,12 +109,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             {
                 if (npc.ai[1] == 420)
                 {
+                    if (npc.ai[0] == 0)
+                    {
+                        TrailOffset = new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 15;
+                    }
+
                     NPC parent = Main.npc[(int)npc.ai[2]];
                     if (parent.active && parent.type == NPCID.EyeofCthulhu)
                     {
                         if (npc.ai[0]++ < parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions.Count - 1)
                         {
-                            npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]];
+                            npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]] + TrailOffset;
                         }
                     }
                 }
@@ -315,7 +321,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (npc.ai[1] == 0)
                     {
                         npc.velocity = Vector2.Zero;
-                        npc.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f;
+                        npc.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 3f;
                     }
                     // recording time
                     if (npc.ai[1]++ < 480)
@@ -323,7 +329,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         if (npc.ai[1] % 60 == 0)
                         {
                             npc.velocity = Vector2.Zero;
-                            npc.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f;
+                            npc.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 3f;
                         }
 
                         TrailPositions.Add(npc.Center);
@@ -333,6 +339,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         npc.velocity = Vector2.Zero;
                         NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI);
+                    }
+
+                    if (npc.ai[1] > 480 && npc.ai[1] % 5 == 0)
+                    {
+                        int RandomOffset = Main.rand.Next(-5, 5) * 10;
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
                     }
                     /*if (npc.ai[1]++ == 0)
                     {
