@@ -120,8 +120,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         if (npc.ai[0]++ < parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions.Count - 1)
                         {
                             npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]] + TrailOffset;
+                            npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
                         }
                     }
+
+                    // During the following state, we don't want the AI to run
+                    return false;
                 }
                 else
                 {
@@ -321,36 +325,41 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (npc.ai[1] == 0)
                     {
                         npc.velocity = Vector2.Zero;
-                        npc.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 3f;
+                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
                     }
+
                     // recording time
-                    if (npc.ai[1]++ < 480)
+                    //if (npc.ai[1]++ < 480)
                     {
-                        if (npc.ai[1] % 60 == 0)
+                        if (npc.ai[1]++ % 240 == 0)
                         {
+                            npc.Center = player.Center + new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 75;
                             npc.velocity = Vector2.Zero;
-                            npc.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 3f;
-                        }
+                            npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
 
-                        TrailPositions.Add(npc.Center);
+                            RotateDirection = Main.rand.NextBool() ? 1 : -1;
+                        }
                     }
 
-                    if (npc.ai[1] == 480)
+                    npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
+                    npc.velocity = npc.velocity.RotatedBy(0.012f * RotateDirection);
+
+                    TrailPositions.Add(npc.Center);
+
+                    /*if (npc.ai[1] == 480)
                     {
                         npc.velocity = Vector2.Zero;
                         NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI);
-                    }
+                    }*/
 
-                    if (npc.ai[1] > 480 && npc.ai[1] % 5 == 0)
+                    // Spawn NPCs after a delay
+                    if (npc.ai[1] > 60 && npc.ai[1] < 185 && npc.ai[1] % 5 == 0)
                     {
-                        int RandomOffset = Main.rand.Next(-5, 5) * 10;
+                        int RandomOffset = Main.rand.Next(-4, 4) * 10;
                         NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
                     }
-                    /*if (npc.ai[1]++ == 0)
-                    {
-                        npc.velocity = Vector2.Zero;
-                    }
 
+                    /*
                     if (npc.ai[1] > 45)
                     {
                         foreach (Projectile projectile in TentacleList)
@@ -471,6 +480,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
 
             return false;
+        }
+
+        public override bool CheckActive(NPC npc)
+        {
+            if (npc.type == NPCID.ServantofCthulhu)
+            {
+                return false;
+            }
+
+            return base.CheckActive(npc);
         }
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
