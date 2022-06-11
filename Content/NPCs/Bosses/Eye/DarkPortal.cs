@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using System;
+using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 
@@ -250,4 +252,97 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         }
     }
 
+    public class EyePortal : ModProjectile
+    {
+        public override string Texture => AssetDirectory.Empty;
+        public override bool ShouldUpdatePosition() => false;
+        public override void SetDefaults()
+        {
+            Projectile.width = Projectile.height = 256;
+            Projectile.aiStyle = -1;
+            Projectile.friendly = false;
+            Projectile.tileCollide = false;
+            Projectile.hostile = true;
+            Projectile.timeLeft = (int)Projectile.ai[0];
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            // I don't know why the SetDefault wasn't working lol
+            Projectile.timeLeft = (int)Projectile.ai[0];
+        }
+
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            Projectile.hide = true;
+            behindNPCs.Add(index);
+        }
+
+        public override void AI()
+        {
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+
+            if (Projectile.timeLeft < 30)
+            {
+                Projectile.localAI[0]--;
+            }
+            else
+            {
+                if (Projectile.localAI[0] < 25)
+                {
+                    Projectile.localAI[0]++;
+                }
+            }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Vector2 offset = Vector2.UnitY.RotatedBy(Projectile.rotation);
+            float progress2 = Utils.Clamp(Projectile.localAI[0], 0, 25f) / 25f;
+
+            DrawRing(AssetDirectory.Textures + "Vortex2", Main.spriteBatch, Projectile.Center - offset * 40f, 8f, 8f, Main.GameUpdateCount / 20f, progress2, new Color(60, 3, 79));
+            DrawRing(AssetDirectory.Textures + "Vortex2", Main.spriteBatch, Projectile.Center - offset * 40f, 8f, 8f, Main.GameUpdateCount / 20f, progress2, new Color(60, 3, 79));
+            DrawRing(AssetDirectory.Textures + "VortexCenter", Main.spriteBatch, Projectile.Center - offset * 40f, 6f, 6f, Main.GameUpdateCount / 40f, progress2, Color.Black);
+
+            return false;
+        }
+
+
+        private void DrawRing(string texture, SpriteBatch spriteBatch, Vector2 position, float width, float height, float rotation, float prog, Color color)
+        {
+            var texRing = ModContent.Request<Texture2D>(texture).Value;
+            Effect effect = OvermorrowModFile.Instance.Ring.Value;
+
+            effect.Parameters["uTime"].SetValue(rotation);
+            effect.Parameters["cosine"].SetValue((float)Math.Cos(rotation));
+            effect.Parameters["uColor"].SetValue(color.ToVector3());
+            effect.Parameters["uImageSize1"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
+            effect.Parameters["uOpacity"].SetValue(prog);
+            effect.CurrentTechnique.Passes["BowRingPass"].Apply();
+
+            // The portal center doesn't actually move because the shader will break the texture
+            if (texture == AssetDirectory.Textures + "VortexCenter")
+            {
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+
+                var target = ModUtils.toRect(position, (int)(16 * (width + prog)), (int)(60 * (height + prog)));
+                spriteBatch.Draw(texRing, target, null, color * prog, Projectile.rotation + MathHelper.PiOver2 * 3, texRing.Size() / 2, 0, 0);
+
+                spriteBatch.End();
+                spriteBatch.Begin(default, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
+            }
+            else
+            {
+                spriteBatch.End();
+                spriteBatch.Begin(default, BlendState.Additive, default, default, default, effect, Main.GameViewMatrix.ZoomMatrix);
+
+                var target = ModUtils.toRect(position, (int)(16 * (width + prog)), (int)(60 * (height + prog)));
+                spriteBatch.Draw(texRing, target, null, color * prog, Projectile.rotation + MathHelper.PiOver2 * 3, texRing.Size() / 2, 0, 0);
+
+                spriteBatch.End();
+                spriteBatch.Begin(default, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
+            }
+        }
+    }
 }

@@ -304,7 +304,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                     }
 
-                    if (npc.ai[1] % 360 == 0)
+                    if (npc.ai[1] % 60 == 0)
                     {
                         RotateDirection = Main.rand.NextBool() ? 1 : -1;
                     }
@@ -333,13 +333,43 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         if (npc.ai[1]++ % 240 == 0)
                         {
-                            npc.Center = player.Center + new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 75;
+                            npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-6, 5) + 1) * 75;
                             npc.velocity = Vector2.Zero;
                             npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
 
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
+
                             RotateDirection = Main.rand.NextBool() ? 1 : -1;
+
+                            // Predict where the boss will end up a second before it does
+                            Vector2 simulatedPosition = npc.Center;
+                            Vector2 simulatedVelocity = npc.velocity;
+
+                            // i am 60 parallel worlds ahead of you
+                            for (int i = 0; i < 240; i++)
+                            {
+                                simulatedVelocity = simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                                simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                            }
+
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 480);
                         }
                     }
+
+                    /*if (npc.ai[1]++ % 215 == 0)
+                    {
+                        Vector2 simulatedPosition = npc.Center;
+                        Vector2 simulatedVelocity = npc.velocity;
+
+                        // i am 60 parallel worlds ahead of you
+                        for (int i = 0; i < 25; i++)
+                        {
+                            simulatedPosition += npc.velocity.RotatedBy(0.012f * RotateDirection);
+                            simulatedVelocity = simulatedVelocity.RotatedByRandom(0.012f * RotateDirection);
+                        }
+
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer);
+                    }*/
 
                     npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
                     npc.velocity = npc.velocity.RotatedBy(0.012f * RotateDirection);
