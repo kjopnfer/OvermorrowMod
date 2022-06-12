@@ -29,6 +29,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private Vector2 InitialPosition;
 
         private bool TransitionPhase = false;
+        private bool SpawnServants = true;
 
         private List<Projectile> TentacleList;
         public List<Vector2> TrailPositions;
@@ -85,6 +86,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 npc.localAI[2] = 0;
             }
 
+            if (npc.type == NPCID.ServantofCthulhu)
+            {
+                if (npc.ai[1] == 420)
+                {
+                    npc.alpha = 255;
+                }
+            }
+
             base.OnSpawn(npc, source);
         }
 
@@ -124,6 +133,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                     }
 
+                    foreach (Projectile projectile in Main.projectile)
+                    {
+                        if (projectile.type != ModContent.ProjectileType<EyePortal>() || !projectile.active) continue;
+
+                        if (npc.Hitbox.Intersects(projectile.Hitbox))
+                        {
+                            if (npc.alpha >= 255) npc.alpha = 255;
+                            if (npc.alpha <= 0) npc.alpha = 0;
+
+                            // Entrance portal makes them fade in
+                            if (projectile.ai[0] == 240)
+                            {
+                                if (npc.alpha > 0) npc.alpha -= 10;
+                            }
+
+                            // The exit portal should make them fade out
+                            if (projectile.ai[0] == 480)
+                            {
+                                if (npc.alpha < 255) npc.alpha += 10;
+                            }
+                        }
+                    }
+
+
                     // During the following state, we don't want the AI to run
                     return false;
                 }
@@ -155,6 +188,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
 
             if (npc.type != NPCID.EyeofCthulhu) return true;
+
+            if (npc.alpha >= 255) npc.alpha = 255;
+            if (npc.alpha <= 0) npc.alpha = 0;
 
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
@@ -322,16 +358,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     break;
                 case (float)AIStates.Portal:
-                    if (npc.ai[1] == 0)
-                    {
-                        npc.velocity = Vector2.Zero;
-                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
-                    }
+                    // Launches towards the player before curving in a random direction. Will spawn a portal at the initial position it teleports
+                    // Then simulates the entire path to place an end portal. Records the position of the eye as it travels in order for the minions
+                    // to read and follow. At the end of each cycle, it will reset the AI Timer (npc.ai[1]) to zero.
 
-                    // recording time
-                    //if (npc.ai[1]++ < 480)
+                    if (npc.ai[1]++ == 0)
                     {
-                        if (npc.ai[1]++ % 240 == 0)
+                        npc.alpha = 255;
+
+                        //if (npc.ai[1]++ % 240 == 0)
                         {
                             npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-6, 5) + 1) * 75;
                             npc.velocity = Vector2.Zero;
@@ -348,7 +383,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             // i am 60 parallel worlds ahead of you
                             for (int i = 0; i < 240; i++)
                             {
-                                simulatedVelocity = simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                                if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+
                                 simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
                             }
 
@@ -356,34 +392,32 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                     }
 
-                    /*if (npc.ai[1]++ % 215 == 0)
+                    // TODO: SHRINK AND GROW TENTACLES WHEN MOVING IN AND OUT OF PORTALS
+
+                    if (npc.ai[1] == 240)
                     {
-                        Vector2 simulatedPosition = npc.Center;
-                        Vector2 simulatedVelocity = npc.velocity;
+                        npc.ai[1] = 0;
 
-                        // i am 60 parallel worlds ahead of you
-                        for (int i = 0; i < 25; i++)
-                        {
-                            simulatedPosition += npc.velocity.RotatedBy(0.012f * RotateDirection);
-                            simulatedVelocity = simulatedVelocity.RotatedByRandom(0.012f * RotateDirection);
-                        }
-
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer);
-                    }*/
+                        // Set it to false so it doesn't run through multiple attack cycles
+                        SpawnServants = false;
+                    }
 
                     npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
-                    npc.velocity = npc.velocity.RotatedBy(0.012f * RotateDirection);
+                    if (npc.ai[1] > 60)
+                    {
+                        if (npc.ai[1] > 210) npc.alpha += 10;
+
+                        npc.velocity = npc.velocity.RotatedBy(0.012f * RotateDirection);
+                    }
+                    else
+                    {
+                        npc.alpha -= 10;
+                    }
 
                     TrailPositions.Add(npc.Center);
 
-                    /*if (npc.ai[1] == 480)
-                    {
-                        npc.velocity = Vector2.Zero;
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI);
-                    }*/
-
                     // Spawn NPCs after a delay
-                    if (npc.ai[1] > 60 && npc.ai[1] < 185 && npc.ai[1] % 5 == 0)
+                    if (npc.ai[1] > 60 && npc.ai[1] < 185 && npc.ai[1] % 5 == 0 && SpawnServants)
                     {
                         int RandomOffset = Main.rand.Next(-4, 4) * 10;
                         NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
@@ -525,6 +559,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture;
+            Color color;
             float progress;
             float scale;
 
@@ -544,7 +579,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         //effect.CurrentTechnique.Passes["Whiteout"].Apply();
                     }
 
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, drawColor, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                    color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
+
+                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, color, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
                     spriteBatch.Reload(SpriteSortMode.Deferred);
 
@@ -585,7 +622,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                     }
 
-                    Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
+                    color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
                     spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
                     return false;
