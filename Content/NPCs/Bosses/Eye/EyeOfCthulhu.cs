@@ -21,6 +21,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         bool Temp = true;
 
         private int MoveDirection = 1;
+        private float turnResistance;
 
         private float InitialRotation;
         private int TearDirection = 1;
@@ -294,7 +295,35 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     break;
                 case (float)AIStates.Intro:
                     // Long tentacles
-                    for (int i = 0; i <= 3; i++)
+
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
+                        Projectile proj = Main.projectile[projectileIndex];
+                        if (proj.ModProjectile is EyeTentacle tentacle)
+                        {
+                            tentacle.value = Main.rand.Next(0, 3) * 50;
+                            tentacle.parentID = npc.whoAmI;
+                        }
+
+                        TentacleList.Add(proj);
+                    }
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, -Main.rand.NextFloat(2.5f, 3.75f));
+                        Projectile proj = Main.projectile[projectileIndex];
+                        if (proj.ModProjectile is EyeTentacle tentacle)
+                        {
+                            tentacle.value = Main.rand.Next(0, 3) * 50;
+                            tentacle.parentID = npc.whoAmI;
+                        }
+
+                        TentacleList.Add(proj);
+                    }
+
+                    /*for (int i = 0; i <= 3; i++)
                     {
                         int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
                         Projectile proj = Main.projectile[projectileIndex];
@@ -319,7 +348,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
 
                         TentacleList.Add(proj);
-                    }
+                    }*/
 
                     npc.ai[0] = (float)AIStates.Selector;
                     break;
@@ -362,9 +391,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     // Then simulates the entire path to place an end portal. Records the position of the eye as it travels in order for the minions
                     // to read and follow. At the end of each cycle, it will reset the AI Timer (npc.ai[1]) to zero.
 
+                    // Flying outside the portal and spawning the end-portal
                     if (npc.ai[1]++ == 0)
                     {
                         npc.alpha = 255;
+
+                        // TEMPORARY REMOVE LATER
+                        foreach (Projectile projectile in TentacleList)
+                        {
+                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            {
+                                tentacle.lockGrow = true;
+                                tentacle.length = 0;
+                            }
+                        }
 
                         //if (npc.ai[1]++ % 240 == 0)
                         {
@@ -381,9 +421,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             Vector2 simulatedVelocity = npc.velocity;
 
                             // i am 60 parallel worlds ahead of you
+
+                            turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
                             for (int i = 0; i < 240; i++)
                             {
-                                if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                                if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
 
                                 simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
                             }
@@ -393,6 +435,27 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
 
                     // TODO: SHRINK AND GROW TENTACLES WHEN MOVING IN AND OUT OF PORTALS
+                    if (npc.ai[1] < 45)
+                    {
+                        foreach (Projectile projectile in TentacleList)
+                        {
+                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            {
+                                if (npc.localAI[3]++ % 3 == 0) tentacle.length += 5;
+                            }
+                        }
+                    }
+
+                    if (npc.ai[1] > 185)
+                    {
+                        foreach (Projectile projectile in TentacleList)
+                        {
+                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            {
+                                if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length -= 5;
+                            }
+                        }
+                    }
 
                     if (npc.ai[1] == 240)
                     {
@@ -405,13 +468,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
                     if (npc.ai[1] > 60)
                     {
-                        if (npc.ai[1] > 210) npc.alpha += 10;
+                        if (npc.ai[1] > 225) npc.alpha += 15;
 
-                        npc.velocity = npc.velocity.RotatedBy(0.012f * RotateDirection);
+                        npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
                     }
                     else
                     {
-                        npc.alpha -= 10;
+                        npc.alpha -= 15;
                     }
 
                     TrailPositions.Add(npc.Center);
