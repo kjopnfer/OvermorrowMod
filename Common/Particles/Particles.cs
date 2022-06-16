@@ -603,7 +603,7 @@ namespace OvermorrowMod.Common.Particles
         }
     }
 
-    public class Shockwave2 : CustomParticle
+    public class Shockwave : CustomParticle
     {
         public override string Texture => AssetDirectory.Textures + "Perlin";
         public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
