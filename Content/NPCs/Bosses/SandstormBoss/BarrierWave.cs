@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 {
                     if (Projectile.Hitbox.Intersects(proj.Hitbox))
                     {
-                        Particle.CreateParticle(Particle.ParticleType<Shockwave2>(), proj.Center, Vector2.Zero, Color.Yellow, 1, 2f);
+                        Particle.CreateParticle(Particle.ParticleType<Shockwave>(), proj.Center, Vector2.Zero, Color.Yellow, 1, 2f);
 
                         foreach (Player player in Main.player)
                         {

@@ -29,6 +29,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private int RotateDirection = 1;
         private Vector2 InitialPosition;
 
+        private int IntroPortal = 0;
+
         private bool TransitionPhase = false;
         private bool SpawnServants = true;
 
@@ -157,7 +159,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                     }
 
-
                     // During the following state, we don't want the AI to run
                     return false;
                 }
@@ -192,6 +193,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (npc.alpha >= 255) npc.alpha = 255;
             if (npc.alpha <= 0) npc.alpha = 0;
+            if (npc.life > npc.lifeMax) npc.life = npc.lifeMax;
 
             npc.TargetClosest(true);
             Player player = Main.player[npc.target];
@@ -229,8 +231,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Filters.Scene["Flash"].GetShader().UseIntensity(progress);
                 }
             }*/
-
-            if (npc.life > npc.lifeMax) npc.life = npc.lifeMax;
 
             if (npc.life <= npc.lifeMax * 0.5f && !TransitionPhase)
             {
@@ -294,65 +294,188 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Transition(npc, player);
                     break;
                 case (float)AIStates.Intro:
-                    // Long tentacles
-
-
-                    for (int i = 0; i < 2; i++)
+                    // Increase the darkness of the screen
+                    if (npc.ai[3] < 1f && !TransitionPhase)
                     {
-                        int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
-                        Projectile proj = Main.projectile[projectileIndex];
-                        if (proj.ModProjectile is EyeTentacle tentacle)
+                        npc.ai[3] += 0.05f;
+                    }
+                    else
+                    {
+                        // The NPC can only start the timer after achieving complete darkness once
+                        if (npc.ai[1]++ == 0)
                         {
-                            tentacle.value = Main.rand.Next(0, 3) * 50;
-                            tentacle.parentID = npc.whoAmI;
-                        }
+                            npc.velocity = Vector2.Zero;
 
-                        TentacleList.Add(proj);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
+                                Projectile proj = Main.projectile[projectileIndex];
+                                if (proj.ModProjectile is EyeTentacle tentacle)
+                                {
+                                    tentacle.value = Main.rand.Next(0, 3) * 50;
+                                    tentacle.parentID = npc.whoAmI;
+                                }
+
+                                TentacleList.Add(proj);
+                            }
+
+                            for (int i = 0; i < 2; i++)
+                            {
+                                int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, -Main.rand.NextFloat(2.5f, 3.75f));
+                                Projectile proj = Main.projectile[projectileIndex];
+                                if (proj.ModProjectile is EyeTentacle tentacle)
+                                {
+                                    tentacle.value = Main.rand.Next(0, 3) * 50;
+                                    tentacle.parentID = npc.whoAmI;
+                                }
+
+                                TentacleList.Add(proj);
+                            }
+
+                            TransitionPhase = true;
+                        }
                     }
 
-                    for (int i = 0; i < 2; i++)
+                    // Darkness eye attack
+                    if (npc.ai[1] % 15 == 0 && npc.ai[1] < 540 && TransitionPhase)
                     {
-                        int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, -Main.rand.NextFloat(2.5f, 3.75f));
-                        Projectile proj = Main.projectile[projectileIndex];
-                        if (proj.ModProjectile is EyeTentacle tentacle)
-                        {
-                            tentacle.value = Main.rand.Next(0, 3) * 50;
-                            tentacle.parentID = npc.whoAmI;
-                        }
+                        Vector2 RandomPosition = player.Center + new Vector2(Main.rand.Next(-9, 7) + 1, Main.rand.Next(-7, 5) + 1) * 75;
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
 
-                        TentacleList.Add(proj);
+                        if (Main.rand.NextBool(4))
+                        {
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), player.position, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
+                        }
                     }
 
-                    /*for (int i = 0; i <= 3; i++)
+                    // After 750 ticks, the NPC has finished the Darkness attack and transitions into the portal intro
+                    if (npc.ai[1] >= /*870*/750)
                     {
-                        int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
-                        Projectile proj = Main.projectile[projectileIndex];
-                        if (proj.ModProjectile is EyeTentacle tentacle)
+                        // Decreases the darkness of the screen
+                        if (npc.ai[3] > 0)
                         {
-                            tentacle.value = Main.rand.Next(0, 3) * 50;
-                            tentacle.parentID = npc.whoAmI;
+                            npc.ai[3] -= 0.05f;
                         }
+                        else
+                        {
+                            // After the screen has been undarkened, pan the camera over to the eye movement
+                            if (npc.ai[2]++ == 0)
+                            {
+                                npc.Center = player.Center + new Vector2(500, -500);
+                                foreach (Player cameraPlayer in Main.player)
+                                {
+                                    if (npc.Distance(cameraPlayer.Center) < 900)
+                                    {
+                                        cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 4200, 120, 120);
+                                    }
+                                }
+                            }
 
-                        TentacleList.Add(proj);
+                            // Start the portal intro going to the left
+                            if (npc.ai[2] >= 120)
+                            {
+                                #region Portal Trail
+
+                                // Flying outside the portal and spawning the end-portal
+                                if (npc.ai[2] == 120)
+                                {
+                                    if (IntroPortal == 1) npc.Center = player.Center - new Vector2(500, -500);
+
+                                    npc.alpha = 255;
+                                    npc.velocity = Vector2.UnitX.RotatedBy(MathHelper.PiOver4) * 6f * (IntroPortal == 1 ? 1 : -1);
+
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
+
+                                    RotateDirection = Main.rand.NextBool() ? 1 : -1;
+
+                                    // Predict where the boss will end up a second before it does
+                                    Vector2 simulatedPosition = npc.Center;
+                                    Vector2 simulatedVelocity = npc.velocity;
+
+                                    turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
+
+                                    // i am 60 parallel worlds ahead of you
+                                    for (int i = 0; i < 240; i++)
+                                    {
+                                        if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
+
+                                        simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                                    }
+
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 450);
+                                }
+
+                                #region Tentacle Growth
+                                if (npc.ai[2] < 120 + 45)
+                                {
+                                    foreach (Projectile projectile in TentacleList)
+                                    {
+                                        if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                                        {
+                                            if (npc.localAI[3]++ % 3 == 0) tentacle.length += 5;
+                                        }
+                                    }
+                                }
+
+                                if (npc.ai[2] > 120 + 185)
+                                {
+                                    foreach (Projectile projectile in TentacleList)
+                                    {
+                                        if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                                        {
+                                            if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length -= 5;
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                if (npc.ai[2] == 120 + 240)
+                                {
+                                    npc.ai[2] = 120;
+
+                                    // Set it to false so it doesn't run through multiple attack cycles
+                                    SpawnServants = false;
+                                }
+
+                                npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
+                                if (npc.ai[2] > 120 + 60)
+                                {
+                                    if (npc.ai[2] > 120 + 225) npc.alpha += 15;
+
+                                    npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
+                                }
+                                else
+                                {
+                                    npc.alpha -= 15;
+                                }
+
+                                TrailPositions.Add(npc.Center);
+
+                                // Spawn NPCs after a delay
+                                if (npc.ai[2] > 120 + 60 && npc.ai[2] < 120 + 185 && npc.ai[2] % 5 == 0 && SpawnServants)
+                                {
+                                    int RandomOffset = Main.rand.Next(-4, 4) * 10;
+                                    NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
+                                }
+                                #endregion
+                            }
+
+                            /*if (npc.ai[2] == 120 + 240)
+                            {
+                                TrailPositions.Clear();
+                                npc.ai[0] = (float)AIStates.Selector;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                            }*/
+                        }
                     }
 
-                    // Short tentacles
-                    for (int i = 0; i <= 3; i++)
-                    {
-                        int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(2, 4) * 15, Main.rand.NextFloat(4f, 5f));
-                        Projectile proj = Main.projectile[projectileIndex];
-                        if (proj.ModProjectile is EyeTentacle tentacle)
-                        {
-                            tentacle.value = Main.rand.Next(0, 3) * 50;
-                            tentacle.parentID = npc.whoAmI;
-                        }
-
-                        TentacleList.Add(proj);
-                    }*/
-
-                    npc.ai[0] = (float)AIStates.Selector;
+                    /*
+                    
+                    */
                     break;
                 case (float)AIStates.Selector:
+                    #region temp
                     if (++npc.ai[1] % 120 == 0)
                     {
                         if (Main.rand.NextBool())
@@ -384,153 +507,152 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         npc.ai[1] = 0;
                     }
-
+                    #endregion
                     break;
                 case (float)AIStates.Portal:
                     // Launches towards the player before curving in a random direction. Will spawn a portal at the initial position it teleports
                     // Then simulates the entire path to place an end portal. Records the position of the eye as it travels in order for the minions
                     // to read and follow. At the end of each cycle, it will reset the AI Timer (npc.ai[1]) to zero.
-
-                    // Flying outside the portal and spawning the end-portal
-                    if (npc.ai[1]++ == 0)
+                    #region Portal Spin
+                    if (npc.ai[1] < 630)
                     {
-                        npc.alpha = 255;
+                        if (npc.ai[1]++ == 0) npc.velocity = Vector2.Zero;
 
-                        // TEMPORARY REMOVE LATER
-                        foreach (Projectile projectile in TentacleList)
+                        if (npc.ai[1] > 45)
                         {
-                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            foreach (Projectile projectile in TentacleList)
                             {
-                                tentacle.lockGrow = true;
-                                tentacle.length = 0;
+                                if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                                {
+                                    tentacle.lockGrow = true;
+                                    if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length--;
+                                }
                             }
                         }
 
-                        //if (npc.ai[1]++ % 240 == 0)
+                        if (npc.ai[1] > 300 && npc.alpha < 255)
                         {
-                            npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-6, 5) + 1) * 75;
-                            npc.velocity = Vector2.Zero;
-                            npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
-
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
-
-                            RotateDirection = Main.rand.NextBool() ? 1 : -1;
-
-                            // Predict where the boss will end up a second before it does
-                            Vector2 simulatedPosition = npc.Center;
-                            Vector2 simulatedVelocity = npc.velocity;
-
-                            // i am 60 parallel worlds ahead of you
-
-                            turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
-                            for (int i = 0; i < 240; i++)
-                            {
-                                if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
-
-                                simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
-                            }
-
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 480);
+                            npc.alpha += 5;
                         }
-                    }
 
-                    // TODO: SHRINK AND GROW TENTACLES WHEN MOVING IN AND OUT OF PORTALS
-                    if (npc.ai[1] < 45)
-                    {
-                        foreach (Projectile projectile in TentacleList)
+                        if (npc.ai[1] >= 450)
                         {
-                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            npc.rotation += MathHelper.Lerp(0.12f, 0.03f, Utils.Clamp(npc.ai[1] - 450, 0, 120) / 120f);
+                        }
+                        else
+                        {
+                            npc.rotation += MathHelper.Lerp(0.03f, 0.12f, Utils.Clamp(npc.ai[1], 0, 120) / 120f);
+                        }
+
+                        // From 240 to 420 is when the portal fully opens
+                        // Hold for half a second
+                        if (npc.ai[1] >= 420 + 30)
+                        {
+                            npc.dontTakeDamage = true;
+                            npc.ShowNameOnHover = false;
+
+                            // Close after a second
+                            if (npc.ai[1] == 630)
                             {
-                                if (npc.localAI[3]++ % 3 == 0) tentacle.length += 5;
+                                npc.ShowNameOnHover = true;
+                                npc.dontTakeDamage = false;
+
                             }
                         }
                     }
+                    #endregion
 
-                    if (npc.ai[1] > 185)
+                    #region Portal Trail
+                    if (npc.ai[1] >= 630)
                     {
-                        foreach (Projectile projectile in TentacleList)
+                        // Flying outside the portal and spawning the end-portal
+                        if (npc.ai[1]++ == 630)
                         {
-                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            npc.alpha = 255;
+
+                            //if (npc.ai[1]++ % 240 == 0)
                             {
-                                if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length -= 5;
+                                npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-6, 5) + 1) * 75;
+                                npc.velocity = Vector2.Zero;
+                                npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
+
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
+
+                                RotateDirection = Main.rand.NextBool() ? 1 : -1;
+
+                                // Predict where the boss will end up a second before it does
+                                Vector2 simulatedPosition = npc.Center;
+                                Vector2 simulatedVelocity = npc.velocity;
+
+                                // i am 60 parallel worlds ahead of you
+
+                                turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
+                                for (int i = 0; i < 240; i++)
+                                {
+                                    if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
+
+                                    simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                                }
+
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 450);
                             }
                         }
-                    }
 
-                    if (npc.ai[1] == 240)
-                    {
-                        npc.ai[1] = 0;
-
-                        // Set it to false so it doesn't run through multiple attack cycles
-                        SpawnServants = false;
-                    }
-
-                    npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
-                    if (npc.ai[1] > 60)
-                    {
-                        if (npc.ai[1] > 225) npc.alpha += 15;
-
-                        npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
-                    }
-                    else
-                    {
-                        npc.alpha -= 15;
-                    }
-
-                    TrailPositions.Add(npc.Center);
-
-                    // Spawn NPCs after a delay
-                    if (npc.ai[1] > 60 && npc.ai[1] < 185 && npc.ai[1] % 5 == 0 && SpawnServants)
-                    {
-                        int RandomOffset = Main.rand.Next(-4, 4) * 10;
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
-                    }
-
-                    /*
-                    if (npc.ai[1] > 45)
-                    {
-                        foreach (Projectile projectile in TentacleList)
+                        #region Tentacle Growth
+                        if (npc.ai[1] < 630 + 45)
                         {
-                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            foreach (Projectile projectile in TentacleList)
                             {
-                                tentacle.lockGrow = true;
-                                if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length--;
+                                if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                                {
+                                    if (npc.localAI[3]++ % 3 == 0) tentacle.length += 5;
+                                }
                             }
                         }
-                    }
 
-                    if (npc.ai[1] > 300 && npc.alpha < 255)
-                    {
-                        npc.alpha += 5;
-                    }
-
-                    if (npc.ai[1] >= 450)
-                    {
-                        npc.rotation += MathHelper.Lerp(0.12f, 0.03f, Utils.Clamp(npc.ai[1] - 450, 0, 120) / 120f);
-                    }
-                    else
-                    {
-                        npc.rotation += MathHelper.Lerp(0.03f, 0.12f, Utils.Clamp(npc.ai[1], 0, 120) / 120f);
-                    }
-
-                    // From 240 to 420 is when the portal fully opens
-                    // Hold for half a second
-                    if (npc.ai[1] >= 420 + 30)
-                    {
-                        npc.dontTakeDamage = true;
-                        npc.ShowNameOnHover = false;
-
-                        // Close after a second
-                        if (npc.ai[1] == 630)
+                        if (npc.ai[1] > 630 + 185)
                         {
-                            npc.ShowNameOnHover = true;
-                            npc.dontTakeDamage = false;
-
-                            npc.ai[0] = (float)AIStates.Selector;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
+                            foreach (Projectile projectile in TentacleList)
+                            {
+                                if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                                {
+                                    if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length -= 5;
+                                }
+                            }
                         }
-                    }*/
+                        #endregion
+
+                        if (npc.ai[1] == 630 + 240)
+                        {
+                            npc.ai[1] = 630;
+
+                            // Set it to false so it doesn't run through multiple attack cycles
+                            SpawnServants = false;
+                        }
+
+                        npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
+                        if (npc.ai[1] > 630 + 60)
+                        {
+                            if (npc.ai[1] > 630 + 225) npc.alpha += 15;
+
+                            npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
+                        }
+                        else
+                        {
+                            npc.alpha -= 15;
+                        }
+
+                        TrailPositions.Add(npc.Center);
+
+                        // Spawn NPCs after a delay
+                        if (npc.ai[1] > 630 + 60 && npc.ai[1] < 630 + 185 && npc.ai[1] % 5 == 0 && SpawnServants)
+                        {
+                            int RandomOffset = Main.rand.Next(-4, 4) * 10;
+                            NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
+                        }
+                    }
+                    #endregion
+
                     break;
                 case (float)AIStates.Minions:
                     if (npc.ai[1]++ == 0)
