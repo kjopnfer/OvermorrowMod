@@ -29,7 +29,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private int RotateDirection = 1;
         private Vector2 InitialPosition;
 
-        private int IntroPortal = 0;
+        private bool PIZZATIME = true;
+        private int PortalRuns = 0;
 
         private bool TransitionPhase = false;
         private bool SpawnServants = true;
@@ -79,6 +80,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             {
                 TentacleList = new List<Projectile>();
                 TrailPositions = new List<Vector2>();
+
+                for (int i = 0; i < 2; i++)
+                {
+                    int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, 105, Main.rand.NextFloat(2.5f, 3.75f));
+                    Projectile proj = Main.projectile[projectileIndex];
+                    if (proj.ModProjectile is EyeTentacle tentacle)
+                    {
+                        tentacle.parentID = npc.whoAmI;
+                    }
+
+                    TentacleList.Add(proj);
+                }
+
+                for (int i = 0; i < 2; i++)
+                {
+                    int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, 105, -Main.rand.NextFloat(2.5f, 3.75f));
+                    Projectile proj = Main.projectile[projectileIndex];
+                    if (proj.ModProjectile is EyeTentacle tentacle)
+                    {
+                        tentacle.parentID = npc.whoAmI;
+                    }
+
+                    TentacleList.Add(proj);
+                }
 
                 npc.rotation = -MathHelper.PiOver2;
                 npc.ai[0] = (float)AIStates.Intro;
@@ -152,7 +177,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
 
                             // The exit portal should make them fade out
-                            if (projectile.ai[0] == 480)
+                            if (projectile.ai[0] == 450)
                             {
                                 if (npc.alpha < 255) npc.alpha += 10;
                             }
@@ -232,7 +257,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
             }*/
 
-            if (npc.life <= npc.lifeMax * 0.5f && !TransitionPhase)
+            /*if (npc.life <= npc.lifeMax * 0.5f && !TransitionPhase)
             {
                 npc.dontTakeDamage = true;
                 npc.velocity = Vector2.Zero;
@@ -248,7 +273,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.ai[1] = 0;
                     npc.ai[2] = 0;
                 }
-            }
+            }*/
 
             var normalizedRotation = npc.rotation % MathHelper.TwoPi;
 
@@ -283,7 +308,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 {
                     if (playerAngle >= lowerAngle && playerAngle <= upperAngle && player.direction == -npc.direction)
                     {
-                        targetPlayer.AddBuff(ModContent.BuffType<Paralyzed>(), 360);
+                        //targetPlayer.AddBuff(ModContent.BuffType<Paralyzed>(), 360);
                     }
                 }
             }
@@ -305,33 +330,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         if (npc.ai[1]++ == 0)
                         {
                             npc.velocity = Vector2.Zero;
-
-                            for (int i = 0; i < 2; i++)
-                            {
-                                int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, Main.rand.NextFloat(2.5f, 3.75f));
-                                Projectile proj = Main.projectile[projectileIndex];
-                                if (proj.ModProjectile is EyeTentacle tentacle)
-                                {
-                                    tentacle.value = Main.rand.Next(0, 3) * 50;
-                                    tentacle.parentID = npc.whoAmI;
-                                }
-
-                                TentacleList.Add(proj);
-                            }
-
-                            for (int i = 0; i < 2; i++)
-                            {
-                                int projectileIndex = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<EyeTentacle>(), 0, 0f, Main.myPlayer, Main.rand.Next(5, 7) * 15, -Main.rand.NextFloat(2.5f, 3.75f));
-                                Projectile proj = Main.projectile[projectileIndex];
-                                if (proj.ModProjectile is EyeTentacle tentacle)
-                                {
-                                    tentacle.value = Main.rand.Next(0, 3) * 50;
-                                    tentacle.parentID = npc.whoAmI;
-                                }
-
-                                TentacleList.Add(proj);
-                            }
-
                             TransitionPhase = true;
                         }
                     }
@@ -352,127 +350,28 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (npc.ai[1] >= /*870*/750)
                     {
                         // Decreases the darkness of the screen
-                        if (npc.ai[3] > 0)
+                        /*if (npc.ai[3] > 0)
                         {
+                            npc.alpha = 255;
                             npc.ai[3] -= 0.05f;
                         }
-                        else
+                        else*/
                         {
-                            // After the screen has been undarkened, pan the camera over to the eye movement
-                            if (npc.ai[2]++ == 0)
-                            {
-                                npc.Center = player.Center + new Vector2(500, -500);
-                                foreach (Player cameraPlayer in Main.player)
-                                {
-                                    if (npc.Distance(cameraPlayer.Center) < 900)
-                                    {
-                                        cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 4200, 120, 120);
-                                    }
-                                }
-                            }
 
-                            // Start the portal intro going to the left
-                            if (npc.ai[2] >= 120)
-                            {
-                                #region Portal Trail
 
-                                // Flying outside the portal and spawning the end-portal
-                                if (npc.ai[2] == 120)
-                                {
-                                    if (IntroPortal == 1) npc.Center = player.Center - new Vector2(500, -500);
-
-                                    npc.alpha = 255;
-                                    npc.velocity = Vector2.UnitX.RotatedBy(MathHelper.PiOver4) * 6f * (IntroPortal == 1 ? 1 : -1);
-
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
-
-                                    RotateDirection = Main.rand.NextBool() ? 1 : -1;
-
-                                    // Predict where the boss will end up a second before it does
-                                    Vector2 simulatedPosition = npc.Center;
-                                    Vector2 simulatedVelocity = npc.velocity;
-
-                                    turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
-
-                                    // i am 60 parallel worlds ahead of you
-                                    for (int i = 0; i < 240; i++)
-                                    {
-                                        if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
-
-                                        simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
-                                    }
-
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 450);
-                                }
-
-                                #region Tentacle Growth
-                                if (npc.ai[2] < 120 + 45)
-                                {
-                                    foreach (Projectile projectile in TentacleList)
-                                    {
-                                        if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
-                                        {
-                                            if (npc.localAI[3]++ % 3 == 0) tentacle.length += 5;
-                                        }
-                                    }
-                                }
-
-                                if (npc.ai[2] > 120 + 185)
-                                {
-                                    foreach (Projectile projectile in TentacleList)
-                                    {
-                                        if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
-                                        {
-                                            if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length -= 5;
-                                        }
-                                    }
-                                }
-                                #endregion
-
-                                if (npc.ai[2] == 120 + 240)
-                                {
-                                    npc.ai[2] = 120;
-
-                                    // Set it to false so it doesn't run through multiple attack cycles
-                                    SpawnServants = false;
-                                }
-
-                                npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
-                                if (npc.ai[2] > 120 + 60)
-                                {
-                                    if (npc.ai[2] > 120 + 225) npc.alpha += 15;
-
-                                    npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
-                                }
-                                else
-                                {
-                                    npc.alpha -= 15;
-                                }
-
-                                TrailPositions.Add(npc.Center);
-
-                                // Spawn NPCs after a delay
-                                if (npc.ai[2] > 120 + 60 && npc.ai[2] < 120 + 185 && npc.ai[2] % 5 == 0 && SpawnServants)
-                                {
-                                    int RandomOffset = Main.rand.Next(-4, 4) * 10;
-                                    NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
-                                }
-                                #endregion
-                            }
-
-                            /*if (npc.ai[2] == 120 + 240)
-                            {
-                                TrailPositions.Clear();
-                                npc.ai[0] = (float)AIStates.Selector;
-                                npc.ai[1] = 0;
-                                npc.ai[2] = 0;
-                            }*/
+                            npc.ai[0] = (float)AIStates.Portal;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
                         }
-                    }
 
-                    /*
-                    
-                    */
+                        /*if (npc.ai[2] == 120 + 240)
+                        {
+                            TrailPositions.Clear();
+                            npc.ai[0] = (float)AIStates.Selector;
+                            npc.ai[1] = 0;
+                            npc.ai[2] = 0;
+                        }*/
+                    }
                     break;
                 case (float)AIStates.Selector:
                     #region temp
@@ -530,6 +429,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                         }
 
+                        // Darkness eye attack
+                        if (npc.ai[1] % 15 == 0 && npc.ai[1] < 540 && TransitionPhase)
+                        {
+                            Vector2 RandomPosition = player.Center + new Vector2(Main.rand.Next(-9, 7) + 1, Main.rand.Next(-7, 5) + 1) * 75;
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
+
+                            if (Main.rand.NextBool(4))
+                            {
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), player.position, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
+                            }
+                        }
+
                         if (npc.ai[1] > 300 && npc.alpha < 255)
                         {
                             npc.alpha += 5;
@@ -554,16 +465,40 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             // Close after a second
                             if (npc.ai[1] == 630)
                             {
+
                                 npc.ShowNameOnHover = true;
                                 npc.dontTakeDamage = false;
 
+
+                            }
+                        }
+                    }
+
+                    if (npc.ai[1] == 630 && PIZZATIME)
+                    {
+                        if (npc.ai[3] > 0)
+                        {
+                            npc.alpha = 255;
+                            npc.ai[3] -= 0.05f;
+                        }
+
+                        if (npc.ai[3] <= 0)
+                        {
+                            PIZZATIME = false;
+
+                            foreach (Player cameraPlayer in Main.player)
+                            {
+                                if (npc.Distance(cameraPlayer.Center) < 1800)
+                                {
+                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 4200, 120, 120);
+                                }
                             }
                         }
                     }
                     #endregion
 
                     #region Portal Trail
-                    if (npc.ai[1] >= 630)
+                    if (npc.ai[1] >= 630 && npc.ai[3] <= 0)
                     {
                         // Flying outside the portal and spawning the end-portal
                         if (npc.ai[1]++ == 630)
