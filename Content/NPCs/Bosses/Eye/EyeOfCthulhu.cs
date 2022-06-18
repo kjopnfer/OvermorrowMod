@@ -11,6 +11,7 @@ using Terraria.ModLoader;
 using Terraria.GameContent;
 using OvermorrowMod.Common;
 using System.Collections.Generic;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
@@ -163,6 +164,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         npc.dontTakeDamage = parent.GetGlobalNPC<EyeOfCthulhu>().IntroPortal ? true : false;
 
+                        // For each AI tick, move through an index of the array
                         if (npc.ai[0]++ < parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions.Count - 1)
                         {
                             npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]] + TrailOffset;
@@ -252,6 +254,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             //float progress = MathHelper.Lerp(-0.066f, -0.106f, (float)Math.Sin(npc.localAI[2]++ / 30f));
 
 
+            #region commented out shit
             /*if (Main.netMode != NetmodeID.Server)
             {
                 if (!Filters.Scene["Flash"].IsActive())
@@ -283,6 +286,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.ai[2] = 0;
                 }
             }*/
+            #endregion
 
             var normalizedRotation = npc.rotation % MathHelper.TwoPi;
 
@@ -333,54 +337,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         npc.ai[3] += 0.05f;
                     }
-                    else
+                    
+                    // Screen has darkened and flagged the Intro bool for the Portal
+                    if (npc.ai[3] >= 1f)
                     {
-                        // The NPC can only start the timer after achieving complete darkness once
-                        if (npc.ai[1]++ == 0)
-                        {
-                            npc.velocity = Vector2.Zero;
-                            TransitionPhase = true;
-                        }
-                    }
+                        TransitionPhase = true;
 
-                    // Darkness eye attack
-                    if (npc.ai[1] % 15 == 0 && npc.ai[1] < 540 && TransitionPhase)
-                    {
-                        Vector2 RandomPosition = player.Center + new Vector2(Main.rand.Next(-9, 7) + 1, Main.rand.Next(-7, 5) + 1) * 75;
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
-
-                        if (Main.rand.NextBool(4))
-                        {
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), player.position, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
-                        }
-                    }
-
-                    // After 750 ticks, the NPC has finished the Darkness attack and transitions into the portal intro
-                    if (/*npc.ai[1] >= 750*/npc.ai[3] >= 1f)
-                    {
-                        // Decreases the darkness of the screen
-                        /*if (npc.ai[3] > 0)
-                        {
-                            npc.alpha = 255;
-                            npc.ai[3] -= 0.05f;
-                        }
-                        else*/
-                        {
-
-                            TransitionPhase = true;
-
-                            npc.ai[0] = (float)AIStates.Portal;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
-                        }
-
-                        /*if (npc.ai[2] == 120 + 240)
-                        {
-                            TrailPositions.Clear();
-                            npc.ai[0] = (float)AIStates.Selector;
-                            npc.ai[1] = 0;
-                            npc.ai[2] = 0;
-                        }*/
+                        npc.ai[0] = (float)AIStates.Portal;
+                        npc.ai[1] = 0;
+                        npc.ai[2] = 0;
                     }
                     break;
                 case (float)AIStates.Selector:
@@ -425,7 +390,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     #region Portal Spin
                     if (npc.ai[1] < 330)
                     {
-                        if (npc.ai[1]++ == 0) npc.velocity = Vector2.Zero;
+                        if (npc.ai[1] == 0) npc.velocity = Vector2.Zero;
+
+                        if (PortalRuns <= 2 && IntroPortal)
+                        {
+                            npc.ai[1]++;
+                        }
 
                         // FOR SOME APPARENT REASON WHEN I TRIED TO MAKE THE TENTACLES SHRINK AND GROW IN THE INTRO
                         // AI CASE THEY KEPT GETTING INDEX OUT OF BOUNDS ERRORS
@@ -535,87 +505,86 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (npc.ai[1] >= 330 && npc.ai[3] <= 0)
                     {
                         // Flying outside the portal and spawning the end-portal
-                        if (npc.ai[1]++ == 330)
+                        if (npc.ai[1]++ == 330 && PortalRuns < 3)
                         {
                             npc.alpha = 255;
 
-                            //if (npc.ai[1]++ % 240 == 0)
+                            #region Position
+                            if (IntroPortal)
                             {
-                                if (IntroPortal)
+                                // npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-9, -7)) * 75;
+                                switch (PortalRuns)
                                 {
-                                    // npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-9, -7)) * 75;
-                                    switch (PortalRuns)
-                                    {
-                                        case 0: // Left side
-                                            npc.Center = player.Center + new Vector2(-7, Main.rand.Next(-11, -10)) * 75;
-                                            break;
-                                        case 1: // Right side
-                                            npc.Center = player.Center + new Vector2(8, Main.rand.Next(-7, -5)) * 75;
-                                            break;
-                                        case 2:
-                                            npc.Center = player.Center + new Vector2(0, Main.rand.Next(-7, -5)) * 75;
-                                            break;
-                                        default:
-                                            //npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-9, -7)) * 75;
-                                            break;
-                                    }
+                                    case 0: // Left side
+                                        npc.Center = player.Center + new Vector2(-7, -8) * 75;
+                                        break;
+                                    case 1: // Right side
+                                        npc.Center = player.Center + new Vector2(6, -3) * 75;
+                                        break;
+                                    case 2:
+                                        npc.Center = player.Center + new Vector2(0, Main.rand.Next(-9, -7)) * 75;
+                                        break;
+                                    default:
+                                        //npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-9, -7)) * 75;
+                                        break;
                                 }
-                                else
-                                {
-                                    npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-6, 5) + 1) * 75;
-                                }
-
-                                npc.velocity = Vector2.Zero;
-
-                                if (IntroPortal)
-                                {
-
-                                    switch (PortalRuns)
-                                    {
-                                        case 0: // Go right
-                                            npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(20)) * 6f;
-                                            RotateDirection = -1;
-                                            break;
-                                        case 1: // Go right
-                                            npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25)) * 6f;
-                                            RotateDirection = 1;
-                                            break;
-                                        case 2: // Go down
-                                            npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 3;
-                                            break;
-                                        default:
-                                            //npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25) * (Main.rand.NextBool() ? 1 : -1)) * 6f;
-                                            break;
-
-                                    }
-                                    //npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25) * (Main.rand.NextBool() ? 1 : -1)) * 6f;
-                                }
-                                else
-                                {
-                                    npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
-                                }
-
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
-
-                                if (!IntroPortal)
-                                    RotateDirection = Main.rand.NextBool() ? 1 : -1;
-
-                                // Predict where the boss will end up a second before it does
-                                Vector2 simulatedPosition = npc.Center;
-                                Vector2 simulatedVelocity = npc.velocity;
-
-                                // i am 60 parallel worlds ahead of you
-
-                                turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
-                                for (int i = 0; i < 240; i++)
-                                {
-                                    if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
-
-                                    simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
-                                }
-
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 450);
                             }
+                            else
+                            {
+                                npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-6, 5) + 1) * 75;
+                            }
+                            #endregion
+
+                            #region Velocity
+                            npc.velocity = Vector2.Zero;
+                            if (IntroPortal)
+                            {
+                                switch (PortalRuns)
+                                {
+                                    case 0: // Go right
+                                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(20)) * 6f;
+                                        RotateDirection = -1;
+                                        break;
+                                    case 1: // Go right
+                                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25)) * 6f;
+                                        RotateDirection = 1;
+                                        break;
+                                    case 2: // Go down
+                                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 2;
+                                        break;
+                                    default:
+                                        //npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25) * (Main.rand.NextBool() ? 1 : -1)) * 6f;
+                                        break;
+
+                                }
+                                //npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25) * (Main.rand.NextBool() ? 1 : -1)) * 6f;
+                            }
+                            else
+                            {
+                                npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
+                            }
+                            #endregion
+
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
+
+                            if (!IntroPortal)
+                                RotateDirection = Main.rand.NextBool() ? 1 : -1;
+
+                            // Predict where the boss will end up a second before it does
+                            Vector2 simulatedPosition = npc.Center;
+                            Vector2 simulatedVelocity = npc.velocity;
+
+                            // i am 60 parallel universes ahead of you
+                            turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
+                            for (int i = 0; i < 240; i++)
+                            {
+                                if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
+
+                                simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                            }
+
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 450);
+
                         }
 
                         #region Tentacle Growth
@@ -652,20 +621,47 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             SpawnServants = false;
                         }
 
+                        #region Movement and Alpha
                         npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
                         if (npc.ai[1] > 330 + 60)
                         {
                             if (npc.ai[1] > 330 + 225) npc.alpha += 15;
 
                             if (PortalRuns < 2)
+                            {
                                 npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
+                            }
+                            else if (PortalRuns == 2)
+                            {
+                                if (npc.ai[1] == 390 + 30f)
+                                {
+                                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/EyeScreech3")
+                                    {
+                                        Volume = 0.9f,
+                                        PitchVariance = 0.2f,
+                                        MaxInstances = 3,
+                                    });
+                                }
+
+                                npc.velocity = Vector2.Lerp(Vector2.UnitY * 2, Vector2.UnitY * 0.1f, Utils.Clamp(npc.ai[1] - 390, 0, 60f) / 60f);
+                            }
                         }
                         else
                         {
                             npc.alpha -= 15;
                         }
 
-                        TrailPositions.Add(npc.Center);
+                        // Record the positions for two instances
+                        if (PortalRuns < 2)
+                        {
+                            TrailPositions.Add(npc.Center);
+                        }
+                        else
+                        {
+                            // On the 3rd instance, record only the first position the eye teleports to
+                            if (npc.ai[1] == 330) { TrailPositions.Add(npc.Center); Main.NewText("end"); }
+                        }
+                        #endregion
 
                         // Spawn NPCs after a delay
                         if (npc.ai[1] > 330 + 60 && npc.ai[1] < 330 + 185 && npc.ai[1] % 5 == 0 && SpawnServants)
@@ -676,27 +672,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
                     #endregion
 
-                    break;
-                case (float)AIStates.Minions:
-                    if (npc.ai[1]++ == 0)
-                    {
-                        npc.velocity = Vector2.Zero;
-                    }
-
-                    if (npc.ai[1] % 15 == 0)
-                    {
-                        Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-8, -4)) * 25;
-
-                        Vector2 velocity = Vector2.UnitY /** Main.rand.NextFloat(0.25f, 1f)*/;
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), RandomPosition, velocity, ModContent.ProjectileType<DemonEye>(), npc.damage, 0f, Main.myPlayer, 0, Main.rand.NextFloat(-1f, 1f));
-                    }
-
-                    if (npc.ai[1] == 360)
-                    {
-                        npc.ai[0] = (float)AIStates.Selector;
-                        npc.ai[1] = 0;
-                        npc.ai[2] = 0;
-                    }
                     break;
                 case (float)AIStates.Suck:
                     if (npc.ai[1] == 360)
@@ -749,7 +724,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
                     break;
             }
-
 
             return false;
         }

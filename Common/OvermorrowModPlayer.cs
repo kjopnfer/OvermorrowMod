@@ -423,7 +423,7 @@ namespace OvermorrowMod.Common
 
         public override void PreUpdateMovement()
         {
-            if (Player.HasBuff(ModContent.BuffType<Paralyzed>()))
+            if (Player.HasBuff(ModContent.BuffType<Paralyzed>()) || Player.HasBuff(ModContent.BuffType<Cutscene>()))
             {
                 if (Player.controlJump)
                 {
