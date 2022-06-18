@@ -16,7 +16,8 @@ namespace OvermorrowMod.Quests
 {
     public class QuestPlayer : ModPlayer
     {
-        public string PlayerUUID { get; private set; } = null;
+        public string PlayerUUID { get; private set; } = Guid.NewGuid().ToString();
+
         public string SelectedLocation { get; set; } = null;
 
         public IEnumerable<BaseQuestState> CurrentQuests => Quests.State.GetActiveQuests(this);
