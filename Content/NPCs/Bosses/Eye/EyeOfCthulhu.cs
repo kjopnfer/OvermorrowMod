@@ -423,7 +423,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     // Then simulates the entire path to place an end portal. Records the position of the eye as it travels in order for the minions
                     // to read and follow. At the end of each cycle, it will reset the AI Timer (npc.ai[1]) to zero.
                     #region Portal Spin
-                    if (npc.ai[1] < 630)
+                    if (npc.ai[1] < 330)
                     {
                         if (npc.ai[1]++ == 0) npc.velocity = Vector2.Zero;
 
@@ -437,13 +437,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
                                 {
                                     tentacle.lockGrow = true;
-                                    if (tentacle.length > 0 && npc.localAI[3]++ % 3 == 0) tentacle.length--;
+                                    if (tentacle.length > 0)
+                                    {
+                                        if (IntroDarkness)
+                                        {
+                                            tentacle.length--;
+                                        }
+                                        else
+                                        {
+                                            if (npc.localAI[3]++ % 3 == 0) tentacle.length--;
+                                        }
+
+                                    }
                                 }
                             }
                         }
 
                         // Darkness eye attack
-                        if (npc.ai[1] % 15 == 0 && npc.ai[1] < 540 && TransitionPhase)
+                        if (npc.ai[1] % 15 == 0 && npc.ai[1] < 240 && TransitionPhase)
                         {
                             Vector2 RandomPosition = player.Center + new Vector2(Main.rand.Next(-9, 7) + 1, Main.rand.Next(-7, 5) + 1) * 75;
                             Projectile.NewProjectile(npc.GetSource_FromAI(), RandomPosition, Vector2.Zero, ModContent.ProjectileType<DarkEye>(), npc.damage, 0f, Main.myPlayer);
@@ -454,12 +465,22 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                         }
 
-                        if (npc.ai[1] > 300 && npc.alpha < 255)
+                        if (IntroDarkness)
                         {
-                            npc.alpha += 5;
+                            if (npc.alpha < 255)
+                            {
+                                npc.alpha += 5;
+                            }
+                        }
+                        else
+                        {
+                            if (npc.ai[1] > 300 && npc.alpha < 255)
+                            {
+                                npc.alpha += 5;
+                            }
                         }
 
-                        if (npc.ai[1] >= 450)
+                        if (npc.ai[1] >= 150)
                         {
                             npc.rotation += MathHelper.Lerp(0.12f, 0.03f, Utils.Clamp(npc.ai[1] - 450, 0, 120) / 120f);
                         }
@@ -470,13 +491,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         // From 240 to 420 is when the portal fully opens
                         // Hold for half a second
-                        if (npc.ai[1] >= 420 + 30)
+                        if (npc.ai[1] >= 120 + 30)
                         {
                             npc.dontTakeDamage = true;
                             npc.ShowNameOnHover = false;
 
                             // Close after a second
-                            if (npc.ai[1] == 630)
+                            if (npc.ai[1] == 330)
                             {
 
                                 npc.ShowNameOnHover = true;
@@ -487,7 +508,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                     }
 
-                    if (npc.ai[1] == 630 && IntroDarkness)
+                    if (npc.ai[1] == 330 && IntroDarkness)
                     {
                         if (npc.ai[3] > 0)
                         {
@@ -511,10 +532,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     #endregion
 
                     #region Portal Trail
-                    if (npc.ai[1] >= 630 && npc.ai[3] <= 0)
+                    if (npc.ai[1] >= 330 && npc.ai[3] <= 0)
                     {
                         // Flying outside the portal and spawning the end-portal
-                        if (npc.ai[1]++ == 630)
+                        if (npc.ai[1]++ == 330)
                         {
                             npc.alpha = 255;
 
@@ -522,7 +543,22 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             {
                                 if (IntroPortal)
                                 {
-                                    npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-7, -4)) * 75;
+                                    // npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-9, -7)) * 75;
+                                    switch (PortalRuns)
+                                    {
+                                        case 0: // Left side
+                                            npc.Center = player.Center + new Vector2(-7, Main.rand.Next(-11, -10)) * 75;
+                                            break;
+                                        case 1: // Right side
+                                            npc.Center = player.Center + new Vector2(8, Main.rand.Next(-7, -5)) * 75;
+                                            break;
+                                        case 2:
+                                            npc.Center = player.Center + new Vector2(0, Main.rand.Next(-7, -5)) * 75;
+                                            break;
+                                        default:
+                                            //npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-9, -7)) * 75;
+                                            break;
+                                    }
                                 }
                                 else
                                 {
@@ -533,7 +569,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                                 if (IntroPortal)
                                 {
-                                    npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.PiOver4 * (Main.rand.NextBool() ? 1 : -1)) * 6f;
+
+                                    switch (PortalRuns)
+                                    {
+                                        case 0: // Go right
+                                            npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(20)) * 6f;
+                                            RotateDirection = -1;
+                                            break;
+                                        case 1: // Go right
+                                            npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25)) * 6f;
+                                            RotateDirection = 1;
+                                            break;
+                                        case 2: // Go down
+                                            npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 3;
+                                            break;
+                                        default:
+                                            //npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25) * (Main.rand.NextBool() ? 1 : -1)) * 6f;
+                                            break;
+
+                                    }
+                                    //npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25) * (Main.rand.NextBool() ? 1 : -1)) * 6f;
                                 }
                                 else
                                 {
@@ -542,7 +597,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
 
-                                RotateDirection = Main.rand.NextBool() ? 1 : -1;
+                                if (!IntroPortal)
+                                    RotateDirection = Main.rand.NextBool() ? 1 : -1;
 
                                 // Predict where the boss will end up a second before it does
                                 Vector2 simulatedPosition = npc.Center;
@@ -563,7 +619,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
 
                         #region Tentacle Growth
-                        if (npc.ai[1] < 630 + 45)
+                        if (npc.ai[1] < 330 + 45)
                         {
                             foreach (Projectile projectile in TentacleList)
                             {
@@ -574,7 +630,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                         }
 
-                        if (npc.ai[1] > 630 + 185)
+                        if (npc.ai[1] > 330 + 185)
                         {
                             foreach (Projectile projectile in TentacleList)
                             {
@@ -586,20 +642,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                         #endregion
 
-                        if (npc.ai[1] == 630 + 240)
+                        if (npc.ai[1] == 330 + 240)
                         {
-                            npc.ai[1] = 630;
+                            npc.ai[1] = 330;
+
+                            PortalRuns++;
 
                             // Set it to false so it doesn't run through multiple attack cycles
                             SpawnServants = false;
                         }
 
                         npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
-                        if (npc.ai[1] > 630 + 60)
+                        if (npc.ai[1] > 330 + 60)
                         {
-                            if (npc.ai[1] > 630 + 225) npc.alpha += 15;
+                            if (npc.ai[1] > 330 + 225) npc.alpha += 15;
 
-                            npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
+                            if (PortalRuns < 2)
+                                npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
                         }
                         else
                         {
@@ -609,7 +668,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         TrailPositions.Add(npc.Center);
 
                         // Spawn NPCs after a delay
-                        if (npc.ai[1] > 630 + 60 && npc.ai[1] < 630 + 185 && npc.ai[1] % 5 == 0 && SpawnServants)
+                        if (npc.ai[1] > 330 + 60 && npc.ai[1] < 330 + 185 && npc.ai[1] % 5 == 0 && SpawnServants)
                         {
                             int RandomOffset = Main.rand.Next(-4, 4) * 10;
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
