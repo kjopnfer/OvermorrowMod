@@ -42,43 +42,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
-            switch (npc.type)
+            if (npc.type == NPCID.EyeofCthulhu)
             {
-                case NPCID.ServantofCthulhu:
-                    NPC parent = Main.npc[(int)npc.ai[2]];
-                    if (parent.active && parent.type == NPCID.EyeofCthulhu)
-                    {
-                        if (parent.GetGlobalNPC<EyeOfCthulhu>().IntroPortal) return false;
-                    }
-
-                    return npc.ai[0] != -1;
-                case NPCID.EyeofCthulhu:
-                    return false;
+                return false;
             }
 
             return base.CanHitPlayer(npc, target, ref cooldownSlot);
         }
-        //public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) => false;
 
         public override void SetDefaults(NPC npc)
         {
-            switch (npc.type)
+            if (npc.type == NPCID.EyeofCthulhu)
             {
-                case NPCID.EyeofCthulhu:
-                    npc.lifeMax = 3200;
-                    break;
-                case NPCID.ServantofCthulhu:
-                    npc.lifeMax = 12;
-                    break;
-            }
-        }
-
-        public override void DrawBehind(NPC npc, int index)
-        {
-            if (npc.type == NPCID.ServantofCthulhu)
-            {
-                npc.hide = true;
-                Main.instance.DrawCacheNPCProjectiles.Add(index);
+                npc.lifeMax = 3200;
             }
         }
 
@@ -122,14 +98,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 npc.localAI[2] = 0;
             }
 
-            if (npc.type == NPCID.ServantofCthulhu)
-            {
-                if (npc.ai[1] == 420)
-                {
-                    npc.alpha = 255;
-                }
-            }
-
             base.OnSpawn(npc, source);
         }
 
@@ -143,88 +111,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Suck = 3
         }
 
-        Vector2 TrailOffset;
         // ai[0] - AI Case
         // ai[1] - AI Counter
         // ai[2] - Secondary AI Counter
         // ai[3] - Miscellaneous (VFX) Counter
         public override bool PreAI(NPC npc)
         {
-            if (npc.type == NPCID.ServantofCthulhu)
-            {
-                if (npc.ai[1] == 420)
-                {
-                    if (npc.ai[0] == 0)
-                    {
-                        TrailOffset = new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 15;
-                    }
-
-                    NPC parent = Main.npc[(int)npc.ai[2]];
-                    if (parent.active && parent.type == NPCID.EyeofCthulhu)
-                    {
-                        npc.dontTakeDamage = parent.GetGlobalNPC<EyeOfCthulhu>().IntroPortal ? true : false;
-
-                        // For each AI tick, move through an index of the array
-                        if (npc.ai[0]++ < parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions.Count - 1)
-                        {
-                            npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]] + TrailOffset;
-                            npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
-                        }
-                    }
-
-                    foreach (Projectile projectile in Main.projectile)
-                    {
-                        if (projectile.type != ModContent.ProjectileType<EyePortal>() || !projectile.active) continue;
-
-                        if (npc.Hitbox.Intersects(projectile.Hitbox))
-                        {
-                            if (npc.alpha >= 255) npc.alpha = 255;
-                            if (npc.alpha <= 0) npc.alpha = 0;
-
-                            // Entrance portal makes them fade in
-                            if (projectile.ai[0] == 240)
-                            {
-                                if (npc.alpha > 0) npc.alpha -= 10;
-                            }
-
-                            // The exit portal should make them fade out
-                            if (projectile.ai[0] == 450)
-                            {
-                                if (npc.alpha < 255) npc.alpha += 10;
-                            }
-                        }
-                    }
-
-                    // During the following state, we don't want the AI to run
-                    return false;
-                }
-                else
-                {
-                    // When the AI is set to -1, the NPC will not deal damage for 1.5 seconds
-                    // This is set whenever they are spawned from the portals
-                    if (npc.ai[0] == -1)
-                    {
-                        if (npc.ai[1]++ > 90) npc.ai[0] = 0;
-                    }
-
-                    foreach (NPC boss in Main.npc)
-                    {
-                        if (!boss.active || boss.type != NPCID.EyeofCthulhu) continue;
-
-                        if (npc.Hitbox.Intersects(boss.Hitbox))
-                        {
-                            boss.HealEffect(npc.life);
-                            boss.life += npc.life;
-
-                            npc.HitEffect(0, npc.damage);
-                            npc.Kill();
-                        }
-                    }
-                }
-
-                return true;
-            }
-
             if (npc.type != NPCID.EyeofCthulhu) return true;
 
             if (npc.alpha >= 255) npc.alpha = 255;
@@ -237,22 +129,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.ai[0] != (float)AIStates.Portal)
                 npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver4;
 
-            npc.defense = 12;
-            foreach (NPC minion in Main.npc)
-            {
-                if (minion.ModNPC is VortexEye)
-                {
-                    npc.defense = 32;
-                }
-            }
-
             //float progress = MathHelper.Lerp(0, 1 / 3f, (float)Math.Sin(npc.localAI[2]++ / 30f));
             //float progress = -0.106f;
 
             float darkIncrease = MathHelper.Lerp(-0.01f, -0.08f, Utils.Clamp(npc.localAI[2]++, 0, 14400f) / 14400f);
             float progress = MathHelper.Lerp(darkIncrease, -0.06f - darkIncrease, (float)Math.Sin(npc.localAI[2]++ / 60f));
             //float progress = MathHelper.Lerp(-0.066f, -0.106f, (float)Math.Sin(npc.localAI[2]++ / 30f));
-
 
             #region commented out shit
             /*if (Main.netMode != NetmodeID.Server)
@@ -337,7 +219,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         npc.ai[3] += 0.05f;
                     }
-                    
+
                     // Screen has darkened and flagged the Intro bool for the Portal
                     if (npc.ai[3] >= 1f)
                     {
@@ -728,86 +610,52 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             return false;
         }
 
-        public override bool CheckActive(NPC npc)
-        {
-            if (npc.type == NPCID.ServantofCthulhu)
-            {
-                return false;
-            }
-
-            return base.CheckActive(npc);
-        }
-
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture;
-            Color color;
-            float progress;
             float scale;
 
-            switch (npc.type)
+            if (npc.type == NPCID.EyeofCthulhu)
             {
-                case NPCID.ServantofCthulhu:
-                    spriteBatch.Reload(SpriteSortMode.Immediate);
+                #region Portal
+                if (npc.ai[0] == (float)AIStates.Portal && npc.ai[1] > 200)
+                {
+                    scale = MathHelper.Lerp(0, 2.25f, Utils.Clamp(npc.ai[1] - 200, 0, 180) / 180f);
 
-                    texture = TextureAssets.Npc[npc.type].Value;
+                    if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.25f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
 
-                    if (npc.ai[1] < 90)
+                    npc.localAI[1] += 0.065f;
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
+                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, new Color(60, 3, 79), npc.localAI[1] * 0.5f, texture.Size() / 2, scale, SpriteEffects.None, 0);
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
+                    scale = MathHelper.Lerp(0, 2f, Utils.Clamp(npc.ai[1] - 240, 0, 180) / 180f);
+                    if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.2f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
+
+                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Black, npc.localAI[1], texture.Size() / 2, scale, SpriteEffects.None, 0);
+                }
+                #endregion
+
+                texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
+
+                if (npc.ai[0] == (float)AIStates.Minions && npc.ai[1] > 120 && npc.ai[1] < 180)
+                {
+                    int amount = 5;
+                    float progress = Utils.Clamp(npc.ai[1] - 120f, 0, 60) / 60f;
+
+                    for (int i = 0; i < amount; i++)
                     {
-                        //Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-                        //progress = Utils.Clamp(npc.ai[1], 0, 90) / 90f;
-                        //effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
-                        //effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
-                        //effect.CurrentTechnique.Passes["Whiteout"].Apply();
+                        float scaleAmount = i / (float)amount;
+                        scale = 1f + progress * scaleAmount;
+                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
                     }
+                }
 
-                    color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
+                Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
+                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, color, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
-
-                    spriteBatch.Reload(SpriteSortMode.Deferred);
-
-                    return false;
-                case NPCID.EyeofCthulhu:
-                    #region Portal
-                    if (npc.ai[0] == (float)AIStates.Portal && npc.ai[1] > 200)
-                    {
-                        scale = MathHelper.Lerp(0, 2.25f, Utils.Clamp(npc.ai[1] - 200, 0, 180) / 180f);
-
-                        if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.25f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
-
-                        npc.localAI[1] += 0.065f;
-
-                        texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
-                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, new Color(60, 3, 79), npc.localAI[1] * 0.5f, texture.Size() / 2, scale, SpriteEffects.None, 0);
-
-                        texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
-                        scale = MathHelper.Lerp(0, 2f, Utils.Clamp(npc.ai[1] - 240, 0, 180) / 180f);
-                        if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.2f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
-
-                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Black, npc.localAI[1], texture.Size() / 2, scale, SpriteEffects.None, 0);
-                    }
-                    #endregion
-
-                    texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
-
-                    if (npc.ai[0] == (float)AIStates.Minions && npc.ai[1] > 120 && npc.ai[1] < 180)
-                    {
-                        int amount = 5;
-                        progress = Utils.Clamp(npc.ai[1] - 120f, 0, 60) / 60f;
-
-                        for (int i = 0; i < amount; i++)
-                        {
-                            float scaleAmount = i / (float)amount;
-                            scale = 1f + progress * scaleAmount;
-                            spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
-                        }
-                    }
-
-                    color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation - MathHelper.PiOver4, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
-
-                    return false;
+                return false;
             }
 
             return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
