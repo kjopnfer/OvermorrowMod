@@ -279,8 +279,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             npc.ai[1]++;
                         }
 
-                        // FOR SOME APPARENT REASON WHEN I TRIED TO MAKE THE TENTACLES SHRINK AND GROW IN THE INTRO
-                        // AI CASE THEY KEPT GETTING INDEX OUT OF BOUNDS ERRORS
+                        // FOR SOME APPARENT REASON WHEN I TRIED TO MAKE THE TENTACLES SHRINK AND GROW
+                        // IN THE INTRO AI CASE THEY KEPT GETTING INDEX OUT OF BOUNDS ERRORS
                         // THIS IS LITERALLY THE ONLY PLACE WHERE THEY WORK AND SO THE ENTIRE INTRO CASE IS HANDLED IN PORTAL AS WELL
                         if (npc.ai[1] > 45)
                         {
@@ -376,7 +376,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             {
                                 if (npc.Distance(cameraPlayer.Center) < 1800)
                                 {
-                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 4200, 120, 120);
+                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 990, 120, 120);
                                 }
                             }
                         }
@@ -398,7 +398,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 switch (PortalRuns)
                                 {
                                     case 0: // Left side
-                                        npc.Center = player.Center + new Vector2(-7, -8) * 75;
+                                        npc.Center = player.Center + new Vector2(-7, -10) * 75;
                                         break;
                                     case 1: // Right side
                                         npc.Center = player.Center + new Vector2(6, -3) * 75;
@@ -493,16 +493,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                         #endregion
 
-                        if (npc.ai[1] == 330 + 240)
-                        {
-                            npc.ai[1] = 330;
-
-                            PortalRuns++;
-
-                            // Set it to false so it doesn't run through multiple attack cycles
-                            SpawnServants = false;
-                        }
-
                         #region Movement and Alpha
                         npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
                         if (npc.ai[1] > 330 + 60)
@@ -540,8 +530,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                         else
                         {
-                            // On the 3rd instance, record only the first position the eye teleports to
-                            if (npc.ai[1] == 330) { TrailPositions.Add(npc.Center); Main.NewText("end"); }
+                            // On the 3rd instance, record only the first position the eye teleports to, offset by 1 because it incremented earlier
+                            if (npc.ai[1] == 331) { TrailPositions.Add(npc.Center); }
                         }
                         #endregion
 
@@ -551,6 +541,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             int RandomOffset = Main.rand.Next(-4, 4) * 10;
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
                         }
+
+                        if (npc.ai[1] == 330 + 240)
+                        {
+                            npc.ai[1] = 330;
+
+                            PortalRuns++;
+
+                            // Set it to false so it doesn't run through multiple attack cycles
+                            SpawnServants = false;
+                        }
+
                     }
                     #endregion
 

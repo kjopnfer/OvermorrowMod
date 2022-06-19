@@ -87,10 +87,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         npc.dontTakeDamage = parent.GetGlobalNPC<EyeOfCthulhu>().IntroPortal ? true : false;
 
                         // For each AI tick, move through an index of the array
-                        if (npc.ai[0]++ < parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions.Count - 1)
+                        if (npc.ai[0]++ < 480)
                         {
                             npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]] + TrailOffset;
-                            npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
+
+                            if (npc.ai[0] != 480) npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
+                        }
+                        else
+                        {
+                            npc.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * 5;
+                            npc.ai[1] = 0;
                         }
                     }
 
@@ -123,13 +129,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 else
                 {
                     // When the AI is set to -1, the NPC will not deal damage for 1.5 seconds
-                    // This is set whenever they are spawned from the portals
+                    // This is set whenever they are spawned from the world portals
                     if (npc.ai[0] == -1)
                     {
                         if (npc.ai[1]++ > 90) npc.ai[0] = 0;
                     }
 
-                    foreach (NPC boss in Main.npc)
+                    /*foreach (NPC boss in Main.npc)
                     {
                         if (!boss.active || boss.type != NPCID.EyeofCthulhu) continue;
 
@@ -141,7 +147,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             npc.HitEffect(0, npc.damage);
                             npc.Kill();
                         }
-                    }
+                    }*/
                 }
 
                 return true;
