@@ -19,7 +19,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
     {
         public override bool InstancePerEntity => true;
 
-        Vector2 TrailOffset;
+        private bool EntranceFade = false;
+        private bool ExitFade = false;
+        private Vector2 TrailOffset;
 
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
@@ -74,6 +76,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
+                if (npc.alpha >= 255) npc.alpha = 255;
+                if (npc.alpha <= 0) npc.alpha = 0;
+
                 if (npc.ai[1] == 420)
                 {
                     if (npc.ai[0] == 0)
@@ -95,31 +100,74 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                         else
                         {
-                            npc.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * 5;
-                            npc.ai[1] = 0;
+                            // NPC has moved through all indices and launches themselves out a random direction
+                            // This doesn't occur until 60 seconds later, after the boss has roared
+                            if (npc.ai[2]++ >= 60)
+                            {
+                                if (npc.alpha > 0) npc.alpha -= 10;
+
+                                // Start moving after the NPC has completely faded in
+                                if (npc.alpha == 0 && npc.ai[0] == 60)
+                                {
+                                    npc.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * 5;
+                                    npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
+                                    npc.ai[1] = 0;
+                                }
+                            }
                         }
                     }
 
-                    foreach (Projectile projectile in Main.projectile)
+                    // TODO: Uncringe this code
+                    if (!ExitFade && !EntranceFade)
                     {
-                        if (projectile.type != ModContent.ProjectileType<EyePortal>() || !projectile.active) continue;
-
-                        if (npc.Hitbox.Intersects(projectile.Hitbox))
+                        foreach (Projectile projectile in Main.projectile)
                         {
-                            if (npc.alpha >= 255) npc.alpha = 255;
-                            if (npc.alpha <= 0) npc.alpha = 0;
+                            if (projectile.type != ModContent.ProjectileType<EyePortal>() || !projectile.active) continue;
 
-                            // Entrance portal makes them fade in
-                            if (projectile.ai[0] == 240)
+                            if (npc.Hitbox.Intersects(projectile.Hitbox))
                             {
-                                if (npc.alpha > 0) npc.alpha -= 10;
-                            }
+                                //if (npc.alpha >= 255) npc.alpha = 255;
+                                //if (npc.alpha <= 0) npc.alpha = 0;
 
-                            // The exit portal should make them fade out
-                            if (projectile.ai[0] == 450)
-                            {
-                                if (npc.alpha < 255) npc.alpha += 10;
+                                // Entrance portal makes them fade in, if they are going out the final we don't want them to fade in yet
+                                if (projectile.ai[0] == 240 && parent.GetGlobalNPC<EyeOfCthulhu>().PortalRuns < 2)
+                                {
+                                    EntranceFade = true;
+                                }
+
+                                // The exit portal should make them fade out
+                                if (projectile.ai[0] == 450)
+                                {
+                                    ExitFade = true;
+                                    //if (npc.alpha < 255) npc.alpha += 10;
+                                }
                             }
+                        }
+                    }
+
+                    // These lines of code make it so that contacting other portals on route dont cause the opacity to change
+                    // Also makes it so that all the NPCs can fade in and out completely instead of being partial due to offset
+                    if (EntranceFade)
+                    {
+                        if (npc.alpha > 0)
+                        {
+                            npc.alpha -= 10;
+                        }
+                        else
+                        {
+                            EntranceFade = false;
+                        }
+                    }
+
+                    if (ExitFade)
+                    {
+                        if (npc.alpha < 255)
+                        {
+                            npc.alpha += 10;
+                        }
+                        else
+                        {
+                            ExitFade = false;
                         }
                     }
 

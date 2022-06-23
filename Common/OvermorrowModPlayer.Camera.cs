@@ -131,7 +131,15 @@ namespace OvermorrowMod.Common
                     {
                         if (!Main.gamePaused)
                         {
-                            screenPositionStore = new Vector2(MathHelper.SmoothStep(focusTo.X - Main.screenWidth / 2, Player.Center.X - Main.screenWidth / 2, CameraCounter), MathHelper.SmoothStep(focusTo.Y - Main.screenHeight / 2, Player.Center.Y - Main.screenHeight / 2, CameraCounter));
+                            if (LockCamera)
+                            {
+                                screenPositionStore = new Vector2(MathHelper.SmoothStep(focusNPC.Center.X - Main.screenWidth / 2, Player.Center.X - Main.screenWidth / 2, CameraCounter), MathHelper.SmoothStep(focusNPC.Center.Y - Main.screenHeight / 2, Player.Center.Y - Main.screenHeight / 2, CameraCounter));
+                            }
+                            else
+                            {
+                                screenPositionStore = new Vector2(MathHelper.SmoothStep(focusTo.X - Main.screenWidth / 2, Player.Center.X - Main.screenWidth / 2, CameraCounter), MathHelper.SmoothStep(focusTo.Y - Main.screenHeight / 2, Player.Center.Y - Main.screenHeight / 2, CameraCounter));
+                            }
+
                             CameraCounter += 1 / returnLength;
                         }
 
@@ -141,6 +149,7 @@ namespace OvermorrowMod.Common
                         {
                             ReturnBack = false;
                             FocusBoss = false;
+                            LockCamera = false;
 
                             MoveTowards = true;
                             ShowText = false;

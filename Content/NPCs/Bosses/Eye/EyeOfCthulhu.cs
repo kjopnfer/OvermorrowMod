@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         private bool IntroDarkness = true;
         public bool IntroPortal = true;
-        private int PortalRuns = 0;
+        public int PortalRuns = 0;
 
         private bool TransitionPhase = false;
         private bool SpawnServants = true;
@@ -259,7 +259,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (npc.ai[1] == 360)
                     {
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;
-                        npc.ai[0] = (float)AIStates.Portal;
+                        npc.ai[0] = (float)AIStates.Selector;
 
                         npc.ai[1] = 0;
                     }
@@ -376,7 +376,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             {
                                 if (npc.Distance(cameraPlayer.Center) < 1800)
                                 {
-                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 990, 120, 120);
+                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 510, 120, 120);
                                 }
                             }
                         }
@@ -398,13 +398,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 switch (PortalRuns)
                                 {
                                     case 0: // Left side
-                                        npc.Center = player.Center + new Vector2(-7, -10) * 75;
+                                        npc.Center = player.Center + new Vector2(-8, -11) * 75;
                                         break;
                                     case 1: // Right side
                                         npc.Center = player.Center + new Vector2(6, -3) * 75;
                                         break;
                                     case 2:
-                                        npc.Center = player.Center + new Vector2(0, Main.rand.Next(-9, -7)) * 75;
+                                        npc.Center = player.Center + new Vector2(0, -9) * 75;
                                         break;
                                     default:
                                         //npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-9, -7)) * 75;
@@ -452,21 +452,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             if (!IntroPortal)
                                 RotateDirection = Main.rand.NextBool() ? 1 : -1;
 
-                            // Predict where the boss will end up a second before it does
-                            Vector2 simulatedPosition = npc.Center;
-                            Vector2 simulatedVelocity = npc.velocity;
-
-                            // i am 60 parallel universes ahead of you
-                            turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
-                            for (int i = 0; i < 240; i++)
+                            if (PortalRuns < 2)
                             {
-                                if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
+                                // Predict where the boss will end up a second before it does
+                                Vector2 simulatedPosition = npc.Center;
+                                Vector2 simulatedVelocity = npc.velocity;
 
-                                simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                                // i am 60 parallel universes ahead of you
+                                turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
+                                for (int i = 0; i < 240; i++)
+                                {
+                                    if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
+
+                                    simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                                }
+
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 450);
                             }
-
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 450);
-
                         }
 
                         #region Tentacle Growth
@@ -505,7 +507,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                             else if (PortalRuns == 2)
                             {
-                                if (npc.ai[1] == 390 + 30f)
+                                // The NPC has exited the final portal, and is slowing down
+                                if (npc.ai[1] == 390 + 60f)
                                 {
                                     SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/EyeScreech3")
                                     {
@@ -542,19 +545,25 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
                         }
 
+                        // Reset the counter after 240 ticks
                         if (npc.ai[1] == 330 + 240)
                         {
-                            npc.ai[1] = 330;
-
-                            PortalRuns++;
-
+                            if (PortalRuns++ < 3)
+                            {
+                                npc.ai[1] = 330;
+                            }
+                            else
+                            {
+                                IntroPortal = false;
+                                npc.ai[0] = (float)AIStates.Selector;
+                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
+                            }
                             // Set it to false so it doesn't run through multiple attack cycles
                             SpawnServants = false;
                         }
-
                     }
                     #endregion
-
                     break;
                 case (float)AIStates.Suck:
                     if (npc.ai[1] == 360)
