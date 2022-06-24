@@ -376,7 +376,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             {
                                 if (npc.Distance(cameraPlayer.Center) < 1800)
                                 {
-                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 720, 120, 120);
+                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 750, 120, 120);
                                 }
                             }
                         }

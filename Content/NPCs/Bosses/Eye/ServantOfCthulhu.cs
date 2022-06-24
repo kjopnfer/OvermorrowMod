@@ -117,17 +117,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                         else if (npc.ai[3] >= 660)
                         {
-                            if (npc.alpha > 0 && !ExitFade && !EntranceFade) npc.alpha -= 10;
 
-                            if (npc.alpha == 0)
+                            if (npc.ai[0]++ == 160)
                             {
-                                if (npc.ai[0]++ == 0)
-                                {
-                                    npc.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * 5;
-                                    npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
-                                }
+                                npc.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * Main.rand.Next(3, 6);
+                                npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
+                            }
 
-                                if (npc.ai[0] == 60) npc.ai[1] = 0;
+                            if (npc.ai[0] >= 160)
+                            {
+                                if (npc.alpha > 0 && !ExitFade && !EntranceFade) npc.alpha -= 10;
+                            }
+
+                            if (npc.alpha == 0 /*&& npc.ai[0] == 120*/)
+                            {
+                                npc.ai[1] = 0;
                             }
                         }
 
@@ -185,7 +189,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         if (npc.alpha > 0)
                         {
-                            npc.alpha -= 10;
+                            npc.alpha -= 12;
                         }
                         else
                         {
@@ -197,7 +201,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         if (npc.alpha < 255)
                         {
-                            npc.alpha += 10;
+                            npc.alpha += 12;
                         }
                         else
                         {
