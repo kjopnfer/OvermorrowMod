@@ -92,17 +92,50 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         npc.dontTakeDamage = parent.GetGlobalNPC<EyeOfCthulhu>().IntroPortal ? true : false;
 
                         // For each AI tick, move through an index of the array
-                        if (npc.ai[0]++ < 480)
+                        // This shit is grossly hard-coded to account for the delays
+                        //if (npc.ai[0] < 480)
+                        if (npc.ai[3] < 239 || (npc.ai[3] > 299 && npc.ai[3] < 539))
                         {
                             npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]] + TrailOffset;
 
-                            if (npc.ai[0] != 480) npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
+                            if (npc.ai[0] != 240) npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
+                            //if (npc.ai[0] != 480) npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
+
+                            npc.ai[0]++;
                         }
-                        else
+
+                        /*if (npc.ai[3] < 630)
+                        {
+                            npc.ai[3]++;
+                        }*/
+                        if (npc.ai[3]++ == 660)
+                        {
+                            npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[480] + TrailOffset;
+
+                            // Reset the ai0 counter so we can reuse, since we are not going through the array anymore
+                            npc.ai[0] = 0;
+                        }
+                        else if (npc.ai[3] >= 660)
+                        {
+                            if (npc.alpha > 0 && !ExitFade && !EntranceFade) npc.alpha -= 10;
+
+                            if (npc.alpha == 0)
+                            {
+                                if (npc.ai[0]++ == 0)
+                                {
+                                    npc.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * 5;
+                                    npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
+                                }
+
+                                if (npc.ai[0] == 60) npc.ai[1] = 0;
+                            }
+                        }
+
+                        /*else
                         {
                             // NPC has moved through all indices and launches themselves out a random direction
                             // This doesn't occur until 60 seconds later, after the boss has roared
-                            if (npc.ai[2]++ >= 60)
+                            if (npc.ai[3]++ >= 60)
                             {
                                 if (npc.alpha > 0) npc.alpha -= 10;
 
@@ -114,9 +147,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                     npc.ai[1] = 0;
                                 }
                             }
-                        }
+                        }*/
                     }
 
+                    #region Fade
                     // TODO: Uncringe this code
                     if (!ExitFade && !EntranceFade)
                     {
@@ -170,6 +204,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             ExitFade = false;
                         }
                     }
+                    #endregion
 
                     // During the following state, we don't want the AI to run
                     return false;

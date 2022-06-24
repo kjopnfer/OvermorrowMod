@@ -376,15 +376,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             {
                                 if (npc.Distance(cameraPlayer.Center) < 1800)
                                 {
-                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 510, 120, 120);
+                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 720, 120, 120);
                                 }
                             }
                         }
                     }
                     #endregion
 
+                    // This is the delay counter inbetween portal movements
+                    if (npc.ai[2] > 0) npc.ai[2]--;
+
                     #region Portal Trail
-                    if (npc.ai[1] >= 330 && npc.ai[3] <= 0)
+                    if (npc.ai[1] >= 330 && npc.ai[3] <= 0 && npc.ai[2] == 0)
                     {
                         // Flying outside the portal and spawning the end-portal
                         if (npc.ai[1]++ == 330 && PortalRuns < 3)
@@ -401,7 +404,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                         npc.Center = player.Center + new Vector2(-8, -11) * 75;
                                         break;
                                     case 1: // Right side
-                                        npc.Center = player.Center + new Vector2(6, -3) * 75;
+                                        npc.Center = player.Center + new Vector2(6, -2) * 75;
                                         break;
                                     case 2:
                                         npc.Center = player.Center + new Vector2(0, -9) * 75;
@@ -449,8 +452,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                             Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
 
-                            if (!IntroPortal)
-                                RotateDirection = Main.rand.NextBool() ? 1 : -1;
+                            if (!IntroPortal) RotateDirection = Main.rand.NextBool() ? 1 : -1;
 
                             if (PortalRuns < 2)
                             {
@@ -499,7 +501,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
                         if (npc.ai[1] > 330 + 60)
                         {
-                            if (npc.ai[1] > 330 + 225) npc.alpha += 15;
+                            if (npc.ai[1] > 330 + 225) npc.alpha += 17;
 
                             if (PortalRuns < 2)
                             {
@@ -541,16 +543,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         // Spawn NPCs after a delay
                         if (npc.ai[1] > 330 + 60 && npc.ai[1] < 330 + 185 && npc.ai[1] % 5 == 0 && SpawnServants)
                         {
-                            int RandomOffset = Main.rand.Next(-4, 4) * 10;
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI, RandomOffset);
+                            NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI);
                         }
 
+                        #region Counter
                         // Reset the counter after 240 ticks
                         if (npc.ai[1] == 330 + 240)
                         {
                             if (PortalRuns++ < 3)
                             {
+                                Main.NewText(TrailPositions.Count);
+
+                                npc.velocity = Vector2.Zero;
+
                                 npc.ai[1] = 330;
+                                npc.ai[2] = 120; // Set the delay inbetween portal instances
                             }
                             else
                             {
@@ -562,10 +569,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             // Set it to false so it doesn't run through multiple attack cycles
                             SpawnServants = false;
                         }
+                        #endregion
                     }
                     #endregion
                     break;
                 case (float)AIStates.Suck:
+                    #region Suck
                     if (npc.ai[1] == 360)
                     {
                         foreach (NPC servant in Main.npc)
@@ -615,6 +624,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }*/
                     }
                     break;
+                    #endregion
             }
 
             return false;
@@ -637,13 +647,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.localAI[1] += 0.065f;
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, new Color(60, 3, 79), npc.localAI[1] * 0.5f, texture.Size() / 2, scale, SpriteEffects.None, 0);
+                    //spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, new Color(60, 3, 79), npc.localAI[1] * 0.5f, texture.Size() / 2, scale, SpriteEffects.None, 0);
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
                     scale = MathHelper.Lerp(0, 2f, Utils.Clamp(npc.ai[1] - 240, 0, 180) / 180f);
                     if (npc.ai[1] >= 450) scale = MathHelper.Lerp(2.2f, 0f, Utils.Clamp(npc.ai[1] - 450, 0, 180) / 180f);
 
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Black, npc.localAI[1], texture.Size() / 2, scale, SpriteEffects.None, 0);
+                    //spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Black, npc.localAI[1], texture.Size() / 2, scale, SpriteEffects.None, 0);
                 }
                 #endregion
 
