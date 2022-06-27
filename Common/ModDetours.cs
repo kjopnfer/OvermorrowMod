@@ -19,6 +19,12 @@ namespace OvermorrowMod.Common
         public static void Load()
         {
             //On.Terraria.Main.DrawNPCChatButtons += DrawNPCChatButtons;
+            On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.Draw += Draw;
+            On.Terraria.Main.DrawHealthBar += DrawHealthBar;
+            On.Terraria.Main.DrawInterface_Resources_Buffs += DrawInterface_Resources_Buffs;
+            On.Terraria.Main.DrawInterface_16_MapOrMinimap += DrawInterface_16_MapOrMinimap;
+            On.Terraria.Main.DrawInterface_25_ResourceBars += DrawInterface_25_ResourceBars;
+            On.Terraria.Main.DrawInterface_30_Hotbar += DrawInterface_30_Hotbar;
             On.Terraria.Player.Update_NPCCollision += UpdateNPCCollision;
             On.Terraria.Player.SlopingCollision += PlatformCollision;
             On.Terraria.Main.DrawInterface += DrawParticles;
@@ -32,6 +38,13 @@ namespace OvermorrowMod.Common
         public static void Unload()
         {
             //On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
+            On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.Draw -= Draw;
+
+            On.Terraria.Main.DrawHealthBar -= DrawHealthBar;
+            On.Terraria.Main.DrawInterface_Resources_Buffs -= DrawInterface_Resources_Buffs;
+            On.Terraria.Main.DrawInterface_16_MapOrMinimap -= DrawInterface_16_MapOrMinimap;
+            On.Terraria.Main.DrawInterface_25_ResourceBars -= DrawInterface_25_ResourceBars;
+            On.Terraria.Main.DrawInterface_30_Hotbar -= DrawInterface_30_Hotbar;
             On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
             On.Terraria.Player.SlopingCollision -= PlatformCollision;
             On.Terraria.Main.DrawInterface -= DrawParticles;
@@ -39,6 +52,48 @@ namespace OvermorrowMod.Common
 
             On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
             Main.OnResolutionChanged -= Main_OnResolutionChanged;
+        }
+
+        private static void Draw(On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.orig_Draw orig, Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager self)
+        {
+            foreach (NPC npc in Main.npc) if (npc.type == NPCID.EyeofCthulhu && npc.active) return;
+
+            orig(self);
+        }
+
+        private static void DrawHealthBar(On.Terraria.Main.orig_DrawHealthBar orig, Main self, float X, float Y, int Health, int MaxHealth, float alpha, float scale, bool noFlip)
+        {
+            foreach (NPC npc in Main.npc) if (npc.type == NPCID.EyeofCthulhu && npc.active) return;
+
+            orig(self, X, Y, Health, MaxHealth, alpha, scale, noFlip);
+        }
+
+        private static void DrawInterface_Resources_Buffs(On.Terraria.Main.orig_DrawInterface_Resources_Buffs orig, Main self)
+        {
+            foreach (NPC npc in Main.npc) if (npc.type == NPCID.EyeofCthulhu && npc.active) return;
+
+            orig(self);
+        }
+
+        private static void DrawInterface_16_MapOrMinimap(On.Terraria.Main.orig_DrawInterface_16_MapOrMinimap orig, Main self)
+        {
+            foreach (NPC npc in Main.npc) if (npc.type == NPCID.EyeofCthulhu && npc.active) return;
+
+            orig(self);
+        }
+
+        private static void DrawInterface_25_ResourceBars(On.Terraria.Main.orig_DrawInterface_25_ResourceBars orig, Main self)
+        {
+            foreach (NPC npc in Main.npc) if (npc.type == NPCID.EyeofCthulhu && npc.active) return;
+
+            orig(self);
+        }
+
+        private static void DrawInterface_30_Hotbar(On.Terraria.Main.orig_DrawInterface_30_Hotbar orig, Main self)
+        {
+            foreach (NPC npc in Main.npc) if (npc.type == NPCID.EyeofCthulhu && npc.active) return;
+
+            orig(self);
         }
 
         private static void Main_OnResolutionChanged(Vector2 obj)

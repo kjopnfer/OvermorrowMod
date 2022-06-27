@@ -6,6 +6,11 @@ namespace OvermorrowMod.Common
 {
     public partial class OvermorrowModPlayer : ModPlayer
     {
+        public enum BossID
+        {
+            Eye = 1
+        }
+
         private bool holdPosition;
         private int holdCounter = 0;
         private Vector2 focusTo;
@@ -22,8 +27,10 @@ namespace OvermorrowMod.Common
         private NPC focusNPC;
 
         private float CameraCounter = 0;
+        private float TitleCounter = 0;
 
         public bool ShowText;
+        public int TitleLength;
         public int TitleID;
 
         //sadness
@@ -67,6 +74,13 @@ namespace OvermorrowMod.Common
             // Finally, flag boolean to activate ModifyScreenPosition hook
             FocusBoss = true;
             MoveTowards = true;
+        }
+
+        public void ShowTitleCard(BossID id, int showLength)
+        {
+            TitleID = (int)id;
+            TitleLength = showLength;
+            ShowText = true;
         }
 
         public override void ModifyScreenPosition()
@@ -169,6 +183,18 @@ namespace OvermorrowMod.Common
                     Main.screenPosition += new Vector2(Main.rand.Next(-1 - ShakeOffset, 1 + ShakeOffset), Main.rand.Next(-1, 1));
                     ScreenShake--;
                 }
+            }
+            #endregion
+
+            #region Boss Title
+            if (TitleCounter == TitleLength)
+            {
+                TitleCounter = 0;
+                ShowText = false;
+            }
+            else
+            {
+                if (!Main.gamePaused) TitleCounter++;
             }
             #endregion
         }

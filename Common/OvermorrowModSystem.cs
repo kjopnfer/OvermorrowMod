@@ -4,6 +4,7 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Content.UI;
+using OvermorrowMod.Core;
 using ReLogic.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -55,41 +56,16 @@ namespace OvermorrowMod.Common
 
         internal void BossTitle(int BossID)
         {
-            string BossName = "";
-            string BossTitle = "";
+            string BossName;
+            string BossTitle;
             Color titleColor = Color.White;
             Color nameColor = Color.White;
+
             switch (BossID)
             {
                 case 1:
-                    BossName = "Dharuud";
-                    BossTitle = "The Sandstorm";
-                    nameColor = Color.LightGoldenrodYellow;
-                    titleColor = Color.Yellow;
-                    break;
-                case 2:
-                    BossName = "The Storm Drake";
-                    BossTitle = "Apex Predator";
-                    nameColor = Color.Cyan;
-                    titleColor = Color.DarkCyan;
-                    break;
-                case 3:
-                    BossName = "Dripplord";
-                    BossTitle = "Bloody Assimilator";
-                    nameColor = Color.Red;
-                    titleColor = Color.DarkRed;
-                    break;
-                case 4:
-                    BossName = "Iorich";
-                    BossTitle = "The Guardian";
-                    nameColor = Color.LimeGreen;
-                    titleColor = Color.Green;
-                    break;
-                case 5:
-                    BossName = "Gra-knight and Lady Apollo";//"Gra-knight and Apollus";
-                    BossTitle = "The Super Stoner Buds";//"The Super Stoner Bros"; /*The Super Biome Brothers*/
-                    nameColor = new Color(230, 228, 216);
-                    titleColor = new Color(64, 80, 89);
+                    BossName = "eye of cthulhu";
+                    BossTitle = "the gamer";
                     break;
                 default:
                     BossName = "snoop dogg";
@@ -99,15 +75,19 @@ namespace OvermorrowMod.Common
                     break;
 
             }
-            Vector2 textSize = FontAssets.DeathText.Value.MeasureString(BossName);
-            Vector2 textSize2 = FontAssets.DeathText.Value.MeasureString(BossTitle) * 0.5f;
-            float textPositionLeft = (Main.screenWidth / 2) - textSize.X / 2f;
-            float text2PositionLeft = (Main.screenWidth / 2) - textSize2.X / 2f;
-            /*float alpha = 255;
-			float alpha2 = 255;*/
+            Vector2 nameSize = FontAssets.DeathText.Value.MeasureString(BossName);
+            Vector2 titleSize = FontAssets.DeathText.Value.MeasureString(BossTitle);
+            float nameOffset = (Main.screenWidth / 2) - nameSize.X / 2f;
+            float titleOffset = (Main.screenWidth / 2) - titleSize.X / 2f;
 
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, FontAssets.DeathText.Value, BossTitle, new Vector2(text2PositionLeft, (Main.screenHeight / 2 - 250)), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, FontAssets.DeathText.Value, BossName, new Vector2(textPositionLeft, (Main.screenHeight / 2 - 300)), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
+            //Main.spriteBatch.Reload(BlendState.Additive);
+            Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag").Value;
+            float backOffset = (Main.screenWidth / 2);
+            Main.spriteBatch.Draw(backDrop, new Vector2(backOffset, 0), null, Color.White, 0f, backDrop.Size() / 2, 1f, SpriteEffects.None, 1f);
+            //Main.spriteBatch.Reload(BlendState.AlphaBlend);
+
+            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, FontAssets.DeathText.Value, BossTitle, new Vector2(titleOffset, 50), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
+            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, FontAssets.DeathText.Value, BossName, new Vector2(nameOffset, 100), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
         }
 
         public override void PostDrawTiles()

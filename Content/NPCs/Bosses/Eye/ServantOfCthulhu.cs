@@ -168,7 +168,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 //if (npc.alpha <= 0) npc.alpha = 0;
 
                                 // Entrance portal makes them fade in, if they are going out the final we don't want them to fade in yet
-                                if (projectile.ai[0] == 240 && parent.GetGlobalNPC<EyeOfCthulhu>().PortalRuns < 2)
+                                if ((projectile.ai[0] == 240 || projectile.ai[0] == 360) && parent.GetGlobalNPC<EyeOfCthulhu>().PortalRuns < 2)
                                 {
                                     EntranceFade = true;
                                 }
