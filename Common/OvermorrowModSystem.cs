@@ -17,11 +17,19 @@ namespace OvermorrowMod.Common
 {
     public class OvermorrowModSystem : ModSystem
     {
+        public static OvermorrowModSystem Instance { get; set; }
+        public OvermorrowModSystem()
+        {
+            Instance = this;
+        }
+
         private GameTime _lastUpdateUiGameTime;
         internal UserInterface MyInterface;
         internal UserInterface AltarUI;
+        internal UserInterface TitleInterface;
 
         internal AltarUI Altar;
+        internal TitleCard TitleCard;
         public override void PostUpdateEverything()
         {
             Trail.UpdateTrails();
@@ -37,6 +45,10 @@ namespace OvermorrowMod.Common
 
                 Altar = new AltarUI();
                 Altar.Activate();
+
+                TitleInterface = new UserInterface();
+                TitleCard = new TitleCard();
+                TitleInterface.SetState(TitleCard);
             }
         }
 
@@ -121,44 +133,23 @@ namespace OvermorrowMod.Common
             int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
             if (mouseTextIndex != -1)
             {
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                       "OvermorrowMod: AltarUI",
-                       delegate
-                       {
-                           if (_lastUpdateUiGameTime != null && AltarUI?.CurrentState != null)
-                           {
-                               AltarUI.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
-                           }
-                           return true;
-                       },
-                          InterfaceScaleType.UI));
-
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "OvermorrowMod: MyInterface",
-                    delegate
-                    {
-                        if (_lastUpdateUiGameTime != null && MyInterface?.CurrentState != null)
-                        {
-                            MyInterface.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
-                        }
-                        return true;
-                    },
-                       InterfaceScaleType.UI));
-
-
-                OvermorrowModPlayer modPlayer = Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>();
-                if (modPlayer.ShowText)
-                {
-                    layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "OvermorrowMod: Title",
-                    delegate
-                    {
-                        BossTitle(modPlayer.TitleID);
-                        return true;
-                    },
-                    InterfaceScaleType.UI));
-                }
+                AddInterfaceLayer(layers, TitleInterface, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
             }
+        }
+
+        public static void AddInterfaceLayer(List<GameInterfaceLayer> layers, UserInterface userInterface, UIState state, int index, bool visible, string customName = null)
+        {
+            string name = customName == null ? state.ToString() : customName;
+            layers.Insert(index, new LegacyGameInterfaceLayer("OvermorrowMod: " + name,
+                delegate
+                {
+                    if (visible)
+                    {
+                        userInterface.Update(Main._drawInterfaceGameTime);
+                        state.Draw(Main.spriteBatch);
+                    }
+                    return true;
+                }, InterfaceScaleType.UI));
         }
 
         internal void ShowAltar()
@@ -175,7 +166,6 @@ namespace OvermorrowMod.Common
         {
             MyInterface?.SetState(null);
         }
-
 
         public override void PreUpdateEntities()
         {
