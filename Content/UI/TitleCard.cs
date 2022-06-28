@@ -25,6 +25,8 @@ namespace OvermorrowMod.Content.UI
             this.name = name;
             this.title = title;
             this.showLength = showLength;
+
+            visible = true;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
