@@ -63,7 +63,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.type == NPCID.EyeofCthulhu)
             {
                 Texture2D badge = ModContent.Request<Texture2D>(AssetDirectory.Empty).Value;
-                OvermorrowModSystem.Instance.TitleCard.SetTitle(badge, "eye of cthulhu", "the gamer", 1080);
+                OvermorrowModSystem.Instance.TitleCard.SetTitle(badge, "eye of cthulhu", "the gamer", 420);
                 //Main.hideUI = true;
 
                 TentacleList = new List<Projectile>();
@@ -122,6 +122,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool PreAI(NPC npc)
         {
             if (npc.type != NPCID.EyeofCthulhu) return true;
+
+            return false;
 
             if (npc.alpha >= 255) npc.alpha = 255;
             if (npc.alpha <= 0) npc.alpha = 0;
