@@ -61,9 +61,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override void OnSpawn(NPC npc, IEntitySource source)
         {
             if (npc.type == NPCID.EyeofCthulhu)
-            {
-                Texture2D badge = ModContent.Request<Texture2D>(AssetDirectory.Empty).Value;
-                OvermorrowModSystem.Instance.TitleCard.SetTitle(badge, "eye of cthulhu", "the gamer", 420);
+            {                
                 //Main.hideUI = true;
 
                 TentacleList = new List<Projectile>();
@@ -122,8 +120,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool PreAI(NPC npc)
         {
             if (npc.type != NPCID.EyeofCthulhu) return true;
-
-            return false;
 
             if (npc.alpha >= 255) npc.alpha = 255;
             if (npc.alpha <= 0) npc.alpha = 0;
@@ -527,6 +523,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             else if (PortalRuns == 2)
                             {
                                 // The NPC has exited the final portal, and is slowing down
+                                Texture2D badge = TextureAssets.NpcHeadBoss[0].Value;
+                                OvermorrowModSystem.Instance.TitleCard.SetTitle(badge, "eye of cthulhu", "the gamer", 300);
+
                                 if (npc.ai[1] == 360 + 120f)
                                 {
                                     foreach (Player cameraPlayer in Main.player)

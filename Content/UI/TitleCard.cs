@@ -17,6 +17,7 @@ namespace OvermorrowMod.Content.UI
         private int showLength;
 
         private int timer;
+        private float secondaryTimer;
 
         public static bool visible = false;
 
@@ -37,23 +38,48 @@ namespace OvermorrowMod.Content.UI
             int xPosition = (int)(Main.screenWidth * Main.UIScale) / 2;
             int yPosition = 60;
 
-            Color color = Color.White * (Utils.Clamp(timer - 60, 0, 120) / 120f);
-            int titleSize = (int)(FontAssets.DeathText.Value.MeasureString(title).X) / 2;
+            Color color = Color.White * (Utils.Clamp(timer - 180, 0, 60) / 60f);
+            if (timer > 240) color = Color.White * (1 - (Utils.Clamp(timer - 240, 0, 60) / 60f));
+
+            Color borderColor = Color.White;
+            if (timer > 240) borderColor = Color.White * (1 - (Utils.Clamp(timer - 240, 0, 60) / 60f));
+
+            //int titleSize = (int)(FontAssets.DeathText.Value.MeasureString(title).X) / 2;
             int nameSize = (int)(FontAssets.DeathText.Value.MeasureString(name).X) / 2;
 
-
             Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag").Value;
-            Color backColor = Color.White * (Utils.Clamp(timer - 60, 0, 60) / 60f);
-            Rectangle drawRectangle = new Rectangle(0, 0, backDrop.Width, (int)MathHelper.Lerp(0, backDrop.Height, Utils.Clamp(timer, 0, 60) / 60f));
-            spriteBatch.Draw(backDrop, new Vector2(xPosition + 65, yPosition + 100), drawRectangle, Color.White, 0f, backDrop.Size() / 2, 1f, SpriteEffects.None, 1f);
+            //Color backColor = Color.White * (Utils.Clamp(timer - 120, 0, 60) / 60f);
+
+            Rectangle drawRectangle = new Rectangle(0, 0, backDrop.Width, (int)MathHelper.Lerp(0, backDrop.Height, Utils.Clamp(timer - 120, 0, 30) / 30f));
+            spriteBatch.Draw(backDrop, new Vector2(xPosition + 65, yPosition + 100), drawRectangle, borderColor, 0f, backDrop.Size() / 2, 1f, SpriteEffects.None, 1f);
 
             Texture2D borderTop = ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag_Top").Value;
             Texture2D borderBottom = ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag_Bottom").Value;
 
-            float topOffset = MathHelper.Lerp(0, -106, Utils.Clamp(timer, 0, 60) / 60f);
-            float bottomOffset = MathHelper.Lerp(0, 200, Utils.Clamp(timer, 0, 60) / 60f);
-            spriteBatch.Draw(borderBottom, new Vector2(xPosition + 65, yPosition /*+ 106 + topOffset*/), null, Color.White, 0f, borderBottom.Size() / 2, 1f, SpriteEffects.None, 1f);
-            spriteBatch.Draw(borderTop, new Vector2(xPosition + 65, yPosition + bottomOffset), null, Color.White, 0f, borderTop.Size() / 2, 1f, SpriteEffects.None, 1f);
+            //float topOffset = MathHelper.Lerp(0, -106, Utils.Clamp(timer - 60, 0, 60) / 60f);
+            float bottomOffset = MathHelper.Lerp(0, 192, Utils.Clamp(timer - 120, 0, 30) / 30f);
+            
+
+            spriteBatch.Draw(borderBottom, new Vector2(xPosition + 65, yPosition + 20 + bottomOffset), null, borderColor, 0f, borderTop.Size() / 2, 1f, SpriteEffects.None, 1f);
+            spriteBatch.Draw(borderTop, new Vector2(xPosition + 65, yPosition - 14/*+ 106 + topOffset*/), null, borderColor, 0f, borderBottom.Size() / 2, 1f, SpriteEffects.None, 1f);
+
+            #region Badge Animation
+            spriteBatch.Draw(badge, new Vector2(xPosition + 65, yPosition), null, borderColor, 0f, badge.Size() / 2, 1f, SpriteEffects.None, 1f);
+
+            if (timer <= 120)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Vortex2").Value;
+                float scale = MathHelper.Lerp(.55f, 0, Utils.Clamp(timer - 60, 0, 60) / 60f);
+
+                spriteBatch.Draw(texture, new Vector2(xPosition + 65, yPosition), null, new Color(60, 3, 79), secondaryTimer * 0.5f, texture.Size() / 2, scale, SpriteEffects.None, 0);
+
+                texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "VortexCenter").Value;
+                scale = MathHelper.Lerp(0.5f, 0, Utils.Clamp(timer - 60, 0, 60) / 60f);
+
+                spriteBatch.Draw(texture, new Vector2(xPosition + 65, yPosition), null, Color.Black, secondaryTimer, texture.Size() / 2, scale, SpriteEffects.None, 0);
+            }
+            #endregion
+
 
             spriteBatch.DrawString(FontAssets.DeathText.Value, title, new Vector2(xPosition, yPosition + 35), color, 0f, Vector2.Zero, 0.6f, SpriteEffects.None, 0);
             spriteBatch.DrawString(FontAssets.DeathText.Value, name, new Vector2(xPosition - nameSize / 2, yPosition + 75), color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
@@ -63,11 +89,16 @@ namespace OvermorrowMod.Content.UI
             if (timer == showLength)
             {
                 timer = 0;
+                secondaryTimer = 0;
                 visible = false;
             }
             else
             {
-                if (!Main.gamePaused) timer++;
+                if (!Main.gamePaused)
+                {
+                    secondaryTimer += 0.1f;
+                    timer++;
+                }
             }
         }
     }
