@@ -356,8 +356,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                                 npc.ShowNameOnHover = true;
                                 npc.dontTakeDamage = false;
-
-
                             }
                         }
                     }
@@ -379,6 +377,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 if (npc.Distance(cameraPlayer.Center) < 1800)
                                 {
                                     cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 600, 120, 60);
+                                    cameraPlayer.AddBuff(ModContent.BuffType<Cutscene>(), 720);
                                 }
                             }
                         }
@@ -386,7 +385,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     #endregion
 
                     // This is the delay counter inbetween portal movements
-                    if (npc.ai[2] > 0) npc.ai[2]--;
+                    if (npc.ai[2] > 0)
+                    {
+                        // NPC movement inbetween portal jumps, mainly for the camera to follow
+                        switch (PortalRuns)
+                        {
+                            case 1:
+                                npc.Center = Vector2.Lerp(player.Center + new Vector2(6, -2) * 75, InitialPosition, npc.ai[2] / 30f);
+                                break;
+                            case 2:
+                                npc.Center = Vector2.Lerp(player.Center + new Vector2(0, -8) * 75, InitialPosition, npc.ai[2] / 30f);
+                                break;
+                        }
+
+                        npc.ai[2]--;
+                    }
 
                     #region Portal Trail
                     if (npc.ai[1] >= 330 && npc.ai[3] <= 0 && npc.ai[2] == 0)
@@ -409,10 +422,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                         npc.Center = player.Center + new Vector2(6, -2) * 75;
                                         break;
                                     case 2:
-                                        npc.Center = player.Center + new Vector2(0, -9) * 75;
-                                        break;
-                                    default:
-                                        //npc.Center = player.Center + new Vector2(Main.rand.Next(-6, 5) + 1, Main.rand.Next(-9, -7)) * 75;
+                                        npc.Center = player.Center + new Vector2(0, -8) * 75;
                                         break;
                                 }
                             }
@@ -519,9 +529,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                                 npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
                             }
-                            else if (PortalRuns == 2)
+                            else if (PortalRuns == 2) // The NPC has exited the final portal, and is slowing down
                             {
-                                // The NPC has exited the final portal, and is slowing down
                                 Texture2D badge = TextureAssets.NpcHeadBoss[0].Value;
                                 OvermorrowModSystem.Instance.TitleCard.SetTitle(badge, "eye of cthulhu", "the gamer", 300);
 
@@ -581,6 +590,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 Main.NewText(TrailPositions.Count);
 
                                 npc.velocity = Vector2.Zero;
+                                InitialPosition = npc.Center;
 
                                 npc.ai[1] = 330;
                                 npc.ai[2] = 30; // Set the delay inbetween portal instances
