@@ -483,7 +483,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
 
                         #region Tentacle Growth
-
                         if (npc.ai[1] < 330 + 45)
                         {
                             foreach (Projectile projectile in TentacleList)

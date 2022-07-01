@@ -94,7 +94,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         // For each AI tick, move through an index of the array
                         // This shit is grossly hard-coded to account for the delays
                         //if (npc.ai[0] < 480)
-                        if (npc.ai[3] < 239 || (npc.ai[3] > 299 && npc.ai[3] < 539))
+                        if (npc.ai[3] < 239 || (npc.ai[3] > 269 && npc.ai[3] < 509))
                         {
                             npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]] + TrailOffset;
 
@@ -259,7 +259,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             {
                 spriteBatch.Reload(SpriteSortMode.Immediate);
 
-                Texture2D texture = TextureAssets.Npc[npc.type].Value;
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu").Value;
 
                 if (npc.ai[1] < 90)
                 {
@@ -272,7 +272,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
 
-                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, npc.frame, color, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation + MathHelper.PiOver2, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);
 

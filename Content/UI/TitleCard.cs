@@ -39,10 +39,10 @@ namespace OvermorrowMod.Content.UI
             int yPosition = 60;
 
             Color color = Color.White * (Utils.Clamp(timer - 180, 0, 60) / 60f);
-            if (timer > 240) color = Color.White * (1 - (Utils.Clamp(timer - 240, 0, 60) / 60f));
+            if (timer > 270) color = Color.White * (1 - (Utils.Clamp(timer - 270, 0, 30) / 30f));
 
             Color borderColor = Color.White;
-            if (timer > 240) borderColor = Color.White * (1 - (Utils.Clamp(timer - 240, 0, 60) / 60f));
+            if (timer > 270) borderColor = Color.White * (1 - (Utils.Clamp(timer - 270, 0, 30) / 30f));
 
             //int titleSize = (int)(FontAssets.DeathText.Value.MeasureString(title).X) / 2;
             int nameSize = (int)(FontAssets.DeathText.Value.MeasureString(name).X) / 2;
@@ -59,7 +59,6 @@ namespace OvermorrowMod.Content.UI
             //float topOffset = MathHelper.Lerp(0, -106, Utils.Clamp(timer - 60, 0, 60) / 60f);
             float bottomOffset = MathHelper.Lerp(0, 192, Utils.Clamp(timer - 120, 0, 30) / 30f);
             
-
             spriteBatch.Draw(borderBottom, new Vector2(xPosition + 65, yPosition + 20 + bottomOffset), null, borderColor, 0f, borderTop.Size() / 2, 1f, SpriteEffects.None, 1f);
             spriteBatch.Draw(borderTop, new Vector2(xPosition + 65, yPosition - 14/*+ 106 + topOffset*/), null, borderColor, 0f, borderBottom.Size() / 2, 1f, SpriteEffects.None, 1f);
 
