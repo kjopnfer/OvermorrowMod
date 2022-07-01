@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Biomes
             return ModContent.GetInstance<BiomeTileCounts>().LavaBiome > 10;
         }
 
-        public override void SpecialVisuals(Player player)
+        public override void SpecialVisuals(Player player, bool isActive)
         {
             for (int k = (int)Math.Floor(player.position.X / 16) - 55; k < (int)Math.Floor(player.position.X / 16) + 55; k++)
             {

@@ -32,7 +32,7 @@ namespace OvermorrowMod.Common
 
         public override void AddRecipes()
         {
-            Mod.CreateRecipe(ItemID.MagicMirror)
+            Recipe.Create(ItemID.MagicMirror)
                 .AddIngredient(ItemID.RecallPotion, 7)
                 .Register();
         }
