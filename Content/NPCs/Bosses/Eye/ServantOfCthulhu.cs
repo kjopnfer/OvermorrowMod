@@ -281,5 +281,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
         }
+
+        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (npc.type == NPCID.ServantofCthulhu)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu_Glow").Value;
+                Color color = Color.Lerp(Color.White, Color.Transparent, npc.alpha / 255f);
+                spriteBatch.Draw(texture, npc.Center - screenPos, null, color, npc.rotation + MathHelper.PiOver2, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
+            }
+
+            base.PostDraw(npc, spriteBatch, screenPos, drawColor);
+        }
     }
 }
