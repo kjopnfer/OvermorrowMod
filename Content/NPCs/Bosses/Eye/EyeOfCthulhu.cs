@@ -384,6 +384,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
                     #endregion
 
+                    #region Portal Delay
                     // This is the delay counter inbetween portal movements
                     if (npc.ai[2] > 0)
                     {
@@ -400,14 +401,22 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         npc.ai[2]--;
                     }
+                    #endregion
 
                     #region Portal Trail
-                    if (npc.ai[1] >= 330 && npc.ai[3] <= 0 && npc.ai[2] == 0)
+                    if (npc.ai[1] >= 330 && npc.ai[3] <= 0 && npc.ai[2] == 0) // Timer is greater than 330 (end of spin), darkness is gone, and delay is 0
                     {
                         // Flying outside the portal and spawning the end-portal
                         if (npc.ai[1]++ == 330 && PortalRuns < 3)
                         {
                             npc.alpha = 255;
+
+                            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/EyePortalOpen")
+                            {
+                                Volume = 0.9f,
+                                PitchVariance = 0.2f,
+                                MaxInstances = 3,
+                            });
 
                             #region Position
                             if (IntroPortal)
