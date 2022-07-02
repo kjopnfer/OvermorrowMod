@@ -67,6 +67,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 {
                     npc.alpha = 255;
                 }
+
+                npc.localAI[1] = -30;
+                npc.localAI[2] = -60;
             }
 
             base.OnSpawn(npc, source);
@@ -81,6 +84,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 if (npc.ai[1] == 420)
                 {
+                    // AI[0] is the indexer
+                    // AI[1] is the state of moving through the portal
+                    // AI[2] is the ID of the EoC
+                    // AI[3] is the AI counter
                     if (npc.ai[0] == 0)
                     {
                         TrailOffset = new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 15;
@@ -215,11 +222,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
                 else
                 {
+                    // AI[0] is something idk
+                    // AI[1] is the AI counter
+
                     // When the AI is set to -1, the NPC will not deal damage for 1.5 seconds
                     // This is set whenever they are spawned from the world portals
                     if (npc.ai[0] == -1)
                     {
-                        if (npc.ai[1]++ > 90) npc.ai[0] = 0;
+                        if (npc.ai[1]++ > 90f) npc.ai[0] = 0;
                     }
 
                     /*foreach (NPC boss in Main.npc)
@@ -261,10 +271,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu").Value;
 
-                if (npc.ai[1] < 90)
+                if (npc.ai[1] < 90f)
                 {
                     //Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-                    //progress = Utils.Clamp(npc.ai[1], 0, 90) / 90f;
+                    //progress = Utils.Clamp(npc.ai[1], 0, 90f) / 90f;
                     //effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
                     //effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
                     //effect.CurrentTechnique.Passes["Whiteout"].Apply();
@@ -272,7 +282,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
 
-                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation + MathHelper.PiOver2, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation + MathHelper.PiOver2, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);
 
@@ -288,7 +298,41 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             {
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu_Glow").Value;
                 Color color = Color.Lerp(Color.White, Color.Transparent, npc.alpha / 255f);
-                spriteBatch.Draw(texture, npc.Center - screenPos, null, color, npc.rotation + MathHelper.PiOver2, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, npc.Center - screenPos, null, color, npc.rotation + MathHelper.PiOver2, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+
+                #region Pulse
+                // TODO: Use a for loop nerd!!
+                spriteBatch.Reload(BlendState.Additive);
+
+                texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
+
+                if (npc.localAI[0]++ == 90f) npc.localAI[0] = 0;
+                if (npc.localAI[1]++ == 90f) npc.localAI[1] = 0;
+                if (npc.localAI[2]++ == 90f) npc.localAI[2] = 0;
+
+                float progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[0], 0, 90f) / 90f);
+                color = Color.Lerp(Color.Orange, Color.Transparent, progress);
+                float scale = MathHelper.Lerp(0, 0.25f, progress);
+
+                for (int i = 0; i < 2; i++)
+                    spriteBatch.Draw(texture, npc.Center - screenPos, null, color, 0f, texture.Size() / 2, scale, SpriteEffects.None, 1f);
+
+                progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[1], 0, 90f) / 90f);
+                Color color2 = Color.Lerp(Color.Orange, Color.Transparent, progress);
+                float scale2 = MathHelper.Lerp(0, 0.25f, progress);
+
+                for (int i = 0; i < 2; i++)
+                    spriteBatch.Draw(texture, npc.Center - screenPos, null, color2, 0f, texture.Size() / 2, scale2, SpriteEffects.None, 1f);
+
+                progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[2], 0, 90f) / 90f);
+                Color color3 = Color.Lerp(Color.Orange, Color.Transparent, progress);
+                float scale3 = MathHelper.Lerp(0, 0.25f, progress);
+
+                for (int i = 0; i < 2; i++)
+                    spriteBatch.Draw(texture, npc.Center - screenPos, null, color3, 0f, texture.Size() / 2, scale3, SpriteEffects.None, 1f);
+
+                spriteBatch.Reload(BlendState.AlphaBlend);
+                #endregion
             }
 
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);

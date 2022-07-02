@@ -517,17 +517,12 @@ namespace OvermorrowMod.Common.Particles
             particle.scale = 0f;
         }
 
-        public float easeOutQuad(float x)
-        {
-            return 1 - (1 - x) * (1 - x);
-        }
-
         public override void Update()
         {
             particle.velocity = Vector2.Zero;
             //float progress = particle.activeTime / maxTime;
 
-            float progress = easeOutQuad(particle.activeTime / maxTime);
+            float progress = ModUtils.EaseOutQuad(particle.activeTime / maxTime);
             particle.scale = MathHelper.SmoothStep(particle.scale, maxSize, progress);
             particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, particle.activeTime / maxTime);
             if (particle.activeTime > maxTime) particle.Kill();

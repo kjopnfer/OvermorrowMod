@@ -315,5 +315,11 @@ namespace OvermorrowMod.Core
             return array;
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
+
+        public static float EaseOutQuad(float x)
+        {
+            return 1 - (1 - x) * (1 - x);
+        }
+
     }
 }
