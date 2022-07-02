@@ -529,7 +529,7 @@ namespace OvermorrowMod.Common.Particles
 
             float progress = easeOutQuad(particle.activeTime / maxTime);
             particle.scale = MathHelper.SmoothStep(particle.scale, maxSize, progress);
-            particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, progress);
+            particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, particle.activeTime / maxTime);
             if (particle.activeTime > maxTime) particle.Kill();
         }
 

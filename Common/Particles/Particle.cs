@@ -38,7 +38,7 @@ namespace OvermorrowMod.Common.Particles
             ParticleTextures = new Dictionary<int, Texture2D>();
             ParticleNames = new Dictionary<int, string>();
             CustomParticle.CustomParticles = new Dictionary<int, CustomParticle>();
-            On.Terraria.Main.DrawInterface += Draw;
+            //On.Terraria.Main.DrawInterface += Draw;
         }
         public static void TryRegisteringParticle(Type type)
         {
@@ -59,7 +59,7 @@ namespace OvermorrowMod.Common.Particles
         {
             NextIndex = -1;
             ActiveParticles = -1;
-            On.Terraria.Main.DrawInterface -= Draw;
+            //On.Terraria.Main.DrawInterface -= Draw;
             particles = null;
             ParticleTypes = null;
             ParticleTextures = null;

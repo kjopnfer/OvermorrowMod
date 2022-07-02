@@ -5,6 +5,7 @@ using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ModLoader;
@@ -157,7 +158,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 // The value that is set for the end-portal, this delays the portal showing up
                 if (Projectile.ai[0] == 450)
                 {
-                    //Main.NewText("dude hello??" + Projectile.localAI[0] + " / " + Projectile.ai[1]);
+                    if (Projectile.ai[1] == 180)
+                    {
+                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/EyePortalOpen")
+                        {
+                            Volume = 0.9f,
+                            PitchVariance = 0.2f,
+                            MaxInstances = 3,
+                        });
+                    }
 
                     if (Projectile.ai[1]++ >= 180)
                     {

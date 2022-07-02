@@ -561,9 +561,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                                 if (npc.ai[1] >= 360 + 120f && npc.ai[1] <= 360 + 130f && npc.ai[1] % 2 == 0)
                                 {
-                                    Main.NewText("PARTICLE");
-                                    float scale = Main.rand.NextFloat(5.5f, 7.5f);
-                                    Particle.CreateParticle(Particle.ParticleType<Pulse>(), npc.Center, Vector2.Zero, Color.Purple, scale, Main.rand.NextFloat(1f, 2f), 0, scale, Main.rand.Next(16, 20) * 10);
+                                    float scale = Main.rand.NextFloat(3f, 5f);
+                                    Particle.CreateParticle(Particle.ParticleType<Pulse>(), npc.Center, Vector2.Zero, Color.Purple, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
                                 }
 
                                 npc.velocity = Vector2.Lerp(Vector2.UnitY * 3, Vector2.UnitY * 0.1f, Utils.Clamp(npc.ai[1] - 390, 0, 60f) / 60f);
@@ -601,8 +600,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                             if (PortalRuns++ < 2)
                             {
-                                Main.NewText(TrailPositions.Count);
-
                                 npc.velocity = Vector2.Zero;
                                 InitialPosition = npc.Center;
 
