@@ -154,9 +154,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
             else
             {
-                if (Projectile.localAI[0] < 25)
+                // The value that is set for the end-portal, this delays the portal showing up
+                if (Projectile.ai[0] == 450)
                 {
-                    Projectile.localAI[0]++;
+                    //Main.NewText("dude hello??" + Projectile.localAI[0] + " / " + Projectile.ai[1]);
+
+                    if (Projectile.ai[1]++ >= 180)
+                    {
+                        if (Projectile.localAI[0] < 25) Projectile.localAI[0]++;
+                    }
+                }
+                else
+                {
+                    if (Projectile.localAI[0] < 25) Projectile.localAI[0]++;
                 }
             }
         }

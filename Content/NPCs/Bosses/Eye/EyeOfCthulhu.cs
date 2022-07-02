@@ -12,6 +12,7 @@ using Terraria.GameContent;
 using OvermorrowMod.Common;
 using System.Collections.Generic;
 using Terraria.Audio;
+using OvermorrowMod.Common.Particles;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
@@ -61,7 +62,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override void OnSpawn(NPC npc, IEntitySource source)
         {
             if (npc.type == NPCID.EyeofCthulhu)
-            {                
+            {
                 //Main.hideUI = true;
 
                 TentacleList = new List<Projectile>();
@@ -425,7 +426,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 switch (PortalRuns)
                                 {
                                     case 0: // Left side
-                                        npc.Center = player.Center + new Vector2(-8, -11) * 75;
+                                        npc.Center = player.Center + new Vector2(-6, -4) * 75;
                                         break;
                                     case 1: // Right side
                                         npc.Center = player.Center + new Vector2(6, -2) * 75;
@@ -453,15 +454,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                         break;
                                     case 1: // Go right
                                         npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25)) * 6f;
-                                        RotateDirection = 1;
+                                        RotateDirection = -1;
                                         break;
                                     case 2: // Go down
                                         npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 3;
                                         break;
-                                    default:
-                                        //npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25) * (Main.rand.NextBool() ? 1 : -1)) * 6f;
-                                        break;
-
                                 }
                                 //npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25) * (Main.rand.NextBool() ? 1 : -1)) * 6f;
                             }
@@ -489,7 +486,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 Vector2 simulatedVelocity = npc.velocity;
 
                                 // i am 60 parallel universes ahead of you
-                                turnResistance = Main.rand.NextFloat(0.012f, 0.02f);
+                                turnResistance = Main.rand.NextFloat(0.02f, 0.026f);
                                 for (int i = 0; i < 240; i++)
                                 {
                                     if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
@@ -550,6 +547,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                         if (npc.Distance(cameraPlayer.Center) < 1800)
                                         {
                                             cameraPlayer.GetModPlayer<OvermorrowModPlayer>().ShowTitleCard(OvermorrowModPlayer.BossID.Eye, 480);
+                                            cameraPlayer.GetModPlayer<OvermorrowModPlayer>().AddScreenShake(20, 4);
                                         }
                                     }
 
@@ -559,6 +557,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                         PitchVariance = 0.2f,
                                         MaxInstances = 3,
                                     });
+                                }
+
+                                if (npc.ai[1] >= 360 + 120f && npc.ai[1] <= 360 + 130f && npc.ai[1] % 2 == 0)
+                                {
+                                    Main.NewText("PARTICLE");
+                                    float scale = Main.rand.NextFloat(5.5f, 7.5f);
+                                    Particle.CreateParticle(Particle.ParticleType<Pulse>(), npc.Center, Vector2.Zero, Color.Purple, scale, Main.rand.NextFloat(1f, 2f), 0, scale, Main.rand.Next(16, 20) * 10);
                                 }
 
                                 npc.velocity = Vector2.Lerp(Vector2.UnitY * 3, Vector2.UnitY * 0.1f, Utils.Clamp(npc.ai[1] - 390, 0, 60f) / 60f);

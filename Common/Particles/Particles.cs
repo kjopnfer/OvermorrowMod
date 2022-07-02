@@ -500,74 +500,8 @@ namespace OvermorrowMod.Common.Particles
             spriteBatch.Draw(texture, pos, null, col2, particle.rotation, origin, scale2 * 0.6f, effects, 0f);
         }
     }
+
     public class Pulse : CustomParticle
-    {
-        //public override string Texture => "Terraria/Projectile_" + ProjectileID.StardustTowerMark;
-        public override string Texture => AssetDirectory.Textures + "PulseCircle";
-        public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
-        float maxTime = 60f;
-        public override void OnSpawn()
-        {
-            /*if (Main.rand.NextBool(3))
-            {
-                particle.customData[0] *= 2;
-            }*/
-            if (particle.customData[1] == 0) particle.customData[1] = 1;
-            if (particle.customData[2] == 0) particle.customData[2] = 1;
-            if (particle.customData[3] == 0) particle.customData[3] = 1;
-            maxSize = particle.scale;
-            particle.scale = 0f;
-        }
-        public override void Update()
-        {
-            particle.velocity = Vector2.Zero;
-            float progress = (float)particle.activeTime / maxTime;
-            particle.scale = MathHelper.Lerp(particle.scale, maxSize, progress);
-            particle.alpha = MathHelper.Lerp(particle.alpha, 0, progress);
-            if (particle.activeTime > maxTime) particle.Kill();
-        }
-
-        private void DrawRing(SpriteBatch spriteBatch, Vector2 position, float width, float height, float rotation, float prog, Color color)
-        {
-            var texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
-            Effect effect = OvermorrowModFile.Instance.Ring.Value;
-
-            effect.Parameters["uProgress"].SetValue(rotation);
-            effect.Parameters["uColor"].SetValue(color.ToVector3());
-            effect.Parameters["uImageSize1"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-            effect.Parameters["uOpacity"].SetValue(prog);
-            effect.CurrentTechnique.Passes["BowRingPass"].Apply();
-
-            spriteBatch.End();
-            spriteBatch.Begin(default, BlendState.Additive, default, default, default, effect, Main.GameViewMatrix.ZoomMatrix);
-
-            var target = ModUtils.toRect(position, (int)(16 * (width + prog)), (int)(60 * (height + prog)));
-            spriteBatch.Draw(texture, target, null, color * prog, particle.rotation, texture.Size() / 2, 0, 0);
-
-            spriteBatch.End();
-            spriteBatch.Begin(default, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-
-            //float progress = (float)particle.activeTime / maxTime;
-            //DrawRing(spriteBatch, particle.position, 1, 1, Main.GameUpdateCount / 40f, 1f, new Color(244, 188, 91));
-
-            spriteBatch.Reload(BlendState.Additive);
-
-            Texture2D texture = Particle.ParticleTextures[particle.type];
-            Vector2 origin = new Vector2(texture.Width, texture.Height) / 2;
-            float progress = (float)particle.activeTime / maxTime;
-            //float baseScale = 512f / (float)texture.Width;
-            Vector2 scale = new Vector2(particle.scale, particle.scale * 1.5f);
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, origin, scale, SpriteEffects.None, 0f);
-
-            spriteBatch.Reload(BlendState.AlphaBlend);
-        }
-    }
-
-    public class Pulse2 : CustomParticle
     {
         public override string Texture => AssetDirectory.Textures + "PulseCircle";
         public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
@@ -578,14 +512,22 @@ namespace OvermorrowMod.Common.Particles
             if (particle.customData[2] == 0) particle.customData[2] = 1;
             if (particle.customData[3] == 0) particle.customData[3] = 1;
 
+            maxTime = particle.customData[1] == 0 ? 60 : particle.customData[1];
             maxSize = particle.scale;
             particle.scale = 0f;
+        }
+
+        public float easeOutQuad(float x)
+        {
+            return 1 - (1 - x) * (1 - x);
         }
 
         public override void Update()
         {
             particle.velocity = Vector2.Zero;
-            float progress = particle.activeTime / maxTime;
+            //float progress = particle.activeTime / maxTime;
+
+            float progress = easeOutQuad(particle.activeTime / maxTime);
             particle.scale = MathHelper.SmoothStep(particle.scale, maxSize, progress);
             particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, progress);
             if (particle.activeTime > maxTime) particle.Kill();

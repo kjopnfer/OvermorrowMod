@@ -265,7 +265,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void Kill(int timeLeft)
         {
-            Particle.CreateParticle(Particle.ParticleType<Pulse2>(), Projectile.Center, Vector2.Zero, Color.Yellow);
+            Particle.CreateParticle(Particle.ParticleType<Pulse>(), Projectile.Center, Vector2.Zero, Color.Yellow);
 
             float radius = 15;
             int numLocations = 10;
