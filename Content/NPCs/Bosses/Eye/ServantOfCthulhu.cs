@@ -23,6 +23,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private bool ExitFade = false;
         private Vector2 TrailOffset;
 
+        private bool BossPulse = false;
+        private int PulseCounter = 0;
+
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
             if (npc.type == NPCID.ServantofCthulhu)
@@ -67,6 +70,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 {
                     npc.alpha = 255;
                 }
+
+                BossPulse = false;
+                PulseCounter = 0;
 
                 npc.localAI[1] = -30;
                 npc.localAI[2] = -60;
@@ -263,6 +269,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             return base.CheckActive(npc);
         }
 
+        public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
+        {
+            if (npc.type == NPCID.ServantofCthulhu)
+            {
+                if (!BossPulse) BossPulse = true;
+            }
+
+            base.OnHitPlayer(npc, target, damage, crit);
+        }
+
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (npc.type == NPCID.ServantofCthulhu)
@@ -304,36 +320,51 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 // TODO: Use a for loop nerd!!
                 spriteBatch.Reload(BlendState.Additive);
 
-                texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
+                if (!Main.gamePaused) PulseCounter++;
+                if (BossPulse && PulseCounter <= 360)
+                {
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
 
-                if (npc.localAI[0]++ == 90f) npc.localAI[0] = 0;
-                if (npc.localAI[1]++ == 90f) npc.localAI[1] = 0;
-                if (npc.localAI[2]++ == 90f) npc.localAI[2] = 0;
+                    if (npc.localAI[0]++ == 90f) npc.localAI[0] = 0;
+                    if (npc.localAI[1]++ == 90f) npc.localAI[1] = 0;
+                    if (npc.localAI[2]++ == 90f) npc.localAI[2] = 0;
 
-                float progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[0], 0, 90f) / 90f);
-                color = Color.Lerp(Color.Orange, Color.Transparent, progress);
-                float scale = MathHelper.Lerp(0, 0.25f, progress);
+                    float progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[0], 0, 90f) / 90f);
+                    color = Color.Lerp(Color.Orange, Color.Transparent, progress);
+                    float scale = MathHelper.Lerp(0, 0.25f, progress);
 
-                for (int i = 0; i < 2; i++)
-                    spriteBatch.Draw(texture, npc.Center - screenPos, null, color, 0f, texture.Size() / 2, scale, SpriteEffects.None, 1f);
+                    for (int i = 0; i < 3; i++)
+                        spriteBatch.Draw(texture, npc.Center - screenPos, null, color, 0f, texture.Size() / 2, scale, SpriteEffects.None, 1f);
 
-                progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[1], 0, 90f) / 90f);
-                Color color2 = Color.Lerp(Color.Orange, Color.Transparent, progress);
-                float scale2 = MathHelper.Lerp(0, 0.25f, progress);
+                    progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[1], 0, 90f) / 90f);
+                    Color color2 = Color.Lerp(Color.Orange, Color.Transparent, progress);
+                    float scale2 = MathHelper.Lerp(0, 0.25f, progress);
 
-                for (int i = 0; i < 2; i++)
-                    spriteBatch.Draw(texture, npc.Center - screenPos, null, color2, 0f, texture.Size() / 2, scale2, SpriteEffects.None, 1f);
+                    for (int i = 0; i < 3; i++)
+                        spriteBatch.Draw(texture, npc.Center - screenPos, null, color2, 0f, texture.Size() / 2, scale2, SpriteEffects.None, 1f);
 
-                progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[2], 0, 90f) / 90f);
-                Color color3 = Color.Lerp(Color.Orange, Color.Transparent, progress);
-                float scale3 = MathHelper.Lerp(0, 0.25f, progress);
+                    progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[2], 0, 90f) / 90f);
+                    Color color3 = Color.Lerp(Color.Orange, Color.Transparent, progress);
+                    float scale3 = MathHelper.Lerp(0, 0.25f, progress);
 
-                for (int i = 0; i < 2; i++)
-                    spriteBatch.Draw(texture, npc.Center - screenPos, null, color3, 0f, texture.Size() / 2, scale3, SpriteEffects.None, 1f);
+                    for (int i = 0; i < 3; i++)
+                        spriteBatch.Draw(texture, npc.Center - screenPos, null, color3, 0f, texture.Size() / 2, scale3, SpriteEffects.None, 1f);
+
+                    if (PulseCounter >= 360)
+                    {
+                        npc.localAI[0] = 0;
+                        npc.localAI[1] = -30;
+                        npc.localAI[2] = -60;
+
+                        BossPulse = false;
+                        PulseCounter = 0;
+                    }
+                }
 
                 spriteBatch.Reload(BlendState.AlphaBlend);
                 #endregion
             }
+
 
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
