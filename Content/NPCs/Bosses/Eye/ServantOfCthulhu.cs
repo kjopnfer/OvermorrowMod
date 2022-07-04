@@ -329,36 +329,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (npc.localAI[1]++ == 90f) npc.localAI[1] = 0;
                     if (npc.localAI[2]++ == 90f) npc.localAI[2] = 0;
 
-                    float progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[0], 0, 90f) / 90f);
-                    color = Color.Lerp(Color.Orange, Color.Transparent, progress);
-                    float scale = MathHelper.Lerp(0, 0.25f, progress);
-
                     for (int i = 0; i < 3; i++)
-                        spriteBatch.Draw(texture, npc.Center - screenPos, null, color, 0f, texture.Size() / 2, scale, SpriteEffects.None, 1f);
-
-                    progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[1], 0, 90f) / 90f);
-                    Color color2 = Color.Lerp(Color.Orange, Color.Transparent, progress);
-                    float scale2 = MathHelper.Lerp(0, 0.25f, progress);
-
-                    for (int i = 0; i < 3; i++)
-                        spriteBatch.Draw(texture, npc.Center - screenPos, null, color2, 0f, texture.Size() / 2, scale2, SpriteEffects.None, 1f);
-
-                    progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[2], 0, 90f) / 90f);
-                    Color color3 = Color.Lerp(Color.Orange, Color.Transparent, progress);
-                    float scale3 = MathHelper.Lerp(0, 0.25f, progress);
-
-                    for (int i = 0; i < 3; i++)
-                        spriteBatch.Draw(texture, npc.Center - screenPos, null, color3, 0f, texture.Size() / 2, scale3, SpriteEffects.None, 1f);
-
-                    if (PulseCounter >= 360)
                     {
-                        npc.localAI[0] = 0;
-                        npc.localAI[1] = -30;
-                        npc.localAI[2] = -60;
+                        float progress = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[i], 0, 90f) / 90f);
+                        color = Color.Lerp(Color.Orange, Color.Transparent, progress);
+                        float scale = MathHelper.Lerp(0, 0.25f, progress);
 
-                        BossPulse = false;
-                        PulseCounter = 0;
+                        // The original is kinda faded out this just makes it thicker
+                        for (int j = 0; j < 4; j++)
+                            spriteBatch.Draw(texture, npc.Center - screenPos, null, color, 0f, texture.Size() / 2, scale, SpriteEffects.None, 1f);
                     }
+                }
+
+                if (PulseCounter >= 360)
+                {
+                    npc.localAI[0] = 0;
+                    npc.localAI[1] = -30;
+                    npc.localAI[2] = -60;
+
+                    BossPulse = false;
+                    PulseCounter = 0;
                 }
 
                 spriteBatch.Reload(BlendState.AlphaBlend);
