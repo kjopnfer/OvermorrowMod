@@ -169,56 +169,56 @@ namespace OvermorrowMod.Common
 
         public override void AddRecipes()
         {
-            CreateRecipe(ItemID.ChainKnife)
+            Recipe.Create(ItemID.ChainKnife)
                 .AddIngredient(ItemID.Chain, 6)
                 .AddRecipeGroup("IronBar", 1)
                 .AddTile(TileID.Anvils)
                 .Register();
 
-            CreateRecipe(ItemID.HermesBoots)
+            Recipe.Create(ItemID.HermesBoots)
                 .AddIngredient(ItemID.Silk, 6)
                 .AddIngredient<EruditeOrb>(3)
                 .AddTile(TileID.Loom)
                 .Register();
 
-            CreateRecipe(ItemID.WaterWalkingBoots)
+            Recipe.Create(ItemID.WaterWalkingBoots)
                 .AddIngredient(ItemID.HermesBoots)
                 .AddIngredient<EruditeOrb>(3)
                 .AddTile(TileID.Loom)
                 .Register();
 
-            CreateRecipe(ItemID.CloudinaBottle)
+            Recipe.Create(ItemID.CloudinaBottle)
                 .AddIngredient(ItemID.Bottle)
                 .AddIngredient(ItemID.Cloud, 10)
                 .AddIngredient<EruditeOrb>(3)
                 .AddTile(TileID.Anvils)
                 .Register();
 
-            CreateRecipe(ItemID.LuckyHorseshoe)
+            Recipe.Create(ItemID.LuckyHorseshoe)
                 .AddIngredient(ItemID.GoldBar, 10)
                 .AddIngredient<EruditeOrb>(2)
                 .AddTile(TileID.Anvils)
                 .Register();
 
-            CreateRecipe(ItemID.LuckyHorseshoe)
+            Recipe.Create(ItemID.LuckyHorseshoe)
                 .AddIngredient(ItemID.PlatinumBar, 10)
                 .AddIngredient<EruditeOrb>(2)
                 .AddTile(TileID.Anvils)
                 .Register();
 
-            CreateRecipe(ItemID.ClimbingClaws)
+            Recipe.Create(ItemID.ClimbingClaws)
                 .AddRecipeGroup("IronBar", 8)
                 .AddIngredient<EruditeOrb>(2)
                 .AddTile(TileID.Anvils)
                 .Register();
 
-            CreateRecipe(ItemID.ShoeSpikes)
+            Recipe.Create(ItemID.ShoeSpikes)
                 .AddRecipeGroup("IronBar", 8)
                 .AddIngredient<EruditeOrb>(2)
                 .AddTile(TileID.Anvils)
                 .Register();
 
-            CreateRecipe(ItemID.JellyfishNecklace)
+            Recipe.Create(ItemID.JellyfishNecklace)
                 .AddIngredient(ItemID.Coral, 6)
                 .AddIngredient(ItemID.Starfish, 4)
                 .AddIngredient<EruditeOrb>(2)
