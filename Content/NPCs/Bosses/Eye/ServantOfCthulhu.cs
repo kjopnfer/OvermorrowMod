@@ -106,12 +106,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         // For each AI tick, move through an index of the array
                         // This shit is grossly hard-coded to account for the delays
-                        //if (npc.ai[0] < 480)
-                        if (npc.ai[3] < 239 || (npc.ai[3] > 269 && npc.ai[3] < 509))
+                        //if (npc.ai[3] < 239 || (npc.ai[3] > 269 && npc.ai[3] < 509))
+                        if (npc.ai[3] < 59 || (npc.ai[3] > 89 && npc.ai[3] < 329))
                         {
                             npc.Center = parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0]] + TrailOffset;
 
-                            if (npc.ai[0] != 240) npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
+                            if (npc.ai[0] != 60) npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
                             //if (npc.ai[0] != 480) npc.rotation = npc.DirectionTo(parent.GetGlobalNPC<EyeOfCthulhu>().TrailPositions[(int)npc.ai[0] + 1] + TrailOffset).ToRotation() - MathHelper.PiOver2;
 
                             npc.ai[0]++;
@@ -147,24 +147,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 npc.ai[1] = 0;
                             }
                         }
-
-                        /*else
-                        {
-                            // NPC has moved through all indices and launches themselves out a random direction
-                            // This doesn't occur until 60 seconds later, after the boss has roared
-                            if (npc.ai[3]++ >= 60)
-                            {
-                                if (npc.alpha > 0) npc.alpha -= 10;
-
-                                // Start moving after the NPC has completely faded in
-                                if (npc.alpha == 0 && npc.ai[0] == 60)
-                                {
-                                    npc.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * 5;
-                                    npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
-                                    npc.ai[1] = 0;
-                                }
-                            }
-                        }*/
                     }
 
                     #region Fade
@@ -177,21 +159,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                             if (npc.Hitbox.Intersects(projectile.Hitbox))
                             {
-                                //if (npc.alpha >= 255) npc.alpha = 255;
-                                //if (npc.alpha <= 0) npc.alpha = 0;
-
                                 // Entrance portal makes them fade in, if they are going out the final we don't want them to fade in yet
                                 if ((projectile.ai[0] == 240 || projectile.ai[0] == 360) && parent.GetGlobalNPC<EyeOfCthulhu>().PortalRuns < 2)
-                                {
                                     EntranceFade = true;
-                                }
+
 
                                 // The exit portal should make them fade out
-                                if (projectile.ai[0] == 450)
-                                {
-                                    ExitFade = true;
-                                    //if (npc.alpha < 255) npc.alpha += 10;
-                                }
+                                if (projectile.ai[0] == 210) ExitFade = true;
                             }
                         }
                     }
@@ -200,26 +174,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     // Also makes it so that all the NPCs can fade in and out completely instead of being partial due to offset
                     if (EntranceFade)
                     {
-                        if (npc.alpha > 0)
-                        {
-                            npc.alpha -= 12;
-                        }
-                        else
-                        {
-                            EntranceFade = false;
-                        }
+                        if (npc.alpha > 0) npc.alpha -= 20;
+                        else EntranceFade = false;
                     }
 
                     if (ExitFade)
                     {
-                        if (npc.alpha < 255)
-                        {
-                            npc.alpha += 12;
-                        }
-                        else
-                        {
-                            ExitFade = false;
-                        }
+                        if (npc.alpha < 255) npc.alpha += 20;
+                        else ExitFade = false;
                     }
                     #endregion
 

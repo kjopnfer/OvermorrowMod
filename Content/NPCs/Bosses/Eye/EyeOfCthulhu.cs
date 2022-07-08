@@ -135,8 +135,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             //float progress = MathHelper.Lerp(0, 1 / 3f, (float)Math.Sin(npc.localAI[2]++ / 30f));
             //float progress = -0.106f;
 
-            float darkIncrease = MathHelper.Lerp(-0.01f, -0.08f, Utils.Clamp(npc.localAI[2]++, 0, 14400f) / 14400f);
-            float progress = MathHelper.Lerp(darkIncrease, -0.06f - darkIncrease, (float)Math.Sin(npc.localAI[2]++ / 60f));
+            //float darkIncrease = MathHelper.Lerp(-0.01f, -0.08f, Utils.Clamp(npc.localAI[2]++, 0, 14400f) / 14400f);
+            //float progress = MathHelper.Lerp(darkIncrease, -0.06f - darkIncrease, (float)Math.Sin(npc.localAI[2]++ / 60f) / 2 + 0.5f);
+            float progress = MathHelper.Lerp(0, 0.1f, (float)Math.Sin(npc.localAI[2]++ / 60f) / 2 + 0.5f);
             //float progress = MathHelper.Lerp(-0.066f, -0.106f, (float)Math.Sin(npc.localAI[2]++ / 30f));
 
             #region commented out shit
@@ -153,6 +154,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Filters.Scene["Flash"].GetShader().UseIntensity(progress);
                 }
             }*/
+
 
             /*if (npc.life <= npc.lifeMax * 0.5f && !TransitionPhase)
             {
@@ -377,7 +379,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             {
                                 if (npc.Distance(cameraPlayer.Center) < 1800)
                                 {
-                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 600, 120, 60);
+                                    cameraPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerLockCamera(npc, 360, 120, 60);
                                     cameraPlayer.AddBuff(ModContent.BuffType<Cutscene>(), 720);
                                 }
                             }
@@ -449,11 +451,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 switch (PortalRuns)
                                 {
                                     case 0: // Go right
-                                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(20)) * 6f;
+                                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(20)) * 20f;
                                         RotateDirection = -1;
                                         break;
                                     case 1: // Go right
-                                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25)) * 6f;
+                                        npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(25)) * 20f;
                                         RotateDirection = -1;
                                         break;
                                     case 2: // Go down
@@ -464,15 +466,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                             else
                             {
-                                npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 6f;
+                                npc.velocity = Vector2.Normalize(npc.DirectionTo(player.Center)) * 15f;
                             }
                             #endregion
 
-                            if (PortalRuns == 2)
-                            {
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 360);
-                            }
-                            else
+                            
+                            
                             {
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
                             }
@@ -486,20 +485,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 Vector2 simulatedVelocity = npc.velocity;
 
                                 // i am 60 parallel universes ahead of you
-                                turnResistance = Main.rand.NextFloat(0.02f, 0.026f);
-                                for (int i = 0; i < 240; i++)
+                                turnResistance = Main.rand.NextFloat(0.032f, 0.044f);
+                                for (int i = 0; i < 60; i++)
                                 {
-                                    if (i > 60) simulatedVelocity = simulatedVelocity.RotatedBy(turnResistance * RotateDirection);
+                                    float resistanceLerp = MathHelper.Lerp(0, turnResistance, Utils.Clamp(i, 0, 60) / 60f);
+                                    /*if (i > 30)*/ simulatedVelocity = simulatedVelocity.RotatedBy(resistanceLerp * RotateDirection);
 
-                                    simulatedPosition += simulatedVelocity.RotatedBy(0.012f * RotateDirection);
+                                    simulatedPosition += simulatedVelocity;
                                 }
 
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 450);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 210);
                             }
                         }
 
                         #region Tentacle Growth
-                        if (npc.ai[1] < 330 + 45)
+                        /*if (npc.ai[1] < 330 + 45)
                         {
                             foreach (Projectile projectile in TentacleList)
                             {
@@ -512,7 +512,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         if (PortalRuns < 2)
                         {
-                            if (npc.ai[1] > 330 + 185)
+                            if (npc.ai[1] > 330 + 65)
                             {
                                 foreach (Projectile projectile in TentacleList)
                                 {
@@ -522,53 +522,55 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                     }
                                 }
                             }
-                        }
+                        }*/
                         #endregion
 
                         #region Movement and Alpha
                         npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
-                        if (npc.ai[1] > 330 + 60)
+
+                        if (PortalRuns < 2)
                         {
-                            if (PortalRuns < 2)
-                            {
-                                if (npc.ai[1] > 330 + 225) npc.alpha += 17;
+                            // Start fading away near the end of the run
+                            if (npc.ai[1] > 330 + 45) npc.alpha += 17;
 
-                                npc.velocity = npc.velocity.RotatedBy(turnResistance * RotateDirection);
-                            }
-                            else if (PortalRuns == 2) // The NPC has exited the final portal, and is slowing down
-                            {
-                                Texture2D badge = TextureAssets.NpcHeadBoss[0].Value;
-                                OvermorrowModSystem.Instance.TitleCard.SetTitle(badge, "eye of cthulhu", "the gamer", 300);
-
-                                if (npc.ai[1] == 360 + 120f)
-                                {
-                                    foreach (Player cameraPlayer in Main.player)
-                                    {
-                                        if (npc.Distance(cameraPlayer.Center) < 1800)
-                                        {
-                                            cameraPlayer.GetModPlayer<OvermorrowModPlayer>().ShowTitleCard(OvermorrowModPlayer.BossID.Eye, 480);
-                                            cameraPlayer.GetModPlayer<OvermorrowModPlayer>().AddScreenShake(30, 6);
-                                        }
-                                    }
-
-                                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/EyeScreech3")
-                                    {
-                                        Volume = 0.9f,
-                                        PitchVariance = 0.2f,
-                                        MaxInstances = 3,
-                                    });
-                                }
-
-                                if (npc.ai[1] >= 360 + 120f && npc.ai[1] <= 360 + 130f && npc.ai[1] % 2 == 0)
-                                {
-                                    float scale = Main.rand.NextFloat(3f, 5f);
-                                    Particle.CreateParticle(Particle.ParticleType<Pulse>(), npc.Center, Vector2.Zero, Color.Purple, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
-                                }
-
-                                npc.velocity = Vector2.Lerp(Vector2.UnitY * 3, Vector2.UnitY * 0.1f, Utils.Clamp(npc.ai[1] - 390, 0, 60f) / 60f);
-                            }
+                            // The NPC starts curving its path after 60 ticks
+                            float resistanceLerp = MathHelper.Lerp(0, turnResistance, Utils.Clamp(npc.ai[1] - 330, 0, 60) / 60f);
+                            npc.velocity = npc.velocity.RotatedBy(resistanceLerp * RotateDirection);
                         }
-                        else
+                        else if (PortalRuns == 2) // The NPC has exited the final portal, and is slowing down
+                        {
+                            Texture2D badge = TextureAssets.NpcHeadBoss[0].Value;
+                            OvermorrowModSystem.Instance.TitleCard.SetTitle(badge, "eye of cthulhu", "the gamer", 300);
+
+                            if (npc.ai[1] == 360 + 120f)
+                            {
+                                foreach (Player cameraPlayer in Main.player)
+                                {
+                                    if (npc.Distance(cameraPlayer.Center) < 1800)
+                                    {
+                                        cameraPlayer.GetModPlayer<OvermorrowModPlayer>().ShowTitleCard(OvermorrowModPlayer.BossID.Eye, 480);
+                                        cameraPlayer.GetModPlayer<OvermorrowModPlayer>().AddScreenShake(30, 6);
+                                    }
+                                }
+
+                                SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/EyeScreech3")
+                                {
+                                    Volume = 0.9f,
+                                    PitchVariance = 0.2f,
+                                    MaxInstances = 3,
+                                });
+                            }
+
+                            if (npc.ai[1] >= 360 + 120f && npc.ai[1] <= 360 + 130f && npc.ai[1] % 2 == 0)
+                            {
+                                float scale = Main.rand.NextFloat(3f, 5f);
+                                Particle.CreateParticle(Particle.ParticleType<Pulse>(), npc.Center, Vector2.Zero, Color.Purple, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
+                            }
+
+                            npc.velocity = Vector2.Lerp(Vector2.UnitY * 3, Vector2.UnitY * 0.1f, Utils.Clamp(npc.ai[1] - 390, 0, 60f) / 60f);
+                        }
+
+                        if (npc.ai[1] < 330 + 30)
                         {
                             npc.alpha -= 15;
                         }
@@ -581,25 +583,32 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         else
                         {
                             // On the 3rd instance, record only the first position the eye teleports to, offset by 1 because it incremented earlier
-                            if (npc.ai[1] == 331) { TrailPositions.Add(npc.Center); }
+                            if (npc.ai[1] == 330 + 1) { TrailPositions.Add(npc.Center); }
                         }
                         #endregion
 
                         // Spawn NPCs after a delay
-                        if (npc.ai[1] > 330 + 60 && npc.ai[1] < 330 + 185 && npc.ai[1] % 5 == 0 && SpawnServants)
+                        if (npc.ai[1] >= 330 && npc.ai[1] < 330 + 125 && npc.ai[1] % 5 == 0 && SpawnServants)
                         {
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI);
                         }
 
                         #region Counter
                         // Reset the counter after 240 ticks
-                        if (npc.ai[1] == 330 + 240)
+                        if (npc.ai[1] == 330 + 60)
                         {
                             // Set it to false so it doesn't run through multiple attack cycles
                             SpawnServants = false;
 
                             if (PortalRuns++ < 2)
                             {
+                                if (PortalRuns == 2)
+                                {
+                                    Vector2 position = player.Center + new Vector2(0, -8) * 75;
+                                    Vector2 velocity = position.DirectionTo(player.Center);
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), position, velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 360);
+                                }
+
                                 npc.velocity = Vector2.Zero;
                                 InitialPosition = npc.Center;
 

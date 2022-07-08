@@ -156,9 +156,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             else
             {
                 // The value that is set for the end-portal, this delays the portal showing up
-                if (Projectile.ai[0] == 450)
+                if (Projectile.ai[0] == 210)
                 {
-                    if (Projectile.ai[1] == 180)
+                    if (Projectile.ai[1] == 0)
                     {
                         SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/NPC/EyePortalOpen")
                         {
@@ -168,14 +168,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         });
                     }
 
-                    if (Projectile.ai[1]++ >= 180)
-                    {
-                        if (Projectile.localAI[0] < 25) Projectile.localAI[0]++;
-                    }
+                    if (Projectile.localAI[0] < 25) Projectile.localAI[0]++;
                 }
                 else
                 {
-                    if (Projectile.localAI[0] < 25) Projectile.localAI[0]++;
+                    Projectile.localAI[0]++;
                 }
             }
         }
