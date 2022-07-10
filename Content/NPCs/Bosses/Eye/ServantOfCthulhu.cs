@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
-                NPCID.Sets.TrailCacheLength[npc.type] = 14;
+                NPCID.Sets.TrailCacheLength[npc.type] = 48;
                 NPCID.Sets.TrailingMode[npc.type] = 3;
 
                 npc.lifeMax = 12;
@@ -248,16 +248,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
-                Texture2D afterImage = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Glow").Value;
-
                 spriteBatch.Reload(BlendState.Additive);
 
+                Texture2D afterImage = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Glow").Value;
                 for (int k = 0; k < npc.oldPos.Length; k++)
                 {
                     Vector2 drawPos = npc.oldPos[k] + npc.Size / 2 - Main.screenPosition;
-                    Color afterImageColor = Color.Orange * (npc.oldPos.Length - k / (float)npc.oldPos.Length);
-                    float scale = npc.scale * (npc.oldPos.Length - k / (float)npc.oldPos.Length);
-                    spriteBatch.Draw(afterImage, drawPos, null, afterImageColor, npc.oldRot[k] + MathHelper.PiOver2, afterImage.Size() / 2f, scale, SpriteEffects.None, 0f);
+                    var trailLength = ProjectileID.Sets.TrailCacheLength[npc.type];
+                    var fadeMult = 1f / trailLength;
+                    Color afterImageColor = Color.Orange * (1f - fadeMult * k);
+
+                    spriteBatch.Draw(afterImage, drawPos, null, afterImageColor, npc.oldRot[k] + MathHelper.PiOver2, afterImage.Size() / 2f, npc.scale * (trailLength - k) / trailLength, SpriteEffects.None, 0f);
                 }
 
                 spriteBatch.Reload(BlendState.AlphaBlend);
