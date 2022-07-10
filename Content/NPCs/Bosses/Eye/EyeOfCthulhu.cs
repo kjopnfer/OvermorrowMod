@@ -55,6 +55,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.EyeofCthulhu)
             {
+                NPCID.Sets.TrailCacheLength[npc.type] = 7;
+                NPCID.Sets.TrailingMode[npc.type] = 2;
+
                 npc.lifeMax = 3200;
             }
         }
@@ -470,11 +473,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                             #endregion
 
-                            
-                            
-                            {
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
-                            }
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.velocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 240);
 
                             if (!IntroPortal) RotateDirection = Main.rand.NextBool() ? 1 : -1;
 
@@ -489,7 +488,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 for (int i = 0; i < 60; i++)
                                 {
                                     float resistanceLerp = MathHelper.Lerp(0, turnResistance, Utils.Clamp(i, 0, 60) / 60f);
-                                    /*if (i > 30)*/ simulatedVelocity = simulatedVelocity.RotatedBy(resistanceLerp * RotateDirection);
+                                    /*if (i > 30)*/
+                                    simulatedVelocity = simulatedVelocity.RotatedBy(resistanceLerp * RotateDirection);
 
                                     simulatedPosition += simulatedVelocity;
                                 }
@@ -542,14 +542,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             Texture2D badge = TextureAssets.NpcHeadBoss[0].Value;
                             OvermorrowModSystem.Instance.TitleCard.SetTitle(badge, "eye of cthulhu", "the gamer", 300);
 
-                            if (npc.ai[1] == 360 + 120f)
+                            if (npc.ai[1] == 330)
                             {
                                 foreach (Player cameraPlayer in Main.player)
                                 {
                                     if (npc.Distance(cameraPlayer.Center) < 1800)
                                     {
                                         cameraPlayer.GetModPlayer<OvermorrowModPlayer>().ShowTitleCard(OvermorrowModPlayer.BossID.Eye, 480);
-                                        cameraPlayer.GetModPlayer<OvermorrowModPlayer>().AddScreenShake(30, 6);
                                     }
                                 }
 
@@ -561,13 +560,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 });
                             }
 
-                            if (npc.ai[1] >= 360 + 120f && npc.ai[1] <= 360 + 130f && npc.ai[1] % 2 == 0)
+                            if (npc.ai[1] >= 330 + 30f && npc.ai[1] <= 360 + 40f && npc.ai[1] % 2 == 0)
                             {
                                 float scale = Main.rand.NextFloat(3f, 5f);
                                 Particle.CreateParticle(Particle.ParticleType<Pulse>(), npc.Center, Vector2.Zero, Color.Purple, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
+
+                                foreach (Player cameraPlayer in Main.player)
+                                {
+                                    if (npc.Distance(cameraPlayer.Center) < 1800)
+                                    {
+                                        cameraPlayer.GetModPlayer<OvermorrowModPlayer>().AddScreenShake(5, 6);
+                                    }
+                                }
                             }
 
-                            npc.velocity = Vector2.Lerp(Vector2.UnitY * 3, Vector2.UnitY * 0.1f, Utils.Clamp(npc.ai[1] - 390, 0, 60f) / 60f);
+                            npc.velocity = Vector2.Lerp(Vector2.UnitY * 3, Vector2.UnitY * 0.1f, Utils.Clamp(npc.ai[1] - 330, 0, 30f) / 30f);
                         }
 
                         if (npc.ai[1] < 330 + 30)
@@ -725,6 +732,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         scale = 1f + progress * scaleAmount;
                         spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
                     }
+                }
+
+                for (int k = 0; k < npc.oldPos.Length; k++)
+                {
+                    Vector2 drawPos = npc.oldPos[k] - Main.screenPosition;
+                    Color afterImageColor = Color.Orange * ((float)npc.oldPos.Length - k / (float)npc.oldPos.Length);
+                    spriteBatch.Draw(texture, drawPos, null, afterImageColor, npc.oldRot[k] - MathHelper.PiOver4, texture.Size() / 2f, npc.scale, SpriteEffects.None, 0f);
                 }
 
                 Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);

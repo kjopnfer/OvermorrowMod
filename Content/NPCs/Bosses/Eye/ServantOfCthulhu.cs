@@ -46,6 +46,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
+                NPCID.Sets.TrailCacheLength[npc.type] = 14;
+                NPCID.Sets.TrailingMode[npc.type] = 3;
+
                 npc.lifeMax = 12;
             }
 
@@ -235,7 +238,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
-                if (!BossPulse) BossPulse = true;
+                //if (!BossPulse) BossPulse = true;
             }
 
             base.OnHitPlayer(npc, target, damage, crit);
@@ -245,9 +248,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
-                spriteBatch.Reload(SpriteSortMode.Immediate);
+                Texture2D afterImage = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Glow").Value;
 
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu").Value;
+                spriteBatch.Reload(BlendState.Additive);
+
+                for (int k = 0; k < npc.oldPos.Length; k++)
+                {
+                    Vector2 drawPos = npc.oldPos[k] + npc.Size / 2 - Main.screenPosition;
+                    Color afterImageColor = Color.Orange * (npc.oldPos.Length - k / (float)npc.oldPos.Length);
+                    float scale = npc.scale * (npc.oldPos.Length - k / (float)npc.oldPos.Length);
+                    spriteBatch.Draw(afterImage, drawPos, null, afterImageColor, npc.oldRot[k] + MathHelper.PiOver2, afterImage.Size() / 2f, scale, SpriteEffects.None, 0f);
+                }
+
+                spriteBatch.Reload(BlendState.AlphaBlend);
+
+                spriteBatch.Reload(SpriteSortMode.Immediate);
 
                 if (npc.ai[1] < 90f)
                 {
@@ -258,8 +273,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     //effect.CurrentTechnique.Passes["Whiteout"].Apply();
                 }
 
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu").Value;
                 Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
-
                 spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, color, npc.rotation + MathHelper.PiOver2, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);
@@ -279,7 +294,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 spriteBatch.Draw(texture, npc.Center - screenPos, null, color, npc.rotation + MathHelper.PiOver2, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
 
                 #region Pulse
-                // TODO: Use a for loop nerd!!
                 spriteBatch.Reload(BlendState.Additive);
 
                 if (!Main.gamePaused) PulseCounter++;
