@@ -56,7 +56,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.type == NPCID.EyeofCthulhu)
             {
                 NPCID.Sets.TrailCacheLength[npc.type] = 7;
-                NPCID.Sets.TrailingMode[npc.type] = 2;
+                NPCID.Sets.TrailingMode[npc.type] = 3;
 
                 npc.lifeMax = 3200;
             }
@@ -597,7 +597,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         // Spawn NPCs after a delay
                         if (npc.ai[1] >= 330 && npc.ai[1] < 330 + 125 && npc.ai[1] % 5 == 0 && SpawnServants)
                         {
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 420, npc.whoAmI);
+                            NPC.NewNPC(npc.GetSource_FromAI(), (int)TrailPositions[0].X, (int)TrailPositions[0].Y, NPCID.ServantofCthulhu, 0, 0, 42069, npc.whoAmI);
                         }
 
                         #region Counter
@@ -736,9 +736,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 for (int k = 0; k < npc.oldPos.Length; k++)
                 {
-                    Vector2 drawPos = npc.oldPos[k] - Main.screenPosition;
+                    Vector2 drawPos = npc.oldPos[k] + npc.Size / 2 - Main.screenPosition;
                     Color afterImageColor = Color.Orange * ((float)npc.oldPos.Length - k / (float)npc.oldPos.Length);
-                    spriteBatch.Draw(texture, drawPos, null, afterImageColor, npc.oldRot[k] - MathHelper.PiOver4, texture.Size() / 2f, npc.scale, SpriteEffects.None, 0f);
+                    //spriteBatch.Draw(texture, drawPos, null, afterImageColor, npc.oldRot[k] - MathHelper.PiOver4, texture.Size() / 2f, npc.scale, SpriteEffects.None, 0f);
                 }
 
                 Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);

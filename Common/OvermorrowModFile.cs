@@ -52,6 +52,18 @@ namespace OvermorrowMod.Common
 
         public static List<Asset<Texture2D>> TrailTextures;
 
+        public static void PremultiplyTexture(ref Texture2D texture)
+        {
+            Color[] buffer = new Color[texture.Width * texture.Height];
+            texture.GetData(buffer);
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                buffer[i] = Color.FromNonPremultiplied(
+                    buffer[i].R, buffer[i].G, buffer[i].B, buffer[i].A);
+            }
+            texture.SetData(buffer);
+        }
+
         public override void Load()
         {
             // Keys
@@ -105,6 +117,12 @@ namespace OvermorrowMod.Common
                 {
                     TrailTextures.Add(ModContent.Request<Texture2D>(AssetDirectory.Trails + "Trail" + i));
                 }
+
+                Main.QueueMainThreadAction(() =>
+                {
+                    Texture2D glow = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Glow", AssetRequestMode.ImmediateLoad).Value;
+                    PremultiplyTexture(ref glow);
+                });
 
                 TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ChainKnife");
             }
