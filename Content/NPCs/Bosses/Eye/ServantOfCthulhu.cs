@@ -77,6 +77,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 npc.localAI[1] = -30;
                 npc.localAI[2] = -60;
+
+                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ModContent.ProjectileType<ServantTrail>(), 0, 0f, Main.myPlayer, npc.whoAmI);
             }
 
             base.OnSpawn(npc, source);
