@@ -35,6 +35,7 @@ namespace OvermorrowMod.Common
         public Asset<Effect> TextShader;
         public Asset<Effect> Whiteout;
         public Asset<Effect> RadialBlur;
+        public Asset<Effect> Portal;
         public Asset<Texture2D> BlurTestTexture;
 
         public static List<Asset<Texture2D>> TrailTextures;
@@ -66,6 +67,7 @@ namespace OvermorrowMod.Common
                 Whiteout = Assets.Request<Effect>("Effects/Whiteout");
                 RadialBlur = Assets.Request<Effect>("Effects/CenterBlurShader");
                 BlurTestTexture = Assets.Request<Texture2D>("Effects/testpattern");
+                Portal = Assets.Request<Effect>("Effects/PortalOverride");
 
                 Ref<Effect> ref1 = new Ref<Effect>(Shockwave.Value);
                 Ref<Effect> ref2 = new Ref<Effect>(Shockwave2.Value);
