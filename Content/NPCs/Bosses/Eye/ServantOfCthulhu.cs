@@ -22,7 +22,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
 
         Vector2 InitialVelocity;
-        float angle = 0;
+        float InitialRotation;
+        Vector2 ChargePosition;
+
+        float RandomAngle;
+        float RandomSpeed;
+        float ChargeAngle = 0;
 
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
@@ -224,21 +229,35 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.ai[1]++;
                     if (npc.ai[1] >= 360 && npc.ai[1] <= 600)
                     {
-                        if (npc.ai[1] < 420)
+                        if (npc.ai[1] < 480) // NPC slows down
                         {
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2;
-                        }
-                        else
-                        {
-                            if (npc.ai[1] == 420)
+                            if (npc.ai[1] == 360)
                             {
-                                npc.velocity = npc.DirectionTo(player.Center) * 15;
                                 InitialVelocity = npc.velocity;
+                                InitialRotation = npc.rotation;
                             }
 
-                            angle = MathHelper.Lerp(0, 1.6f, Utils.Clamp(npc.ai[1] - 420, 0, 60) / 60f);
-                            npc.velocity = Vector2.Lerp(InitialVelocity, Vector2.Zero, Utils.Clamp(npc.ai[1] - 420, 0, 120) / 120f).RotatedBy(MathHelper.ToRadians(angle));
+                            float progress = Utils.Clamp(npc.ai[1] - 360, 0, 60) / 60f;
+                            npc.velocity = Vector2.Lerp(InitialVelocity, Vector2.Zero, progress);
+                            npc.rotation = MathHelper.Lerp(InitialRotation, npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2, progress);
+
+
+                            // These are generated so the NPC can simulate all the variables for the charge within PreDraw
+                            if (npc.ai[1] == 420)
+                            {
+                                ChargePosition = npc.DirectionTo(player.Center + Vector2.UnitY * (Main.rand.Next(-5, 5) * 10)) * 15;
+                                RandomAngle = Main.rand.NextFloat(1.6f, 1.8f);
+                                RandomSpeed = Main.rand.Next(15, 18);
+
+                                InitialVelocity = npc.DirectionTo(ChargePosition) * RandomSpeed;
+                            }
+                        }
+                        else // NPC dashes forward
+                        {
+                            if (npc.ai[1] == 480) npc.velocity = InitialVelocity;
+
+                            ChargeAngle = MathHelper.Lerp(0, RandomAngle, Utils.Clamp(npc.ai[1] - 420, 0, 60) / 60f);
+                            npc.velocity = Vector2.Lerp(InitialVelocity, Vector2.Zero, Utils.Clamp(npc.ai[1] - 480, 0, 120) / 120f).RotatedBy(MathHelper.ToRadians(ChargeAngle));
                             npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
                         }
 
@@ -292,18 +311,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 spriteBatch.Reload(BlendState.Additive);
 
-                if (npc.ai[1] >= 420 && npc.ai[1] <= 600)
+                if (npc.ai[1] >= 420 && npc.ai[1] <= 480)
                 {
                     Texture2D trail = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/LineIndicator").Value;
                     Vector2 simulatedPosition = npc.Center;
-                    Vector2 simulatedVelocity = npc.velocity;
+                    Vector2 simulatedVelocity = InitialVelocity;
 
                     // Trajectory simulation for 120 ticks ahead
                     for (int i = 0; i < 120; i++)
                     {
                         Color trailColor = Color.Orange * ((120 - i) / 120f);
 
-                        simulatedVelocity = simulatedVelocity.RotatedBy(MathHelper.ToRadians(angle));
+                        float simulatedAngle = MathHelper.Lerp(0, RandomAngle, Utils.Clamp(i, 0, 60) / 60f);
+                        simulatedVelocity = Vector2.Lerp(InitialVelocity, Vector2.Zero, i / 120f).RotatedBy(MathHelper.ToRadians(simulatedAngle));
+                        //simulatedVelocity = simulatedVelocity.RotatedBy(MathHelper.ToRadians(ChargeAngle));
                         simulatedPosition += simulatedVelocity;
                         spriteBatch.Draw(trail, simulatedPosition - screenPos, null, trailColor, 0f, trail.Size() / 2, 1f, SpriteEffects.None, 1f);
                     }

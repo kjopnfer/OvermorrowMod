@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
     public class ServantTrail : ModProjectile, ITrailEntity
     {
         public Color TrailColor(float progress) => Color.Black;
-        public float TrailSize(float progress) => 25;
+        public float TrailSize(float progress) => 30;
         public Type TrailType() => typeof(LightningTrail);
         public override string Texture => AssetDirectory.Empty;
         public override bool? CanDamage() => false;
