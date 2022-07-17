@@ -20,6 +20,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private bool BossPulse = false;
         private int PulseCounter = 0;
 
+        public bool BossDash = false;
+        public int BossDelay = 0;
 
         Vector2 InitialVelocity;
         Vector2 ChargePosition;
@@ -206,7 +208,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     // This is set whenever they are spawned from the world portals
                     if (npc.ai[0] == -1)
                     {
-                        if (npc.ai[1] > 90f) npc.ai[0] = 0;
+                        if (npc.ai[1]++ > 90f) npc.ai[0] = 0;
                     }
 
                     npc.TargetClosest(true);
@@ -228,55 +230,63 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }*/
 
 
-                    npc.ai[1]++;
-                    if (npc.ai[1] >= 360 && npc.ai[1] <= 600)
+                    //npc.ai[1]++;
+                    //if (npc.ai[1] >= 360 && npc.ai[1] <= 600)
+                    if (BossDash)
                     {
                         npc.dontTakeDamage = true;
 
-                        if (npc.ai[1] < 480) // NPC slows down
+                        if (++npc.ai[1] >= BossDelay)
                         {
-                            if (npc.ai[1] == 360)
+                            //if (npc.ai[1] < 480) // NPC slows down
+                            if (npc.ai[1] < BossDelay + 120)
                             {
-                                InitialVelocity = npc.velocity;
-                                InitialRotation = npc.rotation;
+                                if (npc.ai[1] == BossDelay)
+                                {
+                                    InitialVelocity = npc.velocity;
+                                    InitialRotation = npc.rotation;
+                                }
+
+                                float progress = Utils.Clamp(npc.ai[1] - BossDelay, 0, 60) / 60f;
+                                npc.velocity = Vector2.Lerp(InitialVelocity, Vector2.Zero, progress);
+
+                                if (npc.ai[1] >= BossDelay && npc.ai[1] <= BossDelay + 60)
+                                    npc.rotation = MathHelper.Lerp(InitialRotation, npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2, progress);
+
+
+                                // These are generated so the NPC can simulate all the variables for the charge within PreDraw for a second
+                                if (npc.ai[1] == BossDelay + 60)
+                                {
+                                    ChargePosition = player.Center + (Vector2.UnitY * Main.rand.Next(-5, 5) * 10);
+                                    RandomAngle = Main.rand.NextFloat(0, 1.8f) * (Main.rand.NextBool() ? 1 : -1);
+                                    RandomReduction = Main.rand.NextFloat(0.97f, 0.995f);
+                                    float RandomSpeed = Main.rand.Next(17, 20);
+
+                                    InitialVelocity = npc.DirectionTo(ChargePosition) * RandomSpeed;
+                                }
+                            }
+                            else // NPC dashes forward
+                            {
+                                if (npc.ai[1] == BossDelay + 120) npc.velocity = InitialVelocity;
+
+                                ChargeAngle = MathHelper.Lerp(0, RandomAngle, Utils.Clamp(npc.ai[1] - (BossDelay + 120), 0, 60f) / 60f);
+                                npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(ChargeAngle));
+                                npc.velocity *= RandomReduction;
+                                //npc.velocity = Vector2.Lerp(InitialVelocity, Vector2.Zero, Utils.Clamp(npc.ai[1] - 480, 0, 120) / 120f);
+                                npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
                             }
 
-                            float progress = Utils.Clamp(npc.ai[1] - 360, 0, 60) / 60f;
-                            npc.velocity = Vector2.Lerp(InitialVelocity, Vector2.Zero, progress);
-
-                            if (npc.ai[1] >= 360 && npc.ai[1] <= 420)
-                                npc.rotation = MathHelper.Lerp(InitialRotation, npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2, progress);
-
-
-                            // These are generated so the NPC can simulate all the variables for the charge within PreDraw for a second
-                            if (npc.ai[1] == 420)
+                            if (npc.ai[1] == BossDelay + 240)
                             {
-                                ChargePosition = player.Center + (Vector2.UnitY * Main.rand.Next(-5, 5) * 10);
-                                RandomAngle = Main.rand.NextFloat(0, 1.8f) * (Main.rand.NextBool() ? 1 : -1);
-                                RandomReduction = Main.rand.NextFloat(0.97f, 0.995f);
-                                float RandomSpeed = Main.rand.Next(17, 20);
+                                npc.dontTakeDamage = false;
+                                BossDash = false;
+                                BossDelay = 0;
 
-                                InitialVelocity = npc.DirectionTo(ChargePosition) * RandomSpeed;
+                                npc.ai[1] = 0;
                             }
-                        }
-                        else // NPC dashes forward
-                        {
-                            if (npc.ai[1] == 480) npc.velocity = InitialVelocity;
 
-                            ChargeAngle = MathHelper.Lerp(0, RandomAngle, Utils.Clamp(npc.ai[1] - 480, 0, 60f) / 60f);
-                            npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(ChargeAngle));
-                            npc.velocity *= RandomReduction;
-                            //npc.velocity = Vector2.Lerp(InitialVelocity, Vector2.Zero, Utils.Clamp(npc.ai[1] - 480, 0, 120) / 120f);
-                            npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
+                            return false;
                         }
-
-                        if (npc.ai[1] == 600)
-                        {
-                            npc.dontTakeDamage = false;
-                            npc.ai[1] = 0;
-                        }
-
-                        return false;
                     }
                 }
 
@@ -324,7 +334,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 spriteBatch.Reload(BlendState.Additive);
 
-                if (npc.ai[1] >= 420 && npc.ai[1] <= 480)
+                //if (npc.ai[1] >= 420 && npc.ai[1] <= 480)
+                if (BossDash && (npc.ai[1] >= BossDelay + 60) && (npc.ai[1] <= BossDelay + 120))
                 {
                     Texture2D trail = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/LineIndicator").Value;
                     Vector2 simulatedPosition = npc.Center;
@@ -335,7 +346,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
 
                         float trailFade = (120 - i) / 120f;
-                        float npcFade = MathHelper.Lerp(0, 1, Utils.Clamp(npc.ai[1] - 450, 0, 30) / 30f);
+                        float npcFade = MathHelper.Lerp(0, 1, Utils.Clamp(npc.ai[1] - (BossDelay + 90), 0, 30) / 30f);
                         Color trailColor = Color.Orange * Utils.Clamp(trailFade - npcFade, 0, 1);
 
                         float simulatedAngle = MathHelper.Lerp(0, RandomAngle, Utils.Clamp(i, 0, 60f) / 60f);
@@ -392,8 +403,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 int frame = 1;
                 Rectangle drawRectangle = new Rectangle(0, (int)(texture.Height / 2f) * frame, texture.Width, (int)(texture.Height / 2f));
-                float fadeValues = (npc.ai[1] >= 420 && npc.ai[1] <= 600) ? MathHelper.Lerp(0, 1, Utils.Clamp(npc.ai[1] - 420, 0, 60) / 60f): 0;
+                float fadeValues = (npc.ai[1] >= BossDelay + 60 && npc.ai[1] <= BossDelay + 240) ? MathHelper.Lerp(0, 1, Utils.Clamp(npc.ai[1] - (BossDelay + 60), 0, 60) / 60f) : 0;
+                if (npc.ai[1] == 42069) fadeValues = 1;
                 spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color * fadeValues, npc.rotation + MathHelper.PiOver2, drawRectangle.Size() / 2, npc.scale, SpriteEffects.None, 0);
+
+                // Draws an eye-streak thing when it is dashing so the NPC is actually sort of visible
+                if (npc.ai[1] >= BossDelay + 120 || npc.ai[1] == 42069)
+                {
+                    Texture2D afterImage = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu_Glow2").Value;
+                    for (int k = 0; k < npc.oldPos.Length; k++)
+                    {
+                        Vector2 drawPos = npc.oldPos[k] + npc.Size / 2 - Main.screenPosition;
+                        var trailLength = ProjectileID.Sets.TrailCacheLength[npc.type];
+                        var fadeMult = 1f / trailLength;
+                        Color afterImageColor = Color.White * (1f - fadeMult * k);
+
+                        spriteBatch.Draw(afterImage, drawPos, null, afterImageColor, npc.oldRot[k] + MathHelper.PiOver2, afterImage.Size() / 2f, npc.scale * (trailLength - k) / trailLength, SpriteEffects.None, 0f);
+                    }
+
+                    spriteBatch.Draw(afterImage, npc.Center - screenPos, null, color, npc.rotation + MathHelper.PiOver2, afterImage.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                }
                 #endregion
 
                 #region Pulse

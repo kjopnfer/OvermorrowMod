@@ -266,6 +266,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     if (npc.ai[1] == 360)
                     {
+                        foreach(NPC npcs in Main.npc)
+                        {
+                            if (npcs.type != NPCID.ServantofCthulhu) continue;
+
+                            ServantOfCthulhu servant = npcs.GetGlobalNPC<ServantOfCthulhu>();
+                            // Forces all servants to dash at the player
+                            if (!servant.BossDash)
+                            {
+                                servant.BossDash = true;
+                                servant.BossDelay = Main.rand.Next(0, 7) * 10;
+                            }
+                        }
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;
                         npc.ai[0] = (float)AIStates.Selector;
 
@@ -721,10 +733,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
 
-                if (npc.ai[0] == (float)AIStates.Minions && npc.ai[1] > 120 && npc.ai[1] < 180)
+                if (npc.ai[0] == (float)AIStates.Selector && npc.ai[1] > 300 && npc.ai[1] < 360)
                 {
                     int amount = 5;
-                    float progress = Utils.Clamp(npc.ai[1] - 120f, 0, 60) / 60f;
+                    float progress = Utils.Clamp(npc.ai[1] - 300, 0, 60) / 60f;
 
                     for (int i = 0; i < amount; i++)
                     {
