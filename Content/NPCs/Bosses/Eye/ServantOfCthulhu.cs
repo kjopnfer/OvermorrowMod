@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         Vector2 InitialVelocity;
         Vector2 ChargePosition;
-        
+
         float InitialRotation;
 
         float RandomAngle = 0;
@@ -227,9 +227,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         }
                     }*/
 
+
                     npc.ai[1]++;
                     if (npc.ai[1] >= 360 && npc.ai[1] <= 600)
                     {
+                        npc.dontTakeDamage = true;
+
                         if (npc.ai[1] < 480) // NPC slows down
                         {
                             if (npc.ai[1] == 360)
@@ -245,7 +248,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 npc.rotation = MathHelper.Lerp(InitialRotation, npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver2, progress);
 
 
-                            // These are generated so the NPC can simulate all the variables for the charge within PreDraw
+                            // These are generated so the NPC can simulate all the variables for the charge within PreDraw for a second
                             if (npc.ai[1] == 420)
                             {
                                 ChargePosition = player.Center + (Vector2.UnitY * Main.rand.Next(-5, 5) * 10);
@@ -267,7 +270,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver2;
                         }
 
-                        if (npc.ai[1] == 600) npc.ai[1] = 0;
+                        if (npc.ai[1] == 600)
+                        {
+                            npc.dontTakeDamage = false;
+                            npc.ai[1] = 0;
+                        }
 
                         return false;
                     }
@@ -326,7 +333,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     // Trajectory simulation for 120 ticks ahead
                     for (int i = 0; i < 120; i++)
                     {
-                        Color trailColor = Color.Orange * ((120 - i) / 120f);
+
+                        float trailFade = (120 - i) / 120f;
+                        float npcFade = MathHelper.Lerp(0, 1, Utils.Clamp(npc.ai[1] - 450, 0, 30) / 30f);
+                        Color trailColor = Color.Orange * Utils.Clamp(trailFade - npcFade, 0, 1);
 
                         float simulatedAngle = MathHelper.Lerp(0, RandomAngle, Utils.Clamp(i, 0, 60f) / 60f);
                         simulatedVelocity = simulatedVelocity.RotatedBy(MathHelper.ToRadians(simulatedAngle));
@@ -353,7 +363,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu").Value;
 
-                Rectangle drawRectangle = new Rectangle(0, (int)(texture.Height / 2f) * 1, texture.Width, (int)(texture.Height / 2f));
+                int frame = 0;
+                Rectangle drawRectangle = new Rectangle(0, (int)(texture.Height / 2f) * frame, texture.Width, (int)(texture.Height / 2f));
 
                 Color color = Color.Lerp(drawColor, Color.Transparent, npc.alpha / 255f);
                 spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color, npc.rotation + MathHelper.PiOver2, drawRectangle.Size() / 2, npc.scale, SpriteEffects.None, 0);
@@ -370,11 +381,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu_Glow").Value;
+                #region NPC textures
+                Texture2D glow = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu_Glow").Value;
                 Color color = Color.Lerp(Color.White, Color.Transparent, npc.alpha / 255f);
 
-                if (npc.ai[1] < 360)
-                    spriteBatch.Draw(texture, npc.Center - screenPos, null, color, npc.rotation + MathHelper.PiOver2, texture.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                spriteBatch.Draw(glow, npc.Center - screenPos, null, color, npc.rotation + MathHelper.PiOver2, glow.Size() / 2, npc.scale, SpriteEffects.None, 0);
+
+                // This is the texture for the NPC to fade into black
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/ServantOfCthulhu").Value;
+
+                int frame = 1;
+                Rectangle drawRectangle = new Rectangle(0, (int)(texture.Height / 2f) * frame, texture.Width, (int)(texture.Height / 2f));
+                float fadeValues = (npc.ai[1] >= 420 && npc.ai[1] <= 600) ? MathHelper.Lerp(0, 1, Utils.Clamp(npc.ai[1] - 420, 0, 60) / 60f): 0;
+                spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color * fadeValues, npc.rotation + MathHelper.PiOver2, drawRectangle.Size() / 2, npc.scale, SpriteEffects.None, 0);
+                #endregion
 
                 #region Pulse
                 spriteBatch.Reload(BlendState.Additive);
