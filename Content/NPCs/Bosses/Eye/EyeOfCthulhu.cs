@@ -742,7 +742,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         float scaleAmount = i / (float)amount;
                         scale = 1f + progress * scaleAmount;
-                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation - MathHelper.PiOver4, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
                     }
                 }
 

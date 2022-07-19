@@ -6,6 +6,8 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System.Collections.Generic;
+using OvermorrowMod.Content.Buffs.Debuffs;
+using OvermorrowMod.Content.Dusts;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
@@ -41,6 +43,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 {
                     if (parent.GetGlobalNPC<EyeOfCthulhu>().IntroPortal) return false;
                 }
+
+                if (BossDash && npc.ai[1] <= BossDelay + 60) return false;
 
                 return npc.ai[0] != -1;
             }
@@ -214,7 +218,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.TargetClosest(true);
                     Player player = Main.player[npc.target];
 
-
                     /*foreach (NPC boss in Main.npc)
                     {
                         if (!boss.active || boss.type != NPCID.EyeofCthulhu) continue;
@@ -243,6 +246,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             {
                                 if (npc.ai[1] == BossDelay)
                                 {
+                                    // Dash backwards
+                                    npc.velocity = -npc.DirectionTo(player.Center) * Main.rand.Next(12, 15);
+
                                     InitialVelocity = npc.velocity;
                                     InitialRotation = npc.rotation;
                                 }
@@ -281,6 +287,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 npc.dontTakeDamage = false;
                                 BossDash = false;
                                 BossDelay = 0;
+                                
+                                for (int i = 0; i < Main.rand.Next(8, 16); i++)
+                                {
+                                    Vector2 randomSpeed = Vector2.One.RotateRandom(MathHelper.TwoPi) * Main.rand.Next(5, 10);
+                                    Dust.NewDust(npc.Center, 2, 2, ModContent.DustType<ShadowForm>(), randomSpeed.X, randomSpeed.Y);
+                                }
 
                                 npc.ai[1] = 0;
                             }
@@ -310,6 +322,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             if (npc.type == NPCID.ServantofCthulhu)
             {
+                if (target.HasBuff<Watched>())
+                {
+                    damage *= 2;
+                }
                 //if (!BossPulse) BossPulse = true;
             }
 
