@@ -19,8 +19,9 @@ namespace OvermorrowMod.Content.Dusts
 
         public override bool Update(Dust dust)
         {
-            dust.velocity *= 0.99f;
-            dust.scale *= 0.99f;
+            dust.position += dust.velocity;
+            dust.velocity *= 0.98f;
+            dust.scale *= 0.98f;
 
             if (counter++ % 2 == 0) dust.alpha++;
 

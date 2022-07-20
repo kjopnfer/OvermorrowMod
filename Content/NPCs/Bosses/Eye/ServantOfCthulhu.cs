@@ -288,10 +288,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 BossDash = false;
                                 BossDelay = 0;
                                 
-                                for (int i = 0; i < Main.rand.Next(8, 16); i++)
+                                for (int i = 0; i < Main.rand.Next(12, 16); i++)
                                 {
-                                    Vector2 randomSpeed = Vector2.One.RotateRandom(MathHelper.TwoPi) * Main.rand.Next(5, 10);
-                                    Dust.NewDust(npc.Center, 2, 2, ModContent.DustType<ShadowForm>(), randomSpeed.X, randomSpeed.Y);
+                                    Vector2 randomSpeed = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(1, 4);
+                                    Dust.NewDust(npc.Center, 2, 2, ModContent.DustType<ShadowForm>(), randomSpeed.X, randomSpeed.Y, 0, default, Main.rand.Next(1, 3));
                                 }
 
                                 npc.ai[1] = 0;
