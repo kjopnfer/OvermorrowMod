@@ -211,7 +211,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 {
                     if (playerAngle >= lowerAngle && playerAngle <= upperAngle && player.direction == -npc.direction)
                     {
-                        //targetPlayer.AddBuff(ModContent.BuffType<Paralyzed>(), 360);
+                        targetPlayer.AddBuff(ModContent.BuffType<Watched>(), 60);
                     }
                 }
             }
