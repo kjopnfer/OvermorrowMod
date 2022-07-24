@@ -21,7 +21,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private float moveSpeed;
         private float turnResistance;
         private Vector2 positionOffset;
-        public Color TrailColor(float progress) => Color.Black;
+
+        public Player latchPlayer;
+        private bool hasLatched = false;
+        private Vector2 latchPoint;
+        public Color TrailColor(float progress) => hasLatched ? Color.Transparent : Color.Black;
         public float TrailSize(float progress) => 16;
         public Type TrailType() => typeof(LightningTrail);
 
@@ -57,21 +61,37 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             NPC.TargetClosest();
             Player player = Main.player[NPC.target];
 
-            NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
-
-            if (++AICounter < 150)
+            if (!hasLatched)
             {
-                NPC.Move(player.Center, moveSpeed, turnResistance);
+                NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
+
+                if (++AICounter < 150)
+                {
+                    NPC.Move(player.Center, moveSpeed, turnResistance);
+                }
+                else if (AICounter == 150)
+                {
+                    rotateDirection = Main.rand.NextBool() ? 1 : -1;
+                    NPC.velocity = NPC.DirectionTo(player.Center).RotatedByRandom(MathHelper.PiOver4) * (moveSpeed / 2);
+                }
+
+                NPC.velocity = NPC.velocity.RotatedBy(Math.Sin(AICounter * randomAmplitude) * randomAmplitude * rotateDirection);
+
+                if (AICounter == 210) AICounter = 0;
+
+                if (NPC.Hitbox.Intersects(player.getRect()))
+                {
+                    hasLatched = true;
+                    latchPoint = NPC.Center - player.Center;
+                    latchPlayer = player;
+
+                    Main.NewText("latch");
+                }
             }
-            else if (AICounter == 150)
+            else
             {
-                rotateDirection = Main.rand.NextBool() ? 1 : -1;
-                NPC.velocity = NPC.velocity.RotatedByRandom(MathHelper.PiOver4) * 2;
+                NPC.Center = latchPlayer.Center + latchPoint;
             }
-
-            NPC.velocity = NPC.velocity.RotatedBy(Math.Sin(AICounter * randomAmplitude) * randomAmplitude * rotateDirection);
-
-            if (AICounter == 210) AICounter = 0;
         }
 
         public Vector2 PolarVector(float radius, float theta)
@@ -91,7 +111,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Texture2D glow = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/MiniServant_Glow").Value;
             Color color = Color.Lerp(Color.White, Color.Transparent, NPC.alpha / 255f);
 
-            spriteBatch.Draw(glow, NPC.Center - screenPos, null, color, NPC.rotation + MathHelper.PiOver2, glow.Size() / 2, NPC.scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(glow, NPC.Center - screenPos, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, SpriteEffects.None, 0);
         }
     }
 }
