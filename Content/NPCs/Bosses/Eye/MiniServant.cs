@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private bool isLeft = false;
         private bool isRight = false;
 
-        public Color TrailColor(float progress) => hasLatched ? Color.Transparent : Color.Black;
+        public Color TrailColor(float progress) => AICase == (int)AIStates.Latch ? Color.Transparent : Color.Black;
         public float TrailSize(float progress) => 16;
         public Type TrailType() => typeof(LightningTrail);
 
@@ -51,6 +51,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             NPC.DeathSound = SoundID.NPCDeath2;
         }
 
+        public enum AIStates
+        {
+            Fly = 0,
+            Latch = 1,
+            ShakeOff = 2
+        }
+        public ref float AICase => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
         public override void OnSpawn(IEntitySource source)
         {
@@ -66,7 +73,100 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             NPC.TargetClosest();
             Player player = Main.player[NPC.target];
 
-            if (!hasLatched)
+            switch (AICase)
+            {
+                case (int)AIStates.Fly:
+                    NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
+
+                    if (++AICounter < 150)
+                    {
+                        NPC.Move(player.Center, moveSpeed, turnResistance);
+                    }
+                    else if (AICounter == 150)
+                    {
+                        rotateDirection = Main.rand.NextBool() ? 1 : -1;
+                        NPC.velocity = NPC.DirectionTo(player.Center).RotatedByRandom(MathHelper.PiOver4) * (moveSpeed / 2);
+                    }
+
+                    NPC.velocity = NPC.velocity.RotatedBy(Math.Sin(AICounter * randomAmplitude) * randomAmplitude * rotateDirection);
+
+                    if (AICounter == 210) AICounter = 0;
+
+                    foreach (Player latchTarget in Main.player)
+                    {
+                        if (!latchTarget.active) continue;
+
+                        if (NPC.Hitbox.Intersects(latchTarget.getRect()))
+                        {
+                            //hasLatched = true;
+                            latchPoint = NPC.Center - player.Center;
+                            latchPlayer = player;
+
+                            AICase = (int)AIStates.Latch;
+                            AICounter = 0;
+                        }
+                    }
+                    break;
+                case (int)AIStates.Latch:
+                    NPC.Center = latchPlayer.Center + latchPoint;
+
+                    #region Shake Off Detection
+                    // The reason that we don't use the control keys for left/right is to account for bottle-type accessories
+                    if (player.direction == 1)
+                    {
+                        if (!isRight)
+                        {
+                            //Main.NewText("facing right");
+                            isRight = true;
+                            isLeft = false;
+
+                            latchCounter += Main.rand.Next(3, 6);
+                        }
+                    }
+
+                    if (player.direction == -1)
+                    {
+                        if (!isLeft)
+                        {
+                            //Main.NewText("facing left");
+                            isLeft = true;
+                            isRight = false;
+
+                            latchCounter += Main.rand.Next(3, 6);
+                        }
+                    }
+
+                    if (latchPlayer.justJumped)
+                    {
+                        //Main.NewText("jump");
+                        latchCounter += Main.rand.Next(3, 6);
+                    }
+
+                    latchCounter -= Main.rand.Next(1, 3);
+                    if (latchCounter < 0) latchCounter = 0;
+
+                    if (latchCounter >= 60)
+                    {
+                        NPC.velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 8;
+                        latchCounter = 0;
+
+                        AICase = (int)AIStates.ShakeOff;
+                        AICounter = 0;
+                    }
+                    #endregion
+                    break;
+                case (int)AIStates.ShakeOff:
+                    NPC.velocity = NPC.velocity.RotatedBy(Math.Sin(AICounter * randomAmplitude) * randomAmplitude * rotateDirection);
+
+                    if (AICounter++ == 90)
+                    {
+                        AICase = (int)AIStates.Fly;
+                        AICounter = 0;
+                    }
+                    break;
+            }
+
+            /*if (!hasLatched)
             {
                 NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
 
@@ -115,6 +215,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         Main.NewText("facing right");
                         isRight = true;
                         isLeft = false;
+
+                        latchCounter += Main.rand.Next(3, 6);
                     }
                 }
 
@@ -126,13 +228,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         isLeft = true;
                         isRight = false;
+
+                        latchCounter += Main.rand.Next(3, 6);
                     }
                 }
 
+                if (latchPlayer.justJumped)
+                {
+                    Main.NewText("jump");
+                    latchCounter += Main.rand.Next(3, 6);
+                }
 
-                if (latchPlayer.justJumped) Main.NewText("jump");
+                if (latchCounter >= 40)
+                {
+                    latchCounter = 0;
+                    hasLatched = false;
+                }
                 #endregion
-            }
+            }*/
         }
 
         public Vector2 PolarVector(float radius, float theta)
