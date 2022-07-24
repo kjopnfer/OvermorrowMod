@@ -25,6 +25,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public Player latchPlayer;
         private bool hasLatched = false;
         private Vector2 latchPoint;
+        private int latchCounter;
+
+        private bool isLeft = false;
+        private bool isRight = false;
+
         public Color TrailColor(float progress) => hasLatched ? Color.Transparent : Color.Black;
         public float TrailSize(float progress) => 16;
         public Type TrailType() => typeof(LightningTrail);
@@ -79,18 +84,54 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 if (AICounter == 210) AICounter = 0;
 
-                if (NPC.Hitbox.Intersects(player.getRect()))
+                foreach (Player latchTarget in Main.player)
                 {
-                    hasLatched = true;
-                    latchPoint = NPC.Center - player.Center;
-                    latchPlayer = player;
+                    if (!latchTarget.active) continue;
 
-                    Main.NewText("latch");
+                    if (NPC.Hitbox.Intersects(latchTarget.getRect()))
+                    {
+                        hasLatched = true;
+                        latchPoint = NPC.Center - player.Center;
+                        latchPlayer = player;
+                    }
                 }
             }
             else
             {
                 NPC.Center = latchPlayer.Center + latchPoint;
+
+                #region Shake Off Detection
+
+                //if(latchPlayer.releaseLeft && latchPlayer.oldDirection == 1) Main.NewText("left");
+                //if (latchPlayer.releaseRight && latchPlayer.oldDirection == -1) Main.NewText("right");
+
+                //if (latchPlayer.oldDirection == 1 && latchPlayer.direction == -1) Main.NewText("right");
+
+                // The reason that we don't use the control keys for left/right is to account for bottle-type accessories
+                if (player.direction == 1)
+                {
+                    if (!isRight)
+                    {
+                        Main.NewText("facing right");
+                        isRight = true;
+                        isLeft = false;
+                    }
+                }
+
+                if (player.direction == -1)
+                {
+                    if (!isLeft)
+                    {
+                        Main.NewText("facing left");
+
+                        isLeft = true;
+                        isRight = false;
+                    }
+                }
+
+
+                if (latchPlayer.justJumped) Main.NewText("jump");
+                #endregion
             }
         }
 

@@ -13,7 +13,7 @@ namespace OvermorrowMod.Common.DrawLayers
     {
         public override Position GetDefaultPosition()
         {
-            return new AfterParent(PlayerDrawLayers.FrontAccFront);
+            return new AfterParent(PlayerDrawLayers.FrozenOrWebbedDebuff);
         }
 
         protected override void Draw(ref PlayerDrawSet drawInfo)
@@ -30,7 +30,6 @@ namespace OvermorrowMod.Common.DrawLayers
                     Texture2D glow = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/MiniServant_Glow").Value;
 
                     Color color = Lighting.GetColor((int)npc.Center.X, (int)npc.Center.Y);
-
 
                     DrawData textureLayer = new DrawData(texture, npc.Center - Main.screenPosition, npc.frame, color, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 1);
                     DrawData glowLayer = new DrawData(glow, npc.Center - Main.screenPosition, npc.frame, Color.White, npc.rotation, npc.frame.Size() / 2, npc.scale, SpriteEffects.None, 1);
