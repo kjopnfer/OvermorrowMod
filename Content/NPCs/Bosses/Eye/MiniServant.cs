@@ -56,6 +56,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         }
         public ref float AICase => ref NPC.ai[0];
         public ref float AICounter => ref NPC.ai[1];
+        public ref float HealCounter => ref NPC.ai[2];
+        public ref float ParentID => ref NPC.ai[3];
         public override void OnSpawn(IEntitySource source)
         {
             moveSpeed = Main.rand.Next(12, 15) * 2;
@@ -109,6 +111,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 case (int)AIStates.Latch:
                     NPC.Center = latchPlayer.Center + latchPoint;
 
+                    Main.NewText(HealCounter);
+                    if (++HealCounter % 600 == 0)
+                    {
+                        latchPlayer.Hurt(PlayerDeathReason.ByCustomReason(latchPlayer.name + " has reduced to a husk."), 10, 0, false, false, false, -1);
+
+                        if (latchPlayer.statLife <= 0)
+                        {
+                            latchPlayer.statLife = 0;
+                            latchPlayer.KillMe(PlayerDeathReason.ByCustomReason(latchPlayer.name + " has reduced to a husk."), 10, 0);
+                        }
+                    }
+
                     #region Shake Off Detection
                     // The reason that we don't use the control keys for left/right is to account for bottle-type accessories
                     if (player.direction == 1 && !isRight)
@@ -144,6 +158,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         AICase = (int)AIStates.ShakeOff;
                         AICounter = 0;
+                        HealCounter = 0;
                     }
                     #endregion
                     break;
@@ -171,7 +186,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             #region Boss Line
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/LineIndicator").Value;
 
-            NPC parent = Main.npc[(int)NPC.ai[3]];
+            NPC parent = Main.npc[(int)ParentID];
             foreach (NPC npc in Main.npc)
             {
                 if (npc.type != NPCID.EyeofCthulhu) continue;
@@ -193,7 +208,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 Vector2 midPoint1 = parent.Center + new Vector2(lineOffset, distance / 3).RotatedBy(parent.rotation - MathHelper.PiOver4);
                 Vector2 midPoint2 = NPC.Center + new Vector2(0, -distance / 3).RotatedBy(NPC.rotation);
 
-                float alpha = MathHelper.Lerp(0, 0.65f, (float)Math.Sin(NPC.localAI[0]++ / 60f) / 2 + 0.5f);
+                float alpha = MathHelper.Lerp(0, 0.1f, (float)Math.Sin(NPC.localAI[0]++ / 60f) / 2 + 0.5f);
                 for (int i = 0; i < iterations; i++)
                 {
                     float progress = i / iterations;

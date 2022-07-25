@@ -18,13 +18,15 @@ namespace OvermorrowMod.Common
     {
         public static void Load()
         {
+            #region Hide UI
             //On.Terraria.Main.DrawNPCChatButtons += DrawNPCChatButtons;
-            On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.Draw += Draw;
+            /*On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.Draw += Draw;
             On.Terraria.Main.DrawHealthBar += DrawHealthBar;
             On.Terraria.Main.DrawInterface_Resources_Buffs += DrawInterface_Resources_Buffs;
             On.Terraria.Main.DrawInterface_16_MapOrMinimap += DrawInterface_16_MapOrMinimap;
             On.Terraria.Main.DrawInterface_25_ResourceBars += DrawInterface_25_ResourceBars;
-            On.Terraria.Main.DrawInterface_30_Hotbar += DrawInterface_30_Hotbar;
+            On.Terraria.Main.DrawInterface_30_Hotbar += DrawInterface_30_Hotbar;*/
+            #endregion
             On.Terraria.Player.Update_NPCCollision += UpdateNPCCollision;
             On.Terraria.Player.SlopingCollision += PlatformCollision;
             On.Terraria.Main.DrawInterface += DrawParticles;
@@ -37,14 +39,16 @@ namespace OvermorrowMod.Common
 
         public static void Unload()
         {
+            #region Hide UI
             //On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
-            On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.Draw -= Draw;
+            /*On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.Draw -= Draw;
 
             On.Terraria.Main.DrawHealthBar -= DrawHealthBar;
             On.Terraria.Main.DrawInterface_Resources_Buffs -= DrawInterface_Resources_Buffs;
             On.Terraria.Main.DrawInterface_16_MapOrMinimap -= DrawInterface_16_MapOrMinimap;
             On.Terraria.Main.DrawInterface_25_ResourceBars -= DrawInterface_25_ResourceBars;
-            On.Terraria.Main.DrawInterface_30_Hotbar -= DrawInterface_30_Hotbar;
+            On.Terraria.Main.DrawInterface_30_Hotbar -= DrawInterface_30_Hotbar;*/
+            #endregion
             On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
             On.Terraria.Player.SlopingCollision -= PlatformCollision;
             On.Terraria.Main.DrawInterface -= DrawParticles;
