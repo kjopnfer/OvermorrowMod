@@ -96,7 +96,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
 
                 npc.rotation = -MathHelper.PiOver2;
-                npc.ai[0] = (float)AIStates.Intro;
+                npc.ai[0] = (float)AIStates.Selector;
                 npc.ai[1] = 0;
                 npc.ai[2] = 0;
                 npc.ai[3] = 0;

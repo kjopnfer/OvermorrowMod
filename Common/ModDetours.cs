@@ -134,7 +134,7 @@ namespace OvermorrowMod.Common
             //DarkVortex.DrawAll(spriteBatch);
             spriteBatch.End();
 
-            graphicsDevice.SetRenderTarget(Main.screenTarget);
+            /*graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
@@ -146,7 +146,7 @@ namespace OvermorrowMod.Common
             OvermorrowModFile.BigTentacle.Parameters["m"].SetValue(0.62f);
             OvermorrowModFile.BigTentacle.Parameters["n"].SetValue(0.01f);
             spriteBatch.Draw(OvermorrowModFile.Instance.Render, Vector2.Zero, Color.White);
-            spriteBatch.End();
+            spriteBatch.End();*/
 
             orig(self, finalTexture, screenTarget1, screenTarget2, clearColor);
         }

@@ -5,9 +5,6 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
-using OvermorrowMod.Content.Buffs.Debuffs;
-using OvermorrowMod.Content.Dusts;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using System;
@@ -20,15 +17,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private float rotateDirection = 1;
         private float moveSpeed;
         private float turnResistance;
-        private Vector2 positionOffset;
 
         public Player latchPlayer;
-        private bool hasLatched = false;
         private Vector2 latchPoint;
-        private int latchCounter;
+        private int latchCounter = 0;
 
         private bool isLeft = false;
         private bool isRight = false;
+
+        private int lineOffset;
 
         public Color TrailColor(float progress) => AICase == (int)AIStates.Latch ? Color.Transparent : Color.Black;
         public float TrailSize(float progress) => 16;
@@ -63,15 +60,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             moveSpeed = Main.rand.Next(12, 15) * 2;
             turnResistance = Main.rand.Next(16, 19) * 5;
-            positionOffset = new Vector2(Main.rand.Next(-3, 3), Main.rand.Next(-3, 3)) * 10;
             rotateDirection = Main.rand.NextBool() ? 1 : -1;
             randomAmplitude = Main.rand.NextFloat(0.1f, 0.25f);
+            lineOffset = (Main.rand.Next(-24, 14) + 5) * 20;
         }
 
         public override void AI()
         {
             NPC.TargetClosest();
             Player player = Main.player[NPC.target];
+
+            NPC.dontTakeDamage = AICase == (int)AIStates.Latch;
 
             switch (AICase)
             {
@@ -98,12 +97,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                         if (NPC.Hitbox.Intersects(latchTarget.getRect()))
                         {
-                            //hasLatched = true;
                             latchPoint = NPC.Center - player.Center;
                             latchPlayer = player;
 
                             AICase = (int)AIStates.Latch;
                             AICounter = 0;
+                            NPC.localAI[0] = 0;
                         }
                     }
                     break;
@@ -112,42 +111,35 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     #region Shake Off Detection
                     // The reason that we don't use the control keys for left/right is to account for bottle-type accessories
-                    if (player.direction == 1)
+                    if (player.direction == 1 && !isRight)
                     {
-                        if (!isRight)
-                        {
-                            //Main.NewText("facing right");
-                            isRight = true;
-                            isLeft = false;
+                        isRight = true;
+                        isLeft = false;
 
-                            latchCounter += Main.rand.Next(3, 6);
-                        }
+                        latchCounter += Main.rand.Next(3, 6);
                     }
 
-                    if (player.direction == -1)
+                    if (player.direction == -1 && !isLeft)
                     {
-                        if (!isLeft)
-                        {
-                            //Main.NewText("facing left");
-                            isLeft = true;
-                            isRight = false;
+                        isLeft = true;
+                        isRight = false;
 
-                            latchCounter += Main.rand.Next(3, 6);
-                        }
+                        latchCounter += Main.rand.Next(3, 6);
                     }
 
                     if (latchPlayer.justJumped)
                     {
-                        //Main.NewText("jump");
-                        latchCounter += Main.rand.Next(3, 6);
+                        latchCounter += Main.rand.Next(4, 7);
                     }
 
-                    latchCounter -= Main.rand.Next(1, 3);
+                    if (latchCounter > 0 && AICounter++ % 3 == 0) latchCounter -= Main.rand.Next(1, 3);
                     if (latchCounter < 0) latchCounter = 0;
 
-                    if (latchCounter >= 60)
+                    Main.NewText(latchCounter);
+                    if (latchCounter >= 25 || player.wet || player.HasBuff(BuffID.OnFire))
                     {
                         NPC.velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 8;
+                        lineOffset = (Main.rand.Next(-15, 14) + 5) * 20;
                         latchCounter = 0;
 
                         AICase = (int)AIStates.ShakeOff;
@@ -165,92 +157,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
                     break;
             }
-
-            /*if (!hasLatched)
-            {
-                NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
-
-                if (++AICounter < 150)
-                {
-                    NPC.Move(player.Center, moveSpeed, turnResistance);
-                }
-                else if (AICounter == 150)
-                {
-                    rotateDirection = Main.rand.NextBool() ? 1 : -1;
-                    NPC.velocity = NPC.DirectionTo(player.Center).RotatedByRandom(MathHelper.PiOver4) * (moveSpeed / 2);
-                }
-
-                NPC.velocity = NPC.velocity.RotatedBy(Math.Sin(AICounter * randomAmplitude) * randomAmplitude * rotateDirection);
-
-                if (AICounter == 210) AICounter = 0;
-
-                foreach (Player latchTarget in Main.player)
-                {
-                    if (!latchTarget.active) continue;
-
-                    if (NPC.Hitbox.Intersects(latchTarget.getRect()))
-                    {
-                        hasLatched = true;
-                        latchPoint = NPC.Center - player.Center;
-                        latchPlayer = player;
-                    }
-                }
-            }
-            else
-            {
-                NPC.Center = latchPlayer.Center + latchPoint;
-
-                #region Shake Off Detection
-
-                //if(latchPlayer.releaseLeft && latchPlayer.oldDirection == 1) Main.NewText("left");
-                //if (latchPlayer.releaseRight && latchPlayer.oldDirection == -1) Main.NewText("right");
-
-                //if (latchPlayer.oldDirection == 1 && latchPlayer.direction == -1) Main.NewText("right");
-
-                // The reason that we don't use the control keys for left/right is to account for bottle-type accessories
-                if (player.direction == 1)
-                {
-                    if (!isRight)
-                    {
-                        Main.NewText("facing right");
-                        isRight = true;
-                        isLeft = false;
-
-                        latchCounter += Main.rand.Next(3, 6);
-                    }
-                }
-
-                if (player.direction == -1)
-                {
-                    if (!isLeft)
-                    {
-                        Main.NewText("facing left");
-
-                        isLeft = true;
-                        isRight = false;
-
-                        latchCounter += Main.rand.Next(3, 6);
-                    }
-                }
-
-                if (latchPlayer.justJumped)
-                {
-                    Main.NewText("jump");
-                    latchCounter += Main.rand.Next(3, 6);
-                }
-
-                if (latchCounter >= 40)
-                {
-                    latchCounter = 0;
-                    hasLatched = false;
-                }
-                #endregion
-            }*/
-        }
-
-        public Vector2 PolarVector(float radius, float theta)
-        {
-            return new Vector2((float)Math.Cos(theta), (float)Math.Sin(theta)) * radius;
         }
 
         public override void FindFrame(int frameHeight)
@@ -258,6 +164,46 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (++NPC.frameCounter % 5 == 0) NPC.frame.Y += frameHeight;
 
             if (NPC.frame.Y >= frameHeight * 2) NPC.frame.Y = 0;
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            #region Boss Line
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/LineIndicator").Value;
+
+            NPC parent = Main.npc[(int)NPC.ai[3]];
+            foreach (NPC npc in Main.npc)
+            {
+                if (npc.type != NPCID.EyeofCthulhu) continue;
+
+                parent = npc;
+            }
+
+            if (parent.type == NPCID.EyeofCthulhu && AICase == (int)AIStates.Latch)
+            {
+                Vector2 mountedCenter = parent.Center;
+                var drawPosition = NPC.Center;
+
+                var remainingVectorToParent = mountedCenter - drawPosition;
+                float rotation = remainingVectorToParent.ToRotation() - MathHelper.PiOver2;
+
+                float CHAIN_LENGTH = 1;
+                float distance = Vector2.Distance(parent.Center, NPC.Center);
+                float iterations = distance / CHAIN_LENGTH;
+                Vector2 midPoint1 = parent.Center + new Vector2(lineOffset, distance / 3).RotatedBy(parent.rotation - MathHelper.PiOver4);
+                Vector2 midPoint2 = NPC.Center + new Vector2(0, -distance / 3).RotatedBy(NPC.rotation);
+
+                float alpha = MathHelper.Lerp(0, 0.65f, (float)Math.Sin(NPC.localAI[0]++ / 60f) / 2 + 0.5f);
+                for (int i = 0; i < iterations; i++)
+                {
+                    float progress = i / iterations;
+
+                    Vector2 position = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, progress);
+                    Main.EntitySpriteDraw(texture, position - Main.screenPosition, null, Color.Orange * alpha, rotation, texture.Size() / 2, 1f, SpriteEffects.None, 0);
+                }
+            }
+            #endregion
+            return base.PreDraw(spriteBatch, screenPos, drawColor);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
