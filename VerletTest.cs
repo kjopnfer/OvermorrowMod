@@ -35,25 +35,35 @@ namespace OvermorrowMod
            // bannerItem = Item.BannerToItem(banner);
         }
         public VerletPoint[] points;
+        public VerletPoint[] points2;
+        public VerletStick[] sticks;
+        public VerletStick[] sticks2;
         public override void AI()
         {
             if (NPC.ai[0] == 0)
             {
-                points = new VerletPoint[3];
-                points[0] = new VerletPoint(new Vector2(0, 0), new Vector2(NPC.Center.X + 100, NPC.Center.Y + 25), null, true);
-                points[1] = new VerletPoint(new Vector2(0, 0), new Vector2(NPC.Center.X + 0, NPC.Center.Y + 25), null, false);
-                points[2] = new VerletPoint(new Vector2(0, 0), new Vector2(NPC.Center.X - 100, NPC.Center.Y + 25),null, false);
+                /*points = new VerletPoint[4];
+                points[0] = new VerletPoint(new Vector2(NPC.Center.X + 100, NPC.Center.Y - 250), new Vector2(NPC.Center.X + 100, NPC.Center.Y - 250), null, true);
+                points[1] = new VerletPoint(new Vector2(NPC.Center.X + 0, NPC.Center.Y - 100), new Vector2(NPC.Center.X + 0, NPC.Center.Y - 100), null, false);
+                points[2] = new VerletPoint(new Vector2(NPC.Center.X - 100, NPC.Center.Y - 50), new Vector2(NPC.Center.X - 100, NPC.Center.Y - 50),null, false);
+                points[3] = new VerletPoint(new Vector2(NPC.Center.X - 140, NPC.Center.Y - 75), new Vector2(NPC.Center.X - 140, NPC.Center.Y - 75),null, false);
                 points[0].connections = new VerletPoint[1];
                 points[0].connections[0] = points[1];                
                 points[1].connections = new VerletPoint[1];
                 points[1].connections[0] = points[2];
+                points[3].connections = new VerletPoint[1];
+                points[3].connections[0] = points[2];
+                */
+                points = VerletPointsInLine_Even(NPC.Center, new Vector2(NPC.Center.X - 200, NPC.Center.Y + 250), 5, true, false);
+                points2 = VerletPointsInLine_Offset(new Vector2(NPC.Center.X - 300, NPC.Center.Y -400), new Vector2(NPC.Center.X + 300, NPC.Center.Y - 400),new float[] { 0f, 0.3f, .5f, .7f, 1f }, 5, true, true);
+                sticks = GetVerletSticks(points);
+                sticks2 = GetVerletSticks(points2);
             }
-            points = CalculateVerlet(points,new Vector2(0,1),10);
+            points = CalculateVerlet(points,sticks,new Vector2(0,1),0.07f,10,100f);
+            points2 = CalculateVerlet(points2,sticks2,new Vector2(0,1),0.07f,10,100f);
             NPC.ai[0]++;
-            foreach(VerletPoint point in points)
-            {
-                Dust.NewDust(point.position, 0, 0, DustID.GemEmerald, 0f, 0f, 100, default(Color), 0.25f);
-            }
+            DrawVerletDust(points, DustID.GemEmerald, Color.White);
+            DrawVerletDust(points2, DustID.GemEmerald, Color.Red);
         }
 
 
