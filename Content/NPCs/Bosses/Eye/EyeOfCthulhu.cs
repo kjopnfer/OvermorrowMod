@@ -247,7 +247,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-3, 3) + 5, Main.rand.Next(-8, -4)) * 50;
 
                             var entitySource = npc.GetSource_FromAI();
-                            int index = NPC.NewNPC(entitySource, (int)RandomPosition.X, (int)RandomPosition.Y, NPCID.ServantofCthulhu);
+                            int index = NPC.NewNPC(entitySource, (int)RandomPosition.X, (int)RandomPosition.Y, ModContent.NPCType<MiniServant>(), 0, 0, 0, 0, npc.whoAmI);
 
                             if (Main.netMode == NetmodeID.Server && index < Main.maxNPCs)
                             {
@@ -268,7 +268,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         foreach(NPC npcs in Main.npc)
                         {
-                            if (npcs.type != NPCID.ServantofCthulhu) continue;
+                            if (npcs.type != NPCID.ServantofCthulhu || npcs.type == ModContent.NPCType<MiniServant>()) continue;
 
                             ServantOfCthulhu servant = npcs.GetGlobalNPC<ServantOfCthulhu>();
                             // Forces all servants to dash at the player
@@ -276,6 +276,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             {
                                 servant.BossDash = true;
                                 servant.BossDelay = Main.rand.Next(0, 7) * 10;
+                            }
+
+                            if (!((MiniServant)npc.ModNPC).shadowForm)
+                            {
+                                ((MiniServant)npc.ModNPC).shadowForm = true;
+                                ((MiniServant)npc.ModNPC).shadowCounter = Main.rand.Next(5, 8) * 60;
                             }
                         }
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;

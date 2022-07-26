@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using System;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
@@ -27,6 +28,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
         private int lineOffset;
 
+        public bool shadowForm = false;
+        public int shadowCounter = 0;
         public Color TrailColor(float progress) => AICase == (int)AIStates.Latch ? Color.Transparent : Color.Black;
         public float TrailSize(float progress) => 16;
         public Type TrailType() => typeof(LightningTrail);
@@ -36,6 +39,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             DisplayName.SetDefault("Drainer of Cthulhu");
             Main.npcFrameCount[NPC.type] = 2;
+
+            NPCID.Sets.TrailCacheLength[NPC.type] = 100;
+            NPCID.Sets.TrailingMode[NPC.type] = 3;
         }
 
         public override void SetDefaults()
@@ -67,20 +73,34 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             lineOffset = (Main.rand.Next(-24, 14) + 5) * 20;
         }
 
+        public List<float> particles = new List<float>();
+
         public override void AI()
         {
             NPC.TargetClosest();
             Player player = Main.player[NPC.target];
             NPC parentNPC = Main.npc[(int)ParentID];
 
+            if (!player.active || player.dead)
+            {
+                NPC.TargetClosest(false);
+                player = Main.player[NPC.target];
+            }
+
             NPC.dontTakeDamage = AICase == (int)AIStates.Latch;
+
+            if (shadowCounter > 0 && shadowForm)
+            {
+                shadowCounter--;
+            }
+            else if (shadowCounter == 0) shadowForm = false;
 
             switch (AICase)
             {
                 case (int)AIStates.Fly:
                     NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
 
-                    if (++AICounter < 150 && player.statLife > 0)
+                    if (++AICounter < 150 && !player.dead)
                     {
                         NPC.Move(player.Center, moveSpeed, turnResistance);
                     }
@@ -112,13 +132,27 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 case (int)AIStates.Latch:
                     NPC.Center = latchPlayer.Center + latchPoint;
 
-                    //Main.NewText(HealCounter);
-                    if (++HealCounter % 120 == 0)
+                    // First damage the player and add a particle
+                    if (++HealCounter % 240 == 120)
                     {
-                        if (parentNPC.active && parentNPC.type == NPCID.EyeofCthulhu) parentNPC.life += 10;
+                        particles.Add(0f);
 
-                        //latchPlayer.Hurt(PlayerDeathReason.ByCustomReason(latchPlayer.name + " has reduced to a husk."), 10, 0, false, false, false, -1);
+                        /*if (parentNPC.active && parentNPC.type == NPCID.EyeofCthulhu)
+                        {
+                            parentNPC.HealEffect(10);
+                            parentNPC.life += 10;
+                        }*/
+
                         latchPlayer.HurtDirect(PlayerDeathReason.ByCustomReason(latchPlayer.name + " was reduced to a husk."), 10, false, true);
+                    }
+                    else if (HealCounter % 240 == 180) // and after a second has passed( particle has touched eoc)
+                    {
+                        // heal eoc
+                        if (parentNPC.active && parentNPC.type == NPCID.EyeofCthulhu)
+                        {
+                            parentNPC.HealEffect(10);
+                            parentNPC.life += 10;
+                        }
                     }
 
                     #region Shake Off Detection
@@ -170,6 +204,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     }
                     break;
             }
+
+            // update every particle
+            for (int i = 0; i < particles.Count; i++)
+            {
+                particles[i] += 1 / 60f;
+                if (particles[i] >= 1)
+                {
+                    particles.RemoveAt(i);
+                }
+            }
         }
 
         public override void FindFrame(int frameHeight)
@@ -214,6 +258,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Vector2 position = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, progress);
                     Main.EntitySpriteDraw(texture, position - Main.screenPosition, null, Color.Orange * alpha, rotation, texture.Size() / 2, 1f, SpriteEffects.None, 0);
                 }
+
+                // draw a glow in the area the particles are at
+                Texture2D tex2 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
+                for (int i = 0; i < particles.Count; i++)
+                {
+                    for (int j = 0; j < 2; j++)
+                    {
+                        float offset = 1 / 60f * j;
+                        float scale = 0.25f / j;
+                        Vector2 pos1 = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, 1f - particles[i] + offset);
+                        Vector2 pos2 = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, 1f - particles[i] + offset);
+                        Main.EntitySpriteDraw(tex2, pos1 - Main.screenPosition, null, Color.Orange, 0f, tex2.Size() / 2, scale, SpriteEffects.None, 0);
+                        Main.EntitySpriteDraw(tex2, pos2 - Main.screenPosition, null, Color.Orange, 0f, tex2.Size() / 2, scale, SpriteEffects.None, 0);
+                    }
+                    Vector2 pos = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, 1f - particles[i]);
+                    Main.EntitySpriteDraw(tex2, pos - Main.screenPosition, null, Color.Orange, 0f, tex2.Size() / 2, 0.25f, SpriteEffects.None, 0);
+                }
             }
             #endregion
             return base.PreDraw(spriteBatch, screenPos, drawColor);
@@ -225,6 +286,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             Color color = Color.Lerp(Color.White, Color.Transparent, NPC.alpha / 255f);
 
             spriteBatch.Draw(glow, NPC.Center - screenPos, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, SpriteEffects.None, 0);
+
+            if (shadowForm && shadowCounter > 0)
+            {
+                for (int k = 0; k < NPC.oldPos.Length; k++)
+                {
+                    Vector2 drawPos = NPC.oldPos[k] + NPC.Size / 2 - Main.screenPosition;
+                    var trailLength = ProjectileID.Sets.TrailCacheLength[NPC.type];
+                    var fadeMult = 1f / trailLength;
+                    Color afterImageColor = Color.White * (1f - fadeMult * k);
+
+                    spriteBatch.Draw(glow, drawPos, NPC.frame, afterImageColor, NPC.oldRot[k] + MathHelper.PiOver2, NPC.frame.Size() / 2f, NPC.scale * (trailLength - k) / trailLength, SpriteEffects.None, 0f);
+                }
+            }
         }
     }
 }
