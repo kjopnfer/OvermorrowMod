@@ -71,6 +71,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         {
             NPC.TargetClosest();
             Player player = Main.player[NPC.target];
+            NPC parentNPC = Main.npc[(int)ParentID];
 
             NPC.dontTakeDamage = AICase == (int)AIStates.Latch;
 
@@ -79,7 +80,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 case (int)AIStates.Fly:
                     NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
 
-                    if (++AICounter < 150)
+                    if (++AICounter < 150 && player.statLife > 0)
                     {
                         NPC.Move(player.Center, moveSpeed, turnResistance);
                     }
@@ -111,16 +112,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 case (int)AIStates.Latch:
                     NPC.Center = latchPlayer.Center + latchPoint;
 
-                    Main.NewText(HealCounter);
-                    if (++HealCounter % 600 == 0)
+                    //Main.NewText(HealCounter);
+                    if (++HealCounter % 120 == 0)
                     {
-                        latchPlayer.Hurt(PlayerDeathReason.ByCustomReason(latchPlayer.name + " has reduced to a husk."), 10, 0, false, false, false, -1);
+                        if (parentNPC.active && parentNPC.type == NPCID.EyeofCthulhu) parentNPC.life += 10;
 
-                        if (latchPlayer.statLife <= 0)
-                        {
-                            latchPlayer.statLife = 0;
-                            latchPlayer.KillMe(PlayerDeathReason.ByCustomReason(latchPlayer.name + " has reduced to a husk."), 10, 0);
-                        }
+                        //latchPlayer.Hurt(PlayerDeathReason.ByCustomReason(latchPlayer.name + " has reduced to a husk."), 10, 0, false, false, false, -1);
+                        latchPlayer.HurtDirect(PlayerDeathReason.ByCustomReason(latchPlayer.name + " was reduced to a husk."), 10, false, true);
                     }
 
                     #region Shake Off Detection
@@ -149,8 +147,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     if (latchCounter > 0 && AICounter++ % 3 == 0) latchCounter -= Main.rand.Next(1, 3);
                     if (latchCounter < 0) latchCounter = 0;
 
-                    Main.NewText(latchCounter);
-                    if (latchCounter >= 25 || player.wet || player.HasBuff(BuffID.OnFire))
+                    //Main.NewText(latchCounter);
+                    if (latchCounter >= 25 || player.wet || player.HasBuff(BuffID.OnFire) || latchPlayer.statLife <= 0)
                     {
                         NPC.velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 8;
                         lineOffset = (Main.rand.Next(-15, 14) + 5) * 20;

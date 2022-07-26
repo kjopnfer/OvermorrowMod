@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.DrawLayers
 {
-    public class MiniServantDrawLayer : PlayerDrawLayer
+    /*public class MiniServantDrawLayer : PlayerDrawLayer
     {
         public override Position GetDefaultPosition()
         {
@@ -39,5 +39,5 @@ namespace OvermorrowMod.Common.DrawLayers
                 }
             }
         }
-    }
+    }*/
 }

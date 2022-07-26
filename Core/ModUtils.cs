@@ -321,5 +321,23 @@ namespace OvermorrowMod.Core
             return 1 - (1 - x) * (1 - x);
         }
 
+        /// <summary>
+        /// Modified version of Player.Hurt, which ignores defense.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="damage"></param>
+        /// <param name="dramatic"></param>
+        /// <param name="dot"></param>
+        public static void HurtDirect(this Player player, PlayerDeathReason deathReason, int damage, bool dramatic = false, bool dot = false)
+        {
+            CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, damage, dramatic, dot);
+            player.statLife -= damage;
+
+            if (player.statLife <= 0)
+            {
+                player.statLife = 0;
+                player.KillMe(deathReason, 10, 0);
+            }
+        }
     }
 }
