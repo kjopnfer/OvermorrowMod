@@ -268,7 +268,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     {
                         foreach(NPC npcs in Main.npc)
                         {
-                            if (npcs.type != NPCID.ServantofCthulhu || npcs.type == ModContent.NPCType<MiniServant>()) continue;
+                            if (npcs.type != NPCID.ServantofCthulhu && npcs.type != ModContent.NPCType<MiniServant>()) continue;
 
                             ServantOfCthulhu servant = npcs.GetGlobalNPC<ServantOfCthulhu>();
                             // Forces all servants to dash at the player
@@ -278,10 +278,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                                 servant.BossDelay = Main.rand.Next(0, 7) * 10;
                             }
 
-                            if (!((MiniServant)npc.ModNPC).shadowForm)
+                            if (!((MiniServant)npcs.ModNPC).shadowForm && npcs.ai[0] != 1)
                             {
-                                ((MiniServant)npc.ModNPC).shadowForm = true;
-                                ((MiniServant)npc.ModNPC).shadowCounter = Main.rand.Next(5, 8) * 60;
+                                ((MiniServant)npcs.ModNPC).shadowForm = true;
+                                ((MiniServant)npcs.ModNPC).shadowCounter = Main.rand.Next(5, 8) * 60;
                             }
                         }
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;

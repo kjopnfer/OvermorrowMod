@@ -9,6 +9,7 @@ using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using System;
 using System.Collections.Generic;
+using OvermorrowMod.Content.Dusts;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
@@ -91,9 +92,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             if (shadowCounter > 0 && shadowForm)
             {
+                NPC.dontTakeDamage = true;
                 shadowCounter--;
             }
-            else if (shadowCounter == 0) shadowForm = false;
+            else if (shadowCounter == 0 && shadowForm)
+            {
+                for (int i = 0; i < Main.rand.Next(12, 16); i++)
+                {
+                    Vector2 randomSpeed = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(1, 4);
+                    Dust.NewDust(NPC.Center, 2, 2, ModContent.DustType<ShadowForm>(), randomSpeed.X, randomSpeed.Y, 0, default, Main.rand.Next(1, 3));
+                }
+
+                NPC.dontTakeDamage = false;
+                shadowForm = false;
+                shadowCounter = 0;
+            }
 
             switch (AICase)
             {
@@ -133,7 +146,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     NPC.Center = latchPlayer.Center + latchPoint;
 
                     // First damage the player and add a particle
-                    if (++HealCounter % 240 == 120)
+                    if (HealCounter++ % 240 == 0)
                     {
                         particles.Add(0f);
 
@@ -143,7 +156,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             parentNPC.life += 10;
                         }*/
 
-                        latchPlayer.HurtDirect(PlayerDeathReason.ByCustomReason(latchPlayer.name + " was reduced to a husk."), 10, false, true);
                     }
                     else if (HealCounter % 240 == 180) // and after a second has passed( particle has touched eoc)
                     {
@@ -153,6 +165,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             parentNPC.HealEffect(10);
                             parentNPC.life += 10;
                         }
+
+                        latchPlayer.HurtDirect(PlayerDeathReason.ByCustomReason(latchPlayer.name + " was reduced to a husk."), 10, false, true);
                     }
 
                     #region Shake Off Detection
@@ -208,7 +222,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             // update every particle
             for (int i = 0; i < particles.Count; i++)
             {
-                particles[i] += 1 / 60f;
+                particles[i] += 1 / 180f;
                 if (particles[i] >= 1)
                 {
                     particles.RemoveAt(i);
@@ -263,17 +277,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 Texture2D tex2 = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
                 for (int i = 0; i < particles.Count; i++)
                 {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        float offset = 1 / 60f * j;
-                        float scale = 0.25f / j;
-                        Vector2 pos1 = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, 1f - particles[i] + offset);
-                        Vector2 pos2 = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, 1f - particles[i] + offset);
-                        Main.EntitySpriteDraw(tex2, pos1 - Main.screenPosition, null, Color.Orange, 0f, tex2.Size() / 2, scale, SpriteEffects.None, 0);
-                        Main.EntitySpriteDraw(tex2, pos2 - Main.screenPosition, null, Color.Orange, 0f, tex2.Size() / 2, scale, SpriteEffects.None, 0);
-                    }
-                    Vector2 pos = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, 1f - particles[i]);
-                    Main.EntitySpriteDraw(tex2, pos - Main.screenPosition, null, Color.Orange, 0f, tex2.Size() / 2, 0.25f, SpriteEffects.None, 0);
+                    Vector2 pos = ModUtils.Bezier(parent.Center, NPC.Center, midPoint1, midPoint2, ModUtils.EaseOutQuad(1f - particles[i]));
+                    Main.EntitySpriteDraw(tex2, pos - Main.screenPosition, null, Color.Orange, 0f, tex2.Size() / 2, 0.15f, SpriteEffects.None, 0);
                 }
             }
             #endregion
@@ -287,8 +292,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
             spriteBatch.Draw(glow, NPC.Center - screenPos, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, SpriteEffects.None, 0);
 
-            if (shadowForm && shadowCounter > 0)
+            if (shadowForm)
             {
+                Texture2D glow2 = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/MiniServant_Glow2").Value;
+
                 for (int k = 0; k < NPC.oldPos.Length; k++)
                 {
                     Vector2 drawPos = NPC.oldPos[k] + NPC.Size / 2 - Main.screenPosition;
@@ -296,7 +303,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     var fadeMult = 1f / trailLength;
                     Color afterImageColor = Color.White * (1f - fadeMult * k);
 
-                    spriteBatch.Draw(glow, drawPos, NPC.frame, afterImageColor, NPC.oldRot[k] + MathHelper.PiOver2, NPC.frame.Size() / 2f, NPC.scale * (trailLength - k) / trailLength, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(glow2, drawPos, NPC.frame, afterImageColor, NPC.oldRot[k] + MathHelper.PiOver2, NPC.frame.Size() / 2f, NPC.scale * (trailLength - k) / trailLength, SpriteEffects.None, 0f);
                 }
             }
         }
