@@ -135,12 +135,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.ai[0] != (float)AIStates.Portal)
                 npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver4;
 
-            //float progress = MathHelper.Lerp(0, 1 / 3f, (float)Math.Sin(npc.localAI[2]++ / 30f));
+            float progress = MathHelper.Lerp(0, 1f, (float)Math.Sin(npc.localAI[2]++ / 30f) * 0.5f + 0.5f);
             //float progress = -0.106f;
 
             //float darkIncrease = MathHelper.Lerp(-0.01f, -0.08f, Utils.Clamp(npc.localAI[2]++, 0, 14400f) / 14400f);
             //float progress = MathHelper.Lerp(darkIncrease, -0.06f - darkIncrease, (float)Math.Sin(npc.localAI[2]++ / 60f) / 2 + 0.5f);
-            float progress = MathHelper.Lerp(0, 0.1f, (float)Math.Sin(npc.localAI[2]++ / 60f) / 2 + 0.5f);
+            //float progress = MathHelper.Lerp(0, 0.1f, (float)Math.Sin(npc.localAI[2]++ / 60f) / 2 + 0.5f);
             //float progress = MathHelper.Lerp(-0.066f, -0.106f, (float)Math.Sin(npc.localAI[2]++ / 30f));
 
             #region commented out shit
@@ -176,6 +176,22 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     npc.ai[2] = 0;
                 }
             }*/
+
+            if (Main.netMode != NetmodeID.Server)
+            {
+                if (!Filters.Scene["ContainedFlash"].IsActive())
+                {
+                    Filters.Scene.Activate("ContainedFlash");
+                }
+
+                if (Filters.Scene["ContainedFlash"].IsActive())
+                {
+                    Filters.Scene["ContainedFlash"].GetShader().UseTargetPosition(npc.Center);
+                    Filters.Scene["ContainedFlash"].GetShader().UseIntensity(progress);
+                    Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotation"].SetValue(npc.rotation + MathHelper.Pi + MathHelper.PiOver4);
+                    Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotationArea"].SetValue(MathHelper.ToRadians(15));
+                }
+            }
             #endregion
 
             var normalizedRotation = npc.rotation % MathHelper.TwoPi;

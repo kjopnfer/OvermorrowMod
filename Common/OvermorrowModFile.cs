@@ -33,6 +33,7 @@ namespace OvermorrowMod.Common
         public RenderTarget2D Render;
 
         public Asset<Effect> BeamShader;
+        public Asset<Effect> ContainedFlash;
         public Asset<Effect> Dissolve;
         public Asset<Effect> Flash;
         public Asset<Effect> RadialBlur;
@@ -81,6 +82,7 @@ namespace OvermorrowMod.Common
 
                 // Effects
                 BeamShader = Assets.Request<Effect>("Effects/Beam");
+                ContainedFlash = Assets.Request<Effect>("Effects/ContainedFlash");
                 Dissolve = Assets.Request<Effect>("Effects/Dissolve");
                 Flash = Assets.Request<Effect>("Effects/Flash");
                 Ring = Assets.Request<Effect>("Effects/Ring");
@@ -111,6 +113,9 @@ namespace OvermorrowMod.Common
 
                 Ref<Effect> filterRef = new Ref<Effect>(Assets.Request<Effect>("Effects/Flash").Value);
                 Filters.Scene["Flash"] = new Filter(new ScreenShaderData(filterRef, "ScreenFlash"), EffectPriority.VeryHigh);
+
+                Ref<Effect> flashRef = new Ref<Effect>(Assets.Request<Effect>("Effects/ContainedFlash").Value);
+                Filters.Scene["ContainedFlash"] = new Filter(new ScreenShaderData(flashRef, "ModdersToolkitShaderPass"), EffectPriority.VeryHigh);
 
                 TrailTextures = new List<Asset<Texture2D>>();
                 for (int i = 0; i < 7; i++)
