@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -6,7 +7,8 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Overmorrow.Common;
+using OvermorrowMod.Common;
+using OvermorrowMod.Content.Buffs.Debuffs;
 
 namespace Overmorrow.Common.Bow
 {
@@ -278,14 +280,14 @@ namespace Overmorrow.Common.Bow
 										{
 											vector2_5 -= spinningpoint;
 										}
-										int index2 = Projectile.NewProjectile(position.X + vector2_5.X, position.Y + vector2_5.Y, dir.X * -1f / trajectoryPlayer.chargeVelocityDivide, dir.Y * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
+										int index2 = Projectile.NewProjectile(null, position.X + vector2_5.X, position.Y + vector2_5.Y, dir.X * -1f / trajectoryPlayer.chargeVelocityDivide, dir.Y * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
 										Main.projectile[index2].noDropItem = true;
 									}
 								}
 								else
 								{
 									SoundEngine.PlaySound(new SoundStyle(""), -1, -1);
-									Projectile.NewProjectile(playerPos, dir * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
+									Projectile.NewProjectile(null, playerPos, dir * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
 								}
 							}
 							else
