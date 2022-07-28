@@ -24,6 +24,7 @@ namespace OvermorrowMod.Common
         public static ModKeybind ToggleUI;
         public static ModKeybind AmuletKey;
 
+        public static List<int[]> ModBowsToOverride = new List<int[]>();
         public static OvermorrowModFile Instance { get; set; }
         public OvermorrowModFile() => Instance = this;
 
@@ -125,6 +126,8 @@ namespace OvermorrowMod.Common
             SandModeKey = null;
             AmuletKey = null;
             ToggleUI = null;
+
+            ModBowsToOverride.Clear();
 
         }
 
