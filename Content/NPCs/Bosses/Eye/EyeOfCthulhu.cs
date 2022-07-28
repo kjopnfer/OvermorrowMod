@@ -177,6 +177,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
             }*/
 
+            /*
             if (Main.netMode != NetmodeID.Server)
             {
                 if (!Filters.Scene["ContainedFlash"].IsActive())
@@ -191,7 +192,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotation"].SetValue(npc.rotation + MathHelper.Pi + MathHelper.PiOver4);
                     Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotationArea"].SetValue(MathHelper.ToRadians(15));
                 }
-            }
+            }*/
             #endregion
 
             var normalizedRotation = npc.rotation % MathHelper.TwoPi;
@@ -301,14 +302,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                         }
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;
-                        npc.ai[0] = (float)AIStates.Selector;
-
+                        npc.ai[0] = (float)AIStates.Portal;
                         npc.ai[1] = 0;
+
                     }
                     #endregion
                     break;
                 case (float)AIStates.Portal:
-                    
+                    #region Portal Prep
+                    npc.velocity = Vector2.Zero;
+
+                    // Shrink tentacles and then angle upwards slightly
+                    if (npc.ai[1] == 0) InitialRotation = npc.rotation;
+
+                    npc.rotation = MathHelper.Lerp(InitialRotation, InitialRotation + MathHelper.ToRadians(45), Utils.Clamp(npc.ai[1]++, 0, 180) / 180f);
+
+                    foreach (Projectile projectile in TentacleList)
+                    {
+                        if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                        {
+                            if (tentacle.length > 0) tentacle.length -= 5;
+                        }
+                    }
+
+                    #endregion
                     break;
                 case (float)AIStates.Suck:
                     #region Suck
