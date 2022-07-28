@@ -135,7 +135,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.ai[0] != (float)AIStates.Portal)
                 npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver4;
 
-            float progress = MathHelper.Lerp(0, 1f, (float)Math.Sin(npc.localAI[2]++ / 30f) * 0.5f + 0.5f);
+            float progress = MathHelper.Lerp(0, 12f, (float)Math.Sin(npc.localAI[2]++ / 30f) * 0.5f + 0.5f);
             //float progress = -0.106f;
 
             //float darkIncrease = MathHelper.Lerp(-0.01f, -0.08f, Utils.Clamp(npc.localAI[2]++, 0, 14400f) / 14400f);
@@ -186,7 +186,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 if (Filters.Scene["ContainedFlash"].IsActive())
                 {
-                    Filters.Scene["ContainedFlash"].GetShader().UseTargetPosition(npc.Center);
+                    Filters.Scene["ContainedFlash"].GetShader().UseTargetPosition(npc.Center + new Vector2(24, -20).RotatedBy(npc.rotation + MathHelper.PiOver2));
                     Filters.Scene["ContainedFlash"].GetShader().UseIntensity(progress);
                     Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotation"].SetValue(npc.rotation + MathHelper.Pi + MathHelper.PiOver4);
                     Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotationArea"].SetValue(MathHelper.ToRadians(15));
