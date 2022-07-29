@@ -283,7 +283,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     if (npc.ai[1] == 360)
                     {
-                        foreach(NPC npcs in Main.npc)
+                        foreach (NPC npcs in Main.npc)
                         {
                             if (npcs.type != NPCID.ServantofCthulhu && npcs.type != ModContent.NPCType<MiniServant>()) continue;
 
@@ -310,21 +310,57 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     break;
                 case (float)AIStates.Portal:
                     #region Portal Prep
-                    npc.velocity = Vector2.Zero;
 
                     // Shrink tentacles and then angle upwards slightly
-                    if (npc.ai[1] == 0) InitialRotation = npc.rotation;
-
-                    npc.rotation = MathHelper.Lerp(InitialRotation, InitialRotation + MathHelper.ToRadians(45), Utils.Clamp(npc.ai[1]++, 0, 180) / 180f);
-
-                    foreach (Projectile projectile in TentacleList)
+                    if (npc.ai[1]++ == 0)
                     {
-                        if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                        npc.velocity = Vector2.Zero;
+                        InitialRotation = npc.rotation;
+                    }
+
+
+                    if (npc.ai[1] < 180)
+                    {
+                        npc.rotation = MathHelper.Lerp(InitialRotation, InitialRotation - MathHelper.ToRadians(45), Utils.Clamp(npc.ai[1], 0, 180) / 180f);
+
+                        foreach (Projectile projectile in TentacleList)
                         {
-                            if (tentacle.length > 0) tentacle.length -= 5;
+                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
+                            {
+                                tentacle.lockGrow = true;
+
+                                if (tentacle.length > 0 && npc.localAI[3]++ % 2 == 0) tentacle.length--;
+                            }
                         }
                     }
 
+                    if (npc.ai[1] >= 180 && npc.ai[1] <= 360)
+                    {
+                        if (npc.ai[1] == 180)
+                        {
+                            npc.velocity = Vector2.One.RotatedBy(npc.rotation) * 6;
+
+                            // Predict where the boss will end up three seconds before it does
+                            Vector2 simulatedPosition = npc.Center;
+                            Vector2 simulatedVelocity = npc.velocity;
+
+                            for (int i = 0; i < 180; i++)
+                            {
+                                simulatedVelocity = simulatedVelocity.RotatedBy(MathHelper.ToRadians(0.51f * -npc.direction));
+                                simulatedPosition += simulatedVelocity;
+
+                            }
+
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 210);
+                        }
+
+                        // Rotate the NPC upwards into a portal, if they are facing right rotate by a negative trajectory else do the opposite
+                        npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(0.51f * -npc.direction));
+
+                        npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
+
+                        if (npc.ai[1] == 360) npc.velocity = Vector2.Zero;
+                    }
                     #endregion
                     break;
                 case (float)AIStates.Suck:
