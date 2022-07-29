@@ -163,12 +163,12 @@ namespace Overmorrow.Common.Bow
 						player.itemTime = 5;
 						if (bowDrawCheck)
 						{
-							player.direction = ((Cursor.Position.X > Main.screenWidth / 2) ? -1 : 1);
+							//player.direction = ((Cursor.Position.X > Main.screenWidth / 2) ? -1 : 1);
 							player.itemRotation = (float)Math.Atan2((distanceY * -1f * player.direction), (distanceX * -1f * player.direction));
 						}
 						if (!channelCheck)
 						{
-							Cursor.Position = new System.Drawing.Point(Main.screenWidth / 2, Main.screenHeight / 2);
+							//Cursor.Position = new System.Drawing.Point(Main.screenWidth / 2, Main.screenHeight / 2);
 							channelCheck = true;
 						}
 						if (!fullChargeCheck && trajectoryPlayer.bowTimingMax == trajectoryPlayer.bowTiming)
@@ -176,14 +176,14 @@ namespace Overmorrow.Common.Bow
 							Main.PlaySound(SoundID.MaxMana, -1, -1, 1, 1f, 0f);
 							fullChargeCheck = true;
 						}
-						if (!bowDrawCheck)
+						/*if (!bowDrawCheck)
 						{
 							if (new Vector2(Cursor.Position.X, Cursor.Position.Y) != new Vector2((Main.screenWidth / 2), (Main.screenHeight / 2)))
 							{
 								Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/bowCharge"), -1, -1);
 								bowDrawCheck = true;
 							}
-						}
+						}*/
 						else if (trajectoryPlayer.bowTiming < trajectoryPlayer.bowTimingMax)
 						{
 							trajectoryPlayer.bowTiming++;
