@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Common.VanillaOverrides;
 using OvermorrowMod.Content.UI;
 using ReLogic.Graphics;
 using System.Collections.Generic;
@@ -18,6 +19,17 @@ namespace OvermorrowMod.Common
         internal UserInterface AltarUI;
 
         internal AltarUI Altar;
+
+        internal TrajectoryDraw trajectoryDraw;
+        private UserInterface trajDraw;
+
+        internal bowChargeDraw BowChargeDraw;
+        private UserInterface bowCargDraw;
+
+        public static bool shid;
+        public static int[] bow2Send;
+        public string faef = "foof";
+
         public override void PostUpdateEverything()
         {
             Trail.UpdateTrails();
@@ -33,7 +45,23 @@ namespace OvermorrowMod.Common
 
                 Altar = new AltarUI();
                 Altar.Activate();
+
+                trajectoryDraw = new TrajectoryDraw();
+                trajectoryDraw.Activate();
+                trajDraw = new UserInterface();
+                trajDraw.SetState(trajectoryDraw);
+
+                BowChargeDraw = new bowChargeDraw();
+                BowChargeDraw.Activate();
+                bowCargDraw = new UserInterface();
+                bowCargDraw.SetState(BowChargeDraw);
             }
+        }
+
+        public override void Unload()
+        {
+            shid = false;
+            bow2Send = new int[] { };
         }
 
         public override void UpdateUI(GameTime gameTime)
@@ -48,6 +76,10 @@ namespace OvermorrowMod.Common
             {
                 AltarUI.Update(gameTime);
             }
+
+            trajDraw?.Update(gameTime);
+
+            bowCargDraw?.Update(gameTime);
         }
 
         internal void BossTitle(int BossID)
@@ -149,8 +181,36 @@ namespace OvermorrowMod.Common
                     },
                     InterfaceScaleType.UI));
                 }
+
+                mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+                if (mouseTextIndex != -1)
+                {
+                    layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                        "OvermorrowMod: Bow Trajectory",
+                        delegate
+                        {
+                            trajDraw.Draw(Main.spriteBatch, new GameTime());
+                            return true;
+                        },
+                        InterfaceScaleType.Game)
+                    );
+                }
+                mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+                if (mouseTextIndex != -1)
+                {
+                    layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                        "OvermorrowMod: Bow Charge",
+                        delegate
+                        {
+                            bowCargDraw.Draw(Main.spriteBatch, new GameTime());
+                            return true;
+                        },
+                        InterfaceScaleType.Game)
+                    );
+                }
             }
         }
+
 
         internal void ShowAltar()
         {
