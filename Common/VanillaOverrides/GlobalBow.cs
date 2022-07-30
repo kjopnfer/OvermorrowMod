@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -9,17 +8,45 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using OvermorrowMod.Common;
 using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Content.UI;
 using OvermorrowMod.Content.Projectiles.Misc;
 
 namespace OvermorrowMod.Common.VanillaOverrides
 {
+	public class BowOverride
+    {
+		public int ItemID;
+		public int ConvertAll; 
+		public int ConvertWood; 
+		public int ChargeTime;
+		public int ArrowsFired;
+		public int ConsumeChance;
+
+		/// <summary>
+		/// Japan's dumb code to make shit more READABLE
+		/// </summary>
+		/// <param name="ItemID">The bow ID to be overriden</param>
+		/// <param name="ConvertAll">Converts all arrows to a specific type, enter 0 to not convert arrows</param>
+		/// <param name="ConvertWood">I don't know what the fuck this does</param>
+		/// <param name="ChargeTime">The amount of time it takes for the bow to fully charge</param>
+		/// <param name="ArrowsFired">The amount of arrows fired per shot</param>
+		/// <param name="ConsumeChance">The probability of the ammo being consumed, I don't know what metric it uses</param>
+		public BowOverride(int ItemID, int ConvertAll, int ConvertWood, int ChargeTime, int ArrowsFired, int ConsumeChance)
+        {
+			this.ItemID = ItemID;
+			this.ConvertAll = ConvertAll;
+			this.ConvertWood = ConvertWood;
+			this.ChargeTime = ChargeTime;
+			this.ArrowsFired = ArrowsFired;
+			this.ConsumeChance = ConsumeChance;
+        }
+    }
+
 	/// <summary>
 	/// the frank fire code
 	/// </summary>
-	public class bowOverride : GlobalItem
+	public class GlobalBow : GlobalItem
 	{
 		public override bool InstancePerEntity => true;
 
