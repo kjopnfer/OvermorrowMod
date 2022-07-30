@@ -78,9 +78,6 @@ namespace OvermorrowMod.Content.UI
             TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
             if (trajectoryPlayer.drawChargeBar && !Main.LocalPlayer.dead)
             {
-                /*if (alpha < 255)
-                    alpha += 8.5f;
-                Color cringeColor = new Color(255, 255, 255, alphs);*/
                 if (IsMouseHovering && !Config.bowChargeLockSend)
                     Main.hoverItemName = "Bow Charge Meter (You can adjust/lock my position by dragging me/toggling a config option)";
                 mouseHoverCharge = (IsMouseHovering && !Config.bowChargeLockSend);
@@ -106,9 +103,7 @@ namespace OvermorrowMod.Content.UI
                     barFrame = 16;
                     trajectoryPlayer.chargeVelocityDivide--;
                 }
-                /*Main.NewText(barWidth);
-                Main.NewText(trajectoryPlayer.bowTiming);
-                Main.NewText(trajectoryPlayer.bowTimingMax);*/
+
                 Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/UI/bowCharge").Value;
                 if (trajectoryPlayer.bowTimingMax == trajectoryPlayer.bowTiming)
                     spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(0, 40, 55, 14), Color.White);

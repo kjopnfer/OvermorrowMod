@@ -16,6 +16,9 @@ using OvermorrowMod.Content.Projectiles.Misc;
 
 namespace OvermorrowMod.Common.Bow
 {
+	/// <summary>
+	/// the frank fire code
+	/// </summary>
 	public class bowOverride : GlobalItem
 	{
 		public override bool InstancePerEntity => true;
@@ -187,8 +190,9 @@ namespace OvermorrowMod.Common.Bow
 
 						if (bowDrawCheck)
 						{
-							player.direction = ((Main.MouseWorld.X > Main.screenWidth / 2) ? -1 : 1);
+							player.direction = ((Main.MouseWorld.X > player.Center.X) ? -1 : 1);
 							player.itemRotation = (float)Math.Atan2((distanceY * -1f * player.direction), (distanceX * -1f * player.direction));
+							player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.DirectionTo(Main.MouseWorld).ToRotation() + MathHelper.PiOver2);
 						}
 
 						if (!channelCheck)
@@ -282,7 +286,7 @@ namespace OvermorrowMod.Common.Bow
 								}
 							}
 
-							if ((int)this.chargeDamageScale != 0)
+							if ((int)chargeDamageScale != 0)
 							{
 								if (convertWood2 != 0 && toShoot == 1)
 								{
