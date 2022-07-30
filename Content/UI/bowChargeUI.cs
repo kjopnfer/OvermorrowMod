@@ -109,12 +109,13 @@ namespace OvermorrowMod.Content.UI
                 /*Main.NewText(barWidth);
                 Main.NewText(trajectoryPlayer.bowTiming);
                 Main.NewText(trajectoryPlayer.bowTimingMax);*/
+                Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/UI/bowCharge").Value;
                 if (trajectoryPlayer.bowTimingMax == trajectoryPlayer.bowTiming)
-                    spriteBatch.Draw(ModContent.Request<Texture2D>("OvermorrowMod/Content/UI/bowCharge").Value, position, new Rectangle(0, 40, 55, 14), Color.White);
+                    spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(0, 40, 55, 14), Color.White);
                 else
                 {
-                    spriteBatch.Draw(ModContent.Request<Texture2D>("OvermorrowMod/Content/UI/bowCharge").Value, position, new Rectangle(0, 24, 55, 14), Color.White);
-                    spriteBatch.Draw(ModContent.Request<Texture2D>("OvermorrowMod/Content/UI/bowCharge").Value, new Vector2(position.X, position.Y + 4), new Rectangle(0, barFrame, (int)barWidth, 6), Color.White);
+                    spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(0, 24, 55, 14), Color.White);
+                    spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 10) - Main.screenPosition, new Rectangle(0, barFrame, (int)barWidth, 6), Color.White);
                 }
             }
             else
