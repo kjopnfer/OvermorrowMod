@@ -38,10 +38,12 @@ namespace OvermorrowMod.Content.UI
             Width.Set(chargeUiWidth, 0);
             Height.Set(chargeUiHeight, 0);
         }
+
         public static void updatePos()
         {
             position = new Vector2(OvermorrowModPlayer.bowChargeMeterPosX, OvermorrowModPlayer.bowChargeMeterPosY);
         }
+
         public override void MouseDown(UIMouseEvent evt)
         {
             if (IsMouseHovering && !Config.bowChargeLockSend)
@@ -54,9 +56,10 @@ namespace OvermorrowMod.Content.UI
                     player.channel = false;
                 }
             }
+
             base.MouseDown(evt);
-            //Main.NewText("fard");
         }
+
         public override void MouseUp(UIMouseEvent evt)
         {
             if (!Config.bowChargeLockSend)
@@ -69,6 +72,7 @@ namespace OvermorrowMod.Content.UI
                 dragging = false;
             }
         }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
@@ -125,6 +129,7 @@ namespace OvermorrowMod.Content.UI
             base.Update(gameTime);
         }
     }
+
     public class bowChargeDraw : UIState
     {
         public bowChargeUI bowCharge;

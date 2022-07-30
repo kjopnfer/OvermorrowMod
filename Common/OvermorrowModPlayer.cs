@@ -92,9 +92,10 @@ namespace OvermorrowMod.Common
         // public bool windBuff;
 
         // Misc
+        public Vector2 bowChargeMeterPos;
         public static float bowChargeMeterPosX;
         public static float bowChargeMeterPosY;
-        public Vector2 bowChargeMeterPos;
+
         public int BowEnergyCount = 0;
         public int IorichGuardianEnergy = 0;
         public int PlatformTimer = 0;
