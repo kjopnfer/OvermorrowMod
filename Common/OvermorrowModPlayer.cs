@@ -4,12 +4,15 @@ using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Content.Projectiles.Accessory;
 using System;
+using OvermorrowMod.Content.Items.Accessories.Expert;
+using OvermorrowMod.Content.UI;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Common
 {
@@ -89,6 +92,9 @@ namespace OvermorrowMod.Common
         // public bool windBuff;
 
         // Misc
+        public static float bowChargeMeterPosX;
+        public static float bowChargeMeterPosY;
+        public Vector2 bowChargeMeterPos;
         public int BowEnergyCount = 0;
         public int IorichGuardianEnergy = 0;
         public int PlatformTimer = 0;
@@ -167,6 +173,22 @@ namespace OvermorrowMod.Common
 
             DashActive = true;
             DashType = 0;
+        }
+
+        public override void SaveData(TagCompound tag)
+        {
+            bowChargeMeterPos = bowChargeUI.position;
+            tag.Add("bowChargeMeterPosY", (float)bowChargeMeterPos.Y);
+            tag.Add("bowChargeMeterPosX", (float)bowChargeMeterPos.X);
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            if (tag.ContainsKey("bowChargeMeterPosX"))
+                bowChargeMeterPosX = tag.GetFloat("bowChargeMeterPosX");
+            if (tag.ContainsKey("bowChargeMeterPosY"))
+                bowChargeMeterPosY = tag.GetFloat("bowChargeMeterPosY");
+            bowChargeUI.updatePos();
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
