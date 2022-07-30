@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace OvermorrowMod.Common.Bow
+namespace OvermorrowMod.Common.VanillaOverrides
 {
     public class TrajectoryTelegraph : UIElement
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using OvermorrowMod.Common.Bow;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
+using OvermorrowMod.Common.VanillaOverrides;
 using OvermorrowMod.Content.UI;
 using ReLogic.Graphics;
 using System.Collections.Generic;
