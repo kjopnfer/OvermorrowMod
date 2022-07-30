@@ -12,12 +12,12 @@ using Terraria.ModLoader;
 using OvermorrowMod.Common;
 using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Content.UI;
+using OvermorrowMod.Content.Projectiles.Misc;
 
 namespace OvermorrowMod.Common.Bow
 {
 	public class bowOverride : GlobalItem
 	{
-		//public override bool CloneNewInstances => true;
 		public override bool InstancePerEntity => true;
 
 		private bool channelCheck;
@@ -85,6 +85,7 @@ namespace OvermorrowMod.Common.Bow
 			BowsToOverride.Add(new int[] { ModContent.ItemType<Testing.testSemiCoolBow>(), 0, 0, 120, 3, 0 });
 			BowsToOverride.Add(new int[] { ModContent.ItemType<Slingshot>(), ModContent.ProjectileType<RandBird>(), 0, 120, 1, 0 });
 		}*/
+
 		public override void SetDefaults(Item item)
 		{
 			AddBowsToOverride();
@@ -101,9 +102,23 @@ namespace OvermorrowMod.Common.Bow
 				g++;
 			}
 		}
+
+        public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage)
+        {
+			int g = 0;
+			while (BowsToOverride.Count > g)
+			{
+				if (item.type == BowsToOverride[g][0] && Config.improveBowsSend)
+				{
+					damage.Flat += (item.damage * 7);
+				}
+				g++;
+			}
+		}
+
 		public override void UpdateInventory(Item item, Player player)
 		{
-			//Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>(); Can not find
+			Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
 			int g = 0;
 			while (BowsToOverride.Count > g)
 			{
@@ -111,7 +126,7 @@ namespace OvermorrowMod.Common.Bow
 				{
 					if (Config.improveBowsSend)
 					{
-						//item.shoot = ModContent.ProjectileType<>(); Ye Ye ass projectile 
+						item.shoot = ModContent.ProjectileType<ghostProjectile>();
 						item.useStyle = ItemUseStyleID.Shoot;
 						item.useTime = 1;
 						item.useAnimation = 5;
@@ -130,6 +145,7 @@ namespace OvermorrowMod.Common.Bow
 				g++;
 			}
 		}
+
 		public override bool CanUseItem(Item item, Player player)
 		{
 			int g = 0;
@@ -141,22 +157,26 @@ namespace OvermorrowMod.Common.Bow
 				}
 				g++;
 			}
+
 			return true;
 		}
+
 		public override void HoldItem(Item item, Player player)
 		{
 			int f = 0;
+
 			while (BowsToOverride.Count > f)
 			{
 				if (item.type == BowsToOverride[f][0] && Config.improveBowsSend)
 				{
-					this.SetDefaults(item);
+					SetDefaults(item);
 					Vector2 playerPos = new Vector2(player.Center.X, player.Center.Y);
 					TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
 					trajectoryPlayer.drawChargeBar = true;
 					trajectoryPlayer.bowTimingReduce = (player.magicQuiver ? 15 : 0);
 					trajectoryPlayer.bowTimingMax = BowsToOverride[f][3] - trajectoryPlayer.bowTimingReduce;
 					Vector2 dir = (Main.MouseWorld - player.Center) / 30f;
+
 					if (player.channel)
 					{
 						trajectoryPlayer.drawTrajectory = true;
@@ -164,26 +184,30 @@ namespace OvermorrowMod.Common.Bow
 						float distanceY = Main.MouseWorld.Y - trajectoryPlayer.trajPointY;
 						chargeDamageScale = player.GetWeaponDamage(player.HeldItem) / (float)trajectoryPlayer.bowTimingMax * trajectoryPlayer.bowTiming;
 						player.itemTime = 5;
+
 						if (bowDrawCheck)
 						{
 							player.direction = ((Main.MouseWorld.X > Main.screenWidth / 2) ? -1 : 1);
 							player.itemRotation = (float)Math.Atan2((distanceY * -1f * player.direction), (distanceX * -1f * player.direction));
 						}
+
 						if (!channelCheck)
 						{
 							//Cursor.Position = new System.Drawing.Point(Main.screenWidth / 2, Main.screenHeight / 2);
 							channelCheck = true;
 						}
+
 						if (!fullChargeCheck && trajectoryPlayer.bowTimingMax == trajectoryPlayer.bowTiming)
 						{
 							SoundEngine.PlaySound(SoundID.MaxMana, player.Center);
 							fullChargeCheck = true;
 						}
+
 						if (!bowDrawCheck)
 						{
 							if (Main.MouseWorld != new Vector2((Main.screenWidth / 2), (Main.screenHeight / 2)))
                             {
-                                SoundStyle sound = new SoundStyle("Sounds/bowCharge");
+                                SoundStyle sound = new SoundStyle("OvermorrowMod/Sounds/bowCharge");
                                 SoundEngine.PlaySound(sound, player.Center);
 								Mouse.SetPosition(Main.screenWidth / 2, Main.screenHeight / 2);
                                 bowDrawCheck = true;
@@ -216,7 +240,7 @@ namespace OvermorrowMod.Common.Bow
 										{
 											break;
 										}
-										DontConsumeChance += this.DoShittyAmmoConservationThing() + bowOverride.BowsToOverride[f][5];
+										DontConsumeChance += DoShittyAmmoConservationThing() + BowsToOverride[f][5];
 										if (Main.rand.Next(1, 101) > DontConsumeChance)
 										{
 											player.inventory[g].stack--;
@@ -257,16 +281,19 @@ namespace OvermorrowMod.Common.Bow
 									}
 								}
 							}
+
 							if ((int)this.chargeDamageScale != 0)
 							{
 								if (convertWood2 != 0 && toShoot == 1)
 								{
 									toShoot = convertWood2;
 								}
+
 								if (convertAll2 != 0)
 								{
 									toShoot = convertAll2;
 								}
+
 								if (BowsToOverride[f][4] != 0)
 								{
 									Vector2 position = player.RotatedRelativePoint(player.MountedCenter, true);
@@ -276,7 +303,7 @@ namespace OvermorrowMod.Common.Bow
 									vector2_4.Normalize();
 									Vector2 spinningpoint = vector2_4 * 40f;
 									bool flag5 = Collision.CanHit(position, 0, 0, position + spinningpoint, 0, 0);
-									SoundEngine.PlaySound(new SoundStyle("Sounds/bowShoot"), player.Center);
+									SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowShoot"), player.Center);
 									for (int index = 0; index < num8; index++)
 									{
 										float num9 = index - (float)((num8 - 1.0) / 2.0);
@@ -291,19 +318,20 @@ namespace OvermorrowMod.Common.Bow
 								}
 								else
 								{
-									SoundEngine.PlaySound(new SoundStyle("Sounds/bowShoot"), player.Center);
+									SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowShoot"), player.Center);
 									Projectile.NewProjectile(null, playerPos, dir * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
 								}
 							}
 							else
 							{
-								SoundEngine.PlaySound(new SoundStyle("Sounds/bowDryfire"), player.Center);
+								SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowDryfire"), player.Center);
 								player.AddBuff(ModContent.BuffType<BowDryfire>(), 120, true);
 							}
 						}
 						trajectoryPlayer.bowTiming = 0;
 					}
 				}
+
 				f++;
 			}
 		}
@@ -328,6 +356,7 @@ namespace OvermorrowMod.Common.Bow
 				}
 				f++;
 			}
+
 			if (item.type == ItemID.MagicQuiver && Config.improveBowsSend)
 			{
 				tooltips.Insert(tooltips.Count, new TooltipLine(Mod, "ChargeReduce", "Reduces bow charge time by 0.5 seconds"));
