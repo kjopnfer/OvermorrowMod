@@ -14,384 +14,368 @@ using OvermorrowMod.Content.Projectiles.Misc;
 
 namespace OvermorrowMod.Common.VanillaOverrides
 {
-	public class BowOverride
+    public class BowOverride
     {
-		public int ItemID;
-		public int ConvertAll; 
-		public int ConvertWood; 
-		public int ChargeTime;
-		public int ArrowsFired;
-		public int ConsumeChance;
+        public int ItemID;
+        public int ConvertAll;
+        public int ConvertWood;
+        public int ChargeTime;
+        public int ArrowsFired;
+        public int ConsumeChance;
 
-		/// <summary>
-		/// Japan's dumb code to make shit more READABLE
-		/// </summary>
-		/// <param name="ItemID">The bow ID to be overriden</param>
-		/// <param name="ConvertAll">Converts all arrows to a specific type, enter 0 to not convert arrows</param>
-		/// <param name="ConvertWood">I don't know what the fuck this does</param>
-		/// <param name="ChargeTime">The amount of time it takes for the bow to fully charge</param>
-		/// <param name="ArrowsFired">The amount of arrows fired per shot</param>
-		/// <param name="ConsumeChance">The probability of the ammo being consumed, I don't know what metric it uses</param>
-		public BowOverride(int ItemID, int ConvertAll, int ConvertWood, int ChargeTime, int ArrowsFired, int ConsumeChance)
+        /// <summary>
+        /// Japan's dumb code to make shit more READABLE
+        /// </summary>
+        /// <param name="ItemID">The bow ID to be overriden</param>
+        /// <param name="ConvertAll">Converts all arrows to a specific type, enter 0 to not convert arrows. Enter 1 to leave as wooden.</param>
+        /// <param name="ConvertWood">Converts all wooden arrows to this type of arrow</param>
+        /// <param name="ChargeTime">The amount of time it takes for the bow to fully charge</param>
+        /// <param name="ArrowsFired">The amount of arrows fired per shot</param>
+        /// <param name="ConsumeChance">The probability of the ammo being consumed by percentage, entering 1 means 1% chance</param>
+        public BowOverride(int ItemID, int ConvertAll, int ConvertWood, int ChargeTime, int ArrowsFired, int ConsumeChance)
         {
-			this.ItemID = ItemID;
-			this.ConvertAll = ConvertAll;
-			this.ConvertWood = ConvertWood;
-			this.ChargeTime = ChargeTime;
-			this.ArrowsFired = ArrowsFired;
-			this.ConsumeChance = ConsumeChance;
+            this.ItemID = ItemID;
+            this.ConvertAll = ConvertAll;
+            this.ConvertWood = ConvertWood;
+            this.ChargeTime = ChargeTime;
+            this.ArrowsFired = ArrowsFired;
+            this.ConsumeChance = ConsumeChance;
         }
     }
 
-	/// <summary>
-	/// the frank fire code
-	/// </summary>
-	public class GlobalBow : GlobalItem
-	{
-		public override bool InstancePerEntity => true;
+    /// <summary>
+    /// the frank fire code
+    /// </summary>
+    public class GlobalBow : GlobalItem
+    {
+        public override bool InstancePerEntity => true;
 
-		private bool channelCheck;
-		private bool bowDrawCheck;
-		private bool fullChargeCheck;
-		private int BowChargeTime = 180;
-		private float chargeDamageScale;
-		public static int convertWood2;
-		public static int convertAll2;
-		public static List<int[]> BowsToOverride = new List<int[]>();
-		public static List<int[]> ModBowsToOverride = new List<int[]>();
-		public List<int> ShittyAmmoConservationThing = new List<int>();
+        private bool channelCheck;
+        private bool bowDrawCheck;
+        private bool fullChargeCheck;
+        private float chargeDamageScale;
+        public static int convertWood;
+        public static int convertAll;
+        public static List<BowOverride> BowsToOverride = new List<BowOverride>();
+        public static List<BowOverride> ModBowsToOverride = new List<BowOverride>();
+        public List<int> ShittyAmmoConservationThing = new List<int>();
 
-		public int DoShittyAmmoConservationThing()
-		{
-			Player player = Main.LocalPlayer;
-			//thanks ilspy very cool
-			return (player.magicQuiver ? 20 : 0) + (player.HasBuff(93) ? 20 : 0) + (player.HasBuff(112) ? 20 : 0) + ((player.armor[1].type == ItemID.ShroomiteBreastplate) ? 20 : 0) + ((player.armor[0].type == ItemID.ChlorophyteHelmet) ? 20 : 0) + ((player.armor[1].type == ItemID.HuntressAltShirt) ? 20 : 0) + ((player.armor[1].type == ItemID.VortexBreastplate) ? 25 : 0) + ((player.armor[1].type == ItemID.HuntressJerkin) ? 10 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.Fossil")) ? 20 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.CobaltRanged")) ? 20 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.MythrilRanged")) ? 20 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.AdamantiteRanged")) ? 25 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.Titanium") && player.armor[0].type == ItemID.TitaniumHelmet) ? 25 : 0);
-		}
+        public int DoShittyAmmoConservationThing()
+        {
+            Player player = Main.LocalPlayer;
+            //thanks ilspy very cool
+            return (player.magicQuiver ? 20 : 0) + (player.HasBuff(93) ? 20 : 0) + (player.HasBuff(112) ? 20 : 0) + ((player.armor[1].type == ItemID.ShroomiteBreastplate) ? 20 : 0) + ((player.armor[0].type == ItemID.ChlorophyteHelmet) ? 20 : 0) + ((player.armor[1].type == ItemID.HuntressAltShirt) ? 20 : 0) + ((player.armor[1].type == ItemID.VortexBreastplate) ? 25 : 0) + ((player.armor[1].type == ItemID.HuntressJerkin) ? 10 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.Fossil")) ? 20 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.CobaltRanged")) ? 20 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.MythrilRanged")) ? 20 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.AdamantiteRanged")) ? 25 : 0) + ((player.setBonus == Language.GetTextValue("ArmorSetBonus.Titanium") && player.armor[0].type == ItemID.TitaniumHelmet) ? 25 : 0);
+        }
 
-		public static void AddBowsToOverride()
-		{
-			//ItemID, ConvertAll2, ConvertWood2, ChargeTime, AroowsFiredAtOnce, NoConsumeChance
-			BowsToOverride.Clear();
-			BowsToOverride.Add(new int[6] { ItemID.WoodenBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.BorealWoodBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.CopperBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.PalmWoodBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.RichMahoganyBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.TinBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.EbonwoodBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.IronBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.ShadewoodBow, 0, 0, 180, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.LeadBow, 0, 0, 165, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.PearlwoodBow, 0, 0, 165, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.SilverBow, 0, 0, 165, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.TungstenBow, 0, 0, 165, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.GoldBow, 0, 0, 150, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.PlatinumBow, 0, 0, 150, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.DemonBow, 0, 0, 150, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.TendonBow, 0, 0, 150, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.HellwingBow, 0, ProjectileID.Hellwing, 135, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.BeesKnees, 0, ProjectileID.BeeArrow, 135, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.MoltenFury, 0, ProjectileID.FireArrow, 135, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.DD2PhoenixBow, ProjectileID.DD2PhoenixBowShot, 0, 90, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.IceBow, ProjectileID.FrostArrow, 0, 120, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.ShadowFlameBow, ProjectileID.ShadowFlameArrow, 0, 120, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.Marrow, ProjectileID.BoneArrow, 0, 120, 1, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.Phantasm, 0, ProjectileID.PhantasmArrow, 60, 7, 66 });
-			BowsToOverride.Add(new int[6] { ItemID.Tsunami, 0, 0, 60, 5, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.DD2BetsyBow, ProjectileID.DD2BetsyArrow, 0, 60, 3, 0 });
-			BowsToOverride.Add(new int[6] { ItemID.PulseBow, ProjectileID.PulseBolt, 0, 105, 1, 0 });
-			//if (RadiantShadows.shid)
-			//{
-				int i = 0;
-				while (OvermorrowModFile.ModBowsToOverride.Count > i)
-				{
-					BowsToOverride.Add(new int[] { OvermorrowModFile.ModBowsToOverride[i][0], OvermorrowModFile.ModBowsToOverride[i][1], OvermorrowModFile.ModBowsToOverride[i][2], OvermorrowModFile.ModBowsToOverride[i][3], OvermorrowModFile.ModBowsToOverride[i][4], OvermorrowModFile.ModBowsToOverride[i][5]});
-					i++;
-				}
-			//}
-		}
-		/*public virtual void AddModBows()
+        public static void AddBowsToOverride()
+        {
+            BowsToOverride.Clear();
+
+            BowsToOverride.Add(new BowOverride(ItemID.WoodenBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.BorealWoodBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.CopperBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.PalmWoodBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.RichMahoganyBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.TinBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.EbonwoodBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.IronBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.ShadewoodBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.LeadBow, 0, 0, 165, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.PearlwoodBow, 0, 0, 165, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.SilverBow, 0, 0, 165, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.TungstenBow, 0, 0, 165, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.GoldBow, 0, 0, 150, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.PlatinumBow, 0, 0, 150, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.DemonBow, 0, 0, 150, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.TendonBow, 0, 0, 150, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.HellwingBow, 0, ProjectileID.Hellwing, 135, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.BeesKnees, 0, ProjectileID.BeeArrow, 135, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.MoltenFury, 0, ProjectileID.FireArrow, 135, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.DD2PhoenixBow, ProjectileID.DD2PhoenixBowShot, 0, 90, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.IceBow, ProjectileID.FrostArrow, 0, 120, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.ShadowFlameBow, ProjectileID.ShadowFlameArrow, 0, 120, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.Marrow, ProjectileID.BoneArrow, 0, 120, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.Phantasm, 0, ProjectileID.PhantasmArrow, 60, 7, 66));
+            BowsToOverride.Add(new BowOverride(ItemID.Tsunami, 0, 0, 60, 5, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.DD2BetsyBow, ProjectileID.DD2BetsyArrow, 0, 60, 3, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.PulseBow, ProjectileID.PulseBolt, 0, 105, 1, 0));
+
+            //if (RadiantShadows.shid)
+            //{
+            //int i = 0;
+            //	while (OvermorrowModFile.ModBowsToOverride.Count > i)
+            //	{
+            //		BowsToOverride.Add(new BowOverride(OvermorrowModFile.ModBowsToOverride[i][0], OvermorrowModFile.ModBowsToOverride[i][1], OvermorrowModFile.ModBowsToOverride[i][2], OvermorrowModFile.ModBowsToOverride[i][3], OvermorrowModFile.ModBowsToOverride[i][4], OvermorrowModFile.ModBowsToOverride[i][5]));
+            //		i++;
+            //	}
+            //}
+        }
+        /*public virtual void AddModBows()
 		{
 			BowsToOverride.Add(new int[] { ModContent.ItemType<Testing.testSemiCoolBow>(), 0, 0, 120, 3, 0 });
 			BowsToOverride.Add(new int[] { ModContent.ItemType<Slingshot>(), ModContent.ProjectileType<RandBird>(), 0, 120, 1, 0 });
 		}*/
 
-		public override void SetDefaults(Item item)
-		{
-			AddBowsToOverride();
-			//AddModBows();
-			int g = 0;
-			while (BowsToOverride.Count > g)
-			{
-				if (item.type == BowsToOverride[g][0])
-				{
-					item.channel = true;
-					convertAll2 = BowsToOverride[g][1];
-					convertWood2 = BowsToOverride[g][2];
-				}
-				g++;
-			}
-		}
+        public override void SetDefaults(Item item)
+        {
+            AddBowsToOverride();
+            //AddModBows();
+            for (int i = 0; i < BowsToOverride.Count; i++)
+            {
+                if (item.type == BowsToOverride[i].ItemID)
+                {
+                    item.channel = true;
+                    convertAll = BowsToOverride[i].ConvertAll;
+                    convertWood = BowsToOverride[i].ConvertWood;
+                }
+            }
+        }
 
         public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage)
         {
-			int g = 0;
-			while (BowsToOverride.Count > g)
-			{
-				if (item.type == BowsToOverride[g][0] && Config.improveBowsSend)
-				{
-					damage.Flat += (item.damage * 7);
-				}
-				g++;
-			}
-		}
+            for (int i = 0; i < BowsToOverride.Count; i++)
+            {
+                if (item.type == BowsToOverride[i].ItemID && Config.improveBowsSend)
+                {
+                    damage.Flat = (item.damage * 7);
+                }
+            }
+        }
 
-		public override void UpdateInventory(Item item, Player player)
-		{
-			Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
-			int g = 0;
-			while (BowsToOverride.Count > g)
-			{
-				if (item.type == BowsToOverride[g][0])
-				{
-					if (Config.improveBowsSend)
-					{
-						item.shoot = ModContent.ProjectileType<ghostProjectile>();
-						item.useStyle = ItemUseStyleID.Shoot;
-						item.useTime = 1;
-						item.useAnimation = 5;
-						item.reuseDelay = 0;
-						item.channel = true;
-						item.autoReuse = true;
-						item.noMelee = true;
-						item.UseSound = null;
-						item.noUseGraphic = false;
-					}
-					else
-					{
-						item.CloneDefaults(BowsToOverride[g][0]);
-					}
-				}
-				g++;
-			}
-		}
+        public override void UpdateInventory(Item item, Player player)
+        {
+            Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
 
-		public override bool CanUseItem(Item item, Player player)
-		{
-			int g = 0;
-			while (BowsToOverride.Count > g)
-			{
-				if (Config.improveBowsSend && item.type == BowsToOverride[g][0])
-				{
-					return !player.HasBuff(ModContent.BuffType<BowDryfire>()) && !player.dead && ((player.channel && !player.dead) || (!bowChargeUI.mouseHoverCharge && !bowChargeUI.dragging));
-				}
-				g++;
-			}
+            for (int i = 0; i < BowsToOverride.Count; i++)
+            {
+                if (item.type == BowsToOverride[i].ItemID)
+                {
+                    if (Config.improveBowsSend)
+                    {
+                        item.shoot = ModContent.ProjectileType<ghostProjectile>();
+                        item.useStyle = ItemUseStyleID.Shoot;
+                        item.useTime = 1;
+                        item.useAnimation = 5;
+                        item.reuseDelay = 0;
+                        item.channel = true;
+                        item.autoReuse = true;
+                        item.noMelee = true;
+                        item.UseSound = null;
+                        item.noUseGraphic = false;
+                    }
+                    else
+                    {
+                        item.CloneDefaults(BowsToOverride[i].ItemID);
+                    }
+                }
+            }
+        }
 
-			return true;
-		}
+        public override bool CanUseItem(Item item, Player player)
+        {
+            for (int i = 0; i < BowsToOverride.Count; i++)
+            {
+                if (Config.improveBowsSend && item.type == BowsToOverride[i].ItemID)
+                {
+                    return !player.HasBuff(ModContent.BuffType<BowDryfire>()) && !player.dead && ((player.channel && !player.dead) || (!bowChargeUI.mouseHoverCharge && !bowChargeUI.dragging));
+                }
+            }
 
-		public override void HoldItem(Item item, Player player)
-		{
-			int f = 0;
+            return true;
+        }
 
-			while (BowsToOverride.Count > f)
-			{
-				if (item.type == BowsToOverride[f][0] && Config.improveBowsSend)
-				{
-					SetDefaults(item);
-					Vector2 playerPos = new Vector2(player.Center.X, player.Center.Y);
-					TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
-					trajectoryPlayer.drawChargeBar = true;
-					trajectoryPlayer.bowTimingReduce = (player.magicQuiver ? 15 : 0);
-					trajectoryPlayer.bowTimingMax = BowsToOverride[f][3] - trajectoryPlayer.bowTimingReduce;
-					Vector2 dir = (Main.MouseWorld - player.Center) / 30f;
+        public override void HoldItem(Item item, Player player)
+        {
+            for (int i = 0; i < BowsToOverride.Count; i++)
+            {
+                if (item.type == BowsToOverride[i].ItemID && Config.improveBowsSend)
+                {
+                    SetDefaults(item);
+                    Vector2 playerPos = new Vector2(player.Center.X, player.Center.Y);
+                    TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
 
-					if (player.channel)
-					{
-						trajectoryPlayer.drawTrajectory = true;
-						float distanceX = Main.MouseWorld.X - trajectoryPlayer.trajPointX;
-						float distanceY = Main.MouseWorld.Y - trajectoryPlayer.trajPointY;
-						chargeDamageScale = player.GetWeaponDamage(player.HeldItem) / (float)trajectoryPlayer.bowTimingMax * trajectoryPlayer.bowTiming;
-						player.itemTime = 5;
+                    trajectoryPlayer.drawChargeBar = true;
+                    trajectoryPlayer.bowTimingReduce = (player.magicQuiver ? 15 : 0);
+                    trajectoryPlayer.bowTimingMax = BowsToOverride[i].ChargeTime - trajectoryPlayer.bowTimingReduce;
 
-						if (bowDrawCheck)
-						{
-							player.direction = ((Main.MouseWorld.X > player.Center.X) ? -1 : 1);
-							player.itemRotation = (float)Math.Atan2((distanceY * -1f * player.direction), (distanceX * -1f * player.direction));
-							player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.DirectionTo(Main.MouseWorld).ToRotation() + MathHelper.PiOver2);
-						}
+                    Vector2 dir = (Main.MouseWorld - player.Center) / 30f;
+                    if (player.channel)
+                    {
+                        trajectoryPlayer.drawTrajectory = true;
+                        float distanceX = Main.MouseWorld.X - trajectoryPlayer.trajPointX;
+                        float distanceY = Main.MouseWorld.Y - trajectoryPlayer.trajPointY;
+                        chargeDamageScale = player.GetWeaponDamage(player.HeldItem) / (float)trajectoryPlayer.bowTimingMax * trajectoryPlayer.bowTiming;
+                        player.itemTime = 5;
 
-						if (!channelCheck)
-						{
-							//Cursor.Position = new System.Drawing.Point(Main.screenWidth / 2, Main.screenHeight / 2);
-							channelCheck = true;
-						}
+                        if (bowDrawCheck)
+                        {
+                            player.direction = ((Main.MouseWorld.X > player.Center.X) ? -1 : 1);
+                            player.itemRotation = (float)Math.Atan2((distanceY * -1f * player.direction), (distanceX * -1f * player.direction));
+                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.DirectionTo(Main.MouseWorld).ToRotation() + MathHelper.PiOver2);
+                        }
 
-						if (!fullChargeCheck && trajectoryPlayer.bowTimingMax == trajectoryPlayer.bowTiming)
-						{
-							SoundEngine.PlaySound(SoundID.MaxMana, player.Center);
-							fullChargeCheck = true;
-						}
+                        if (!channelCheck)
+                        {
+                            //Cursor.Position = new System.Drawing.Point(Main.screenWidth / 2, Main.screenHeight / 2);
+                            channelCheck = true;
+                        }
 
-						if (!bowDrawCheck)
-						{
-							if (Main.MouseWorld != new Vector2((Main.screenWidth / 2), (Main.screenHeight / 2)))
+                        if (!fullChargeCheck && trajectoryPlayer.bowTimingMax == trajectoryPlayer.bowTiming)
+                        {
+                            SoundEngine.PlaySound(SoundID.MaxMana, player.Center);
+                            fullChargeCheck = true;
+                        }
+
+                        if (!bowDrawCheck)
+                        {
+                            if (Main.MouseWorld != new Vector2((Main.screenWidth / 2), (Main.screenHeight / 2)))
                             {
                                 SoundStyle sound = new SoundStyle("OvermorrowMod/Sounds/bowCharge");
                                 SoundEngine.PlaySound(sound, player.Center);
-								Mouse.SetPosition(Main.screenWidth / 2, Main.screenHeight / 2);
+                                Mouse.SetPosition(Main.screenWidth / 2, Main.screenHeight / 2);
                                 bowDrawCheck = true;
-							}
-						}
-						else if (trajectoryPlayer.bowTiming < trajectoryPlayer.bowTimingMax)
-						{
-							trajectoryPlayer.bowTiming++;
-						}
-					}
-					else
-					{
-						bowDrawCheck = false;
-						channelCheck = false;
-						fullChargeCheck = false;
-						if (trajectoryPlayer.bowTiming != 0)
-						{
-							int toShoot = 0;
-							int DontConsumeChance = 0;
-							if (player.inventory[54].type == ItemID.None && player.inventory[55].type == ItemID.None && player.inventory[56].type == ItemID.None && player.inventory[57].type == ItemID.None)
-							{
-								int g = 0;
-								while (player.inventory.Length > g)
-								{
-									if (player.inventory[g].ammo == AmmoID.Arrow)
-									{
-										toShoot = player.inventory[g].shoot;
-										int damage = player.inventory[g].damage;
-										if (!player.inventory[g].consumable)
-										{
-											break;
-										}
-										DontConsumeChance += DoShittyAmmoConservationThing() + BowsToOverride[f][5];
-										if (Main.rand.Next(1, 101) > DontConsumeChance)
-										{
-											player.inventory[g].stack--;
-											break;
-										}
-										break;
-									}
-									else
-									{
-										g++;
-									}
-								}
-							}
-							else
-							{
-								int g2 = 54;
-								while (58 > g2)
-								{
-									if (player.inventory[g2].ammo == AmmoID.Arrow)
-									{
-										toShoot = player.inventory[g2].shoot;
-										int damage2 = player.inventory[g2].damage;
-										if (!player.inventory[g2].consumable)
-										{
-											break;
-										}
-										DontConsumeChance += DoShittyAmmoConservationThing() + BowsToOverride[f][5];
-										if (Main.rand.Next(1, 101) > DontConsumeChance)
-										{
-											player.inventory[g2].stack--;
-											break;
-										}
-										break;
-									}
-									else
-									{
-										g2++;
-									}
-								}
-							}
+                            }
+                        }
+                        else if (trajectoryPlayer.bowTiming < trajectoryPlayer.bowTimingMax)
+                        {
+                            trajectoryPlayer.bowTiming++;
+                        }
+                    }
+                    else
+                    {
+                        bowDrawCheck = false;
+                        channelCheck = false;
+                        fullChargeCheck = false;
 
-							if ((int)chargeDamageScale != 0)
-							{
-								if (convertWood2 != 0 && toShoot == 1)
-								{
-									toShoot = convertWood2;
-								}
+                        if (trajectoryPlayer.bowTiming != 0)
+                        {
+                            int toShoot = 0;
+                            int DontConsumeChance = 0;
+                            if (player.inventory[54].type == ItemID.None && player.inventory[55].type == ItemID.None && player.inventory[56].type == ItemID.None && player.inventory[57].type == ItemID.None)
+                            {
+                                for (int j = 0; j < player.inventory.Length; j++)
+                                {
+                                    if (player.inventory[j].ammo == AmmoID.Arrow)
+                                    {
+                                        toShoot = player.inventory[j].shoot;
+                                        int damage = player.inventory[j].damage;
+                                        if (!player.inventory[j].consumable)
+                                        {
+                                            break;
+                                        }
+                                        DontConsumeChance += DoShittyAmmoConservationThing() + BowsToOverride[i].ConsumeChance;
+                                        if (Main.rand.Next(1, 101) > DontConsumeChance)
+                                        {
+                                            player.inventory[j].stack--;
+                                            break;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // I think this is the ammo slots or something
+                                for (int j = 54; j < 58; j++)
+                                {
+                                    if (player.inventory[j].ammo == AmmoID.Arrow)
+                                    {
+                                        toShoot = player.inventory[j].shoot;
+                                        int damage2 = player.inventory[j].damage;
+                                        if (!player.inventory[j].consumable)
+                                        {
+                                            break;
+                                        }
+                                        DontConsumeChance += DoShittyAmmoConservationThing() + BowsToOverride[i].ConsumeChance;
+                                        if (Main.rand.Next(1, 101) > DontConsumeChance)
+                                        {
+                                            player.inventory[j].stack--;
+                                            break;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
 
-								if (convertAll2 != 0)
-								{
-									toShoot = convertAll2;
-								}
+                            if ((int)chargeDamageScale != 0)
+                            {
+                                if (convertWood != 0 && toShoot == 1)
+                                {
+                                    toShoot = convertWood;
+                                }
 
-								if (BowsToOverride[f][4] != 0)
-								{
-									Vector2 position = player.RotatedRelativePoint(player.MountedCenter, true);
-									float num7 = 0.31415927f;
-									int num8 = BowsToOverride[f][4];
-									Vector2 vector2_4 = dir * -1f / trajectoryPlayer.chargeVelocityDivide;
-									vector2_4.Normalize();
-									Vector2 spinningpoint = vector2_4 * 40f;
-									bool flag5 = Collision.CanHit(position, 0, 0, position + spinningpoint, 0, 0);
-									SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowShoot"), player.Center);
-									for (int index = 0; index < num8; index++)
-									{
-										float num9 = index - (float)((num8 - 1.0) / 2.0);
-										Vector2 vector2_5 = spinningpoint.RotatedBy(num7 * num9, default);
-										if (!flag5)
-										{
-											vector2_5 -= spinningpoint;
-										}
-										int index2 = Projectile.NewProjectile(null, position.X + vector2_5.X, position.Y + vector2_5.Y, dir.X * -1f / trajectoryPlayer.chargeVelocityDivide, dir.Y * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
-										Main.projectile[index2].noDropItem = true;
-									}
-								}
-								else
-								{
-									SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowShoot"), player.Center);
-									Projectile.NewProjectile(null, playerPos, dir * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
-								}
-							}
-							else
-							{
-								SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowDryfire"), player.Center);
-								player.AddBuff(ModContent.BuffType<BowDryfire>(), 120, true);
-							}
-						}
-						trajectoryPlayer.bowTiming = 0;
-					}
-				}
+                                if (convertAll != 0)
+                                {
+                                    toShoot = convertAll;
+                                }
 
-				f++;
-			}
-		}
-		public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
-		{
-			int f = 0;
-			while (BowsToOverride.Count > f)
-			{
-				if (item.type == BowsToOverride[f][0] && Config.improveBowsSend)
-				{
-					TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
-					int i = 0;
-					while (tooltips.Count > i)
-					{
-						if (tooltips[i].Name == "Speed")
-						{
-							tooltips.RemoveAt(i);
-							tooltips.Insert(i, new TooltipLine(Mod, "Charge", string.Format("Takes {0} {1} to fully charge", (BowsToOverride[f][3] - (float)trajectoryPlayer.bowTimingReduce) / 60f, ((float)BowsToOverride[f][3] / 60f == 1f) ? "second" : "seconds")));
-						}
-						i++;
-					}
-				}
-				f++;
-			}
+                                // This smells like vanilla code and when I tried cleaning it up things broke so LOL
+                                if (BowsToOverride[i].ArrowsFired != 0)
+                                {       
+                                    Vector2 position = player.RotatedRelativePoint(player.MountedCenter, true);
+                                    float num7 = 0.31415927f;
+                                    int num8 = BowsToOverride[i].ArrowsFired;
+                                    Vector2 vector2_4 = dir * -1f / trajectoryPlayer.chargeVelocityDivide;
+                                    vector2_4.Normalize();
+                                    Vector2 spinningpoint = vector2_4 * 40f;
+                                    bool flag5 = Collision.CanHit(position, 0, 0, position + spinningpoint, 0, 0);
+                                    SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowShoot"), player.Center);
+                                    for (int index = 0; index < num8; index++)
+                                    {
+                                        float num9 = index - (float)((num8 - 1.0) / 2.0);
+                                        Vector2 vector2_5 = spinningpoint.RotatedBy(num7 * num9, default);
+                                        if (!flag5)
+                                        {
+                                            vector2_5 -= spinningpoint;
+                                        }
+                                        int index2 = Projectile.NewProjectile(null, position.X + vector2_5.X, position.Y + vector2_5.Y, dir.X * -1f / trajectoryPlayer.chargeVelocityDivide, dir.Y * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
+                                        Main.projectile[index2].noDropItem = true;
+                                    }
+                                }
+                                else
+                                {
+                                    SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowShoot"), player.Center);
+                                    Projectile.NewProjectile(null, playerPos, dir * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
+                                }
+                            }
+                            else
+                            {
+                                SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowDryfire"), player.Center);
+                                player.AddBuff(ModContent.BuffType<BowDryfire>(), 120, true);
+                            }
+                        }
 
-			if (item.type == ItemID.MagicQuiver && Config.improveBowsSend)
-			{
-				tooltips.Insert(tooltips.Count, new TooltipLine(Mod, "ChargeReduce", "Reduces bow charge time by 0.5 seconds"));
-			}
-		}
-	}
+                        trajectoryPlayer.bowTiming = 0;
+                    }
+                }
+            }
+        }
+
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            for (int i = 0; i < BowsToOverride.Count; i++)
+            {
+                if (item.type == BowsToOverride[i].ItemID && Config.improveBowsSend)
+                {
+                    TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
+                    for (int lines = 0; lines < tooltips.Count; lines++)
+                    {
+                        if (tooltips[lines].Name == "Speed")
+                        {
+                            tooltips.RemoveAt(lines);
+                            tooltips.Insert(lines, new TooltipLine(Mod, "Charge",
+                                string.Format("Takes {0} {1} to fully charge",
+                                (BowsToOverride[i].ChargeTime - (float)trajectoryPlayer.bowTimingReduce) / 60f,
+                                ((float)BowsToOverride[i].ChargeTime / 60f == 1f) ? "second" : "seconds")));
+                        }
+                    }
+                }
+            }
+
+            if (item.type == ItemID.MagicQuiver && Config.improveBowsSend)
+            {
+                tooltips.Insert(tooltips.Count, new TooltipLine(Mod, "ChargeReduce", "Reduces bow charge time by 0.5 seconds"));
+            }
+        }
+    }
 }
