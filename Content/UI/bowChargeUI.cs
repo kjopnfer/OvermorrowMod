@@ -21,28 +21,18 @@ namespace OvermorrowMod.Content.UI
     //needs cleanup
     public class bowChargeUI : UIElement
     {
-        public static Vector2 position;
         public const int chargeUiWidth = 56;
         public const int chargeUiHeight = 14; //54
-        const int frames = 5;
-        float alpha;
         Player player = Main.LocalPlayer;
         public static bool mouseHoverCharge;
         public static bool dragging;
 
         public override void OnInitialize()
         {
-            position = new Vector2(Main.MouseWorld.X- (chargeUiWidth / 2), Main.MouseWorld.Y - (chargeUiHeight / 2));
-            Left.Set(position.X, 0);
-            Top.Set(position.Y, 0);
             Width.Set(chargeUiWidth, 0);
             Height.Set(chargeUiHeight, 0);
         }
 
-        public static void updatePos()
-        {
-            position = new Vector2(OvermorrowModPlayer.bowChargeMeterPosX, OvermorrowModPlayer.bowChargeMeterPosY);
-        }
 
         public override void MouseDown(UIMouseEvent evt)
         {
@@ -64,9 +54,6 @@ namespace OvermorrowMod.Content.UI
         {
             if (!Config.bowChargeLockSend)
             {
-                position = new Vector2(Main.MouseWorld.X - (chargeUiWidth / 2), Main.MouseWorld.Y - (chargeUiHeight / 2));
-                Left.Set(position.X, 0);
-                Top.Set(position.Y, 0);
                 Width.Set(chargeUiWidth, 0);
                 Height.Set(chargeUiHeight, 0);
                 dragging = false;
@@ -78,19 +65,7 @@ namespace OvermorrowMod.Content.UI
             TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
             if (trajectoryPlayer.drawChargeBar && !Main.LocalPlayer.dead)
             {
-                if (IsMouseHovering && !Config.bowChargeLockSend)
-                    Main.hoverItemName = "Bow Charge Meter (You can adjust/lock my position by dragging me/toggling a config option)";
-                mouseHoverCharge = (IsMouseHovering && !Config.bowChargeLockSend);
-                if (dragging && !Config.bowChargeLockSend)
-                {
-                    position = new Vector2(Main.MouseWorld.X - (chargeUiWidth / 2), Main.MouseWorld.Y - (chargeUiHeight / 2));
-                }
-                Left.Set(position.X, 0);
-                Width.Set(chargeUiWidth, 0);
-                Top.Set(position.Y, 0);
-                Height.Set(chargeUiHeight, 0);
-                float barWidth;
-                barWidth = (51 / (float)trajectoryPlayer.bowTimingMax) * (float)trajectoryPlayer.bowTiming;
+                float barWidth = (51 / (float)trajectoryPlayer.bowTimingMax) * (float)trajectoryPlayer.bowTiming;
                 int barFrame = 0;
                 trajectoryPlayer.chargeVelocityDivide = 4;
                 if (barWidth > 18)
@@ -113,10 +88,7 @@ namespace OvermorrowMod.Content.UI
                     spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 10) - Main.screenPosition, new Rectangle(0, barFrame, (int)barWidth, 6), Color.White);
                 }
             }
-            else
-            {
-                //alpha = 0;
-            }
+
             if (Main.LocalPlayer.dead)
                 trajectoryPlayer.bowTiming = 0;
         }

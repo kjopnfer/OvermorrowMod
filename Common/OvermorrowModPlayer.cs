@@ -92,10 +92,6 @@ namespace OvermorrowMod.Common
         // public bool windBuff;
 
         // Misc
-        public Vector2 bowChargeMeterPos;
-        public static float bowChargeMeterPosX;
-        public static float bowChargeMeterPosY;
-
         public int BowEnergyCount = 0;
         public int IorichGuardianEnergy = 0;
         public int PlatformTimer = 0;
@@ -174,22 +170,6 @@ namespace OvermorrowMod.Common
 
             DashActive = true;
             DashType = 0;
-        }
-
-        public override void SaveData(TagCompound tag)
-        {
-            bowChargeMeterPos = bowChargeUI.position;
-            tag.Add("bowChargeMeterPosY", (float)bowChargeMeterPos.Y);
-            tag.Add("bowChargeMeterPosX", (float)bowChargeMeterPos.X);
-        }
-
-        public override void LoadData(TagCompound tag)
-        {
-            if (tag.ContainsKey("bowChargeMeterPosX"))
-                bowChargeMeterPosX = tag.GetFloat("bowChargeMeterPosX");
-            if (tag.ContainsKey("bowChargeMeterPosY"))
-                bowChargeMeterPosY = tag.GetFloat("bowChargeMeterPosY");
-            bowChargeUI.updatePos();
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
