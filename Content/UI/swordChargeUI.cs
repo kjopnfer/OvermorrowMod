@@ -61,8 +61,7 @@ namespace OvermorrowMod.Content.UI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            bool should = GlobalSword.ShouldOverrideSword(player.HeldItem.type);
-            Main.NewText($"Should override: {should}");
+            bool should = GlobalSword.ShouldOverrideSword(Main.LocalPlayer.HeldItem.type);
             if (should && !Main.LocalPlayer.dead)
             {
                 SwordOverride so = Main.LocalPlayer.HeldItem.GetGlobalItem<GlobalSword>().SwordOverride;
@@ -71,9 +70,9 @@ namespace OvermorrowMod.Content.UI
                 Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/UI/swordCharge").Value;
       
                 // first draw the first sprite fully
-                spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(0, 0, 64, 15), Color.White);
+                spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(0, 15, 64, 15), Color.White);
                 // then draw sec sprite above it starting on 18 x because the actual bar starts there
-                spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(18, 15, (int)(46 * progress), 15), Color.White);
+                spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2 + 18, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(18, 0, (int)(46 * progress), 15), Color.White);
             }
         }
 
@@ -83,7 +82,7 @@ namespace OvermorrowMod.Content.UI
         }
     }
 
-    public class swordChargeDraw : UIState
+    public class SwordChargeDraw : UIState
     {
         public swordChargeUI swordCharge;
         public override void OnInitialize()

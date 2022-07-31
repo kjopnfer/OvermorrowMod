@@ -26,7 +26,7 @@ namespace OvermorrowMod.Common
         internal bowChargeDraw BowChargeDraw;
         private UserInterface bowChargeDraw;
 
-        internal swordChargeDraw SwordChargeDraw;
+        internal SwordChargeDraw SwordChargeDraw;
         private UserInterface swordChargeDraw;
 
         public static bool shid;
@@ -60,6 +60,9 @@ namespace OvermorrowMod.Common
 
                 bowChargeDraw = new UserInterface();
                 bowChargeDraw.SetState(BowChargeDraw);
+
+                SwordChargeDraw = new SwordChargeDraw();
+                SwordChargeDraw.Activate();
 
                 swordChargeDraw = new UserInterface();
                 swordChargeDraw.SetState(SwordChargeDraw);

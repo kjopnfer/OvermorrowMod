@@ -1,6 +1,9 @@
-﻿using OvermorrowMod.Content.Projectiles.Misc;
+﻿using System;
+using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Projectiles.Misc;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,6 +17,7 @@ namespace OvermorrowMod.Common.VanillaOverrides
         public float ChargeConsumption;
         public float ChargeAmount;
         public int ChargeProjectile;
+        public float HoldOffset;
 
         /// <summary>
         /// gnome
@@ -22,19 +26,21 @@ namespace OvermorrowMod.Common.VanillaOverrides
         /// <param name="chargeRate">Number that increments the charge amount for each usage</param>
         /// <param name="maxCharge">Maximum limit that the player can charge</param>
         /// <param name="chargeConsumption">Amount consumed in a right click</param>
+        /// <param name="holdOffset"> the hold offset for the sword swing</param>
         /// <param name="chargeProjectile">Projectile fired when charge is consumed</param>
-        public SwordOverride(int itemID, float chargeRate, float maxCharge, float chargeConsumption, int chargeProjectile)
+        public SwordOverride(int itemID, float chargeRate, float maxCharge, float chargeConsumption, int chargeProjectile, float holdOffset)
         {
             ItemID = itemID;
             ChargeRate = chargeRate;
             MaxCharge = maxCharge;
             ChargeConsumption = chargeConsumption;
             ChargeProjectile = chargeProjectile;
+            HoldOffset = holdOffset;
         }
 
         public SwordOverride Clone()
         {
-            return new SwordOverride(ItemID, ChargeRate, MaxCharge, ChargeConsumption, ProjectileID.EnchantedBeam);
+            return new SwordOverride(ItemID, ChargeRate, MaxCharge, ChargeConsumption, ProjectileID.EnchantedBeam, HoldOffset);
         }
     }
 
@@ -65,7 +71,7 @@ namespace OvermorrowMod.Common.VanillaOverrides
                 }
             }
 
-            return new SwordOverride(0, 0, 0, 0, 0);
+            return new SwordOverride(0, 0, 0, 0, 0, 0);
         }
 
         public static void LoadSwords()
@@ -73,7 +79,8 @@ namespace OvermorrowMod.Common.VanillaOverrides
             SwordsToOverride = new List<SwordOverride>();
 
             // takes 2 seconds to charge, uses 25% charge to shoot
-            SwordsToOverride.Add(new SwordOverride(ItemID.BeamSword, 1f, 120f, 30f, ProjectileID.EnchantedBeam));
+            SwordsToOverride.Add(new SwordOverride(ItemID.TerraBlade, 5f, 300f, 50f, ProjectileID.TerraBeam, 10f));
+            SwordsToOverride.Add(new SwordOverride(ItemID.BeamSword, 1f, 120f, 30f, ProjectileID.EnchantedBeam, 20f));
         }
         public static void UnloadSwords()
         {
@@ -84,25 +91,29 @@ namespace OvermorrowMod.Common.VanillaOverrides
         {
             if (ShouldOverrideSword(item.type))
             {
-                item.noUseGraphic = true;
+                //item.noUseGraphic = true;
                 SwordOverride = GetByID(item.type).Clone();
             }
         }
 
         public override void HoldItem(Item item, Player player)
         {
-            if (ShouldOverrideSword(item.type) && player.channel)
+            if (ShouldOverrideSword(item.type) && player.altFunctionUse == 2)
             {
-                if (SwordOverride.ChargeAmount < SwordOverride.MaxCharge)
+                if (Main.mouseRight)
                 {
-                    SwordOverride.ChargeAmount += SwordOverride.ChargeRate;
-                    if (SwordOverride.ChargeAmount > SwordOverride.MaxCharge)
+                    player.channel = true;
+                    player.itemTime = 2;
+                    player.itemAnimation = 2;
+                    if (SwordOverride.ChargeAmount < SwordOverride.MaxCharge)
                     {
-                        SwordOverride.ChargeAmount = SwordOverride.MaxCharge;
+                        SwordOverride.ChargeAmount += SwordOverride.ChargeRate;
+                        if (SwordOverride.ChargeAmount > SwordOverride.MaxCharge)
+                        {
+                            SwordOverride.ChargeAmount = SwordOverride.MaxCharge;
+                        }
                     }
                 }
-                player.itemTime = 2;
-                player.itemAnimation = 2;
             }
         }
 
@@ -117,16 +128,7 @@ namespace OvermorrowMod.Common.VanillaOverrides
         {
             if (ShouldOverrideSword(item.type))
             {
-                if (player.altFunctionUse == 0)
-                {
-                    item.channel = false;
-                    item.shoot = SwordOverride.ChargeProjectile;
-                }
-                else
-                {
-                    item.channel = true;
-                    item.shoot = ModContent.ProjectileType<ghostProjectile>();
-                }
+                item.channel = player.altFunctionUse == 2;
             }
             return base.UseItem(item, player);
         }
@@ -143,6 +145,38 @@ namespace OvermorrowMod.Common.VanillaOverrides
 
             base.ModifyTooltips(item, tooltips);
         }
-        
+        public override bool Shoot(Item item, Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            if (ShouldOverrideSword(item.type))
+            {
+                if (player.altFunctionUse == 2)
+                {
+                    return false;
+                }
+                if (SwordOverride.ChargeAmount >= SwordOverride.ChargeConsumption)
+                {
+                    SwordOverride.ChargeAmount -= SwordOverride.ChargeConsumption;
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        public override void UseStyle(Item item, Player player, Rectangle heldItemFrame)
+        {
+            /*if (ShouldOverrideSword(item.type))
+            {
+                float progress = (float)player.itemAnimation / player.itemAnimationMax;
+                float offset = player.direction == -1 ? MathHelper.Pi : 0;
+                float rot = (float)Math.PI - (float)Math.PI * progress + offset;
+                player.itemRotation = rot + offset - MathHelper.PiOver4;
+                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rot + offset + (float)Math.PI);
+                Vector2 pos = player.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, rot + offset);
+                Vector2 dir = (player.Center - pos).SafeNormalize(Vector2.Zero);
+                // temp value
+                player.itemLocation = pos + dir * 50f;
+            }*/
+        }
     }
 }
