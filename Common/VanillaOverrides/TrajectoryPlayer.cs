@@ -5,14 +5,16 @@ namespace OvermorrowMod.Common.VanillaOverrides
 {
     //useless useless useless ...for now?
     //Its not usless, I need for 1.4 port
+
+    // Thank you frank very cool
     public class TrajectoryPlayer : ModPlayer
     {
         public float trajPointX;
         public float trajPointY;
         public bool drawTrajectory;
         public bool drawChargeBar;
-        public int bowTiming;
-        public int bowTimingMax = 180; // 3 seconds
+        public int bowTiming; // The progress of the bow charge
+        public int bowTimingMax = 180; // The maximum value of the bow charge, 60 ticks for a second
         public int bowTimingReduce = 0;
         public int chargeVelocityDivide = 1;
 
