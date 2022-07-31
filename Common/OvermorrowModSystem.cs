@@ -24,7 +24,10 @@ namespace OvermorrowMod.Common
         private UserInterface trajDraw;
 
         internal bowChargeDraw BowChargeDraw;
-        private UserInterface bowCargDraw;
+        private UserInterface bowChargeDraw;
+
+        internal swordChargeDraw SwordChargeDraw;
+        private UserInterface swordChargeDraw;
 
         public static bool shid;
         public static int[] bow2Send;
@@ -48,13 +51,18 @@ namespace OvermorrowMod.Common
 
                 trajectoryDraw = new TrajectoryDraw();
                 trajectoryDraw.Activate();
+
                 trajDraw = new UserInterface();
                 trajDraw.SetState(trajectoryDraw);
 
                 BowChargeDraw = new bowChargeDraw();
                 BowChargeDraw.Activate();
-                bowCargDraw = new UserInterface();
-                bowCargDraw.SetState(BowChargeDraw);
+
+                bowChargeDraw = new UserInterface();
+                bowChargeDraw.SetState(BowChargeDraw);
+
+                swordChargeDraw = new UserInterface();
+                swordChargeDraw.SetState(SwordChargeDraw);
             }
         }
 
@@ -79,7 +87,8 @@ namespace OvermorrowMod.Common
 
             trajDraw?.Update(gameTime);
 
-            bowCargDraw?.Update(gameTime);
+            bowChargeDraw?.Update(gameTime);
+            swordChargeDraw?.Update(gameTime);
         }
 
         internal void BossTitle(int BossID)
@@ -195,6 +204,7 @@ namespace OvermorrowMod.Common
                         InterfaceScaleType.Game)
                     );
                 }
+
                 mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
                 if (mouseTextIndex != -1)
                 {
@@ -202,7 +212,21 @@ namespace OvermorrowMod.Common
                         "OvermorrowMod: Bow Charge",
                         delegate
                         {
-                            bowCargDraw.Draw(Main.spriteBatch, new GameTime());
+                            bowChargeDraw.Draw(Main.spriteBatch, new GameTime());
+                            return true;
+                        },
+                        InterfaceScaleType.Game)
+                    );
+                }
+
+                mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+                if (mouseTextIndex != -1)
+                {
+                    layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                        "OvermorrowMod: Sword Charge",
+                        delegate
+                        {
+                            swordChargeDraw.Draw(Main.spriteBatch, new GameTime());
                             return true;
                         },
                         InterfaceScaleType.Game)

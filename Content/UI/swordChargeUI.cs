@@ -19,7 +19,7 @@ using OvermorrowMod.Common.VanillaOverrides;
 namespace OvermorrowMod.Content.UI
 {
     //needs cleanup
-    public class bowChargeUI : UIElement
+    public class swordChargeUI : UIElement
     {
         public const int chargeUiWidth = 56;
         public const int chargeUiHeight = 14; //54
@@ -32,7 +32,6 @@ namespace OvermorrowMod.Content.UI
             Width.Set(chargeUiWidth, 0);
             Height.Set(chargeUiHeight, 0);
         }
-
 
         public override void MouseDown(UIMouseEvent evt)
         {
@@ -62,50 +61,35 @@ namespace OvermorrowMod.Content.UI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            TrajectoryPlayer trajectoryPlayer = Main.LocalPlayer.GetModPlayer<TrajectoryPlayer>();
-
-            if (trajectoryPlayer.drawChargeBar && !Main.LocalPlayer.dead)
+            bool should = GlobalSword.ShouldOverrideSword(player.HeldItem.type);
+            Main.NewText($"Should override: {should}");
+            if (should && !Main.LocalPlayer.dead)
             {
-                float barWidth = (51 / (float)trajectoryPlayer.bowTimingMax) * (float)trajectoryPlayer.bowTiming;
-                int barFrame = 0;
-                trajectoryPlayer.chargeVelocityDivide = 4;
-                if (barWidth > 18)
-                {
-                    barFrame = 8;
-                    trajectoryPlayer.chargeVelocityDivide -= 2;
-                }
-                if (barWidth > 38)
-                {
-                    barFrame = 16;
-                    trajectoryPlayer.chargeVelocityDivide--;
-                }
-
-                Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/UI/bowCharge").Value;
-                if (trajectoryPlayer.bowTimingMax == trajectoryPlayer.bowTiming)
-                    spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(0, 40, 55, 14), Color.White);
-                else
-                {
-                    spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(0, 24, 55, 14), Color.White);
-                    spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 10) - Main.screenPosition, new Rectangle(0, barFrame, (int)barWidth, 6), Color.White);
-                }
+                SwordOverride so = Main.LocalPlayer.HeldItem.GetGlobalItem<GlobalSword>().SwordOverride;
+                float progress = so.ChargeAmount / so.MaxCharge;
+  
+                Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Content/UI/swordCharge").Value;
+      
+                // first draw the first sprite fully
+                spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(0, 0, 64, 15), Color.White);
+                // then draw sec sprite above it starting on 18 x because the actual bar starts there
+                spriteBatch.Draw(texture, new Vector2(Main.LocalPlayer.Bottom.X - texture.Width / 2, Main.LocalPlayer.Bottom.Y + 6) - Main.screenPosition, new Rectangle(18, 15, (int)(46 * progress), 15), Color.White);
             }
-
-            if (Main.LocalPlayer.dead)
-                trajectoryPlayer.bowTiming = 0;
         }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
         }
     }
 
-    public class bowChargeDraw : UIState
+    public class swordChargeDraw : UIState
     {
-        public bowChargeUI bowCharge;
+        public swordChargeUI swordCharge;
         public override void OnInitialize()
         {
-            bowCharge = new bowChargeUI();
-            Append(bowCharge);
+            swordCharge = new swordChargeUI();
+            Append(swordCharge);
         }
     }
 }

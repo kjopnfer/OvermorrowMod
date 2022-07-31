@@ -116,9 +116,50 @@ namespace OvermorrowMod.Common.VanillaOverrides
 			BowsToOverride.Add(new int[] { ModContent.ItemType<Slingshot>(), ModContent.ProjectileType<RandBird>(), 0, 120, 1, 0 });
 		}*/
 
+        public static void LoadBows()
+        {
+            BowsToOverride = new List<BowOverride>();
+            ModBowsToOverride = new List<BowOverride>();
+
+            BowsToOverride.Add(new BowOverride(ItemID.WoodenBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.BorealWoodBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.CopperBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.PalmWoodBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.RichMahoganyBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.TinBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.EbonwoodBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.IronBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.ShadewoodBow, 0, 0, 180, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.LeadBow, 0, 0, 165, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.PearlwoodBow, 0, 0, 165, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.SilverBow, 0, 0, 165, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.TungstenBow, 0, 0, 165, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.GoldBow, 0, 0, 150, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.PlatinumBow, 0, 0, 150, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.DemonBow, 0, 0, 150, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.TendonBow, 0, 0, 150, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.HellwingBow, 0, ProjectileID.Hellwing, 135, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.BeesKnees, 0, ProjectileID.BeeArrow, 135, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.MoltenFury, 0, ProjectileID.FireArrow, 135, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.DD2PhoenixBow, ProjectileID.DD2PhoenixBowShot, 0, 90, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.IceBow, ProjectileID.FrostArrow, 0, 120, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.ShadowFlameBow, ProjectileID.ShadowFlameArrow, 0, 120, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.Marrow, ProjectileID.BoneArrow, 0, 120, 1, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.Phantasm, 0, ProjectileID.PhantasmArrow, 60, 7, 66));
+            BowsToOverride.Add(new BowOverride(ItemID.Tsunami, 0, 0, 60, 5, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.DD2BetsyBow, ProjectileID.DD2BetsyArrow, 0, 60, 3, 0));
+            BowsToOverride.Add(new BowOverride(ItemID.PulseBow, ProjectileID.PulseBolt, 0, 105, 1, 0));
+        }
+
+        public static void UnloadBows()
+        {
+            BowsToOverride = null;
+            ModBowsToOverride = null;
+        }
+
         public override void SetDefaults(Item item)
         {
-            AddBowsToOverride();
+            //AddBowsToOverride();
             //AddModBows();
             for (int i = 0; i < BowsToOverride.Count; i++)
             {
@@ -311,7 +352,7 @@ namespace OvermorrowMod.Common.VanillaOverrides
 
                                 // This smells like vanilla code and when I tried cleaning it up things broke so LOL
                                 if (BowsToOverride[i].ArrowsFired != 0)
-                                {       
+                                {
                                     Vector2 position = player.RotatedRelativePoint(player.MountedCenter, true);
                                     float num7 = 0.31415927f;
                                     int num8 = BowsToOverride[i].ArrowsFired;

@@ -4,6 +4,7 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Materials;
+using OvermorrowMod.Common.VanillaOverrides;
 using OvermorrowMod.Core;
 using ReLogic.Content;
 using System;
@@ -96,6 +97,9 @@ namespace OvermorrowMod.Common
             Trail.Load();
             Quests.Quests.Load(this);
 
+            GlobalBow.LoadBows();
+            GlobalSword.LoadSwords();
+
             foreach (Type type in Code.GetTypes())
             {
                 HexLoader.TryRegisteringHex(type);
@@ -123,12 +127,14 @@ namespace OvermorrowMod.Common
             Particle.Unload();
             Trail.Unload();
 
+            GlobalBow.UnloadBows();
+            GlobalSword.UnloadSwords();
+
             SandModeKey = null;
             AmuletKey = null;
             ToggleUI = null;
 
             ModBowsToOverride.Clear();
-
         }
 
         public override void AddRecipes()
