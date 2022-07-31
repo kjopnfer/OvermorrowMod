@@ -4,6 +4,7 @@ using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
+using OvermorrowMod.Content.NPCs.Carts;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
@@ -31,6 +32,7 @@ namespace OvermorrowMod.Common
             On.Terraria.Player.SlopingCollision += PlatformCollision;
             On.Terraria.Main.DrawInterface += DrawParticles;
             On.Terraria.Main.DrawDust += DrawOverlay;
+            On.Terraria.Player.SetTalkNPC += SetTalkNPC;
 
             On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
             Main.OnResolutionChanged += Main_OnResolutionChanged;
@@ -53,9 +55,21 @@ namespace OvermorrowMod.Common
             On.Terraria.Player.SlopingCollision -= PlatformCollision;
             On.Terraria.Main.DrawInterface -= DrawParticles;
             On.Terraria.Main.DrawDust -= DrawOverlay;
+            On.Terraria.Player.SetTalkNPC -= SetTalkNPC;
 
             On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
             Main.OnResolutionChanged -= Main_OnResolutionChanged;
+        }
+
+
+        private static void SetTalkNPC(On.Terraria.Player.orig_SetTalkNPC orig, Player self, int npcIndex, bool fromNet)
+        {
+            if (npcIndex == ModContent.NPCType<Cart>())
+            {
+                self.currentShoppingSettings.HappinessReport = "";
+            }
+
+            orig.Invoke(self, npcIndex, fromNet);
         }
 
         private static void Draw(On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.orig_Draw orig, Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager self)
