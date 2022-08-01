@@ -57,7 +57,7 @@ namespace OvermorrowMod.Content.Tiles.Carts
             if (counter == 420)
             {
                 Main.NewText("helo");
-                NPC.NewNPC(null, (int)LampPosition.X - 88, (int)LampPosition.Y, ModContent.NPCType<Cart>());
+                NPC.NewNPC(null, (int)LampPosition.X - 90, (int)LampPosition.Y, ModContent.NPCType<Cart>());
 
                 counter++;
             }

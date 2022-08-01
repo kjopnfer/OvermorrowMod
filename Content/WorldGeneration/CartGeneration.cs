@@ -68,7 +68,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     }
                 }
 
-                PlaceCart(x, y - 3);
+                PlaceCart(x, y);
             }
         }
 
@@ -92,18 +92,18 @@ namespace OvermorrowMod.Content.WorldGeneration
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-
-            //ModUtils.PlaceObject(x + 1, y + 23, ModContent.TileType<CartSign>());
-            //ModUtils.PlaceObject(x + 1, y + 24, ModContent.TileType<CartSign>());
-            //ModUtils.PlaceObject(x + 1, y + 25, ModContent.TileType<CartSign>());
+            // This shit blows up if I try to do anything with anything I'm scared
             WorldGen.PlaceTile(x - (TileClear.width / 2), y - (TileClear.height) + 23, ModContent.TileType<CartSign>());
-
-            //WorldGen.PlaceTile(x - (TileClear.width / 2) + 11, y - (TileClear.height) + 17, TileID.Adamantite);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19, ModContent.TileType<CartLamp>());
             ModContent.GetInstance<CartLampTE>().Place(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19);
 
-            //WorldGen.PlaceTile(x - (TileClear.width / 2) + 1, y - (TileClear.height) + 24, TileID.Adamantite);
-            //WorldGen.PlaceTile(x - (TileClear.width / 2) + 1, y - (TileClear.height) + 25, TileID.Titanium);
+            for (int i = 0; i < 16; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    WorldGen.PlaceTile(x - (TileClear.width / 2) + i, y - (TileClear.height) + 26 + j, TileID.Adamantite, false, true);
+                }
+            }
         }
     }
 }
