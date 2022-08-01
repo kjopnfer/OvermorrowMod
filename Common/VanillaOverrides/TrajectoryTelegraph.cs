@@ -28,8 +28,8 @@ namespace OvermorrowMod.Common.VanillaOverrides
             if (trajectoryPlayer.drawTrajectory && !Main.LocalPlayer.dead)
             {
                 Player player = Main.LocalPlayer;
-                float distanceX = (Main.MouseWorld.X - trajectoryPlayer.trajPointX) * -1;
-                float distanceY = (Main.MouseWorld.Y - trajectoryPlayer.trajPointY) * -1;
+                float distanceX = (Main.MouseWorld.X - trajectoryPlayer.trajPointX);// * -1;
+                float distanceY = (Main.MouseWorld.Y - trajectoryPlayer.trajPointY);// * -1;
                 //Main.screenPosition = Main.MouseWorld * -1; ech
                 /*Main.NewText("mousewolrdX: " + Main.MouseWorld.X + " mouseworldY: " + Main.MouseWorld.Y);
                 Main.NewText("trajPointX: " + trajectoryPlayer.trajPointX + " trajPointY: " + trajectoryPlayer.trajPointY);

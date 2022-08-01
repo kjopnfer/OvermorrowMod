@@ -250,10 +250,10 @@ namespace OvermorrowMod.Common.VanillaOverrides
 
                         if (bowDrawCheck)
                         {
-                            player.direction = ((Main.MouseWorld.X > player.Center.X) ? -1 : 1);
-                            player.itemRotation = (float)Math.Atan2((distanceY * -1f * player.direction), (distanceX * -1f * player.direction));
-                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.DirectionTo(Main.MouseWorld).ToRotation() + MathHelper.PiOver2);
-                        }
+                            player.direction = ((Main.MouseWorld.X > player.Center.X) ? 1 : -1);
+                            player.itemRotation = (float)Math.Atan2((distanceY /* -1f*/ * player.direction), (distanceX /* -1f*/ * player.direction));
+                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.DirectionTo(Main.MouseWorld).ToRotation()); //+ MathHelper.PiOver2);
+                        } 
 
                         if (!channelCheck)
                         {
@@ -369,14 +369,14 @@ namespace OvermorrowMod.Common.VanillaOverrides
                                         {
                                             vector2_5 -= spinningpoint;
                                         }
-                                        int index2 = Projectile.NewProjectile(null, position.X + vector2_5.X, position.Y + vector2_5.Y, dir.X * -1f / trajectoryPlayer.chargeVelocityDivide, dir.Y * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
+                                        int index2 = Projectile.NewProjectile(null, position.X + vector2_5.X, position.Y + vector2_5.Y, dir.X * +1f / trajectoryPlayer.chargeVelocityDivide, dir.Y * +1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
                                         Main.projectile[index2].noDropItem = true;
                                     }
                                 }
                                 else
                                 {
                                     SoundEngine.PlaySound(new SoundStyle("OvermorrowMod/Sounds/bowShoot"), player.Center);
-                                    Projectile.NewProjectile(null, playerPos, dir * -1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
+                                    Projectile.NewProjectile(null, playerPos, dir * +1f / trajectoryPlayer.chargeVelocityDivide, toShoot, (int)chargeDamageScale, item.knockBack, player.whoAmI, 0f, 0f);
                                 }
                             }
                             else
