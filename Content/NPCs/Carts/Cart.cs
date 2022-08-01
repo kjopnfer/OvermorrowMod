@@ -19,6 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Carts
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Merchant Cart");
+            NPCID.Sets.ActsLikeTownNPC[Type] = true;
         }
 
         public override void SetDefaults()

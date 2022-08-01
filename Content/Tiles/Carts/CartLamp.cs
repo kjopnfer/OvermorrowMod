@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Content.NPCs.Carts;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -29,6 +30,48 @@ namespace OvermorrowMod.Content.Tiles.Carts
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Reaper Buff Station Thing");
             AddMapEntry(Color.Red, name);
+        }
+    }
+
+    public class CartLampTE : ModTileEntity
+    {
+        int counter = 0;
+        public Vector2 LampPosition => Position.ToWorldCoordinates(16, 16);
+        public override void Update()
+        {
+            int detectionRange = 20 * 16;
+
+            foreach (Player player in Main.player)
+            {
+                if (Vector2.DistanceSquared(player.Center, LampPosition) < detectionRange * detectionRange)
+                {
+                    if (counter != 420)
+                    {
+                        Main.NewText(counter);
+                        counter++;
+                    }
+                    break;
+                }
+            }
+
+            if (counter == 420)
+            {
+                Main.NewText("helo");
+                NPC.NewNPC(null, (int)LampPosition.X - 88, (int)LampPosition.Y, ModContent.NPCType<Cart>());
+
+                counter++;
+            }
+        }
+
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<CartLamp>())
+            {
+                Kill(Position.X, Position.Y);
+            }
+
+            return tile.HasTile && tile.TileType == ModContent.TileType<CartLamp>();
         }
     }
 }

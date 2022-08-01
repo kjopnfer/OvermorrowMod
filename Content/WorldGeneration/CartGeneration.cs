@@ -31,6 +31,9 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         private void GenerateCarts(GenerationProgress progress, GameConfiguration config)
         {
+            int[] TileBlacklist = { TileID.Trees, 43, 44, 226 };
+
+
             progress.Message = "Setting up Merchant Zones";
 
             // Places cart zones based on the size of the world
@@ -53,7 +56,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     }
 
                     // We have the tile but we want to check if its a grass block, if it isn't restart the process
-                    if (tile.TileType == TileID.Grass && tile.WallType == WallID.None && tile.LiquidAmount == 0)
+                    if (tile.TileType == TileID.Grass && tile.WallType == WallID.None && tile.TileType != TileID.Trees && Main.tileSolid[tile.TileType])
                     {
                         validArea = true;
                     }
@@ -97,7 +100,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             //WorldGen.PlaceTile(x - (TileClear.width / 2) + 11, y - (TileClear.height) + 17, TileID.Adamantite);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19, ModContent.TileType<CartLamp>());
-          
+            ModContent.GetInstance<CartLampTE>().Place(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19);
+
             //WorldGen.PlaceTile(x - (TileClear.width / 2) + 1, y - (TileClear.height) + 24, TileID.Adamantite);
             //WorldGen.PlaceTile(x - (TileClear.width / 2) + 1, y - (TileClear.height) + 25, TileID.Titanium);
         }
