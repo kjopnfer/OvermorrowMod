@@ -37,8 +37,10 @@ namespace OvermorrowMod.Content.WorldGeneration
             progress.Message = "Setting up Merchant Zones";
 
             // Places cart zones based on the size of the world
-            for (int i = 0; i < 3; i++)
+            for (int _ = 0; _ < 3; _++)
             {
+                int blocksBelow = 0;
+                int blocksAbove = 0;
                 bool validArea = false;
 
                 // Pick a random spot in the world that is in midair
@@ -58,13 +60,49 @@ namespace OvermorrowMod.Content.WorldGeneration
                     // We have the tile but we want to check if its a grass block, if it isn't restart the process
                     if (tile.TileType == TileID.Grass && tile.WallType == WallID.None && tile.TileType != TileID.Trees && Main.tileSolid[tile.TileType])
                     {
-                        validArea = true;
+                        // Shift the x-coordinate backwards since the texture generates in the middle
+                        int tempX = x - 9;
+
+                        // We also want to check for spacing. First check for blocks underneath the zone.
+                        for (int i = 0; i < 16; i++)
+                        {
+                            for (int j = 0; j < 8; j++)
+                            {
+                                if (Framing.GetTileSafely(tempX + i, y + j).HasTile) blocksBelow++;
+                            }
+                        }
+
+                        // Then check for the blocks above the zone.
+                        for (int i = 0; i < 16; i++)
+                        {
+                            for (int j = 0; j < 10; j++)
+                            {
+                                if (Framing.GetTileSafely(tempX + i, y - j).HasTile) blocksAbove++;
+                            }
+                        }
+
+                        if (blocksBelow >= 64 && blocksAbove <= 8)
+                        {
+                            validArea = true;
+                        }
+                        else
+                        {
+                            // Reset and try again.
+                            x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                            y = WorldGen.genRand.Next((int)(Main.worldSurface * 0.35f), (int)(Main.worldSurface * 0.5f));
+
+                            blocksBelow = 0;
+                            blocksAbove = 0;
+                        }
                     }
                     else
                     {
-                        // Pick a random spot in the world that is in midair
+                        // Reset and try again.
                         x = WorldGen.genRand.Next(0, Main.maxTilesX);
                         y = WorldGen.genRand.Next((int)(Main.worldSurface * 0.35f), (int)(Main.worldSurface * 0.5f));
+
+                        blocksBelow = 0;
+                        blocksAbove = 0;
                     }
                 }
 
@@ -101,7 +139,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    WorldGen.PlaceTile(x - (TileClear.width / 2) + i, y - (TileClear.height) + 26 + j, TileID.Adamantite, false, true);
+                    WorldGen.PlaceTile(x - (TileClear.width / 2) + i, y - (TileClear.height) + 26 + j, TileID.Dirt, false, true);
                 }
             }
         }
