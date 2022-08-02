@@ -135,7 +135,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             if (npc.ai[0] != (float)AIStates.Portal)
                 npc.rotation = npc.DirectionTo(player.Center).ToRotation() - MathHelper.PiOver4;
 
-            float progress = MathHelper.Lerp(0, 12f, (float)Math.Sin(npc.localAI[2]++ / 30f) * 0.5f + 0.5f);
             //float progress = -0.106f;
 
             //float darkIncrease = MathHelper.Lerp(-0.01f, -0.08f, Utils.Clamp(npc.localAI[2]++, 0, 14400f) / 14400f);
@@ -177,22 +176,43 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
             }*/
 
-            /*
+
             if (Main.netMode != NetmodeID.Server)
             {
-                if (!Filters.Scene["ContainedFlash"].IsActive())
+                if (npc.ai[1] >= 340 && npc.ai[1] <= 540)
                 {
-                    Filters.Scene.Activate("ContainedFlash");
-                }
+                    if (!Filters.Scene["ContainedFlash"].IsActive())
+                    {
+                        Filters.Scene.Activate("ContainedFlash");
+                    }
 
-                if (Filters.Scene["ContainedFlash"].IsActive())
-                {
-                    Filters.Scene["ContainedFlash"].GetShader().UseTargetPosition(npc.Center + new Vector2(24, -20).RotatedBy(npc.rotation + MathHelper.PiOver2));
-                    Filters.Scene["ContainedFlash"].GetShader().UseIntensity(progress);
-                    Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotation"].SetValue(npc.rotation + MathHelper.Pi + MathHelper.PiOver4);
-                    Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotationArea"].SetValue(MathHelper.ToRadians(15));
+                    float value = ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[2], 0, 60) / 60f);
+                    float progress = MathHelper.Lerp(0, 12f, value);
+                    float size = MathHelper.Lerp(0, 30, value);
+                    if (npc.ai[1] >= 420)
+                    {
+                        value = Utils.Clamp(npc.localAI[2] - 60, 0, 30) / 30f;
+                        progress = MathHelper.Lerp(12, 0f, value);
+                        size = MathHelper.Lerp(30, 0, value);
+                    }
+
+                    if (Filters.Scene["ContainedFlash"].IsActive())
+                    {
+                        Filters.Scene["ContainedFlash"].GetShader().UseTargetPosition(npc.Center + new Vector2(24, -20).RotatedBy(npc.rotation + MathHelper.PiOver2));
+                        Filters.Scene["ContainedFlash"].GetShader().UseIntensity(progress);
+                        Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotation"].SetValue(npc.rotation + MathHelper.Pi + MathHelper.PiOver4);
+                        Filters.Scene["ContainedFlash"].GetShader().Shader.Parameters["rotationArea"].SetValue(MathHelper.ToRadians(size));
+                    }
+
+                    npc.localAI[2]++;
+
+                    if (npc.ai[1] == 540)
+                    {
+                        npc.localAI[2] = 0;
+                        if (Filters.Scene["ContainedFlash"].IsActive()) Filters.Scene.Deactivate("ContainedFlash");
+                    }
                 }
-            }*/
+            }
             #endregion
 
             var normalizedRotation = npc.rotation % MathHelper.TwoPi;
@@ -259,7 +279,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     #region temp
                     if (++npc.ai[1] % 120 == 0)
                     {
-                        if (Main.rand.NextBool())
+                        if (Main.rand.NextBool(5))
                         {
                             Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-3, 3) + 5, Main.rand.Next(-8, -4)) * 50;
 
@@ -281,7 +301,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                     Dust.NewDust(player.Center + Vector2.UnitY.RotatedBy(MathHelper.ToRadians(npc.ai[2] += (0.25f * RotateDirection))) * 500, 1, 1, DustID.Adamantite);
                     npc.Move(player.Center + Vector2.UnitY.RotatedBy(MathHelper.ToRadians(npc.ai[2] += (0.25f * RotateDirection))) * 370, 2.5f, 1);
 
-                    if (npc.ai[1] == 360)
+                    if (npc.ai[1] == 600)
                     {
                         foreach (NPC npcs in Main.npc)
                         {
@@ -302,119 +322,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             }
                         }
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;
-                        npc.ai[0] = (float)AIStates.Portal;
+                        npc.ai[0] = (float)AIStates.Selector;
                         npc.ai[1] = 0;
 
                     }
                     #endregion
                     break;
-                case (float)AIStates.Portal:
-                    #region Portal Prep
-
-                    // Shrink tentacles and then angle upwards slightly
-                    if (npc.ai[1]++ == 0)
-                    {
-                        npc.velocity = Vector2.Zero;
-                        InitialRotation = npc.rotation;
-                    }
-
-
-                    if (npc.ai[1] < 180)
-                    {
-                        npc.rotation = MathHelper.Lerp(InitialRotation, InitialRotation - MathHelper.ToRadians(45), Utils.Clamp(npc.ai[1], 0, 180) / 180f);
-
-                        foreach (Projectile projectile in TentacleList)
-                        {
-                            if (projectile.active && projectile.ModProjectile is EyeTentacle tentacle)
-                            {
-                                tentacle.lockGrow = true;
-
-                                if (tentacle.length > 0 && npc.localAI[3]++ % 2 == 0) tentacle.length--;
-                            }
-                        }
-                    }
-
-                    if (npc.ai[1] >= 180 && npc.ai[1] <= 360)
-                    {
-                        if (npc.ai[1] == 180)
-                        {
-                            npc.velocity = Vector2.One.RotatedBy(npc.rotation) * 6;
-
-                            // Predict where the boss will end up three seconds before it does
-                            Vector2 simulatedPosition = npc.Center;
-                            Vector2 simulatedVelocity = npc.velocity;
-
-                            for (int i = 0; i < 180; i++)
-                            {
-                                simulatedVelocity = simulatedVelocity.RotatedBy(MathHelper.ToRadians(0.51f * -npc.direction));
-                                simulatedPosition += simulatedVelocity;
-
-                            }
-
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), simulatedPosition, simulatedVelocity, ModContent.ProjectileType<EyePortal>(), 0, 0f, Main.myPlayer, 210);
-                        }
-
-                        // Rotate the NPC upwards into a portal, if they are facing right rotate by a negative trajectory else do the opposite
-                        npc.velocity = npc.velocity.RotatedBy(MathHelper.ToRadians(0.51f * -npc.direction));
-
-                        npc.rotation = npc.velocity.ToRotation() - MathHelper.PiOver4;
-
-                        if (npc.ai[1] == 360) npc.velocity = Vector2.Zero;
-                    }
-                    #endregion
-                    break;
-                case (float)AIStates.Suck:
-                    #region Suck
-                    if (npc.ai[1] == 360)
-                    {
-                        foreach (NPC servant in Main.npc)
-                        {
-                            if (!servant.active || servant.type != NPCID.ServantofCthulhu && npc.Distance(servant.Center) < 400) continue;
-
-                            var npcAngle = npc.DirectionTo(servant.Center).ToRotation() - MathHelper.PiOver4;
-
-                            if (npc.rotation > 0)
-                            {
-                                if (npcAngle <= 0)
-                                {
-                                    npcAngle += MathHelper.TwoPi;
-                                }
-                            }
-                            else
-                            {
-                                if (npcAngle >= 0)
-                                {
-                                    npcAngle -= MathHelper.TwoPi;
-                                }
-                            }
-
-                            if (npcAngle >= lowerAngle && npcAngle <= upperAngle)
-                            {
-                                float PullStrength = MathHelper.Lerp(.65f, .25f, npc.Distance(servant.Center) / 400f);
-                                float Direction = (npc.Center - servant.Center).ToRotation();
-                                float HorizontalPull = (float)Math.Cos(Direction) * PullStrength;
-                                float VerticalPull = (float)Math.Sin(Direction) * PullStrength;
-
-                                servant.velocity += new Vector2(HorizontalPull, VerticalPull);
-                            }
-                        }
-
-                        // dust for mouth suck
-                        /*for (int _ = 0; _ < 2; _++)
-                        {
-                            var rot = npc.rotation + Main.rand.NextFloat(-MathHelper.PiOver4 + 0.2f, MathHelper.PiOver4 - 0.2f);
-
-                            Vector2 RandomPosition = npc.Center + Vector2.One.RotatedBy(rot + MathHelper.Pi) * -Main.rand.Next(200, 250);
-                            Vector2 Direction = Vector2.Normalize(npc.Center - RandomPosition);
-
-                            int DustSpeed = 30;
-
-                            int dust = Dust.NewDust(RandomPosition, 1, 1, DustID.Cloud, Direction.X * DustSpeed, Direction.Y * DustSpeed, 0, default, Main.rand.NextFloat(1, 1.5f));
-                            Main.dust[dust].noGravity = true;
-                        }*/
-                    }
-                    break;
-                    #endregion
             }
 
             return false;
@@ -447,6 +360,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                 }
                 #endregion
 
+                #region Pulse
                 texture = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Eye/EyeOfCthulhu").Value;
 
                 if (npc.ai[0] == (float)AIStates.Selector && npc.ai[1] > 300 && npc.ai[1] < 360)
@@ -461,6 +375,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                         spriteBatch.Draw(texture, npc.Center - Main.screenPosition, null, Color.Orange * (1f - progress), npc.rotation - MathHelper.PiOver4, texture.Size() / 2, scale * npc.scale, SpriteEffects.None, 0f);
                     }
                 }
+                #endregion
 
                 for (int k = 0; k < npc.oldPos.Length; k++)
                 {
@@ -490,12 +405,20 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                 spriteBatch.Reload(BlendState.Additive);
 
-                if (npc.ai[1] >= 120 && npc.ai[1] <= 300)
-                {
-                    Texture2D spotlight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "EyeTell").Value;
-                    float lightAlpha = MathHelper.Lerp(0.65f, 0.8f, (float)Math.Sin(npc.localAI[0]++ / 20f));
 
-                    spriteBatch.Draw(spotlight, npc.Center + new Vector2(npc.width * 1.52f, -npc.height * 1.35f).RotatedBy(npc.rotation + MathHelper.PiOver2) - Main.screenPosition, null, new Color(255, 200, 46) * lightAlpha, npc.rotation - MathHelper.PiOver4, spotlight.Size() / 2, 1f, SpriteEffects.None, 0);
+                if (npc.ai[1] >= 120 && npc.ai[1] <= 360)
+                {
+                    if (!Main.gamePaused) npc.localAI[0]++;
+
+                    Texture2D spotlight = ModContent.Request<Texture2D>(AssetDirectory.Textures + "EyeTell").Value;
+                    //float lightAlpha = MathHelper.Lerp(0.65f, 0.8f, (float)Math.Sin(npc.localAI[0]++ / 20f));
+                    float lightAlpha = MathHelper.Lerp(0.8f, 0f, Utils.Clamp(npc.localAI[0] - 120, 0, 60) / 60f);
+                    float heightLerp = MathHelper.Lerp(1f, 0, ModUtils.EaseOutQuad(Utils.Clamp(npc.localAI[0] - 60f, 0, 180) / 180f));
+                    spriteBatch.Draw(spotlight, npc.Center + new Vector2(npc.width * 1.52f, -npc.height * 1.35f).RotatedBy(npc.rotation + MathHelper.PiOver2) - Main.screenPosition, null, new Color(255, 200, 46) * lightAlpha, npc.rotation - MathHelper.PiOver4, spotlight.Size() / 2, new Vector2(heightLerp, 1), SpriteEffects.None, 0);
+                }
+                else
+                {
+                    npc.localAI[0] = 0;
                 }
 
                 spriteBatch.Reload(BlendState.AlphaBlend);
