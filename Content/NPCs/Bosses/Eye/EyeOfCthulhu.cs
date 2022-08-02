@@ -41,6 +41,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         private List<Projectile> TentacleList;
         public List<Vector2> TrailPositions;
 
+        public List<int> MinionList = new List<int>();
+
         public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
         {
             if (npc.type == NPCID.EyeofCthulhu)
@@ -284,7 +286,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
                             Vector2 RandomPosition = npc.Center + new Vector2(Main.rand.Next(-3, 3) + 5, Main.rand.Next(-8, -4)) * 50;
 
                             var entitySource = npc.GetSource_FromAI();
+
                             int index = NPC.NewNPC(entitySource, (int)RandomPosition.X, (int)RandomPosition.Y, ModContent.NPCType<MiniServant>(), 0, 0, 0, 0, npc.whoAmI);
+                            if (Main.rand.NextBool())
+                            {
+                                index = NPC.NewNPC(entitySource, (int)RandomPosition.X, (int)RandomPosition.Y, NPCID.ServantofCthulhu);
+                            }
+
+                            MinionList.Add(index);
 
                             if (Main.netMode == NetmodeID.Server && index < Main.maxNPCs)
                             {
@@ -303,24 +312,53 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 
                     if (npc.ai[1] == 600)
                     {
-                        foreach (NPC npcs in Main.npc)
+                        foreach (int id in MinionList)
                         {
-                            if (npcs.type != NPCID.ServantofCthulhu && npcs.type != ModContent.NPCType<MiniServant>()) continue;
-
-                            ServantOfCthulhu servant = npcs.GetGlobalNPC<ServantOfCthulhu>();
-                            // Forces all servants to dash at the player
-                            if (!servant.BossDash)
+                            NPC minion = Main.npc[id];
+                            if (minion.active)
                             {
-                                servant.BossDash = true;
-                                servant.BossDelay = Main.rand.Next(0, 7) * 10;
+                                ServantOfCthulhu servant = minion.GetGlobalNPC<ServantOfCthulhu>();
+                                // Forces all servants to dash at the player
+                                if (!servant.BossDash)
+                                {
+                                    servant.BossDash = true;
+                                    servant.BossDelay = Main.rand.Next(0, 7) * 10;
+                                }
                             }
-
-                            if (!((MiniServant)npcs.ModNPC).shadowForm && npcs.ai[0] != 1)
+                            else
                             {
-                                ((MiniServant)npcs.ModNPC).shadowForm = true;
-                                ((MiniServant)npcs.ModNPC).shadowCounter = Main.rand.Next(5, 8) * 60;
+                                if (!((MiniServant)minion.ModNPC).shadowForm && minion.ai[0] != 1)
+                                {
+                                    ((MiniServant)minion.ModNPC).shadowForm = true;
+                                    ((MiniServant)minion.ModNPC).shadowCounter = Main.rand.Next(5, 8) * 60;
+                                }
                             }
                         }
+                        
+
+                        /*foreach (NPC minions in Main.npc)
+                        {
+                            if (minions.type != NPCID.ServantofCthulhu && minions.type != ModContent.NPCType<MiniServant>() && !minions.active) continue;
+
+                            if (minions.type == NPCID.ServantofCthulhu && minions.active)
+                            {
+                                ServantOfCthulhu servant = minions.GetGlobalNPC<ServantOfCthulhu>();
+                                // Forces all servants to dash at the player
+                                if (!servant.BossDash)
+                                {
+                                    servant.BossDash = true;
+                                    servant.BossDelay = Main.rand.Next(0, 7) * 10;
+                                }
+                            }
+                            else
+                            {
+                                if (!((MiniServant)minions.ModNPC).shadowForm && minions.ai[0] != 1)
+                                {
+                                    ((MiniServant)minions.ModNPC).shadowForm = true;
+                                    ((MiniServant)minions.ModNPC).shadowCounter = Main.rand.Next(5, 8) * 60;
+                                }
+                            }
+                        }*/
                         //npc.ai[0] = Main.rand.NextBool() ? (float)AIStates.Minions : (float)AIStates.Tear;
                         npc.ai[0] = (float)AIStates.Selector;
                         npc.ai[1] = 0;
