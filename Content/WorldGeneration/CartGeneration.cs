@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Base;
+using OvermorrowMod.Content.Tiles.Carts;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
@@ -107,9 +108,10 @@ namespace OvermorrowMod.Content.WorldGeneration
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true, true);
 
             // This shit blows up if I try to do anything with anything I'm scared
-            /*WorldGen.PlaceTile(x - (TileClear.width / 2), y - (TileClear.height) + 23, ModContent.TileType<CartSign>());
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19, ModContent.TileType<CartLamp>());
-            ModContent.GetInstance<CartLampTE>().Place(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 30, y - (TileClear.height) + 35, ModContent.TileType<CartSign>());
+
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 42, y - (TileClear.height) + 32, ModContent.TileType<CartLamp>());
+            /*ModContent.GetInstance<CartLampTE>().Place(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19);
 
             for (int i = 0; i < 16; i++)
             {
