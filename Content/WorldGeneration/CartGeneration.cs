@@ -1,9 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.Tiles;
-using OvermorrowMod.Content.Tiles.Carts;
-using OvermorrowMod.Content.Tiles.DesertTemple;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
@@ -11,7 +8,6 @@ using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Content.WorldGeneration
@@ -20,7 +16,7 @@ namespace OvermorrowMod.Content.WorldGeneration
     {
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
-            int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
+            int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Gems"));
             if (BiomeIndex != -1)
             {
                 tasks.Insert(BiomeIndex + 1, new PassLegacy("Ruined Town", GenerateTown));
@@ -33,14 +29,14 @@ namespace OvermorrowMod.Content.WorldGeneration
         {
             progress.Message = "Creating Town";
 
-
-            for (int _ = 0; _ < 3; _++)
+            // I don't know why the first one doesn't generate dude
+            for (int _ = 0; _ < 2; _++)
             {
                 bool validArea = false;
 
                 // Pick a random spot in the world that is in midair
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                int y = (int)Main.worldSurface;
+                int y = (int)(Main.worldSurface * 0.35f);
 
                 while (!validArea)
                 {
@@ -52,10 +48,10 @@ namespace OvermorrowMod.Content.WorldGeneration
                         tile = Framing.GetTileSafely(x, y);
                     }
 
+                    Tile aboveTile = Framing.GetTileSafely(x, y - 1);
                     // We have the tile but we want to check if its a grass block, if it isn't restart the process
-                    if (tile.TileType == TileID.Grass && tile.WallType == WallID.None && tile.TileType != TileID.Trees && Main.tileSolid[tile.TileType])
+                    if (tile.TileType == TileID.Dirt && tile.WallType == WallID.None && !aboveTile.HasTile && Main.tileSolid[tile.TileType])
                     {
-
                         validArea = true;
                     }
                     else
@@ -66,78 +62,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     }
                 }
 
-                PlaceTown(x, y + 52);
-                // Places cart zones based on the size of the world
-                /*for (int _ = 0; _ < 3; _++)
-                {
-                    int blocksBelow = 0;
-                    int blocksAbove = 0;
-                    bool validArea = false;
-
-                    // Pick a random spot in the world that is in midair
-                    int x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                    int y = (int)Main.worldSurface;
-
-                    while (!validArea)
-                    {
-                        // Loop downwards until we reach a solid tile
-                        Tile tile = Framing.GetTileSafely(x, y);
-                        while (!tile.HasTile)
-                        {
-                            y++;
-                            tile = Framing.GetTileSafely(x, y);
-                        }
-
-                        // We have the tile but we want to check if its a grass block, if it isn't restart the process
-                        if (tile.TileType == TileID.Grass && tile.WallType == WallID.None && tile.TileType != TileID.Trees && Main.tileSolid[tile.TileType])
-                        {
-                            // Shift the x-coordinate backwards since the texture generates in the middle
-                            int tempX = x - 9;
-
-                            // We also want to check for spacing. First check for blocks underneath the zone.
-                            for (int i = 0; i < 16; i++)
-                            {
-                                for (int j = 0; j < 8; j++)
-                                {
-                                    if (Framing.GetTileSafely(tempX + i, y + j).HasTile) blocksBelow++;
-                                }
-                            }
-
-                            // Then check for the blocks above the zone.
-                            for (int i = 0; i < 16; i++)
-                            {
-                                for (int j = 0; j < 10; j++)
-                                {
-                                    if (Framing.GetTileSafely(tempX + i, y - j).HasTile) blocksAbove++;
-                                }
-                            }
-
-                            if (blocksBelow >= 64 && blocksAbove <= 8)
-                            {
-                                validArea = true;
-                            }
-                            else
-                            {
-                                // Reset and try again.
-                                x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                                y = WorldGen.genRand.Next((int)(Main.worldSurface * 0.35f), (int)(Main.worldSurface * 0.5f));
-
-                                blocksBelow = 0;
-                                blocksAbove = 0;
-                            }
-                        }
-                        else
-                        {
-                            // Reset and try again.
-                            x = WorldGen.genRand.Next(0, Main.maxTilesX);
-                            y = WorldGen.genRand.Next((int)(Main.worldSurface * 0.35f), (int)(Main.worldSurface * 0.5f));
-
-                            blocksBelow = 0;
-                            blocksAbove = 0;
-                        }
-                    }
-
-                }*/
+                PlaceTown(x, y + 60);         
             }
         }
 
@@ -152,7 +77,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(105, 99, 94)] = TileID.GrayBrick,
                 [new Color(117, 70, 46)] = TileID.RedDynastyShingles,
                 [new Color(93, 70, 52)] = TileID.Platforms,
-                [new Color(69, 87, 78)] = TileID.GreenDungeonBrick,
+                [new Color(69, 87, 78)] = TileID.EbonstoneBrick,
             };
 
             Dictionary<Color, int> WallMapping = new Dictionary<Color, int>
@@ -162,8 +87,9 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(73, 64, 56)] = WallID.Wood,
                 [new Color(40, 34, 29)] = WallID.BorealWood,
                 [new Color(70, 67, 72)] = WallID.Stone,
-                [new Color(42, 50, 46)] = WallID.GreenDungeonTile,
+                [new Color(42, 50, 46)] = WallID.EbonstoneBrick,
                 [new Color(87, 43, 20)] = WallID.RedBrick,
+                [new Color(93, 70, 52)] = WallID.BorealWood,
             };
 
             Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
@@ -178,6 +104,15 @@ namespace OvermorrowMod.Content.WorldGeneration
             Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true, true);
+
+            // Emulate vanilla worldgen by placing stone, grass, etc
+            for (int i = 0; i < WorldGen.genRand.Next(12, 15); i++)
+            {
+                Vector2 coordinates = new Vector2(x + WorldGen.genRand.Next(-25, 25), y + WorldGen.genRand.Next(0, 25));
+                if (Framing.GetTileSafely((int)coordinates.X, (int)coordinates.Y).TileType == TileID.Dirt) {
+                    WorldGen.OreRunner((int)coordinates.X, (int)coordinates.Y, WorldGen.genRand.Next(2, 6), WorldGen.genRand.Next(2, 4), TileID.Stone);
+                }
+            }
 
             // This shit blows up if I try to do anything with anything I'm scared
             /*WorldGen.PlaceTile(x - (TileClear.width / 2), y - (TileClear.height) + 23, ModContent.TileType<CartSign>());
