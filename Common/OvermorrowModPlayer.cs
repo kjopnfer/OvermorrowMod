@@ -5,12 +5,15 @@ using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.NPCs;
 using OvermorrowMod.Content.Projectiles.Accessory;
 using System;
+using OvermorrowMod.Content.Items.Accessories.Expert;
+using OvermorrowMod.Content.UI;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Common
 {

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.NPCs.Bosses.Eye;
+using OvermorrowMod.Common.VanillaOverrides;
 using OvermorrowMod.Content.UI;
 using OvermorrowMod.Core;
 using ReLogic.Graphics;
@@ -30,6 +31,17 @@ namespace OvermorrowMod.Common
 
         internal AltarUI Altar;
         internal TitleCard TitleCard;
+
+        internal TrajectoryDraw trajectoryDraw;
+        private UserInterface trajDraw;
+
+        internal bowChargeDraw BowChargeDraw;
+        private UserInterface bowCargDraw;
+
+        public static bool shid;
+        public static int[] bow2Send;
+        public string faef = "foof";
+
         public override void PostUpdateEverything()
         {
             Trail.UpdateTrails();
@@ -46,10 +58,26 @@ namespace OvermorrowMod.Common
                 Altar = new AltarUI();
                 Altar.Activate();
 
+                trajectoryDraw = new TrajectoryDraw();
+                trajectoryDraw.Activate();
+                trajDraw = new UserInterface();
+                trajDraw.SetState(trajectoryDraw);
+
+                BowChargeDraw = new bowChargeDraw();
+                BowChargeDraw.Activate();
+                bowCargDraw = new UserInterface();
+                bowCargDraw.SetState(BowChargeDraw);
+
                 TitleInterface = new UserInterface();
                 TitleCard = new TitleCard();
                 TitleInterface.SetState(TitleCard);
             }
+        }
+
+        public override void Unload()
+        {
+            shid = false;
+            bow2Send = new int[] { };
         }
 
         public override void UpdateUI(GameTime gameTime)
@@ -64,6 +92,10 @@ namespace OvermorrowMod.Common
             {
                 AltarUI.Update(gameTime);
             }
+
+            trajDraw?.Update(gameTime);
+
+            bowCargDraw?.Update(gameTime);
         }
 
         internal void BossTitle(int BossID)
@@ -135,8 +167,47 @@ namespace OvermorrowMod.Common
             {
                 AddInterfaceLayer(layers, TitleInterface, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
             }
-        }
 
+            OvermorrowModPlayer modPlayer = Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>();
+            if (modPlayer.ShowText)
+            {
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                "OvermorrowMod: Title",
+                delegate
+                {
+                    BossTitle(modPlayer.TitleID);
+                    return true;
+                },
+                InterfaceScaleType.UI));
+            }
+
+            mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+            if (mouseTextIndex != -1)
+            {
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                    "OvermorrowMod: Bow Trajectory",
+                    delegate
+                    {
+                        trajDraw.Draw(Main.spriteBatch, new GameTime());
+                        return true;
+                    },
+                    InterfaceScaleType.Game)
+                );
+            }
+            mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+            if (mouseTextIndex != -1)
+            {
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                    "OvermorrowMod: Bow Charge",
+                    delegate
+                    {
+                        bowCargDraw.Draw(Main.spriteBatch, new GameTime());
+                        return true;
+                    },
+                    InterfaceScaleType.Game)
+                );
+            }
+        }
         public static void AddInterfaceLayer(List<GameInterfaceLayer> layers, UserInterface userInterface, UIState state, int index, bool visible, string customName = null)
         {
             string name = customName == null ? state.ToString() : customName;
@@ -151,6 +222,7 @@ namespace OvermorrowMod.Common
                     return true;
                 }, InterfaceScaleType.UI));
         }
+
 
         internal void ShowAltar()
         {
