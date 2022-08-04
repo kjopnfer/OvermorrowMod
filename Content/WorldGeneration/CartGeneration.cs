@@ -110,7 +110,11 @@ namespace OvermorrowMod.Content.WorldGeneration
             // This shit blows up if I try to do anything with anything I'm scared
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 30, y - (TileClear.height) + 35, ModContent.TileType<CartSign>());
 
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 42, y - (TileClear.height) + 32, ModContent.TileType<CartLamp>());
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 31, ModContent.TileType<CartLamp>());
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 32, ModContent.TileType<CartLamp>());
+            //WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 33, ModContent.TileType<CartLamp>());
+            //WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 34, ModContent.TileType<CartLamp>());
+
             /*ModContent.GetInstance<CartLampTE>().Place(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19);
 
             for (int i = 0; i < 16; i++)
