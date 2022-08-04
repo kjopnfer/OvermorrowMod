@@ -73,6 +73,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(69, 132, 64)] = TileID.Grass,
                 [new Color(101, 67, 41)] = TileID.Dirt,
                 [new Color(84, 68, 55)] = TileID.ClayBlock,
+                [new Color(128, 128, 128)] = TileID.Stone,
                 [new Color(110, 113, 117)] = TileID.StoneSlab,
                 [new Color(105, 99, 94)] = TileID.GrayBrick,
                 [new Color(117, 70, 46)] = TileID.RedDynastyShingles,
@@ -104,15 +105,6 @@ namespace OvermorrowMod.Content.WorldGeneration
             Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true, true);
-
-            // Emulate vanilla worldgen by placing stone, grass, etc
-            for (int i = 0; i < WorldGen.genRand.Next(12, 15); i++)
-            {
-                Vector2 coordinates = new Vector2(x + WorldGen.genRand.Next(-25, 25), y + WorldGen.genRand.Next(0, 25));
-                if (Framing.GetTileSafely((int)coordinates.X, (int)coordinates.Y).TileType == TileID.Dirt) {
-                    WorldGen.OreRunner((int)coordinates.X, (int)coordinates.Y, WorldGen.genRand.Next(2, 6), WorldGen.genRand.Next(2, 4), TileID.Stone);
-                }
-            }
 
             // This shit blows up if I try to do anything with anything I'm scared
             /*WorldGen.PlaceTile(x - (TileClear.width / 2), y - (TileClear.height) + 23, ModContent.TileType<CartSign>());
