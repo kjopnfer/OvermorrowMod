@@ -39,6 +39,12 @@ namespace OvermorrowMod.Content.WorldGeneration
                 int x = WorldGen.genRand.Next(0, Main.maxTilesX);
                 int y = (int)(Main.worldSurface * 0.35f);
 
+                // Make sure that the x coordinate chosen isn't within the spawn point
+                while (x > Main.spawnTileX - 50 && x < Main.spawnTileY + 50)
+                {
+                    x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                }
+
                 while (!validArea)
                 {
                     // Loop downwards until we reach a solid tile
@@ -60,10 +66,16 @@ namespace OvermorrowMod.Content.WorldGeneration
                         // Reset and try again.
                         x = WorldGen.genRand.Next(0, Main.maxTilesX);
                         y = WorldGen.genRand.Next((int)(Main.worldSurface * 0.35f), (int)(Main.worldSurface * 0.5f));
+
+                        // Make sure that the x coordinate chosen isn't within the spawn point
+                        while (x > Main.spawnTileX - 50 && x < Main.spawnTileY + 50)
+                        {
+                            x = WorldGen.genRand.Next(0, Main.maxTilesX);
+                        }
                     }
                 }
 
-                PlaceTown(x, y + 60);         
+                PlaceTown(x, y + 60);
             }
         }
 
@@ -107,14 +119,58 @@ namespace OvermorrowMod.Content.WorldGeneration
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true, true);
 
-            // This shit blows up if I try to do anything with anything I'm scared
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 30, y - (TileClear.height) + 35, ModContent.TileType<CartSign>());
 
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 31, ModContent.TileType<CartLamp>());
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 32, ModContent.TileType<CartLamp>());
-            //WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 33, ModContent.TileType<CartLamp>());
-            //WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 34, ModContent.TileType<CartLamp>());
 
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height) + 1, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85  + 1, y + 25 - (TileClear.height) + 1, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85  - 1, y + 25 - (TileClear.height) + 1, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85  + 1, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);
+
+
+            // 68, 24
+            Tile tile = Main.tile[x - (TileClear.width / 2) + 68, y + 23 - (TileClear.height)]; 
+            tile.Slope = SlopeType.SlopeUpRight;
+            /*tile = Main.tile[x - (TileClear.width / 2) + 69, y + 22 - (TileClear.height)]; tile.Slope = SlopeType.SlopeUpRight;
+            tile = Main.tile[x - (TileClear.width / 2) + 70, y + 21 - (TileClear.height)]; tile.Slope = SlopeType.SlopeUpRight;
+            //tile = Main.tile[x - (TileClear.width / 2) + 71, y - (TileClear.height) + 21]; tile.Slope = SlopeType.SlopeUpRight;
+
+            tile = Main.tile[x - (TileClear.width / 2) + 91, y + 26 - (TileClear.height)]; tile.Slope = SlopeType.SlopeUpLeft;
+            //tile = Main.tile[x - (TileClear.width / 2) + 95, y - (TileClear.height) + 29]; tile.Slope = SlopeType.SlopeUpLeft;
+            //tile = Main.tile[x - (TileClear.width / 2) + 94, y - (TileClear.height) + 28]; tile.Slope = SlopeType.SlopeUpLeft;
+            //tile = Main.tile[x - (TileClear.width / 2) + 93, y - (TileClear.height) + 27]; tile.Slope = SlopeType.SlopeUpLeft;
+            
+            //
+
+            tile = Main.tile[x - (TileClear.width / 2) + 69, y - (TileClear.height) + 24]; tile.Slope = SlopeType.SlopeUpRight;
+            tile = Main.tile[x - (TileClear.width / 2) + 70, y - (TileClear.height) + 23]; tile.Slope = SlopeType.SlopeUpRight;
+            tile = Main.tile[x - (TileClear.width / 2) + 71, y - (TileClear.height) + 22]; tile.Slope = SlopeType.SlopeUpRight;
+            tile = Main.tile[x - (TileClear.width / 2) + 72, y - (TileClear.height) + 21]; tile.Slope = SlopeType.SlopeUpRight;
+
+            tile = Main.tile[x - (TileClear.width / 2) + 95, y - (TileClear.height) + 30]; tile.Slope = SlopeType.SlopeUpLeft;
+            tile = Main.tile[x - (TileClear.width / 2) + 94, y - (TileClear.height) + 29]; tile.Slope = SlopeType.SlopeUpLeft;
+            tile = Main.tile[x - (TileClear.width / 2) + 93, y - (TileClear.height) + 28]; tile.Slope = SlopeType.SlopeUpLeft;
+            tile = Main.tile[x - (TileClear.width / 2) + 92, y - (TileClear.height) + 27]; tile.Slope = SlopeType.SlopeUpLeft;*/
+
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 67, y - (TileClear.height) + 23, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 68, y - (TileClear.height) + 22, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 69, y - (TileClear.height) + 21, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 70, y - (TileClear.height) + 20, TileID.ObsidianBrick, false, true);
+
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 95, y - (TileClear.height) + 29, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 94, y - (TileClear.height) + 28, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 93, y - (TileClear.height) + 27, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 92, y - (TileClear.height) + 26, TileID.ObsidianBrick, false, true);
+
+            //TileGen.Generate(x - (TileClear.width / 2) + 69, y - (TileClear.height) + 24, true, true, true);
+
+     
             /*ModContent.GetInstance<CartLampTE>().Place(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19);
 
             for (int i = 0; i < 16; i++)
