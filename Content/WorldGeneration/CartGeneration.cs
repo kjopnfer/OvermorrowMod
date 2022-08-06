@@ -89,7 +89,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(128, 128, 128)] = TileID.Stone,
                 [new Color(110, 113, 117)] = TileID.StoneSlab,
                 [new Color(105, 99, 94)] = TileID.GrayBrick,
-                [new Color(117, 70, 46)] = TileID.RedDynastyShingles,
+                [new Color(117, 70, 46)] = ModContent.TileType<CastleRoof>(),
                 //[new Color(93, 70, 52)] = ModContent.TileType<PlaceholderPlatform>(),
                 [new Color(69, 87, 78)] = TileID.EbonstoneBrick,
             };
@@ -130,7 +130,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 31, ModContent.TileType<CartLamp>());
 
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
+            /*WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);
@@ -138,7 +138,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85  + 1, y + 25 - (TileClear.height) + 1, TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85  - 1, y + 25 - (TileClear.height) + 1, TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85  + 1, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);*/
 
             /*WorldGen.SlopeTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height), (int)SlopeType.SlopeDownRight);
             WorldGen.SlopeTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height), (int)SlopeType.SlopeDownRight);
