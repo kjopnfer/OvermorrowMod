@@ -82,17 +82,19 @@ namespace OvermorrowMod
 			return sticks;
 		}
 
-		public static void DrawVerletDust(VerletPoint[] points, int dust,Color color)
+		public static void DrawVerletDust(VerletPoint[] points, int dust,Color color, SpriteBatch spriteBatch)
         {
 			foreach (VerletPoint point in points)
 			{
-				Dust.NewDust(point.position, 0, 0, dust, 0f, 0f, 100, color, 0.25f);
+				//Dust.NewDust(point.position, 0, 0, dust, 0f, 0f, 100, color, 0.25f);
 				if (point.connections == null)
 				{
 					continue;
 				}
 				foreach (VerletPoint p2 in point.connections)
 				{
+					Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
+					spriteBatch.Draw(texture, point.position - Main.screenPosition, null, Color.White, point.position.DirectionTo(p2.position).ToRotation() + MathHelper.PiOver2, texture.Size() / 2, 1f, SpriteEffects.None, 1); ;
 				// Dust.QuickDustLine(point.position, p2.position, dust, color);
 				}
 			}

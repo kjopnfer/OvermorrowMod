@@ -3,6 +3,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static OvermorrowMod.Verlet;
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OvermorrowMod
 {
@@ -16,7 +18,7 @@ namespace OvermorrowMod
             //Main.npcFrameCount[Type] = Main.npcFrameCount[NPCID.Zombie];
 
         }
-        public override string Texture => "OvermorrowMod/Assets/Textures/Perlin";
+        public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
             NPC.width = 18;
@@ -40,6 +42,12 @@ namespace OvermorrowMod
         public VerletStick[] sticks2;
         public override void AI()
         {
+           
+            
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
             if (NPC.ai[0] == 0)
             {
                 /*points = new VerletPoint[4];
@@ -54,20 +62,21 @@ namespace OvermorrowMod
                 points[3].connections = new VerletPoint[1];
                 points[3].connections[0] = points[2];
                 */
-                points = VerletPointsInLine_Even(NPC.Center, new Vector2(NPC.Center.X - 200, NPC.Center.Y + 250), 5, true, false);
-                points2 = VerletPointsInLine_Offset(new Vector2(NPC.Center.X - 300, NPC.Center.Y -400), new Vector2(NPC.Center.X + 300, NPC.Center.Y - 400),new float[] { 0f, 0.3f, .5f, .7f, 1f }, 5, true, true);
+                points = VerletPointsInLine_Even(NPC.Center, new Vector2(NPC.Center.X - 200, NPC.Center.Y + 250), 10, true, false);
+                points2 = VerletPointsInLine_Offset(new Vector2(NPC.Center.X - 300, NPC.Center.Y - 400), new Vector2(NPC.Center.X + 300, NPC.Center.Y - 400), new float[] { 0f, 0.3f, .5f, .7f, 1f }, 5, true, true);
                 sticks = GetVerletSticks(points);
                 sticks2 = GetVerletSticks(points2);
             }
-            points = CalculateVerlet(points,sticks,new Vector2(0,1),0.07f,10,100f);
-            points2 = CalculateVerlet(points2,sticks2,new Vector2(0,1),0.07f,10,100f);
+            points = CalculateVerlet(points, sticks, new Vector2(0, 1), 0.07f, 10, 100f);
+            points2 = CalculateVerlet(points2, sticks2, new Vector2(0, 1), 0.07f, 10, 100f);
             NPC.ai[0]++;
-            DrawVerletDust(points, DustID.GemEmerald, Color.White);
-            DrawVerletDust(points2, DustID.GemEmerald, Color.Red);
+            DrawVerletDust(points, DustID.GemEmerald, Color.White, spriteBatch);
+            DrawVerletDust(points2, DustID.GemEmerald, Color.Red, spriteBatch);
+
+            return base.PreDraw(spriteBatch, screenPos, drawColor);
         }
 
 
 
-     
     }
 }
