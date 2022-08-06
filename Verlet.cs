@@ -28,8 +28,6 @@ namespace OvermorrowMod
         }
     }
 
-
-
     public class VerletStick
     {
         public VerletPoint point1;
@@ -50,28 +48,21 @@ namespace OvermorrowMod
         public static VerletStick[] GetVerletSticks(VerletPoint[] points)
         {
             int stickCount = 0;
-            int maxsticks = 0;
+            int maxSticks = 0;
             foreach (VerletPoint p in points)
             {
-                if (p.connections == null)
-                {
-                    continue;
-                }
-                foreach (VerletPoint p2 in p.connections)
-                {
-                    maxsticks++;
-                }
+                if (p.connections == null) continue;
 
+                foreach (VerletPoint p2 in p.connections) maxSticks++;
             }
-            if (maxsticks < 1)
-            { return null; }
-            VerletStick[] sticks = new VerletStick[maxsticks];
+
+            if (maxSticks < 1) return null;
+
+            VerletStick[] sticks = new VerletStick[maxSticks];
             foreach (VerletPoint p in points)
             {
-                if (p.connections == null)
-                {
-                    continue;
-                }
+                if (p.connections == null) continue;
+
                 foreach (VerletPoint p2 in p.connections)
                 {
                     sticks[stickCount] = new VerletStick(p, p2);
@@ -80,24 +71,6 @@ namespace OvermorrowMod
 
             }
             return sticks;
-        }
-
-        public static void DrawVerlet(VerletPoint[] points, int dust, Color color, SpriteBatch spriteBatch)
-        {
-            foreach (VerletPoint point in points)
-            {
-                //Dust.NewDust(point.position, 0, 0, dust, 0f, 0f, 100, color, 0.25f);
-                if (point.connections == null)
-                {
-                    continue;
-                }
-                foreach (VerletPoint p2 in point.connections)
-                {
-                    Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
-                    spriteBatch.Draw(texture, point.position - Main.screenPosition, null, Color.White, point.position.DirectionTo(p2.position).ToRotation() + MathHelper.PiOver2, texture.Size() / 2, 1f, SpriteEffects.None, 1); ;
-                    // Dust.QuickDustLine(point.position, p2.position, dust, color);
-                }
-            }
         }
 
         public static VerletPoint[] VerletPointsInLine_Offset(Vector2 one, Vector2 two, float[] offsets, int num_points, bool first_Locked = true, bool final_locked = false)
@@ -178,43 +151,6 @@ namespace OvermorrowMod
 
         }
 
-        public static VerletPoint[] CalculateVerlet(VerletPoint[] points, VerletStick[] sticks, Vector2 down, float delta, int depth = 10, float gravity = 100f)
-        {
-            foreach (VerletPoint p in points)
-            {
-                if (!p.locked)
-                {
-                    Vector2 positionBeforeUpdate = p.position;
-                    p.position += p.position - p.prevPosition;
-                    p.position += down * gravity * delta * delta;
-                    p.prevPosition = positionBeforeUpdate;
-                }
-            }
-            for (int i = 0; i < depth; i++)
-            {
-                if (sticks == null)
-                {
-                    continue;
-                }
-                foreach (VerletStick stick in sticks)
-                {
-                    Vector2 stickCentre = (stick.point1.position + stick.point2.position) / 2;
-                    Vector2 stickDir = Vector2.Normalize(stick.point1.position - stick.point2.position);
-                    if (!stick.point1.locked)
-                    {
-                        stick.point1.position = stickCentre + stickDir * stick.length / 2;
-                    }
-                    if (!stick.point2.locked)
-                    {
-                        stick.point2.position = stickCentre - stickDir * stick.length / 2;
-                    }
-
-                }
-            }
-            return points;
-
-        }
-
         public static VerletPoint[] GenerateVerlet(Texture2D texture, Vector2 startPosition, Vector2 endPosition, bool firstLocked = true, bool lastLocked = false)
         {
             // Generate the number of points according to texture size and the start/end positions
@@ -261,5 +197,55 @@ namespace OvermorrowMod
 
             return points;
         }
+
+        public static VerletPoint[] SimulateVerlet(VerletPoint[] points, VerletStick[] sticks, Vector2 down, float delta, int depth = 10, float gravity = 100f, bool wind = true)
+        {
+            // Simulate the movement of the points if the point isn't locked in place
+            foreach (VerletPoint p in points)
+            {
+                if (!p.locked)
+                {
+                    Vector2 positionBeforeUpdate = p.position;
+                    p.position += p.position - p.prevPosition;
+                    p.position += down * gravity * delta * delta;
+
+                    if (wind) p.position.X += Main.windSpeedCurrent / 2;
+
+                    p.prevPosition = positionBeforeUpdate;
+                }
+            }
+
+            // Simulate the points based on the connections
+            for (int i = 0; i < depth; i++)
+            {
+                if (sticks == null) continue;
+
+                foreach (VerletStick stick in sticks)
+                {
+                    Vector2 stickCentre = (stick.point1.position + stick.point2.position) / 2;
+                    Vector2 stickDir = Vector2.Normalize(stick.point1.position - stick.point2.position);
+                    if (!stick.point1.locked) stick.point1.position = stickCentre + stickDir * stick.length / 2;
+
+                    if (!stick.point2.locked) stick.point2.position = stickCentre - stickDir * stick.length / 2;
+                }
+            }
+
+            return points;
+        }
+
+        public static void DrawVerlet(VerletPoint[] points, SpriteBatch spriteBatch)
+        {
+            foreach (VerletPoint point in points)
+            {
+                if (point.connections == null) continue;
+
+                foreach (VerletPoint p2 in point.connections)
+                {
+                    Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
+                    spriteBatch.Draw(texture, point.position - Main.screenPosition, null, Color.White, point.position.DirectionTo(p2.position).ToRotation() + MathHelper.PiOver2, texture.Size() / 2, 1f, SpriteEffects.None, 1); ;
+                }
+            }
+        }
+
     }
 }
