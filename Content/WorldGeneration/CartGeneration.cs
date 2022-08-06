@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.WorldGeneration
     {
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
-            int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Gems"));
+            int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
             if (BiomeIndex != -1)
             {
                 tasks.Insert(BiomeIndex + 1, new PassLegacy("Ruined Town", GenerateTown));
@@ -90,7 +90,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(110, 113, 117)] = TileID.StoneSlab,
                 [new Color(105, 99, 94)] = TileID.GrayBrick,
                 [new Color(117, 70, 46)] = TileID.RedDynastyShingles,
-                [new Color(93, 70, 52)] = TileID.Platforms,
+                //[new Color(93, 70, 52)] = ModContent.TileType<PlaceholderPlatform>(),
                 [new Color(69, 87, 78)] = TileID.EbonstoneBrick,
             };
 
@@ -106,6 +106,12 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(93, 70, 52)] = WallID.BorealWood,
             };
 
+            Dictionary<Color, int> SlopeMapping = new Dictionary<Color, int>
+            {
+                [new Color(0, 255, 0)] = 2, // /|
+                [new Color(255, 0, 0)] = 1, // |\    
+            };
+
             Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
             {
                 [new Color(0, 0, 0)] = -2
@@ -116,8 +122,9 @@ namespace OvermorrowMod.Content.WorldGeneration
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
             Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown").Value;
-            TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping);
-            TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true, true);
+            Texture2D SlopeMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown_Slope").Value;
+            TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping, null, null, SlopeMap, SlopeMapping);
+            TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 30, y - (TileClear.height) + 35, ModContent.TileType<CartSign>());
 
@@ -133,10 +140,17 @@ namespace OvermorrowMod.Content.WorldGeneration
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85  + 1, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height) - 1, TileID.ObsidianBrick, false, true);
 
+            /*WorldGen.SlopeTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height), (int)SlopeType.SlopeDownRight);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height), (int)SlopeType.SlopeDownRight);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height), (int)SlopeType.SlopeDownRight);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height) - 1, (int)SlopeType.SlopeDownRight);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height) + 1, (int)SlopeType.SlopeDownRight);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height) + 1, (int)SlopeType.SlopeDownRight);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height) + 1, (int)SlopeType.SlopeDownRight);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height) - 1, (int)SlopeType.SlopeDownRight);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height) - 1, (int)SlopeType.SlopeDownRight);*/
 
-            // 68, 24
-            Tile tile = Main.tile[x - (TileClear.width / 2) + 68, y + 23 - (TileClear.height)]; 
-            tile.Slope = SlopeType.SlopeUpRight;
+
             /*tile = Main.tile[x - (TileClear.width / 2) + 69, y + 22 - (TileClear.height)]; tile.Slope = SlopeType.SlopeUpRight;
             tile = Main.tile[x - (TileClear.width / 2) + 70, y + 21 - (TileClear.height)]; tile.Slope = SlopeType.SlopeUpRight;
             //tile = Main.tile[x - (TileClear.width / 2) + 71, y - (TileClear.height) + 21]; tile.Slope = SlopeType.SlopeUpRight;
@@ -158,19 +172,66 @@ namespace OvermorrowMod.Content.WorldGeneration
             tile = Main.tile[x - (TileClear.width / 2) + 93, y - (TileClear.height) + 28]; tile.Slope = SlopeType.SlopeUpLeft;
             tile = Main.tile[x - (TileClear.width / 2) + 92, y - (TileClear.height) + 27]; tile.Slope = SlopeType.SlopeUpLeft;*/
 
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 67, y - (TileClear.height) + 23, TileID.ObsidianBrick, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 68, y - (TileClear.height) + 22, TileID.ObsidianBrick, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 69, y - (TileClear.height) + 21, TileID.ObsidianBrick, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 70, y - (TileClear.height) + 20, TileID.ObsidianBrick, false, true);
+            Main.tile[x - (TileClear.width / 2) + 67, y - (TileClear.height) + 23].ClearTile();
+            Main.tile[x - (TileClear.width / 2) + 68, y - (TileClear.height) + 22].ClearTile();
+            Main.tile[x - (TileClear.width / 2) + 69, y - (TileClear.height) + 21].ClearTile();
+            Main.tile[x - (TileClear.width / 2) + 70, y - (TileClear.height) + 20].ClearTile();
 
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 95, y - (TileClear.height) + 29, TileID.ObsidianBrick, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 94, y - (TileClear.height) + 28, TileID.ObsidianBrick, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 93, y - (TileClear.height) + 27, TileID.ObsidianBrick, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 92, y - (TileClear.height) + 26, TileID.ObsidianBrick, false, true);
+            Main.tile[x - (TileClear.width / 2) + 95, y - (TileClear.height) + 29].ClearTile();
+            Main.tile[x - (TileClear.width / 2) + 94, y - (TileClear.height) + 28].ClearTile();
+            Main.tile[x - (TileClear.width / 2) + 93, y - (TileClear.height) + 27].ClearTile();
+            Main.tile[x - (TileClear.width / 2) + 92, y - (TileClear.height) + 26].ClearTile();
+
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 67, y - (TileClear.height) + 23, TileID.Platforms, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 68, y - (TileClear.height) + 22, TileID.Platforms, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 69, y - (TileClear.height) + 21, TileID.Platforms, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 70, y - (TileClear.height) + 20, TileID.Platforms, false, true);
+                                                                                            
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 95, y - (TileClear.height) + 29, TileID.Platforms, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 94, y - (TileClear.height) + 28, TileID.Platforms, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 93, y - (TileClear.height) + 27, TileID.Platforms, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 92, y - (TileClear.height) + 26, TileID.Platforms, false, true);
+
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 67, y + 23 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 68, y + 22 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 69, y + 21 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 70, y + 20 - (TileClear.height), 2);
+
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 95, y + 29 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 94, y + 28 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 93, y + 27 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 92, y + 26 - (TileClear.height), 1);
+
+            // 68, 24
+            //Tile tile = Framing.GetTileSafely(x - (TileClear.width / 2) + 67, y + 23 - (TileClear.height));
+            //tile.Slope = SlopeType.SlopeUpRight;
+            //WorldGen.SlopeTile(x - (TileClear.width / 2) + 67, y + 23 - (TileClear.height), (int)SlopeType.SlopeUpRight);
+            ////tile = Framing.GetTileSafely(x - (TileClear.width / 2) + 67, y + 22 - (TileClear.height));
+            ////tile.Slope = SlopeType.SlopeUpRight;
+            //WorldGen.SlopeTile(x - (TileClear.width / 2) + 68, y + 22 - (TileClear.height), (int)SlopeType.SlopeDownRight);
+            //WorldGen.SlopeTile(x - (TileClear.width / 2) + 69, y + 21 - (TileClear.height), (int)SlopeType.SlopeDownRight);
+            //WorldGen.SlopeTile(x - (TileClear.width / 2) + 70, y + 20 - (TileClear.height), (int)SlopeType.SlopeDownRight);
 
             //TileGen.Generate(x - (TileClear.width / 2) + 69, y - (TileClear.height) + 24, true, true, true);
+            /*WorldGen.SlopeTile(x - (TileClear.width / 2) + 68, y + 23 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 69, y + 22 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 70, y + 21 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 71, y + 20 - (TileClear.height), 2);
 
-     
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 94, y + 29 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 93, y + 28 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 92, y + 27 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 91, y + 26 - (TileClear.height), 1);
+
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 67, y + 23 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 68, y + 22 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 69, y + 21 - (TileClear.height), 2);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 70, y + 20 - (TileClear.height), 2);
+
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 95, y + 29 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 94, y + 28 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 93, y + 27 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 92, y + 26 - (TileClear.height), 1);*/
             /*ModContent.GetInstance<CartLampTE>().Place(x - (TileClear.width / 2) + 12, y - (TileClear.height) + 19);
 
             for (int i = 0; i < 16; i++)
