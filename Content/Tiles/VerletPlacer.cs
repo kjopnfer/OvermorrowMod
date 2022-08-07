@@ -1,0 +1,106 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Core;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using Terraria.ObjectData;
+
+namespace OvermorrowMod.Content.Tiles
+{
+    public class VerletPlacer : ModTile
+    {
+        public override void SetStaticDefaults()
+        {
+            Main.tileSolid[Type] = true;
+            Main.tileMergeDirt[Type] = false;
+            Main.tileBlockLight[Type] = true;
+            Main.tileLighted[Type] = true;
+
+            TileObjectData.newTile.UsesCustomCanPlace = true;
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<VerletPlacerTE>().Hook_AfterPlacement, -1, 0, true);
+            TileObjectData.addTile(Type);
+
+            MineResist = 2f;
+            AddMapEntry(new Color(92, 64, 51));
+        }
+    }
+
+    public class VerletPlacerTE : ModTileEntity
+    {
+        public int BlockID;
+        public int PairedBlock;
+
+        public VerletPoint[] points;
+        public VerletStick[] sticks;
+
+        public override void SaveData(TagCompound tag)
+        {
+            tag["BlockID"] = BlockID;
+            tag["PairedBlock"] = PairedBlock;
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            // Load the Tunnel's ID and the paired Tunnel
+            BlockID = tag.Get<int>("BlockID");
+            PairedBlock = tag.Get<int>("PairedBlock");
+        }
+
+        public override void Update()
+        {
+            //points = Verlet.SimulateVerlet(points, sticks, new Vector2(0, 1), 0.07f, 10, 100f);
+            //Verlet.DrawVerlet(points, Main.spriteBatch);
+        }
+
+        public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
+        {
+            int id = Place(i, j);
+            /*VerletPlacerTE te = ByID[id] as VerletPlacerTE;
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
+
+            // For each tunnel that is placed, assign a new ID and then add into the global list
+            te.BlockID = VerletWorld.VerletCounter++;
+
+            // If the tunnel's ID is 0, then the next tunnel is 1. Their paired tunnel is the previous tunnel, so ID - 1.
+            // Therefore, for each even tunnel, make it ID - 1, and then for each odd tunnel make it ID + 1
+            te.PairedBlock = VerletWorld.VerletCounter % 2 == 0 ? te.BlockID - 1 : te.BlockID + 1;
+
+            Main.NewText("placed tunnel, my id is:" + te.BlockID + " my pair is:" + te.PairedBlock);
+
+            if (VerletWorld.VerletCounter % 2 == 0)
+            {
+                // Retrieve the paired tunnel ID, and their associated position
+                for (int x = 0; x < ByID.Count; x++)
+                {
+                    TileEntity entity;
+                    if (ByID.TryGetValue(x, out entity))
+                    {
+                        // Check if it is the matching tile entity
+                        if (entity != null && entity is VerletPlacerTE tunnel && tunnel.PairedBlock == BlockID && PairedBlock == tunnel.BlockID)
+                        {
+                            //points = Verlet.GenerateVerlet(texture, new Vector2(i, j), tunnel.Position.ToWorldCoordinates(16, 16), true, true);
+                        }
+                    }
+                }
+            }*/
+
+            return id;
+        }
+
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<VerletPlacer>()) Kill(Position.X, Position.Y);
+
+            return tile.HasTile && tile.TileType == ModContent.TileType<VerletPlacer>();
+        }
+    }
+
+    public class VerletWorld : ModSystem
+    {
+        public static int VerletCounter;
+    }
+}
