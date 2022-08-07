@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Tiles.Carts
@@ -15,6 +16,9 @@ namespace OvermorrowMod.Content.Tiles.Carts
 
             Main.tileMerge[Type][ModContent.TileType<CastleRoof>()] = true;
             Main.tileMerge[ModContent.TileType<CastleRoof>()][Type] = true;
+
+            Main.tileMerge[Type][TileID.Grass] = true;
+            Main.tileMerge[TileID.Grass][Type] = true;
 
             MinPick = 95;
             MineResist = 2f;
