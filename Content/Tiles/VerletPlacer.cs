@@ -45,7 +45,6 @@ namespace OvermorrowMod.Content.Tiles
 
         public override void LoadData(TagCompound tag)
         {
-            // Load the Tunnel's ID and the paired Tunnel
             BlockID = tag.Get<int>("BlockID");
             PairedBlock = tag.Get<int>("PairedBlock");
         }
@@ -69,18 +68,18 @@ namespace OvermorrowMod.Content.Tiles
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
 
-            // For each tunnel that is placed, assign a new ID and then add into the global list
+            // For each block that is placed, assign a new ID and then add into the global list
             te.BlockID = VerletWorld.VerletCounter++;
 
-            // If the tunnel's ID is 0, then the next tunnel is 1. Their paired tunnel is the previous tunnel, so ID - 1.
-            // Therefore, for each even tunnel, make it ID - 1, and then for each odd tunnel make it ID + 1
+            // If the block's ID is 0, then the next block is 1. Their paired block is the previous tunnel, so ID - 1.
+            // Therefore, for each even block, make it ID - 1, and then for each odd block make it ID + 1
             te.PairedBlock = VerletWorld.VerletCounter % 2 == 0 ? te.BlockID - 1 : te.BlockID + 1;
 
             Main.NewText("placed tunnel, my id is:" + te.BlockID + " my pair is:" + te.PairedBlock);
 
             if (VerletWorld.VerletCounter % 2 == 0)
             {
-                // Retrieve the paired tunnel ID, and their associated position
+                // Retrieve the paired block ID, and their associated position
                 for (int x = 0; x < ByID.Count; x++)
                 {
                     TileEntity entity;
@@ -91,7 +90,8 @@ namespace OvermorrowMod.Content.Tiles
                         {
                             Main.NewText("i generated verlet");
 
-                            te.points = Verlet.GenerateVerlet(texture, te.Position.ToWorldCoordinates(16, 16), tile.Position.ToWorldCoordinates(16, 16), true, true);
+                            te.points = Verlet.GenerateVerlet(texture, Main.LocalPlayer.Center, Main.LocalPlayer.Center + new Vector2(200, 200), true, true);
+                            //te.points = Verlet.GenerateVerlet(texture, te.Position.ToWorldCoordinates(16, 16), tile.Position.ToWorldCoordinates(16, 16), true, true);
                             te.sticks = Verlet.GetVerletSticks(te.points);
                         }
                     }

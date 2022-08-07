@@ -215,7 +215,7 @@ namespace OvermorrowMod
                 }
             }
 
-            // Simulate the points based on the connections
+            // Simulate the connections
             for (int i = 0; i < depth; i++)
             {
                 if (sticks == null) continue;
