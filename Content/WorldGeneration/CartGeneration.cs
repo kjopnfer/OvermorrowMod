@@ -75,7 +75,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                     }
                 }
 
-                PlaceTown(x, y + 60);
+                PlaceTown(x, y + 30);
+                //PlaceTown(x, y + 60);
             }
         }
 
@@ -87,23 +88,25 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(101, 67, 41)] = TileID.Dirt,
                 [new Color(84, 68, 55)] = TileID.ClayBlock,
                 [new Color(128, 128, 128)] = TileID.Stone,
-                [new Color(110, 113, 117)] = TileID.StoneSlab,
+                [new Color(197, 130, 57)] = ModContent.TileType<CastleRoof>(),
+                [new Color(154, 100, 57)] = TileID.WoodBlock,
+                [new Color(152, 119, 85)] = TileID.Rope,
+                [new Color(40, 37, 35)] = TileID.WoodenBeam,
                 [new Color(105, 99, 94)] = ModContent.TileType<CastleBrick>(),
-                [new Color(117, 70, 46)] = ModContent.TileType<CastleRoof>(),
-                //[new Color(93, 70, 52)] = ModContent.TileType<PlaceholderPlatform>(),
-                [new Color(69, 87, 78)] = TileID.EbonstoneBrick,
+                [new Color(67, 65, 64)] = ModContent.TileType<DarkCastleBrick>(),
+                [new Color(115, 78, 48)] = TileID.Adamantite,
             };
 
             Dictionary<Color, int> WallMapping = new Dictionary<Color, int>
             {
                 [new Color(70, 67, 72)] = WallID.StoneSlab,
-                [new Color(49, 45, 51)] = WallID.GrayBrick,
                 [new Color(73, 64, 56)] = WallID.Wood,
                 [new Color(40, 34, 29)] = WallID.BorealWood,
+                [new Color(40, 37, 35)] = WallID.GrayBrick,
                 [new Color(70, 67, 72)] = WallID.Stone,
                 [new Color(42, 50, 46)] = WallID.EbonstoneBrick,
                 [new Color(87, 43, 20)] = WallID.RedBrick,
-                [new Color(93, 70, 52)] = WallID.BorealWood,
+                [new Color(115, 78, 48)] = WallID.BorealWood,
             };
 
             Dictionary<Color, int> SlopeMapping = new Dictionary<Color, int>
@@ -117,11 +120,11 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(0, 0, 0)] = -2
             };
 
-            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown_Clear").Value;
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Tower_Clear").Value;
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown").Value;
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Tower").Value;
             Texture2D SlopeMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown_Slope").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping, null, null, SlopeMap, SlopeMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
@@ -130,6 +133,20 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 31, ModContent.TileType<CartLamp>());
 
+            for (int i = 0; i < 56; i++)
+            {
+                for (int j = 0; j < 94; j++)
+                {
+                    Tile tile = Framing.GetTileSafely(x - (TileClear.width / 2) + i, y - (TileClear.height) + j);
+                    if (tile.TileType == TileID.Adamantite)
+                    {
+                        tile.ClearTile();
+                        //Main.tile[x - (TileClear.width / 2) + i, y - (TileClear.height) + j].ClearTile();
+                        WorldGen.PlaceTile(x - (TileClear.width / 2) + i, y - (TileClear.height)  + j, ModContent.TileType<CastlePlatform>(), false, true);
+                        //WorldGen.KillTile(x - (TileClear.width / 2) + i, y - (TileClear.height) + j, true);
+                    }
+                }
+            }
             /*WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
@@ -172,7 +189,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             tile = Main.tile[x - (TileClear.width / 2) + 93, y - (TileClear.height) + 28]; tile.Slope = SlopeType.SlopeUpLeft;
             tile = Main.tile[x - (TileClear.width / 2) + 92, y - (TileClear.height) + 27]; tile.Slope = SlopeType.SlopeUpLeft;*/
 
-            Main.tile[x - (TileClear.width / 2) + 67, y - (TileClear.height) + 23].ClearTile();
+            /*Main.tile[x - (TileClear.width / 2) + 67, y - (TileClear.height) + 23].ClearTile();
             Main.tile[x - (TileClear.width / 2) + 68, y - (TileClear.height) + 22].ClearTile();
             Main.tile[x - (TileClear.width / 2) + 69, y - (TileClear.height) + 21].ClearTile();
             Main.tile[x - (TileClear.width / 2) + 70, y - (TileClear.height) + 20].ClearTile();
@@ -200,7 +217,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             WorldGen.SlopeTile(x - (TileClear.width / 2) + 95, y + 29 - (TileClear.height), 1);
             WorldGen.SlopeTile(x - (TileClear.width / 2) + 94, y + 28 - (TileClear.height), 1);
             WorldGen.SlopeTile(x - (TileClear.width / 2) + 93, y + 27 - (TileClear.height), 1);
-            WorldGen.SlopeTile(x - (TileClear.width / 2) + 92, y + 26 - (TileClear.height), 1);
+            WorldGen.SlopeTile(x - (TileClear.width / 2) + 92, y + 26 - (TileClear.height), 1);*/
 
             // 68, 24
             //Tile tile = Framing.GetTileSafely(x - (TileClear.width / 2) + 67, y + 23 - (TileClear.height));
