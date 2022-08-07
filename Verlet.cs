@@ -200,8 +200,6 @@ namespace OvermorrowMod
 
         public static VerletPoint[] SimulateVerlet(VerletPoint[] points, VerletStick[] sticks, Vector2 down, float delta, int depth = 10, float gravity = 100f, bool wind = true)
         {
-            Main.NewText("simulating");
-
             // Simulate the movement of the points if the point isn't locked in place
             foreach (VerletPoint p in points)
             {
@@ -237,8 +235,6 @@ namespace OvermorrowMod
 
         public static void DrawVerlet(VerletPoint[] points, SpriteBatch spriteBatch)
         {
-            Main.NewText("drawing");
-
             foreach (VerletPoint point in points)
             {
                 if (point.connections == null) continue;
@@ -251,5 +247,18 @@ namespace OvermorrowMod
             }
         }
 
+        public static void DrawVerlet(VerletPoint[] points)
+        {
+            foreach (VerletPoint point in points)
+            {
+                if (point.connections == null) continue;
+
+                foreach (VerletPoint p2 in point.connections)
+                {
+                    Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
+                    Main.EntitySpriteDraw(texture, point.position - Main.screenPosition, null, Color.White, point.position.DirectionTo(p2.position).ToRotation() + MathHelper.PiOver2, texture.Size() / 2, 1f, SpriteEffects.None, 1);
+                }
+            }
+        }
     }
 }

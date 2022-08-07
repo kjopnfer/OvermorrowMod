@@ -50,13 +50,15 @@ namespace OvermorrowMod.Content.Tiles
             PairedBlock = tag.Get<int>("PairedBlock");
         }
 
-        int counter;
         public override void Update()
         {
             if (BlockID != 0 && BlockID % 2 == 1)
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
                 points = Verlet.SimulateVerlet(points, sticks, new Vector2(0, 1), 0.07f, 10, 100f);
                 Verlet.DrawVerlet(points, Main.spriteBatch);
+
+                Main.spriteBatch.End();
             }
         }
 
