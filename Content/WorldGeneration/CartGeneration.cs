@@ -88,7 +88,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(84, 68, 55)] = TileID.ClayBlock,
                 [new Color(128, 128, 128)] = TileID.Stone,
                 [new Color(110, 113, 117)] = TileID.StoneSlab,
-                [new Color(105, 99, 94)] = TileID.GrayBrick,
+                [new Color(105, 99, 94)] = ModContent.TileType<CastleBrick>(),
                 [new Color(117, 70, 46)] = ModContent.TileType<CastleRoof>(),
                 //[new Color(93, 70, 52)] = ModContent.TileType<PlaceholderPlatform>(),
                 [new Color(69, 87, 78)] = TileID.EbonstoneBrick,
@@ -182,15 +182,15 @@ namespace OvermorrowMod.Content.WorldGeneration
             Main.tile[x - (TileClear.width / 2) + 93, y - (TileClear.height) + 27].ClearTile();
             Main.tile[x - (TileClear.width / 2) + 92, y - (TileClear.height) + 26].ClearTile();
 
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 67, y - (TileClear.height) + 23, TileID.Platforms, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 68, y - (TileClear.height) + 22, TileID.Platforms, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 69, y - (TileClear.height) + 21, TileID.Platforms, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 70, y - (TileClear.height) + 20, TileID.Platforms, false, true);
-                                                                                            
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 95, y - (TileClear.height) + 29, TileID.Platforms, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 94, y - (TileClear.height) + 28, TileID.Platforms, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 93, y - (TileClear.height) + 27, TileID.Platforms, false, true);
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 92, y - (TileClear.height) + 26, TileID.Platforms, false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 67, y - (TileClear.height) + 23, ModContent.TileType<CastlePlatform>(), false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 68, y - (TileClear.height) + 22, ModContent.TileType<CastlePlatform>(), false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 69, y - (TileClear.height) + 21, ModContent.TileType<CastlePlatform>(), false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 70, y - (TileClear.height) + 20, ModContent.TileType<CastlePlatform>(), false, true);
+
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 95, y - (TileClear.height) + 29, ModContent.TileType<CastlePlatform>(), false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 94, y - (TileClear.height) + 28, ModContent.TileType<CastlePlatform>(), false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 93, y - (TileClear.height) + 27, ModContent.TileType<CastlePlatform>(), false, true);
+            WorldGen.PlaceTile(x - (TileClear.width / 2) + 92, y - (TileClear.height) + 26, ModContent.TileType<CastlePlatform>(), false, true);
 
             WorldGen.SlopeTile(x - (TileClear.width / 2) + 67, y + 23 - (TileClear.height), 2);
             WorldGen.SlopeTile(x - (TileClear.width / 2) + 68, y + 22 - (TileClear.height), 2);
