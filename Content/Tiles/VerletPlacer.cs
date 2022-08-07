@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
+using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Enums;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
@@ -18,7 +20,7 @@ namespace OvermorrowMod.Content.Tiles
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
 
-            TileObjectData.newTile.UsesCustomCanPlace = true;
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<VerletPlacerTE>().Hook_AfterPlacement, -1, 0, true);
             TileObjectData.addTile(Type);
 
@@ -32,8 +34,8 @@ namespace OvermorrowMod.Content.Tiles
         public int BlockID;
         public int PairedBlock;
 
-        public VerletPoint[] points;
-        public VerletStick[] sticks;
+        public VerletPoint[] points = null;
+        public VerletStick[] sticks = null;
 
         public override void SaveData(TagCompound tag)
         {
@@ -48,16 +50,20 @@ namespace OvermorrowMod.Content.Tiles
             PairedBlock = tag.Get<int>("PairedBlock");
         }
 
+        int counter;
         public override void Update()
         {
-            //points = Verlet.SimulateVerlet(points, sticks, new Vector2(0, 1), 0.07f, 10, 100f);
-            //Verlet.DrawVerlet(points, Main.spriteBatch);
+            if (BlockID != 0 && BlockID % 2 == 1)
+            {
+                points = Verlet.SimulateVerlet(points, sticks, new Vector2(0, 1), 0.07f, 10, 100f);
+                Verlet.DrawVerlet(points, Main.spriteBatch);
+            }
         }
 
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
         {
             int id = Place(i, j);
-            /*VerletPlacerTE te = ByID[id] as VerletPlacerTE;
+            VerletPlacerTE te = ByID[id] as VerletPlacerTE;
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Chains + "Bones").Value;
 
@@ -79,13 +85,16 @@ namespace OvermorrowMod.Content.Tiles
                     if (ByID.TryGetValue(x, out entity))
                     {
                         // Check if it is the matching tile entity
-                        if (entity != null && entity is VerletPlacerTE tunnel && tunnel.PairedBlock == BlockID && PairedBlock == tunnel.BlockID)
+                        if (entity != null && entity is VerletPlacerTE tile && tile.PairedBlock == te.BlockID && te.PairedBlock == tile.BlockID)
                         {
-                            //points = Verlet.GenerateVerlet(texture, new Vector2(i, j), tunnel.Position.ToWorldCoordinates(16, 16), true, true);
+                            Main.NewText("i generated verlet");
+
+                            te.points = Verlet.GenerateVerlet(texture, te.Position.ToWorldCoordinates(16, 16), tile.Position.ToWorldCoordinates(16, 16), true, true);
+                            te.sticks = Verlet.GetVerletSticks(te.points);
                         }
                     }
                 }
-            }*/
+            }
 
             return id;
         }

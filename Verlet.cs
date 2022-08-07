@@ -200,6 +200,8 @@ namespace OvermorrowMod
 
         public static VerletPoint[] SimulateVerlet(VerletPoint[] points, VerletStick[] sticks, Vector2 down, float delta, int depth = 10, float gravity = 100f, bool wind = true)
         {
+            Main.NewText("simulating");
+
             // Simulate the movement of the points if the point isn't locked in place
             foreach (VerletPoint p in points)
             {
@@ -235,6 +237,8 @@ namespace OvermorrowMod
 
         public static void DrawVerlet(VerletPoint[] points, SpriteBatch spriteBatch)
         {
+            Main.NewText("drawing");
+
             foreach (VerletPoint point in points)
             {
                 if (point.connections == null) continue;
