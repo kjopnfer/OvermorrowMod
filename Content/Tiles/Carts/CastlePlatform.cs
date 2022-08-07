@@ -30,6 +30,7 @@ namespace OvermorrowMod.Content.Tiles.Carts
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsDoor);
             AddMapEntry(new Color(93, 70, 52));
 
+            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.CastlePlatform>();
             AdjTiles = new int[] { TileID.Platforms };
         }
     }
