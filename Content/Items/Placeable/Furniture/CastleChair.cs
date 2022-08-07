@@ -1,17 +1,14 @@
-using OvermorrowMod.Content.Tiles.Carts;
-using OvermorrowMod.Core;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
+using Block = OvermorrowMod.Content.Tiles.Carts.CastleChair;
 
-namespace OvermorrowMod.Content.Items.Placeable
+namespace OvermorrowMod.Content.Items.Placeable.Furniture
 {
-    public class TestPlaceable : ModItem
+    public class CastleChair : ModItem
     {
-        public override string Texture => AssetDirectory.Textures + "ChainKnife";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Test Placeable");
+            DisplayName.SetDefault("Castle Chair");
         }
 
         public override void SetDefaults()
@@ -26,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Placeable
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = 2000;
-            Item.createTile = ModContent.TileType<JunkPile>();
+            Item.createTile = ModContent.TileType<Block>();
         }
     }
 }
