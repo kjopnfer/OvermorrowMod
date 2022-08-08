@@ -8,14 +8,90 @@ using Terraria.UI;
 using Terraria.GameInput;
 using Terraria.GameContent.UI.Elements;
 using ReLogic.Content;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
     public class DialogueState : UIState
     {
+        private UIElement DialogueBox;
+        private UIText Dialogue;
+        public UIImage BackDrop;
+
+        private int DialogueTimer;
+        private int SecondaryTimer;
+
         public override void OnInitialize()
         {
-            base.OnInitialize();
+            DialogueBox = new UIElement();
+            DialogueBox.Width.Set(600f, 0f);
+            DialogueBox.HAlign = .5f;
+            DialogueBox.Top.Set(169, 0f);
+
+            BackDrop = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag").Value);
+            BackDrop.Left.Set(0, 0f);
+            BackDrop.Top.Set(0, 0f);
+
+            Dialogue = new UIText("", 1f);
+            Dialogue.Top.Set(14, 0f);
+            Dialogue.Left.Set(163, 0f);
+
+            DialogueBox.Append(BackDrop);
+            DialogueBox.Append(Dialogue);
+            Append(DialogueBox);
+        }
+
+        // This determines whether the UI is shown or not
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (Main.LocalPlayer.GetModPlayer<DialoguePlayer>().DialogueList.Count > 0)
+            {
+                BackDrop.Draw(spriteBatch);
+                Dialogue.Draw(spriteBatch);
+            }
+
+            /*int xPosition = (int)(Main.screenWidth * Main.UIScale) / 2;
+            int yPosition = Main.screenHeight - 100;
+
+            Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag").Value;
+            spriteBatch.Draw(backDrop, new Vector2(xPosition + 65, yPosition), null, Color.White, 0f, backDrop.Size() / 2, 1f, SpriteEffects.None, 1f);
+
+            base.Draw(spriteBatch);*/
+        }
+
+        // This handles the dialogue that the player has, if it detects that the player has new dialogue then it starts drawing it
+        public override void Update(GameTime gameTime)
+        {
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+
+            if (player.DialogueList.Count > 0)
+            {
+                // Draw out the entire dialogue or something
+                if (DialogueTimer++ < player.DialogueList[0].drawTime)
+                {
+                    Dialogue.SetText(player.DialogueList[0].displayText);
+                }
+                else // Hold the dialogue for the amount of time specified
+                {
+                    Main.NewText("HOLD" + SecondaryTimer);
+                    if (SecondaryTimer++ <= player.DialogueList[0].showTime)
+                    {
+                        Dialogue.SetText(player.DialogueList[0].displayText);
+
+                        // Remove the dialogue from the list and reset counters
+                        if (SecondaryTimer == player.DialogueList[0].showTime)
+                        {
+                            Main.NewText("REMOVED");
+
+                            player.DialogueList.RemoveAt(0);
+                            DialogueTimer = 0;
+                            SecondaryTimer = 0;
+                        }
+                    }
+                }
+            }
+
+            base.Update(gameTime);
         }
     }
 }
