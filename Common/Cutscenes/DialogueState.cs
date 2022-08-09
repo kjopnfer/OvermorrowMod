@@ -15,6 +15,7 @@ namespace OvermorrowMod.Common.Cutscenes
     public class DialogueState : UIState
     {
         private UIElement DialogueBox;
+        private UIText Name;
         private UIText Dialogue;
         public UIImage BackDrop;
 
@@ -32,11 +33,16 @@ namespace OvermorrowMod.Common.Cutscenes
             BackDrop.Left.Set(0, 0f);
             BackDrop.Top.Set(0, 0f);
 
+            Name = new UIText("", 1f);
+            Name.Top.Set(20, 0f);
+            Name.Left.Set(130, 0f);
+
             Dialogue = new UIText("", 1f);
-            Dialogue.Top.Set(14, 0f);
+            Dialogue.Top.Set(60, 0f);
             Dialogue.Left.Set(143, 0f);
 
             DialogueBox.Append(BackDrop);
+            DialogueBox.Append(Name);
             DialogueBox.Append(Dialogue);
             Append(DialogueBox);
         }
@@ -47,6 +53,7 @@ namespace OvermorrowMod.Common.Cutscenes
             if (Main.LocalPlayer.GetModPlayer<DialoguePlayer>().DialogueList.Count > 0)
             {
                 BackDrop.Draw(spriteBatch);
+                Name.Draw(spriteBatch);
                 Dialogue.Draw(spriteBatch);
             }
 
@@ -66,6 +73,9 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (player.DialogueList.Count > 0)
             {
+                Name.SetText(player.DialogueList[0].speakerName);
+                Name.TextColor = player.DialogueList[0].speakerColor;
+
                 // Draw out the entire dialogue or something
                 if (DialogueTimer++ < player.DialogueList[0].drawTime)
                 {

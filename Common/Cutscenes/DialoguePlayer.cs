@@ -17,21 +17,27 @@ namespace OvermorrowMod.Common.Cutscenes
     // Dialogue should be able to be cleared and then a new one added if it is urgent
     public class Dialogue
     {
+        public string speakerName;
         public string displayText;
         public int drawTime;
         public int showTime;
 
+        public Color speakerColor;
+
         /// <summary>
         /// Used to store information about a dialogue object
         /// </summary>
+        /// <param name="speakerName">The name of the speaker</param>
         /// <param name="displayText">The text to be displayed</param>
         /// <param name="drawTime">The amount of time it takes to completely draw the text</param>
         /// <param name="showTime">How long the text remains on screen after fully drawing</param>
-        public Dialogue(string displayText, int drawTime, int showTime)
+        public Dialogue(string speakerName, string displayText, int drawTime, int showTime, Color speakerColor)
         {
+            this.speakerName = speakerName;
             this.displayText = displayText;
             this.drawTime = drawTime;
             this.showTime = showTime;
+            this.speakerColor = speakerColor;
         }
     }
 
@@ -40,7 +46,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public List<Dialogue> DialogueList = new List<Dialogue>();
         public bool ShowDialogue = false;
 
-        public void AddDialogue(string displayText, int drawtime, int showTime)
+        public void AddDialogue(string speakerName, string displayText, int drawtime, int showTime, Color speakerColor)
         {
             ShowDialogue = true;
 
@@ -65,7 +71,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
             }
 
-            DialogueList.Add(new Dialogue(stringBuilder.ToString(), drawtime, showTime));
+            DialogueList.Add(new Dialogue(speakerName, stringBuilder.ToString(), drawtime, showTime, speakerColor));
         }
     }
 }
