@@ -8,6 +8,8 @@ using Terraria.UI;
 using Terraria.GameInput;
 using Terraria.GameContent.UI.Elements;
 using ReLogic.Content;
+using System;
+using System.Text;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -41,7 +43,29 @@ namespace OvermorrowMod.Common.Cutscenes
         public void AddDialogue(string displayText, int drawtime, int showTime)
         {
             ShowDialogue = true;
-            DialogueList.Add(new Dialogue(displayText, drawtime, showTime));
+
+            // Process the display text
+            const int MAX_CHARACTERS = 40;
+            string[] words = displayText.Split(new string[] { " " }, StringSplitOptions.None);
+            var stringBuilder = new StringBuilder();
+
+            int characterCount = 0;
+            foreach (string word in words)
+            {
+                // We add +1 to the words to account for the spaces inbetween words.
+                if (characterCount + word.Length + 1 > MAX_CHARACTERS) // We've reached the maximum limit of characters so we enter a new line
+                {
+                    stringBuilder.Append("\n" + word + " ");
+                    characterCount = 0;
+                }
+                else
+                {
+                    characterCount += word.Length + 1;
+                    stringBuilder.Append(word + " ");
+                }
+            }
+
+            DialogueList.Add(new Dialogue(stringBuilder.ToString(), drawtime, showTime));
         }
     }
 }

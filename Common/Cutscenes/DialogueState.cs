@@ -28,13 +28,13 @@ namespace OvermorrowMod.Common.Cutscenes
             DialogueBox.HAlign = .5f;
             DialogueBox.Top.Set(169, 0f);
 
-            BackDrop = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag").Value);
+            BackDrop = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag"));
             BackDrop.Left.Set(0, 0f);
             BackDrop.Top.Set(0, 0f);
 
             Dialogue = new UIText("", 1f);
             Dialogue.Top.Set(14, 0f);
-            Dialogue.Left.Set(163, 0f);
+            Dialogue.Left.Set(143, 0f);
 
             DialogueBox.Append(BackDrop);
             DialogueBox.Append(Dialogue);
