@@ -69,11 +69,12 @@ namespace OvermorrowMod.Common.Cutscenes
                 // Draw out the entire dialogue or something
                 if (DialogueTimer++ < player.DialogueList[0].drawTime)
                 {
-                    Dialogue.SetText(player.DialogueList[0].displayText);
+                    int progress = (int)MathHelper.Lerp(0, player.DialogueList[0].displayText.Length, DialogueTimer / (float)player.DialogueList[0].drawTime);
+                    Dialogue.SetText(player.DialogueList[0].displayText.Substring(0, progress));
                 }
                 else // Hold the dialogue for the amount of time specified
                 {
-                    Main.NewText("HOLD" + SecondaryTimer);
+                    //Main.NewText("HOLD" + SecondaryTimer);
                     if (SecondaryTimer++ <= player.DialogueList[0].showTime)
                     {
                         Dialogue.SetText(player.DialogueList[0].displayText);

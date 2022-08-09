@@ -32,27 +32,27 @@ namespace OvermorrowMod.Content.Projectiles
             if (Projectile.ai[0]++ == 0)
             {
                 Main.NewText("a");
-                player.AddDialogue("here", 60, 120);
+                player.AddDialogue("Do you enjoy going through hell?", 60, 120);
             }
             else if (Projectile.ai[0] == 60)
             {
                 Main.NewText("b");
-                player.AddDialogue("come", 60, 120);
+                player.AddDialogue("You've harnessed great power, but you wield it for no one but yourself.", 60, 120);
             }
             else if (Projectile.ai[0] == 120)
             {
                 Main.NewText("c");
-                player.AddDialogue("the", 60, 120);
+                player.AddDialogue("Once the dust has settled and only one remains, if it is you, what value will this have had?!", 60, 120);
             }
             else if (Projectile.ai[0] == 180)
             {
                 Main.NewText("d");
-                player.AddDialogue("big", 60, 120);
+                player.AddDialogue("An upstart who recklessly stole and killed their way to power. I wonder, who does that remind me of...?", 60, 120);
             }
             else if (Projectile.ai[0] == 240)
             {
                 Main.NewText("e");
-                player.AddDialogue("ass", 60, 120);
+                player.AddDialogue("You have no stake in this battle. No one gave you any say in this matter!", 60, 120);
             }
         }
 
