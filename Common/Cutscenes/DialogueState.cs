@@ -79,6 +79,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 // Draw out the entire dialogue or something
                 if (DialogueTimer++ < player.DialogueList[0].drawTime)
                 {
+                    // We need to detect if any color coded text is present, if it is then skip forward by the progression
                     int progress = (int)MathHelper.Lerp(0, player.DialogueList[0].displayText.Length, DialogueTimer / (float)player.DialogueList[0].drawTime);
                     Dialogue.SetText(player.DialogueList[0].displayText.Substring(0, progress));
                 }

@@ -54,6 +54,10 @@ namespace OvermorrowMod.Content.Projectiles
                 Main.NewText("e");
                 player.AddDialogue("its ya boi", "You have no stake in this battle. No one gave you any say in this matter!", 60, 120, Color.Orange);
             }
+            else if(Projectile.ai[0] == 300)
+            {
+                player.AddDialogue("its ya boi", "Look [c/34C9EB:this text is blue.] but only after it renders...", 60, 120, Color.Orange);
+            }
         }
 
         public override void Kill(int timeLeft)
