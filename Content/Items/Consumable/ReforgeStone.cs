@@ -1,0 +1,90 @@
+using Microsoft.Xna.Framework;
+using System;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using Terraria.Utilities;
+
+namespace OvermorrowMod.Content.Items.Consumable
+{
+    public class ReforgeStone : ModItem
+    {
+        public override bool CanRightClick() => true;
+        public override bool CanStack(Item item2) => false;
+        public override bool CanUseItem(Player player) => false;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Melee Reforge Stone");
+            ItemID.Sets.CanGetPrefixes[Type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            Item.width = Item.height = 22;
+            Item.damage = 10;
+            Item.knockBack = 5f;
+            Item.crit = 32;
+            Item.useAnimation = Item.useTime = 10;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.shootSpeed = 1f;
+            Item.consumable = false;
+            Item.rare = ItemRarityID.Green;
+            Item.DamageType = DamageClass.Melee;
+        }
+
+        public static int[] meleePrefixes = new int[] {
+            PrefixID.Savage, PrefixID.Legendary, PrefixID.Murderous, PrefixID.Deadly,
+            PrefixID.Godly, PrefixID.Demonic, PrefixID.Superior, PrefixID.Unpleasant };
+
+        // Bro I don't even know why I need to do this, Prefix(-1) just doesn't wanna work half the time
+        public static int GetRandomPrefix()
+        {
+            return meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)];
+        }
+
+        public override void RightClick(Player player)
+        {
+            base.RightClick(player);
+        }
+
+        public override int ChoosePrefix(UnifiedRandom rand)
+        {
+            return GetRandomPrefix();
+        }
+
+        public override bool OnPickup(Player player)
+        {
+            //Item.Prefix(0);
+            //Item.Prefix(meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)]);
+            //Item.prefix = PrefixID.Deranged;
+            return base.OnPickup(player);
+        }
+
+        /*private static readonly int[] unwantedPrefixes = new int[] { 
+            PrefixID.Large, PrefixID.Dangerous, PrefixID.Sharp, PrefixID.Pointy, PrefixID.Tiny, PrefixID.Terrible, PrefixID.Small,
+            PrefixID.Dull, PrefixID.Unhappy, PrefixID.Bulky, PrefixID.Shameful, PrefixID.Heavy, PrefixID.Light, PrefixID.Keen, 
+            PrefixID.Forceful, PrefixID.Broken, PrefixID.Damaged, PrefixID.Shoddy, PrefixID.Hurtful, PrefixID.Strong, PrefixID.Weak, 
+            PrefixID.Zealous, PrefixID.Quick, PrefixID.Agile, PrefixID.Nimble, PrefixID.Slow, PrefixID.Sluggish, PrefixID.Lazy, 
+            PrefixID.Annoying, PrefixID.Nasty };
+
+        public override bool AllowPrefix(int pre)
+        {
+            if (Array.IndexOf(unwantedPrefixes, pre) > -1)
+            {
+                return false;
+            }
+
+            return true;
+        }*/
+
+        public override bool? PrefixChance(int pre, UnifiedRandom rand)
+        {
+            if (pre == -3) return false;
+            //if (pre == -1) return true;
+
+            return base.PrefixChance(pre, rand);
+        }
+    }
+}

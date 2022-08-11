@@ -1,3 +1,5 @@
+using OvermorrowMod.Content.Items.Consumable;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -6,6 +8,20 @@ namespace OvermorrowMod.Common
 {
     public class OvermorrowGlobalItem : GlobalItem
     {
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            if (item.type == ModContent.ItemType<ReforgeStone>()) {
+                for (int lines = 0; lines < tooltips.Count; lines++)
+                {
+                    if (tooltips[lines].Name == "Damage") tooltips.RemoveAt(lines);
+                    if (tooltips[lines].Name == "CritChance") tooltips.RemoveAt(lines);
+                    if (tooltips[lines].Name == "Speed") tooltips.RemoveAt(lines);
+                    if (tooltips[lines].Name == "Knockback") tooltips.RemoveAt(lines);
+                }
+            }
+
+            base.ModifyTooltips(item, tooltips);
+        }
 
         public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage)
         {

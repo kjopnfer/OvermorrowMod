@@ -13,6 +13,8 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using OvermorrowMod.Content.Items.Consumable;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Common
 {
@@ -172,6 +174,29 @@ namespace OvermorrowMod.Common
             DashType = 0;
         }
 
+        public override void OnEnterWorld(Player player)
+        {
+            List<int> prefixList = new List<int> { 
+                PrefixID.Massive, PrefixID.Savage, PrefixID.Rapid, PrefixID.Hasty, PrefixID.Intimidating, 
+                PrefixID.Deadly, PrefixID.Staunch, PrefixID.Mystic, PrefixID.Masterful, PrefixID.Celestial,
+                PrefixID.Superior, PrefixID.Deadly, PrefixID.Murderous, PrefixID.Unpleasant, PrefixID.Godly, 
+                PrefixID.Demonic, PrefixID.Legendary, PrefixID.Unreal, PrefixID.Mythical };
+
+           
+            int item = Item.NewItem(null, player.Center, ModContent.ItemType<ReforgeStone>());
+            Main.item[item].Prefix(ReforgeStone.GetRandomPrefix());
+
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<ReforgeStone>());
+            Main.item[item].Prefix(ReforgeStone.GetRandomPrefix());
+
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<ReforgeStone>());
+            Main.item[item].Prefix(ReforgeStone.GetRandomPrefix());
+
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<ReforgeStone>());
+            Main.item[item].Prefix(ReforgeStone.GetRandomPrefix());
+
+            base.OnEnterWorld(player);
+        }
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
         {
             if (BMSet && item.DamageType == DamageClass.Melee)
