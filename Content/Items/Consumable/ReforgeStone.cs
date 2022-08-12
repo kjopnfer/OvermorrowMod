@@ -14,6 +14,7 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override bool CanRightClick() => true;
         public override bool CanStack(Item item2) => false;
         public override bool CanUseItem(Player player) => false;
+        public override bool ConsumeItem(Player player) => false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Melee Reforge Stone");
@@ -29,7 +30,7 @@ namespace OvermorrowMod.Content.Items.Consumable
             Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shootSpeed = 1f;
-            Item.consumable = false;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Green;
             Item.DamageType = DamageClass.Melee;
         }
@@ -38,10 +39,47 @@ namespace OvermorrowMod.Content.Items.Consumable
             PrefixID.Savage, PrefixID.Legendary, PrefixID.Murderous, PrefixID.Deadly,
             PrefixID.Godly, PrefixID.Demonic, PrefixID.Superior, PrefixID.Unpleasant };
 
+        public static int[] knockbackPrefixes = new int[] {
+            PrefixID.Savage, PrefixID.Legendary, PrefixID.Godly, PrefixID.Superior, PrefixID.Unpleasant };
+
+        public static int[] critPrefixes = new int[] {
+            PrefixID.Legendary, PrefixID.Murderous, PrefixID.Godly, PrefixID.Demonic, PrefixID.Superior };
+
         // Bro I don't even know why I need to do this, Prefix(-1) just doesn't wanna work half the time
         public static int GetRandomPrefix()
         {
             return meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)];
+        }
+
+        public override void UpdateInventory(Player player)
+        {
+            if (/*player.inventory[58].type == Item.type && */Main.mouseItem.type == Item.type)
+            {
+
+                //Main.NewText("ITS HERE");
+                if (Main.mouseRight)
+                {
+                    if (Main.HoverItem.DamageType == DamageClass.Melee)
+                    {
+                        //Main.NewText("i am RIGHT CLICKING while being HLEd OVER AN ITEM");
+                    }
+                }
+            }
+
+            /*foreach (Item playerItem in player.inventory)
+            {
+                if (Item.getRect().Intersects(playerItem.getRect()) && playerItem.type != ModContent.ItemType<ReforgeStone>()
+                    && playerItem.DamageType == DamageClass.Melee)
+                {
+                    //Main.NewText("holy SHIT");
+                }
+
+                if (playerItem.DamageType == DamageClass.Melee)
+                {
+
+                }
+            }*/
+            base.UpdateInventory(player);
         }
 
         public override void RightClick(Player player)
@@ -52,14 +90,6 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override int ChoosePrefix(UnifiedRandom rand)
         {
             return GetRandomPrefix();
-        }
-
-        public override bool OnPickup(Player player)
-        {
-            //Item.Prefix(0);
-            //Item.Prefix(meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)]);
-            //Item.prefix = PrefixID.Deranged;
-            return base.OnPickup(player);
         }
 
         /*private static readonly int[] unwantedPrefixes = new int[] { 
