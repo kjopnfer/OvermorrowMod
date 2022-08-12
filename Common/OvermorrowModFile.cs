@@ -14,6 +14,9 @@ using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+//Mercenaries
+using OvermorrowMod.Content.NPCs.Mercenary;
+using OvermorrowMod.Content.NPCs.Mercenary.Paladin;
 
 namespace OvermorrowMod.Common
 {
@@ -39,7 +42,12 @@ namespace OvermorrowMod.Common
         public Asset<Texture2D> BlurTestTexture;
 
         public static List<Asset<Texture2D>> TrailTextures;
-
+        //Mercenaries
+        internal List<MercenaryDrawHelper> drawHelpers = new List<MercenaryDrawHelper>();
+        public override void PostSetupContent()
+        {
+            drawHelpers.Add(new PaladinDrawHelper());
+        }
         public override void Load()
         {
             //Terraria.ModLoader.IO.TagSerializer.AddSerializer(new VectorSerializer());
