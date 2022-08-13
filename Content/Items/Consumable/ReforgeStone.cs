@@ -18,6 +18,7 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Melee Reforge Stone");
+            Tooltip.SetDefault("Used to apply modifiers to Melee weapons");
             ItemID.Sets.CanGetPrefixes[Type] = true;
         }
 
@@ -49,42 +50,6 @@ namespace OvermorrowMod.Content.Items.Consumable
         public static int GetRandomPrefix()
         {
             return meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)];
-        }
-
-        public override void UpdateInventory(Player player)
-        {
-            if (/*player.inventory[58].type == Item.type && */Main.mouseItem.type == Item.type)
-            {
-
-                //Main.NewText("ITS HERE");
-                if (Main.mouseRight)
-                {
-                    if (Main.HoverItem.DamageType == DamageClass.Melee)
-                    {
-                        //Main.NewText("i am RIGHT CLICKING while being HLEd OVER AN ITEM");
-                    }
-                }
-            }
-
-            /*foreach (Item playerItem in player.inventory)
-            {
-                if (Item.getRect().Intersects(playerItem.getRect()) && playerItem.type != ModContent.ItemType<ReforgeStone>()
-                    && playerItem.DamageType == DamageClass.Melee)
-                {
-                    //Main.NewText("holy SHIT");
-                }
-
-                if (playerItem.DamageType == DamageClass.Melee)
-                {
-
-                }
-            }*/
-            base.UpdateInventory(player);
-        }
-
-        public override void RightClick(Player player)
-        {
-            base.RightClick(player);
         }
 
         public override int ChoosePrefix(UnifiedRandom rand)
