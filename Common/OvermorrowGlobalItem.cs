@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Core;
 using System;
@@ -17,22 +18,6 @@ namespace OvermorrowMod.Common
 
         public int warningDelay = 0;
         public float reforgeAnimation = 0;
-
-        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
-        {
-            if (item.type == ModContent.ItemType<ReforgeStone>())
-            {
-                for (int lines = 0; lines < tooltips.Count; lines++)
-                {
-                    if (tooltips[lines].Name == "Damage") tooltips.RemoveAt(lines);
-                    if (tooltips[lines].Name == "CritChance") tooltips.RemoveAt(lines);
-                    if (tooltips[lines].Name == "Speed") tooltips.RemoveAt(lines);
-                    if (tooltips[lines].Name == "Knockback") tooltips.RemoveAt(lines);
-                }
-            }
-
-            base.ModifyTooltips(item, tooltips);
-        }
 
         public override bool ConsumeItem(Item item, Player player)
         {
@@ -83,7 +68,7 @@ namespace OvermorrowMod.Common
                         item.SetDefaults(item.type); // Reset the item to prevent stacking
                         item.Prefix(0);
                         item.Prefix(Main.mouseItem.prefix);
-                        item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation = 30;
+                        item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation = 40;
 
                         Main.mouseItem.TurnToAir();
                     }
@@ -93,10 +78,54 @@ namespace OvermorrowMod.Common
             return base.CanRightClick(item);
         }
 
+        TParticleSystem sys = new();
         public override bool PreDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             if (reforgeAnimation > 0)
             {
+                // Spawn the particles once
+                if (reforgeAnimation == 40)
+                {
+                    int maxIterations = 6;
+                    for (int i = 0; i < maxIterations; i++)
+                    {
+                        sys.CreateParticle(Main.rand.NextVector2FromRectangle(frame), Vector2.One.RotatedBy(MathHelper.TwoPi / maxIterations * i) * 0.5f, Main.hslToRgb(Main.rand.NextFloat(0, 1), 1f, 0.9f), (part) =>
+                        {
+                            if (part.ai[0] >= 40)
+                            {
+                                part.dead = true;
+                            }
+                            else
+                            {
+                                part.ai[0]++;
+                                part.position += part.velocity;
+                                //part.position += part.velocity.RotatedBy(Math.PI / 2) * (float)Math.Sin(part.ai[0] * Math.PI / 10);
+                                part.alpha = (float)(Math.Sin((1f - part.ai[0] / 40) * Math.PI));
+                                part.scale = (1f - part.ai[0] / 40) * part.ai[1];
+                            }
+                        }, ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ProjectileID.StardustTowerMark).Value, (part, batch) =>
+                        {
+                            batch.Draw(part.texture, position + part.position, null, part.color * part.alpha, 0f,
+                                part.texture.Size() / 2, part.scale * 0.2f, SpriteEffects.None, 0f);
+                            batch.Reload(BlendState.Additive);
+                            Texture2D tex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
+                            batch.Draw(tex, position + part.position, null, Color.Orange * part.alpha * 0.7f, 0f,
+                                tex.Size() / 2, part.scale * 2.5f, SpriteEffects.None, 0f);
+                            batch.Draw(tex, position + part.position, null, part.color * part.alpha * 0.4f, 0f,
+                                tex.Size() / 2, part.scale * 5f, SpriteEffects.None, 0f);
+                            batch.Reload(BlendState.AlphaBlend);
+                        }, (part) =>
+                        {
+                            part.alpha = 1f;
+                            part.scale = 1f;
+                            part.ai[1] = Main.rand.NextFloat(0.2f, 0.3f);
+                        });
+                    }
+                }
+
+                sys.UpdateParticles();
+                sys.DrawParticles();
+
                 Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
@@ -115,6 +144,16 @@ namespace OvermorrowMod.Common
             }
 
             return base.PreDrawInInventory(item, spriteBatch, position, frame, drawColor, itemColor, origin, scale);
+        }
+
+        public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            if (reforgeAnimation > 0)
+            {
+                
+            }
+
+            base.PostDrawInInventory(item, spriteBatch, position, frame, drawColor, itemColor, origin, scale);
         }
 
         public override void UpdateInventory(Item item, Player player)

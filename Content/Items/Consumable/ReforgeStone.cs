@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -55,6 +56,19 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override int ChoosePrefix(UnifiedRandom rand)
         {
             return GetRandomPrefix();
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            for (int lines = 0; lines < tooltips.Count; lines++)
+            {
+                if (tooltips[lines].Name == "Damage") tooltips.RemoveAt(lines);
+                if (tooltips[lines].Name == "CritChance") tooltips.RemoveAt(lines);
+                if (tooltips[lines].Name == "Speed") tooltips.RemoveAt(lines);
+                if (tooltips[lines].Name == "Knockback") tooltips.RemoveAt(lines);
+            }
+
+            base.ModifyTooltips(tooltips);
         }
 
         /*private static readonly int[] unwantedPrefixes = new int[] { 
