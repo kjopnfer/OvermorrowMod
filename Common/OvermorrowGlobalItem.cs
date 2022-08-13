@@ -148,9 +148,22 @@ namespace OvermorrowMod.Common
 
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            if (reforgeAnimation > 0)
+            if (Main.mouseItem.type == ModContent.ItemType<ReforgeStone>())
             {
-                
+                if (item.DamageType == DamageClass.Melee && item.type != Main.mouseItem.type)
+                {
+
+                }
+                else
+                {
+                    //Main.LocalPlayer.inventory[58]
+                    if (item != Main.mouseItem)
+                    {
+                        Vector2 center = ModUtils.GetInventoryPosition(position, frame, origin, scale);
+                        Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "CrossedOut").Value;
+                        spriteBatch.Draw(texture, center, null, drawColor, 0, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
+                    }
+                }
             }
 
             base.PostDrawInInventory(item, spriteBatch, position, frame, drawColor, itemColor, origin, scale);
