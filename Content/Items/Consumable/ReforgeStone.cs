@@ -1,4 +1,6 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -69,6 +71,14 @@ namespace OvermorrowMod.Content.Items.Consumable
             }
 
             base.ModifyTooltips(tooltips);
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Content + "Items/Consumable/ReforgeStone_Dropped").Value;
+            spriteBatch.Draw(texture, Item.Center - Main.screenPosition, null, lightColor, rotation, texture.Size() / 2f, scale, SpriteEffects.None, 1);
+
+            return false;
         }
 
         /*private static readonly int[] unwantedPrefixes = new int[] { 
