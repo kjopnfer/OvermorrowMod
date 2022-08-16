@@ -29,49 +29,62 @@ namespace OvermorrowMod.Common
             return base.ConsumeItem(item, player);
         }
 
-        public override void RightClick(Item item, Player player)
-        {
-            if (Main.mouseItem.type == ModContent.ItemType<ReforgeStone>())
-            {
-                Main.NewText("AHHHHHHH");
-            }
-
-            base.RightClick(item, player);
-        }
-
         public override bool CanRightClick(Item item)
         {
-            if (Main.mouseItem.type == ModContent.ItemType<ReforgeStone>())
+            if (Main.mouseItem.ModItem is ReforgeStone)
             {
-                // Check if the prefix is even valid for the item
-                if (item.DamageType == DamageClass.Melee)
-                {
-                    // The item has a knockback prefix but it doesn't even have knockback
-                    if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.knockbackPrefixes, Main.mouseItem.prefix) > -1)
-                    {
-                        if (item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay == 0)
-                        {
-                            Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
-                            item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay = 120;
-                        }
-                    }
-                    /*else if (item.crit == 0 && Array.IndexOf(ReforgeStone.critPrefixes, Main.mouseItem.prefix) > -1)  // The item has a crit prefix but it doesn't even have critical strike chance
-                    {
-                        if (item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay == 0)
-                        {
-                            Main.NewText("This item has no critical strike chance to modify.", new Color(252, 86, 3));
-                            item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay = 120;
-                        }
-                    }*/
-                    else
-                    {
-                        item.SetDefaults(item.type); // Reset the item to prevent stacking
-                        item.Prefix(0);
-                        item.Prefix(Main.mouseItem.prefix);
-                        item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation = 40;
+                OvermorrowGlobalItem globalItem = item.GetGlobalItem<OvermorrowGlobalItem>();
+                bool canApply = true;
 
-                        Main.mouseItem.TurnToAir();
+                if (Main.mouseItem.ModItem is MeleeReforge stone)
+                {
+                    // Check if the prefix is even valid for the item
+                    if (item.DamageType == DamageClass.Melee)
+                    {
+                        // The item has a knockback prefix but it doesn't even have knockback
+                        if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.knockbackPrefixesMelee, Main.mouseItem.prefix) > -1)
+                        {
+                            if (globalItem.warningDelay == 0)
+                            {
+                                Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
+                                canApply = false;
+                                globalItem.warningDelay = 120;
+                            }
+                        }
+                        /*else if (item.crit == 0 && Array.IndexOf(ReforgeStone.critPrefixes, Main.mouseItem.prefix) > -1)  // The item has a crit prefix but it doesn't even have critical strike chance
+                        {
+                            if (item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay == 0)
+                            {
+                                Main.NewText("This item has no critical strike chance to modify.", new Color(252, 86, 3));
+                                item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay = 120;
+                            }
+                        }*/
+                        else if (stone.DPSCeiling > DPSCalculation(item) && stone.DPSFloor < DPSCalculation(item))
+                        {
+                            if (globalItem.warningDelay == 0)
+                            {
+                                Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
+                                canApply = false;
+                                globalItem.warningDelay = 120;
+                            }
+                        }
                     }
+                }
+                else if (Main.mouseItem.ModItem is RangedReforge)
+                {
+
+                }
+
+                if (canApply)
+                {
+                    item.SetDefaults(item.type); // Reset the item to prevent stacking
+                    item.Prefix(0);
+                    item.Prefix(Main.mouseItem.prefix);
+                    globalItem.reforgeAnimation = 40;
+
+                    Main.mouseItem.TurnToAir();
+
+                    Main.NewText(DPSCalculation(item));
                 }
             }
 
@@ -146,22 +159,40 @@ namespace OvermorrowMod.Common
             return base.PreDrawInInventory(item, spriteBatch, position, frame, drawColor, itemColor, origin, scale);
         }
 
+        private float DPSCalculation(Item item)
+        {
+            float numPerUse = item.useAnimation / item.useTime;
+
+            return (float)(item.damage * 60f / item.useTime) * (1 + item.crit / 100f);
+        }
+
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            if (Main.mouseItem.type == ModContent.ItemType<ReforgeStone>())
+            if (Main.mouseItem.type == ModContent.ItemType<MeleeReforge>())
             {
-                if (item.DamageType == DamageClass.Melee && item.type != Main.mouseItem.type)
+                if (item.DamageType == DamageClass.Melee && item.type != Main.mouseItem.type && DPSCalculation(item) < 50)
                 {
 
                 }
                 else
                 {
                     //Main.LocalPlayer.inventory[58]
-                    if (item != Main.mouseItem)
+                    if (item != Main.mouseItem || item.damage == 0)
                     {
-                        Vector2 center = ModUtils.GetInventoryPosition(position, frame, origin, scale);
-                        Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "CrossedOut").Value;
-                        spriteBatch.Draw(texture, center, null, drawColor, 0, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
+                        Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+                        Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                        float progress = 30f / 120f;
+                        effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
+                        effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+                        effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+                        spriteBatch.Draw(TextureAssets.Item[item.type].Value, position, frame, drawColor, 0, origin, scale, SpriteEffects.None, 1);
+
+                        Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+                        //Vector2 center = ModUtils.GetInventoryPosition(position, frame, origin, scale);
+                        //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "CrossedOut").Value;
+                        //spriteBatch.Draw(texture, center, null, drawColor, 0, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
                     }
                 }
             }

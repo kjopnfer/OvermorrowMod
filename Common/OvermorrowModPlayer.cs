@@ -183,17 +183,14 @@ namespace OvermorrowMod.Common
                 PrefixID.Demonic, PrefixID.Legendary, PrefixID.Unreal, PrefixID.Mythical };
 
            
-            int item = Item.NewItem(null, player.Center, ModContent.ItemType<ReforgeStone>());
-            Main.item[item].Prefix(ReforgeStone.GetRandomPrefix());
+            int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
+            //Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
 
-            item = Item.NewItem(null, player.Center, ModContent.ItemType<ReforgeStone>());
-            Main.item[item].Prefix(ReforgeStone.GetRandomPrefix());
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<RangedReforge>(), 1, false, -1);
+            //Main.item[item].Prefix(ReforgeStone.rangedPrefixes[Main.rand.Next(0, ReforgeStone.rangedPrefixes.Length)]);
 
-            item = Item.NewItem(null, player.Center, ModContent.ItemType<ReforgeStone>());
-            Main.item[item].Prefix(ReforgeStone.GetRandomPrefix());
-
-            item = Item.NewItem(null, player.Center, ModContent.ItemType<ReforgeStone>());
-            Main.item[item].Prefix(ReforgeStone.GetRandomPrefix());
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<MagicReforge>(), 1, false, -1);
+            //Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);
 
             base.OnEnterWorld(player);
         }

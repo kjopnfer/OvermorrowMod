@@ -12,18 +12,15 @@ using Terraria.Utilities;
 
 namespace OvermorrowMod.Content.Items.Consumable
 {
-    public class ReforgeStone : ModItem
+    public abstract class ReforgeStone : ModItem
     {
+        public int DPSFloor = 0;
+        public int DPSCeiling = 50;
         public override bool CanRightClick() => true;
         public override bool CanStack(Item item2) => false;
         public override bool CanUseItem(Player player) => false;
         public override bool ConsumeItem(Player player) => false;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Melee Reforge Stone");
-            Tooltip.SetDefault("Used to apply modifiers to Melee weapons");
-            ItemID.Sets.CanGetPrefixes[Type] = true;
-        }
+        public virtual string WorldTexture => AssetDirectory.Textures + "Items/Reforge_Dropped_1";
 
         public override void SetDefaults()
         {
@@ -36,29 +33,27 @@ namespace OvermorrowMod.Content.Items.Consumable
             Item.shootSpeed = 1f;
             Item.consumable = true;
             Item.rare = ItemRarityID.Green;
-            Item.DamageType = DamageClass.Melee;
         }
 
         public static int[] meleePrefixes = new int[] {
             PrefixID.Savage, PrefixID.Legendary, PrefixID.Murderous, PrefixID.Deadly,
             PrefixID.Godly, PrefixID.Demonic, PrefixID.Superior, PrefixID.Unpleasant };
 
-        public static int[] knockbackPrefixes = new int[] {
+        public static int[] knockbackPrefixesMelee = new int[] {
             PrefixID.Savage, PrefixID.Legendary, PrefixID.Godly, PrefixID.Superior, PrefixID.Unpleasant };
 
-        public static int[] critPrefixes = new int[] {
+        public static int[] critPrefixesMelee = new int[] {
             PrefixID.Legendary, PrefixID.Murderous, PrefixID.Godly, PrefixID.Demonic, PrefixID.Superior };
 
-        // Bro I don't even know why I need to do this, Prefix(-1) just doesn't wanna work half the time
-        public static int GetRandomPrefix()
+        public static int[] rangedPrefixes = new int[]
         {
-            return meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)];
-        }
+            PrefixID.Intimidating, PrefixID.Rapid, PrefixID.Hasty, PrefixID.Deadly2, PrefixID.Staunch, PrefixID.Unreal
+        };
 
-        public override int ChoosePrefix(UnifiedRandom rand)
+        public static int[] magicPrefixes = new int[]
         {
-            return GetRandomPrefix();
-        }
+            PrefixID.Mystic, PrefixID.Masterful, PrefixID.Celestial, PrefixID.Mythical
+        };
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -73,37 +68,84 @@ namespace OvermorrowMod.Content.Items.Consumable
             base.ModifyTooltips(tooltips);
         }
 
+        public override bool? PrefixChance(int pre, UnifiedRandom rand)
+        {
+            if (pre == -3) return false;
+
+            return base.PrefixChance(pre, rand);
+        }
+
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Content + "Items/Consumable/ReforgeStone_Dropped").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(WorldTexture).Value;
             spriteBatch.Draw(texture, Item.Center - Main.screenPosition, null, lightColor, rotation, texture.Size() / 2f, scale, SpriteEffects.None, 1);
 
             return false;
         }
 
-        /*private static readonly int[] unwantedPrefixes = new int[] { 
-            PrefixID.Large, PrefixID.Dangerous, PrefixID.Sharp, PrefixID.Pointy, PrefixID.Tiny, PrefixID.Terrible, PrefixID.Small,
-            PrefixID.Dull, PrefixID.Unhappy, PrefixID.Bulky, PrefixID.Shameful, PrefixID.Heavy, PrefixID.Light, PrefixID.Keen, 
-            PrefixID.Forceful, PrefixID.Broken, PrefixID.Damaged, PrefixID.Shoddy, PrefixID.Hurtful, PrefixID.Strong, PrefixID.Weak, 
-            PrefixID.Zealous, PrefixID.Quick, PrefixID.Agile, PrefixID.Nimble, PrefixID.Slow, PrefixID.Sluggish, PrefixID.Lazy, 
-            PrefixID.Annoying, PrefixID.Nasty };
-
-        public override bool AllowPrefix(int pre)
+        // Bro I don't even know why I need to do this, Prefix(-1) just doesn't wanna work half the time
+        public virtual int GetRandomPrefix()
         {
-            if (Array.IndexOf(unwantedPrefixes, pre) > -1)
-            {
-                return false;
-            }
+            return meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)];
+        }
 
-            return true;
-        }*/
-
-        public override bool? PrefixChance(int pre, UnifiedRandom rand)
+        public override int ChoosePrefix(UnifiedRandom rand)
         {
-            if (pre == -3) return false;
-            //if (pre == -1) return true;
+            return GetRandomPrefix();
+        }
+    }
 
-            return base.PrefixChance(pre, rand);
+    public class MeleeReforge : ReforgeStone
+    {
+        public override string Texture => AssetDirectory.Textures + "Items/Reforge_Melee_1";
+        public override int GetRandomPrefix() => meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)];
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Melee Reforge Stone");
+            Tooltip.SetDefault("Used to apply modifiers to Melee weapons");
+            ItemID.Sets.CanGetPrefixes[Type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Item.DamageType = DamageClass.Melee;
+        }
+    }
+
+    public class RangedReforge : ReforgeStone
+    {
+        public override string Texture => AssetDirectory.Textures + "Items/Reforge_Ranged_1";
+        public override int GetRandomPrefix() => rangedPrefixes[Main.rand.Next(0, rangedPrefixes.Length)];
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Ranged Reforge Stone");
+            Tooltip.SetDefault("Used to apply modifiers to Ranged weapons");
+            ItemID.Sets.CanGetPrefixes[Type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Item.DamageType = DamageClass.Ranged;
+        }
+    }
+
+    public class MagicReforge : ReforgeStone
+    {
+        public override string Texture => AssetDirectory.Textures + "Items/Reforge_Magic_1";
+        public override int GetRandomPrefix() => magicPrefixes[Main.rand.Next(0, magicPrefixes.Length)];
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Magic Reforge Stone");
+            Tooltip.SetDefault("Used to apply modifiers to Ranged weapons");
+            ItemID.Sets.CanGetPrefixes[Type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Item.DamageType = DamageClass.Magic;
         }
     }
 }
