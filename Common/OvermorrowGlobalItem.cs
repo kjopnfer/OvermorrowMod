@@ -36,7 +36,7 @@ namespace OvermorrowMod.Common
                 OvermorrowGlobalItem globalItem = item.GetGlobalItem<OvermorrowGlobalItem>();
                 bool canApply = true;
 
-                if (Main.mouseItem.ModItem is MeleeReforge stone)
+                if (Main.mouseItem.ModItem is MeleeReforge meleeStone)
                 {
                     // Check if the prefix is even valid for the item
                     if (item.DamageType == DamageClass.Melee)
@@ -59,7 +59,7 @@ namespace OvermorrowMod.Common
                                 item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay = 120;
                             }
                         }*/
-                        else if (stone.DPSCeiling > DPSCalculation(item) && stone.DPSFloor < DPSCalculation(item))
+                        else if (meleeStone.DPSCeiling >= DPSCalculation(item) && meleeStone.DPSFloor < DPSCalculation(item))
                         {
                             if (globalItem.warningDelay == 0)
                             {
@@ -70,9 +70,42 @@ namespace OvermorrowMod.Common
                         }
                     }
                 }
-                else if (Main.mouseItem.ModItem is RangedReforge)
+                else if (Main.mouseItem.ModItem is RangedReforge rangedStone)
                 {
+                    // Check if the prefix is even valid for the item
+                    if (item.DamageType == DamageClass.Magic)
+                    {
+                        // The item has a knockback prefix but it doesn't even have knockback
+                        if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.rangedPrefixes, Main.mouseItem.prefix) > -1)
+                        {
+                            if (globalItem.warningDelay == 0)
+                            {
+                                Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
+                                canApply = false;
+                                globalItem.warningDelay = 120;
+                            }
+                        }
+                        else if (rangedStone.DPSCeiling >= DPSCalculation(item) && rangedStone.DPSFloor < DPSCalculation(item))
+                        {
+                            if (globalItem.warningDelay == 0)
+                            {
+                                Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
+                                canApply = false;
+                                globalItem.warningDelay = 120;
+                            }
+                        }
+                    }
+                }
 
+                if (item.DamageType != Main.mouseItem.DamageType)
+                {
+                    canApply = false;
+
+                    if (globalItem.warningDelay == 0)
+                    {
+                        Main.NewText("This item is unable to be used with this stone.", new Color(252, 86, 3));
+                        globalItem.warningDelay = 120;
+                    }
                 }
 
                 if (canApply)
@@ -161,39 +194,26 @@ namespace OvermorrowMod.Common
 
         private float DPSCalculation(Item item)
         {
-            float numPerUse = item.useAnimation / item.useTime;
-
             return (float)(item.damage * 60f / item.useTime) * (1 + item.crit / 100f);
         }
 
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            if (Main.mouseItem.type == ModContent.ItemType<MeleeReforge>())
+            if (Main.mouseItem.ModItem is ReforgeStone)
             {
-                if (item.DamageType == DamageClass.Melee && item.type != Main.mouseItem.type && DPSCalculation(item) < 50)
+                if (item.DamageType != Main.mouseItem.DamageType || item.damage == 0)
                 {
+                    Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-                }
-                else
-                {
-                    //Main.LocalPlayer.inventory[58]
-                    if (item != Main.mouseItem || item.damage == 0)
-                    {
-                        Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+                    Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                    float progress = 30f / 120f;
+                    effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
+                    effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+                    effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
-                        Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-                        float progress = 30f / 120f;
-                        effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
-                        effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
-                        effect.CurrentTechnique.Passes["Whiteout"].Apply();
+                    spriteBatch.Draw(TextureAssets.Item[item.type].Value, position, frame, drawColor, 0, origin, scale, SpriteEffects.None, 1);
 
-                        spriteBatch.Draw(TextureAssets.Item[item.type].Value, position, frame, drawColor, 0, origin, scale, SpriteEffects.None, 1);
-
-                        Main.spriteBatch.Reload(SpriteSortMode.Deferred);
-                        //Vector2 center = ModUtils.GetInventoryPosition(position, frame, origin, scale);
-                        //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "CrossedOut").Value;
-                        //spriteBatch.Draw(texture, center, null, drawColor, 0, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
-                    }
+                    Main.spriteBatch.Reload(SpriteSortMode.Deferred);
                 }
             }
 

@@ -175,14 +175,7 @@ namespace OvermorrowMod.Common
         }
 
         public override void OnEnterWorld(Player player)
-        {
-            List<int> prefixList = new List<int> { 
-                PrefixID.Massive, PrefixID.Savage, PrefixID.Rapid, PrefixID.Hasty, PrefixID.Intimidating, 
-                PrefixID.Deadly, PrefixID.Staunch, PrefixID.Mystic, PrefixID.Masterful, PrefixID.Celestial,
-                PrefixID.Superior, PrefixID.Deadly, PrefixID.Murderous, PrefixID.Unpleasant, PrefixID.Godly, 
-                PrefixID.Demonic, PrefixID.Legendary, PrefixID.Unreal, PrefixID.Mythical };
-
-           
+        {        
             int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
             //Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
 

@@ -110,6 +110,7 @@ namespace OvermorrowMod.Content.Items.Consumable
         {
             base.SetDefaults();
             Item.DamageType = DamageClass.Melee;
+            Item.knockBack = 10f;
         }
     }
 
@@ -146,6 +147,7 @@ namespace OvermorrowMod.Content.Items.Consumable
         {
             base.SetDefaults();
             Item.DamageType = DamageClass.Magic;
+            Item.mana = 10;
         }
     }
 }
