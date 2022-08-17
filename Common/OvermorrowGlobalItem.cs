@@ -18,6 +18,7 @@ namespace OvermorrowMod.Common
 
         public int warningDelay = 0;
         public float reforgeAnimation = 0;
+        public int resetDelay = 0;
 
         public override bool ConsumeItem(Item item, Player player)
         {
@@ -44,27 +45,21 @@ namespace OvermorrowMod.Common
                         // The item has a knockback prefix but it doesn't even have knockback
                         if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.knockbackPrefixesMelee, Main.mouseItem.prefix) > -1)
                         {
+                            canApply = false;
+
                             if (globalItem.warningDelay == 0)
                             {
                                 Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
-                                canApply = false;
                                 globalItem.warningDelay = 120;
                             }
                         }
-                        /*else if (item.crit == 0 && Array.IndexOf(ReforgeStone.critPrefixes, Main.mouseItem.prefix) > -1)  // The item has a crit prefix but it doesn't even have critical strike chance
-                        {
-                            if (item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay == 0)
-                            {
-                                Main.NewText("This item has no critical strike chance to modify.", new Color(252, 86, 3));
-                                item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay = 120;
-                            }
-                        }*/
                         else if (meleeStone.DPSCeiling >= DPSCalculation(item) && meleeStone.DPSFloor < DPSCalculation(item))
                         {
+                            canApply = false;
+
                             if (globalItem.warningDelay == 0)
                             {
                                 Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
-                                canApply = false;
                                 globalItem.warningDelay = 120;
                             }
                         }
@@ -78,19 +73,21 @@ namespace OvermorrowMod.Common
                         // The item has a knockback prefix but it doesn't even have knockback
                         if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.rangedPrefixes, Main.mouseItem.prefix) > -1)
                         {
+                            canApply = false;
+
                             if (globalItem.warningDelay == 0)
                             {
                                 Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
-                                canApply = false;
                                 globalItem.warningDelay = 120;
                             }
                         }
                         else if (rangedStone.DPSCeiling >= DPSCalculation(item) && rangedStone.DPSFloor < DPSCalculation(item))
                         {
+                            canApply = false;
+
                             if (globalItem.warningDelay == 0)
                             {
                                 Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
-                                canApply = false;
                                 globalItem.warningDelay = 120;
                             }
                         }
@@ -99,24 +96,42 @@ namespace OvermorrowMod.Common
 
                 if (item.DamageType != Main.mouseItem.DamageType)
                 {
+                    Main.NewText(reforgeAnimation);
+
                     canApply = false;
 
                     if (globalItem.warningDelay == 0)
                     {
                         Main.NewText("This item is unable to be used with this stone.", new Color(252, 86, 3));
                         globalItem.warningDelay = 120;
+                        reforgeAnimation = 40;
                     }
                 }
+                else
+                {
+                    //globalItem.reforgeAnimation = 40;
+                }
+
+                //reforgeAnimation = 40;
 
                 if (canApply)
                 {
-                    item.SetDefaults(item.type); // Reset the item to prevent stacking
+                    /*if (resetDelay == 0)
+                    {
+                        item.SetDefaults(item.type); // Reset the item to prevent prefix stacking
+                        resetDelay = 60;
+                    }*/
+
+                    item.CloneDefaults(item.type);
+                    //item.ResetStats(item.type);
                     item.Prefix(0);
                     item.Prefix(Main.mouseItem.prefix);
+
                     globalItem.reforgeAnimation = 40;
 
                     Main.mouseItem.TurnToAir();
 
+                    Main.NewText("reforge animation " + globalItem.reforgeAnimation);
                     Main.NewText(DPSCalculation(item));
                 }
             }
@@ -184,7 +199,7 @@ namespace OvermorrowMod.Common
 
                 Main.spriteBatch.Reload(SpriteSortMode.Deferred);
 
-                item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation -= 0.5f;
+                reforgeAnimation -= 0.5f;
 
                 return false;
             }
@@ -224,7 +239,14 @@ namespace OvermorrowMod.Common
         {
             if (item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay > 0)
             {
+                Main.NewText("warning delay" + warningDelay); // why does this work
                 item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay--;
+            }
+
+            if (item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation > 0)
+            {
+                Main.NewText(item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation); // but this doesnt
+                //item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation -= 0.5f;
             }
 
             base.UpdateInventory(item, player);

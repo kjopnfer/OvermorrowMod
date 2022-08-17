@@ -60,6 +60,7 @@ namespace OvermorrowMod.Content.Items.Consumable
             for (int lines = 0; lines < tooltips.Count; lines++)
             {
                 if (tooltips[lines].Name == "Damage") tooltips.RemoveAt(lines);
+                if (tooltips[lines].Name == "UseMana") tooltips.RemoveAt(lines);
                 if (tooltips[lines].Name == "CritChance") tooltips.RemoveAt(lines);
                 if (tooltips[lines].Name == "Speed") tooltips.RemoveAt(lines);
                 if (tooltips[lines].Name == "Knockback") tooltips.RemoveAt(lines);
