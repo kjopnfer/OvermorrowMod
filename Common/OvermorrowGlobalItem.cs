@@ -21,6 +21,14 @@ namespace OvermorrowMod.Common
         public int resetDelay = 0;
 
         private bool drawInvalid = false;
+        private TParticleSystem sys = new();
+
+        private Color reforgeColor = Color.White;
+
+        private float DPSCalculation(Item item)
+        {
+            return (float)(item.damage * 60f / item.useTime) * (1 + item.crit / 100f);
+        }
 
         public override bool ConsumeItem(Item item, Player player)
         {
@@ -149,7 +157,11 @@ namespace OvermorrowMod.Common
 
                     globalItem.reforgeAnimation = 40;
 
-                    //Main.mouseItem.TurnToAir();
+                    if (Main.mouseItem.ModItem is MeleeReforge) reforgeColor = Color.Orange;
+                    else if (Main.mouseItem.ModItem is RangedReforge) reforgeColor = Color.Green;
+                    else if (Main.mouseItem.ModItem is MagicReforge) reforgeColor = Color.Red;
+
+                    Main.mouseItem.TurnToAir();
 
                     //Main.NewText("reforge animation " + globalItem.reforgeAnimation);
                     //Main.NewText(DPSCalculation(item));
@@ -159,18 +171,16 @@ namespace OvermorrowMod.Common
             return base.CanRightClick(item);
         }
 
-        TParticleSystem sys = new();
         public override bool PreDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             if (reforgeAnimation > 0)
             {
-                // Spawn the particles once
-                if (reforgeAnimation == 40)
+                if (reforgeAnimation == 40) // Spawn the particles once, it's hard-coded assuming no other reforgeAnimations take longer than 1.5 secs LOL
                 {
-                    int maxIterations = 6;
-                    for (int i = 0; i < maxIterations; i++)
+                    const int MAX_ITERATIONS = 6;
+                    for (int i = 0; i < MAX_ITERATIONS; i++)
                     {
-                        sys.CreateParticle(Main.rand.NextVector2FromRectangle(frame), Vector2.One.RotatedBy(MathHelper.TwoPi / maxIterations * i) * 0.5f, Main.hslToRgb(Main.rand.NextFloat(0, 1), 1f, 0.9f), (part) =>
+                        sys.CreateParticle(Main.rand.NextVector2FromRectangle(frame), Vector2.One.RotatedBy(MathHelper.TwoPi / MAX_ITERATIONS * i) * 0.5f, Main.hslToRgb(Main.rand.NextFloat(0, 1), 1f, 0.9f), (part) =>
                         {
                             if (part.ai[0] >= 40)
                             {
@@ -190,7 +200,7 @@ namespace OvermorrowMod.Common
                                 part.texture.Size() / 2, part.scale * 0.2f, SpriteEffects.None, 0f);
                             batch.Reload(BlendState.Additive);
                             Texture2D tex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
-                            batch.Draw(tex, position + part.position, null, Color.Orange * part.alpha * 0.7f, 0f,
+                            batch.Draw(tex, position + part.position, null, reforgeColor * part.alpha * 0.7f, 0f,
                                 tex.Size() / 2, part.scale * 2.5f, SpriteEffects.None, 0f);
                             batch.Draw(tex, position + part.position, null, part.color * part.alpha * 0.4f, 0f,
                                 tex.Size() / 2, part.scale * 5f, SpriteEffects.None, 0f);
@@ -211,7 +221,7 @@ namespace OvermorrowMod.Common
 
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 float progress = Utils.Clamp(item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation, 0, 120f) / 120f;
-                effect.Parameters["WhiteoutColor"].SetValue(Color.Orange.ToVector3());
+                effect.Parameters["WhiteoutColor"].SetValue(reforgeColor.ToVector3());
                 effect.Parameters["WhiteoutProgress"].SetValue(progress);
                 effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
@@ -227,14 +237,9 @@ namespace OvermorrowMod.Common
             return base.PreDrawInInventory(item, spriteBatch, position, frame, drawColor, itemColor, origin, scale);
         }
 
-        private float DPSCalculation(Item item)
-        {
-            return (float)(item.damage * 60f / item.useTime) * (1 + item.crit / 100f);
-        }
-
         public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            if (Main.mouseItem.ModItem is ReforgeStone)
+            if (Main.mouseItem.ModItem is ReforgeStone && reforgeAnimation == 0) // In case the item goes out of range after reforging don't just black it out immediately
             {
                 drawInvalid = false;
 

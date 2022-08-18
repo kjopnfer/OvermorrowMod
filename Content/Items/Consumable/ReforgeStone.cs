@@ -113,7 +113,7 @@ namespace OvermorrowMod.Content.Items.Consumable
             Item.DamageType = DamageClass.Melee;
             Item.knockBack = 10f;
 
-            DPSCeiling = 100;
+            DPSCeiling = 55;
         }
     }
 
@@ -132,7 +132,8 @@ namespace OvermorrowMod.Content.Items.Consumable
         {
             base.SetDefaults();
             Item.DamageType = DamageClass.Ranged;
-            DPSCeiling = 80;
+
+            DPSCeiling = 900;
         }
     }
 
@@ -152,6 +153,8 @@ namespace OvermorrowMod.Content.Items.Consumable
             base.SetDefaults();
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
+
+            DPSCeiling = 60;
         }
     }
 }
