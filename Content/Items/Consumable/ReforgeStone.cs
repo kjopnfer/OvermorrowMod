@@ -1,13 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
-using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Terraria.Utilities;
 
 namespace OvermorrowMod.Content.Items.Consumable
@@ -59,11 +56,11 @@ namespace OvermorrowMod.Content.Items.Consumable
         {
             for (int lines = 0; lines < tooltips.Count; lines++)
             {
-                if (tooltips[lines].Name == "Damage") tooltips.RemoveAt(lines);
-                if (tooltips[lines].Name == "UseMana") tooltips.RemoveAt(lines);
-                if (tooltips[lines].Name == "CritChance") tooltips.RemoveAt(lines);
-                if (tooltips[lines].Name == "Speed") tooltips.RemoveAt(lines);
-                if (tooltips[lines].Name == "Knockback") tooltips.RemoveAt(lines);
+                if (tooltips[lines].Name == "Damage" || tooltips[lines].Name == "UseMana" ||
+                    tooltips[lines].Name == "CritChance" || tooltips[lines].Name == "Speed" || tooltips[lines].Name == "Knockback")
+                {
+                    tooltips.RemoveAt(lines);
+                }
             }
 
             base.ModifyTooltips(tooltips);

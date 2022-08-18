@@ -45,92 +45,83 @@ namespace OvermorrowMod.Common
                 OvermorrowGlobalItem globalItem = item.GetGlobalItem<OvermorrowGlobalItem>();
                 bool canApply = true;
 
-                if (Main.mouseItem.ModItem is MeleeReforge meleeStone)
+                if (Main.mouseItem.ModItem is MeleeReforge meleeStone && item.DamageType == DamageClass.Melee)
                 {
-                    // Check if the prefix is even valid for the item
-                    if (item.DamageType == DamageClass.Melee)
+                    //Main.NewText(meleeStone.DPSFloor + "/ " + meleeStone.DPSCeiling + ": " + DPSCalculation(item));
+
+                    // The item has a knockback prefix but it doesn't even have knockback
+                    if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.knockbackPrefixesMelee, Main.mouseItem.prefix) > -1)
                     {
-                        //Main.NewText(meleeStone.DPSFloor + "/ " + meleeStone.DPSCeiling + ": " + DPSCalculation(item));
+                        canApply = false;
 
-                        // The item has a knockback prefix but it doesn't even have knockback
-                        if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.knockbackPrefixesMelee, Main.mouseItem.prefix) > -1)
+                        if (globalItem.warningDelay == 0)
                         {
-                            canApply = false;
-
-                            if (globalItem.warningDelay == 0)
-                            {
-                                Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
-                                globalItem.warningDelay = 120;
-                            }
-                        }
-                        else if (meleeStone.DPSCeiling < DPSCalculation(item) || meleeStone.DPSFloor > DPSCalculation(item))
-                        {
-                            canApply = false;
-
-                            if (globalItem.warningDelay == 0)
-                            {
-                                Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
-                                globalItem.warningDelay = 120;
-                            }
+                            Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
+                            globalItem.warningDelay = 120;
                         }
                     }
-                }
-                else if (Main.mouseItem.ModItem is RangedReforge rangedStone)
-                {
-                    // Check if the prefix is even valid for the item
-                    if (item.DamageType == DamageClass.Ranged)
+                    else if (meleeStone.DPSCeiling < DPSCalculation(item) || meleeStone.DPSFloor > DPSCalculation(item))
                     {
-                        //Main.NewText(rangedStone.DPSFloor + "/ " + rangedStone.DPSCeiling + ": " + DPSCalculation(item));
+                        canApply = false;
 
-                        // The item has a knockback prefix but it doesn't even have knockback
-                        if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.rangedPrefixes, Main.mouseItem.prefix) > -1)
+                        if (globalItem.warningDelay == 0)
                         {
-                            canApply = false;
-
-                            if (globalItem.warningDelay == 0)
-                            {
-                                Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
-                                globalItem.warningDelay = 120;
-                            }
-                        }
-                        else if (rangedStone.DPSCeiling < DPSCalculation(item) || rangedStone.DPSFloor > DPSCalculation(item))
-                        {
-                            canApply = false;
-
-                            if (globalItem.warningDelay == 0)
-                            {
-                                Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
-                                globalItem.warningDelay = 120;
-                            }
+                            Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
+                            globalItem.warningDelay = 120;
                         }
                     }
+
                 }
-                else if (Main.mouseItem.ModItem is MagicReforge magicStone)
+                else if (Main.mouseItem.ModItem is RangedReforge rangedStone && item.DamageType == DamageClass.Ranged)
                 {
-                    if (item.DamageType == DamageClass.Magic)
+                    //Main.NewText(rangedStone.DPSFloor + "/ " + rangedStone.DPSCeiling + ": " + DPSCalculation(item));
+
+                    // The item has a knockback prefix but it doesn't even have knockback
+                    if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.rangedPrefixes, Main.mouseItem.prefix) > -1)
                     {
-                        //Main.NewText(magicStone.DPSFloor + "/ " + magicStone.DPSCeiling + ": " + DPSCalculation(item));
+                        canApply = false;
 
-                        // The item has a knockback prefix but it doesn't even have knockback
-                        if (item.mana >= 0 && Array.IndexOf(ReforgeStone.rangedPrefixes, Main.mouseItem.prefix) > -1)
+                        if (globalItem.warningDelay == 0)
                         {
-                            canApply = false;
-
-                            if (globalItem.warningDelay == 0)
-                            {
-                                Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
-                                globalItem.warningDelay = 120;
-                            }
+                            Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
+                            globalItem.warningDelay = 120;
                         }
-                        else if (magicStone.DPSCeiling < DPSCalculation(item) || magicStone.DPSFloor > DPSCalculation(item))
-                        {
-                            canApply = false;
+                    }
+                    else if (rangedStone.DPSCeiling < DPSCalculation(item) || rangedStone.DPSFloor > DPSCalculation(item))
+                    {
+                        canApply = false;
 
-                            if (globalItem.warningDelay == 0)
-                            {
-                                Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
-                                globalItem.warningDelay = 120;
-                            }
+                        if (globalItem.warningDelay == 0)
+                        {
+                            Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
+                            globalItem.warningDelay = 120;
+                        }
+                    }
+
+                }
+                else if (Main.mouseItem.ModItem is MagicReforge magicStone && item.DamageType == DamageClass.Magic)
+                {
+                    //Main.NewText(magicStone.DPSFloor + "/ " + magicStone.DPSCeiling + ": " + DPSCalculation(item));
+
+                    // The item has a knockback prefix but it doesn't even have knockback
+                    if (item.mana >= 0 && Array.IndexOf(ReforgeStone.rangedPrefixes, Main.mouseItem.prefix) > -1)
+                    {
+                        canApply = false;
+
+                        if (globalItem.warningDelay == 0)
+                        {
+                            Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
+                            globalItem.warningDelay = 120;
+                        }
+                    }
+                    else if (magicStone.DPSCeiling < DPSCalculation(item) || magicStone.DPSFloor > DPSCalculation(item))
+                    {
+                        canApply = false;
+
+                        if (globalItem.warningDelay == 0)
+                        {
+                            Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
+                            globalItem.warningDelay = 120;
                         }
                     }
                 }
@@ -284,10 +275,7 @@ namespace OvermorrowMod.Common
 
         public override void UpdateInventory(Item item, Player player)
         {
-            if (item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay > 0)
-            {
-                item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay--;
-            }
+            if (item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay > 0) item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay--;
 
             base.UpdateInventory(item, player);
         }
