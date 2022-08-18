@@ -20,6 +20,8 @@ namespace OvermorrowMod.Common
         public float reforgeAnimation = 0;
         public int resetDelay = 0;
 
+        private bool drawInvalid = false;
+
         public override bool ConsumeItem(Item item, Player player)
         {
             if (Main.mouseItem.type == ModContent.ItemType<ReforgeStone>())
@@ -42,6 +44,8 @@ namespace OvermorrowMod.Common
                     // Check if the prefix is even valid for the item
                     if (item.DamageType == DamageClass.Melee)
                     {
+                        Main.NewText(meleeStone.DPSFloor + "/ " + meleeStone.DPSCeiling + ": " + DPSCalculation(item));
+
                         // The item has a knockback prefix but it doesn't even have knockback
                         if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.knockbackPrefixesMelee, Main.mouseItem.prefix) > -1)
                         {
@@ -53,7 +57,7 @@ namespace OvermorrowMod.Common
                                 globalItem.warningDelay = 120;
                             }
                         }
-                        else if (meleeStone.DPSCeiling >= DPSCalculation(item) && meleeStone.DPSFloor < DPSCalculation(item))
+                        else if (meleeStone.DPSCeiling < DPSCalculation(item) && meleeStone.DPSFloor > DPSCalculation(item))
                         {
                             canApply = false;
 
@@ -68,8 +72,10 @@ namespace OvermorrowMod.Common
                 else if (Main.mouseItem.ModItem is RangedReforge rangedStone)
                 {
                     // Check if the prefix is even valid for the item
-                    if (item.DamageType == DamageClass.Magic)
+                    if (item.DamageType == DamageClass.Ranged)
                     {
+                        Main.NewText(rangedStone.DPSFloor + "/ " + rangedStone.DPSCeiling + ": " + DPSCalculation(item));
+
                         // The item has a knockback prefix but it doesn't even have knockback
                         if (item.knockBack == 0 && Array.IndexOf(ReforgeStone.rangedPrefixes, Main.mouseItem.prefix) > -1)
                         {
@@ -81,7 +87,36 @@ namespace OvermorrowMod.Common
                                 globalItem.warningDelay = 120;
                             }
                         }
-                        else if (rangedStone.DPSCeiling >= DPSCalculation(item) && rangedStone.DPSFloor < DPSCalculation(item))
+                        else if (rangedStone.DPSCeiling < DPSCalculation(item) && rangedStone.DPSFloor > DPSCalculation(item))
+                        {
+                            canApply = false;
+
+                            if (globalItem.warningDelay == 0)
+                            {
+                                Main.NewText("This item requires a higher tier of Reforge Stones.", new Color(252, 86, 3));
+                                globalItem.warningDelay = 120;
+                            }
+                        }
+                    }
+                }
+                else if (Main.mouseItem.ModItem is MagicReforge magicStone)
+                {
+                    if (item.DamageType == DamageClass.Magic)
+                    {
+                        Main.NewText(magicStone.DPSFloor + "/ " + magicStone.DPSCeiling + ": " + DPSCalculation(item));
+
+                        // The item has a knockback prefix but it doesn't even have knockback
+                        if (item.mana >= 0 && Array.IndexOf(ReforgeStone.rangedPrefixes, Main.mouseItem.prefix) > -1)
+                        {
+                            canApply = false;
+
+                            if (globalItem.warningDelay == 0)
+                            {
+                                Main.NewText("This item has no knockback to modify.", new Color(252, 86, 3));
+                                globalItem.warningDelay = 120;
+                            }
+                        }
+                        else if (magicStone.DPSCeiling < DPSCalculation(item) && magicStone.DPSFloor > DPSCalculation(item))
                         {
                             canApply = false;
 
@@ -96,8 +131,6 @@ namespace OvermorrowMod.Common
 
                 if (item.DamageType != Main.mouseItem.DamageType)
                 {
-                    Main.NewText(reforgeAnimation);
-
                     canApply = false;
 
                     if (globalItem.warningDelay == 0)
@@ -107,32 +140,19 @@ namespace OvermorrowMod.Common
                         reforgeAnimation = 40;
                     }
                 }
-                else
-                {
-                    //globalItem.reforgeAnimation = 40;
-                }
-
-                //reforgeAnimation = 40;
 
                 if (canApply)
                 {
-                    /*if (resetDelay == 0)
-                    {
-                        item.SetDefaults(item.type); // Reset the item to prevent prefix stacking
-                        resetDelay = 60;
-                    }*/
-
                     item.CloneDefaults(item.type);
-                    //item.ResetStats(item.type);
                     item.Prefix(0);
                     item.Prefix(Main.mouseItem.prefix);
 
                     globalItem.reforgeAnimation = 40;
 
-                    Main.mouseItem.TurnToAir();
+                    //Main.mouseItem.TurnToAir();
 
-                    Main.NewText("reforge animation " + globalItem.reforgeAnimation);
-                    Main.NewText(DPSCalculation(item));
+                    //Main.NewText("reforge animation " + globalItem.reforgeAnimation);
+                    //Main.NewText(DPSCalculation(item));
                 }
             }
 
@@ -216,7 +236,36 @@ namespace OvermorrowMod.Common
         {
             if (Main.mouseItem.ModItem is ReforgeStone)
             {
+                drawInvalid = false;
+
                 if (item.DamageType != Main.mouseItem.DamageType || item.damage == 0)
+                {
+                    drawInvalid = true;
+                }
+
+                if (Main.mouseItem.ModItem is MeleeReforge meleeStone)
+                {
+                    if (meleeStone.DPSCeiling < DPSCalculation(item) || meleeStone.DPSFloor > DPSCalculation(item))
+                    {
+                        drawInvalid = true;
+                    }
+                }
+                else if (Main.mouseItem.ModItem is RangedReforge rangedStone)
+                {
+                    if (rangedStone.DPSCeiling < DPSCalculation(item) || rangedStone.DPSFloor > DPSCalculation(item))
+                    {
+                        drawInvalid = true;
+                    }
+                }
+                else if (Main.mouseItem.ModItem is MagicReforge magicStone)
+                {
+                    if (magicStone.DPSCeiling < DPSCalculation(item) || magicStone.DPSFloor > DPSCalculation(item))
+                    {
+                        drawInvalid = true;
+                    }
+                }
+
+                if (drawInvalid)
                 {
                     Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
@@ -239,13 +288,13 @@ namespace OvermorrowMod.Common
         {
             if (item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay > 0)
             {
-                Main.NewText("warning delay" + warningDelay); // why does this work
+                //Main.NewText("warning delay" + warningDelay); // why does this work
                 item.GetGlobalItem<OvermorrowGlobalItem>().warningDelay--;
             }
 
             if (item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation > 0)
             {
-                Main.NewText(item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation); // but this doesnt
+                //Main.NewText(item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation); // but this doesnt
                 //item.GetGlobalItem<OvermorrowGlobalItem>().reforgeAnimation -= 0.5f;
             }
 

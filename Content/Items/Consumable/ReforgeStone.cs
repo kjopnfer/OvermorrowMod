@@ -25,8 +25,8 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override void SetDefaults()
         {
             Item.width = Item.height = 22;
-            Item.damage = 10;
-            Item.knockBack = 5f;
+            Item.damage = 50;
+            Item.knockBack = 10f;
             Item.crit = 32;
             Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -112,6 +112,8 @@ namespace OvermorrowMod.Content.Items.Consumable
             base.SetDefaults();
             Item.DamageType = DamageClass.Melee;
             Item.knockBack = 10f;
+
+            DPSCeiling = 100;
         }
     }
 
@@ -130,6 +132,7 @@ namespace OvermorrowMod.Content.Items.Consumable
         {
             base.SetDefaults();
             Item.DamageType = DamageClass.Ranged;
+            DPSCeiling = 80;
         }
     }
 
