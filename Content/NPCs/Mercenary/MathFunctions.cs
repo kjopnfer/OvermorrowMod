@@ -3,8 +3,8 @@ using Microsoft.Xna.Framework;
 
 namespace OvermorrowMod.Content.NPCs.Mercenary
 {
-	public struct MathFunctions
-	{
+    public struct MathFunctions
+    {
         /// <summary>
         /// Factored form Parabolas
         /// </summary>

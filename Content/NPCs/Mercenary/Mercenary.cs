@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         //Should not be a part of the base attack system, but as a built in delay (atkDelay = AttackDelay; and then put a check, for example)
         public virtual int AttackDelay { get { return 60; } }
         #region NPC values
-        public virtual string ActName { get { return "Mercenary"; } }
+        public virtual string MercenaryName { get { return "Mercenary"; } }
         public virtual int MaxHealth { get { return 400; } }
         public virtual int Defense { get { return 20; } }
         public virtual float KnockbackResist { get { return 0.25f; } }
@@ -48,7 +48,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         int farTimer;
         //The closest hostile projectile to the mercenary
         public Projectile scoutProjectile;
-        //The closest hostile NPc to the mercenary
+        // The closest hostile NPC to the mercenary
         public NPC scoutNPC;
         public bool catchingUp;
         //These two are only used in StandardAI() for storing distance and delays for leaps, how many tiles must be accounted, etc.
@@ -76,7 +76,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public int currentMinute;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault(ActName);
+            DisplayName.SetDefault(MercenaryName);
         }
         public override void SetDefaults()
         {
@@ -94,13 +94,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public override void AI()
         {
             //**Everything except the last line here is already included in the base AI
-            if(hireTimer < 0)
+            if (hireTimer < 0)
             {
                 hiredBy = -1;
                 hireTimer = 0;
             }
             hireTimer--;
-            if(currentMinute-- < 1)
+            if (currentMinute-- < 1)
             {
                 hireTime--;
                 currentMinute = 3600;
@@ -121,7 +121,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             Vector2 target = targ.position;
             //When safe: When the player is not too far
             //Otherwise: When in danger and the target (generally scoutNPC) is not null
-            if(!TooFar() || (DangerThreshold() && target != Vector2.Zero))
+            if (!TooFar() || (DangerThreshold() && target != Vector2.Zero))
             {
                 //The mercenary will fall through platforms if the target is below it
                 void FallThrough()
@@ -280,7 +280,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         {
             Player player = Main.player[hiredBy];
             int count = 0;
-            for(int y = -1; y > -24; y--)
+            for (int y = -1; y > -24; y--)
             {
                 for (int x = -4; x < 4; x++)
                 {
@@ -312,9 +312,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 return Main.player[hiredBy];
             return null;
         }
-        public virtual void MainAI() 
+        public virtual void MainAI()
         {
-            if(hiredBy != -1)
+            if (hiredBy != -1)
             {
                 if (!TooFar() && !DangerThreshold() && !catchingUp)
                 {
@@ -340,7 +340,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 if (DangerThreshold())
                 {
                     continueAttack = false;
-                        SafetyBehaviour();
+                    SafetyBehaviour();
                     if (CanHeal())
                         restore[0] = 1;
                 }
@@ -363,7 +363,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                         //Make the NPC walk towards the player and stop when nearby if not in combat
                         if (!continueAttack && !catchingUp && scoutNPC == null && scoutProjectile == null)
                         {
-                            if(Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(player.Center.X, 0)) > 125)
+                            if (Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(player.Center.X, 0)) > 125)
                                 StandardAI(Rect(player));
                         }
                         if (hiredBy != -1)
@@ -395,7 +395,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 NPC.dontTakeDamageFromHostiles = true;
             }
             //Look for threats if hired
-            if(hiredBy != -1)
+            if (hiredBy != -1)
                 ScoutThreats();
         }
         public List<MercenaryDialogue> PlaceholderDialogue()
@@ -447,7 +447,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         /// <returns></returns>
         public bool TooFar()
         {
-            if(scoutNPC == null && scoutProjectile == null && !DangerThreshold())
+            if (scoutNPC == null && scoutProjectile == null && !DangerThreshold())
             {
                 float distance = Vector2.Distance(Main.player[hiredBy].MountedCenter, NPC.Center);
                 if (distance >= 1000)
@@ -466,9 +466,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             return false;
         }
         /// <summary>
-        /// Returns if the NPC is in danger
+        /// Returns if the NPC is in danger of dying if their life falls below 25%
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A boolean value of whether the NPC is below 25% life</returns>
         public bool DangerThreshold() => NPC.life < NPC.lifeMax * 0.25f;
         /// <summary>
         /// Returns if the NPC should stop calling this method; called when a detected enemy is nearby
@@ -488,9 +488,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         }
         Projectile RadialProjectileCheck()
         {
-            foreach(Projectile p in Main.projectile)
+            foreach (Projectile p in Main.projectile)
             {
-                if(p != null && p.active && !p.friendly)
+                if (p != null && p.active && !p.friendly)
                 {
                     //Unlike NPCs, projectiles must be in a set radius to be detected
                     int[] results = WithinDetectRange(p.Center, 0.5f);
@@ -517,7 +517,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             List<NPC> possibleTargets = new List<NPC>();
             foreach (NPC n in Main.npc)
             {
-                if (n != null && n.active && !n.immortal && !n.dontTakeDamage && n.type != NPCID.TargetDummy && ((!n.friendly && !n.CountsAsACritter) || n.boss ))
+                if (n != null && n.active && !n.immortal && !n.dontTakeDamage && n.type != NPCID.TargetDummy && ((!n.friendly && !n.CountsAsACritter) || n.boss))
                 {
                     //Checks if the NPC is in a set radius
                     int[] results = WithinDetectRange(n.Center, 2);
@@ -531,7 +531,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                     }
                 }
             }
-            if(distance.Count > 0)
+            if (distance.Count > 0)
             {
                 //Finds the smallest distance and bases the needed attack performed based on their "nearby" placement
                 float lowest = 99999;
@@ -551,7 +551,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         {
             //Checks if an NPC is withing a radial section
             int[] result = new int[2] { 0, 0 };
-            if(Math.Pow(pos.X - NPC.Center.X, 2) + Math.Pow(pos.Y - NPC.Center.Y, 2) < Math.Pow(DetectRadius * multiplier, 2))
+            if (Math.Pow(pos.X - NPC.Center.X, 2) + Math.Pow(pos.Y - NPC.Center.Y, 2) < Math.Pow(DetectRadius * multiplier, 2))
             {
                 result[0] = 1;
                 //Used for RadialNPCCheck() (the nearby check)
@@ -585,16 +585,16 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = $"{(hiredBy == -1 ? "Hire" : "Prolong (10 minutes)")}: 1 gold";
-            if(hiredBy != -1)
+            if (hiredBy != -1)
                 button2 = $"{hireTime} minutes";
         }
         public override void OnChatButtonClicked(bool firstButton, ref bool shop)
         {
-            if(firstButton)
+            if (firstButton)
             {
                 //Hires (if possible) and extends the hired duration by 10 minutes if a gold is spent
                 Player player = Main.LocalPlayer;
-                if(player.CanBuyItem(10000))
+                if (player.CanBuyItem(10000))
                 {
                     if (hiredBy == -1)
                         hiredBy = player.whoAmI;
@@ -626,7 +626,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public static void ScreenShakeEvent(Vector2 center, float duration2, float strength2, float radius = 100)
         {
             //Updates ScreenShakePlayer for every player in a given radius, and starts a screen shake event for each player
-            foreach(Player p in Main.player)
+            foreach (Player p in Main.player)
             {
                 if (p != null && p.active && !p.dead)
                 {
@@ -680,7 +680,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         {
             int highest = 0;
             string result = "Blank";
-            foreach(MercenaryDialogue d in dialogueOptions)
+            foreach (MercenaryDialogue d in dialogueOptions)
             {
                 if (d.priority > highest && d.condition)
                 {
