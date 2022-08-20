@@ -16,7 +16,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 //Mercenaries
 using OvermorrowMod.Content.NPCs.Mercenary;
-using OvermorrowMod.Content.NPCs.Mercenary.Paladin;
+using static OvermorrowMod.Content.NPCs.Mercenary.Paladin.Paladin;
 
 namespace OvermorrowMod.Common
 {
@@ -48,6 +48,7 @@ namespace OvermorrowMod.Common
         {
             drawHelpers.Add(new PaladinDrawHelper());
         }
+
         public override void Load()
         {
             //Terraria.ModLoader.IO.TagSerializer.AddSerializer(new VectorSerializer());

@@ -689,7 +689,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         }
     }
 
-    public class PaladinProjectile : ModProjectile
+    public abstract class PaladinProjectile : ModProjectile
     {
         public Paladin owner;
 
