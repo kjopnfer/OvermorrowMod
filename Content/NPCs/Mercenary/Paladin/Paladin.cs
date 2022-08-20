@@ -15,6 +15,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
     {
         // The position where the paladin should aim attacks
         public Vector2 targetPosition;
+
         // Used as a stun delay when the paladin has collision while running in the same direction
         public int stunDuration;
 
@@ -29,25 +30,46 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         // Used to make ProjectileReact() a one-time action for a projectile
         private bool projReaction;
+
+        #region Draw Variables
+        // Used as an alternate direction lock for attacks
+        public int hammerDirection;
+
         // The frame that is used while drawing the NPC
         private Point moveFrame;
+
+        #region Walk
+        // Used in FrameUpdate() for walk cycles
+        private int moveFrameX;
+        private int moveTimer;
+        #endregion
+
+        #region Hammer
+        // Used for attack animation cycles
+        public int hammerDelay;
+        public int slamTimer;
+        public int throwStyle;
+        #endregion
+
+        #region Catch Up
+        // Used for hammer slam animation cycles (used in CatchUp())
+        private bool catchUpLanded;
+        private bool catchUpFinished;
+        #endregion
+
+        #region Close Attack
+        // Used for differentiating between hammer spin and hammer slam for close attacks
+        private bool CAStyleDecided;
+        private bool doHammerSpin;
+        #endregion
+
+        #endregion
+
         // Used for the CatchUp() method
         private MathFunctions.Parabola parabola;
 
-        // TODO: Probably find a more intuitive way of doing these?
-        #region Draw Variables
-        // Used in FrameUpdate() for walk cycles
-        int[] walk = new int[2];
-        // Used as an alternate direction lock for attacks
-        public int hammerDirection;
-        // Used for attack animation cycles
-        public int[] hammerChuck = new int[3];
-        // Used for hammer slam animation cycles (used in CatchUp())
-        bool[] catchUp = new bool[2];
-        // Determines if the afterimate effect is drawn
+        // Determines if the afterimage effect is drawn
         bool drawAfterimage;
-        // Used for differentiating between hammer spin and hammer slam for close attacks
-        bool[] closeAttack = new bool[2];
 
         #region Afterimage variables
         //Past position
@@ -56,7 +78,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         Point[] imgFrame = new Point[6];
         #endregion
 
-        #endregion
         public override List<MercenaryDialogue> Dialogue
         {
             get => PlaceholderDialogue();
@@ -80,7 +101,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 closeAttackStyle = false;
             }
 
-            if (targetNPC == null) closeAttack = new bool[2];
+            if (targetNPC == null)
+            {
+                CAStyleDecided = false;
+                doHammerSpin = false;
+            }
 
             // Allow another projectile reaction to happen if not on a solid tile
             if (projReaction && OnSolidTile() != null) projReaction = false;
@@ -104,14 +129,15 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             if (catchingUp && !DangerThreshold())
             {
                 drawAfterimage = true;
-                //If the leap has started
-                if (catchUp[0])
+                if (catchUpLanded) // If the leap has started
                     if (FrameUpdate(FrameType.CatchUp)) // Declare that the paladin has caught up when the animation is finished
-                        catchUp[1] = true;
+                        doHammerSpin = true;
             }
             else
             {
-                catchUp = new bool[2];
+                catchUpLanded = false;
+                catchUpFinished = false;
+
                 catchingUp = false;
             }
 
@@ -139,15 +165,18 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 if ((HammerAlive() == null && !catchingUp) || closeAttackStyle) // Resets attack variables
                 {
-                    hammerChuck = new int[3];
+                    hammerDelay = 0;
+                    slamTimer = 0;
+                    throwStyle = 0;
+
+                    //hammerChuck = new int[3];
                     targetPosition = Vector2.Zero;
                 }
                 else if (HammerAlive() != null)
                     NPC.velocity.X = 0;
 
                 // Starts the "walk" animation cycle
-                if (targetNPC == null && HammerAlive() == null && !catchingUp)
-                    FrameUpdate(FrameType.Walk);
+                if (targetNPC == null && HammerAlive() == null && !catchingUp) FrameUpdate(FrameType.Walk);
             }
 
             // Starts the "walkBattle" animation cycle if the paladin finds an enemy
@@ -202,30 +231,30 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         {
                             // Change the X frame at a speed depending on the velocity
                             int add = (int)Math.Round(Math.Abs(NPC.velocity.X));
-                            walk[1] += add;
-                            if (walk[1] > 8)
+                            moveTimer += add;
+                            if (moveTimer > 8)
                             {
-                                walk[1] = 0;
-                                walk[0]++;
+                                moveTimer = 0;
+                                moveFrameX++;
                             }
 
-                            if (walk[0] <= 5)
+                            if (moveFrameX <= 5)
                             {
                                 // Initial Y frame, change to alternate Y frame when X frame is at the end
                                 moveFrame.Y = 0;
-                                moveFrame.X = walk[0] + 1;
+                                moveFrame.X = moveFrameX + 1;
 
-                                if (walk[0] > 4) moveFrame.Y = 1;
+                                if (moveFrameX > 4) moveFrame.Y = 1;
                             }
 
-                            if (walk[0] <= 12 && walk[0] > 5)
+                            if (moveFrameX <= 12 && moveFrameX > 5)
                             {
                                 //Alternate Y frame, change to initial Y frame when X frame is at the end
                                 moveFrame.Y = 1;
-                                moveFrame.X = walk[0] - 6;
-                                if (walk[0] > 11)
+                                moveFrame.X = moveFrameX - 6;
+                                if (moveFrameX > 11)
                                 {
-                                    walk[0] = 1;
+                                    moveFrameX = 1;
                                     moveFrame.Y = 0;
                                 }
                             }
@@ -241,68 +270,68 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         {
                             // Just like "walk", but at different Y frames
                             int add = (int)Math.Round(Math.Abs(NPC.velocity.X));
-                            walk[1] += add;
-                            if (walk[1] > 8)
+                            moveTimer += add;
+                            if (moveTimer > 8)
                             {
-                                walk[1] = 0;
-                                walk[0]++;
+                                moveTimer = 0;
+                                moveFrameX++;
                             }
 
-                            if (walk[0] <= 5)
+                            if (moveFrameX <= 5)
                             {
                                 moveFrame.Y = 7;
-                                moveFrame.X = walk[0] + 1;
+                                moveFrame.X = moveFrameX + 1;
 
-                                if (walk[0] > 4) moveFrame.Y = 8;
+                                if (moveFrameX > 4) moveFrame.Y = 8;
                             }
 
-                            if (walk[0] <= 12 && walk[0] > 5)
+                            if (moveFrameX <= 12 && moveFrameX > 5)
                             {
                                 moveFrame.Y = 8;
-                                moveFrame.X = walk[0] - 6;
-                                if (walk[0] > 11)
+                                moveFrame.X = moveFrameX - 6;
+                                if (moveFrameX > 11)
                                 {
-                                    walk[0] = 1;
+                                    moveFrameX = 1;
                                     moveFrame.Y = 7;
                                 }
                             }
 
                             if (NPC.velocity.Y != 0) moveFrame = holdHammerFall;
 
-                            if (NPC.velocity.Y == 0 && NPC.velocity.X == 0)
-                                moveFrame = holdHammerStill;
+                            if (NPC.velocity.Y == 0 && NPC.velocity.X == 0) moveFrame = holdHammerStill;
+
                             return true;
                         }
                     case FrameType.HammerSpin:
                         {
                             //Similar to "walk", but the X frame update has a static speed, and **needs much more maticulous offset setting in PostDraw
                             //**The frames should be the same, so the paladin at the lower row is further to the right during the spinning frames
-                            if (walk[1]++ >= 1)
+                            if (moveTimer++ >= 1)
                             {
-                                walk[1] = 0;
-                                walk[0]++;
+                                moveTimer = 0;
+                                moveFrameX++;
                             }
 
-                            if (walk[0] <= 3)
+                            if (moveFrameX <= 3)
                             {
                                 moveFrame.Y = 5;
-                                moveFrame.X = walk[0];
+                                moveFrame.X = moveFrameX;
 
-                                if (walk[0] > 2) moveFrame.Y = 6;
+                                if (moveFrameX > 2) moveFrame.Y = 6;
                             }
 
-                            if (walk[0] <= 6 && walk[0] > 2)
+                            if (moveFrameX <= 6 && moveFrameX > 2)
                             {
                                 moveFrame.Y = 6;
-                                moveFrame.X = walk[0] - 3;
+                                moveFrame.X = moveFrameX - 3;
                             }
 
-                            if (walk[0] > 6)
+                            if (moveFrameX > 6)
                             {
                                 moveFrame = new Point(3, 5);
-                                if (walk[0] >= 8)
+                                if (moveFrameX >= 8)
                                 {
-                                    walk[0] = 0;
+                                    moveFrameX = 0;
                                     moveFrame = new Point(0, 5);
                                 }
                             }
@@ -312,8 +341,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     case FrameType.HammerChuck:
                         {
                             // Wait for a delay (poise the hammer), then prepare to receive the hammer; return when the delay is finished
-                            hammerChuck[0]++;
-                            if (hammerChuck[0] < 30)
+                            if (++hammerDelay < 30)
                                 moveFrame = prepareSwing;
                             else
                                 moveFrame = getHammerStance;
@@ -341,9 +369,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     case FrameType.CatchUp:
                         {
                             // Or "hammer slam"; default to "prepareSwing" (0, 4), then move the X frame every 10 ticks
-                            hammerChuck[1]++;
+                            slamTimer++;
                             moveFrame.Y = 4;
-                            switch (hammerChuck[1])
+                            switch (slamTimer)
                             {
                                 case 10:
                                     moveFrame.X = 1;
@@ -356,7 +384,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                     break;
                             }
 
-                            return hammerChuck[1] >= 40;
+                            return slamTimer >= 40;
                         }
                 }
             }
@@ -371,7 +399,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             NPC.direction = NPC.velocity.X < 1 ? -1 : 1;
             if (OnSolidTile() != null)
             {
-                //If the NPC is on a solid tile, slow the NPC to a halt, and when the NPC is not moving, wait two seconds, then heal
+                // If the NPC is on a solid tile, slow the NPC to a halt, and when the NPC is not moving, wait two seconds, then heal
                 restore[1]++;
                 if (targetNPC == null && incomingProjectile == null) NPC.velocity.X *= 0.125f;
 
@@ -414,6 +442,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     decoy.width = threat.width;
                     decoy.height = threat.height;
                     decoy.Center = location;
+
                     if (DangerThreshold())
                     {
                         hammerDirection = NPC.velocity.X < 0 ? -1 : 1;
@@ -452,7 +481,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override bool CatchUp(Vector2 location = new Vector2())
         {
             Player player = Main.player[hiredBy];
-            if (!catchUp[0])
+            if (!catchUpLanded)
             {
                 if (HammerAlive() == null && Spinning() == null)
                 {
@@ -460,17 +489,17 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     {
                         if (!isLeaping)
                         {
-                            //If on a solid tile
-                            if (OnSolidTile() != null || NPC.velocity.Y == 0)
+                            if (OnSolidTile() != null || NPC.velocity.Y == 0) // If on a solid tile
                             {
-                                //Create a parabolic function that is expected to be done in at least 1/2 a second
-                                //The parabolic function is from the NPC center, to the expected player's position plus an additive to prevent extremely small distanced leaps
+                                // Create a parabolic function that is expected to be done in at least 1/2 a second
+                                // The parabolic function is from the NPC center, to the expected player's position plus an additive to prevent extremely small distanced leaps
                                 Vector2 place = location != new Vector2() ? location : player.MountedCenter;
                                 Vector2 additive = Vector2.Zero;
-                                if (Math.Abs(NPC.Center.X - place.X) < 75)
-                                    additive.X = place.X < NPC.Center.X ? -125 : 125;
-                                if (Math.Abs(NPC.Center.Y - place.Y) < 50)
-                                    additive.Y = -35;
+
+                                if (Math.Abs(NPC.Center.X - place.X) < 75) additive.X = place.X < NPC.Center.X ? -125 : 125;
+
+                                if (Math.Abs(NPC.Center.Y - place.Y) < 50) additive.Y = -35;
+
                                 parabola = MathFunctions.Parabola.ParabolaFromCoords(NPC.Center, place + additive);
                                 parabola.SetIncrement(30);
                                 isLeaping = true;
@@ -501,11 +530,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                 NPC.position.Y = MathFunctions.AGF.Round(NPC.Center.Y - 8) - 24;
                                 NPC.velocity.Y = MathHelper.Clamp(NPC.velocity.Y, 0, -4);
                                 NPC.noTileCollide = false;
-                                ScreenShake.ScreenShakeEvent(NPC.Center, 15, 9f, 400);
+                                ScreenShake.ScreenShakeEvent(NPC.Center, 15, 4.5f, 400);
                                 isLeaping = false;
                                 leapDist = 0;
                                 leapDelay = 0;
-                                catchUp[0] = true;
+                                catchUpLanded = true;
                             }
                         }
                     }
@@ -517,12 +546,14 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     }
                 }
             }
-            return catchUp[1];
+
+            return catchUpFinished;
         }
+
         public override bool FarAttack()
         {
             Vector2 scout;
-            //Sets the target, and makes the NPC face towards it
+            // Sets the target, and makes the NPC face towards it
             if (targetNPC != null)
             {
                 scout = targetNPC.Center;
@@ -530,115 +561,121 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 NPC.direction = NPC.Center.X < scout.X ? 1 : -1;
                 hammerDirection = NPC.direction;
             }
+
             if (CanAttack())
             {
-                //Perform three different kinds of hammer throws; each of the motions are solely performed by the projectile
-                bool check = hammerChuck[2] == 2 ? true : FrameUpdate(FrameType.HammerChuck);
+                // Perform three different kinds of hammer throws; each of the motions are solely performed by the projectile
+                bool check = throwStyle == 2 ? true : FrameUpdate(FrameType.HammerChuck);
                 if (check)
                 {
-                    hammerChuck[2]++;
-                    if (hammerChuck[2] > 3)
-                        hammerChuck[2] = 1;
-                    hammerChuck[0] = 0;
-                    hammerChuck[1] = 1;
+                    throwStyle++;
+                    if (throwStyle > 3) throwStyle = 1;
+
+                    hammerDelay = 0;
+                    slamTimer = 1;
+
                     PaladinHammer hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammer>(), 20, 1f, hiredBy).ModProjectile as PaladinHammer;
                     hammer.owner = this;
                     hammer.direction = targetPosition.X < NPC.Center.X ? -1 : 1;
                     hammer.startEnd = Start();
                 }
                 else
-                    hammerChuck[1] = 0;
+                    slamTimer = 0;
             }
-            //If a hammer is out and not on the third kind of hammer throw, set to a crouched stance
-            if (hammerChuck[2] == 3 && hammerChuck[1] == 1)
-                FrameUpdate(FrameType.HammerChuckAwait);
-            float[] Start()
-            {
-                //Return; at what X must the projectile be killed, and the starting X
-                switch (hammerChuck[2])
-                {
-                    case 2:
-                        return new float[2] { 4.9f, 3 };
-                    case 3:
-                        return new float[2] { 5, 5 };
-                    default:
-                        return new float[2] { 3, 1 };
-                }
-            }
+
+            // If a hammer is out and not on the third kind of hammer throw, set to a crouched stance
+            if (throwStyle == 3 && slamTimer == 1) FrameUpdate(FrameType.HammerChuckAwait);
+
             return HammerAlive() == null && targetNPC == null;
         }
+
         bool CanAttack() => Spinning() == null && HammerAlive() == null && attackDelay < 1;
         public override bool CloseAttack()
         {
-            if (!closeAttack[0])
+            if (!CAStyleDecided)
             {
-                //Check the distance between the enemy and the NPC; if *really* close, perform a hammer spin, otherwise perform a hammer slam
+                // Check the distance between the enemy and the NPC; if *really* close, perform a hammer spin, otherwise perform a hammer slam
                 Vector2 scout;
                 if (targetNPC != null)
                 {
                     scout = targetNPC.Center;
                     float general = Vector2.Distance(new Vector2(scout.X, 0), new Vector2(NPC.Center.X, 0));
                     float height = Vector2.Distance(new Vector2(scout.Y, 0), new Vector2(NPC.Center.Y, 0));
-                    closeAttack[1] = height > 50 || OnSolidTile() == null || general < 75;
-                    closeAttack[0] = true;
+                    doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
+                    CAStyleDecided = true;
                 }
             }
-            if (closeAttack[1])
+
+            if (doHammerSpin)
             {
                 drawAfterimage = true;
                 FrameUpdate(FrameType.HammerSpin);
-                //Lock the direction to forward to prevent unusual appearance
+
+                // Lock the direction to forward to prevent unusual appearance
                 hammerDirection = 1;
-                if (targetNPC != null)
-                    NPC.direction = NPC.Center.X < targetNPC.Center.X ? 1 : -1;
+                if (targetNPC != null) NPC.direction = NPC.Center.X < targetNPC.Center.X ? 1 : -1;
+
                 velocity = 0.33f;
-                //Go towards the target
-                if (!DangerThreshold() && targetNPC != null)
-                    StandardAI(Rect(targetNPC));
-                //Create a projectile that moves forth and back from the paladin
+                // Go towards the target
+                if (!DangerThreshold() && targetNPC != null) StandardAI(Rect(targetNPC));
+
+                // Create a projectile that moves forth and back from the paladin
                 if (CanAttack())
                 {
                     PaladinHammerSpin hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammerSpin>(), 20, 1f, hiredBy).ModProjectile as PaladinHammerSpin;
                     hammer.owner = this;
                 }
-                //If there is still an enemy, keep the spinning projectile alive
-                if (Spinning() != null && targetNPC != null)
-                    Spinning().Projectile.timeLeft = 2;
-                //Revert the paladin's stats to normal
+
+                // If there is still an enemy, keep the spinning projectile alive
+                if (Spinning() != null && targetNPC != null) Spinning().Projectile.timeLeft = 2;
+
+                // Revert the paladin's stats to normal
                 if (Spinning() == null)
                 {
                     NPC.defense = Defense;
                     NPC.knockBackResist = KnockbackResist;
-                    closeAttack = new bool[2];
+
+                    CAStyleDecided = false;
+                    doHammerSpin = false;
+                    //closeAttack = new bool[2];
                 }
+
                 bool stop = Spinning() == null && targetNPC == null;
                 return stop;
             }
             else
             {
-                //Face the paladin towards the enemy, and keep it still
-                if (attackDelay < 0)
-                    hammerDirection = targetNPC.Center.X < NPC.Center.X ? -1 : 1;
+                // Face the paladin towards the enemy, and keep it still
+                if (attackDelay < 0) hammerDirection = targetNPC.Center.X < NPC.Center.X ? -1 : 1;
+
                 NPC.velocity.X = 0;
-                if (FrameUpdate(FrameType.CatchUp) && attackDelay < 1)
-                    hammerChuck[1] = 0;
-                //Create a projectile with lerped motion towards the faced direction, and shake the screen
-                if (hammerChuck[1] > 9 && Shockwave() == null && attackDelay < 1)
+
+                if (FrameUpdate(FrameType.CatchUp) && attackDelay < 1) slamTimer = 0;
+
+                // Create a projectile with lerped motion towards the faced direction, and shake the screen
+                if (slamTimer > 9 && Shockwave() == null && attackDelay < 1)
                 {
                     ScreenShake.ScreenShakeEvent(NPC.Center, 15, 9, 250);
                     PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(hammerDirection == -1 ? -16 : 16, 0), ModContent.ProjectileType<PaladinHammerHit>(), 30, 1, hiredBy).ModProjectile as PaladinHammerHit;
                     shockwave.owner = this;
                     attackDelay = AttackDelay + 20;
                 }
-                //Set the frames to a standing walkBattle frame in the middle of the delay
-                else if (hammerChuck[1] < 10)
+                else if (slamTimer < 10) // Set the frames to a standing walkBattle frame in the middle of the delay
                     moveFrame = new Point(0, 3);
-                if (attackDelay > 0 && attackDelay < 40)
-                    moveFrame = new Point(1, 7);
-                //Check for the nearest NPC if a hammer spin attack is necessary
+
+                if (attackDelay > 0 && attackDelay < 40) moveFrame = new Point(1, 7);
+
+                // Check for the nearest NPC if a hammer spin attack is necessary
                 if (attackDelay < 0)
-                    closeAttack = new bool[2];
+                {
+                    CAStyleDecided = false;
+                    doHammerSpin = false;
+
+                    //closeAttack = new bool[2];
+                }
+
                 bool stop = Shockwave() == null && moveFrame.X > 0;
+
                 return stop;
             }
         }
@@ -672,6 +709,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     else
                         set.X += check == -1 ? -1 : -14;
                 }
+
                 return set;
             }
 
@@ -740,6 +778,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             Projectile.width = 38;
             Projectile.height = 38;
             Projectile.timeLeft = 3000;
@@ -756,7 +796,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             if (owner != null && owner.NPC.active)
             {
                 //Rotate the hammer forth, back, or forth but faster
-                switch (owner.hammerChuck[2])
+                switch (owner.throwStyle)
                 {
                     case 1:
                         rotation += 0.125f * (direction == 1 ? 1 : -1);
@@ -856,6 +896,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             Projectile.width = 50;
             Projectile.height = 50;
             Projectile.timeLeft = 2;
@@ -901,6 +943,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             Projectile.width = 50;
             Projectile.height = 50;
             Projectile.timeLeft = 180;
@@ -927,7 +971,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             // Dust offset
             Vector2 offset = new Vector2(35 * (owner.hammerDirection == -1 ? -1 : 1), 25);
-       
+
             #region shockwave dust
             // Create sine shaped dust formations as the projectile travels
             float sin2 = (float)Math.Pow(Math.Abs(1.06f * Math.Sin(5f * sine)), 40) - 0.1f;
@@ -959,6 +1003,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
+
             Projectile.width = 48;
             Projectile.height = 48;
             Projectile.tileCollide = true;

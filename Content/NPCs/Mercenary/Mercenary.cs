@@ -78,6 +78,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public override bool CheckActive() => false;
         public virtual bool RestoreHealth() => false;
         public IEntitySource Source() => NPC.GetSource_FromAI();
+        public override string GetChat() => MercenaryDialogue.PickDialogueOption(Dialogue);
         public void ExtendTimer(int minutes) { hireTime += minutes + 1; hireTimer += 3600 * minutes; }
         public override void SetStaticDefaults()
         {
@@ -332,7 +333,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                     if (continueAttack) continueAttack = closeAttackStyle ? CloseAttack() : FarAttack();
                 }
 
-                Player player = FollowPlayer();          
+                Player player = FollowPlayer();
                 if (hireTimer < 0) // Update the time that the mercenary is hired for
                 {
                     hiredBy = -1;
@@ -359,24 +360,24 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 {
                     NPC.dontTakeDamage = false;
                     NPC.dontTakeDamageFromHostiles = false;
-                    //If the NPC does not have to / cannot heal
-                    if (restore[0] < 1)
+
+                    if (restore[0] < 1) // If the NPC does not have to / cannot heal
                     {
-                        //Perform a method whenever a projectile is detected; the second check may be removed if fully optimized
-                        //The second check is mainly for the NPC to not perform extra actions to (usually get away from) a threat
-                        if (incomingProjectile != null && !DangerThreshold())
-                            ProjectileReact();
-                        //Decrease the heal cooldown
-                        if (restore[1]-- < 0)
-                            restore[1] = 0;
-                        if (restore[2]-- < 0)
-                            restore[2] = 0;
-                        //Make the NPC walk towards the player and stop when nearby if not in combat
+                        // Perform a method whenever a projectile is detected; the second check may be removed if fully optimized
+                        // The second check is mainly for the NPC to not perform extra actions to (usually get away from) a threat
+                        if (incomingProjectile != null && !DangerThreshold()) ProjectileReact();
+
+                        // Decrease the heal cooldown
+                        if (restore[1]-- < 0) restore[1] = 0;
+                        if (restore[2]-- < 0) restore[2] = 0;
+
+                        // Make the NPC walk towards the player and stop when nearby if not in combat
                         if (!continueAttack && !catchingUp && targetNPC == null && incomingProjectile == null)
                         {
                             if (Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(player.Center.X, 0)) > 125)
                                 StandardAI(Rect(player));
                         }
+
                         if (hiredBy != -1)
                         {
                             //Cancel all attacks (if any) and catch up to the player
@@ -385,8 +386,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                                 if (!DangerThreshold())
                                 {
                                     continueAttack = false;
-                                    if (CatchUp())
-                                        catchingUp = false;
+                                    if (CatchUp()) catchingUp = false;
                                 }
                             }
                         }
@@ -432,28 +432,19 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         /// <summary>
         /// Performed when in danger; usually used for evading
         /// </summary>
-        public virtual void SafetyBehaviour()
-        {
-
-        }
+        public virtual void SafetyBehaviour() { }
 
         /// <summary>
         /// Performed when a projectile is detected; usually dodging the projectile
         /// </summary>
-        public virtual void ProjectileReact()
-        {
-
-        }
+        public virtual void ProjectileReact() { }
 
         /// <summary>
         /// Used for catching up to the player; returns if the NPC has catched up
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        public virtual bool CatchUp(Vector2 location = new Vector2())
-        {
-            return false;
-        }
+        public virtual bool CatchUp(Vector2 location = new Vector2()) => false;
 
         /// <summary>
         /// Returns if the NPC is too far away from the player; always returns false if in danger
@@ -492,19 +483,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         /// Returns if the NPC should stop calling this method; called when a detected enemy is nearby
         /// </summary>
         /// <returns></returns>
-        public virtual bool CloseAttack()
-        {
-            return false;
-        }
+        public virtual bool CloseAttack() => false;
 
         /// <summary>
         /// Returns if the NPC should stop calling this method; called when a detected enemy is far away
         /// </summary>
         /// <returns></returns>
-        public virtual bool FarAttack()
-        {
-            return false;
-        }
+        public virtual bool FarAttack() => false;
 
         Projectile RadialProjectileCheck()
         {
@@ -548,6 +533,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                     }
                 }
             }
+
             if (distance.Count > 0)
             {
                 //Finds the smallest distance and bases the needed attack performed based on their "nearby" placement
@@ -597,13 +583,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             spriteBatch.Draw(checkTest, wallDetectPos - screenPos, new Rectangle(0, 0, checkTest.Width, checkTest.Height), drawColor, 0, new Vector2(checkTest.Width / 2, checkTest.Height / 2), 1, NPC.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             spriteBatch.Draw(checkTest, groundDetectPos - screenPos, new Rectangle(0, 0, checkTest.Width, checkTest.Height), drawColor, (float)Math.PI * 0.5f, new Vector2(checkTest.Width / 2, checkTest.Height / 2), 1, SpriteEffects.FlipHorizontally, 0);
         }
-        public override string GetChat() => MercenaryDialogue.PickDialogueOption(Dialogue);
+
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = $"{(hiredBy == -1 ? "Hire" : "Prolong (10 minutes)")}: 1 gold";
-            if (hiredBy != -1)
-                button2 = $"{hireTime} minutes";
+            if (hiredBy != -1) button2 = $"{hireTime} minutes";
         }
+
         public override void OnChatButtonClicked(bool firstButton, ref bool shop)
         {
             if (firstButton)

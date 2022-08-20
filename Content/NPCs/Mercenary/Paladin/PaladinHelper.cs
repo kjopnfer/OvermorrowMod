@@ -6,6 +6,7 @@ using Terraria.GameContent;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Core;
+using System.Linq;
 
 namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 {
@@ -64,8 +65,26 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 }
             }
 
+            /*return Main.projectile
+                .Where(p => p != null && p.active && p.type == ModContent.ProjectileType<PaladinHammerHit>())
+                .Select(p => p.ModProjectile)
+                .OfType<PaladinHammerHit>()
+                .Where(hammer => hammer.owner == this)
+                .FirstOrDefault();*/
+
             return null;
         }
+
+        /*public static T FindProjectile<T>(Entity owner) where T : ModProjectile
+        {
+            var type = ModContent.ProjectileType<T>();
+            return Main.projectile
+                .Where(p => p != null && p.active && p.type == type)
+                .Select(p => p.ModProjectile)
+                .OfType<T>()
+                .Where(mp => mp.owner == owner)
+                .FirstOrDefault();
+        }*/
 
         /// <summary>
         /// Returns the hammer spin projectile
@@ -117,6 +136,23 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 return tile;
 
             return new Tile();
+        }
+
+        /// <summary>
+        /// Returns info on how the hammer will behave based on the throwstyle
+        /// </summary>
+        /// <returns>Returns at what X must the projectile be killed, and the starting X</returns>
+        private float[] Start()
+        {
+            switch (throwStyle)
+            {
+                case 2:
+                    return new float[2] { 4.9f, 3 };
+                case 3:
+                    return new float[2] { 5, 5 };
+                default:
+                    return new float[2] { 3, 1 };
+            }
         }
     }
 }
