@@ -88,6 +88,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override int MaxHealth => 500;
         public override int Defense => 40;
         public override float KnockbackResist => 0.66f;
+        public override int HealCooldown => 10;
 
         // TODO: Refactor all code for readability
         public override void AI()
@@ -131,7 +132,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 drawAfterimage = true;
                 if (catchUpLanded) // If the leap has started
                     if (FrameUpdate(FrameType.CatchUp)) // Declare that the paladin has caught up when the animation is finished
-                        doHammerSpin = true;
+                        catchUpFinished = true;
             }
             else
             {
@@ -934,6 +935,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
     {
         public float sine;
         float initialVelocity;
+        bool initialize;
+
         public override string Texture => AssetDirectory.NPC + "Mercenary/Paladin/PaladinHammer";
         public override bool PreDraw(ref Color lightColor) => false;
         public override void SetStaticDefaults()
@@ -951,26 +954,22 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             AIType = ProjectileID.Bullet;
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            Vector2 offset = new Vector2(35 * (owner.hammerDirection == -1 ? -1 : 1), 25);
-
-            // Creates an oval dust shape
-            for (int a = 0; a < 20; a++)
-            {
-                float pi = (float)Math.PI / 10;
-                Dust dust = Dust.NewDustPerfect(new Vector2(20f * (float)Math.Cos(a * pi) + Projectile.Center.X, 5f * (float)Math.Sin(a * pi) + Projectile.Center.Y) + offset, 6);
-                dust.noGravity = true;
-                dust.velocity = Vector2.Zero;
-            }
-
-            initialVelocity = Projectile.velocity.X;
-        }
-
         public override void AI()
         {
             // Dust offset
             Vector2 offset = new Vector2(35 * (owner.hammerDirection == -1 ? -1 : 1), 25);
+            if (!initialize)
+            {
+                for (int a = 0; a < 20; a++) // Create an oval dust shape
+                {
+                    float pi = (float)Math.PI / 10;
+                    Dust dust = Dust.NewDustPerfect(new Vector2(20f * (float)Math.Cos(a * pi) + Projectile.Center.X, 5f * (float)Math.Sin(a * pi) + Projectile.Center.Y) + offset, 6);
+                    dust.noGravity = true;
+                    dust.velocity = Vector2.Zero;
+                }
+
+                initialVelocity = Projectile.velocity.X;
+            }
 
             #region shockwave dust
             // Create sine shaped dust formations as the projectile travels

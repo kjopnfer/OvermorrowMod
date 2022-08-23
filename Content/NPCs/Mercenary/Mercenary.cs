@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public virtual int MaxHealth { get { return 400; } }
         public virtual int Defense { get { return 20; } }
         public virtual float KnockbackResist { get { return 0.25f; } }
-        //How many seconds a mercenary must wait until they can heal again (until RestoreHealth() can be called)
+        // How many seconds a mercenary must wait until they can heal again (until RestoreHealth() can be called)
         public virtual int HealCooldown { get { return 30; } }
         //A list of MercenaryDialogue classes, containing strings (the dialogue), ints (priority of the dialogue) and bools (can display or not)
         public virtual List<MercenaryDialogue> Dialogue { get; set; }
@@ -128,11 +128,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public void StandardAI(RBC targ)
         {
             Vector2 target = targ.position;
-            //When safe: When the player is not too far
-            //Otherwise: When in danger and the target (generally scoutNPC) is not null
+            // When safe: When the player is not too far
+            // Otherwise: When in danger and the target (generally scoutNPC) is not null
             if (!TooFar() || (DangerThreshold() && target != Vector2.Zero))
             {
-                //The mercenary will fall through platforms if the target is below it
+                // The mercenary will fall through platforms if the target is below it
                 void FallThrough()
                 {
                     if ((target.Y - (targ.height / 2)) > NPC.Center.Y && OnPlatform(NPC.Center, NPC.height / 2, false) && (OnPlatform(new Vector2(NPC.Center.X, target.Y), targ.height / 2, false) || OnPlatform(new Vector2(NPC.Center.X, target.Y), targ.height / 2, true)))
@@ -261,6 +261,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 }
             }
         }
+
         /// <summary>
         /// Checks for hostile threats (NPCs and projectiles)
         /// </summary>
@@ -269,6 +270,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             incomingProjectile = RadialProjectileCheck();
             targetNPC = RadialNPCCheck();
         }
+
         /// <summary>
         /// Determines if RestoreHealth() can be called
         /// </summary>
@@ -277,10 +279,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         {
             int check = 0;
             for (int a = 0; a < restore.Length; a++)
-                if (restore[a] < 1)
-                    check++;
+                if (restore[a] < 1) check++;
+
             return check == restore.Length;
         }
+
         /// <summary>
         /// A check for if the NPC can follow the player; this is in place so as the AI will not have to account with cavern systems and similar tile formations. This can be removed if a pathing algorithm, or something similar, is made.
         /// </summary>
@@ -298,11 +301,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                     if (!WorldGen.TileEmpty(checkTile.X, checkTile.Y) && WorldGen.SolidOrSlopedTile(tile))
                     {
                         count++;
-                        if (tile.WallType != WallID.None)
-                            count++;
+                        if (tile.WallType != WallID.None) count++;
                     }
                 }
             }
+
             return count < 7;
         }
         /// <summary>
@@ -311,14 +314,15 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         /// <param name="entity"></param>
         /// <returns></returns>
         public RBC Rect(Entity entity) => new RBC(entity.width, entity.height, entity.Center);
+
         /// <summary>
         /// Returns the player that the mercenary is supposed to follow; if not hired, return null
         /// </summary>
         /// <returns></returns>
         public Player FollowPlayer()
         {
-            if (hiredBy != -1)
-                return Main.player[hiredBy];
+            if (hiredBy != -1) return Main.player[hiredBy];
+
             return null;
         }
 
@@ -348,7 +352,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 }
 
                 // Perform safety behaviour if in danger, or perform a health restore (RestoreHealth()) if possible
-                if (DangerThreshold())
+                if (DangerThreshold() || targetNPC == null)
                 {
                     continueAttack = false;
                     SafetyBehaviour();
