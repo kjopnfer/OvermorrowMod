@@ -52,23 +52,28 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         // The closest hostile NPC to the mercenary
         public NPC targetNPC;
         public bool catchingUp;
-        //These two are only used in StandardAI() for storing distance and delays for leaps, how many tiles must be accounted, etc.
-        int[] detectValue = new int[2];
-        int[] detectTimer = new int[2];
-        //A minimum of tiles required for a leap; at least 2
-        int checkGap;
-        //Used for randomized closing distances when walking to the player (StandardAI())
-        int[] runCond = new int[2] { 350, 350 };
-        //Used for cancelling an unused pit jump
-        int pitJumpExpire;
-        //The direction the NPC should go while performing a leap
-        int direction;
-        //The current wall detection scanner position
-        Vector2 wallDetectPos;
-        //The current pit detection scanner position
-        Vector2 groundDetectPos;
-        //Where the NPC should expect to start a leap when a pit is detected
-        Vector2 pitJumpRelative;
+
+        // These two are only used in StandardAI() for storing distance and delays for leaps, how many tiles must be accounted, etc.
+        public int[] detectValue = new int[2];
+        public int[] detectTimer = new int[2];
+
+        // A minimum of tiles required for a leap; at least 2
+        public int checkGap;
+
+        // Used for randomized closing distances when walking to the player (StandardAI())
+        public int[] runCond = new int[2] { 350, 350 };
+        
+        // Used for cancelling an unused pit jump
+        public int pitJumpExpire;
+
+        // The direction the NPC should go while performing a leap
+        public int direction;
+        // The current wall detection scanner position
+        public Vector2 wallDetectPos;
+        // The current pit detection scanner position
+        public Vector2 groundDetectPos;
+        // Where the NPC should expect to start a leap when a pit is detected
+        public Vector2 pitJumpRelative;
         //How many minutes are displayed (how many minutes the mercenary will fight for you) when you open chat
         public int hireTime;
         //the literal time left (in ticks), determintes hireTime
@@ -106,6 +111,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 hireTimer = 0;
             }
             hireTimer--;
+
             if (currentMinute-- < 1)
             {
                 hireTime--;
@@ -125,142 +131,160 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             CombatText.NewText(NPC.getRect(), Color.SpringGreen, $"{heal}", false, false);
         }
 
-        public void StandardAI(RBC targ)
+        public void StandardAI(RBC target)
         {
-            Vector2 target = targ.position;
+            Vector2 targetPosition = target.position;
             // When safe: When the player is not too far
             // Otherwise: When in danger and the target (generally scoutNPC) is not null
-            if (!TooFar() || (DangerThreshold() && target != Vector2.Zero))
+            if (!TooFar() || (DangerThreshold() && targetPosition != Vector2.Zero))
             {
-                // The mercenary will fall through platforms if the target is below it
-                void FallThrough()
-                {
-                    if ((target.Y - (targ.height / 2)) > NPC.Center.Y && OnPlatform(NPC.Center, NPC.height / 2, false) && (OnPlatform(new Vector2(NPC.Center.X, target.Y), targ.height / 2, false) || OnPlatform(new Vector2(NPC.Center.X, target.Y), targ.height / 2, true)))
-                        NPC.noTileCollide = true;
-                    else
-                        NPC.noTileCollide = false;
-                }
-                //Checks if the tile it is standing on is a platform
-                bool OnPlatform(Vector2 check, float additive, bool solidTile)
-                {
-                    Point checkTile = new Point((int)check.X / 16, (int)(check.Y + additive) / 16);
-                    Tile tile = Main.tile[checkTile.X, checkTile.Y];
-                    return solidTile ? Main.tileSolid[tile.TileType] && WorldGen.TileEmpty(checkTile.X, checkTile.Y) : Main.tileSolidTop[tile.TileType];
-                }
-                //Checks the vertical distance to the target; some randomization is added with runCond[0]
-                bool NextToTarget() => Vector2.Distance(new Vector2(NPC.Center.X), new Vector2(target.X)) < runCond[0];
+                // Checks the vertical distance to the target; some randomization is added with runCond[0]
+                bool NextToTarget() => Vector2.Distance(new Vector2(NPC.Center.X), new Vector2(targetPosition.X)) < runCond[0];
+
                 if (hiredBy != -1)
                 {
-                    if (!NextToTarget() || target != Vector2.Zero)
+                    if (!NextToTarget() || targetPosition != Vector2.Zero)
                     {
-                        //Add randomization for NextToTarget()
-                        if (runCond[1] == runCond[0])
-                            runCond[0] = Main.rand.Next(150, 400);
-                        //Determines which direction the NPC should go
-                        bool moveCondition = direction != 0 && NPC.velocity.Y != 0 && groundDetectPos != Vector2.Zero ? (direction > 0) : (NPC.Center.X < target.X);
+                        // Add randomization for NextToTarget()
+                        if (runCond[1] == runCond[0]) runCond[0] = Main.rand.Next(150, 400);
+
+                        // Determines which direction the NPC should go
+                        bool moveCondition = direction != 0 && NPC.velocity.Y != 0 && groundDetectPos != Vector2.Zero ? (direction > 0) : (NPC.Center.X < targetPosition.X);
                         NPC.velocity.X += moveCondition ? velocity : -velocity;
                         NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -7, 7);
-                        //The mercenary cannot check tiles if it is in the air
+                        // The mercenary cannot check tiles if it is in the air
                         if (NPC.velocity.Y == 0)
                         {
-                            if (groundDetectPos == Vector2.Zero)
-                                direction = 0;
-                            if (canCheckTiles)
-                                CheckTiles();
+                            if (groundDetectPos == Vector2.Zero) direction = 0;
+
+                            if (canCheckTiles) CheckTiles();
                         }
                     }
                     else
                         runCond[1] = runCond[0];
-                    FallThrough();
-                }
-                void CheckTiles()
-                {
-                    //Changes the position of the wall detection scanner
-                    wallDetectPos = new Vector2(NPC.Center.X + (NPC.width * (NPC.direction == 1 ? 0.25f : -0.25f)), (NPC.Center.Y + 8) - (detectTimer[0] * 16));
-                    #region Wall check
-                    //If there is no obstruction between the scanned position, and the wall detection scanner, there is no tile there
-                    bool noWall = Collision.CanHitLine(wallDetectPos, 12, 12, new Vector2(wallDetectPos.X + (96 * (NPC.direction == 1 ? 1 : -1)), wallDetectPos.Y - 8), 12, 12);
-                    if (!noWall)
-                        detectValue[0]++;
-                    //A minimum amount of time must pass until a leap can be performed (>= num represents how many tiles can be accounted upwards)
-                    if (detectTimer[0]++ >= 5)
-                    {
-                        //Make the mercenary jump a height based on how many obstructions were found, and reset the values
-                        #region Wall check jump
-                        if (detectValue[0] > 0)
-                            NPC.velocity.Y -= (detectValue[0] * 6f) * (1.5f / detectValue[0]);
-                        #endregion
-                        detectValue[0] = 0;
-                        detectTimer[0] = 0;
-                    }
-                    #endregion
-                    #region Horizontal check
-                    if (groundDetectPos != Vector2.Zero)
-                    {
-                        //Like wall detection, but it checks downwards and also checks for a **gap quota
-                        bool pit = Pit(0) && Pit(1);
-                        bool Pit(int x) => Collision.CanHitLine(groundDetectPos, 12, 12, new Vector2(groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x), groundDetectPos.Y + 16), 12, 12) && !Main.tileSolidTop[Main.tile[MathFunctions.AGF.Round((groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x)) / 16), MathFunctions.AGF.Round((groundDetectPos.Y / 16))].TileType];
-                        if (pit)
-                        {
-                            //**The gap must be at least two tiles wide in order for the mercenary to jump; to prevent unnecessary leaps
-                            checkGap++;
-                            if (checkGap == 2)
-                            {
-                                //Sets a place for the mercenary to go towards to perform the leap
-                                pitJumpRelative = groundDetectPos;
-                                direction = NPC.Center.X - groundDetectPos.X < 0 ? 1 : -1;
-                            }
-                            detectValue[1]++;
-                        }
-                        else
-                            checkGap = 0;
-                        //Same story with wall detection; can check a maximum of around 17 tiles before checking if a leap is needed
-                        if (detectTimer[1] < 17)
-                            detectTimer[1]++;
-                        if (detectTimer[1] >= 15)
-                        {
-                            //If a leap is needed (and the quota is met i.e. "checkGap == 2") 
-                            if (pitJumpRelative != Vector2.Zero)
-                            {
-                                //perform a leap if the NPC is close enough to where pitJumpRelative was set (where the leap should be performed)
-                                float dist = Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(pitJumpRelative.X, 0)) * (NPC.direction == -1 ? 0.5f : 1);
-                                float condition = (16 * 4) / (NPC.direction == -1 ? 2 : 1);
-                                //Erases the expected leap position after a brief period (brief because the NPC would be near it anyways)
-                                pitJumpExpire++;
-                                if (pitJumpExpire >= 15)
-                                    pitJumpRelative = Vector2.Zero;
-                                //if close enough to the expected position
-                                if (dist < condition && condition < 75)
-                                {
-                                    //Perform a leap based on how many tiles were detected, and reset the values
-                                    #region Wall check jump
-                                    if (detectValue[1] > 0)
-                                        NPC.velocity.Y -= (detectValue[1] * 6.75f) * (1.45f / detectValue[1]);
-                                    #endregion
-                                    pitJumpExpire = 0;
-                                    detectValue[1] = 0;
-                                    detectTimer[1] = 0;
-                                    pitJumpRelative = Vector2.Zero;
-                                }
-                            }
-                            //If a leap was not expected, reset values
-                            else
-                            {
-                                pitJumpExpire = 0;
-                                detectValue[1] = 0;
-                                detectTimer[1] = 0;
-                            }
-                        }
-                    }
-                    //Update the pit detection position
-                    if (detectValue[0] < 1)
-                        groundDetectPos = new Vector2(NPC.Center.X + (detectTimer[1] * (NPC.direction == 1 ? 16f : -16f)), NPC.Center.Y + (NPC.height / 2.33f));
-                    else
-                        groundDetectPos = Vector2.Zero;
-                    #endregion
+
+                    FallThrough(target, targetPosition);
                 }
             }
         }
+
+        /// <summary>
+        /// The mercenary will fall through platforms if the target is below it
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="targetPosition"></param>
+        void FallThrough(RBC target, Vector2 targetPosition)
+        {
+            if ((targetPosition.Y - (target.height / 2)) > NPC.Center.Y && OnPlatform(NPC.Center, NPC.height / 2, false) && (OnPlatform(new Vector2(NPC.Center.X, targetPosition.Y), target.height / 2, false) || OnPlatform(new Vector2(NPC.Center.X, targetPosition.Y), target.height / 2, true)))
+                NPC.noTileCollide = true;
+            else
+                NPC.noTileCollide = false;
+        }
+
+        /// <summary>
+        /// Checks if the tile it is standing on is a platform
+        /// </summary>
+        /// <param name="check"></param>
+        /// <param name="additive"></param>
+        /// <param name="solidTile"></param>
+        /// <returns></returns>
+        public bool OnPlatform(Vector2 check, float additive, bool solidTile)
+        {
+            Point checkTile = new Point((int)check.X / 16, (int)(check.Y + additive) / 16);
+            Tile tile = Main.tile[checkTile.X, checkTile.Y];
+            return solidTile ? Main.tileSolid[tile.TileType] && WorldGen.TileEmpty(checkTile.X, checkTile.Y) : Main.tileSolidTop[tile.TileType];
+        }
+
+        public virtual void CheckTiles()
+        {
+            // Changes the position of the wall detection scanner
+            wallDetectPos = new Vector2(NPC.Center.X + (NPC.width * (NPC.direction == 1 ? 0.25f : -0.25f)), (NPC.Center.Y + 8) - (detectTimer[0] * 16));
+
+            #region Wall check
+            // If there is no obstruction between the scanned position, and the wall detection scanner, there is no tile there
+            bool noWall = Collision.CanHitLine(wallDetectPos, 12, 12, new Vector2(wallDetectPos.X + (96 * (NPC.direction == 1 ? 1 : -1)), wallDetectPos.Y - 8), 12, 12);
+            if (!noWall) detectValue[0]++;
+
+            // A minimum amount of time must pass until a leap can be performed (>= num represents how many tiles can be accounted upwards)
+            if (detectTimer[0]++ >= 5)
+            {
+                // Make the mercenary jump a height based on how many obstructions were found, and reset the values
+                #region Wall check jump
+                if (detectValue[0] > 0) NPC.velocity.Y -= (detectValue[0] * 6f) * (1.5f / detectValue[0]);
+
+                #endregion
+                detectValue[0] = 0;
+                detectTimer[0] = 0;
+            }
+            #endregion
+
+            #region Horizontal check
+            if (groundDetectPos != Vector2.Zero)
+            {
+                // Like wall detection, but it checks downwards and also checks for a **gap quota
+                bool pit = Pit(0) && Pit(1);
+                bool Pit(int x) => Collision.CanHitLine(groundDetectPos, 12, 12, new Vector2(groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x), groundDetectPos.Y + 16), 12, 12) && !Main.tileSolidTop[Main.tile[MathFunctions.AGF.Round((groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x)) / 16), MathFunctions.AGF.Round((groundDetectPos.Y / 16))].TileType];
+                if (pit)
+                {
+                    //**The gap must be at least two tiles wide in order for the mercenary to jump; to prevent unnecessary leaps
+                    if (++checkGap == 2)
+                    {
+                        // Sets a place for the mercenary to go towards to perform the leap
+                        pitJumpRelative = groundDetectPos;
+                        direction = NPC.Center.X - groundDetectPos.X < 0 ? 1 : -1;
+                    }
+
+                    detectValue[1]++;
+                }
+                else
+                    checkGap = 0;
+
+                // Same story with wall detection; can check a maximum of around 17 tiles before checking if a leap is needed
+                if (detectTimer[1] < 17) detectTimer[1]++;
+
+                if (detectTimer[1] >= 15)
+                {
+                    // If a leap is needed (and the quota is met i.e. "checkGap == 2") 
+                    if (pitJumpRelative != Vector2.Zero)
+                    {
+                        //perform a leap if the NPC is close enough to where pitJumpRelative was set (where the leap should be performed)
+                        float dist = Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(pitJumpRelative.X, 0)) * (NPC.direction == -1 ? 0.5f : 1);
+                        float condition = (16 * 4) / (NPC.direction == -1 ? 2 : 1);
+                        // Erases the expected leap position after a brief period (brief because the NPC would be near it anyways)
+                        if (++pitJumpExpire >= 15) pitJumpRelative = Vector2.Zero;
+
+                        //if close enough to the expected position
+                        if (dist < condition && condition < 75)
+                        {
+                            // Perform a leap based on how many tiles were detected, and reset the values
+                            #region Wall check jump
+                            if (detectValue[1] > 0)
+                                NPC.velocity.Y -= (detectValue[1] * 6.75f) * (1.45f / detectValue[1]);
+                            #endregion
+
+                            pitJumpExpire = 0;
+                            detectValue[1] = 0;
+                            detectTimer[1] = 0;
+                            pitJumpRelative = Vector2.Zero;
+                        }
+                    }
+                    else // If a leap was not expected, reset values
+                    {
+                        pitJumpExpire = 0;
+                        detectValue[1] = 0;
+                        detectTimer[1] = 0;
+                    }
+                }
+            }
+
+            // Update the pit detection position
+            if (detectValue[0] < 1)
+                groundDetectPos = new Vector2(NPC.Center.X + (detectTimer[1] * (NPC.direction == 1 ? 16f : -16f)), NPC.Center.Y + (NPC.height / 2.33f));
+            else
+                groundDetectPos = Vector2.Zero;
+            #endregion
+        }
+
 
         /// <summary>
         /// Checks for hostile threats (NPCs and projectiles)
@@ -328,6 +352,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
 
         public virtual void BaseAI()
         {
+            if (NPC.life > NPC.lifeMax) NPC.life = NPC.lifeMax;
+
             if (hiredBy != -1)
             {
                 if (!TooFar() && !DangerThreshold() && !catchingUp)
@@ -352,10 +378,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 }
 
                 // Perform safety behaviour if in danger, or perform a health restore (RestoreHealth()) if possible
-                if (DangerThreshold() || targetNPC == null)
+                if (DangerThreshold() || (targetNPC == null && NPC.life < NPC.lifeMax))
                 {
-                    continueAttack = false;
-                    SafetyBehaviour();
+                    if (DangerThreshold())
+                    {
+                        continueAttack = false;
+                        SafetyBehaviour();
+                    }
 
                     if (CanHeal()) restore[0] = 1;
                 }

@@ -681,6 +681,97 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             }
         }
 
+        // Doing this because the NPC keeps jumping when doing the spin attack and messing with afterimages
+        public override void CheckTiles()
+        {
+            // Changes the position of the wall detection scanner
+            wallDetectPos = new Vector2(NPC.Center.X + (NPC.width * (NPC.direction == 1 ? 0.25f : -0.25f)), (NPC.Center.Y + 8) - (detectTimer[0] * 16));
+
+            #region Wall check
+            // If there is no obstruction between the scanned position, and the wall detection scanner, there is no tile there
+            bool noWall = Collision.CanHitLine(wallDetectPos, 12, 12, new Vector2(wallDetectPos.X + (96 * (NPC.direction == 1 ? 1 : -1)), wallDetectPos.Y - 8), 12, 12);
+            if (!noWall) detectValue[0]++;
+
+            // A minimum amount of time must pass until a leap can be performed (>= num represents how many tiles can be accounted upwards)
+            if (detectTimer[0]++ >= 5)
+            {
+                // Make the mercenary jump a height based on how many obstructions were found, and reset the values
+                #region Wall check jump
+                if (detectValue[0] > 0 && !doHammerSpin) NPC.velocity.Y -= (detectValue[0] * 6f) * (1.5f / detectValue[0]);
+
+                #endregion
+                detectValue[0] = 0;
+                detectTimer[0] = 0;
+            }
+            #endregion
+
+            #region Horizontal check
+            if (groundDetectPos != Vector2.Zero)
+            {
+                // Like wall detection, but it checks downwards and also checks for a **gap quota
+                bool pit = Pit(0) && Pit(1);
+                bool Pit(int x) => Collision.CanHitLine(groundDetectPos, 12, 12, new Vector2(groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x), groundDetectPos.Y + 16), 12, 12) && !Main.tileSolidTop[Main.tile[MathFunctions.AGF.Round((groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x)) / 16), MathFunctions.AGF.Round((groundDetectPos.Y / 16))].TileType];
+                if (pit)
+                {
+                    //**The gap must be at least two tiles wide in order for the mercenary to jump; to prevent unnecessary leaps
+                    if (++checkGap == 2)
+                    {
+                        // Sets a place for the mercenary to go towards to perform the leap
+                        pitJumpRelative = groundDetectPos;
+                        direction = NPC.Center.X - groundDetectPos.X < 0 ? 1 : -1;
+                    }
+
+                    detectValue[1]++;
+                }
+                else
+                    checkGap = 0;
+
+                // Same story with wall detection; can check a maximum of around 17 tiles before checking if a leap is needed
+                if (detectTimer[1] < 17) detectTimer[1]++;
+
+                if (detectTimer[1] >= 15)
+                {
+                    // If a leap is needed (and the quota is met i.e. "checkGap == 2") 
+                    if (pitJumpRelative != Vector2.Zero)
+                    {
+                        //perform a leap if the NPC is close enough to where pitJumpRelative was set (where the leap should be performed)
+                        float dist = Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(pitJumpRelative.X, 0)) * (NPC.direction == -1 ? 0.5f : 1);
+                        float condition = (16 * 4) / (NPC.direction == -1 ? 2 : 1);
+                        // Erases the expected leap position after a brief period (brief because the NPC would be near it anyways)
+                        if (++pitJumpExpire >= 15) pitJumpRelative = Vector2.Zero;
+
+                        //if close enough to the expected position
+                        if (dist < condition && condition < 75)
+                        {
+                            // Perform a leap based on how many tiles were detected, and reset the values
+                            #region Wall check jump
+                            if (detectValue[1] > 0 && !doHammerSpin)
+                                NPC.velocity.Y -= (detectValue[1] * 6.75f) * (1.45f / detectValue[1]);
+                            #endregion
+
+                            pitJumpExpire = 0;
+                            detectValue[1] = 0;
+                            detectTimer[1] = 0;
+                            pitJumpRelative = Vector2.Zero;
+                        }
+                    }
+                    else // If a leap was not expected, reset values
+                    {
+                        pitJumpExpire = 0;
+                        detectValue[1] = 0;
+                        detectTimer[1] = 0;
+                    }
+                }
+            }
+
+            // Update the pit detection position
+            if (detectValue[0] < 1)
+                groundDetectPos = new Vector2(NPC.Center.X + (detectTimer[1] * (NPC.direction == 1 ? 16f : -16f)), NPC.Center.Y + (NPC.height / 2.33f));
+            else
+                groundDetectPos = Vector2.Zero;
+            #endregion
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => false;
 
         // TODO: Fix framing issues regarding afterimages
