@@ -83,7 +83,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             get => PlaceholderDialogue();
         }
         public override string MercenaryName => "Rookie Paladin";
-        public override int AttackDelay => 90;
+        public override int AttackDelay => 60;
         public override float DetectRadius => 350;
         public override int MaxHealth => 500;
         public override int Defense => 40;
@@ -393,7 +393,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             return false;
         }
 
-        // TODO: Make this trigger when the NPC isn't in combat
         public override bool RestoreHealth()
         {
             bool finished = false;
@@ -710,7 +709,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 // Like wall detection, but it checks downwards and also checks for a **gap quota
                 bool pit = Pit(0) && Pit(1);
-                bool Pit(int x) => Collision.CanHitLine(groundDetectPos, 12, 12, new Vector2(groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x), groundDetectPos.Y + 16), 12, 12) && !Main.tileSolidTop[Main.tile[MathFunctions.AGF.Round((groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x)) / 16), MathFunctions.AGF.Round((groundDetectPos.Y / 16))].TileType];
                 if (pit)
                 {
                     //**The gap must be at least two tiles wide in order for the mercenary to jump; to prevent unnecessary leaps
@@ -745,7 +743,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         {
                             // Perform a leap based on how many tiles were detected, and reset the values
                             #region Wall check jump
-                            if (detectValue[1] > 0 && !doHammerSpin)
+                            if (detectValue[1] > 0)
                                 NPC.velocity.Y -= (detectValue[1] * 6.75f) * (1.45f / detectValue[1]);
                             #endregion
 
@@ -860,6 +858,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public int direction;
         bool[] far = new bool[2];
         public float[] startEnd = new float[2];
+        bool initialize = false;
         float rotation;
         public override void SetStaticDefaults()
         {
@@ -878,13 +877,14 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             AIType = ProjectileID.Bullet;
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            sine = startEnd[1];
-        }
-
         public override void AI()
         {
+            if (!initialize)
+            {
+                sine = startEnd[1];
+                initialize = true;
+            }
+
             if (owner != null && owner.NPC.active)
             {
                 //Rotate the hammer forth, back, or forth but faster
@@ -906,8 +906,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 {
                     if (distance < 450)
                     {
-                        //Move the hammer in a unique functioned movement; the cycle is based on the starting x
-                        //https://www.desmos.com/calculator/8zryrzykns
+                        // Move the hammer in a unique functioned movement; the cycle is based on the starting x
+                        // https://www.desmos.com/calculator/8zryrzykns
                         Vector2 center = owner.targetPosition - owner.NPC.Center;
                         float f2 = (float)Math.Atan(center.Y / center.X);
                         float[] rot = new float[2] { -direction * (float)(Math.PI / 2) + f2, direction * (float)(Math.PI / 1) + f2 };

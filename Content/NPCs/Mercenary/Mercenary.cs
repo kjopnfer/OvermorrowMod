@@ -195,6 +195,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             return solidTile ? Main.tileSolid[tile.TileType] && WorldGen.TileEmpty(checkTile.X, checkTile.Y) : Main.tileSolidTop[tile.TileType];
         }
 
+        public bool Pit(int x) => Collision.CanHitLine(groundDetectPos, 12, 12, new Vector2(groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x), groundDetectPos.Y + 16), 12, 12) && !Main.tileSolidTop[Main.tile[MathFunctions.AGF.Round((groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x)) / 16), MathFunctions.AGF.Round((groundDetectPos.Y / 16))].TileType];
         public virtual void CheckTiles()
         {
             // Changes the position of the wall detection scanner
@@ -223,7 +224,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             {
                 // Like wall detection, but it checks downwards and also checks for a **gap quota
                 bool pit = Pit(0) && Pit(1);
-                bool Pit(int x) => Collision.CanHitLine(groundDetectPos, 12, 12, new Vector2(groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x), groundDetectPos.Y + 16), 12, 12) && !Main.tileSolidTop[Main.tile[MathFunctions.AGF.Round((groundDetectPos.X + (NPC.direction == 1 ? 16 * x : -16 * x)) / 16), MathFunctions.AGF.Round((groundDetectPos.Y / 16))].TileType];
                 if (pit)
                 {
                     //**The gap must be at least two tiles wide in order for the mercenary to jump; to prevent unnecessary leaps
