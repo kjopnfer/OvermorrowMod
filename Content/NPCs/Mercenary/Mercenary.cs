@@ -80,6 +80,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public int hireTimer;
         //Sets to 3600 every minute; decreases 1 per tick to update hireTime
         public int currentMinute;
+
+        public virtual int MaxFrames() => 10;
         public override bool CheckActive() => false;
         public virtual bool RestoreHealth() => false;
         public IEntitySource Source() => NPC.GetSource_FromAI();
@@ -88,6 +90,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault(MercenaryName);
+            Main.npcFrameCount[NPC.type] = MaxFrames();
         }
         public override void SetDefaults()
         {
@@ -656,6 +659,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 return new Vector2(Main.screenPosition.X + Main.rand.NextFloat(-strength, strength), Main.screenPosition.Y + Main.rand.NextFloat(-strength, strength));
             return Main.screenPosition;
         }
+
         public static void ScreenShakeEvent(Vector2 center, float duration2, float strength2, float radius = 100)
         {
             //Updates ScreenShakePlayer for every player in a given radius, and starts a screen shake event for each player

@@ -40,7 +40,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         #region Walk
         // Used in FrameUpdate() for walk cycles
-        private int moveFrameX;
+        private int moveFrameY;
         private int moveTimer;
         #endregion
 
@@ -89,6 +89,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override int Defense => 40;
         public override float KnockbackResist => 0.66f;
         public override int HealCooldown => 10;
+
+        // The maximum number of Y frames the NPC has
+        public override int MaxFrames() => 15;
 
         // TODO: Refactor all code for readability
         public override void AI()
@@ -183,7 +186,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             // Starts the "walkBattle" animation cycle if the paladin finds an enemy
             if (targetNPC != null)
             {
-                if ((HammerAlive() == null && (!closeAttackStyle || DangerThreshold())) || restore[0] > 0 && !catchingUp)
+                if (restore[0] > 0 && !catchingUp || (HammerAlive() == null && (!closeAttackStyle || DangerThreshold())))
                     FrameUpdate(FrameType.WalkBattle);
             }
 
@@ -211,186 +214,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             HammerChuck,
             HammerChuckAwait,
             CatchUp
-        }
-
-        private bool FrameUpdate(FrameType type, bool condition = true)
-        {
-            #region Key frames
-            Point hammerFall = new Point(0, 0);
-            Point hammerStill = new Point(0, 2);
-            Point prepareSwing = new Point(0, 3);
-            Point getHammerStance = new Point(1, 3);
-            Point holdHammerFall = new Point(0, 7);
-            Point holdHammerStill = new Point(1, 7);
-            #endregion
-
-            if (condition)
-            {
-                switch (type)
-                {
-                    case FrameType.Walk:
-                        {
-                            // Change the X frame at a speed depending on the velocity
-                            int add = (int)Math.Round(Math.Abs(NPC.velocity.X));
-                            moveTimer += add;
-                            if (moveTimer > 8)
-                            {
-                                moveTimer = 0;
-                                moveFrameX++;
-                            }
-
-                            if (moveFrameX <= 5)
-                            {
-                                // Initial Y frame, change to alternate Y frame when X frame is at the end
-                                moveFrame.Y = 0;
-                                moveFrame.X = moveFrameX + 1;
-
-                                if (moveFrameX > 4) moveFrame.Y = 1;
-                            }
-
-                            if (moveFrameX <= 12 && moveFrameX > 5)
-                            {
-                                //Alternate Y frame, change to initial Y frame when X frame is at the end
-                                moveFrame.Y = 1;
-                                moveFrame.X = moveFrameX - 6;
-                                if (moveFrameX > 11)
-                                {
-                                    moveFrameX = 1;
-                                    moveFrame.Y = 0;
-                                }
-                            }
-
-                            //Frames for falling and standing still
-                            if (NPC.velocity.Y != 0) moveFrame = hammerFall;
-
-                            if (NPC.velocity.Y == 0 && NPC.velocity.X == 0) moveFrame = hammerStill;
-
-                            return true;
-                        }
-                    case FrameType.WalkBattle:
-                        {
-                            // Just like "walk", but at different Y frames
-                            int add = (int)Math.Round(Math.Abs(NPC.velocity.X));
-                            moveTimer += add;
-                            if (moveTimer > 8)
-                            {
-                                moveTimer = 0;
-                                moveFrameX++;
-                            }
-
-                            if (moveFrameX <= 5)
-                            {
-                                moveFrame.Y = 7;
-                                moveFrame.X = moveFrameX + 1;
-
-                                if (moveFrameX > 4) moveFrame.Y = 8;
-                            }
-
-                            if (moveFrameX <= 12 && moveFrameX > 5)
-                            {
-                                moveFrame.Y = 8;
-                                moveFrame.X = moveFrameX - 6;
-                                if (moveFrameX > 11)
-                                {
-                                    moveFrameX = 1;
-                                    moveFrame.Y = 7;
-                                }
-                            }
-
-                            if (NPC.velocity.Y != 0) moveFrame = holdHammerFall;
-
-                            if (NPC.velocity.Y == 0 && NPC.velocity.X == 0) moveFrame = holdHammerStill;
-
-                            return true;
-                        }
-                    case FrameType.HammerSpin:
-                        {
-                            //Similar to "walk", but the X frame update has a static speed, and **needs much more maticulous offset setting in PostDraw
-                            //**The frames should be the same, so the paladin at the lower row is further to the right during the spinning frames
-                            if (moveTimer++ >= 1)
-                            {
-                                moveTimer = 0;
-                                moveFrameX++;
-                            }
-
-                            if (moveFrameX <= 3)
-                            {
-                                moveFrame.Y = 5;
-                                moveFrame.X = moveFrameX;
-
-                                if (moveFrameX > 2) moveFrame.Y = 6;
-                            }
-
-                            if (moveFrameX <= 6 && moveFrameX > 2)
-                            {
-                                moveFrame.Y = 6;
-                                moveFrame.X = moveFrameX - 3;
-                            }
-
-                            if (moveFrameX > 6)
-                            {
-                                moveFrame = new Point(3, 5);
-                                if (moveFrameX >= 8)
-                                {
-                                    moveFrameX = 0;
-                                    moveFrame = new Point(0, 5);
-                                }
-                            }
-
-                            return true;
-                        }
-                    case FrameType.HammerChuck:
-                        {
-                            // Wait for a delay (poise the hammer), then prepare to receive the hammer; return when the delay is finished
-                            if (++hammerDelay < 30)
-                                moveFrame = prepareSwing;
-                            else
-                                moveFrame = getHammerStance;
-
-                            return moveFrame == getHammerStance;
-                        }
-                    case FrameType.HammerChuckAwait:
-                        {
-                            // Used for the third hammer throw; set the arm in the general direction of the hammer
-                            Vector2 hammer = HammerAlive().Projectile.Center;
-                            Point add = getHammerStance;
-
-                            if (hammer.Y < NPC.Center.Y - 33) add.X = 2;
-
-                            if (hammer.Y >= NPC.Center.Y + 22 && hammer.Y < NPC.Center.Y + 33) add.X = 3;
-
-                            if (hammer.Y > NPC.Center.Y + 33) add.X = 4;
-
-                            if (hammer.Y > NPC.Center.Y + 66) add.X = 5;
-
-                            moveFrame = add;
-
-                            return true;
-                        }
-                    case FrameType.CatchUp:
-                        {
-                            // Or "hammer slam"; default to "prepareSwing" (0, 4), then move the X frame every 10 ticks
-                            slamTimer++;
-                            moveFrame.Y = 4;
-                            switch (slamTimer)
-                            {
-                                case 10:
-                                    moveFrame.X = 1;
-                                    break;
-                                case 20:
-                                    moveFrame.X = 2;
-                                    break;
-                                case 30:
-                                    moveFrame.X = 3;
-                                    break;
-                            }
-
-                            return slamTimer >= 40;
-                        }
-                }
-            }
-
-            return false;
         }
 
         public override bool RestoreHealth()
@@ -550,6 +373,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             return catchUpFinished;
         }
 
+        /// <summary>
+        /// Determines whether the Paladin is not spinning, the hammer has not been thrown and there is no attack delay
+        /// </summary>
+        /// <returns></returns>
+        bool CanAttack() => Spinning() == null && HammerAlive() == null && attackDelay < 1;
         public override bool FarAttack()
         {
             Vector2 scout;
@@ -589,7 +417,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             return HammerAlive() == null && targetNPC == null;
         }
 
-        bool CanAttack() => Spinning() == null && HammerAlive() == null && attackDelay < 1;
         public override bool CloseAttack()
         {
             if (!CAStyleDecided)
@@ -616,6 +443,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 if (targetNPC != null) NPC.direction = NPC.Center.X < targetNPC.Center.X ? 1 : -1;
 
                 velocity = 0.33f;
+
                 // Go towards the target
                 if (!DangerThreshold() && targetNPC != null) StandardAI(Rect(targetNPC));
 
@@ -640,8 +468,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     //closeAttack = new bool[2];
                 }
 
-                bool stop = Spinning() == null && targetNPC == null;
-                return stop;
+                return Spinning() == null && targetNPC == null; ;
             }
             else
             {
@@ -674,9 +501,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     //closeAttack = new bool[2];
                 }
 
-                bool stop = Shockwave() == null && moveFrame.X > 0;
-
-                return stop;
+                return Shockwave() == null && moveFrame.X > 0; ;
             }
         }
 
@@ -770,12 +595,236 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             #endregion
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => false;
+        int xFrame = 1;
+        int yFrame = 0;
+        public override void FindFrame(int frameHeight)
+        {
+            NPC.spriteDirection = NPC.direction;
+            NPC.frame.Width = TextureAssets.Npc[NPC.type].Value.Width / 4;
+
+            NPC.frame.X = NPC.frame.Width * xFrame;
+            NPC.frame.Y = frameHeight * yFrame;
+        }
+
+        int tempCounter = 0;
+        private bool FrameUpdate(FrameType type, bool condition = true)
+        {
+            #region Key frames
+            Point hammerFall = new Point(0, 0);
+            Point hammerStill = new Point(0, 2);
+            Point prepareSwing = new Point(0, 3);
+            Point getHammerStance = new Point(1, 3);
+            Point holdHammerFall = new Point(0, 7);
+            Point holdHammerStill = new Point(1, 7);
+            #endregion
+
+            if (condition)
+            {
+                switch (type)
+                {
+                    case FrameType.Walk:
+                        {
+                            if (NPC.velocity.X == 0 && NPC.velocity.Y == 0) // Frame for when the NPC is standing still
+                            {
+                                yFrame = 0;
+                                tempCounter = 0;
+                            }
+                            else if (NPC.velocity.Y != 0) // Frame for when the NPC is jumping or falling
+                            {
+                                yFrame = 1;
+                                tempCounter = 0;
+                            }
+                            else // Frames for when the NPC is walking
+                            {
+                                if (yFrame < 2 || yFrame == 13) yFrame = 2;
+
+                                // Change the walking frame at a speed depending on the velocity
+                                int walkRate = (int)Math.Round(Math.Abs(NPC.velocity.X));
+                                tempCounter += walkRate;
+                                if (tempCounter > 8)
+                                {
+                                    yFrame++;
+                                    tempCounter = 0;
+                                }
+                            }
+
+                            // Change the X frame at a speed depending on the velocity
+                            /*int add = (int)Math.Round(Math.Abs(NPC.velocity.X));
+                            moveTimer += add;
+                            if (moveTimer > 8)
+                            {
+                                moveTimer = 0;
+                                moveFrameX++;
+                            }
+
+                            if (moveFrameX <= 5)
+                            {
+                                // Initial Y frame, change to alternate Y frame when X frame is at the end
+                                moveFrame.Y = 0;
+                                moveFrame.X = moveFrameX + 1;
+
+                                if (moveFrameX > 4) moveFrame.Y = 1;
+                            }
+
+                            if (moveFrameX <= 12 && moveFrameX > 5)
+                            {
+                                //Alternate Y frame, change to initial Y frame when X frame is at the end
+                                moveFrame.Y = 1;
+                                moveFrame.X = moveFrameX - 6;
+                                if (moveFrameX > 11)
+                                {
+                                    moveFrameX = 1;
+                                    moveFrame.Y = 0;
+                                }
+                            }
+
+                            //Frames for falling and standing still
+                            if (NPC.velocity.Y != 0) moveFrame = hammerFall;
+
+                            if (NPC.velocity.Y == 0 && NPC.velocity.X == 0) moveFrame = hammerStill;*/
+
+                            return true;
+                        }
+                    case FrameType.WalkBattle:
+                        {
+                            // Just like "walk", but at different Y frames
+                            int add = (int)Math.Round(Math.Abs(NPC.velocity.X));
+                            moveTimer += add;
+                            if (moveTimer > 8)
+                            {
+                                moveTimer = 0;
+                                moveFrameY++;
+                            }
+
+                            if (moveFrameY <= 5)
+                            {
+                                moveFrame.Y = 7;
+                                moveFrame.X = moveFrameY + 1;
+
+                                if (moveFrameY > 4) moveFrame.Y = 8;
+                            }
+
+                            if (moveFrameY <= 12 && moveFrameY > 5)
+                            {
+                                moveFrame.Y = 8;
+                                moveFrame.X = moveFrameY - 6;
+                                if (moveFrameY > 11)
+                                {
+                                    moveFrameY = 1;
+                                    moveFrame.Y = 7;
+                                }
+                            }
+
+                            if (NPC.velocity.Y != 0) moveFrame = holdHammerFall;
+
+                            if (NPC.velocity.Y == 0 && NPC.velocity.X == 0) moveFrame = holdHammerStill;
+
+                            return true;
+                        }
+                    case FrameType.HammerSpin:
+                        {
+                            //Similar to "walk", but the X frame update has a static speed, and **needs much more maticulous offset setting in PostDraw
+                            //**The frames should be the same, so the paladin at the lower row is further to the right during the spinning frames
+                            if (moveTimer++ >= 1)
+                            {
+                                moveTimer = 0;
+                                moveFrameY++;
+                            }
+
+                            if (moveFrameY <= 3)
+                            {
+                                moveFrame.Y = 5;
+                                moveFrame.X = moveFrameY;
+
+                                if (moveFrameY > 2) moveFrame.Y = 6;
+                            }
+
+                            if (moveFrameY <= 6 && moveFrameY > 2)
+                            {
+                                moveFrame.Y = 6;
+                                moveFrame.X = moveFrameY - 3;
+                            }
+
+                            if (moveFrameY > 6)
+                            {
+                                moveFrame = new Point(3, 5);
+                                if (moveFrameY >= 8)
+                                {
+                                    moveFrameY = 0;
+                                    moveFrame = new Point(0, 5);
+                                }
+                            }
+
+                            return true;
+                        }
+                    case FrameType.HammerChuck:
+                        {
+                            // Wait for a delay (poise the hammer), then prepare to receive the hammer; return when the delay is finished
+                            if (++hammerDelay < 30)
+                                moveFrame = prepareSwing;
+                            else
+                                moveFrame = getHammerStance;
+
+                            return moveFrame == getHammerStance;
+                        }
+                    case FrameType.HammerChuckAwait:
+                        {
+                            // Used for the third hammer throw; set the arm in the general direction of the hammer
+                            Vector2 hammer = HammerAlive().Projectile.Center;
+                            Point add = getHammerStance;
+
+                            if (hammer.Y < NPC.Center.Y - 33) add.X = 2;
+
+                            if (hammer.Y >= NPC.Center.Y + 22 && hammer.Y < NPC.Center.Y + 33) add.X = 3;
+
+                            if (hammer.Y > NPC.Center.Y + 33) add.X = 4;
+
+                            if (hammer.Y > NPC.Center.Y + 66) add.X = 5;
+
+                            moveFrame = add;
+
+                            return true;
+                        }
+                    case FrameType.CatchUp:
+                        {
+                            // Or "hammer slam"; default to "prepareSwing" (0, 4), then move the X frame every 10 ticks
+                            slamTimer++;
+                            moveFrame.Y = 4;
+                            switch (slamTimer)
+                            {
+                                case 10:
+                                    moveFrame.X = 1;
+                                    break;
+                                case 20:
+                                    moveFrame.X = 2;
+                                    break;
+                                case 30:
+                                    moveFrame.X = 3;
+                                    break;
+                            }
+
+                            return slamTimer >= 40;
+                        }
+                }
+            }
+
+            return false;
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            spriteBatch.Draw(texture, NPC.Center - Vector2.UnitY * 6 - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            return false;
+        }
 
         // TODO: Fix framing issues regarding afterimages
+        // Each frame is 116 x 72
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            int check = hammerDirection != 0 ? hammerDirection : NPC.direction;
+            /*int check = hammerDirection != 0 ? hammerDirection : NPC.direction;
             Vector2 offset = FrameOffset();
             Vector2 FrameOffset()
             {
@@ -813,7 +862,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 }
             }
 
-            Helper().Draw(spriteBatch, moveFrame, NPC.Center - screenPos, drawColor, fx, offset);
+            Helper().Draw(spriteBatch, moveFrame, NPC.Center - screenPos, drawColor, fx, offset);*/
         }
     }
 
@@ -887,7 +936,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (owner != null && owner.NPC.active)
             {
-                //Rotate the hammer forth, back, or forth but faster
+                // Rotate the hammer forth, back, or forth but faster
                 switch (owner.throwStyle)
                 {
                     case 1:
