@@ -196,12 +196,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (drawAfterimage)
             {
-                imgFrame[5] = moveFrame;
+                imgFrame[5] = new Point(xFrame, yFrame);
                 imgPos[5] = NPC.Center;
-                for (int a = 1; a < 6; a++)
+
+                for (int i = 1; i < 6; i++)
                 {
-                    imgFrame[a - 1] = imgFrame[a];
-                    imgPos[a - 1] = imgPos[a];
+                    imgFrame[i - 1] = imgFrame[i];
+                    imgPos[i - 1] = imgPos[i];
                 }
             }
         }
@@ -465,6 +466,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
                     CAStyleDecided = false;
                     doHammerSpin = false;
+
+                    imgPos = new Vector2[6] { new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2() };
+                    Array.Clear(imgFrame);
                     //closeAttack = new bool[2];
                 }
 
@@ -610,8 +614,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         private bool FrameUpdate(FrameType type, bool condition = true)
         {
             #region Key frames
-            Point hammerFall = new Point(0, 0);
-            Point hammerStill = new Point(0, 2);
             Point prepareSwing = new Point(0, 3);
             Point getHammerStance = new Point(1, 3);
             Point holdHammerFall = new Point(0, 7);
@@ -622,8 +624,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 switch (type)
                 {
+                    #region Walk
                     case FrameType.Walk:
                         {
+                            xFrame = 1;
+
                             if (NPC.velocity.X == 0 && NPC.velocity.Y == 0) // Frame for when the NPC is standing still
                             {
                                 yFrame = 0;
@@ -648,43 +653,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                 }
                             }
 
-                            // Change the X frame at a speed depending on the velocity
-                            /*int add = (int)Math.Round(Math.Abs(NPC.velocity.X));
-                            moveTimer += add;
-                            if (moveTimer > 8)
-                            {
-                                moveTimer = 0;
-                                moveFrameX++;
-                            }
-
-                            if (moveFrameX <= 5)
-                            {
-                                // Initial Y frame, change to alternate Y frame when X frame is at the end
-                                moveFrame.Y = 0;
-                                moveFrame.X = moveFrameX + 1;
-
-                                if (moveFrameX > 4) moveFrame.Y = 1;
-                            }
-
-                            if (moveFrameX <= 12 && moveFrameX > 5)
-                            {
-                                //Alternate Y frame, change to initial Y frame when X frame is at the end
-                                moveFrame.Y = 1;
-                                moveFrame.X = moveFrameX - 6;
-                                if (moveFrameX > 11)
-                                {
-                                    moveFrameX = 1;
-                                    moveFrame.Y = 0;
-                                }
-                            }
-
-                            //Frames for falling and standing still
-                            if (NPC.velocity.Y != 0) moveFrame = hammerFall;
-
-                            if (NPC.velocity.Y == 0 && NPC.velocity.X == 0) moveFrame = hammerStill;*/
-
                             return true;
                         }
+                    #endregion
+                    #region WalkBattle
                     case FrameType.WalkBattle:
                         {
                             // Just like "walk", but at different Y frames
@@ -721,42 +693,24 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
                             return true;
                         }
+                    #endregion
+                    #region HammerSpin
                     case FrameType.HammerSpin:
                         {
-                            //Similar to "walk", but the X frame update has a static speed, and **needs much more maticulous offset setting in PostDraw
-                            //**The frames should be the same, so the paladin at the lower row is further to the right during the spinning frames
-                            if (moveTimer++ >= 1)
-                            {
-                                moveTimer = 0;
-                                moveFrameY++;
-                            }
+                            xFrame = 3;
+                            NPC.direction = 1;
 
-                            if (moveFrameY <= 3)
-                            {
-                                moveFrame.Y = 5;
-                                moveFrame.X = moveFrameY;
+                            if (yFrame < 7 || yFrame == 14) yFrame = 7;
 
-                                if (moveFrameY > 2) moveFrame.Y = 6;
-                            }
-
-                            if (moveFrameY <= 6 && moveFrameY > 2)
+                            if (tempCounter++ >= 2)
                             {
-                                moveFrame.Y = 6;
-                                moveFrame.X = moveFrameY - 3;
-                            }
-
-                            if (moveFrameY > 6)
-                            {
-                                moveFrame = new Point(3, 5);
-                                if (moveFrameY >= 8)
-                                {
-                                    moveFrameY = 0;
-                                    moveFrame = new Point(0, 5);
-                                }
+                                tempCounter = 0;
+                                yFrame++;
                             }
 
                             return true;
                         }
+                    #endregion
                     case FrameType.HammerChuck:
                         {
                             // Wait for a delay (poise the hammer), then prepare to receive the hammer; return when the delay is finished
@@ -815,13 +769,26 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(texture, NPC.Center - Vector2.UnitY * 6 - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            spriteBatch.Draw(texture, NPC.Center - Vector2.UnitY * 6 - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
+            if (drawAfterimage)
+            {
+                for (int i = 0; i < imgPos.Length; i++)
+                {
+                    if (imgPos[i] == new Vector2()) continue;
+
+                    // Each frame on the spritesheet is 116 x 72
+                    const int frameWidth = 116;
+                    const int frameHeight = 72;
+
+                    Rectangle drawRectangle = new Rectangle(frameWidth * imgFrame[i].X, frameHeight * imgFrame[i].Y, frameWidth, frameHeight);
+                    spriteBatch.Draw(texture, imgPos[i] - Vector2.UnitY * 6 - screenPos, drawRectangle, drawColor * ((float)(i - imgPos.Length + 6.125f) / (imgPos.Length)), NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 1f);
+                }
+            }
             return false;
         }
 
         // TODO: Fix framing issues regarding afterimages
-        // Each frame is 116 x 72
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             /*int check = hammerDirection != 0 ? hammerDirection : NPC.direction;
@@ -852,15 +819,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 return set;
             }
 
-            SpriteEffects fx = check == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            if (drawAfterimage)
-            {
-                for (int a = 0; a < imgPos.Length; a++)
-                {
-                    if (imgPos[a] != new Vector2())
-                        Helper().Draw(spriteBatch, imgFrame[a], (imgPos[a] + new Vector2(imgFrame[a].Y > 4 ? (imgFrame[a].Y > 5 ? -16 : 16) : 0, 0)) - screenPos, drawColor * ((float)(a - imgPos.Length + 6.125f) / (imgPos.Length)), fx, imgFrame[a].Y > 4 ? new Vector2(0, 4) : offset);
-                }
-            }
+            
 
             Helper().Draw(spriteBatch, moveFrame, NPC.Center - screenPos, drawColor, fx, offset);*/
         }
