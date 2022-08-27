@@ -101,8 +101,23 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (targetNPC == null && !DangerThreshold()) // Remove direction lock
             {
+                if (doHammerSpin)
+                {
+                    Main.NewText("stopped spin");
+
+                    NPC.defense = Defense;
+                    NPC.knockBackResist = KnockbackResist;
+
+                    spinCounter = 0;
+
+                    doHammerSpin = false;
+                    closeAttackStyle = false;
+
+                    imgPos = new Vector2[6] { new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2() };
+                    Array.Clear(imgFrame);
+                }
+
                 hammerDirection = 0;
-                closeAttackStyle = false;
             }
 
             if (targetNPC == null)
@@ -207,16 +222,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             }
         }
 
-        public enum FrameType
-        {
-            Walk,
-            WalkBattle,
-            HammerSpin,
-            HammerChuck,
-            HammerChuckAwait,
-            CatchUp
-        }
-
         public override bool RestoreHealth()
         {
             bool finished = false;
@@ -271,7 +276,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     {
                         hammerDirection = NPC.velocity.X < 0 ? -1 : 1;
                         NPC.direction = hammerDirection;
-                        StandardAI(Rect(decoy));
+                        CombatAI(Rect(decoy));
                     }
                 }
             }
@@ -379,7 +384,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         /// </summary>
         /// <returns></returns>
         bool CanAttack() => Spinning() == null && HammerAlive() == null && attackDelay < 1;
-        public override bool FarAttack()
+        /*public override bool FarAttack()
         {
             Vector2 scout;
             // Sets the target, and makes the NPC face towards it
@@ -417,16 +422,15 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             return HammerAlive() == null && targetNPC == null;
         }
-
+        */
         public override bool CloseAttack()
         {
             if (!CAStyleDecided)
             {
                 // Check the distance between the enemy and the NPC; if *really* close, perform a hammer spin, otherwise perform a hammer slam
-                Vector2 scout;
                 if (targetNPC != null)
                 {
-                    scout = targetNPC.Center;
+                    Vector2 scout = targetNPC.Center;
                     float general = Vector2.Distance(new Vector2(scout.X, 0), new Vector2(NPC.Center.X, 0));
                     float height = Vector2.Distance(new Vector2(scout.Y, 0), new Vector2(NPC.Center.Y, 0));
                     doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
@@ -436,22 +440,42 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (doHammerSpin)
             {
+                if (spinCounter > 90)
+                {
+                    drawAfterimage = true;
+                }
+
                 drawAfterimage = true;
                 FrameUpdate(FrameType.HammerSpin);
 
                 // Lock the direction to forward to prevent unusual appearance
                 hammerDirection = 1;
-                if (targetNPC != null) NPC.direction = NPC.Center.X < targetNPC.Center.X ? 1 : -1;
+                //if (targetNPC != null) NPC.direction = NPC.Center.X < targetNPC.Center.X ? 1 : -1;
 
+                spinCounter++;
                 velocity = 0.33f;
 
                 // Go towards the target
-                if (!DangerThreshold() && targetNPC != null) StandardAI(Rect(targetNPC));
+                if (!DangerThreshold() && targetNPC != null) CombatAI(Rect(targetNPC));
 
                 // Create a projectile that moves forth and back from the paladin
                 if (CanAttack())
                 {
-                    PaladinHammerSpin hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammerSpin>(), 20, 1f, hiredBy).ModProjectile as PaladinHammerSpin;
+                    int spinDamage = 5;
+                    if (spinCounter > 150)
+                    {
+                        spinDamage = 20;
+                    }
+                    else if (spinCounter > 90)
+                    {
+                        spinDamage = 15;
+                    }
+                    else if (spinCounter > 30)
+                    {
+                        spinDamage = 10;
+                    }
+
+                    PaladinHammerSpin hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammerSpin>(), spinDamage, 1f, hiredBy).ModProjectile as PaladinHammerSpin;
                     hammer.owner = this;
                 }
 
@@ -461,18 +485,16 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 // Revert the paladin's stats to normal
                 if (Spinning() == null)
                 {
-                    NPC.defense = Defense;
-                    NPC.knockBackResist = KnockbackResist;
+                    //Main.NewText("stopped spinning");
 
-                    CAStyleDecided = false;
-                    doHammerSpin = false;
+                    //CAStyleDecided = false;
+                    //doHammerSpin = false;
 
-                    imgPos = new Vector2[6] { new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2() };
-                    Array.Clear(imgFrame);
+                    //spinCounter = 0;
                     //closeAttack = new bool[2];
                 }
 
-                return Spinning() == null && targetNPC == null; ;
+                return Spinning() == null && targetNPC == null;
             }
             else
             {
@@ -506,6 +528,52 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 }
 
                 return Shockwave() == null && moveFrame.X > 0; ;
+            }
+        }
+
+        // Doing this in order to make the NPC slide around when doing the hammer spin
+        public override void CombatAI(RBC target)
+        {
+            Vector2 targetPosition = target.position;
+
+            // When safe: When the player is not too far
+            // Otherwise: When in danger and the target (generally scoutNPC) is not null
+            if (!TooFar() || (DangerThreshold() && targetPosition != Vector2.Zero))
+            {
+                // Checks the vertical distance to the target; some randomization is added with runCond[0]
+                bool NextToTarget() => Vector2.Distance(new Vector2(NPC.Center.X), new Vector2(targetPosition.X)) < runCond[0];
+
+                if (hiredBy != -1)
+                {
+                    if (!NextToTarget() || targetPosition != Vector2.Zero)
+                    {
+                        // Add randomization for NextToTarget()
+                        if (runCond[1] == runCond[0]) runCond[0] = Main.rand.Next(150, 400);
+
+                        // Determines which direction the NPC should go
+                        bool moveCondition = direction != 0 && NPC.velocity.Y != 0 && groundDetectPos != Vector2.Zero ? (direction > 0) : (NPC.Center.X < targetPosition.X);
+
+                        if (doHammerSpin)
+                            Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
+
+
+                        NPC.velocity.X += moveCondition ? velocity : -velocity;
+                        NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -7, 7);
+
+
+                        // The mercenary cannot check tiles if it is in the air
+                        if (NPC.velocity.Y == 0)
+                        {
+                            if (groundDetectPos == Vector2.Zero) direction = 0;
+
+                            if (canCheckTiles) CheckTiles();
+                        }
+                    }
+                    else
+                        runCond[1] = runCond[0];
+
+                    FallThrough(target, targetPosition);
+                }
             }
         }
 
@@ -610,6 +678,17 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             NPC.frame.Y = frameHeight * yFrame;
         }
 
+        public enum FrameType
+        {
+            Walk,
+            WalkBattle,
+            HammerSpin,
+            HammerChuck,
+            HammerChuckAwait,
+            CatchUp
+        }
+
+        int spinCounter = 0;
         int tempCounter = 0;
         private bool FrameUpdate(FrameType type, bool condition = true)
         {
@@ -702,7 +781,23 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
                             if (yFrame < 7 || yFrame == 14) yFrame = 7;
 
-                            if (tempCounter++ >= 2)
+                            // The longer the paladin is spinning, the faster they go
+                            int spinSpeed = 1;
+                            if (spinCounter > 150)
+                            {
+                                spinSpeed = 6;
+                            }
+                            else if (spinCounter > 90)
+                            {
+                                spinSpeed = 3;
+                            }
+                            else if (spinCounter > 30)
+                            {
+                                spinSpeed = 2;
+                            }
+
+                            tempCounter += spinSpeed;
+                            if (tempCounter >= 6)
                             {
                                 tempCounter = 0;
                                 yFrame++;

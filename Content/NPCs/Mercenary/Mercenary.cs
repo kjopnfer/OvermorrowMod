@@ -134,9 +134,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             CombatText.NewText(NPC.getRect(), Color.SpringGreen, $"{heal}", false, false);
         }
 
-        public void StandardAI(RBC target)
+        public virtual void CombatAI(RBC target)
         {
             Vector2 targetPosition = target.position;
+
             // When safe: When the player is not too far
             // Otherwise: When in danger and the target (generally scoutNPC) is not null
             if (!TooFar() || (DangerThreshold() && targetPosition != Vector2.Zero))
@@ -155,6 +156,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                         bool moveCondition = direction != 0 && NPC.velocity.Y != 0 && groundDetectPos != Vector2.Zero ? (direction > 0) : (NPC.Center.X < targetPosition.X);
                         NPC.velocity.X += moveCondition ? velocity : -velocity;
                         NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -7, 7);
+
                         // The mercenary cannot check tiles if it is in the air
                         if (NPC.velocity.Y == 0)
                         {
@@ -176,7 +178,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         /// </summary>
         /// <param name="target"></param>
         /// <param name="targetPosition"></param>
-        void FallThrough(RBC target, Vector2 targetPosition)
+        public void FallThrough(RBC target, Vector2 targetPosition)
         {
             if ((targetPosition.Y - (target.height / 2)) > NPC.Center.Y && OnPlatform(NPC.Center, NPC.height / 2, false) && (OnPlatform(new Vector2(NPC.Center.X, targetPosition.Y), target.height / 2, false) || OnPlatform(new Vector2(NPC.Center.X, targetPosition.Y), target.height / 2, true)))
                 NPC.noTileCollide = true;
@@ -411,12 +413,12 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                         if (!continueAttack && !catchingUp && targetNPC == null && incomingProjectile == null)
                         {
                             if (Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(player.Center.X, 0)) > 125)
-                                StandardAI(Rect(player));
+                                CombatAI(Rect(player));
                         }
 
                         if (hiredBy != -1)
                         {
-                            //Cancel all attacks (if any) and catch up to the player
+                            // Cancel all attacks (if any) and catch up to the player
                             if (catchingUp)
                             {
                                 if (!DangerThreshold())
