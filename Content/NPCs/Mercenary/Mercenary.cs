@@ -7,45 +7,76 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using System.IO;
 
 namespace OvermorrowMod.Content.NPCs.Mercenary
 {
     public partial class Mercenary : ModNPC
     {
         #region Adjustable Values
-        //The general detect radius for mercenaries; for close attacks, it checks entities that are in a third of this radius
+        /// <summary>
+        /// The maximum number of Y frames the NPC has
+        /// </summary>
+        /// <returns></returns>
+        public virtual int MaxFrames() => 10;
+
+        /// <summary>
+        /// The general detect radius for mercenaries; for close attacks, it checks entities that are in a third of this radius
+        /// </summary>
         public virtual float DetectRadius { get { return 100; } }
-        //Should not be a part of the base attack system, but as a built in delay (atkDelay = AttackDelay; and then put a check, for example)
+
+        /// <summary>
+        /// Should not be a part of the base attack system, but as a built in delay (atkDelay = AttackDelay; and then put a check, for example)
+        /// </summary>
         public virtual int AttackDelay { get { return 60; } }
+
         #region NPC values
         public virtual string MercenaryName { get { return "Mercenary"; } }
         public virtual int MaxHealth { get { return 400; } }
         public virtual int Defense { get { return 20; } }
         public virtual float KnockbackResist { get { return 0.25f; } }
+
         // How many seconds a mercenary must wait until they can heal again (until RestoreHealth() can be called)
         public virtual int HealCooldown { get { return 30; } }
         //A list of MercenaryDialogue classes, containing strings (the dialogue), ints (priority of the dialogue) and bools (can display or not)
         public virtual List<MercenaryDialogue> Dialogue { get; set; }
         #endregion
         #endregion
+
         //A variable for RestoreHealth() method, all variables from this method are drained to 0 when not healing
         //Use in an override of RestoreHealth() as a timer or other variable
         public int[] restore = new int[3];
-        //Determines if the mercenary should continue attacking (calls FarAttack() or CloseAttack() to set this variable)
+        // Determines if the mercenary should continue attacking (calls FarAttack() or CloseAttack() to set this variable)
         public bool continueAttack;
-        //Determines if the mercenary should call CloseAttack()
+
+        // Determines if the mercenary should call CloseAttack()
         public bool closeAttackStyle;
-        //Determines if StandardAI() should account for walls and ceilings (or be called at all)
+
+        // Determines if MovementAI() should account for walls and ceilings (or be called at all)
         public bool canCheckTiles = true;
-        //How fast should the mercenary go when StandardAI() is called
+
+        // How fast should the mercenary go when MovementAI() is called
         public float velocity = 0.25f;
-        //Generally used with AttackDelay
+
+        // Generally used with AttackDelay, flexible
         public int attackDelay;
-        //The player that has hired this mercenary (the player index)
+
+        #region Hire
+        // The player that has hired this mercenary (the player index)
         public int hiredBy = -1;
-        //If this reaches a certain amount, CatchUp() will be called (unless the mercenary is in danger)
+
+        // How many minutes are displayed (how many minutes the mercenary will fight for you) when you open chat
+        public int hireTime;
+
+        // the literal time left (in ticks), determintes hireTime
+        public int hireTimer;
+
+        // Sets to 3600 every minute; decreases 1 per tick to update hireTime
+        public int currentMinute;
+        #endregion
+
+        // If this reaches a certain amount, CatchUp() will be called (unless the mercenary is in danger)
         int farTimer;
+
         // The closest hostile projectile to the mercenary
         public Projectile incomingProjectile;
 
@@ -53,35 +84,33 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public NPC targetNPC;
         public bool catchingUp;
 
-        // These two are only used in StandardAI() for storing distance and delays for leaps, how many tiles must be accounted, etc.
+        #region Movement
+        // These two are only used in MovementAI() for storing distance and delays for leaps, how many tiles must be accounted, etc.
         public int[] detectValue = new int[2];
         public int[] detectTimer = new int[2];
 
-        // A minimum of tiles required for a leap; at least 2
-        public int checkGap;
-
         // Used for randomized closing distances when walking to the player (StandardAI())
         public int[] runCond = new int[2] { 350, 350 };
-        
+
         // Used for cancelling an unused pit jump
         public int pitJumpExpire;
 
         // The direction the NPC should go while performing a leap
         public int direction;
+
+        // A minimum of tiles required for a leap; at least 2
+        public int checkGap;
+
         // The current wall detection scanner position
         public Vector2 wallDetectPos;
+
         // The current pit detection scanner position
         public Vector2 groundDetectPos;
+
         // Where the NPC should expect to start a leap when a pit is detected
         public Vector2 pitJumpRelative;
-        //How many minutes are displayed (how many minutes the mercenary will fight for you) when you open chat
-        public int hireTime;
-        //the literal time left (in ticks), determintes hireTime
-        public int hireTimer;
-        //Sets to 3600 every minute; decreases 1 per tick to update hireTime
-        public int currentMinute;
+        #endregion
 
-        public virtual int MaxFrames() => 10;
         public override bool CheckActive() => false;
         public virtual bool RestoreHealth() => false;
         public IEntitySource Source() => NPC.GetSource_FromAI();
@@ -92,6 +121,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             DisplayName.SetDefault(MercenaryName);
             Main.npcFrameCount[NPC.type] = MaxFrames();
         }
+
         public override void SetDefaults()
         {
             NPC.townNPC = true;
@@ -99,42 +129,18 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             NPC.height = 54;
             NPC.lifeMax = MaxHealth;
             NPC.friendly = true;
+            //NPC.aiStyle = -1;
             NPC.defense = Defense;
             NPC.knockBackResist = KnockbackResist;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
         }
-        //**This is mostly irrelevant except for the base NPC of this class
-        public override void AI()
-        {
-            //**Everything except the last line here is already included in the base AI
-            if (hireTimer < 0)
-            {
-                hiredBy = -1;
-                hireTimer = 0;
-            }
-            hireTimer--;
-
-            if (currentMinute-- < 1)
-            {
-                hireTime--;
-                currentMinute = 3600;
-            }
-
-            BaseAI();
-        }
 
         /// <summary>
-        /// Restores 1/5 of the mercenary's max health when it can successfully perform RestoreHealth()
+        /// Handles movement towards the target, distance checks, and collision/platform checks
         /// </summary>
-        public void Heal()
-        {
-            int heal = NPC.lifeMax / 5;
-            NPC.life += heal;
-            CombatText.NewText(NPC.getRect(), Color.SpringGreen, $"{heal}", false, false);
-        }
-
-        public virtual void CombatAI(RBC target)
+        /// <param name="target"></param>
+        public virtual void MovementAI(RBC target)
         {
             Vector2 targetPosition = target.position;
 
@@ -171,6 +177,115 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                     FallThrough(target, targetPosition);
                 }
             }
+        }
+
+        /// <summary>
+        /// Handles following the player, detecting nearby threats, attack styles, and flagging SafetyBehavior()
+        /// </summary>
+        public virtual void BaseAI()
+        {
+            if (NPC.life > NPC.lifeMax) NPC.life = NPC.lifeMax;
+
+            if (hiredBy != -1)
+            {
+                // Combat check, checks if the below are true and then chooses an attack style
+                if (!TooFar() && !DangerThreshold() && !catchingUp && attackDelay == 0)
+                {
+                    if (targetNPC != null) continueAttack = true;
+                    
+                    // If a close attack style is chosen, check if the method evaluates to true to continue attacking
+                    // Otherwise, check to see if the NPC should continue attack after doing a far attack
+                    if (continueAttack) continueAttack = closeAttackStyle ? CloseAttack() : FarAttack();
+                }
+
+                #region Hire Time
+                Player player = FollowPlayer();
+                if (hireTimer < 0) // Update the time that the mercenary is hired for
+                {
+                    hiredBy = -1;
+                    hireTimer = 0;
+                }
+
+                hireTimer--;
+                if (currentMinute-- < 1)
+                {
+                    hireTime--;
+                    currentMinute = 3600;
+                }
+                #endregion
+
+                // Perform safety behaviour if in danger, or perform a health restore (RestoreHealth()) if possible
+                if (DangerThreshold() || (targetNPC == null && NPC.life < NPC.lifeMax))
+                {
+                    if (DangerThreshold())
+                    {
+                        continueAttack = false;
+                        SafetyBehaviour();
+                    }
+
+                    if (CanHeal()) restore[0] = 1;
+                }
+
+                if (CanFollowPlayer())
+                {
+                    NPC.dontTakeDamage = false;
+                    NPC.dontTakeDamageFromHostiles = false;
+
+                    if (restore[0] < 1) // If the NPC does not have to / cannot heal
+                    {
+                        // Perform a method whenever a projectile is detected; the second check may be removed if fully optimized
+                        // The second check is mainly for the NPC to not perform extra actions to (usually get away from) a threat
+                        if (incomingProjectile != null && !DangerThreshold()) ProjectileReact();
+
+                        // Decrease the heal cooldown
+                        if (restore[1]-- < 0) restore[1] = 0;
+                        if (restore[2]-- < 0) restore[2] = 0;
+
+                        // Make the NPC walk towards the player and stop when nearby if not in combat
+                        if (!continueAttack && !catchingUp && targetNPC == null && incomingProjectile == null)
+                        {
+                            if (Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(player.Center.X, 0)) > 125)
+                            {
+                                Main.NewText("we WLAKIN " + velocity);
+                                MovementAI(Rect(player));
+                            }
+                        }
+
+                        // Cancel all attacks (if any) and catch up to the player
+                        if (catchingUp)
+                        {
+                            if (!DangerThreshold())
+                            {
+                                continueAttack = false;
+                                if (CatchUp()) catchingUp = false;
+                            }
+                        }
+                    }
+                    else if (RestoreHealth()) // If health has been successsfully restored, set a cooldown
+                    {
+                        restore[0] = 0;
+                        restore[2] = HealCooldown * 60;
+                    }
+                }
+
+                // Look for threats if hired
+                ScoutThreats();
+            }
+            else // The NPC is invulnerable if not hired
+            {
+                NPC.dontTakeDamage = true;
+                NPC.dontTakeDamageFromHostiles = true;
+            }
+        }
+
+        /// <summary>
+        /// Restores 1/5 of the mercenary's max health when it can successfully perform RestoreHealth()
+        /// </summary>
+        public void Heal()
+        {
+            int heal = NPC.lifeMax / 5;
+            NPC.life += heal;
+            CombatText.NewText(NPC.getRect(), Color.SpringGreen, $"{heal}", false, false);
         }
 
         /// <summary>
@@ -290,9 +405,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             #endregion
         }
 
-
         /// <summary>
-        /// Checks for hostile threats (NPCs and projectiles)
+        /// Checks for hostile threats (NPCs and projectiles), and saves them into their associated variables.
         /// </summary>
         public void ScoutThreats()
         {
@@ -337,6 +451,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
 
             return count < 7;
         }
+
         /// <summary>
         /// Returns a class that contains the width, height and the exact position of an entity (usually used for StandardAI())
         /// </summary>
@@ -353,97 +468,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             if (hiredBy != -1) return Main.player[hiredBy];
 
             return null;
-        }
-
-        public virtual void BaseAI()
-        {
-            if (NPC.life > NPC.lifeMax) NPC.life = NPC.lifeMax;
-
-            if (hiredBy != -1)
-            {
-                if (!TooFar() && !DangerThreshold() && !catchingUp)
-                {
-                    if (targetNPC != null) continueAttack = true;
-
-                    if (continueAttack) continueAttack = closeAttackStyle ? CloseAttack() : FarAttack();
-                }
-
-                Player player = FollowPlayer();
-                if (hireTimer < 0) // Update the time that the mercenary is hired for
-                {
-                    hiredBy = -1;
-                    hireTimer = 0;
-                }
-
-                hireTimer--;
-                if (currentMinute-- < 1)
-                {
-                    hireTime--;
-                    currentMinute = 3600;
-                }
-
-                // Perform safety behaviour if in danger, or perform a health restore (RestoreHealth()) if possible
-                if (DangerThreshold() || (targetNPC == null && NPC.life < NPC.lifeMax))
-                {
-                    if (DangerThreshold())
-                    {
-                        continueAttack = false;
-                        SafetyBehaviour();
-                    }
-
-                    if (CanHeal()) restore[0] = 1;
-                }
-
-                if (CanFollowPlayer())
-                {
-                    NPC.dontTakeDamage = false;
-                    NPC.dontTakeDamageFromHostiles = false;
-
-                    if (restore[0] < 1) // If the NPC does not have to / cannot heal
-                    {
-                        // Perform a method whenever a projectile is detected; the second check may be removed if fully optimized
-                        // The second check is mainly for the NPC to not perform extra actions to (usually get away from) a threat
-                        if (incomingProjectile != null && !DangerThreshold()) ProjectileReact();
-
-                        // Decrease the heal cooldown
-                        if (restore[1]-- < 0) restore[1] = 0;
-                        if (restore[2]-- < 0) restore[2] = 0;
-
-                        // Make the NPC walk towards the player and stop when nearby if not in combat
-                        if (!continueAttack && !catchingUp && targetNPC == null && incomingProjectile == null)
-                        {
-                            if (Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(player.Center.X, 0)) > 125)
-                                CombatAI(Rect(player));
-                        }
-
-                        if (hiredBy != -1)
-                        {
-                            // Cancel all attacks (if any) and catch up to the player
-                            if (catchingUp)
-                            {
-                                if (!DangerThreshold())
-                                {
-                                    continueAttack = false;
-                                    if (CatchUp()) catchingUp = false;
-                                }
-                            }
-                        }
-                    }
-                    else if (RestoreHealth()) // If health has been successsfully restored, set a cooldown
-                    {
-                        restore[0] = 0;
-                        restore[2] = HealCooldown * 60;
-                    }
-                }
-            }
-            else // The NPC is invulnerable if not hired
-            {
-                NPC.dontTakeDamage = true;
-                NPC.dontTakeDamageFromHostiles = true;
-            }
-
-            // Look for threats if hired
-            if (hiredBy != -1) ScoutThreats();
         }
 
         public List<MercenaryDialogue> PlaceholderDialogue()
@@ -550,23 +574,29 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             return null;
         }
 
+        /// <summary>
+        /// Checks all around the NPC based on it's detection range and adds to them a list of possible targets.
+        /// </summary>
+        /// <returns>Returns the nearest NPC within this list.</returns>
         NPC RadialNPCCheck()
         {
             List<bool> nearby = new List<bool>();
             List<float> distance = new List<float>();
             List<NPC> possibleTargets = new List<NPC>();
+
             foreach (NPC n in Main.npc)
             {
                 if (n != null && n.active && !n.immortal && !n.dontTakeDamage && n.type != NPCID.TargetDummy && ((!n.friendly && !n.CountsAsACritter) || n.boss))
                 {
-                    //Checks if the NPC is in a set radius
+                    // Checks if the NPC is in a set radius
                     int[] results = WithinDetectRange(n.Center, 2);
                     if (results[0] == 1)
                     {
-                        //distance is used for finding the closest NPC
+                        // Distance is used for finding the closest NPC
                         distance.Add(Vector2.Distance(n.Center, NPC.Center));
                         possibleTargets.Add(n);
-                        //used for checking if the closest NPC needs a close attack or a far attack
+
+                        // Used for checking if the closest NPC needs a close attack or a far attack
                         nearby.Add(results[1] == 1 && Vector2.Distance(new Vector2(n.Center.Y, 0), new Vector2(NPC.Center.Y, 0)) < 75);
                     }
                 }
@@ -574,11 +604,12 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
 
             if (distance.Count > 0)
             {
-                //Finds the smallest distance and bases the needed attack performed based on their "nearby" placement
+                // Finds the smallest distance and bases the needed attack performed based on their "nearby" placement
                 float lowest = 99999;
+
                 for (int a = 0; a < distance.Count; a++)
-                    if (distance[a] < lowest)
-                        lowest = distance[a];
+                    if (distance[a] < lowest) lowest = distance[a];
+
                 for (int a = 0; a < distance.Count; a++)
                     if (distance[a] == lowest)
                     {
@@ -586,6 +617,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                         return possibleTargets[a];
                     }
             }
+
             return null;
         }
         public int[] WithinDetectRange(Vector2 pos, float multiplier = 1)
@@ -614,7 +646,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             float totalDimensions = (float)Math.Sqrt((multiplier * dimensions.X) + (multiplier * dimensions.Y));
             return distance / totalDimensions;
         }
-        //Usually overrided; otherwise visualizes the wall and pit detection
+        
+        // Usually overrided; otherwise visualizes the wall and pit detection
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D checkTest = ModContent.Request<Texture2D>("OvermorrowMod/Content/NPCs/Mercenary/TestDetection").Value;
