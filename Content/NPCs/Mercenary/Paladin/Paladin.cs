@@ -198,7 +198,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     NPC.velocity.X = 0;
 
                 // Starts the "walk" animation cycle
-                if (targetNPC == null && HammerAlive() == null && !catchingUp && !doHammerSpin) FrameUpdate(FrameType.Walk);
+                if (targetNPC == null && HammerAlive() == null && !catchingUp && !CAStyleDecided) FrameUpdate(FrameType.Walk);
             }
 
             // Starts the "walkBattle" animation cycle if the paladin finds an enemy
@@ -1122,13 +1122,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             Projectile.width = 50;
             Projectile.height = 50;
             Projectile.timeLeft = 180;
-            AIType = ProjectileID.Bullet;
+            Projectile.aiStyle = -1;
         }
 
         public override void AI()
         {
             // Dust offset
-            Vector2 offset = new Vector2(35 * (owner.hammerDirection == -1 ? -1 : 1), 25);
+            Vector2 offset = new Vector2(0, 25);
 
             if (!initialize)
             {
@@ -1156,6 +1156,30 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             // Lerp the velocity of the projectile to 0
             Projectile.velocity = new Vector2(MathHelper.Lerp(initialVelocity, 0, 1 - (Projectile.timeLeft / 180f)), 0);
+
+            // Makes the shockwave stick to the ground, if checks if there is a tile below the center and a tile at the center
+            // If there is a tile below the projectile AND the projectile isn't in a tile, do nothing.
+            // Otherwise, if there isn't a tile below the projectile, move downwards.
+            // And if the projectile is inside of a tile, move upwards.
+
+            Vector2 positionChange = Projectile.Bottom / 16;
+
+            Tile tile = Framing.GetTileSafely((int)Projectile.Bottom.X / 16, (int)Projectile.Bottom.Y / 16);
+            Tile tileBelow = Framing.GetTileSafely((int)Projectile.Bottom.X / 16, (int)Projectile.Bottom.Y / 16 + 2);
+            while ((tile.HasTile && Main.tileSolid[tile.TileType]) || (!tileBelow.HasTile && !Main.tileSolid[tileBelow.TileType]))
+            //while ((tile.HasTile && Main.tileSolid[tile.TileType]))
+            {
+                // We are in a tile and the tile is solid (ie not a table or tree)
+                if (tile.HasTile && Main.tileSolid[tile.TileType]) positionChange.Y -= 1;
+
+                // The tile below doesnt exist or the tile is not solid
+                if (!tileBelow.HasTile && !Main.tileSolid[tileBelow.TileType]) positionChange.Y += 1;
+
+                tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
+                tileBelow = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y + 2);
+            }
+
+            Projectile.Center = new Vector2(0, -Projectile.height / 2f) + positionChange * 16;
         }
     }
 
