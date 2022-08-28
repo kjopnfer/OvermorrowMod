@@ -86,7 +86,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override float DetectRadius => 350;
         public override int MaxHealth => 500;
         public override int Defense => 40;
-        public override float KnockbackResist => 0.66f;
+        public override float KnockbackResist => 0f;
         public override int HealCooldown => 10;
         public override int MaxFrames() => 15;
 
@@ -118,7 +118,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 return;
             }
 
-            Main.NewText("continue attack? " + continueAttack + " / " + spinCounter + " / " + NPC.direction);
+            Main.NewText("continue attack? " + continueAttack + " / " + spinCounter + " / hammer delay: " + hammerDelay);
 
             drawAfterimage = false;
             BaseAI();
@@ -196,8 +196,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 if ((HammerAlive() == null && !catchingUp) || closeAttackStyle) // Resets attack variables
                 {
-                    hammerDelay = 0;
-                    slamTimer = 0;
+                    //hammerDelay = 0;
+                    //slamTimer = 0;
                     throwStyle = 0;
 
                     targetPosition = Vector2.Zero;
@@ -446,12 +446,19 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     float general = Vector2.Distance(new Vector2(scout.X, 0), new Vector2(NPC.Center.X, 0));
                     float height = Vector2.Distance(new Vector2(scout.Y, 0), new Vector2(NPC.Center.Y, 0));
 
-                    if (!doHammerSpin)
+                    /*if (!doHammerSpin)
                     {
                         doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
-                        hammerDirection = targetNPC.Center.X > NPC.Center.X ? 1 : -1;
-                    }
+                    }*/
 
+                    // Turn off default town NPC shit
+                    AIType = -1;
+
+                    // We don't want any of the attacks to be interrupted after they've started
+                    continueClose = true;
+                    hammerDirection = targetNPC.Center.X > NPC.Center.X ? 1 : -1;
+
+                    hammerDelay = 60;
                     CAStyleDecided = true;
                 }
             }
@@ -469,13 +476,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     doHammerSpin = false;
                     continueClose = false;
 
+                    AIType = 0;
                     attackDelay = AttackDelay;
 
                     Main.NewText("stun");
                     return false;
                 }
 
-                continueClose = true;
                 FrameUpdate(FrameType.HammerSpin);
 
                 // Go towards the target
@@ -530,11 +537,49 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             }
             else
             {
-                CAStyleDecided = false;
+                FrameUpdate(FrameType.HammerSlam);
                 //doHammerSpin = false;
 
-                Main.NewText("decide on slam");
-                return false;
+                if (hammerDelay > 0)
+                {
+                    yFrame = 2;
+                    hammerDelay--;
+                }
+                else
+                {
+                    slamTimer++;
+                    if (slamTimer >= 32)
+                    {
+                        yFrame = 6;
+
+                        if (slamTimer == 32)
+                        {
+                            ScreenShake.ScreenShakeEvent(NPC.Center, 15, 4, 250);
+                            PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(16 * hammerDirection, 0), ModContent.ProjectileType<PaladinHammerHit>(), 35, 1, hiredBy).ModProjectile as PaladinHammerHit;
+                            shockwave.owner = this;
+                        }
+                    }
+                    else if (slamTimer > 28) yFrame = 5;
+                    else if (slamTimer > 24) yFrame = 4;
+                    else if (slamTimer > 20) yFrame = 3;
+
+                    if (slamTimer == 152)
+                    {
+                        continueClose = false;
+                        CAStyleDecided = false;
+
+                        slamTimer = 0;
+                        hammerDelay = 60;
+                        yFrame = 0;
+
+                        AIType = 0;
+
+                        return false;
+                    }
+                }
+
+                Main.NewText("decide on slam, delay: " + hammerDelay + " / slamTimer: " + slamTimer);
+                return true;
             }
 
             /*if (!CAStyleDecided)
@@ -805,6 +850,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             Walk,
             WalkBattle,
             HammerSpin,
+            HammerSlam,
             HammerChuck,
             HammerChuckAwait,
             CatchUp
@@ -916,37 +962,15 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                             return true;
                         }
                     #endregion
-                    case FrameType.HammerChuck:
+                    #region HammerSlam
+                    case FrameType.HammerSlam: // The frames are handled in CloseAttack()
                         {
                             xFrame = 3;
-
-                            // Wait for a delay (poise the hammer), then prepare to receive the hammer; return when the delay is finished
-                            if (++hammerDelay < 30)
-                                moveFrame = prepareSwing;
-                            else
-                                moveFrame = getHammerStance;
-
-                            return moveFrame == getHammerStance;
-                        }
-                    case FrameType.HammerChuckAwait:
-                        {
-                            xFrame = 3;
-                            // Used for the third hammer throw; set the arm in the general direction of the hammer
-                            /*Vector2 hammer = HammerAlive().Projectile.Center;
-                            Point add = getHammerStance;
-
-                            if (hammer.Y < NPC.Center.Y - 33) add.X = 2;
-
-                            if (hammer.Y >= NPC.Center.Y + 22 && hammer.Y < NPC.Center.Y + 33) add.X = 3;
-
-                            if (hammer.Y > NPC.Center.Y + 33) add.X = 4;
-
-                            if (hammer.Y > NPC.Center.Y + 66) add.X = 5;
-
-                            moveFrame = add;*/
+                            NPC.direction = hammerDirection;
 
                             return true;
                         }
+                    #endregion
                     case FrameType.CatchUp:
                         {
                             xFrame = 3;
@@ -972,7 +996,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 }
             }
 
-            return false;
+            return true;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -1237,6 +1261,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             // Dust offset
             Vector2 offset = new Vector2(35 * (owner.hammerDirection == -1 ? -1 : 1), 25);
+
             if (!initialize)
             {
                 for (int a = 0; a < 20; a++) // Create an oval dust shape
@@ -1250,8 +1275,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 initialVelocity = Projectile.velocity.X;
             }
 
-            #region shockwave dust
             // Create sine shaped dust formations as the projectile travels
+            #region shockwave dust
             float sin2 = (float)Math.Pow(Math.Abs(1.06f * Math.Sin(5f * sine)), 40) - 0.1f;
             if (sin2 > 0)
             {
@@ -1262,11 +1287,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             #endregion
 
             // Lerp the velocity of the projectile to 0
-            sine += (float)Math.PI / 90;
-            if (sine <= Math.PI / 2)
-                Projectile.velocity = new Vector2(MathHelper.Lerp(initialVelocity, 0, (float)Math.Sin(sine)), 0);
-            else
-                Projectile.Kill();
+            Projectile.velocity = new Vector2(MathHelper.Lerp(initialVelocity, 0, 1 - (Projectile.timeLeft / 180f)), 0);
         }
     }
 
