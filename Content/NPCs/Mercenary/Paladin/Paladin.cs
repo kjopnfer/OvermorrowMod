@@ -449,6 +449,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     if (!doHammerSpin)
                     {
                         doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
+                        hammerDirection = targetNPC.Center.X > NPC.Center.X ? 1 : -1;
                     }
 
                     CAStyleDecided = true;
@@ -886,7 +887,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     case FrameType.HammerSpin:
                         {
                             xFrame = 3;
-                            NPC.direction = 1;
+                            NPC.direction = hammerDirection;
 
                             if (yFrame < 7 || yFrame == 14) yFrame = 7;
 
