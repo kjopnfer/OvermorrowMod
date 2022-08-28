@@ -118,7 +118,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 return;
             }
 
-            Main.NewText("continue attack? " + continueAttack + " / " + spinCounter);
+            Main.NewText("continue attack? " + continueAttack + " / " + spinCounter + " / " + NPC.direction);
 
             drawAfterimage = false;
             BaseAI();
@@ -486,12 +486,17 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 float knockBack = 1f;
 
                 // Basically decelerates near the end of the maximum spin time
-                if (spinCounter > 260)
+                if (spinCounter > 280)
+                {
+                    spinDamage = 0;
+                    knockBack = 0f;
+                }
+                else if (spinCounter > 250)
                 {
                     spinDamage = 5;
                     knockBack = 1f;
                 }
-                else if (spinCounter > 230)
+                else if (spinCounter > 210)
                 {
                     spinDamage = 15;
                     knockBack = 0.5f;
@@ -806,7 +811,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         }
 
         public int spinCounter = 0;
-        int tempCounter = 0;
+        float tempCounter = 0;
         private bool FrameUpdate(FrameType type, bool condition = true)
         {
             #region Key frames
@@ -892,28 +897,14 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                             if (yFrame < 7 || yFrame == 14) yFrame = 7;
 
                             // The longer the paladin is spinning, the faster they go. Slows down near the end.
-                            // I don't know an alternative way to write this, somebody please tell me lmao.
-                            int spinSpeed = 1;
-                            if (spinCounter > 260)
-                            {
-                                spinSpeed = 1;
-                            }
-                            else if (spinCounter > 230)
-                            {
-                                spinSpeed = 2;
-                            }
-                            else if (spinCounter > 150)
-                            {
-                                spinSpeed = 6;
-                            }
-                            else if (spinCounter > 90)
-                            {
-                                spinSpeed = 3;
-                            }
-                            else if (spinCounter > 30)
-                            {
-                                spinSpeed = 2;
-                            }
+                            float spinSpeed = 1;
+                            if (spinCounter > 280) spinSpeed = 0f;
+                            else if (spinCounter > 250) spinSpeed = 0.5f;
+                            else if (spinCounter > 240) spinSpeed = 1;
+                            else if (spinCounter > 210) spinSpeed = 3;
+                            else if (spinCounter > 150) spinSpeed = 6;
+                            else if (spinCounter > 90) spinSpeed = 3;
+                            else if (spinCounter > 30) spinSpeed = 2;
 
                             tempCounter += spinSpeed;
                             if (tempCounter >= 6)
@@ -988,6 +979,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            if (doHammerSpin) spriteEffects = hammerDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
             spriteBatch.Draw(texture, NPC.Center - Vector2.UnitY * 6 - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             if (drawAfterimage)
