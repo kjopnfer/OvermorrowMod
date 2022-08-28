@@ -29,6 +29,12 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         /// </summary>
         public virtual int AttackDelay { get { return 60; } }
 
+        // Shitty niche variables to make it so the NPC doesn't choose an attack while its in an attack and the NPC fucking dies
+        // Might replace with something better, for now its literally just for the paladin
+        public bool continueClose = false;
+        public bool continueFar = false;
+        #endregion
+
         #region NPC values
         public virtual string MercenaryName { get { return "Mercenary"; } }
         public virtual int MaxHealth { get { return 400; } }
@@ -39,7 +45,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public virtual int HealCooldown { get { return 30; } }
         //A list of MercenaryDialogue classes, containing strings (the dialogue), ints (priority of the dialogue) and bools (can display or not)
         public virtual List<MercenaryDialogue> Dialogue { get; set; }
-        #endregion
         #endregion
 
         //A variable for RestoreHealth() method, all variables from this method are drained to 0 when not healing
@@ -55,7 +60,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public bool canCheckTiles = true;
 
         // How fast should the mercenary go when MovementAI() is called
-        public float velocity = 0.25f;
+        public float acceleration = 0.25f;
 
         // Generally used with AttackDelay, flexible
         public int attackDelay;
@@ -160,7 +165,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
 
                         // Determines which direction the NPC should go
                         bool moveCondition = direction != 0 && NPC.velocity.Y != 0 && groundDetectPos != Vector2.Zero ? (direction > 0) : (NPC.Center.X < targetPosition.X);
-                        NPC.velocity.X += moveCondition ? velocity : -velocity;
+
+                        Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
+
+                        NPC.velocity.X += moveCondition ? acceleration : -acceleration;
                         NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -7, 7);
 
                         // The mercenary cannot check tiles if it is in the air
@@ -192,10 +200,24 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                 if (!TooFar() && !DangerThreshold() && !catchingUp && attackDelay == 0)
                 {
                     if (targetNPC != null) continueAttack = true;
-                    
+
                     // If a close attack style is chosen, check if the method evaluates to true to continue attacking
                     // Otherwise, check to see if the NPC should continue attack after doing a far attack
-                    if (continueAttack) continueAttack = closeAttackStyle ? CloseAttack() : FarAttack();
+                    if (continueAttack) //continueAttack = closeAttackStyle ? CloseAttack() : FarAttack();
+                    {
+                        if (continueClose)
+                        {
+                            continueAttack = CloseAttack();
+                        }
+                        else if (continueFar)
+                        {
+                            continueAttack = FarAttack();
+                        }
+                        else
+                        {
+                            continueAttack = closeAttackStyle ? CloseAttack() : FarAttack();
+                        }
+                    }
                 }
 
                 #region Hire Time
@@ -246,7 +268,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                         {
                             if (Vector2.Distance(new Vector2(NPC.Center.X, 0), new Vector2(player.Center.X, 0)) > 125)
                             {
-                                Main.NewText("we WLAKIN " + velocity);
+                                Main.NewText("we WLAKIN " + acceleration);
                                 MovementAI(Rect(player));
                             }
                         }

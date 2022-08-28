@@ -100,16 +100,25 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 NPC.velocity.X = 0;
 
                 drawAfterimage = false;
-                continueAttack = false;
                 targetNPC = null;
 
                 stunDuration--;
                 FrameUpdate(FrameType.WalkBattle);
 
+                if (stunDuration == 0)
+                {
+                    // I will explain this since it was confusing me for like a solid half an hour.
+                    // The NPC has two velocity values, the base velocity all NPCs have and the unique velocity used to scale speed
+                    // Within MovementAI is where this second value is applied. Therefore setting it to zero means it doesn't move at all.
+                    // When the NPC is stunned, their second velocity is set to zero and this cannot be called.
+                    acceleration = 0.125f;
+                    canCheckTiles = true;
+                }
+
                 return;
             }
 
-            Main.NewText("continue attack? " + continueAttack);
+            Main.NewText("continue attack? " + continueAttack + " / " + spinCounter);
 
             drawAfterimage = false;
             BaseAI();
@@ -117,57 +126,34 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             // Stun and attackDelay cooldown update
             if (attackDelay > 0) attackDelay--;
 
-            if (targetNPC == null && !DangerThreshold()) // Remove direction lock
-            {
-                if (doHammerSpin) // Stops the hammer spin
-                {
-                    Main.NewText("stopped spin");
-
-                    NPC.defense = Defense;
-                    NPC.knockBackResist = KnockbackResist;
-
-                    spinCounter = 0;
-
-                    doHammerSpin = false;
-                    CAStyleDecided = false;
-
-                    imgPos = new Vector2[6] { new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2() };
-                    Array.Clear(imgFrame);
-                }
-
-                hammerDirection = 0;
-            }
-
-            if (targetNPC == null)
-            {
-                CAStyleDecided = false;
-                doHammerSpin = false;
-            }
-
             // Allow another projectile reaction to happen if not on a solid tile
             if (projReaction && OnSolidTile() != null) projReaction = false;
 
             // The paladin will speed up if it goes in the same direction
             if (SameDirection() && !DangerThreshold())
             {
-                velocity += 0.001f * (Spinning() != null ? 50 : 1);
-                velocity = MathHelper.Clamp(velocity, 0, 0.5f);
+                acceleration += 0.001f * (Spinning() != null ? 50 : 1);
+                acceleration = MathHelper.Clamp(acceleration, 0, 0.5f);
             }
 
             // The paladin moves faster than usual while in danger, but is more careful (the above code does not run)
+            // Therefore, the paladin will have a higher base movement speed but with no acceleration
             if (DangerThreshold())
             {
-                velocity = 0.2f;
+                acceleration = 0.2f;
             }
-            else if (stunDuration == 0) // Hella important for movement LMAO
-            {
-                // I will explain this since it was confusing me for like a solid half an hour.
-                // The NPC has two velocity values, the base velocity all NPCs have and the unique velocity used to scale speed
-                // Within MovementAI is where this second value is applied. Therefore setting it to zero means it doesn't move at all.
-                // When the NPC is stunned, their second velocity is set to zero and this cannot be called.
 
-                velocity = 0.125f;
-                canCheckTiles = true;
+            // The paladin has completely stopped, so reset their acceleration to their base
+            if (NPC.velocity.X == 0)
+            {
+                if (DangerThreshold())
+                {
+                    acceleration = 0.2f;
+                }
+                else
+                {
+                    acceleration = 0.125f;
+                }
             }
 
             // The paladin is catching up to the player and is not in danger of dying
@@ -186,7 +172,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 catchingUp = false;
             }
 
-            if (velocity > 0.4f)
+            if (acceleration > 0.4f)
             {
                 // Draws an afterimage after the NPC reaches a certain velocity. If the NPC is not in danger of dying, start ramming.
                 drawAfterimage = true;
@@ -206,7 +192,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 }
             }
 
-            if (targetNPC == null || velocity > 0.4f)
+            if (targetNPC == null || acceleration > 0.4f)
             {
                 if ((HammerAlive() == null && !catchingUp) || closeAttackStyle) // Resets attack variables
                 {
@@ -220,7 +206,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     NPC.velocity.X = 0;
 
                 // Starts the "walk" animation cycle
-                if (targetNPC == null && HammerAlive() == null && !catchingUp) FrameUpdate(FrameType.Walk);
+                if (targetNPC == null && HammerAlive() == null && !catchingUp && !doHammerSpin) FrameUpdate(FrameType.Walk);
             }
 
             // Starts the "walkBattle" animation cycle if the paladin finds an enemy
@@ -405,6 +391,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         /// </summary>
         /// <returns></returns>
         bool CanAttack() => Spinning() == null && HammerAlive() == null && attackDelay < 1;
+        public override bool FarAttack()
+        {
+            Main.NewText("somehow far attack");
+            return false;
+        }
         /*public override bool FarAttack()
         {
             Vector2 scout;
@@ -455,7 +446,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     float general = Vector2.Distance(new Vector2(scout.X, 0), new Vector2(NPC.Center.X, 0));
                     float height = Vector2.Distance(new Vector2(scout.Y, 0), new Vector2(NPC.Center.Y, 0));
 
-                    doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
+                    if (!doHammerSpin)
+                    {
+                        doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
+                    }
+
                     CAStyleDecided = true;
                 }
             }
@@ -464,30 +459,43 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 if (spinCounter++ == 300)
                 {
-                    if (Spinning() != null && targetNPC != null) Spinning().Projectile.Kill();
+                    if (Spinning() != null) Spinning().Projectile.Kill();
 
                     spinCounter = 0;
-
                     stunDuration = 180;
+
                     CAStyleDecided = false;
                     doHammerSpin = false;
+                    continueClose = false;
 
                     attackDelay = AttackDelay;
 
                     Main.NewText("stun");
-
                     return false;
                 }
 
+                continueClose = true;
                 FrameUpdate(FrameType.HammerSpin);
 
                 // Go towards the target
-                if (!DangerThreshold()) MovementAI(Rect(targetNPC));
+                if (!DangerThreshold() && targetNPC != null) MovementAI(Rect(targetNPC));
 
                 // Create a projectile that moves forth and back from the paladin
                 int spinDamage = 5;
                 float knockBack = 1f;
-                if (spinCounter > 150)
+
+                // Basically decelerates near the end of the maximum spin time
+                if (spinCounter > 260)
+                {
+                    spinDamage = 5;
+                    knockBack = 1f;
+                }
+                else if (spinCounter > 230)
+                {
+                    spinDamage = 15;
+                    knockBack = 0.5f;
+                }
+                else if (spinCounter > 150)
                 {
                     spinDamage = 20;
                     knockBack = 0.2f;
@@ -503,22 +511,21 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     knockBack = 1f;
                 }
 
-                if (spinCounter > 90) drawAfterimage = true;
+                if (spinCounter > 90 && spinCounter < 260) drawAfterimage = true;
 
                 PaladinHammerSpin hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammerSpin>(), spinDamage, knockBack, hiredBy).ModProjectile as PaladinHammerSpin;
                 hammer.owner = this;
 
-                Main.NewText("doing hammer spin: " + (Spinning() != null && targetNPC != null));
+                // Keep the spinning projectile alive while he is spinning
+                Spinning().Projectile.timeLeft = 2;
 
-                // If there is still an enemy, keep the spinning projectile alive
-                if (Spinning() != null && targetNPC != null) Spinning().Projectile.timeLeft = 2;
-
-                return Spinning() != null && targetNPC != null;
+                // Always returns true, the NPC will only exit out of this when he has spun for 5 seconds.
+                return true;
             }
             else
             {
                 CAStyleDecided = false;
-                doHammerSpin = false;
+                //doHammerSpin = false;
 
                 Main.NewText("decide on slam");
                 return false;
@@ -666,10 +673,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         // Determines which direction the NPC should go
                         bool moveCondition = direction != 0 && NPC.velocity.Y != 0 && groundDetectPos != Vector2.Zero ? (direction > 0) : (NPC.Center.X < targetPosition.X);
 
-                        if (doHammerSpin)
-                            Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
+                        Collision.StepUp(ref NPC.position, ref NPC.velocity, NPC.width, NPC.height, ref NPC.stepSpeed, ref NPC.gfxOffY);
 
-                        NPC.velocity.X += moveCondition ? velocity : -velocity;
+                        NPC.velocity.X += moveCondition ? acceleration : -acceleration;
                         NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -7, 7);
 
                         // The mercenary cannot check tiles if it is in the air
@@ -846,17 +852,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     #region WalkBattle
                     case FrameType.WalkBattle:
                         {
-                            // This is here cause sometimes it just sticks itself here idk, might remove when I know wtf is going on
-                            if (doHammerSpin)
-                            {
-                                if (Spinning() != null) Spinning().Projectile.Kill();
-
-                                doHammerSpin = false;
-                                spinCounter = 0;
-
-                                Main.NewText("standing here i realize");
-                            }
-
                             // Just like "walk", but at different Y frames
                             xFrame = 0;
 
@@ -895,9 +890,18 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
                             if (yFrame < 7 || yFrame == 14) yFrame = 7;
 
-                            // The longer the paladin is spinning, the faster they go
+                            // The longer the paladin is spinning, the faster they go. Slows down near the end.
+                            // I don't know an alternative way to write this, somebody please tell me lmao.
                             int spinSpeed = 1;
-                            if (spinCounter > 150)
+                            if (spinCounter > 260)
+                            {
+                                spinSpeed = 1;
+                            }
+                            else if (spinCounter > 230)
+                            {
+                                spinSpeed = 2;
+                            }
+                            else if (spinCounter > 150)
                             {
                                 spinSpeed = 6;
                             }
@@ -1020,10 +1024,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public virtual void DoScreenShake()
         {
             owner.stunDuration = 30;
-            //owner.velocity = 0;
-            //owner.NPC.velocity.X *= -2f;
-            owner.NPC.velocity.X = 0;
-            ScreenShake.ScreenShakeEvent(Projectile.Center, 15, 5, 100);
+            owner.acceleration = 0;
+            owner.NPC.velocity.X *= -2f;
+            ScreenShake.ScreenShakeEvent(Projectile.Center, 15, 2, 100);
         }
 
         public void CheckCollision()
@@ -1186,6 +1189,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override void DoScreenShake()
         {
             owner.stunDuration = 30;
+            owner.acceleration = 0;
             owner.NPC.velocity *= -1f;
             ScreenShake.ScreenShakeEvent(Projectile.Center, 15, 5, 100);
         }
@@ -1294,7 +1298,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override void AI()
         {
             // Set the position directly in front of the paladin
-            if (owner != null && owner.NPC.active && owner.velocity >= 0.4f)
+            if (owner != null && owner.NPC.active && owner.acceleration >= 0.4f)
                 Projectile.Center = owner.NPC.Center + new Vector2(owner.NPC.direction == -1 ? -50 : 50, 4);
             else
                 Projectile.Kill();
@@ -1308,7 +1312,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             if (target.knockBackResist < 1 && !target.boss)
                 target.velocity += new Vector2((owner.NPC.direction == -1 ? -7.5f : 7.5f) / target.knockBackResist, -8f / target.knockBackResist);
             //if the paladin is still alive and the above does not occur, shake the screen
-            else if (owner != null && owner.NPC.active && owner.velocity >= 0.4f)
+            else if (owner != null && owner.NPC.active && owner.acceleration >= 0.4f)
                 DoScreenShake();
         }
     }
