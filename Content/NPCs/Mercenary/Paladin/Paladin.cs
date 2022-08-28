@@ -96,7 +96,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             if (stunDuration > 0)
             {
                 Main.NewText("stunned: " + stunDuration);
-
                 NPC.velocity.X = 0;
 
                 drawAfterimage = false;
@@ -146,14 +145,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             // The paladin has completely stopped, so reset their acceleration to their base
             if (NPC.velocity.X == 0)
             {
-                if (DangerThreshold())
-                {
-                    acceleration = 0.2f;
-                }
-                else
-                {
-                    acceleration = 0.125f;
-                }
+                if (DangerThreshold()) acceleration = 0.2f;
+                else acceleration = 0.125f;
             }
 
             // The paladin is catching up to the player and is not in danger of dying
@@ -199,7 +192,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     //hammerDelay = 0;
                     //slamTimer = 0;
                     throwStyle = 0;
-
                     targetPosition = Vector2.Zero;
                 }
                 else if (HammerAlive() != null)
@@ -538,7 +530,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             else
             {
                 FrameUpdate(FrameType.HammerSlam);
-                //doHammerSpin = false;
 
                 if (hammerDelay > 0)
                 {
@@ -581,125 +572,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 Main.NewText("decide on slam, delay: " + hammerDelay + " / slamTimer: " + slamTimer);
                 return true;
             }
-
-            /*if (!CAStyleDecided)
-            {
-                // Check the distance between the enemy and the NPC; if *really* close, perform a hammer spin, otherwise perform a hammer slam
-                if (targetNPC != null)
-                {
-                    Vector2 scout = targetNPC.Center;
-                    float general = Vector2.Distance(new Vector2(scout.X, 0), new Vector2(NPC.Center.X, 0));
-                    float height = Vector2.Distance(new Vector2(scout.Y, 0), new Vector2(NPC.Center.Y, 0));
-
-                    doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
-                    CAStyleDecided = true;
-                }
-            }
-
-            if (doHammerSpin)
-            {
-                Main.NewText("hammerspin");
-
-                if (spinCounter == 300)
-                {
-                    Main.NewText("npc set to stun");
-                    stunDuration = 60;
-
-                    NPC.defense = Defense;
-                    NPC.knockBackResist = KnockbackResist;
-
-                    spinCounter = 0;
-
-                    doHammerSpin = false;
-                    CAStyleDecided = false;
-
-                    imgPos = new Vector2[6] { new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2(), new Vector2() };
-                    Array.Clear(imgFrame);
-
-                    return false;
-                }
-
-                if (spinCounter > 90)
-                {
-                    drawAfterimage = true;
-                }
-
-                drawAfterimage = true;
-                FrameUpdate(FrameType.HammerSpin);
-
-                // Lock the direction to forward to prevent unusual appearance
-                hammerDirection = 1;
-                //if (targetNPC != null) NPC.direction = NPC.Center.X < targetNPC.Center.X ? 1 : -1;
-
-                spinCounter++;
-                velocity = 0.33f;
-
-                // Go towards the target
-                if (!DangerThreshold() && targetNPC != null) MovementAI(Rect(targetNPC));
-
-                // Create a projectile that moves forth and back from the paladin
-                if (CanAttack())
-                {
-                    int spinDamage = 5;
-                    if (spinCounter > 150)
-                    {
-                        spinDamage = 20;
-                    }
-                    else if (spinCounter > 90)
-                    {
-                        spinDamage = 15;
-                    }
-                    else if (spinCounter > 30)
-                    {
-                        spinDamage = 10;
-                    }
-
-                    PaladinHammerSpin hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammerSpin>(), spinDamage, 1f, hiredBy).ModProjectile as PaladinHammerSpin;
-                    hammer.owner = this;
-                }
-
-                // If there is still an enemy, keep the spinning projectile alive
-                if (Spinning() != null && targetNPC != null) Spinning().Projectile.timeLeft = 2;
-
-                // Stop spinning if the hammer projectile doesn't exist or if there is no longer a target
-                return true;
-                //return Spinning() == null && targetNPC == null;
-            }
-            /*else
-            {
-                // Face the paladin towards the enemy, and keep it still
-                if (attackDelay < 0) hammerDirection = targetNPC.Center.X < NPC.Center.X ? -1 : 1;
-
-                NPC.velocity.X = 0;
-
-                if (FrameUpdate(FrameType.CatchUp) && attackDelay < 1) slamTimer = 0;
-
-                // Create a projectile with lerped motion towards the faced direction, and shake the screen
-                if (slamTimer > 9 && Shockwave() == null && attackDelay < 1)
-                {
-                    ScreenShake.ScreenShakeEvent(NPC.Center, 15, 9, 250);
-                    PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(hammerDirection == -1 ? -16 : 16, 0), ModContent.ProjectileType<PaladinHammerHit>(), 30, 1, hiredBy).ModProjectile as PaladinHammerHit;
-                    shockwave.owner = this;
-                    attackDelay = AttackDelay + 20;
-                }
-                else if (slamTimer < 10) // Set the frames to a standing walkBattle frame in the middle of the delay
-                    moveFrame = new Point(0, 3);
-
-                if (attackDelay > 0 && attackDelay < 40) moveFrame = new Point(1, 7);
-
-                // Check for the nearest NPC if a hammer spin attack is necessary
-                if (attackDelay < 0)
-                {
-                    CAStyleDecided = false;
-                    doHammerSpin = false;
-
-                    //closeAttack = new bool[2];
-                }
-
-                return Shockwave() == null && moveFrame.X > 0; ;
-            }*/
-
-            return false;
         }
 
         // Doing this in order to make the NPC slide around when doing the hammer spin
@@ -858,142 +730,138 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public int spinCounter = 0;
         float tempCounter = 0;
-        private bool FrameUpdate(FrameType type, bool condition = true)
+        private bool FrameUpdate(FrameType type)
         {
             #region Key frames
             Point prepareSwing = new Point(0, 3);
             Point getHammerStance = new Point(1, 3);
             #endregion
-
-            if (condition)
+            switch (type)
             {
-                switch (type)
-                {
-                    #region Walk
-                    case FrameType.Walk:
+                #region Walk
+                case FrameType.Walk:
+                    {
+                        xFrame = 1;
+
+                        if (NPC.velocity.X == 0 && NPC.velocity.Y == 0) // Frame for when the NPC is standing still
                         {
-                            xFrame = 1;
-
-                            if (NPC.velocity.X == 0 && NPC.velocity.Y == 0) // Frame for when the NPC is standing still
-                            {
-                                yFrame = 0;
-                                tempCounter = 0;
-                            }
-                            else if (NPC.velocity.Y != 0) // Frame for when the NPC is jumping or falling
-                            {
-                                yFrame = 1;
-                                tempCounter = 0;
-                            }
-                            else // Frames for when the NPC is walking
-                            {
-                                if (yFrame < 2 || yFrame == 13) yFrame = 2;
-
-                                // Change the walking frame at a speed depending on the velocity
-                                int walkRate = (int)Math.Round(Math.Abs(NPC.velocity.X));
-                                tempCounter += walkRate;
-                                if (tempCounter > 8)
-                                {
-                                    yFrame++;
-                                    tempCounter = 0;
-                                }
-                            }
-
-                            return true;
+                            yFrame = 0;
+                            tempCounter = 0;
                         }
-                    #endregion
-                    #region WalkBattle
-                    case FrameType.WalkBattle:
+                        else if (NPC.velocity.Y != 0) // Frame for when the NPC is jumping or falling
                         {
-                            // Just like "walk", but at different Y frames
-                            xFrame = 0;
-
-                            if (NPC.velocity.X == 0 && NPC.velocity.Y == 0) // Frame for when the NPC is standing still
-                            {
-                                yFrame = 0;
-                                tempCounter = 0;
-                            }
-                            else if (NPC.velocity.Y != 0) // Frame for when the NPC is jumping or falling
-                            {
-                                yFrame = 1;
-                                tempCounter = 0;
-                            }
-                            else // Frames for when the NPC is walking
-                            {
-                                if (yFrame < 2 || yFrame == 13) yFrame = 2;
-
-                                // Change the walking frame at a speed depending on the velocity
-                                int walkRate = (int)Math.Round(Math.Abs(NPC.velocity.X));
-                                tempCounter += walkRate;
-                                if (tempCounter > 8)
-                                {
-                                    yFrame++;
-                                    tempCounter = 0;
-                                }
-                            }
-
-                            return true;
+                            yFrame = 1;
+                            tempCounter = 0;
                         }
-                    #endregion
-                    #region HammerSpin
-                    case FrameType.HammerSpin:
+                        else // Frames for when the NPC is walking
                         {
-                            xFrame = 3;
-                            NPC.direction = hammerDirection;
+                            if (yFrame < 2 || yFrame == 13) yFrame = 2;
 
-                            if (yFrame < 7 || yFrame == 14) yFrame = 7;
-
-                            // The longer the paladin is spinning, the faster they go. Slows down near the end.
-                            float spinSpeed = 1;
-                            if (spinCounter > 280) spinSpeed = 0f;
-                            else if (spinCounter > 250) spinSpeed = 0.5f;
-                            else if (spinCounter > 240) spinSpeed = 1;
-                            else if (spinCounter > 210) spinSpeed = 3;
-                            else if (spinCounter > 150) spinSpeed = 6;
-                            else if (spinCounter > 90) spinSpeed = 3;
-                            else if (spinCounter > 30) spinSpeed = 2;
-
-                            tempCounter += spinSpeed;
-                            if (tempCounter >= 6)
+                            // Change the walking frame at a speed depending on the velocity
+                            int walkRate = (int)Math.Round(Math.Abs(NPC.velocity.X));
+                            tempCounter += walkRate;
+                            if (tempCounter > 8)
                             {
-                                tempCounter = 0;
                                 yFrame++;
+                                tempCounter = 0;
                             }
-
-                            return true;
                         }
-                    #endregion
-                    #region HammerSlam
-                    case FrameType.HammerSlam: // The frames are handled in CloseAttack()
-                        {
-                            xFrame = 3;
-                            NPC.direction = hammerDirection;
 
-                            return true;
+                        return true;
+                    }
+                #endregion
+                #region WalkBattle
+                case FrameType.WalkBattle:
+                    {
+                        // Just like "walk", but at different Y frames
+                        xFrame = 0;
+
+                        if (NPC.velocity.X == 0 && NPC.velocity.Y == 0) // Frame for when the NPC is standing still
+                        {
+                            yFrame = 0;
+                            tempCounter = 0;
                         }
-                    #endregion
-                    case FrameType.CatchUp:
+                        else if (NPC.velocity.Y != 0) // Frame for when the NPC is jumping or falling
                         {
-                            xFrame = 3;
+                            yFrame = 1;
+                            tempCounter = 0;
+                        }
+                        else // Frames for when the NPC is walking
+                        {
+                            if (yFrame < 2 || yFrame == 13) yFrame = 2;
 
-                            // Or "hammer slam"; default to "prepareSwing" (0, 4), then move the X frame every 10 ticks
-                            slamTimer++;
-                            moveFrame.Y = 4;
-                            switch (slamTimer)
+                            // Change the walking frame at a speed depending on the velocity
+                            int walkRate = (int)Math.Round(Math.Abs(NPC.velocity.X));
+                            tempCounter += walkRate;
+                            if (tempCounter > 8)
                             {
-                                case 10:
-                                    moveFrame.X = 1;
-                                    break;
-                                case 20:
-                                    moveFrame.X = 2;
-                                    break;
-                                case 30:
-                                    moveFrame.X = 3;
-                                    break;
+                                yFrame++;
+                                tempCounter = 0;
                             }
-
-                            return slamTimer >= 40;
                         }
-                }
+
+                        return true;
+                    }
+                #endregion
+                #region HammerSpin
+                case FrameType.HammerSpin:
+                    {
+                        xFrame = 3;
+                        NPC.direction = hammerDirection;
+
+                        if (yFrame < 7 || yFrame == 14) yFrame = 7;
+
+                        // The longer the paladin is spinning, the faster they go. Slows down near the end.
+                        float spinSpeed = 1;
+                        if (spinCounter > 280) spinSpeed = 0f;
+                        else if (spinCounter > 250) spinSpeed = 0.5f;
+                        else if (spinCounter > 240) spinSpeed = 1;
+                        else if (spinCounter > 210) spinSpeed = 3;
+                        else if (spinCounter > 150) spinSpeed = 6;
+                        else if (spinCounter > 90) spinSpeed = 3;
+                        else if (spinCounter > 30) spinSpeed = 2;
+
+                        tempCounter += spinSpeed;
+                        if (tempCounter >= 6)
+                        {
+                            tempCounter = 0;
+                            yFrame++;
+                        }
+
+                        return true;
+                    }
+                #endregion
+                #region HammerSlam
+                case FrameType.HammerSlam: // The frames are handled in CloseAttack()
+                    {
+                        xFrame = 3;
+                        NPC.direction = hammerDirection;
+
+                        return true;
+                    }
+                #endregion
+                case FrameType.CatchUp:
+                    {
+                        xFrame = 3;
+
+                        // Or "hammer slam"; default to "prepareSwing" (0, 4), then move the X frame every 10 ticks
+                        slamTimer++;
+                        moveFrame.Y = 4;
+                        switch (slamTimer)
+                        {
+                            case 10:
+                                moveFrame.X = 1;
+                                break;
+                            case 20:
+                                moveFrame.X = 2;
+                                break;
+                            case 30:
+                                moveFrame.X = 3;
+                                break;
+                        }
+
+                        return slamTimer >= 40;
+                    }
             }
 
             return true;
@@ -1003,7 +871,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            if (doHammerSpin) spriteEffects = hammerDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            if (CAStyleDecided) spriteEffects = hammerDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
             spriteBatch.Draw(texture, NPC.Center - Vector2.UnitY * 6 - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
