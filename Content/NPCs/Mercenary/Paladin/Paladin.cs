@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Terraria.GameContent;
 using OvermorrowMod.Core;
 using Terraria.DataStructures;
+using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common;
 
 namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 {
@@ -546,7 +548,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         if (slamTimer == 32)
                         {
                             ScreenShake.ScreenShakeEvent(NPC.Center, 15, 4, 250);
-                            PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(16 * hammerDirection, 0), ModContent.ProjectileType<PaladinHammerHit>(), 35, 1, hiredBy).ModProjectile as PaladinHammerHit;
+                            PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(10 * hammerDirection, 0), ModContent.ProjectileType<PaladinHammerHit>(), 35, 1, hiredBy).ModProjectile as PaladinHammerHit;
                             shockwave.owner = this;
                         }
                     }
@@ -869,11 +871,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            // Each frame on the spritesheet is 116 x 72
+            const int frameWidth = 116;
+            const int frameHeight = 72;
+
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             if (CAStyleDecided) spriteEffects = hammerDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-
-            spriteBatch.Draw(texture, NPC.Center - Vector2.UnitY * 6 - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
             if (drawAfterimage)
             {
@@ -881,14 +885,32 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 {
                     if (imgPos[i] == new Vector2()) continue;
 
-                    // Each frame on the spritesheet is 116 x 72
-                    const int frameWidth = 116;
-                    const int frameHeight = 72;
-
                     Rectangle drawRectangle = new Rectangle(frameWidth * imgFrame[i].X, frameHeight * imgFrame[i].Y, frameWidth, frameHeight);
                     spriteBatch.Draw(texture, imgPos[i] - Vector2.UnitY * 6 - screenPos, drawRectangle, drawColor * ((float)(i - imgPos.Length + 6.125f) / (imgPos.Length)), NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 1f);
                 }
             }
+
+            spriteBatch.Draw(texture, NPC.Center - Vector2.UnitY * 6 - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            if (CAStyleDecided && !doHammerSpin)
+            {
+                Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                //float progress = Utils.Clamp(NPC.localAI[0]++, 0, 15f) / 15f;
+                effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
+                effect.Parameters["WhiteoutProgress"].SetValue(MathHelper.Lerp(0, 1, (float)Math.Sin(NPC.localAI[0]++ / 60f) / 2 + 0.5f));
+                effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+                int directionOffset = 4 * -hammerDirection;
+                Texture2D hammerTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer").Value;
+                Rectangle drawRectangle = new Rectangle(0, frameHeight * yFrame, frameWidth, frameHeight);
+
+                spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+            }
+
             return false;
         }
     }
@@ -1112,7 +1134,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override bool PreDraw(ref Color lightColor) => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mighty Hammer");
+            DisplayName.SetDefault("Shockwave");
         }
 
         public override void SetDefaults()
@@ -1132,6 +1154,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (!initialize)
             {
+                Particle.CreateParticle(Particle.ParticleType<Pulse2>(), Projectile.Center + offset, Vector2.Zero, Color.Orange);
+
                 for (int a = 0; a < 20; a++) // Create an oval dust shape
                 {
                     float pi = (float)Math.PI / 10;
@@ -1140,17 +1164,31 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     dust.velocity = Vector2.Zero;
                 }
 
+                initialize = true;
                 initialVelocity = Projectile.velocity.X;
             }
 
+
             // Create sine shaped dust formations as the projectile travels
             #region shockwave dust
-            float sin2 = (float)Math.Pow(Math.Abs(1.06f * Math.Sin(5f * sine)), 40) - 0.1f;
-            if (sin2 > 0)
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset + new Vector2(0, -sin2 * 2.5f), DustID.Torch);
-                dust.noGravity = true;
-                dust.velocity = Vector2.Zero;
+            if (Projectile.timeLeft > 90)
+            {  
+                for (int i = 0; i < 6; i++)
+                {
+                    float randomOffset = MathHelper.ToRadians(Main.rand.NextFloat(-10, 10));
+                    float rotation = Projectile.velocity.X < 0 ? randomOffset + MathHelper.PiOver4 : -(randomOffset + MathHelper.PiOver4);
+
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.Torch);
+                    dust.noGravity = true;
+                    dust.velocity = Projectile.velocity.RotatedBy(rotation);
+                }
+                /*float sin2 = (float)Math.Pow(Math.Abs(1.06f * Math.Sin(5f * sine)), 40) - 0.1f;
+                if (sin2 > 0)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset + new Vector2(0, -sin2 * 2.5f), DustID.Torch);
+                    dust.noGravity = true;
+                    dust.velocity = Vector2.Zero;
+                }*/
             }
             #endregion
 
@@ -1161,22 +1199,14 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             // If there is a tile below the projectile AND the projectile isn't in a tile, do nothing.
             // Otherwise, if there isn't a tile below the projectile, move downwards.
             // And if the projectile is inside of a tile, move upwards.
-
             Vector2 positionChange = Projectile.Bottom / 16;
 
             Tile tile = Framing.GetTileSafely((int)Projectile.Bottom.X / 16, (int)Projectile.Bottom.Y / 16);
-            //Tile tileBelow = Framing.GetTileSafely((int)Projectile.Bottom.X / 16, (int)Projectile.Bottom.Y / 16 + 8);
-            //while ((tile.HasTile && Main.tileSolid[tile.TileType]) || (!tileBelow.HasTile || !Main.tileSolid[tileBelow.TileType]))
             while ((tile.HasTile && Main.tileSolid[tile.TileType]))
             {
                 // We are in a tile and the tile is solid (ie not a table or tree)
                 if (tile.HasTile && Main.tileSolid[tile.TileType]) positionChange.Y -= 1;
-
-                // The tile below doesnt exist or the tile is not solid
-                //if (!tileBelow.HasTile || !Main.tileSolid[tileBelow.TileType]) positionChange.Y += 1;
-
                 tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
-                //tileBelow = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y + 8);
             }
 
             tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
