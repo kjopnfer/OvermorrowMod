@@ -1165,21 +1165,29 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             Vector2 positionChange = Projectile.Bottom / 16;
 
             Tile tile = Framing.GetTileSafely((int)Projectile.Bottom.X / 16, (int)Projectile.Bottom.Y / 16);
-            Tile tileBelow = Framing.GetTileSafely((int)Projectile.Bottom.X / 16, (int)Projectile.Bottom.Y / 16 + 2);
-            while ((tile.HasTile && Main.tileSolid[tile.TileType]) || (!tileBelow.HasTile && !Main.tileSolid[tileBelow.TileType]))
-            //while ((tile.HasTile && Main.tileSolid[tile.TileType]))
+            //Tile tileBelow = Framing.GetTileSafely((int)Projectile.Bottom.X / 16, (int)Projectile.Bottom.Y / 16 + 8);
+            //while ((tile.HasTile && Main.tileSolid[tile.TileType]) || (!tileBelow.HasTile || !Main.tileSolid[tileBelow.TileType]))
+            while ((tile.HasTile && Main.tileSolid[tile.TileType]))
             {
                 // We are in a tile and the tile is solid (ie not a table or tree)
                 if (tile.HasTile && Main.tileSolid[tile.TileType]) positionChange.Y -= 1;
 
                 // The tile below doesnt exist or the tile is not solid
-                if (!tileBelow.HasTile && !Main.tileSolid[tileBelow.TileType]) positionChange.Y += 1;
+                //if (!tileBelow.HasTile || !Main.tileSolid[tileBelow.TileType]) positionChange.Y += 1;
 
                 tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
-                tileBelow = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y + 2);
+                //tileBelow = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y + 8);
             }
 
-            Projectile.Center = new Vector2(0, -Projectile.height / 2f) + positionChange * 16;
+            tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
+            while (!tile.HasTile || !Main.tileSolid[tile.TileType])
+            {
+                // The tile below doesnt exist or the tile is not solid
+                if (!tile.HasTile || !Main.tileSolid[tile.TileType]) positionChange.Y += 1;
+                tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
+            }
+
+            Projectile.Center = new Vector2(0, -16 + -Projectile.height / 2f) + positionChange * 16;
         }
     }
 
