@@ -894,22 +894,51 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (CAStyleDecided && !doHammerSpin)
             {
+                Main.spriteBatch.Reload(BlendState.Additive);
+
+                float progress = MathHelper.Lerp(0, 1, 1 - (hammerDelay / 60f));
+                if (hammerDelay == 0 && slamTimer >= 32) progress = MathHelper.Lerp(1, 0, Utils.Clamp(slamTimer - 24, 0, 32) / 32f);
+
+                int directionOffset = 4 * -hammerDirection;
+                Texture2D hammerTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer_Glow").Value;
+                Rectangle drawRectangle = new Rectangle(0, frameHeight * yFrame, frameWidth, frameHeight);
+
+                Color color = Color.Lerp(Color.Transparent, new Color(240, 221, 137), progress);
+                float scale = MathHelper.Lerp(NPC.scale, NPC.scale * 1.025f, progress);
+                spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, color, NPC.rotation, drawRectangle.Size() / 2, scale, spriteEffects, 0);
+
+                color = Color.Lerp(Color.Transparent, Color.Orange, progress);
+                spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, color, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
                 Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-                //float progress = Utils.Clamp(NPC.localAI[0]++, 0, 15f) / 15f;
-                effect.Parameters["WhiteoutColor"].SetValue(Color.Yellow.ToVector3());
-                effect.Parameters["WhiteoutProgress"].SetValue(MathHelper.Lerp(0, 1, (float)Math.Sin(NPC.localAI[0]++ / 60f) / 2 + 0.5f));
+                effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+                effect.Parameters["WhiteoutProgress"].SetValue(progress);
                 effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
-                int directionOffset = 4 * -hammerDirection;
-                Texture2D hammerTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer").Value;
-                Rectangle drawRectangle = new Rectangle(0, frameHeight * yFrame, frameWidth, frameHeight);
-
+                hammerTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer").Value;
                 spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
 
                 Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+
+                Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Arm").Value;
+                spriteBatch.Draw(armTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                if (hammerDelay <= 15 && slamTimer < 20)
+                {
+                    Main.spriteBatch.Reload(BlendState.Additive);
+
+                    Texture2D flare = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flare_01").Value;
+                    scale = MathHelper.Lerp(1, 0, Utils.Clamp(hammerDelay - 12, 0, 5) / 5f);
+                    if (slamTimer > 0) scale = MathHelper.Lerp(1, 0, Utils.Clamp(slamTimer - 18, 0, 2) / 2f);
+
+                    spriteBatch.Draw(flare, NPC.Center + new Vector2(-32 * hammerDirection, -16) - screenPos, null, Color.Orange, NPC.rotation, flare.Size() / 2, scale, spriteEffects, 0);
+
+                    Main.spriteBatch.Reload(BlendState.AlphaBlend);
+                }
             }
+
 
             return false;
         }
@@ -1156,13 +1185,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 Particle.CreateParticle(Particle.ParticleType<Pulse2>(), Projectile.Center + offset, Vector2.Zero, Color.Orange);
 
-                for (int a = 0; a < 20; a++) // Create an oval dust shape
+                /*for (int a = 0; a < 20; a++) // Create an oval dust shape
                 {
                     float pi = (float)Math.PI / 10;
                     Dust dust = Dust.NewDustPerfect(new Vector2(20f * (float)Math.Cos(a * pi) + Projectile.Center.X, 5f * (float)Math.Sin(a * pi) + Projectile.Center.Y) + offset, 6);
                     dust.noGravity = true;
                     dust.velocity = Vector2.Zero;
-                }
+                }*/
 
                 initialize = true;
                 initialVelocity = Projectile.velocity.X;
