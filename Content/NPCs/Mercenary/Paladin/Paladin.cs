@@ -206,8 +206,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             // Starts the "walkBattle" animation cycle if the paladin finds an enemy
             if (targetNPC != null)
             {
-                if (restore[0] > 0 && !catchingUp || (HammerAlive() == null && (!closeAttackStyle || DangerThreshold())))
-                    FrameUpdate(FrameType.WalkBattle);
+                if (!CAStyleDecided)
+                {
+                    if (restore[0] > 0 && !catchingUp || (HammerAlive() == null && (!closeAttackStyle || DangerThreshold())))
+                        FrameUpdate(FrameType.WalkBattle);
+                }
             }
 
             if (drawAfterimage)
@@ -546,8 +549,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         yFrame = 6;
                         if (slamTimer == 32)
                         {
-                            float scale = Main.rand.NextFloat(3f, 5f);
-                            Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
+                            float scale = Main.rand.NextFloat(0.65f, 0.8f);
+                            //Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
 
                             for (int i = 0; i < Main.rand.Next(3, 6); i++)
                             {
@@ -561,8 +564,20 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         }
                     }
                     else if (slamTimer > 28) yFrame = 5;
-                    else if (slamTimer > 24) yFrame = 4;
-                    else if (slamTimer > 20) yFrame = 3;
+                    else if (slamTimer > 24)
+                    {
+                        yFrame = 4;
+                        
+                    }
+                    else if (slamTimer > 20)
+                    {
+                        yFrame = 3;
+                        if (slamTimer == 21)
+                        {
+                            float scale = Main.rand.NextFloat(0.65f, 0.8f);
+                            Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
+                        }
+                    }
 
                     if (slamTimer == 152)
                     {
