@@ -544,9 +544,17 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     if (slamTimer >= 32)
                     {
                         yFrame = 6;
-
                         if (slamTimer == 32)
                         {
+                            float scale = Main.rand.NextFloat(3f, 5f);
+                            Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
+
+                            for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                            {
+                                //scale = Main.rand.NextFloat(0.75f, 1.5f);
+                                Vector2 RandomVelocity = -Vector2.One.RotatedByRandom(MathHelper.Pi) * Main.rand.Next(1, 3);
+                                Particle.CreateParticle(Particle.ParticleType<Smoke2>(), NPC.Center + new Vector2(32 * hammerDirection, 16), RandomVelocity, Color.Black, Main.rand.NextFloat(0.15f, 0.35f), 1, 0, 0, Main.rand.Next(90, 120));
+                            }
                             ScreenShake.ScreenShakeEvent(NPC.Center, 15, 4, 250);
                             PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(10 * hammerDirection, 0), ModContent.ProjectileType<PaladinHammerHit>(), 35, 1, hiredBy).ModProjectile as PaladinHammerHit;
                             shockwave.owner = this;
@@ -894,33 +902,39 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (CAStyleDecided && !doHammerSpin)
             {
-                Main.spriteBatch.Reload(BlendState.Additive);
-
-                float progress = MathHelper.Lerp(0, 1, 1 - (hammerDelay / 60f));
-                if (hammerDelay == 0 && slamTimer >= 32) progress = MathHelper.Lerp(1, 0, Utils.Clamp(slamTimer - 24, 0, 32) / 32f);
-
                 int directionOffset = 4 * -hammerDirection;
-                Texture2D hammerTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer_Glow").Value;
+                float progress = MathHelper.Lerp(0, 1, 1 - (hammerDelay / 60f));
+                if (hammerDelay == 0 && slamTimer >= 32) progress = MathHelper.Lerp(1, 0, Utils.Clamp(slamTimer - 24, 0, 60) / 60f);
+
+                #region Glow
+                Main.spriteBatch.Reload(BlendState.Additive);
+                Texture2D glowTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer_Glow").Value;
                 Rectangle drawRectangle = new Rectangle(0, frameHeight * yFrame, frameWidth, frameHeight);
 
-                Color color = Color.Lerp(Color.Transparent, new Color(240, 221, 137), progress);
                 float scale = MathHelper.Lerp(NPC.scale, NPC.scale * 1.025f, progress);
-                spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, color, NPC.rotation, drawRectangle.Size() / 2, scale, spriteEffects, 0);
+                Color color = Color.Lerp(Color.Transparent, new Color(240, 221, 137), progress);
+                spriteBatch.Draw(glowTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, color, NPC.rotation, drawRectangle.Size() / 2, scale, spriteEffects, 0);
 
                 color = Color.Lerp(Color.Transparent, Color.Orange, progress);
-                spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, color, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+                spriteBatch.Draw(glowTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, color, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+                #endregion
 
+                #region Shader
                 Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+                // The white out shader leaves them full-bright at the lowest progression value so we just bring a full bright hammer to the natural lighting
 
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
                 effect.Parameters["WhiteoutProgress"].SetValue(progress);
                 effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
-                hammerTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer").Value;
-                spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                Texture2D hammerTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer").Value;
+                spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, color, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
 
                 Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+                #endregion
 
                 Texture2D armTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Arm").Value;
                 spriteBatch.Draw(armTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
@@ -1183,7 +1197,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (!initialize)
             {
-                Particle.CreateParticle(Particle.ParticleType<Pulse2>(), Projectile.Center + offset, Vector2.Zero, Color.Orange);
+                //Particle.CreateParticle(Particle.ParticleType<Pulse2>(), Projectile.Center + offset, Vector2.Zero, Color.Orange);
 
                 /*for (int a = 0; a < 20; a++) // Create an oval dust shape
                 {
@@ -1201,7 +1215,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             // Create sine shaped dust formations as the projectile travels
             #region shockwave dust
             if (Projectile.timeLeft > 90)
-            {  
+            {
                 for (int i = 0; i < 6; i++)
                 {
                     float randomOffset = MathHelper.ToRadians(Main.rand.NextFloat(-10, 10));
