@@ -552,6 +552,12 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                             float scale = Main.rand.NextFloat(0.65f, 0.8f);
                             //Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
 
+                            for (int i = 0; i < 6; i++)
+                            {
+                                Vector2 RandomVelocity = Vector2.One.RotatedBy(MathHelper.ToRadians(60 * i)) * 5;
+                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center + new Vector2(32 * hammerDirection, 16), RandomVelocity, Color.Orange, 1, 0.25f);
+                            }
+
                             for (int i = 0; i < Main.rand.Next(3, 6); i++)
                             {
                                 //scale = Main.rand.NextFloat(0.75f, 1.5f);
@@ -567,7 +573,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     else if (slamTimer > 24)
                     {
                         yFrame = 4;
-                        
+
                     }
                     else if (slamTimer > 20)
                     {
