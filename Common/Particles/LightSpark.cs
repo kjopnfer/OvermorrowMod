@@ -8,10 +8,11 @@ using Terraria.ModLoader;
 public class LightSpark : CustomParticle
 {
     public override string Texture => AssetDirectory.Textures + "LightSpark";
-    public float maxTime = 180f;
+    public float maxTime = Main.rand.Next(4, 8) * 10;
     public override void OnSpawn()
     {
         particle.customData[0] = particle.scale;
+        //maxTime = particle.customData[1];
         particle.rotation += MathHelper.Pi / 2;
         particle.scale = 0f;
     }

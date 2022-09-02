@@ -555,16 +555,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                             for (int i = 0; i < Main.rand.Next(16, 24); i++)
                             {
                                 float randomScale = Main.rand.NextFloat(0.25f, 0.5f);
-                                Vector2 RandomVelocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(4, 7);
-                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center + new Vector2(32 * hammerDirection, 16), RandomVelocity, Color.Orange, 1, randomScale);
+                                //float randomTime = Main.rand.Next(5, 7) * 10;
+                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(75), MathHelper.ToRadians(75));
+                                Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(4, 9);
+
+                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center + new Vector2(32 * hammerDirection, 20), RandomVelocity, Color.Orange, 1, randomScale);
                             }
 
-                            for (int i = 0; i < Main.rand.Next(3, 6); i++)
-                            {
-                                //scale = Main.rand.NextFloat(0.75f, 1.5f);
-                                Vector2 RandomVelocity = -Vector2.One.RotatedByRandom(MathHelper.Pi) * Main.rand.Next(1, 3);
-                                Particle.CreateParticle(Particle.ParticleType<Smoke2>(), NPC.Center + new Vector2(32 * hammerDirection, 16), RandomVelocity, Color.Black, Main.rand.NextFloat(0.15f, 0.35f), 1, 0, 0, Main.rand.Next(90, 120));
-                            }
                             ScreenShake.ScreenShakeEvent(NPC.Center, 15, 4, 250);
                             PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(10 * hammerDirection, 0), ModContent.ProjectileType<PaladinHammerHit>(), 35, 1, hiredBy).ModProjectile as PaladinHammerHit;
                             shockwave.owner = this;
@@ -582,7 +579,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         if (slamTimer == 21)
                         {
                             float scale = Main.rand.NextFloat(0.65f, 0.8f);
-                            Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
+                            //Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
                         }
                     }
 
@@ -1233,6 +1230,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 initialVelocity = Projectile.velocity.X;
             }
 
+            if (Projectile.ai[0]++ % 4 == 0)
+            {
+                Projectile.NewProjectile(null, Projectile.Center, Vector2.Zero, ModContent.ProjectileType<LightWave>(), Projectile.damage, 2f, Main.myPlayer);
+            }
 
             // Create sine shaped dust formations as the projectile travels
             #region shockwave dust
@@ -1283,6 +1284,50 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             }
 
             Projectile.Center = new Vector2(0, -16 + -Projectile.height / 2f) + positionChange * 16;
+        }
+    }
+
+    public class LightWave : ModProjectile
+    {
+        public override string Texture => AssetDirectory.Empty;
+        public override void SetDefaults()
+        {
+            Projectile.width = Projectile.height = 5;
+            Projectile.friendly = true;
+            Projectile.timeLeft = 60;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
+            Projectile.hide = true;
+            Projectile.extraUpdates = 1;
+        }
+
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            behindNPCsAndTiles.Add(index);
+        }
+
+        public override void AI()
+        {
+            Projectile.ai[0]++;
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "LightSpike").Value;
+            float heightLerp = MathHelper.Lerp(0, 0.5f, Projectile.ai[0] / 60f);
+            //float widthLerp = MathHelper.Lerp(0, 0.25f, Projectile.ai[0] / 60f);
+
+            //float widthLerp = MathHelper.Lerp(0, 0.25f, (float)(Math.Sin(Projectile.ai[0] / 30f)) / 2 + 0.5f);
+
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.Orange, 0f, texture.Size() / 2f, new Vector2(heightLerp, 0.25f), SpriteEffects.None, 0f);
+            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.Orange, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+
+            return true;
         }
     }
 
