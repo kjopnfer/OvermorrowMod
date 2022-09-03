@@ -7,7 +7,6 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using Terraria.GameContent;
 using OvermorrowMod.Core;
-using Terraria.DataStructures;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common;
 
@@ -554,17 +553,18 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
                             for (int i = 0; i < Main.rand.Next(16, 24); i++)
                             {
-                                float randomScale = Main.rand.NextFloat(0.25f, 0.5f);
+                                float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
                                 //float randomTime = Main.rand.Next(5, 7) * 10;
-                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(75), MathHelper.ToRadians(75));
-                                Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(4, 9);
+                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
+                                Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(5, 9);
+                                Color color = Color.Orange;
 
-                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center + new Vector2(32 * hammerDirection, 20), RandomVelocity, Color.Orange, 1, randomScale);
+                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
                             }
 
                             ScreenShake.ScreenShakeEvent(NPC.Center, 15, 4, 250);
-                            PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(10 * hammerDirection, 0), ModContent.ProjectileType<PaladinHammerHit>(), 35, 1, hiredBy).ModProjectile as PaladinHammerHit;
-                            shockwave.owner = this;
+                            //PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(10 * hammerDirection, 0), ModContent.ProjectileType<PaladinHammerHit>(), 35, 1, hiredBy).ModProjectile as PaladinHammerHit;
+                            //shockwave.owner = this;
                         }
                     }
                     else if (slamTimer > 28) yFrame = 5;
@@ -579,6 +579,18 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         if (slamTimer == 21)
                         {
                             float scale = Main.rand.NextFloat(0.65f, 0.8f);
+                            Projectile.NewProjectileDirect(Source(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, ModContent.ProjectileType<LightExplosion>(), 65, 12f, hiredBy);
+
+                            Vector2 positionChange = targetNPC.Center / 16;
+                            Tile tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
+                            while (!tile.HasTile || !Main.tileSolid[tile.TileType])
+                            {
+                                // The tile below doesnt exist or the tile is not solid
+                                if (!tile.HasTile || !Main.tileSolid[tile.TileType]) positionChange.Y += 1;
+                                tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
+                            }
+
+                            Projectile.NewProjectileDirect(null, positionChange * 16, -Vector2.UnitY * 960, ModContent.ProjectileType<LightBeam>(), 75, 5f, hiredBy);
                             //Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
                         }
                     }
@@ -974,401 +986,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
 
             return false;
-        }
-    }
-
-    public abstract class PaladinProjectile : ModProjectile
-    {
-        public Paladin owner;
-
-        public override void SetDefaults()
-        {
-            Projectile.aiStyle = 1;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.extraUpdates = 1;
-        }
-
-        public virtual void DoScreenShake()
-        {
-            owner.stunDuration = 30;
-            owner.acceleration = 0;
-            owner.NPC.velocity.X *= -2f;
-            ScreenShake.ScreenShakeEvent(Projectile.Center, 15, 2, 100);
-        }
-
-        public void CheckCollision()
-        {
-            // If the paladin collides with a tile while spinning, send the paladin backwards and briefly stun the paladin
-            Point checkTile = new Point(MathFunctions.AGF.Round(Projectile.Center.X / 16), MathFunctions.AGF.Round(Projectile.Center.Y / 16));
-            Tile tile = Main.tile[checkTile.X, checkTile.Y];
-            if (!WorldGen.TileEmpty(checkTile.X, checkTile.Y) && WorldGen.SolidOrSlopedTile(tile) && Main.tileSolid[tile.TileType])
-            {
-                DoScreenShake();
-                Projectile.Kill();
-            }
-        }
-    }
-
-    public class PaladinHammer : PaladinProjectile
-    {
-        public float sine = 1;
-        public int direction;
-        bool[] far = new bool[2];
-        public float[] startEnd = new float[2];
-        bool initialize = false;
-        float rotation;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mighty Hammer");
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-        }
-
-        public override void SetDefaults()
-        {
-            base.SetDefaults();
-
-            Projectile.width = 38;
-            Projectile.height = 38;
-            Projectile.timeLeft = 3000;
-            AIType = ProjectileID.Bullet;
-        }
-
-        public override void AI()
-        {
-            if (!initialize)
-            {
-                sine = startEnd[1];
-                initialize = true;
-            }
-
-            if (owner != null && owner.NPC.active)
-            {
-                // Rotate the hammer forth, back, or forth but faster
-                switch (owner.throwStyle)
-                {
-                    case 1:
-                        rotation += 0.125f * (direction == 1 ? 1 : -1);
-                        break;
-                    case 2:
-                        rotation += 0.125f * (direction == 1 ? -1 : 1);
-                        break;
-                    case 3:
-                        rotation += direction == 1 ? 0.25f : -0.25f;
-                        break;
-                }
-
-                float distance = Vector2.Distance(owner.NPC.Center, owner.targetPosition);
-                if (sine < startEnd[0]) // 1st cycle ends at 3f, second cycle ends at 5f
-                {
-                    if (distance < 450)
-                    {
-                        // Move the hammer in a unique functioned movement; the cycle is based on the starting x
-                        // https://www.desmos.com/calculator/8zryrzykns
-                        Vector2 center = owner.targetPosition - owner.NPC.Center;
-                        float f2 = (float)Math.Atan(center.Y / center.X);
-                        float[] rot = new float[2] { -direction * (float)(Math.PI / 2) + f2, direction * (float)(Math.PI / 1) + f2 };
-                        sine += 2f / 75;
-                        float g = (float)(Math.Cos(sine + Math.PI) / 2) + 0.5f;
-                        float h = (float)(Math.Cos(sine * Math.PI) / 2) + 0.5f;
-                        h *= (float)Math.Sqrt(distance / 16);
-                        float c = rot[0] + (rot[1] - rot[0]) * g;
-                        Vector2 pos = new Vector2((float)(h * Math.Sin(c)), (float)((h * -0.5f) * Math.Cos(c)));
-                        Projectile.Center = (pos * 100) + owner.NPC.Center;
-                    }
-                    else
-                    {
-                        far[0] = true;
-                        sine = 5f;
-                    }
-                }
-                else if (sine >= 5f && sine <= 5f + (Math.PI))
-                {
-                    // 3rd hammer attack; lerp the position of the hammer towards the target; this is performed as the only attack if the target is very far away (slower, but more powerful)
-                    sine += (float)Math.PI / (far[0] ? 180 : 90);
-                    if (!far[1])
-                    {
-                        Projectile.damage = MathFunctions.AGF.Round(Projectile.damage * 1.5f);
-                        far[1] = true;
-                    }
-                    float sin = sine - 5f;
-                    float sine2 = (float)Math.Pow(Math.Sin(sin), 2);
-                    Projectile.Center = new Vector2(MathHelper.Lerp(owner.NPC.Center.X, owner.targetPosition.X, sine2), MathHelper.Lerp(owner.NPC.Center.Y, owner.targetPosition.Y, sine2));
-                }
-                else
-                {
-                    // When it returns to the paladin, shake the screen
-                    Projectile.Kill();
-                }
-            }
-            else
-                Projectile.Kill();
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            // If it hits an npc, shake the screen
-            if (owner != null && owner.NPC.active) ScreenShake.ScreenShakeEvent(Projectile.Center, 8, 4, 100);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            Vector2 drawOrigin = tex.Size() / 2f;
-            for (int k = 0; k < Projectile.oldPos.Length; k++)
-            {
-                Vector2 drawPos = Projectile.oldPos[k] - Main.screenPosition + drawOrigin + new Vector2(0f, Projectile.gfxOffY);
-                Color color = Projectile.GetAlpha(lightColor) * ((float)(Projectile.oldPos.Length - k) / (float)Projectile.oldPos.Length);
-                Main.EntitySpriteDraw(tex, drawPos, null, color, rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0);
-            }
-
-            return false;
-        }
-
-        public override void PostDraw(Color lightColor)
-        {
-            Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, rotation, new Vector2(tex.Width / 2, tex.Height / 2), Projectile.scale, SpriteEffects.None, 0);
-        }
-    }
-
-    public class PaladinHammerSpin : PaladinProjectile
-    {
-        public float sine = (float)Math.PI / 2;
-        public override bool PreDraw(ref Color lightColor) => false;
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) { Projectile.timeLeft = 180; }
-        public override string Texture => AssetDirectory.NPC + "Mercenary/Paladin/PaladinHammer";
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Mighty Hammer");
-        }
-
-        public override void SetDefaults()
-        {
-            base.SetDefaults();
-
-            Projectile.width = 116;
-            Projectile.height = 50;
-            Projectile.timeLeft = 2;
-            AIType = ProjectileID.Bullet;
-        }
-
-        public override void DoScreenShake()
-        {
-            owner.stunDuration = 30;
-            owner.acceleration = 0;
-            owner.NPC.velocity *= -1f;
-            ScreenShake.ScreenShakeEvent(Projectile.Center, 15, 5, 100);
-        }
-
-        public override void AI()
-        {
-            if (owner != null && owner.NPC.active && !owner.DangerThreshold())
-            {
-                // Make the paladin more resistant, and lerp the position of this projectile back and forth
-                CheckCollision();
-                owner.NPC.defense = 90;
-                owner.NPC.knockBackResist = 0;
-                sine += (float)Math.PI / 60 * (owner.NPC.direction == -1 ? -1 : 1);
-                Projectile.velocity = Vector2.Zero;
-                //float pos = MathHelper.Lerp(-35, 35, (float)Math.Pow(Math.Sin(sine), 2));
-                //Projectile.Center = owner.NPC.Center + new Vector2(pos, 0);
-                Projectile.Center = owner.NPC.Center;
-            }
-            else
-            {
-                owner.spinCounter = 0;
-                Projectile.Kill();
-            }
-        }
-    }
-
-    public class PaladinHammerHit : PaladinProjectile
-    {
-        public float sine;
-        float initialVelocity;
-        bool initialize;
-
-        public override string Texture => AssetDirectory.NPC + "Mercenary/Paladin/PaladinHammer";
-        public override bool PreDraw(ref Color lightColor) => false;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Shockwave");
-        }
-
-        public override void SetDefaults()
-        {
-            base.SetDefaults();
-
-            Projectile.width = 50;
-            Projectile.height = 50;
-            Projectile.timeLeft = 180;
-            Projectile.aiStyle = -1;
-        }
-
-        public override void AI()
-        {
-            // Dust offset
-            Vector2 offset = new Vector2(0, 25);
-
-            if (!initialize)
-            {
-                //Particle.CreateParticle(Particle.ParticleType<Pulse2>(), Projectile.Center + offset, Vector2.Zero, Color.Orange);
-
-                /*for (int a = 0; a < 20; a++) // Create an oval dust shape
-                {
-                    float pi = (float)Math.PI / 10;
-                    Dust dust = Dust.NewDustPerfect(new Vector2(20f * (float)Math.Cos(a * pi) + Projectile.Center.X, 5f * (float)Math.Sin(a * pi) + Projectile.Center.Y) + offset, 6);
-                    dust.noGravity = true;
-                    dust.velocity = Vector2.Zero;
-                }*/
-
-                initialize = true;
-                initialVelocity = Projectile.velocity.X;
-            }
-
-            if (Projectile.ai[0]++ % 4 == 0)
-            {
-                Projectile.NewProjectile(null, Projectile.Center, Vector2.Zero, ModContent.ProjectileType<LightWave>(), Projectile.damage, 2f, Main.myPlayer);
-            }
-
-            // Create sine shaped dust formations as the projectile travels
-            #region shockwave dust
-            if (Projectile.timeLeft > 90)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    float randomOffset = MathHelper.ToRadians(Main.rand.NextFloat(-10, 10));
-                    float rotation = Projectile.velocity.X < 0 ? randomOffset + MathHelper.PiOver4 : -(randomOffset + MathHelper.PiOver4);
-
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.Torch);
-                    dust.noGravity = true;
-                    dust.velocity = Projectile.velocity.RotatedBy(rotation);
-                }
-                /*float sin2 = (float)Math.Pow(Math.Abs(1.06f * Math.Sin(5f * sine)), 40) - 0.1f;
-                if (sin2 > 0)
-                {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset + new Vector2(0, -sin2 * 2.5f), DustID.Torch);
-                    dust.noGravity = true;
-                    dust.velocity = Vector2.Zero;
-                }*/
-            }
-            #endregion
-
-            // Lerp the velocity of the projectile to 0
-            Projectile.velocity = new Vector2(MathHelper.Lerp(initialVelocity, 0, 1 - (Projectile.timeLeft / 180f)), 0);
-
-            // Makes the shockwave stick to the ground, if checks if there is a tile below the center and a tile at the center
-            // If there is a tile below the projectile AND the projectile isn't in a tile, do nothing.
-            // Otherwise, if there isn't a tile below the projectile, move downwards.
-            // And if the projectile is inside of a tile, move upwards.
-            Vector2 positionChange = Projectile.Bottom / 16;
-
-            Tile tile = Framing.GetTileSafely((int)Projectile.Bottom.X / 16, (int)Projectile.Bottom.Y / 16);
-            while ((tile.HasTile && Main.tileSolid[tile.TileType]))
-            {
-                // We are in a tile and the tile is solid (ie not a table or tree)
-                if (tile.HasTile && Main.tileSolid[tile.TileType]) positionChange.Y -= 1;
-                tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
-            }
-
-            tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
-            while (!tile.HasTile || !Main.tileSolid[tile.TileType])
-            {
-                // The tile below doesnt exist or the tile is not solid
-                if (!tile.HasTile || !Main.tileSolid[tile.TileType]) positionChange.Y += 1;
-                tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
-            }
-
-            Projectile.Center = new Vector2(0, -16 + -Projectile.height / 2f) + positionChange * 16;
-        }
-    }
-
-    public class LightWave : ModProjectile
-    {
-        public override string Texture => AssetDirectory.Empty;
-        public override void SetDefaults()
-        {
-            Projectile.width = Projectile.height = 5;
-            Projectile.friendly = true;
-            Projectile.timeLeft = 60;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.hide = true;
-            Projectile.extraUpdates = 1;
-        }
-
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
-            behindNPCsAndTiles.Add(index);
-        }
-
-        public override void AI()
-        {
-            Projectile.ai[0]++;
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Main.spriteBatch.Reload(BlendState.Additive);
-
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "LightSpike").Value;
-            float heightLerp = MathHelper.Lerp(0, 0.5f, Projectile.ai[0] / 60f);
-            //float widthLerp = MathHelper.Lerp(0, 0.25f, Projectile.ai[0] / 60f);
-
-            //float widthLerp = MathHelper.Lerp(0, 0.25f, (float)(Math.Sin(Projectile.ai[0] / 30f)) / 2 + 0.5f);
-
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.Orange, 0f, texture.Size() / 2f, new Vector2(heightLerp, 0.25f), SpriteEffects.None, 0f);
-            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.Orange, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 0f);
-
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
-
-            return true;
-        }
-    }
-
-    public class PaladinRamHitbox : PaladinProjectile
-    {
-        public override bool? CanCutTiles() => false;
-        public override bool PreDraw(ref Color lightColor) => false;
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Rookie Paladin");
-        }
-
-        public override void SetDefaults()
-        {
-            base.SetDefaults();
-
-            Projectile.width = 48;
-            Projectile.height = 48;
-            Projectile.tileCollide = true;
-            Projectile.timeLeft = 3000;
-        }
-
-        public override void AI()
-        {
-            // Set the position directly in front of the paladin
-            if (owner != null && owner.NPC.active && owner.acceleration >= 0.4f)
-                Projectile.Center = owner.NPC.Center + new Vector2(owner.NPC.direction == -1 ? -50 : 50, 4);
-            else
-                Projectile.Kill();
-
-            CheckCollision();
-        }
-
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            //ram the non-boss npc and send them flying
-            if (target.knockBackResist < 1 && !target.boss)
-                target.velocity += new Vector2((owner.NPC.direction == -1 ? -7.5f : 7.5f) / target.knockBackResist, -8f / target.knockBackResist);
-            //if the paladin is still alive and the above does not occur, shake the screen
-            else if (owner != null && owner.NPC.active && owner.acceleration >= 0.4f)
-                DoScreenShake();
         }
     }
 }
