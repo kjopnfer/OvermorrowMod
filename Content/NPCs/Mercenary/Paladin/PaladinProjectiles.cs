@@ -329,7 +329,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 64;
+            Projectile.width = Projectile.height = 128;
             Projectile.friendly = true;
             Projectile.timeLeft = (int)maxTime;
             Projectile.penetrate = -1;

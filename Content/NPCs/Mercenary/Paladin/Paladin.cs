@@ -118,7 +118,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 return;
             }
 
-            Main.NewText("continue attack? " + continueAttack + " / " + spinCounter + " / hammer delay: " + hammerDelay);
+            //Main.NewText("continue attack? " + continueAttack + " / " + spinCounter + " / hammer delay: " + hammerDelay);
 
             drawAfterimage = false;
             BaseAI();
@@ -389,7 +389,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         bool CanAttack() => Spinning() == null && HammerAlive() == null && attackDelay < 1;
         public override bool FarAttack()
         {
-            Main.NewText("somehow far attack");
+            //Main.NewText("somehow far attack");
             return false;
         }
         /*public override bool FarAttack()
@@ -556,15 +556,23 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                 float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
                                 //float randomTime = Main.rand.Next(5, 7) * 10;
                                 float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
-                                Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(5, 9);
+                                Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(9, 15);
                                 Color color = Color.Orange;
 
                                 Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
                             }
 
-                            ScreenShake.ScreenShakeEvent(NPC.Center, 15, 4, 250);
-                            //PaladinHammerHit shockwave = Projectile.NewProjectileDirect(Source(), NPC.Center, new Vector2(10 * hammerDirection, 0), ModContent.ProjectileType<PaladinHammerHit>(), 35, 1, hiredBy).ModProjectile as PaladinHammerHit;
-                            //shockwave.owner = this;
+                            for (int i = 0; i < Main.rand.Next(7, 12); i++)
+                            {
+                                float randomScale = Main.rand.NextFloat(1f, 2f);
+                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
+                                Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(4, 8);
+                                Color color = Color.Orange;
+
+                                Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
+                            }
+
+                            ScreenShake.ScreenShakeEvent(NPC.Center, 15, 2, 250);
                         }
                     }
                     else if (slamTimer > 28) yFrame = 5;
@@ -590,7 +598,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                 tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
                             }
 
-                            Projectile.NewProjectileDirect(null, positionChange * 16, -Vector2.UnitY * 960, ModContent.ProjectileType<LightBeam>(), 75, 5f, hiredBy);
+                            //Projectile.NewProjectileDirect(null, positionChange * 16, -Vector2.UnitY * 960, ModContent.ProjectileType<LightBeam>(), 75, 5f, hiredBy);
                             //Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
                         }
                     }
@@ -610,7 +618,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     }
                 }
 
-                Main.NewText("decide on slam, delay: " + hammerDelay + " / slamTimer: " + slamTimer);
+                //Main.NewText("decide on slam, delay: " + hammerDelay + " / slamTimer: " + slamTimer);
                 return true;
             }
         }
