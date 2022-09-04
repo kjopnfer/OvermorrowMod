@@ -42,14 +42,23 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public virtual float KnockbackResist { get { return 0.25f; } }
 
         // How many seconds a mercenary must wait until they can heal again (until RestoreHealth() can be called)
-        public virtual int HealCooldown { get { return 30; } }
+        // This is passed into the HealCooldown variable after the NPC heals and should be initialized only once
+        public virtual int HealDelay { get { return 30; } }
         //A list of MercenaryDialogue classes, containing strings (the dialogue), ints (priority of the dialogue) and bools (can display or not)
         public virtual List<MercenaryDialogue> Dialogue { get; set; }
         #endregion
 
-        //A variable for RestoreHealth() method, all variables from this method are drained to 0 when not healing
-        //Use in an override of RestoreHealth() as a timer or other variable
+        // A variable for RestoreHealth() method, all variables from this method are drained to 0 when not healing
+        // Use in an override of RestoreHealth() as a timer or other variable
         public int[] restore = new int[3];
+        //public bool CanHeal = false;
+
+        // Timer variable, for example: healing animations
+        public int HealTimer = 0; 
+
+        // Cooldown until the mercenary can heal again
+        public int HealCooldown = 0;
+
         // Determines if the mercenary should continue attacking (calls FarAttack() or CloseAttack() to set this variable)
         public bool continueAttack;
 
@@ -245,7 +254,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                         SafetyBehaviour();
                     }
 
-                    if (CanHeal()) restore[0] = 1;
+                    if (HealCheck()) restore[0] = 1;
                 }
 
                 if (CanFollowPlayer())
@@ -286,7 +295,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                     else if (RestoreHealth()) // If health has been successsfully restored, set a cooldown
                     {
                         restore[0] = 0;
-                        restore[2] = HealCooldown * 60;
+                        restore[2] = HealDelay * 60;
                     }
                 }
 
@@ -440,7 +449,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         /// Determines if RestoreHealth() can be called
         /// </summary>
         /// <returns></returns>
-        public bool CanHeal()
+        public bool HealCheck()
         {
             int check = 0;
             for (int a = 0; a < restore.Length; a++)

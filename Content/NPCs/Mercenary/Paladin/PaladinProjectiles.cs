@@ -322,14 +322,20 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         }
     }
 
+    /// <summary>
+    /// This projectile exists so that the texture can draw behind tiles which isn't currently supported in the particles.
+    /// <br>Also handles the actual damage effect of the slam for the first half second.</br>
+    /// </summary>
     public class LightExplosion : ModProjectile
     {
         float maxTime = 240;
         float maxSize = 0.5f;
+        public override bool? CanDamage() => Projectile.ai[0] < 30;
         public override string Texture => AssetDirectory.Empty;
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 128;
+            Projectile.width = 224;
+            Projectile.height = 160;
             Projectile.friendly = true;
             Projectile.timeLeft = (int)maxTime;
             Projectile.penetrate = -1;
@@ -337,6 +343,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             Projectile.ignoreWater = true;
             Projectile.hide = true;
             Projectile.extraUpdates = 2;
+
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1; // 1 hit per npc max
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)

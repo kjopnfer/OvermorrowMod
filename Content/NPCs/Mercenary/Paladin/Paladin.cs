@@ -88,7 +88,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override int MaxHealth => 500;
         public override int Defense => 40;
         public override float KnockbackResist => 0f;
-        public override int HealCooldown => 10;
+        public override int HealDelay => 10;
         public override int MaxFrames() => 15;
 
         // TODO: Refactor all code for readability
@@ -118,7 +118,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 return;
             }
 
-            //Main.NewText("continue attack? " + continueAttack + " / " + spinCounter + " / hammer delay: " + hammerDelay);
+            Main.NewText("continue attack? " + continueAttack + " / " + spinCounter + " / hammer delay: " + hammerDelay);
 
             drawAfterimage = false;
             BaseAI();
@@ -442,10 +442,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     float general = Vector2.Distance(new Vector2(scout.X, 0), new Vector2(NPC.Center.X, 0));
                     float height = Vector2.Distance(new Vector2(scout.Y, 0), new Vector2(NPC.Center.Y, 0));
 
-                    /*if (!doHammerSpin)
-                    {
-                        doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
-                    }*/
+                    if (!doHammerSpin) doHammerSpin = height > 50 || OnSolidTile() == null || general < 75;
 
                     // Turn off default town NPC shit
                     AIType = -1;
@@ -453,6 +450,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     // We don't want any of the attacks to be interrupted after they've started
                     continueClose = true;
                     hammerDirection = targetNPC.Center.X > NPC.Center.X ? 1 : -1;
+                    acceleration = 0.125f;
 
                     hammerDelay = 60;
                     CAStyleDecided = true;
@@ -548,9 +546,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         yFrame = 6;
                         if (slamTimer == 32)
                         {
-                            float scale = Main.rand.NextFloat(0.65f, 0.8f);
-                            //Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
-
                             for (int i = 0; i < Main.rand.Next(16, 24); i++)
                             {
                                 float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
@@ -560,16 +555,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                 Color color = Color.Orange;
 
                                 Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
-                            }
-
-                            for (int i = 0; i < Main.rand.Next(7, 12); i++)
-                            {
-                                float randomScale = Main.rand.NextFloat(1f, 2f);
-                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
-                                Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(4, 8);
-                                Color color = Color.Orange;
-
-                                Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
                             }
 
                             ScreenShake.ScreenShakeEvent(NPC.Center, 15, 2, 250);
@@ -586,20 +571,18 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         yFrame = 3;
                         if (slamTimer == 21)
                         {
-                            float scale = Main.rand.NextFloat(0.65f, 0.8f);
-                            Projectile.NewProjectileDirect(Source(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, ModContent.ProjectileType<LightExplosion>(), 65, 12f, hiredBy);
+                            Projectile.NewProjectileDirect(Source(), NPC.Center + new Vector2(32 * hammerDirection, -16), Vector2.Zero, ModContent.ProjectileType<LightExplosion>(), 65, 12f, hiredBy);
 
-                            Vector2 positionChange = targetNPC.Center / 16;
-                            Tile tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
-                            while (!tile.HasTile || !Main.tileSolid[tile.TileType])
+                            for (int i = 0; i < Main.rand.Next(4, 7); i++)
                             {
-                                // The tile below doesnt exist or the tile is not solid
-                                if (!tile.HasTile || !Main.tileSolid[tile.TileType]) positionChange.Y += 1;
-                                tile = Framing.GetTileSafely((int)positionChange.X, (int)positionChange.Y);
-                            }
+                                float randomScale = Main.rand.NextFloat(1f, 2f);
+                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
+                                Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(4, 8);
+                                Color color = Color.Orange;
 
-                            //Projectile.NewProjectileDirect(null, positionChange * 16, -Vector2.UnitY * 960, ModContent.ProjectileType<LightBeam>(), 75, 5f, hiredBy);
-                            //Particle.CreateParticle(Particle.ParticleType<LightBurst>(), NPC.Center + new Vector2(32 * hammerDirection, 16), Vector2.Zero, Color.Orange, 1, scale, 0, scale, Main.rand.Next(40, 50) * 10);
+                                Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
+                                Particle.CreateParticle(Particle.ParticleType<Bubble>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
+                            }
                         }
                     }
 
@@ -618,7 +601,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     }
                 }
 
-                //Main.NewText("decide on slam, delay: " + hammerDelay + " / slamTimer: " + slamTimer);
+                Main.NewText("decide on slam, delay: " + hammerDelay + " / slamTimer: " + slamTimer);
                 return true;
             }
         }
@@ -772,6 +755,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             WalkBattle,
             HammerSpin,
             HammerSlam,
+            Heal,
             HammerChuck,
             HammerChuckAwait,
             CatchUp
@@ -781,10 +765,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         float tempCounter = 0;
         private bool FrameUpdate(FrameType type)
         {
-            #region Key frames
-            Point prepareSwing = new Point(0, 3);
-            Point getHammerStance = new Point(1, 3);
-            #endregion
             switch (type)
             {
                 #region Walk
@@ -888,6 +868,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
                         return true;
                     }
+                #endregion
+                #region Heal
+                case FrameType.Heal:
+
+                    return true;
                 #endregion
                 case FrameType.CatchUp:
                     {
