@@ -41,39 +41,42 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public virtual int Defense { get { return 20; } }
         public virtual float KnockbackResist { get { return 0.25f; } }
 
-        // How many seconds a mercenary must wait until they can heal again (until RestoreHealth() can be called)
-        // This is passed into the HealCooldown variable after the NPC heals and should be initialized only once
+        /// <summary>
+        /// How many seconds a mercenary must wait until they can heal again (until RestoreHealth() can be called)
+        /// <br>This is passed into the HealCooldown variable after the NPC heals and should be initialized only once</br>
+        /// </summary>
         public virtual int HealDelay { get { return 30; } }
         //A list of MercenaryDialogue classes, containing strings (the dialogue), ints (priority of the dialogue) and bools (can display or not)
         public virtual List<MercenaryDialogue> Dialogue { get; set; }
         #endregion
 
-        // A variable for RestoreHealth() method, all variables from this method are drained to 0 when not healing
-        // Use in an override of RestoreHealth() as a timer or other variable
-        public int[] restore = new int[3];
-        //public bool CanHeal = false;
+        #region Heal
+        public bool CanHeal = false;
 
         // Timer variable, for example: healing animations
         public int HealTimer = 0; 
 
         // Cooldown until the mercenary can heal again
         public int HealCooldown = 0;
+        #endregion
+
+        #region Attack
+        // The closest hostile projectile to the mercenary
+        public Projectile incomingProjectile;
+
+        // The closest hostile NPC to the mercenary
+        public NPC targetNPC;
+
+        // Generally used with AttackDelay, flexible
+        public int attackDelay;
 
         // Determines if the mercenary should continue attacking (calls FarAttack() or CloseAttack() to set this variable)
         public bool continueAttack;
 
         // Determines if the mercenary should call CloseAttack()
         public bool closeAttackStyle;
-
-        // Determines if MovementAI() should account for walls and ceilings (or be called at all)
-        public bool canCheckTiles = true;
-
-        // How fast should the mercenary go when MovementAI() is called
-        public float acceleration = 0.25f;
-
-        // Generally used with AttackDelay, flexible
-        public int attackDelay;
-
+        #endregion
+        
         #region Hire
         // The player that has hired this mercenary (the player index)
         public int hiredBy = -1;
@@ -91,14 +94,16 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         // If this reaches a certain amount, CatchUp() will be called (unless the mercenary is in danger)
         int farTimer;
 
-        // The closest hostile projectile to the mercenary
-        public Projectile incomingProjectile;
-
-        // The closest hostile NPC to the mercenary
-        public NPC targetNPC;
+        
         public bool catchingUp;
 
         #region Movement
+        // Determines if MovementAI() should account for walls and ceilings (or be called at all)
+        public bool canCheckTiles = true;
+
+        // How fast should the mercenary go when MovementAI() is called
+        public float acceleration = 0.25f;
+
         // These two are only used in MovementAI() for storing distance and delays for leaps, how many tiles must be accounted, etc.
         public int[] detectValue = new int[2];
         public int[] detectTimer = new int[2];
@@ -254,7 +259,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                         SafetyBehaviour();
                     }
 
-                    if (HealCheck()) restore[0] = 1;
+                    if (!CanHeal && HealCooldown == 0) CanHeal = true;
                 }
 
                 if (CanFollowPlayer())
@@ -262,15 +267,14 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                     NPC.dontTakeDamage = false;
                     NPC.dontTakeDamageFromHostiles = false;
 
-                    if (restore[0] < 1) // If the NPC does not have to / cannot heal
+                    if (!CanHeal) // If the NPC does not have to / cannot heal
                     {
                         // Perform a method whenever a projectile is detected; the second check may be removed if fully optimized
                         // The second check is mainly for the NPC to not perform extra actions to (usually get away from) a threat
                         if (incomingProjectile != null && !DangerThreshold()) ProjectileReact();
 
                         // Decrease the heal cooldown
-                        if (restore[1]-- < 0) restore[1] = 0;
-                        if (restore[2]-- < 0) restore[2] = 0;
+                        if (HealCooldown > 0) HealCooldown--;
 
                         // Make the NPC walk towards the player and stop when nearby if not in combat
                         if (!continueAttack && !catchingUp && targetNPC == null && incomingProjectile == null)
@@ -292,10 +296,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                             }
                         }
                     }
-                    else if (RestoreHealth()) // If health has been successsfully restored, set a cooldown
+                    else
                     {
-                        restore[0] = 0;
-                        restore[2] = HealDelay * 60;
+                        RestoreHealth();
                     }
                 }
 
@@ -443,19 +446,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         {
             incomingProjectile = RadialProjectileCheck();
             targetNPC = RadialNPCCheck();
-        }
-
-        /// <summary>
-        /// Determines if RestoreHealth() can be called
-        /// </summary>
-        /// <returns></returns>
-        public bool HealCheck()
-        {
-            int check = 0;
-            for (int a = 0; a < restore.Length; a++)
-                if (restore[a] < 1) check++;
-
-            return check == restore.Length;
         }
 
         /// <summary>

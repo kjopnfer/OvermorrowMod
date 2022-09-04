@@ -88,7 +88,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override int MaxHealth => 500;
         public override int Defense => 40;
         public override float KnockbackResist => 0f;
-        public override int HealDelay => 10;
+        public override int HealDelay => 5;
         public override int MaxFrames() => 15;
 
         // TODO: Refactor all code for readability
@@ -99,6 +99,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 Main.NewText("stunned: " + stunDuration);
                 NPC.velocity.X = 0;
 
+                HealCooldown = 60;
                 drawAfterimage = false;
                 targetNPC = null;
 
@@ -118,7 +119,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 return;
             }
 
-            Main.NewText("continue attack? " + continueAttack + " / " + spinCounter + " / hammer delay: " + hammerDelay);
+            Main.NewText("continue attack? " + continueAttack + " / healDelay: " + HealCooldown + " / hammer delay: " + hammerDelay);
 
             drawAfterimage = false;
             BaseAI();
@@ -199,7 +200,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     NPC.velocity.X = 0;
 
                 // Starts the "walk" animation cycle
-                if (targetNPC == null && HammerAlive() == null && !catchingUp && !CAStyleDecided) FrameUpdate(FrameType.Walk);
+                if (targetNPC == null && !CanHeal && !catchingUp && !CAStyleDecided) FrameUpdate(FrameType.Walk);
             }
 
             // Starts the "walkBattle" animation cycle if the paladin finds an enemy
@@ -207,7 +208,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 if (!CAStyleDecided)
                 {
-                    if (restore[0] > 0 && !catchingUp || (HammerAlive() == null && (!closeAttackStyle || DangerThreshold())))
+                    if (!CanHeal && !catchingUp || (HammerAlive() == null && (!closeAttackStyle || DangerThreshold())))
                         FrameUpdate(FrameType.WalkBattle);
                 }
             }
@@ -228,32 +229,35 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override bool RestoreHealth()
         {
             bool finished = false;
-            NPC.direction = NPC.velocity.X < 1 ? -1 : 1;
+            //NPC.direction = NPC.velocity.X < 1 ? -1 : 1;
             if (OnSolidTile() != null)
             {
+                FrameUpdate(FrameType.Heal);
+
                 // If the NPC is on a solid tile, slow the NPC to a halt, and when the NPC is not moving, wait two seconds, then heal
-                restore[1]++;
+                HealTimer++;
                 if (targetNPC == null && incomingProjectile == null) NPC.velocity.X *= 0.125f;
 
-                if (restore[1]++ >= 60 && Spinning() == null && HammerAlive() == null)
+                if (HealTimer++ >= 60 && Spinning() == null && HammerAlive() == null)
                 {
                     NPC.velocity.X = 0;
-                    if (restore[1] >= 120)
+
+                    if (HealTimer % 10 == 0)
+                    {
+                        Vector2 randomOffset = new Vector2(Main.rand.Next(-16, 16) * 2, Main.rand.Next(-16, 0) * 2);
+                        Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Bottom + randomOffset, -Vector2.UnitY, Color.Orange);
+                    }
+
+                    // When healing is done, return true (and reset variables)
+                    if (HealTimer >= 180)
                     {
                         Heal();
-                        restore[0] = 2;
-                        restore[1] = 0;
-                    }
-                }
-            }
+                        CanHeal = false;
+                        HealCooldown = HealDelay * 60;
+                        HealTimer = 0;
 
-            // When healing is done, return true (and reset variables)
-            if (restore[0] == 2)
-            {
-                if (restore[1]++ > 60)
-                {
-                    restore = new int[3];
-                    finished = true;
+                        finished = true;
+                    }
                 }
             }
 
@@ -287,12 +291,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             //StandardAI(Rect(FollowPlayer()));
         }
 
-        // Reset the needed healing charge to perform RestoreHealth()
-        public override void HitEffect(int hitDirection, double damage) { restore[1] = 0; }
         public override void ProjectileReact()
         {
             // This is supposed to send the NPC in a direction perpendicular to the projectile, but it needs to be reworked, along with the projectile check itself
-            if (HammerAlive() == null && restore[0] < 1)
+            if (HammerAlive() == null && CanHeal && HealCooldown > 0)
             {
                 Vector2 velocity = incomingProjectile.velocity + new Vector2(10 * (incomingProjectile.velocity.X < 0 ? -1 : 1), 10 * (incomingProjectile.velocity.Y < 0 ? -1 : 1));
                 if (!projReaction)
@@ -433,6 +435,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public override bool CloseAttack()
         {
+            HealCooldown = 60;
+
             if (!CAStyleDecided)
             {
                 // Check the distance between the enemy and the NPC; if *really* close, perform a hammer spin, otherwise perform a hammer slam
@@ -450,7 +454,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     // We don't want any of the attacks to be interrupted after they've started
                     continueClose = true;
                     hammerDirection = targetNPC.Center.X > NPC.Center.X ? 1 : -1;
-                    acceleration = 0.125f;
+                    acceleration = 0.0625f;
 
                     hammerDelay = 60;
                     CAStyleDecided = true;
@@ -480,7 +484,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 FrameUpdate(FrameType.HammerSpin);
 
                 // Go towards the target
-                if (!DangerThreshold() && targetNPC != null) MovementAI(Rect(targetNPC));
+                if (!DangerThreshold() && targetNPC != null && spinCounter < 210) MovementAI(Rect(targetNPC));
 
                 // Create a projectile that moves forth and back from the paladin
                 int spinDamage = 5;
@@ -580,7 +584,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                 Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(4, 8);
                                 Color color = Color.Orange;
 
-                                Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
+                                Particle.CreateParticle(Particle.ParticleType<Flash>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
                                 Particle.CreateParticle(Particle.ParticleType<Bubble>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
                             }
                         }
@@ -871,6 +875,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 #endregion
                 #region Heal
                 case FrameType.Heal:
+                    xFrame = 2;
+                    yFrame = 1;
 
                     return true;
                 #endregion
@@ -977,6 +983,14 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 }
             }
 
+            if (CanHeal)
+            {
+                spriteBatch.Reload(BlendState.Additive);
+                Texture2D healRay = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Extra_60").Value;
+                spriteBatch.Draw(healRay, NPC.Center + new Vector2(0, 18) - screenPos, null, Color.Orange * 0.75f, NPC.rotation, healRay.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                spriteBatch.Reload(BlendState.AlphaBlend);
+            }
 
             return false;
         }

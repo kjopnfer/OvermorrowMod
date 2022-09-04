@@ -371,7 +371,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             Vector2 origin = new Vector2(texture.Width, texture.Height) / 2;
 
             Color color = Color.Lerp(Color.Orange, Color.Transparent, ModUtils.EaseOutQuad(Utils.Clamp(Projectile.ai[0] - 20, 0, 220) / 220f));
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(texture, Projectile.Center + new Vector2(0, 32) - Main.screenPosition, null, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
 
             Main.spriteBatch.Reload(BlendState.AlphaBlend);
 
