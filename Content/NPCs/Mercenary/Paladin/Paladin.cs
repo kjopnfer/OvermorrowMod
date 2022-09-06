@@ -233,25 +233,28 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             if (OnSolidTile() != null)
             {
                 FrameUpdate(FrameType.Heal);
-
                 // If the NPC is on a solid tile, slow the NPC to a halt, and when the NPC is not moving, wait two seconds, then heal
                 HealTimer++;
+                Main.NewText("heal timer: " + HealTimer);
+
+
                 if (targetNPC == null && incomingProjectile == null) NPC.velocity.X *= 0.125f;
 
                 if (HealTimer++ >= 60 && Spinning() == null && HammerAlive() == null)
                 {
                     NPC.velocity.X = 0;
 
-                    if (HealTimer % 10 == 0)
+                    if (HealTimer % 15 == 0)
                     {
                         Vector2 randomOffset = new Vector2(Main.rand.Next(-16, 16) * 2, Main.rand.Next(-16, 0) * 2);
-                        Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Bottom + randomOffset, -Vector2.UnitY, Color.Orange);
+                        Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Bottom + randomOffset, -Vector2.UnitY, new Color(240, 221, 137));
                     }
 
+                    if (HealTimer % 40 == 0 && HealTimer < 180) Heal();
+
                     // When healing is done, return true (and reset variables)
-                    if (HealTimer >= 180)
+                    if (HealTimer >= 300)
                     {
-                        Heal();
                         CanHeal = false;
                         HealCooldown = HealDelay * 60;
                         HealTimer = 0;
@@ -262,6 +265,26 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             }
 
             return finished;
+        }
+
+        public override void Heal()
+        {
+            int heal = 15;
+
+            if (NPC.life + heal < NPC.lifeMax)
+            {
+                NPC.life += heal;
+                CombatText.NewText(NPC.getRect(), Color.SpringGreen, $"{heal}", false, false);
+            }
+            else
+            {
+                if (NPC.life < NPC.lifeMax)
+                {
+                    int overflow = NPC.lifeMax - NPC.life;
+                    NPC.life += overflow;
+                    CombatText.NewText(NPC.getRect(), Color.SpringGreen, $"{overflow}", false, false);
+                }
+            }
         }
 
         public override void SafetyBehaviour()
@@ -929,10 +952,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             }
 
             spriteBatch.Draw(texture, NPC.Center - Vector2.UnitY * 6 - screenPos, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            int directionOffset = 4 * -hammerDirection;
 
             if (CAStyleDecided && !doHammerSpin)
             {
-                int directionOffset = 4 * -hammerDirection;
                 float progress = MathHelper.Lerp(0, 1, 1 - (hammerDelay / 60f));
                 if (hammerDelay == 0 && slamTimer >= 32) progress = MathHelper.Lerp(1, 0, Utils.Clamp(slamTimer - 24, 0, 60) / 60f);
 
@@ -952,13 +975,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 #region Shader
                 Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-                // The white out shader leaves them full-bright at the lowest progression value so we just bring a full bright hammer to the natural lighting
-
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
                 effect.Parameters["WhiteoutProgress"].SetValue(progress);
                 effect.CurrentTechnique.Passes["Whiteout"].Apply();
-
 
                 Texture2D hammerTexture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Paladin_Hammer").Value;
                 spriteBatch.Draw(hammerTexture, NPC.Center - new Vector2(directionOffset, 6) - screenPos, drawRectangle, color, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
@@ -985,9 +1005,31 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (CanHeal)
             {
+                float progress = Utils.Clamp(HealTimer, 0, 120) / 120f;
+                if (HealTimer >= 180) progress = MathHelper.Lerp(120, 0, Utils.Clamp(HealTimer - 180, 0, 120) / 120f) / 120f;
+
+                Color color = Color.Lerp(Color.Transparent, new Color(240, 221, 137) * 0.8f, progress);
+
+                spriteBatch.Reload(BlendState.Additive);
+                Texture2D handGlow = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Heal_Hand_Glow").Value;
+                spriteBatch.Draw(handGlow, NPC.Center - new Vector2(0, 6) - screenPos, null, color, NPC.rotation, handGlow.Size() / 2, NPC.scale, spriteEffects, 0);
+                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+                spriteBatch.Reload(BlendState.AlphaBlend);
+
+                Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                effect.Parameters["WhiteoutColor"].SetValue(new Color(240, 221, 137).ToVector3());
+                effect.Parameters["WhiteoutProgress"].SetValue(Utils.Clamp(progress, 0, 0.2f));
+                effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+                Texture2D hand = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Mercenary/Paladin/Heal_Hand").Value;
+                spriteBatch.Draw(hand, NPC.Center - new Vector2(0, 6) - screenPos, null, drawColor, NPC.rotation, hand.Size() / 2, NPC.scale, spriteEffects, 0);
+                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+
                 spriteBatch.Reload(BlendState.Additive);
                 Texture2D healRay = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Extra_60").Value;
-                spriteBatch.Draw(healRay, NPC.Center + new Vector2(0, 18) - screenPos, null, Color.Orange * 0.75f, NPC.rotation, healRay.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                spriteBatch.Draw(healRay, NPC.Center + new Vector2(6, 18) - screenPos, null, color, NPC.rotation, healRay.Size() / 2, NPC.scale, spriteEffects, 0);
 
                 spriteBatch.Reload(BlendState.AlphaBlend);
             }

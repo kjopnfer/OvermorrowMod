@@ -313,9 +313,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         }
 
         /// <summary>
-        /// Restores 1/5 of the mercenary's max health when it can successfully perform RestoreHealth()
+        /// By default, restores 1/5 of the mercenary's max health when it can successfully perform RestoreHealth()
+        /// Can be overrided to provide custom healing amounts or effects
         /// </summary>
-        public void Heal()
+        public virtual void Heal()
         {
             int heal = NPC.lifeMax / 5;
             NPC.life += heal;
