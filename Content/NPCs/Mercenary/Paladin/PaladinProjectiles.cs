@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Core;
 using System;
@@ -49,12 +50,16 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
     public class PaladinHammer : PaladinProjectile
     {
-        public float sine = 1;
+        public float progress = 1;
         public int direction;
-        bool[] far = new bool[2];
-        public float[] startEnd = new float[2];
         bool initialize = false;
         float rotation;
+
+        private bool isFarAway = false;
+        private bool damageBoost = false;
+
+        public float startValue;
+        public float endValue;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Mighty Hammer");
@@ -76,66 +81,67 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             if (!initialize)
             {
-                sine = startEnd[1];
+                progress = startValue;
                 initialize = true;
             }
 
             if (owner != null && owner.NPC.active)
             {
+                Main.NewText("throwstyle: " + owner.throwStyle + " progress: " + progress);
                 // Rotate the hammer forth, back, or forth but faster
                 switch (owner.throwStyle)
                 {
                     case 1:
-                        rotation += 0.125f * (direction == 1 ? 1 : -1);
+                        rotation += 0.125f * direction;
                         break;
                     case 2:
-                        rotation += 0.125f * (direction == 1 ? -1 : 1);
+                        rotation += 0.125f * direction;
                         break;
                     case 3:
-                        rotation += direction == 1 ? 0.25f : -0.25f;
+                        rotation += 0.25f * direction;
                         break;
                 }
 
                 float distance = Vector2.Distance(owner.NPC.Center, owner.targetPosition);
-                if (sine < startEnd[0]) // 1st cycle ends at 3f, second cycle ends at 5f
+                if (progress < endValue) // 1st cycle ends at 3f, second cycle ends at 5f
                 {
                     if (distance < 450)
                     {
                         // Move the hammer in a unique functioned movement; the cycle is based on the starting x
-                        // https://www.desmos.com/calculator/8zryrzykns
+                        // See: https://www.desmos.com/calculator/8zryrzykns
                         Vector2 center = owner.targetPosition - owner.NPC.Center;
-                        float f2 = (float)Math.Atan(center.Y / center.X);
-                        float[] rot = new float[2] { -direction * (float)(Math.PI / 2) + f2, direction * (float)(Math.PI / 1) + f2 };
-                        sine += 2f / 75;
-                        float g = (float)(Math.Cos(sine + Math.PI) / 2) + 0.5f;
-                        float h = (float)(Math.Cos(sine * Math.PI) / 2) + 0.5f;
-                        h *= (float)Math.Sqrt(distance / 16);
-                        float c = rot[0] + (rot[1] - rot[0]) * g;
-                        Vector2 pos = new Vector2((float)(h * Math.Sin(c)), (float)((h * -0.5f) * Math.Cos(c)));
+                        float startRotation = (float)Math.Atan(center.Y / center.X);
+                        float[] lerpRotation = new float[2] { -direction * (float)(Math.PI / 2) + startRotation, direction * (float)(Math.PI / 1) + startRotation };
+                        progress += 2f / 75;
+                        float lerpMult = (float)(Math.Cos(progress + Math.PI) / 2) + 0.5f;
+                        float offsetDistance = (float)(Math.Cos(progress * Math.PI) / 2) + 0.5f;
+                        offsetDistance *= (float)Math.Sqrt(distance / 16);
+                        float offsetRotation = lerpRotation[0] + (lerpRotation[1] - lerpRotation[0]) * lerpMult;
+                        Vector2 pos = new Vector2((float)(offsetDistance * Math.Sin(offsetRotation)), (float)((offsetDistance * -0.5f) * Math.Cos(offsetRotation)));
                         Projectile.Center = (pos * 100) + owner.NPC.Center;
                     }
                     else
                     {
-                        far[0] = true;
-                        sine = 5f;
+                        isFarAway = true;
+                        progress = 5f;
                     }
                 }
-                else if (sine >= 5f && sine <= 5f + (Math.PI))
+                else if (progress >= 5f && progress <= 5f + (Math.PI))
                 {
                     // 3rd hammer attack; lerp the position of the hammer towards the target; this is performed as the only attack if the target is very far away (slower, but more powerful)
-                    sine += (float)Math.PI / (far[0] ? 180 : 90);
-                    if (!far[1])
+                    progress += (float)Math.PI / (isFarAway ? 180 : 90);
+                    if (!damageBoost)
                     {
                         Projectile.damage = MathFunctions.AGF.Round(Projectile.damage * 1.5f);
-                        far[1] = true;
+                        damageBoost = true;
                     }
-                    float sin = sine - 5f;
+
+                    float sin = progress - 5f;
                     float sine2 = (float)Math.Pow(Math.Sin(sin), 2);
                     Projectile.Center = new Vector2(MathHelper.Lerp(owner.NPC.Center.X, owner.targetPosition.X, sine2), MathHelper.Lerp(owner.NPC.Center.Y, owner.targetPosition.Y, sine2));
                 }
                 else
                 {
-                    // When it returns to the paladin, shake the screen
                     Projectile.Kill();
                 }
             }
@@ -147,17 +153,18 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             // If it hits an npc, shake the screen
             if (owner != null && owner.NPC.active) ScreenShake.ScreenShakeEvent(Projectile.Center, 8, 4, 100);
+            Particle.CreateParticle(Particle.ParticleType<LightBurst>(), Projectile.Center, Vector2.Zero, Color.LightYellow, 1, 0.5f, 0, 120, 1.25f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            Vector2 drawOrigin = tex.Size() / 2f;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 drawOrigin = texture.Size() / 2f;
             for (int k = 0; k < Projectile.oldPos.Length; k++)
             {
                 Vector2 drawPos = Projectile.oldPos[k] - Main.screenPosition + drawOrigin + new Vector2(0f, Projectile.gfxOffY);
                 Color color = Projectile.GetAlpha(lightColor) * ((float)(Projectile.oldPos.Length - k) / (float)Projectile.oldPos.Length);
-                Main.EntitySpriteDraw(tex, drawPos, null, color, rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, color, rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0);
             }
 
             return false;
@@ -165,8 +172,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, rotation, new Vector2(tex.Width / 2, tex.Height / 2), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
         }
     }
 

@@ -84,9 +84,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         }
         public override string MercenaryName => "Rookie Paladin";
         public override int AttackDelay => 60;
-        public override float DetectRadius => 350;
-        public override int MaxHealth => 500;
-        public override int Defense => 40;
+        public override float DetectRadius => 270;
+        public override int MaxHealth => Main.expertMode ? 1000 : 500;
+        public override int Defense => Main.expertMode? 60 : 40;
         public override float KnockbackResist => 0f;
         public override int HealDelay => 5;
         public override int MaxFrames() => 15;
@@ -250,7 +250,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Bottom + randomOffset, -Vector2.UnitY, new Color(240, 221, 137));
                     }
 
-                    if (HealTimer % 40 == 0 && HealTimer < 180) Heal();
+                    if (HealTimer % 30 == 0 && HealTimer < 180) Heal();
 
                     // When healing is done, return true (and reset variables)
                     if (HealTimer >= 300)
@@ -269,7 +269,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
         public override void Heal()
         {
-            int heal = 15;
+            int heal = 25;
 
             if (NPC.life + heal < NPC.lifeMax)
             {
@@ -412,12 +412,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         /// </summary>
         /// <returns></returns>
         bool CanAttack() => Spinning() == null && HammerAlive() == null && attackDelay < 1;
+
         public override bool FarAttack()
-        {
-            //Main.NewText("somehow far attack");
-            return false;
-        }
-        /*public override bool FarAttack()
         {
             Vector2 scout;
             // Sets the target, and makes the NPC face towards it
@@ -444,7 +440,22 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     PaladinHammer hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammer>(), 20, 1f, hiredBy).ModProjectile as PaladinHammer;
                     hammer.owner = this;
                     hammer.direction = targetPosition.X < NPC.Center.X ? -1 : 1;
-                    hammer.startEnd = Start();
+
+                    switch (throwStyle)
+                    {
+                        case 2:
+                            hammer.startValue = 3;
+                            hammer.endValue = 4.9f;
+                            break;
+                        case 3:
+                            hammer.startValue = 5;
+                            hammer.endValue = 5;
+                            break;
+                        default:
+                            hammer.startValue = 1;
+                            hammer.endValue = 3;
+                            break;
+                    }
                 }
                 else
                     slamTimer = 0;
@@ -454,7 +465,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             if (throwStyle == 3 && slamTimer == 1) FrameUpdate(FrameType.HammerChuckAwait);
 
             return HammerAlive() == null && targetNPC == null;
-        }*/
+        }
 
         public override bool CloseAttack()
         {
@@ -491,7 +502,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     if (Spinning() != null) Spinning().Projectile.Kill();
 
                     spinCounter = 0;
-                    stunDuration = 180;
+                    stunDuration = 90;
 
                     CAStyleDecided = false;
                     doHammerSpin = false;
@@ -900,6 +911,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 case FrameType.Heal:
                     xFrame = 2;
                     yFrame = 1;
+
+                    return true;
+                #endregion
+                #region HammerChuck
+                case FrameType.HammerChuck:
+                    xFrame = 3;
+                    yFrame = 2;
 
                     return true;
                 #endregion
