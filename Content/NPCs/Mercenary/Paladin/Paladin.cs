@@ -84,9 +84,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         }
         public override string MercenaryName => "Rookie Paladin";
         public override int AttackDelay => 60;
-        public override float DetectRadius => 270;
+        public override float DetectRadius => 220;
         public override int MaxHealth => Main.expertMode ? 1000 : 500;
-        public override int Defense => Main.expertMode? 60 : 40;
+        public override int Defense => Main.expertMode ? 60 : 40;
         public override float KnockbackResist => 0f;
         public override int HealDelay => 5;
         public override int MaxFrames() => 15;
@@ -119,7 +119,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 return;
             }
 
-            Main.NewText("continue attack? " + continueAttack + " / healDelay: " + HealCooldown + " / hammer delay: " + hammerDelay);
+            //Main.NewText("continue attack? " + continueAttack + " / healDelay: " + HealCooldown + " / hammer delay: " + hammerDelay);
 
             drawAfterimage = false;
             BaseAI();
@@ -139,10 +139,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             // The paladin moves faster than usual while in danger, but is more careful (the above code does not run)
             // Therefore, the paladin will have a higher base movement speed but with no acceleration
-            if (DangerThreshold())
-            {
-                acceleration = 0.2f;
-            }
+            if (DangerThreshold()) acceleration = 0.2f;
 
             // The paladin has completely stopped, so reset their acceleration to their base
             if (NPC.velocity.X == 0)
@@ -157,7 +154,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 drawAfterimage = true;
                 if (catchUpLanded && FrameUpdate(FrameType.CatchUp)) // If the leap has started
                     catchUpFinished = true; // Declare that the paladin has caught up when the animation is finished
-
             }
             else
             {
@@ -229,7 +225,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override bool RestoreHealth()
         {
             bool finished = false;
-            //NPC.direction = NPC.velocity.X < 1 ? -1 : 1;
             if (OnSolidTile() != null)
             {
                 FrameUpdate(FrameType.Heal);
@@ -411,13 +406,12 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         /// Determines whether the Paladin is not spinning, the hammer has not been thrown and there is no attack delay
         /// </summary>
         /// <returns></returns>
-        bool CanAttack() => Spinning() == null && HammerAlive() == null && attackDelay < 1;
+        bool CanAttack() => HammerAlive() == null && attackDelay < 1;
 
         public override bool FarAttack()
         {
             Vector2 scout;
-            // Sets the target, and makes the NPC face towards it
-            if (targetNPC != null)
+            if (targetNPC != null) // Sets the target, and makes the NPC face towards it
             {
                 scout = targetNPC.Center;
                 targetPosition = scout;
@@ -428,43 +422,37 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             if (CanAttack())
             {
                 // Perform three different kinds of hammer throws; each of the motions are solely performed by the projectile
-                bool check = throwStyle == 2 ? true : FrameUpdate(FrameType.HammerChuck);
-                if (check)
+
+                Main.NewText("throw hamber");
+
+                throwStyle++;
+                if (throwStyle > 3) throwStyle = 1;
+
+                hammerDelay = 0;
+
+                PaladinHammer hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammer>(), 20, 1f, hiredBy).ModProjectile as PaladinHammer;
+                hammer.owner = this;
+                hammer.direction = targetPosition.X < NPC.Center.X ? -1 : 1;
+                hammer.targetPosition = targetPosition;
+
+                switch (throwStyle)
                 {
-                    throwStyle++;
-                    if (throwStyle > 3) throwStyle = 1;
-
-                    hammerDelay = 0;
-                    slamTimer = 1;
-
-                    PaladinHammer hammer = Projectile.NewProjectileDirect(Source(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<PaladinHammer>(), 20, 1f, hiredBy).ModProjectile as PaladinHammer;
-                    hammer.owner = this;
-                    hammer.direction = targetPosition.X < NPC.Center.X ? -1 : 1;
-
-                    switch (throwStyle)
-                    {
-                        case 2:
-                            hammer.startValue = 3;
-                            hammer.endValue = 4.9f;
-                            break;
-                        case 3:
-                            hammer.startValue = 5;
-                            hammer.endValue = 5;
-                            break;
-                        default:
-                            hammer.startValue = 1;
-                            hammer.endValue = 3;
-                            break;
-                    }
+                    case 2:
+                        hammer.startValue = 3;
+                        hammer.endValue = 4.9f;
+                        break;
+                    case 3:
+                        hammer.startValue = 5;
+                        hammer.endValue = 5;
+                        break;
+                    default:
+                        hammer.startValue = 1;
+                        hammer.endValue = 3;
+                        break;
                 }
-                else
-                    slamTimer = 0;
             }
 
-            // If a hammer is out and not on the third kind of hammer throw, set to a crouched stance
-            if (throwStyle == 3 && slamTimer == 1) FrameUpdate(FrameType.HammerChuckAwait);
-
-            return HammerAlive() == null && targetNPC == null;
+            return HammerAlive() != null && targetNPC != null;
         }
 
         public override bool CloseAttack()
@@ -639,7 +627,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     }
                 }
 
-                Main.NewText("decide on slam, delay: " + hammerDelay + " / slamTimer: " + slamTimer);
+                //Main.NewText("decide on slam, delay: " + hammerDelay + " / slamTimer: " + slamTimer);
                 return true;
             }
         }

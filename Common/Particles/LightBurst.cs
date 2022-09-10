@@ -8,15 +8,11 @@ using Terraria.ModLoader;
 public class LightBurst : CustomParticle
 {
     public override string Texture => AssetDirectory.Textures + "PulseCircle";
-    public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
-    public float maxTime { get { return particle.customData[1]; } set { particle.customData[1] = value; } }
+    public float maxSize;
+    public float maxTime; 
     public override void OnSpawn()
     {
-        if (particle.customData[1] == 0) particle.customData[1] = 60;
-        if (particle.customData[2] == 0) particle.customData[2] = 1;
-        if (particle.customData[3] == 0) particle.customData[3] = 1;
-
-        maxTime = particle.customData[1] == 0 ? 60 : particle.customData[1];
+        maxTime = particle.customData[0] == 0 ? 60 : particle.customData[0];
         maxSize = particle.scale;
         particle.scale = 0f;
     }
@@ -29,6 +25,8 @@ public class LightBurst : CustomParticle
         float progress = ModUtils.EaseOutQuad(particle.activeTime / maxTime);
         particle.scale = MathHelper.SmoothStep(particle.scale, maxSize, progress);
         particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, particle.activeTime / maxTime);
+        particle.rotation += 0.009f;
+
         if (particle.activeTime > maxTime) particle.Kill();
     }
 

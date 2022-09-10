@@ -58,6 +58,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         private bool isFarAway = false;
         private bool damageBoost = false;
 
+        public Vector2 targetPosition;
+
         public float startValue;
         public float endValue;
         public override void SetStaticDefaults()
@@ -73,8 +75,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             Projectile.width = 38;
             Projectile.height = 38;
-            Projectile.timeLeft = 3000;
-            AIType = ProjectileID.Bullet;
+            Projectile.timeLeft = 600;
+            Projectile.aiStyle = -1;
         }
 
         public override void AI()
@@ -87,7 +89,9 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
             if (owner != null && owner.NPC.active)
             {
-                Main.NewText("throwstyle: " + owner.throwStyle + " progress: " + progress);
+                if (Projectile.ai[0]++ >= 60 && Projectile.Hitbox.Intersects(owner.NPC.Hitbox)) Projectile.Kill();
+
+                Main.NewText("throwstyle: " + owner.throwStyle + " progress: " + progress + " id: " + Projectile.whoAmI);
                 // Rotate the hammer forth, back, or forth but faster
                 switch (owner.throwStyle)
                 {
@@ -102,14 +106,14 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                         break;
                 }
 
-                float distance = Vector2.Distance(owner.NPC.Center, owner.targetPosition);
+                float distance = Vector2.Distance(owner.NPC.Center, targetPosition);
                 if (progress < endValue) // 1st cycle ends at 3f, second cycle ends at 5f
                 {
                     if (distance < 450)
                     {
                         // Move the hammer in a unique functioned movement; the cycle is based on the starting x
                         // See: https://www.desmos.com/calculator/8zryrzykns
-                        Vector2 center = owner.targetPosition - owner.NPC.Center;
+                        Vector2 center = targetPosition - owner.NPC.Center;
                         float startRotation = (float)Math.Atan(center.Y / center.X);
                         float[] lerpRotation = new float[2] { -direction * (float)(Math.PI / 2) + startRotation, direction * (float)(Math.PI / 1) + startRotation };
                         progress += 2f / 75;
@@ -138,22 +142,24 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
                     float sin = progress - 5f;
                     float sine2 = (float)Math.Pow(Math.Sin(sin), 2);
-                    Projectile.Center = new Vector2(MathHelper.Lerp(owner.NPC.Center.X, owner.targetPosition.X, sine2), MathHelper.Lerp(owner.NPC.Center.Y, owner.targetPosition.Y, sine2));
-                }
-                else
-                {
-                    Projectile.Kill();
+                    Projectile.Center = new Vector2(MathHelper.Lerp(owner.NPC.Center.X, targetPosition.X, sine2), MathHelper.Lerp(owner.NPC.Center.Y, targetPosition.Y, sine2));
                 }
             }
             else
+            {
                 Projectile.Kill();
+            }
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            // If it hits an npc, shake the screen
             if (owner != null && owner.NPC.active) ScreenShake.ScreenShakeEvent(Projectile.Center, 8, 4, 100);
-            Particle.CreateParticle(Particle.ParticleType<LightBurst>(), Projectile.Center, Vector2.Zero, Color.LightYellow, 1, 0.5f, 0, 120, 1.25f);
+
+            float randomScale = Main.rand.NextFloat(0.5f, 0.75f);
+            float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+            float particleTime = 120;
+
+            Particle.CreateParticle(Particle.ParticleType<LightBurst>(), Projectile.Center, Vector2.Zero, Color.LightYellow, 1, randomScale, randomRotation, particleTime);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -174,6 +180,12 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            Main.NewText("die");
+            base.Kill(timeLeft);
         }
     }
 
