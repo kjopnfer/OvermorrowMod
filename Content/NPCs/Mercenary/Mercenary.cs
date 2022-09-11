@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         public bool CanHeal = false;
 
         // Timer variable, for example: healing animations
-        public int HealTimer = 0; 
+        public int HealTimer = 0;
 
         // Cooldown until the mercenary can heal again
         public int HealCooldown = 0;
@@ -76,7 +76,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         // Determines if the mercenary should call CloseAttack()
         public bool closeAttackStyle;
         #endregion
-        
+
         #region Hire
         // The player that has hired this mercenary (the player index)
         public int hiredBy = -1;
@@ -94,7 +94,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
         // If this reaches a certain amount, CatchUp() will be called (unless the mercenary is in danger)
         int farTimer;
 
-        
+
         public bool catchingUp;
 
         #region Movement
@@ -298,7 +298,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
                     }
                     else
                     {
-                        RestoreHealth();
+                        if (!continueAttack) RestoreHealth();
                     }
                 }
 
@@ -668,7 +668,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary
             float totalDimensions = (float)Math.Sqrt((multiplier * dimensions.X) + (multiplier * dimensions.Y));
             return distance / totalDimensions;
         }
-        
+
         // Usually overrided; otherwise visualizes the wall and pit detection
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {

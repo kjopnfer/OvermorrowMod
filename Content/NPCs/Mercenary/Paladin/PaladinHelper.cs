@@ -51,6 +51,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         }
 
         /// <summary>
+        /// Determines whether the Paladin is not spinning, the hammer has not been thrown and there is no attack delay
+        /// </summary>
+        /// <returns></returns>
+        bool CanAttack() => HammerAlive() == null && attackDelay < 1;
+
+
+        /// <summary>
         /// Returns the hammer slam shockwave projectile
         /// </summary>
         /// <returns>Returns the hammer slam projectile if found, otherwise returns null</returns>

@@ -108,10 +108,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
 
                 if (stunDuration == 0)
                 {
-                    // I will explain this since it was confusing me for like a solid half an hour.
-                    // The NPC has two velocity values, the base velocity all NPCs have and the unique velocity used to scale speed
-                    // Within MovementAI is where this second value is applied. Therefore setting it to zero means it doesn't move at all.
-                    // When the NPC is stunned, their second velocity is set to zero and this cannot be called.
                     acceleration = 0.125f;
                     canCheckTiles = true;
                 }
@@ -159,7 +155,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 catchUpLanded = false;
                 catchUpFinished = false;
-
                 catchingUp = false;
             }
 
@@ -187,8 +182,6 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 if ((HammerAlive() == null && !catchingUp) || closeAttackStyle) // Resets attack variables
                 {
-                    //hammerDelay = 0;
-                    //slamTimer = 0;
                     throwStyle = 0;
                     targetPosition = Vector2.Zero;
                 }
@@ -204,7 +197,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             {
                 if (!CAStyleDecided)
                 {
-                    if (!CanHeal && !catchingUp || (HammerAlive() == null && (!closeAttackStyle || DangerThreshold())))
+                    if (!CanHeal && !catchingUp && HammerAlive() == null && !DangerThreshold())
                         FrameUpdate(FrameType.WalkBattle);
                 }
             }
@@ -227,8 +220,13 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             bool finished = false;
             if (OnSolidTile() != null)
             {
+                targetNPC = null;
+                continueAttack = false;
+                continueClose = false;
+                continueFar = false;
+
                 FrameUpdate(FrameType.Heal);
-                // If the NPC is on a solid tile, slow the NPC to a halt, and when the NPC is not moving, wait two seconds, then heal
+
                 HealTimer++;
                 Main.NewText("heal timer: " + HealTimer);
 
@@ -402,14 +400,10 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             return catchUpFinished;
         }
 
-        /// <summary>
-        /// Determines whether the Paladin is not spinning, the hammer has not been thrown and there is no attack delay
-        /// </summary>
-        /// <returns></returns>
-        bool CanAttack() => HammerAlive() == null && attackDelay < 1;
-
         public override bool FarAttack()
         {
+            continueFar = true;
+
             Vector2 scout;
             if (targetNPC != null) // Sets the target, and makes the NPC face towards it
             {
@@ -418,6 +412,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 NPC.direction = NPC.Center.X < scout.X ? 1 : -1;
                 hammerDirection = NPC.direction;
             }
+
+            FrameUpdate(FrameType.HammerChuck);
 
             if (CanAttack())
             {
@@ -904,8 +900,30 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                 #endregion
                 #region HammerChuck
                 case FrameType.HammerChuck:
-                    xFrame = 3;
-                    yFrame = 2;
+                    switch (throwStyle)
+                    {
+                        case 1:
+                            xFrame = 2;
+                            if (tempCounter++ == 0) yFrame = 8;
+
+                            if (tempCounter % 15 == 0) yFrame--;
+
+                            break;
+                        case 2:
+                            xFrame = 2;
+                            if (tempCounter++ == 0) yFrame = 5;
+
+                            if (tempCounter % 15 == 0) yFrame++;
+                            break;
+                        case 3:
+                            xFrame = 3;
+                            yFrame = 1;
+                            break;
+                    }
+
+                    Main.NewText("chuck counteR: " + tempCounter);
+
+                    if (tempCounter == 60) tempCounter = 0;
 
                     return true;
                 #endregion

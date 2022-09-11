@@ -155,11 +155,22 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         {
             if (owner != null && owner.NPC.active) ScreenShake.ScreenShakeEvent(Projectile.Center, 8, 4, 100);
 
-            float randomScale = Main.rand.NextFloat(0.5f, 0.75f);
+            float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
             float particleTime = 120;
 
             Particle.CreateParticle(Particle.ParticleType<LightBurst>(), Projectile.Center, Vector2.Zero, Color.LightYellow, 1, randomScale, randomRotation, particleTime);
+
+            for (int i = 0; i < Main.rand.Next(8, 12); i++)
+            {
+                randomScale = Main.rand.NextFloat(0.15f, 0.35f);
+                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
+                Vector2 angleTo = Projectile.DirectionTo(target.Center);
+                Vector2 RandomVelocity = angleTo.RotatedBy(randomAngle) * Main.rand.Next(9, 15);
+                Color color = new Color(240, 224, 221);
+
+                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale);
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -185,7 +196,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override void Kill(int timeLeft)
         {
             Main.NewText("die");
-            base.Kill(timeLeft);
+            owner.continueFar = false;
         }
     }
 
