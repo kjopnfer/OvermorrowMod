@@ -8,14 +8,19 @@ using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 {
-    public class CoolProjectile : ModProjectile
+    public class VerutumProjectile : ModProjectile
     {
+
+        float Scale = -1f;
+        float ScaleIncrease = 0.005f;
+        static int StaticAI = 0;
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
-        bool StartInTile = false;
+
         public override void SetDefaults()
         {
             Projectile.width = 32; //16 orig: extra 2 blank pixels on right
@@ -30,9 +35,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
             Projectile.timeLeft = 500;
         }
 
-        float Scale = -1f;
-        float ScaleIncrease = 0.005f;
-        static int StaticAI = 0;
         bool IsFirstProjectile()
         {
             for (int i = 0; Main.projectile.Length > i; i++)
@@ -43,17 +45,21 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
                     {
                         return true;
                     }
+
                     break;
                 }
             }
+
             return false;
         }
 
+        public ref float ScaleCounter => ref Projectile.localAI[0];
         public override void AI()
         {
-            if (Projectile.ai[0] == 0 && !TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
+            // Initializer: add the projectile to the ready list if it already isn't there
+            if (Projectile.ai[0] == 0 && !TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
             {
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
+                TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
                 StaticAI = 0;
             }
 
@@ -63,17 +69,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
                 StaticAI = 0;
             }
 
+            // Keep the projectile alive while the player is holding the item
             Projectile.timeLeft = 500;
-            if (Projectile.ai[0] % 24 == 0)
-                ScaleIncrease = -ScaleIncrease;
+
+            if (Projectile.ai[0] % 24 == 0) ScaleIncrease = -ScaleIncrease;
             Scale += ScaleIncrease;
+
             Projectile.ai[0]++;
 
-            if (StaticAI >= 100 && !TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
-            if (TriVerutums.ReadyCoolProjectiles.Count != TriVerutums.MaxCoolThings && IsFirstProjectile())
-                StaticAI++;
+            if (StaticAI >= 100 && !TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
+                TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
 
+            if (TriVerutums.ReadyProjectiles.Count != TriVerutums.MAX_PROJECTILES && IsFirstProjectile())
+                StaticAI++;
         }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
@@ -88,8 +96,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
         {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
+
             Vector2 HalfWidthHeight = new Vector2(Projectile.width / 2, Projectile.height / 2);
-            if (!TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
+            if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
             {
                 for (int i = 0; Projectile.oldPos.Length > i; i++)
                 {
@@ -110,22 +119,22 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 
         public override void Kill(int timeLeft)
         {
-            if (!TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
+            // On the projectile's death, add the projectile back to a ready list
+            if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI)) TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            if (!TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
+            // If the projectile has hit a tile, add the projectile back to a ready list
+            if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI)) TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
 
             return false;
         }
 
         public override void OnHitPvp(Player target, int damage, bool crit)
         {
-            if (!TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
+            // If the projectile has hit a player, add the projectile back to a ready list
+            if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI)) TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
         }
     }
 }
