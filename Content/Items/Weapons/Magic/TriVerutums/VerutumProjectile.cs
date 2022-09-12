@@ -5,17 +5,20 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
+using OvermorrowMod.Content.Dusts;
 
 namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 {
-    public class CoolProjectile : ModProjectile
+    public class VerutumProjectile : ModProjectile
     {
+        public bool canThrow = true;
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
-        bool StartInTile = false;
+
         public override void SetDefaults()
         {
             Projectile.width = 32; //16 orig: extra 2 blank pixels on right
@@ -32,7 +35,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 
         float Scale = -1f;
         float ScaleIncrease = 0.005f;
-        static int StaticAI = 0;
+        static int ActiveAI = 0;
         bool IsFirstProjectile()
         {
             for (int i = 0; Main.projectile.Length > i; i++)
@@ -51,28 +54,31 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 
         public override void AI()
         {
-            if (Projectile.ai[0] == 0 && !TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
+            if (Projectile.ai[0] == 0 && !TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
             {
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
-                StaticAI = 0;
+                TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
+                ActiveAI = 0;
             }
 
             if (Projectile.ai[1] == 1)
             {
                 Projectile.ai[1] = 0;
-                StaticAI = 0;
+                ActiveAI = 0;
             }
 
             Projectile.timeLeft = 500;
+
             if (Projectile.ai[0] % 24 == 0)
                 ScaleIncrease = -ScaleIncrease;
+
             Scale += ScaleIncrease;
             Projectile.ai[0]++;
 
-            if (StaticAI >= 100 && !TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
-            if (TriVerutums.ReadyCoolProjectiles.Count != TriVerutums.MaxCoolThings && IsFirstProjectile())
-                StaticAI++;
+            if (ActiveAI >= 30 && !TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
+                TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
+
+            if (TriVerutums.ReadyProjectiles.Count != TriVerutums.MAX_PROJECTILES && IsFirstProjectile())
+                ActiveAI++;
 
         }
 
@@ -81,6 +87,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
             Vector2 Center = Projectile.Center + new Vector2(0, -Projectile.height / 4.5f).RotatedBy(Projectile.rotation);
             Vector2 Size = new Vector2(12, 12);
             hitbox = new Rectangle((int)Center.X - (int)Size.X, (int)Center.Y - (int)Size.Y, (int)Size.X * 2, (int)Size.Y * 2);
+
+            canThrow = true;
+
+            // If the projectile is in a tile, it should not be able to be shot forward
+            if (Collision.SolidCollision(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height))
+            {
+                canThrow = false;
+            }
+
             base.ModifyDamageHitbox(ref hitbox);
         }
 
@@ -89,7 +104,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
             Vector2 HalfWidthHeight = new Vector2(Projectile.width / 2, Projectile.height / 2);
-            if (!TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
+            if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
             {
                 for (int i = 0; Projectile.oldPos.Length > i; i++)
                 {
@@ -110,22 +125,31 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 
         public override void Kill(int timeLeft)
         {
-            if (!TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
+            if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
+                TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            if (!TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
+            if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
+                TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
 
             return false;
         }
 
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            for (int i = 0; i < 12; i++)
+            {
+                Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(45f)) * Main.rand.NextFloat(-0.25f, -0.15f);
+                Dust.NewDustDirect(target.Center, target.width, target.height, ModContent.DustType<Blood>(), velocity.X, velocity.Y, 0, default, Main.rand.NextFloat(1.55f, 1.95f));
+            }
+        }
+
         public override void OnHitPvp(Player target, int damage, bool crit)
         {
-            if (!TriVerutums.ReadyCoolProjectiles.Contains(Projectile.whoAmI))
-                TriVerutums.ReadyCoolProjectiles.Add(Projectile.whoAmI);
+            if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
+                TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);
         }
     }
 }
