@@ -12,6 +12,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
     {
         public const int MAX_PROJECTILES = 3;
 
+        double distance = 0;
+        double rot = 0.0;
+        double RotAdd = 0.0;
+        float ProjRotationAdd = 0.0f;
+        int RotDirection = 1;
+        Vector2 CoolPosOffset = Vector2.Zero;
+        int ItemHoldTime = 0;
+
+        public static List<int> StoredProjectiles = new List<int>();
+        public static List<int> ReadyProjectiles = new List<int>();
+        List<int> CloseEnoughProjectiles = new List<int>();
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Tri-Verutums");
@@ -35,11 +47,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 
         public override bool? UseItem(Player player)
         {
+            // Get the instance of the closest projectile from the list of projectiles that are ready
+            // This is the projectile that will be shot forward when used
             Projectile ClosestProjectile = new Projectile();
             for (int i = 0; ReadyProjectiles.Count > i; i++)
             {
                 Projectile ThrowProjectile = Main.projectile[ReadyProjectiles[i]];
-                if (CloseEnoughProjectiles.Contains(ReadyProjectiles[i]))
+                if (CloseEnoughProjectiles.Contains(ReadyProjectiles[i]) && ((VerutumProjectile)ThrowProjectile.ModProjectile).canThrow)
                 {
                     ClosestProjectile = Main.projectile[ReadyProjectiles[i]];
                     break;
@@ -48,6 +62,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 
             for (int i = 0; StoredProjectiles.Count > i; i++)
             {
+                // Launch that projectile towards the mouse cursor
                 if (Main.projectile[StoredProjectiles[i]] == ClosestProjectile)
                 {
                     ReadyProjectiles.Remove(StoredProjectiles[i]);
@@ -70,16 +85,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
 
         public override bool CanUseItem(Player player) => CloseEnoughProjectiles.Count != 0 && ReadyProjectiles.Count != 0;
 
-        double distance = 0;
-        double rot = 0.0;
-        double RotAdd = 0.0;
-        float ProjRotationAdd = 0.0f;
-        int RotDirection = 1;
-        Vector2 CoolPosOffset = Vector2.Zero;
-        public static List<int> StoredProjectiles = new List<int>();
-        public static List<int> ReadyProjectiles = new List<int>();
-        List<int> CloseEnoughProjectiles = new List<int>();
-        int ItemHoldTime = 0;
         public override void HoldItem(Player player)
         {
             if (ItemHoldTime == 0)
