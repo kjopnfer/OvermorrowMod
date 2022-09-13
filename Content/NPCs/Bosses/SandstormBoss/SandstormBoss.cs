@@ -1,11 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
-using OvermorrowMod.Content.Items.Consumable.BossBags;
-using OvermorrowMod.Content.Items.Weapons.Magic.SandStaff;
-using OvermorrowMod.Content.Items.Weapons.Melee.SandSpinner;
-using OvermorrowMod.Content.Items.Weapons.Ranged.SandThrower;
-using OvermorrowMod.Content.Items.Weapons.Summoner.DustStaff;
 using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using System;
@@ -670,18 +665,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 dust24.velocity *= 2f;
                 Main.dust[num797].noGravity = true;
             }
-        }
-
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
-            npcLoot.Add(ItemDropRule.BossBag(ItemType<SandstormBag>()));
-            var nonExpert = new LeadingConditionRule(new Conditions.NotExpert())
-                .OnSuccess(ItemDropRule.OneFromOptions(1,
-                    ItemType<SandstormSpinner>(),
-                    ItemType<SandStaff>(),
-                    ItemType<SandThrower>(),
-                    ItemType<DustStaff>()));
-            npcLoot.Add(nonExpert);
         }
 
         public override void BossLoot(ref string name, ref int potionType)

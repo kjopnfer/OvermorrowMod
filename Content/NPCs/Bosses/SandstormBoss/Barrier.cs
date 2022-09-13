@@ -231,7 +231,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         private float InitialRadius;
         private float Radius;
 
-        public override string Texture => AssetDirectory.Melee + "SoulSaber/SoulSaber";
+        public override string Texture => AssetDirectory.Empty;
 
         public override void SetStaticDefaults()
         {

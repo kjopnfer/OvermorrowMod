@@ -3,13 +3,9 @@ using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
-using OvermorrowMod.Content.Items.Weapons.Melee;
-using OvermorrowMod.Content.Items.Weapons.Melee.EatersBlade;
-using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Content.NPCs.CaveFish;
 using OvermorrowMod.Content.NPCs.SalamanderHunter;
 using OvermorrowMod.Content.NPCs.SnapDragon;
-using OvermorrowMod.Content.Projectiles.Accessory;
 using OvermorrowMod.Content.Projectiles.Hexes;
 using System.Collections.Generic;
 using Terraria;
@@ -75,18 +71,12 @@ namespace OvermorrowMod.Common
                 case NPCID.BoneSerpentHead:
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SerpentTooth>(), 20));
                     break;
-                case NPCID.EaterofSouls:
-                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EatersBlade>(), 75));
-                    break;
                 case NPCID.Harpy:
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HarpyLeg>(), 10));
                     break;
                 case NPCID.Drippler:
                 case NPCID.BloodZombie:
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MutatedFlesh>(), 3, 1, 3));
-                    break;
-                case NPCID.Piranha:
-                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Blackfish>(), 50));
                     break;
                 case NPCID.Zombie:
                 case NPCID.BigRainZombie:
@@ -111,74 +101,14 @@ namespace OvermorrowMod.Common
                 case NPCID.ZombieRaincoat:
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<StaleBread>(), 100));
                     break;
-                case NPCID.MotherSlime:
-                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Hammer>(), 14));
-                    break;
             }
 
             base.ModifyNPCLoot(npc, npcLoot);
         }
 
-
-        public override void OnKill(NPC npc)
-        {
-            if (Main.netMode == NetmodeID.Server)
-            {
-                if (npc.type != NPCID.WaterSphere && npc.type != NPCID.ChaosBall && npc.type != NPCID.BurningSphere && npc.type != NPCID.SolarFlare && npc.type != NPCID.VileSpit)
-                {
-                    for (int i = 0; i < Main.maxPlayers; i++)
-                    {
-                        if (npc.playerInteraction[i])
-                        {
-                            Player player = Main.player[i];
-                            var modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
-
-                            if (modPlayer.DripplerEye)
-                            {
-                                if (modPlayer.dripplerStack < 25)
-                                {
-                                    modPlayer.dripplerStack++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                if (npc.type != NPCID.WaterSphere && npc.type != NPCID.ChaosBall && npc.type != NPCID.BurningSphere && npc.type != NPCID.SolarFlare && npc.type != NPCID.VileSpit)
-                {
-                    for (int i = 0; i < Main.maxPlayers; i++)
-                    {
-                        if (npc.playerInteraction[i])
-                        {
-                            Player player = Main.LocalPlayer;
-                            var modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
-
-                            if (modPlayer.DripplerEye)
-                            {
-                                if (modPlayer.dripplerStack < 25)
-                                {
-                                    modPlayer.dripplerStack++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
             Player owner = Main.player[projectile.owner];
-            if (owner.GetModPlayer<OvermorrowModPlayer>().ArmBracer && (projectile.minion == true || projectile.DamageType == DamageClass.Magic))
-            {
-                if (Main.rand.NextBool(6) && owner.GetModPlayer<OvermorrowModPlayer>().sandCount < 10)
-                {
-                    Projectile.NewProjectile(projectile.GetSource_OnHit(npc), owner.Center, Vector2.Zero, ModContent.ProjectileType<SandBallFriendly>(), 24, 2f, projectile.owner, Main.rand.Next(60, 95), Main.rand.Next(3, 6));
-                    owner.GetModPlayer<OvermorrowModPlayer>().sandCount++;
-                }
-            }
 
             if (npc.HasHex(Hex.HexType<CursedFlames>()))
             {
@@ -205,22 +135,6 @@ namespace OvermorrowMod.Common
                 }
             }
 
-        }
-
-        public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
-        {
-            if (target.GetModPlayer<OvermorrowModPlayer>().mirrorBuff && !target.immune)
-            {
-                if (damage < npc.life)
-                {
-                    npc.life -= damage;
-                    CombatText.NewText(new Rectangle((int)npc.position.X, (int)npc.position.Y + 50, npc.width, npc.height), Color.Purple, damage, false, false);
-                }
-                else
-                {
-                    npc.life = 1;
-                }
-            }
         }
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)

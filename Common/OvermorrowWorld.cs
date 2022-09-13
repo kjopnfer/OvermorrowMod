@@ -1,7 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using OvermorrowMod.Content.Items.Weapons.Magic.WarpRocket;
-using OvermorrowMod.Content.Items.Weapons.Melee.GraniteChomper;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Content.Tiles.Ores;
@@ -51,119 +49,6 @@ namespace OvermorrowMod.Common
                     }
                 }
             }*/
-
-            for (int chestIndex = 0; chestIndex < 1000; chestIndex++)
-            {
-                Chest chest = Main.chest[chestIndex];
-
-                int[] itemsToPlaceInGranChests = { ModContent.ItemType<GraniteChomper>() };
-                int itemsToPlaceInGranChestsChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].TileType == TileID.Containers && Main.tile[chest.x, chest.y].TileFrameX == 50 * 36)
-                {
-                    if (!placedGranite) // Guarantees at least one book in a Dungeon Chest
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (inventoryIndex == 1)
-                            {
-                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInGranChests[itemsToPlaceInGranChestsChoice]);
-                                itemsToPlaceInGranChestsChoice = (itemsToPlaceInGranChestsChoice + 1) % itemsToPlaceInGranChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                break;
-                            }
-                        }
-                        placedGranite = true;
-                    }
-                    else
-                    {
-                        if (Main.rand.NextBool(3))
-                        {
-                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                            {
-                                if (inventoryIndex == 1)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInGranChests[itemsToPlaceInGranChestsChoice]);
-                                    itemsToPlaceInGranChestsChoice = (itemsToPlaceInGranChestsChoice + 1) % itemsToPlaceInGranChests.Length;
-                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                int[] itemsToPlaceInMarbChests = { ModContent.ItemType<WarpRocket>() };
-                int itemsToPlaceInGranMarbleChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].TileType == TileID.Containers && Main.tile[chest.x, chest.y].TileFrameX == 51 * 36)
-                {
-                    if (!placedtele) // Guarantees at least one book in a Dungeon Chest
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (inventoryIndex == 1)
-                            {
-                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInMarbChests[itemsToPlaceInGranMarbleChoice]);
-                                itemsToPlaceInGranMarbleChoice = (itemsToPlaceInGranMarbleChoice + 1) % itemsToPlaceInMarbChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                break;
-                            }
-                        }
-                        placedtele = true;
-                    }
-                    else
-                    {
-                        if (Main.rand.NextBool(2))
-                        {
-                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                            {
-                                if (inventoryIndex == 1)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInMarbChests[itemsToPlaceInGranMarbleChoice]);
-                                    itemsToPlaceInGranMarbleChoice = (itemsToPlaceInGranMarbleChoice + 1) % itemsToPlaceInMarbChests.Length;
-                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                int[] itemsToPlaceInSteamChests = { 953 };
-                int itemsToPlaceInSteampunkChoice = 0;
-                if (chest != null && Main.tile[chest.x, chest.y].TileType == TileID.Containers && Main.tile[chest.x, chest.y].TileFrameX == 30 * 36)
-                {
-                    if (!placedclaw) // Guarantees at least one book in a Dungeon Chest
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (inventoryIndex == 1)
-                            {
-                                chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSteamChests[itemsToPlaceInSteampunkChoice]);
-                                itemsToPlaceInSteampunkChoice = (itemsToPlaceInSteampunkChoice + 1) % itemsToPlaceInSteamChests.Length;
-                                // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                break;
-                            }
-                        }
-                        placedclaw = true;
-                    }
-                    else
-                    {
-                        if (Main.rand.NextBool(2))
-                        {
-                            for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                            {
-                                if (inventoryIndex == 1)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(itemsToPlaceInSteamChests[itemsToPlaceInSteampunkChoice]);
-                                    itemsToPlaceInSteampunkChoice = (itemsToPlaceInSteampunkChoice + 1) % itemsToPlaceInSteamChests.Length;
-                                    // Alternate approach: Random instead of cyclical: chest.item[inventoryIndex].SetDefaults(Main.rand.Next(itemsToPlaceInIceChests));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
         #endregion
 
