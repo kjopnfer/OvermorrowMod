@@ -9,6 +9,7 @@ using Terraria.GameInput;
 using Terraria.GameContent.UI.Elements;
 using ReLogic.Content;
 using OvermorrowMod.Core;
+using System.Text;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -81,14 +82,73 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     // We need to detect if any color coded text is present, if it is then skip forward by the progression
                     int progress = (int)MathHelper.Lerp(0, player.DialogueList[0].displayText.Length, DialogueTimer / (float)player.DialogueList[0].drawTime);
-                    Dialogue.SetText(player.DialogueList[0].displayText.Substring(0, progress));
+                    var text = player.DialogueList[0].displayText.Substring(0, progress);
+
+                    if (player.DialogueList[0].bracketColor != null)
+                    {
+                        // Create a new string, adding in hex tags whenever an opening bracket is found
+                        var builder = new StringBuilder();
+                        foreach (var character in text)
+                        {
+                            if (character == '[') // Insert the hex tag if an opening bracket is found
+                            {
+                                builder.Append("[c/" + player.DialogueList[0].bracketColor + ":");
+                            }
+                            else
+                            {
+                                builder.Append(character);
+                            }
+                        }
+
+                        if (!builder.ToString().Contains(']') && builder.ToString().Contains('['))
+                        {
+                            builder.Append(']');
+                        }
+
+                        // Final check for if the tag has two brackets but no characters inbetween
+                        var hexTag = "[c/" + player.DialogueList[0].bracketColor + ":]";
+                        if (builder.ToString().Contains(hexTag))
+                        {
+                            builder.Replace(']', ' ');
+                            builder.Append(']');
+                        }
+
+                        text = builder.ToString();
+                    }
+
+
+                    Dialogue.SetText(text);
                 }
                 else // Hold the dialogue for the amount of time specified
                 {
                     //Main.NewText("HOLD" + SecondaryTimer);
                     if (SecondaryTimer++ <= player.DialogueList[0].showTime)
                     {
-                        Dialogue.SetText(player.DialogueList[0].displayText);
+                        var text = player.DialogueList[0].displayText;
+
+                        if (player.DialogueList[0].bracketColor != null)
+                        {
+                            // Create a new string, adding in hex tags whenever an opening bracket is found
+                            var builder = new StringBuilder();
+                            foreach (var character in text)
+                            {
+                                // Insert the hex tag if an opening bracket is found
+                                if (character == '[')
+                                {
+                                    builder.Append("[c/" + player.DialogueList[0].bracketColor + ":");
+                                }
+                                else
+                                {
+                                    builder.Append(character);
+                                }
+                            }
+
+                            if (!builder.ToString().Contains(']') && builder.ToString().Contains('[')) builder.Append(']');
+
+                            text = builder.ToString();
+                        }
+
+                        Dialogue.SetText(text);
 
                         // Remove the dialogue from the list and reset counters
                         if (SecondaryTimer == player.DialogueList[0].showTime)

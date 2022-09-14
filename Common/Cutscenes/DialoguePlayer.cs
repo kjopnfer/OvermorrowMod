@@ -23,7 +23,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public int showTime;
 
         public Color speakerColor;
-
+        public string bracketColor;
         /// <summary>
         /// Used to store information about a dialogue object
         /// </summary>
@@ -31,13 +31,16 @@ namespace OvermorrowMod.Common.Cutscenes
         /// <param name="displayText">The text to be displayed</param>
         /// <param name="drawTime">The amount of time it takes to completely draw the text</param>
         /// <param name="showTime">How long the text remains on screen after fully drawing</param>
-        public Dialogue(string speakerName, string displayText, int drawTime, int showTime, Color speakerColor)
+        /// <param name="speakerColor">The color of the speaker's name</param>
+        /// <param name="bracketColor">The hex color of the text when enclosed in brackets</param>
+        public Dialogue(string speakerName, string displayText, int drawTime, int showTime, Color speakerColor, string bracketColor)
         {
             this.speakerName = speakerName;
             this.displayText = displayText;
             this.drawTime = drawTime;
             this.showTime = showTime;
             this.speakerColor = speakerColor;
+            this.bracketColor = bracketColor;
         }
     }
 
@@ -46,7 +49,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public List<Dialogue> DialogueList = new List<Dialogue>();
         public bool ShowDialogue = false;
 
-        public void AddDialogue(string speakerName, string displayText, int drawtime, int showTime, Color speakerColor)
+        public void AddDialogue(string speakerName, string displayText, int drawtime, int showTime, Color speakerColor, string bracketColor = null)
         {
             ShowDialogue = true;
 
@@ -71,7 +74,8 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
             }
 
-            DialogueList.Add(new Dialogue(speakerName, stringBuilder.ToString(), drawtime, showTime, speakerColor));
+            DialogueList.Add(new Dialogue(speakerName, stringBuilder.ToString(), drawtime, showTime, speakerColor, bracketColor));
         }
+    
     }
 }
