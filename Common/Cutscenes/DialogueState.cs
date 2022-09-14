@@ -86,6 +86,10 @@ namespace OvermorrowMod.Common.Cutscenes
 
                     if (player.DialogueList[0].bracketColor != null)
                     {
+                        // The number of opening brackets MUST be the same as the number of closing brackets
+                        int numOpen = 0;
+                        int numClose = 0;
+
                         // Create a new string, adding in hex tags whenever an opening bracket is found
                         var builder = new StringBuilder();
                         foreach (var character in text)
@@ -93,14 +97,20 @@ namespace OvermorrowMod.Common.Cutscenes
                             if (character == '[') // Insert the hex tag if an opening bracket is found
                             {
                                 builder.Append("[c/" + player.DialogueList[0].bracketColor + ":");
+                                numOpen++;
                             }
                             else
                             {
+                                if (character == ']')
+                                {
+                                    numClose++;
+                                }
+
                                 builder.Append(character);
                             }
                         }
 
-                        if (!builder.ToString().Contains(']') && builder.ToString().Contains('['))
+                        if (numOpen != numClose)
                         {
                             builder.Append(']');
                         }
@@ -109,14 +119,13 @@ namespace OvermorrowMod.Common.Cutscenes
                         var hexTag = "[c/" + player.DialogueList[0].bracketColor + ":]";
                         if (builder.ToString().Contains(hexTag))
                         {
-                            builder.Replace(']', ' ');
-                            builder.Append(']');
+                            builder.Replace(hexTag, "[c/" + player.DialogueList[0].bracketColor + ": ]");
                         }
 
                         text = builder.ToString();
                     }
 
-
+                    //Main.NewText(text);
                     Dialogue.SetText(text);
                 }
                 else // Hold the dialogue for the amount of time specified

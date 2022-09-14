@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.Projectiles
             if (Projectile.ai[0]++ == 0)
             {
                 Main.NewText("a");
-                player.AddDialogue("John Cena", "Do you enjoy going through [hell?]", 60, 120, Color.LimeGreen, "34C9EB");
+                player.AddDialogue("John Cena", "Do [you] enjoy going through [hell?]", 60, 120, Color.LimeGreen, "34C9EB");
             }
             else if (Projectile.ai[0] == 60)
             {
@@ -42,7 +42,7 @@ namespace OvermorrowMod.Content.Projectiles
             else if (Projectile.ai[0] == 120)
             {
                 Main.NewText("c");
-                player.AddDialogue("???", "Once the [dust] has settled and only one remains, if it is you, what value will this have had?!", 60, 120, Color.Red, "34C9EB");
+                player.AddDialogue("???", "Once the [dust] has settled and [only] one remains, if it is you, what value will this have had?!", 60, 120, Color.Red, "34C9EB");
             }
             else if (Projectile.ai[0] == 180)
             {
