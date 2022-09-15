@@ -74,8 +74,58 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
             }
 
+            // Post-processing tag parser that is probably not super efficient, but serves to support multi-line hex tags
+            // THE CODE ASSUMES THE USER HAS USED THE TAGS CORRECTLY
+
+            /// An example case:
+            /// Lorem ipsum dolor sit amet, [consectetur adipiscing elit,
+            /// sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            /// Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            /// laboris nisi ut aliquip] ex ea commodo consequat.
+
+            // The following code will parse each line that has already been split by new-line tags
+            // When it finds an opening tag, it will add a closing bracket. Vice versa, if it finds a closing tag.
+            // If within two tags that span multiple lines, it will flag itself as inbetween tags and enclose itself.
+
+            string[] lineSplits = stringBuilder.ToString().Split(new string[] { "\n" }, StringSplitOptions.None);
+            stringBuilder = new StringBuilder();
+            bool inBracket = false;
+            foreach (string line in lineSplits)
+            {
+                if (line.Contains('[') && !line.Contains(']'))
+                {
+                    Main.NewText("added ]");
+                    stringBuilder.Append(line + "]\n");
+                    inBracket = true;
+                }
+
+                if (inBracket && !line.Contains('[') && !line.Contains(']'))
+                {
+                    Main.NewText("added [ and ]");
+
+                    stringBuilder.Append('[' + line + "]\n");
+                }
+                else
+                {
+                    if (!inBracket)
+                    {
+                        Main.NewText("added nothing");
+
+                        stringBuilder.Append(line + "\n");
+                    }
+                }
+
+                if (!line.Contains('[') && line.Contains(']') && inBracket)
+                {
+                    Main.NewText("added [");
+
+                    stringBuilder.Append('[' + line + "\n");
+                    inBracket = false;
+                }
+            }
+
             DialogueList.Add(new Dialogue(speakerName, stringBuilder.ToString(), drawtime, showTime, speakerColor, bracketColor));
         }
-    
+
     }
 }
