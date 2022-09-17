@@ -17,6 +17,8 @@ namespace OvermorrowMod.Common.Cutscenes
     // Dialogue should be able to be cleared and then a new one added if it is urgent
     public class Dialogue
     {
+        public Texture2D speakerPortrait;
+
         public string speakerName;
         public string displayText;
         public int drawTime;
@@ -24,6 +26,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public Color speakerColor;
         public string bracketColor;
+
         /// <summary>
         /// Used to store information about a dialogue object
         /// </summary>
@@ -33,8 +36,9 @@ namespace OvermorrowMod.Common.Cutscenes
         /// <param name="showTime">How long the text remains on screen after fully drawing</param>
         /// <param name="speakerColor">The color of the speaker's name</param>
         /// <param name="bracketColor">The hex color of the text when enclosed in brackets</param>
-        public Dialogue(string speakerName, string displayText, int drawTime, int showTime, Color speakerColor, string bracketColor)
+        public Dialogue(Texture2D speakerPortrait, string speakerName, string displayText, int drawTime, int showTime, Color speakerColor, string bracketColor)
         {
+            this.speakerPortrait = speakerPortrait;
             this.speakerName = speakerName;
             this.displayText = displayText;
             this.drawTime = drawTime;
@@ -49,7 +53,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public List<Dialogue> DialogueList = new List<Dialogue>();
         public bool ShowDialogue = false;
 
-        public void AddDialogue(string speakerName, string displayText, int drawtime, int showTime, Color speakerColor, string bracketColor = null)
+        public void AddDialogue(Texture2D speakerPortrait, string speakerName, string displayText, int drawtime, int showTime, Color speakerColor, string bracketColor = null)
         {
             ShowDialogue = true;
 
@@ -124,7 +128,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
             }
 
-            DialogueList.Add(new Dialogue(speakerName, stringBuilder.ToString(), drawtime, showTime, speakerColor, bracketColor));
+            DialogueList.Add(new Dialogue(speakerPortrait, speakerName, stringBuilder.ToString(), drawtime, showTime, speakerColor, bracketColor));
         }
 
     }

@@ -19,6 +19,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private UIText Name;
         private UIText Dialogue;
         public UIImage BackDrop;
+        public UIImage Portrait;
 
         private int DialogueTimer;
         private int SecondaryTimer;
@@ -30,21 +31,26 @@ namespace OvermorrowMod.Common.Cutscenes
             DialogueBox.HAlign = .5f;
             DialogueBox.Top.Set(169, 0f);
 
-            BackDrop = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag"));
+            BackDrop = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack2"));
             BackDrop.Left.Set(0, 0f);
             BackDrop.Top.Set(0, 0f);
 
             Name = new UIText("", 1f);
-            Name.Top.Set(20, 0f);
-            Name.Left.Set(130, 0f);
+            Name.Top.Set(105, 0f);
+            Name.Left.Set(0, 0f);
 
             Dialogue = new UIText("", 1f);
-            Dialogue.Top.Set(60, 0f);
-            Dialogue.Left.Set(143, 0f);
+            Dialogue.Top.Set(15, 0f);
+            Dialogue.Left.Set(140, 0f);
+
+            Portrait = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Empty));
+            Portrait.Left.Set(0, 0f);
+            Portrait.Top.Set(0, 0f);
 
             DialogueBox.Append(BackDrop);
             DialogueBox.Append(Name);
             DialogueBox.Append(Dialogue);
+            DialogueBox.Append(Portrait);
             Append(DialogueBox);
         }
 
@@ -56,6 +62,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 BackDrop.Draw(spriteBatch);
                 Name.Draw(spriteBatch);
                 Dialogue.Draw(spriteBatch);
+                Portrait.Draw(spriteBatch);
             }
 
             /*int xPosition = (int)(Main.screenWidth * Main.UIScale) / 2;
@@ -76,6 +83,7 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 Name.SetText(player.DialogueList[0].speakerName);
                 Name.TextColor = player.DialogueList[0].speakerColor;
+                Portrait.SetImage(player.DialogueList[0].speakerPortrait);
 
                 // Draw out the entire dialogue or something
                 if (DialogueTimer++ < player.DialogueList[0].drawTime)
