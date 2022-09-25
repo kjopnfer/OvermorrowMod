@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.Projectiles
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Rhiannon/Neutral").Value;
-            if (Projectile.ai[0]++ == 0)
+            /*if (Projectile.ai[0]++ == 0)
             {
                 Main.NewText("a");
                 player.AddDialogue(texture, "John Cena", "Do you enjoy going through hell? ", 60, 120, Color.LimeGreen, "34C9EB");
@@ -60,9 +60,9 @@ namespace OvermorrowMod.Content.Projectiles
             {
                 texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Rhiannon/Menacing").Value;
                 player.AddDialogue(texture, "its ya boi", "STOP POSTING ABOUT AMONG US! I'M TIRED OF SEEING IT! MY FRIENDS ON TIKTOK SEND ME MEMES, ON DISCORD IT'S FUCKING MEMES! I was in a server, right? and ALL OF THE CHANNELS were just among us stuff. ", 60, 120, Color.Orange, "FF0000");
-            }
+            }*/
 
-            /*if (Projectile.ai[0]++ == 0)
+            if (Projectile.ai[0]++ == 0)
             {
                 Main.NewText("a");
                 player.AddDialogue(texture, "John Cena", "Do [you] enjoy going through [hell?]", 60, 120, Color.LimeGreen, "34C9EB");
@@ -92,7 +92,7 @@ namespace OvermorrowMod.Content.Projectiles
             {
                 texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Rhiannon/Menacing").Value;
                 player.AddDialogue(texture, "its ya boi", "[STOP POSTING ABOUT AMONG US! I'M TIRED OF SEEING IT! MY FRIENDS ON TIKTOK SEND ME MEMES, ON DISCORD IT'S FUCKING MEMES! I was in a server, right? and ALL OF THE CHANNELS were just among us stuff.]", 60, 120, Color.Orange, "FF0000");
-            }*/
+            }
         }
 
         public override void Kill(int timeLeft)

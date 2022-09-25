@@ -58,7 +58,7 @@ namespace OvermorrowMod.Common.Cutscenes
             ShowDialogue = true;
 
             // Process the display text
-            const int MAX_CHARACTERS = 28;
+            const int MAX_CHARACTERS = 26;
             string[] words = displayText.Split(new string[] { " " }, StringSplitOptions.None);
             var stringBuilder = new StringBuilder();
 
@@ -98,7 +98,7 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 if (line.Contains('[') && !line.Contains(']'))
                 {
-                    Main.NewText("added ]");
+                    //Main.NewText("added ]");
                     stringBuilder.Append(line + "]\n");
                     inBracket = true;
                 }
@@ -113,7 +113,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     if (!inBracket)
                     {
-                        Main.NewText("added nothing");
+                        //Main.NewText("added nothing");
 
                         stringBuilder.Append(line + "\n");
                     }
@@ -121,7 +121,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 if (!line.Contains('[') && line.Contains(']') && inBracket)
                 {
-                    Main.NewText("added [");
+                    //Main.NewText("added [");
 
                     stringBuilder.Append('[' + line + "\n");
                     inBracket = false;

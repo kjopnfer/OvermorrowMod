@@ -13,6 +13,7 @@ using System.Text;
 using Terraria.GameContent;
 using System;
 using ReLogic.Graphics;
+using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -27,6 +28,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private int DialogueTimer;
         private int SecondaryTimer;
         private int AnimationTimer;
+        private int CloseTimer;
 
         public override void OnInitialize()
         {
@@ -71,7 +73,10 @@ namespace OvermorrowMod.Common.Cutscenes
                 //Portrait.Draw(spriteBatch);
             }
 
-            int xPosition = 245;
+            float OPEN_TIME = 15;
+            float CLOSE_TIME = 10;
+
+            int xPosition = 200;
             int yPosition = Main.screenHeight - 375/*169*/;
 
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -82,7 +87,6 @@ namespace OvermorrowMod.Common.Cutscenes
                 spriteBatch.Reload(SpriteSortMode.Immediate);
 
                 Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack3").Value;
-                float OPEN_TIME = 12;
                 //float progress = (float)(Math.Sin(DialogueTimer / 5f) / 2 + 0.5f);
                 float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(AnimationTimer++, 0, OPEN_TIME) / OPEN_TIME);
 
@@ -93,18 +97,31 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 float xScale = MathHelper.Lerp(1.25f, 1, drawProgress);
                 float yScale = MathHelper.Lerp(0, 1, drawProgress);
+                if (SecondaryTimer >= player.DialogueList[0].showTime)
+                {
+                    xScale = 1;
+                    yScale = MathHelper.Lerp(1, 0, CloseTimer / 15f);
+                }
+
                 spriteBatch.Draw(backDrop, new Vector2(xPosition, yPosition), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
 
                 float scale = MathHelper.Lerp(0.5f, 1f, drawProgress);
                 float xOffset = MathHelper.Lerp(-155, 0, drawProgress);
-                spriteBatch.Draw(player.DialogueList[0].speakerPortrait, new Vector2(xPosition + xOffset, yPosition), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
+                if (SecondaryTimer >= player.DialogueList[0].showTime)
+                {
+                    spriteBatch.Draw(player.DialogueList[0].speakerPortrait, new Vector2(xPosition + xOffset, yPosition), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
+                }
+                else
+                {
+                    spriteBatch.Draw(player.DialogueList[0].speakerPortrait, new Vector2(xPosition + xOffset, yPosition), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
+                }
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);
                 #endregion
 
                 if (DialogueTimer < player.DialogueList[0].drawTime && AnimationTimer > OPEN_TIME)
                 {
-                    DialogueTimer++;
+                    if (!Main.gamePaused) DialogueTimer++;
 
                     // We need to detect if any color coded text is present, if it is then skip forward by the progression
                     int progress = (int)MathHelper.Lerp(0, player.DialogueList[0].displayText.Length, DialogueTimer / (float)player.DialogueList[0].drawTime);
@@ -151,15 +168,24 @@ namespace OvermorrowMod.Common.Cutscenes
                         text = builder.ToString();
                     }
 
-                    spriteBatch.DrawString(FontAssets.MouseText.Value, text, new Vector2(xPosition - 75, yPosition - 50), Color.White);
+                    int hoveredSnippet = 0;
+                    Vector2 position = new Vector2(xPosition - 75, yPosition - 50);
+                    TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
 
+                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, position, Color.White, 0f, Vector2.Zero, Vector2.One, out hoveredSnippet, 275f);
+
+                    //spriteBatch.DrawString(FontAssets.MouseText.Value, text, new Vector2(xPosition - 75, yPosition - 50), Color.White);
+                    //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, ChatManager.ParseMessage(text, Color.White), new Vector2(xPosition - 75, yPosition - 50), Color.White, 0f, Vector2.Zero, Vector2.One);
                     //Dialogue.SetText(text);
                 }
                 else // Hold the dialogue for the amount of time specified
                 {
-                    //Main.NewText("HOLD" + SecondaryTimer);
-                    if (SecondaryTimer++ <= player.DialogueList[0].showTime)
+                    if (DialogueTimer < player.DialogueList[0].drawTime) return;
+
+                    if (SecondaryTimer <= player.DialogueList[0].showTime)
                     {
+                        if (!Main.gamePaused) SecondaryTimer++;
+
                         var text = player.DialogueList[0].displayText;
 
                         if (player.DialogueList[0].bracketColor != null)
@@ -184,17 +210,28 @@ namespace OvermorrowMod.Common.Cutscenes
                             text = builder.ToString();
                         }
 
-                        //Dialogue.SetText(text);
-                        spriteBatch.DrawString(FontAssets.MouseText.Value, text, new Vector2(xPosition - 75, yPosition - 50), Color.White);
+                        int hoveredSnippet = 0;
+                        Vector2 position = new Vector2(xPosition - 75, yPosition - 50);
+                        TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
+                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, position, Color.White, 0f, Vector2.Zero, Vector2.One, out hoveredSnippet, 275f);
 
+                        //Dialogue.SetText(text);
+                        //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, text, new Vector2(xPosition - 75, yPosition - 50), Color.White, 0f, Vector2.Zero, Vector2.One);
+                        //spriteBatch.DrawString(FontAssets.MouseText.Value, text, new Vector2(xPosition - 75, yPosition - 50), Color.White);
+                    }
+                    else
+                    {
                         // Remove the dialogue from the list and reset counters
-                        if (SecondaryTimer == player.DialogueList[0].showTime)
+                        if (CloseTimer == CLOSE_TIME)
                         {
                             player.DialogueList.RemoveAt(0);
                             DialogueTimer = 0;
                             SecondaryTimer = 0;
                             AnimationTimer = 0;
+                            CloseTimer = 0;
                         }
+
+                        if (!Main.gamePaused) CloseTimer++;
                     }
                 }
 
