@@ -27,7 +27,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private int DialogueTimer;
         private int SecondaryTimer;
-        private int AnimationTimer;
+        private int OpenTimer;
         private int CloseTimer;
 
         public override void OnInitialize()
@@ -85,11 +85,12 @@ namespace OvermorrowMod.Common.Cutscenes
             if (player.DialogueList.Count > 0)
             {
                 #region Popup Animation
-                spriteBatch.Reload(SpriteSortMode.Immediate);
 
                 Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack3").Value;
-                //float progress = (float)(Math.Sin(DialogueTimer / 5f) / 2 + 0.5f);
-                float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(AnimationTimer++, 0, OPEN_TIME) / OPEN_TIME);
+                if (!player.DialogueList[0].openAnimation) OpenTimer = (int)OPEN_TIME;
+                float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(OpenTimer++, 0, OPEN_TIME) / OPEN_TIME);
+                
+                spriteBatch.Reload(SpriteSortMode.Immediate);
 
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
@@ -120,7 +121,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 spriteBatch.Reload(SpriteSortMode.Deferred);
                 #endregion
 
-                if (DialogueTimer < player.DialogueList[0].drawTime && AnimationTimer > OPEN_TIME)
+                if (DialogueTimer < player.DialogueList[0].drawTime && OpenTimer >= OPEN_TIME)
                 {
                     if (!Main.gamePaused) DialogueTimer++;
 
@@ -214,17 +215,19 @@ namespace OvermorrowMod.Common.Cutscenes
                     }
                     else
                     {
+                        if (!Main.gamePaused) CloseTimer++;
+
+                        if (!player.DialogueList[0].closeAnimation) CloseTimer = (int)CLOSE_TIME;
+
                         // Remove the dialogue from the list and reset counters
                         if (CloseTimer == CLOSE_TIME)
                         {
                             player.DialogueList.RemoveAt(0);
                             DialogueTimer = 0;
                             SecondaryTimer = 0;
-                            AnimationTimer = 0;
+                            OpenTimer = 0;
                             CloseTimer = 0;
                         }
-
-                        if (!Main.gamePaused) CloseTimer++;
                     }
                 }
 
