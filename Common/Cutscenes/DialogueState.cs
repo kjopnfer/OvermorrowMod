@@ -10,6 +10,8 @@ using Terraria.GameContent.UI.Elements;
 using ReLogic.Content;
 using OvermorrowMod.Core;
 using System.Text;
+using Terraria.GameContent;
+using System;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -27,30 +29,32 @@ namespace OvermorrowMod.Common.Cutscenes
         public override void OnInitialize()
         {
             DialogueBox = new UIElement();
-            DialogueBox.Width.Set(600f, 0f);
-            DialogueBox.HAlign = .5f;
-            DialogueBox.Top.Set(169, 0f);
+            DialogueBox.Width.Set(360f, 0f);
+            DialogueBox.Height.Set(130f, 0f);
+            //DialogueBox.HAlign = .5f;
+            DialogueBox.Left.Set(295, 0f);
+            DialogueBox.Top.Set(Main.screenHeight - 375f, 0f);
 
-            BackDrop = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack2"));
+            /*BackDrop = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack2"));
             BackDrop.Left.Set(0, 0f);
             BackDrop.Top.Set(0, 0f);
 
             Name = new UIText("", 1f);
             Name.Top.Set(105, 0f);
-            Name.Left.Set(0, 0f);
+            Name.Left.Set(0, 0f);*/
 
             Dialogue = new UIText("", 1f);
             Dialogue.Top.Set(15, 0f);
             Dialogue.Left.Set(140, 0f);
 
-            Portrait = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Empty));
+            /*Portrait = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Empty));
             Portrait.Left.Set(0, 0f);
             Portrait.Top.Set(0, 0f);
 
             DialogueBox.Append(BackDrop);
-            DialogueBox.Append(Name);
+            DialogueBox.Append(Name);*/
             DialogueBox.Append(Dialogue);
-            DialogueBox.Append(Portrait);
+            //DialogueBox.Append(Portrait);
             Append(DialogueBox);
         }
 
@@ -59,19 +63,39 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             if (Main.LocalPlayer.GetModPlayer<DialoguePlayer>().DialogueList.Count > 0)
             {
-                BackDrop.Draw(spriteBatch);
-                Name.Draw(spriteBatch);
+                //BackDrop.Draw(spriteBatch);
+                //Name.Draw(spriteBatch);
                 Dialogue.Draw(spriteBatch);
-                Portrait.Draw(spriteBatch);
+                //Portrait.Draw(spriteBatch);
             }
 
-            /*int xPosition = (int)(Main.screenWidth * Main.UIScale) / 2;
-            int yPosition = Main.screenHeight - 100;
+            int xPosition = 245;
+            int yPosition = Main.screenHeight - 375/*169*/;
 
-            Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag").Value;
-            spriteBatch.Draw(backDrop, new Vector2(xPosition + 65, yPosition), null, Color.White, 0f, backDrop.Size() / 2, 1f, SpriteEffects.None, 1f);
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            base.Draw(spriteBatch);*/
+            if (player.DialogueList.Count > 0)
+            {
+                spriteBatch.Reload(SpriteSortMode.Immediate);
+
+                Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack3").Value;
+                float progress = (float)(Math.Sin(DialogueTimer / 5f) / 2 + 0.5f);
+
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+                effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+                effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+                float xScale = MathHelper.Lerp(1.25f, 1, progress);
+                float yScale = MathHelper.Lerp(0, 1, progress);
+                spriteBatch.Draw(backDrop, new Vector2(xPosition, yPosition), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
+
+                float scale = MathHelper.Lerp(0.5f, 1f, progress);
+                float xOffset = MathHelper.Lerp(-155, 0, progress);
+                spriteBatch.Draw(player.DialogueList[0].speakerPortrait, new Vector2(xPosition + xOffset, yPosition), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
+
+                spriteBatch.Reload(SpriteSortMode.Deferred);
+            }
         }
 
         // This handles the dialogue that the player has, if it detects that the player has new dialogue then it starts drawing it
@@ -81,9 +105,9 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (player.DialogueList.Count > 0)
             {
-                Name.SetText(player.DialogueList[0].speakerName);
-                Name.TextColor = player.DialogueList[0].speakerColor;
-                Portrait.SetImage(player.DialogueList[0].speakerPortrait);
+                //Name.SetText(player.DialogueList[0].speakerName);
+                //Name.TextColor = player.DialogueList[0].speakerColor;
+                //Portrait.SetImage(player.DialogueList[0].speakerPortrait);
 
                 // Draw out the entire dialogue or something
                 if (DialogueTimer++ < player.DialogueList[0].drawTime)
@@ -170,8 +194,6 @@ namespace OvermorrowMod.Common.Cutscenes
                         // Remove the dialogue from the list and reset counters
                         if (SecondaryTimer == player.DialogueList[0].showTime)
                         {
-                            Main.NewText("REMOVED");
-
                             player.DialogueList.RemoveAt(0);
                             DialogueTimer = 0;
                             SecondaryTimer = 0;
