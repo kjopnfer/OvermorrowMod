@@ -58,7 +58,7 @@ namespace OvermorrowMod.Common.Cutscenes
             ShowDialogue = true;
 
             // Process the display text
-            const int MAX_CHARACTERS = 40;
+            const int MAX_CHARACTERS = 28;
             string[] words = displayText.Split(new string[] { " " }, StringSplitOptions.None);
             var stringBuilder = new StringBuilder();
 

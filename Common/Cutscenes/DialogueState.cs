@@ -12,6 +12,7 @@ using OvermorrowMod.Core;
 using System.Text;
 using Terraria.GameContent;
 using System;
+using ReLogic.Graphics;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -25,6 +26,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private int DialogueTimer;
         private int SecondaryTimer;
+        private int AnimationTimer;
 
         public override void OnInitialize()
         {
@@ -76,32 +78,133 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (player.DialogueList.Count > 0)
             {
+                #region Popup Animation
                 spriteBatch.Reload(SpriteSortMode.Immediate);
 
                 Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack3").Value;
-                float progress = (float)(Math.Sin(DialogueTimer / 5f) / 2 + 0.5f);
+                float OPEN_TIME = 12;
+                //float progress = (float)(Math.Sin(DialogueTimer / 5f) / 2 + 0.5f);
+                float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(AnimationTimer++, 0, OPEN_TIME) / OPEN_TIME);
 
                 Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
                 effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
-                effect.Parameters["WhiteoutProgress"].SetValue(1 - progress);
+                effect.Parameters["WhiteoutProgress"].SetValue(1 - drawProgress);
                 effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
-                float xScale = MathHelper.Lerp(1.25f, 1, progress);
-                float yScale = MathHelper.Lerp(0, 1, progress);
+                float xScale = MathHelper.Lerp(1.25f, 1, drawProgress);
+                float yScale = MathHelper.Lerp(0, 1, drawProgress);
                 spriteBatch.Draw(backDrop, new Vector2(xPosition, yPosition), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
 
-                float scale = MathHelper.Lerp(0.5f, 1f, progress);
-                float xOffset = MathHelper.Lerp(-155, 0, progress);
+                float scale = MathHelper.Lerp(0.5f, 1f, drawProgress);
+                float xOffset = MathHelper.Lerp(-155, 0, drawProgress);
                 spriteBatch.Draw(player.DialogueList[0].speakerPortrait, new Vector2(xPosition + xOffset, yPosition), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
 
                 spriteBatch.Reload(SpriteSortMode.Deferred);
+                #endregion
+
+                if (DialogueTimer < player.DialogueList[0].drawTime && AnimationTimer > OPEN_TIME)
+                {
+                    DialogueTimer++;
+
+                    // We need to detect if any color coded text is present, if it is then skip forward by the progression
+                    int progress = (int)MathHelper.Lerp(0, player.DialogueList[0].displayText.Length, DialogueTimer / (float)player.DialogueList[0].drawTime);
+                    var text = player.DialogueList[0].displayText.Substring(0, progress);
+
+                    if (player.DialogueList[0].bracketColor != null)
+                    {
+                        // The number of opening brackets MUST be the same as the number of closing brackets
+                        int numOpen = 0;
+                        int numClose = 0;
+
+                        // Create a new string, adding in hex tags whenever an opening bracket is found
+                        var builder = new StringBuilder();
+                        foreach (var character in text)
+                        {
+                            if (character == '[') // Insert the hex tag if an opening bracket is found
+                            {
+                                builder.Append("[c/" + player.DialogueList[0].bracketColor + ":");
+                                numOpen++;
+                            }
+                            else
+                            {
+                                if (character == ']')
+                                {
+                                    numClose++;
+                                }
+
+                                builder.Append(character);
+                            }
+                        }
+
+                        if (numOpen != numClose)
+                        {
+                            builder.Append(']');
+                        }
+
+                        // Final check for if the tag has two brackets but no characters inbetween
+                        var hexTag = "[c/" + player.DialogueList[0].bracketColor + ":]";
+                        if (builder.ToString().Contains(hexTag))
+                        {
+                            builder.Replace(hexTag, "[c/" + player.DialogueList[0].bracketColor + ": ]");
+                        }
+
+                        text = builder.ToString();
+                    }
+
+                    spriteBatch.DrawString(FontAssets.MouseText.Value, text, new Vector2(xPosition - 75, yPosition - 50), Color.White);
+
+                    //Dialogue.SetText(text);
+                }
+                else // Hold the dialogue for the amount of time specified
+                {
+                    //Main.NewText("HOLD" + SecondaryTimer);
+                    if (SecondaryTimer++ <= player.DialogueList[0].showTime)
+                    {
+                        var text = player.DialogueList[0].displayText;
+
+                        if (player.DialogueList[0].bracketColor != null)
+                        {
+                            // Create a new string, adding in hex tags whenever an opening bracket is found
+                            var builder = new StringBuilder();
+                            foreach (var character in text)
+                            {
+                                // Insert the hex tag if an opening bracket is found
+                                if (character == '[')
+                                {
+                                    builder.Append("[c/" + player.DialogueList[0].bracketColor + ":");
+                                }
+                                else
+                                {
+                                    builder.Append(character);
+                                }
+                            }
+
+                            if (!builder.ToString().Contains(']') && builder.ToString().Contains('[')) builder.Append(']');
+
+                            text = builder.ToString();
+                        }
+
+                        //Dialogue.SetText(text);
+                        spriteBatch.DrawString(FontAssets.MouseText.Value, text, new Vector2(xPosition - 75, yPosition - 50), Color.White);
+
+                        // Remove the dialogue from the list and reset counters
+                        if (SecondaryTimer == player.DialogueList[0].showTime)
+                        {
+                            player.DialogueList.RemoveAt(0);
+                            DialogueTimer = 0;
+                            SecondaryTimer = 0;
+                            AnimationTimer = 0;
+                        }
+                    }
+                }
+
             }
         }
 
         // This handles the dialogue that the player has, if it detects that the player has new dialogue then it starts drawing it
         public override void Update(GameTime gameTime)
         {
-            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            /*DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
             if (player.DialogueList.Count > 0)
             {
@@ -200,7 +303,7 @@ namespace OvermorrowMod.Common.Cutscenes
                         }
                     }
                 }
-            }
+            }*/
 
             base.Update(gameTime);
         }
