@@ -1,17 +1,6 @@
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
 using System.Collections.Generic;
-using Terraria.UI;
-using Terraria.GameInput;
-using Terraria.GameContent.UI.Elements;
-using ReLogic.Content;
-using System;
-using System.Text;
-using ReLogic.Graphics;
-using Terraria.GameContent;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -46,16 +35,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
             this.openAnimation = openAnimation;
             this.closeAnimation = closeAnimation;
-        }
-    }
-
-    public class DialogueInstance
-    {
-        public List<Dialogue> DialogueList;
-
-        public DialogueInstance()
-        {
-
         }
     }
 

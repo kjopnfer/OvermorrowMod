@@ -19,60 +19,14 @@ namespace OvermorrowMod.Common.Cutscenes
 {
     public class DialogueState : UIState
     {
-        private UIElement DialogueBox;
-        private UIText Name;
-        private UIText Dialogue;
-        public UIImage BackDrop;
-        public UIImage Portrait;
-
         private int DialogueTimer;
         private int SecondaryTimer;
         private int OpenTimer;
         private int CloseTimer;
 
-        public override void OnInitialize()
-        {
-            DialogueBox = new UIElement();
-            DialogueBox.Width.Set(360f, 0f);
-            DialogueBox.Height.Set(130f, 0f);
-            //DialogueBox.HAlign = .5f;
-            DialogueBox.Left.Set(295, 0f);
-            DialogueBox.Top.Set(Main.screenHeight - 375f, 0f);
-
-            /*BackDrop = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack2"));
-            BackDrop.Left.Set(0, 0f);
-            BackDrop.Top.Set(0, 0f);
-
-            Name = new UIText("", 1f);
-            Name.Top.Set(105, 0f);
-            Name.Left.Set(0, 0f);*/
-
-            Dialogue = new UIText("", 1f);
-            Dialogue.Top.Set(15, 0f);
-            Dialogue.Left.Set(140, 0f);
-
-            /*Portrait = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Empty));
-            Portrait.Left.Set(0, 0f);
-            Portrait.Top.Set(0, 0f);
-
-            DialogueBox.Append(BackDrop);
-            DialogueBox.Append(Name);*/
-            DialogueBox.Append(Dialogue);
-            //DialogueBox.Append(Portrait);
-            Append(DialogueBox);
-        }
-
         // This determines whether the UI is shown or not
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (Main.LocalPlayer.GetModPlayer<DialoguePlayer>().DialogueList.Count > 0)
-            {
-                //BackDrop.Draw(spriteBatch);
-                //Name.Draw(spriteBatch);
-                Dialogue.Draw(spriteBatch);
-                //Portrait.Draw(spriteBatch);
-            }
-
             float OPEN_TIME = 15;
             float CLOSE_TIME = 10;
             float MAXIMUM_LENGTH = 265;
@@ -85,7 +39,6 @@ namespace OvermorrowMod.Common.Cutscenes
             if (player.DialogueList.Count > 0)
             {
                 #region Popup Animation
-
                 Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack3").Value;
                 if (!player.DialogueList[0].openAnimation) OpenTimer = (int)OPEN_TIME;
                 float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(OpenTimer++, 0, OPEN_TIME) / OPEN_TIME);
@@ -230,115 +183,7 @@ namespace OvermorrowMod.Common.Cutscenes
                         }
                     }
                 }
-
             }
-        }
-
-        // This handles the dialogue that the player has, if it detects that the player has new dialogue then it starts drawing it
-        public override void Update(GameTime gameTime)
-        {
-            /*DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-
-            if (player.DialogueList.Count > 0)
-            {
-                //Name.SetText(player.DialogueList[0].speakerName);
-                //Name.TextColor = player.DialogueList[0].speakerColor;
-                //Portrait.SetImage(player.DialogueList[0].speakerPortrait);
-
-                // Draw out the entire dialogue or something
-                if (DialogueTimer++ < player.DialogueList[0].drawTime)
-                {
-                    // We need to detect if any color coded text is present, if it is then skip forward by the progression
-                    int progress = (int)MathHelper.Lerp(0, player.DialogueList[0].displayText.Length, DialogueTimer / (float)player.DialogueList[0].drawTime);
-                    var text = player.DialogueList[0].displayText.Substring(0, progress);
-
-                    if (player.DialogueList[0].bracketColor != null)
-                    {
-                        // The number of opening brackets MUST be the same as the number of closing brackets
-                        int numOpen = 0;
-                        int numClose = 0;
-
-                        // Create a new string, adding in hex tags whenever an opening bracket is found
-                        var builder = new StringBuilder();
-                        foreach (var character in text)
-                        {
-                            if (character == '[') // Insert the hex tag if an opening bracket is found
-                            {
-                                builder.Append("[c/" + player.DialogueList[0].bracketColor + ":");
-                                numOpen++;
-                            }
-                            else
-                            {
-                                if (character == ']')
-                                {
-                                    numClose++;
-                                }
-
-                                builder.Append(character);
-                            }
-                        }
-
-                        if (numOpen != numClose)
-                        {
-                            builder.Append(']');
-                        }
-
-                        // Final check for if the tag has two brackets but no characters inbetween
-                        var hexTag = "[c/" + player.DialogueList[0].bracketColor + ":]";
-                        if (builder.ToString().Contains(hexTag))
-                        {
-                            builder.Replace(hexTag, "[c/" + player.DialogueList[0].bracketColor + ": ]");
-                        }
-
-                        text = builder.ToString();
-                    }
-
-                    //Main.NewText(text);
-                    Dialogue.SetText(text);
-                }
-                else // Hold the dialogue for the amount of time specified
-                {
-                    //Main.NewText("HOLD" + SecondaryTimer);
-                    if (SecondaryTimer++ <= player.DialogueList[0].showTime)
-                    {
-                        var text = player.DialogueList[0].displayText;
-
-                        if (player.DialogueList[0].bracketColor != null)
-                        {
-                            // Create a new string, adding in hex tags whenever an opening bracket is found
-                            var builder = new StringBuilder();
-                            foreach (var character in text)
-                            {
-                                // Insert the hex tag if an opening bracket is found
-                                if (character == '[')
-                                {
-                                    builder.Append("[c/" + player.DialogueList[0].bracketColor + ":");
-                                }
-                                else
-                                {
-                                    builder.Append(character);
-                                }
-                            }
-
-                            if (!builder.ToString().Contains(']') && builder.ToString().Contains('[')) builder.Append(']');
-
-                            text = builder.ToString();
-                        }
-
-                        Dialogue.SetText(text);
-
-                        // Remove the dialogue from the list and reset counters
-                        if (SecondaryTimer == player.DialogueList[0].showTime)
-                        {
-                            player.DialogueList.RemoveAt(0);
-                            DialogueTimer = 0;
-                            SecondaryTimer = 0;
-                        }
-                    }
-                }
-            }*/
-
-            base.Update(gameTime);
         }
     }
 }
