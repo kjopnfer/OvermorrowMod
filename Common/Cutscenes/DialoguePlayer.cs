@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.ModLoader;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Terraria;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -43,10 +45,10 @@ namespace OvermorrowMod.Common.Cutscenes
         public List<Dialogue> DialogueList = new List<Dialogue>();
         public bool ShowDialogue = false;
 
-        public void AddDialogue(Texture2D speakerPortrait, string displayText, int drawtime, int showTime, string bracketColor = null, bool openAnimation = true, bool closeAnimation = true)
+        public void AddDialogue(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, Color bracketColor, bool openAnimation = true, bool closeAnimation = true)
         {
             ShowDialogue = true;
-            DialogueList.Add(new Dialogue(speakerPortrait, displayText, drawtime, showTime, bracketColor, openAnimation, closeAnimation));
+            DialogueList.Add(new Dialogue(speakerPortrait, displayText, drawTime, showTime, bracketColor.Hex3(), openAnimation, closeAnimation));
         }
     }
 }
