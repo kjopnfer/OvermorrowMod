@@ -29,19 +29,19 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             float OPEN_TIME = 15;
             float CLOSE_TIME = 10;
-            float MAXIMUM_LENGTH = 250;
+            float MAXIMUM_LENGTH = 280;
 
             int xPosition = 200;
             int yPosition = Main.screenHeight - 375/*169*/;
 
-            Vector2 textPosition = new Vector2(xPosition - 85, yPosition - 25);
+            Vector2 textPosition = new Vector2(xPosition - 95, yPosition - 25);
 
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
             if (player.DialogueList.Count > 0)
             {
                 #region Popup Animation
-                Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack3").Value;
+                Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack2").Value;
                 if (!player.DialogueList[0].openAnimation) OpenTimer = (int)OPEN_TIME;
                 float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(OpenTimer++, 0, OPEN_TIME) / OPEN_TIME);
                 
@@ -92,6 +92,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
                         // Create a new string, adding in hex tags whenever an opening bracket is found
                         var builder = new StringBuilder();
+                        builder.Append("    "); // Appends to the beginning of the string
+
                         foreach (var character in text)
                         {
                             if (character == '[') // Insert the hex tag if an opening bracket is found
@@ -144,6 +146,8 @@ namespace OvermorrowMod.Common.Cutscenes
                         {
                             // Create a new string, adding in hex tags whenever an opening bracket is found
                             var builder = new StringBuilder();
+                            builder.Append("    ");
+
                             foreach (var character in text)
                             {
                                 // Insert the hex tag if an opening bracket is found
