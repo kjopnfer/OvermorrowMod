@@ -80,12 +80,8 @@ namespace OvermorrowMod.Content.Projectiles
             }
             else if (Projectile.ai[0] == 240)
             {
-                player.AddDialogue(texture, "You have no stake in this battle. [No] one gave you any say in this matter!", 60, 120, new Color(52, 201, 235), false, false);
-            }
-            else if (Projectile.ai[0] == 300)
-            {
-                player.AddDialogue(texture, "[STOP POSTING ABOUT AMONG US! I'M TIRED OF SEEING IT! MY FRIENDS ON TIKTOK SEND ME MEMES, ON DISCORD IT'S FUCKING MEMES! I was in a server, right? and ALL OF THE CHANNELS were just among us stuff.]", 60, 120, Color.Red, false, true);
-            }
+                player.AddDialogue(texture, "You have no stake in this battle. [No] one gave you any say in this matter!", 60, 120, new Color(52, 201, 235), false, true);
+            }  
         }
 
         public override void Kill(int timeLeft)

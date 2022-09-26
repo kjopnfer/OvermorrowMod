@@ -29,10 +29,12 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             float OPEN_TIME = 15;
             float CLOSE_TIME = 10;
-            float MAXIMUM_LENGTH = 265;
+            float MAXIMUM_LENGTH = 250;
 
             int xPosition = 200;
             int yPosition = Main.screenHeight - 375/*169*/;
+
+            Vector2 textPosition = new Vector2(xPosition - 85, yPosition - 25);
 
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
@@ -58,7 +60,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     yScale = MathHelper.Lerp(1, 0, CloseTimer / 15f);
                 }
 
-                spriteBatch.Draw(backDrop, new Vector2(xPosition, yPosition), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
+                spriteBatch.Draw(backDrop, new Vector2(xPosition + 48, yPosition + 7), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
 
                 float scale = MathHelper.Lerp(0.5f, 1f, drawProgress);
                 float xOffset = MathHelper.Lerp(-155, 0, drawProgress);
@@ -124,10 +126,9 @@ namespace OvermorrowMod.Common.Cutscenes
                     }
 
                     int hoveredSnippet = 0;
-                    Vector2 position = new Vector2(xPosition - 75, yPosition - 50);
                     TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
 
-                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, position, Color.White, 0f, Vector2.Zero, Vector2.One, out hoveredSnippet, MAXIMUM_LENGTH);
+                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out hoveredSnippet, MAXIMUM_LENGTH);
                 }
                 else // Hold the dialogue for the amount of time specified
                 {
@@ -162,9 +163,8 @@ namespace OvermorrowMod.Common.Cutscenes
                         }
 
                         int hoveredSnippet = 0;
-                        Vector2 position = new Vector2(xPosition - 75, yPosition - 50);
                         TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
-                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, position, Color.White, 0f, Vector2.Zero, Vector2.One, out hoveredSnippet, MAXIMUM_LENGTH);
+                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out hoveredSnippet, MAXIMUM_LENGTH);
                     }
                     else
                     {
