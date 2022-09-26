@@ -13,6 +13,9 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using OvermorrowMod.Content.Items.Consumable;
 using System.Collections.Generic;
+using OvermorrowMod.Common.Cutscenes;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common
 {
@@ -139,6 +142,23 @@ namespace OvermorrowMod.Common
 
             base.OnEnterWorld(player);
         }
+
+        private int greetCounter = 0;
+        public override void PostUpdateBuffs()
+        {
+            DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+
+            if (!dialoguePlayer.guideGreeting && greetCounter++ == 180)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug").Value;
+
+                dialoguePlayer.AddDialogue(texture, "Hello there! That's an unfamiliar face, you must be new around here.", 90, 120, new Color(52, 201, 235), true, true);
+                dialoguePlayer.guideGreeting = true;
+            }
+
+            base.PostUpdateBuffs();
+        }
+
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
         {
             if (BMSet && item.DamageType == DamageClass.Melee)

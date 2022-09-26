@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Core;
@@ -26,6 +27,23 @@ namespace OvermorrowMod.Common
         private float DPSCalculation(Item item)
         {
             return (float)(item.damage * 60f / item.useTime) * (1 + item.crit / 100f);
+        }
+
+        public override bool OnPickup(Item item, Player player)
+        {
+            DialoguePlayer dialoguePlayer = player.GetModPlayer<DialoguePlayer>();
+
+            if (item.type == ItemID.Wood && !dialoguePlayer.pickupWood)
+            {
+                dialoguePlayer.pickupWood = true;
+
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug").Value;
+
+                dialoguePlayer.AddDialogue(texture, "Gathering [wood] I see, good thinking. Wood's useful for all sorts of things.", 90, 120, new Color(52, 201, 235), true, false);
+                dialoguePlayer.AddDialogue(texture, "If you need ideas just bring me some and I'll show you what you can make with it.", 90, 120, new Color(52, 201, 235), false, true);
+            }
+
+            return base.OnPickup(item, player);
         }
 
         public override bool ConsumeItem(Item item, Player player)

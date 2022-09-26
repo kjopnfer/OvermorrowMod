@@ -45,6 +45,10 @@ namespace OvermorrowMod.Common.Cutscenes
         public List<Dialogue> DialogueList = new List<Dialogue>();
         public bool ShowDialogue = false;
 
+        public bool pickupWood = false;
+        public bool distanceGuide = false;
+        public bool guideGreeting = false;
+
         public void AddDialogue(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, Color bracketColor, bool openAnimation = true, bool closeAnimation = true)
         {
             ShowDialogue = true;

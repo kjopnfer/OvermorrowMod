@@ -23,6 +23,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private int SecondaryTimer;
         private int OpenTimer;
         private int CloseTimer;
+        private int DelayTimer;
 
         // This determines whether the UI is shown or not
         public override void Draw(SpriteBatch spriteBatch)
@@ -30,6 +31,7 @@ namespace OvermorrowMod.Common.Cutscenes
             float OPEN_TIME = 15;
             float CLOSE_TIME = 10;
             float MAXIMUM_LENGTH = 280;
+            float DIALOGUE_DELAY = 30;
 
             int xPosition = 200;
             int yPosition = Main.screenHeight - 375/*169*/;
@@ -78,6 +80,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 if (DialogueTimer < player.DialogueList[0].drawTime && OpenTimer >= OPEN_TIME)
                 {
+                    if (DelayTimer++ < 30) return;
+
                     if (!Main.gamePaused) DialogueTimer++;
 
                     // We need to detect if any color coded text is present, if it is then skip forward by the progression
