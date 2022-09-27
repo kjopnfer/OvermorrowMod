@@ -54,5 +54,10 @@ namespace OvermorrowMod.Common.Cutscenes
             ShowDialogue = true;
             DialogueList.Add(new Dialogue(speakerPortrait, displayText, drawTime, showTime, bracketColor.Hex3(), openAnimation, closeAnimation));
         }
+
+        public void ClearDialogue()
+        {
+            DialogueList.Clear();
+        }
     }
 }

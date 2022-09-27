@@ -45,7 +45,7 @@ namespace OvermorrowMod.Common
                     {
                         dialoguePlayer.distanceGuide = true;
 
-                        Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug").Value;
+                        Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                         dialoguePlayer.AddDialogue(texture, "Where are you off to in such a hurry?", 60, 120, new Color(52, 201, 235), true, true);
                     }
                 }

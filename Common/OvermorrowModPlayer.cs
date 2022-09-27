@@ -150,7 +150,7 @@ namespace OvermorrowMod.Common
 
             if (!dialoguePlayer.guideGreeting && greetCounter++ == 180)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug").Value;
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
                 dialoguePlayer.AddDialogue(texture, "Hello there! That's an unfamiliar face, you must be new around here.", 90, 120, new Color(52, 201, 235), true, true);
                 dialoguePlayer.guideGreeting = true;
