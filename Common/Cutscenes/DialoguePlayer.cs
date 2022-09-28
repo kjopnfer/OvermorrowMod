@@ -42,7 +42,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
     public class DialoguePlayer : ModPlayer
     {
-        public List<Dialogue> DialogueList = new List<Dialogue>();
+        private Queue<Dialogue> DialogueQueue = new Queue<Dialogue>();
         public bool ShowDialogue = false;
 
         public bool pickupWood = false;
@@ -52,12 +52,15 @@ namespace OvermorrowMod.Common.Cutscenes
         public void AddDialogue(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, Color bracketColor, bool openAnimation = true, bool closeAnimation = true)
         {
             ShowDialogue = true;
-            DialogueList.Add(new Dialogue(speakerPortrait, displayText, drawTime, showTime, bracketColor.Hex3(), openAnimation, closeAnimation));
+            DialogueQueue.Enqueue(new Dialogue(speakerPortrait, displayText, drawTime, showTime, bracketColor.Hex3(), openAnimation, closeAnimation));
         }
 
-        public void ClearDialogue()
-        {
-            DialogueList.Clear();
-        }
+        public Dialogue GetDialogue() => DialogueQueue.Peek();
+
+        public void ClearDialogue() => DialogueQueue.Clear();
+
+        public void DequeueDialogue() => DialogueQueue.Dequeue();
+
+        public int GetQueueLength() => DialogueQueue.Count;
     }
 }

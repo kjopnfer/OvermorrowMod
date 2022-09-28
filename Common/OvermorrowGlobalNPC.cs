@@ -40,8 +40,10 @@ namespace OvermorrowMod.Common
 
                     DialoguePlayer dialoguePlayer = player.GetModPlayer<DialoguePlayer>();
 
+                    if (dialoguePlayer.distanceGuide) return base.PreAI(npc);
+
                     float xDistance = Math.Abs(npc.Center.X - player.Center.X);
-                    if (xDistance > 15 * 16 && !dialoguePlayer.distanceGuide)
+                    if (xDistance > 15 * 16)
                     {
                         dialoguePlayer.distanceGuide = true;
 
