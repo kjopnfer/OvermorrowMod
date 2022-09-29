@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
@@ -21,6 +22,32 @@ namespace OvermorrowMod.Common
             On.Terraria.Player.SlopingCollision += PlatformCollision;
             On.Terraria.Main.DrawInterface += DrawParticles;
             On.Terraria.Main.DrawDust += DrawOverlay;
+            On.Terraria.Main.GUIChatDrawInner += GUIChatDrawInner;
+        }
+
+        public static void Unload()
+        {
+            //On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
+            On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
+            On.Terraria.Player.SlopingCollision -= PlatformCollision;
+            On.Terraria.Main.DrawInterface -= DrawParticles;
+            On.Terraria.Main.DrawDust -= DrawOverlay;
+            On.Terraria.Main.GUIChatDrawInner -= GUIChatDrawInner;
+        }
+
+        static void GUIChatDrawInner(On.Terraria.Main.orig_GUIChatDrawInner orig, Main self)
+        {
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            if (!player.AddedDialogue && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            {
+                NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                Main.NewText("blocked");
+
+                player.AddDialogue(npc.GetChat(), 20);
+                player.AddedDialogue = true;
+            }
+
+            //orig(self);
         }
 
         // Test for blurred overlay
@@ -50,15 +77,6 @@ namespace OvermorrowMod.Common
             device.DrawUserPrimitives(PrimitiveType.TriangleStrip, data, 0, 2);
 
             orig(self);
-        }
-
-        public static void Unload()
-        {
-            //On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
-            On.Terraria.Player.Update_NPCCollision -= UpdateNPCCollision;
-            On.Terraria.Player.SlopingCollision -= PlatformCollision;
-            On.Terraria.Main.DrawInterface -= DrawParticles;
-            On.Terraria.Main.DrawDust -= DrawOverlay;
         }
 
         public static void DrawParticles(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)

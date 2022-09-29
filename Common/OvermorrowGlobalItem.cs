@@ -39,8 +39,8 @@ namespace OvermorrowMod.Common
 
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
-                dialoguePlayer.AddDialogue(texture, "Gathering [wood] I see, good thinking. Wood's useful for all sorts of things.", 90, 120, new Color(52, 201, 235), true, false);
-                dialoguePlayer.AddDialogue(texture, "If you need ideas just bring me some and I'll show you what you can make with it.", 90, 120, new Color(52, 201, 235), false, true);
+                dialoguePlayer.AddPopup(texture, "Gathering [wood] I see, good thinking. Wood's useful for all sorts of things.", 90, 120, new Color(52, 201, 235), true, false);
+                dialoguePlayer.AddPopup(texture, "If you need ideas just bring me some and I'll show you what you can make with it.", 90, 120, new Color(52, 201, 235), false, true);
             }
 
             return base.OnPickup(item, player);

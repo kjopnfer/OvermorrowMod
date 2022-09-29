@@ -64,23 +64,23 @@ namespace OvermorrowMod.Content.Projectiles
 
             if (Projectile.ai[0]++ == 0)
             {
-                player.AddDialogue(texture, "Do [you] enjoy going through [hell?]", 60, 120, new Color(52, 201, 235), true, false);
+                player.AddPopup(texture, "Do [you] enjoy going through [hell?]", 60, 120, new Color(52, 201, 235), true, false);
             }
             else if (Projectile.ai[0] == 60)
             {
-                player.AddDialogue(texture, "[You've harnessed great power, but you wield] it for no one but yourself.", 60, 120, new Color(52, 201, 235), false, false);
+                player.AddPopup(texture, "[You've harnessed great power, but you wield] it for no one but yourself.", 60, 120, new Color(52, 201, 235), false, false);
             }
             else if (Projectile.ai[0] == 120)
             {
-                player.AddDialogue(texture, "Once the [dust] has settled and [only] one remains, if it is you, what value will this have had?!", 60, 120, new Color(52, 201, 235), false, false);
+                player.AddPopup(texture, "Once the [dust] has settled and [only] one remains, if it is you, what value will this have had?!", 60, 120, new Color(52, 201, 235), false, false);
             }
             else if (Projectile.ai[0] == 180)
             {
-                player.AddDialogue(texture, "An upstart who recklessly stole [and] killed their way to power. I wonder, who does that remind me of...?", 60, 120, new Color(52, 201, 235), false, false);
+                player.AddPopup(texture, "An upstart who recklessly stole [and] killed their way to power. I wonder, who does that remind me of...?", 60, 120, new Color(52, 201, 235), false, false);
             }
             else if (Projectile.ai[0] == 240)
             {
-                player.AddDialogue(texture, "You have no stake in this battle. [No] one gave you any say in this matter!", 60, 120, new Color(52, 201, 235), false, true);
+                player.AddPopup(texture, "You have no stake in this battle. [No] one gave you any say in this matter!", 60, 120, new Color(52, 201, 235), false, true);
             }  
         }
 

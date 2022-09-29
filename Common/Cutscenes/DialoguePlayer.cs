@@ -6,9 +6,7 @@ using Terraria;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
-    // Should be able to push dialogue that will constantly loop through each and pop them from the list
-    // Dialogue should be able to be cleared and then a new one added if it is urgent
-    public class Dialogue
+    public class Popup
     {
         public Texture2D speakerPortrait;
 
@@ -27,7 +25,7 @@ namespace OvermorrowMod.Common.Cutscenes
         /// <param name="drawTime">The amount of time it takes to completely draw the text</param>
         /// <param name="showTime">How long the text remains on screen after fully drawing</param>
         /// <param name="bracketColor">The hex color of the text when enclosed in brackets</param>
-        public Dialogue(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, string bracketColor, bool openAnimation, bool closeAnimation)
+        public Popup(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, string bracketColor, bool openAnimation, bool closeAnimation)
         {
             this.speakerPortrait = speakerPortrait;
             this.displayText = displayText;
@@ -40,27 +38,51 @@ namespace OvermorrowMod.Common.Cutscenes
         }
     }
 
+    public class Dialogue
+    {
+        public string displayText;
+        public int drawTime;
+
+        public string bracketColor;
+
+        public Dialogue(string displayText, int drawTime, string bracketColor)
+        {
+            this.displayText = displayText;
+            this.drawTime = drawTime;
+
+            this.bracketColor = bracketColor;
+        }
+    }
+
     public class DialoguePlayer : ModPlayer
     {
-        private Queue<Dialogue> DialogueQueue = new Queue<Dialogue>();
-        public bool ShowDialogue = false;
+        private Queue<Popup> PopupQueue = new Queue<Popup>();
+        private Dialogue CurrentDialogue;
+
+        public bool AddedDialogue = false;
 
         public bool pickupWood = false;
         public bool distanceGuide = false;
         public bool guideGreeting = false;
 
-        public void AddDialogue(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, Color bracketColor, bool openAnimation = true, bool closeAnimation = true)
+        public void AddDialogue(string displayText, int drawTime)
         {
-            ShowDialogue = true;
-            DialogueQueue.Enqueue(new Dialogue(speakerPortrait, displayText, drawTime, showTime, bracketColor.Hex3(), openAnimation, closeAnimation));
+            CurrentDialogue = new Dialogue(displayText, drawTime, Color.White.Hex3());
         }
 
-        public Dialogue GetDialogue() => DialogueQueue.Peek();
+        public Dialogue GetDialogue() => CurrentDialogue;
 
-        public void ClearDialogue() => DialogueQueue.Clear();
+        public void AddPopup(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, Color bracketColor, bool openAnimation = true, bool closeAnimation = true)
+        {
+            PopupQueue.Enqueue(new Popup(speakerPortrait, displayText, drawTime, showTime, bracketColor.Hex3(), openAnimation, closeAnimation));
+        }
 
-        public void DequeueDialogue() => DialogueQueue.Dequeue();
+        public Popup GetPopup() => PopupQueue.Peek();
 
-        public int GetQueueLength() => DialogueQueue.Count;
+        public void ClearPopup() => PopupQueue.Clear();
+
+        public void RemovePopup() => PopupQueue.Dequeue();
+
+        public int GetQueueLength() => PopupQueue.Count;
     }
 }
