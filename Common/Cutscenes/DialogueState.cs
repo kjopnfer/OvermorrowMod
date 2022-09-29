@@ -79,7 +79,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private void DrawPopup(SpriteBatch spriteBatch, DialoguePlayer player)
         {
-            Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack2").Value;
+            Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack").Value;
             if (!player.GetDialogue().openAnimation) OpenTimer = (int)OPEN_TIME;
             float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(OpenTimer++, 0, OPEN_TIME) / OPEN_TIME);
 
