@@ -1,4 +1,6 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
@@ -7,6 +9,8 @@ using OvermorrowMod.Content.NPCs.CaveFish;
 using OvermorrowMod.Content.NPCs.SalamanderHunter;
 using OvermorrowMod.Content.NPCs.SnapDragon;
 using OvermorrowMod.Content.Projectiles.Hexes;
+using OvermorrowMod.Core;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -23,6 +27,34 @@ namespace OvermorrowMod.Common
         public bool LightningMarked;
 
         public int FungiTime;
+
+        public bool distanceCheck = false;
+
+        public override bool PreAI(NPC npc)
+        {
+            if (npc.type == NPCID.Guide)
+            {
+                foreach (Player player in Main.player)
+                {
+                    if (!player.active) continue;
+
+                    DialoguePlayer dialoguePlayer = player.GetModPlayer<DialoguePlayer>();
+
+                    if (dialoguePlayer.distanceGuide) return base.PreAI(npc);
+
+                    float xDistance = Math.Abs(npc.Center.X - player.Center.X);
+                    if (xDistance > 15 * 16)
+                    {
+                        dialoguePlayer.distanceGuide = true;
+
+                        Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                        dialoguePlayer.AddDialogue(texture, "Where are you off to in such a hurry?", 60, 120, new Color(52, 201, 235), true, true);
+                    }
+                }
+            }
+
+            return base.PreAI(npc);
+        }
 
         public override void ResetEffects(NPC npc)
         {
