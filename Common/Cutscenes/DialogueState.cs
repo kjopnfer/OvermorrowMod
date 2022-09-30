@@ -7,6 +7,7 @@ using OvermorrowMod.Core;
 using System.Text;
 using Terraria.GameContent;
 using Terraria.UI.Chat;
+using Terraria.ID;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -34,6 +35,8 @@ namespace OvermorrowMod.Common.Cutscenes
                 return;
             }
 
+            DrawBackdrop(spriteBatch, player);
+
             if (DelayTimer++ > DIALOGUE_DELAY)
             {
                 if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
@@ -44,6 +47,17 @@ namespace OvermorrowMod.Common.Cutscenes
 
 
             base.Draw(spriteBatch);
+        }
+
+        private void DrawBackdrop(SpriteBatch spriteBatch, DialoguePlayer player)
+        {
+            Vector2 drawPosition = new Vector2(xPosition, yPosition);
+            Texture2D backdrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "Chat_Back").Value;
+
+            //spriteBatch.Draw(backdrop, drawPosition, null, Color.White, 0f, backdrop.Size() / 2, 1f, SpriteEffects.None, 1f);
+
+            Texture2D speaker = player.GetDialogue().speakerBody;
+            spriteBatch.Draw(speaker, drawPosition, null, Color.White, 0f, speaker.Size() / 2, 1f, SpriteEffects.None, 1f);
         }
 
         private void DrawText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition)
@@ -97,6 +111,38 @@ namespace OvermorrowMod.Common.Cutscenes
 
             TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
             ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, 0f, Color.White, Color.Black, Vector2.Zero, Vector2.One, out int hoveredSnippet, MAXIMUM_LENGTH, 2f);
+        }
+    }
+
+    public class OptionButton : UIElement
+    {
+        private string displayText;
+        private Dialogue nextState;
+
+        public OptionButton(string displayText, Dialogue nextState)
+        {
+            this.displayText = displayText;
+            this.nextState = nextState;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+
+            bool isHovering = ContainsPoint(Main.MouseScreen);
+
+            if (isHovering)
+            {
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
+            }
+
+            Utils.DrawBorderString(spriteBatch, displayText, pos, Color.White);
+        }
+
+        public override void MouseDown(UIMouseEvent evt)
+        {
+            Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
+            Main.LocalPlayer.GetModPlayer<DialoguePlayer>().SetDialogue(nextState);
         }
     }
 }

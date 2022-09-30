@@ -40,10 +40,12 @@ namespace OvermorrowMod.Common
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
             if (!player.AddedDialogue && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                 Main.NewText("blocked");
 
-                player.AddDialogue(npc.GetChat(), 20);
+                player.SetDialogue(texture, npc.GetChat(), 20);
                 player.AddedDialogue = true;
             }
 

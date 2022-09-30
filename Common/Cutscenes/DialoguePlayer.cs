@@ -40,19 +40,30 @@ namespace OvermorrowMod.Common.Cutscenes
 
     public class Dialogue
     {
+        public Texture2D speakerBody;
+
         public string displayText;
         public int drawTime;
 
         public string bracketColor;
+        public List<OptionButton> options;
 
-        public Dialogue(string displayText, int drawTime, string bracketColor)
+        public Dialogue(Texture2D speakerBody, string displayText, int drawTime, string bracketColor, List<OptionButton> options = null)
         {
+            this.speakerBody = speakerBody;
             this.displayText = displayText;
             this.drawTime = drawTime;
 
             this.bracketColor = bracketColor;
+            this.options = options;
+        }
+
+        public void AddOptions(OptionButton option)
+        {
+            if (options.Count < 4) options.Add(option);
         }
     }
+
 
     public class DialoguePlayer : ModPlayer
     {
@@ -65,9 +76,19 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool distanceGuide = false;
         public bool guideGreeting = false;
 
-        public void AddDialogue(string displayText, int drawTime)
+        public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, List<OptionButton> options)
         {
-            CurrentDialogue = new Dialogue(displayText, drawTime, Color.White.Hex3());
+            CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, Color.White.Hex3(), options);
+        }
+
+        public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, Color color)
+        {
+            CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, color.Hex3());
+        }
+
+        public void SetDialogue(Dialogue dialogue)
+        {
+            CurrentDialogue = dialogue;
         }
 
         public Dialogue GetDialogue() => CurrentDialogue;
