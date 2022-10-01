@@ -35,5 +35,9 @@ namespace OvermorrowMod.Core
         public const string WorldGen = Content + "WorldGeneration/";
 
         #endregion
+
+        #region Other
+        public const string Dialogue = "OvermorowMod/Common/Cutscenes/Dialogue/";
+        #endregion
     }
 }
