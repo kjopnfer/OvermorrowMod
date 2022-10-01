@@ -61,14 +61,14 @@ namespace OvermorrowMod.Common.Cutscenes
                     if (CloseTimer == CLOSE_TIME)
                     {
                         player.RemovePopup();
-                        ClearTimers();
+                        ResetTimers();
                     }
                 }
             }
         }
 
         #region Helper Methods
-        private void ClearTimers()
+        private void ResetTimers()
         {
             DrawTimer = 0;
             HoldTimer = 0;

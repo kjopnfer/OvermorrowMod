@@ -79,7 +79,7 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 Main.NewText("redrawing");
 
-                foreach (UIElement child in Children)
+                foreach (UIElement child in BackPanel.Children)
                 {
                     if (child is OptionButton)
                     {
@@ -177,6 +177,12 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             Portrait.SetImage(player.GetDialogue().speakerBody);
         }
+
+        public void ResetTimers()
+        {
+            DrawTimer = 0;
+            DelayTimer = 0;
+        }
     }
 
     public class OptionButton : UIElement
@@ -210,11 +216,14 @@ namespace OvermorrowMod.Common.Cutscenes
             Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            DialogueState parent = Parent as DialogueState;
-            parent.dialogueID = linkID;
-            parent.shouldRedraw = true;
+            if (Parent.Parent is DialogueState parent)
+            {
+                parent.dialogueID = linkID;
+                parent.ResetTimers();
+                parent.shouldRedraw = true;
 
-            Main.NewText("changing id to " + linkID);
+                Main.NewText("changing id to " + linkID);
+            }
         }
     }
 }
