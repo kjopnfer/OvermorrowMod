@@ -48,6 +48,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public override void UpdateUI(GameTime gameTime)
         {
             PopupUI?.Update(gameTime);
+            DialogueUI?.Update(gameTime);
         }
     }
 }

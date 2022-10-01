@@ -8,6 +8,7 @@ using System.Text;
 using Terraria.GameContent;
 using Terraria.UI.Chat;
 using Terraria.ID;
+using Terraria.GameContent.UI.Elements;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -22,48 +23,108 @@ namespace OvermorrowMod.Common.Cutscenes
         private float xPosition = Main.screenWidth / 2f - (MAXIMUM_LENGTH / 2f);
         private int yPosition = 375;
 
+        private UIPanel BackPanel = new UIPanel();
+        private UIText Text = new UIText("");
+        private UIImage Portrait = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Empty));
+
+        public string dialogueID = "start";
+        public bool shouldRedraw = true;
+        public override void OnInitialize()
+        {
+            ModUtils.AddElement(BackPanel, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 650, 300, this);
+            ModUtils.AddElement(Text, 0, 0, 650, 300, BackPanel);
+            ModUtils.AddElement(Portrait, 0, 0, 650, 300, BackPanel);
+
+            base.OnInitialize();
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            if (player.GetDialogue == null) return;
 
             if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory)
             {
                 DrawTimer = 0;
                 DelayTimer = 0;
+                dialogueID = "start";
+                shouldRedraw = true;
+
+                player.ClearDialogue();
                 player.AddedDialogue = false;
 
                 return;
             }
 
-            DrawBackdrop(spriteBatch, player);
+            DrawBackdrop(player);
 
             if (DelayTimer++ > DIALOGUE_DELAY)
             {
                 if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
-                DrawText(spriteBatch, player, new Vector2(xPosition, yPosition));
+                DrawText(player);
             }
 
             //Main.npcChatText = "";
 
-
             base.Draw(spriteBatch);
         }
 
-        private void DrawBackdrop(SpriteBatch spriteBatch, DialoguePlayer player)
+        public override void Update(GameTime gameTime)
         {
-            Vector2 drawPosition = new Vector2(xPosition, yPosition);
-            Texture2D backdrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "Chat_Back").Value;
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            //spriteBatch.Draw(backdrop, drawPosition, null, Color.White, 0f, backdrop.Size() / 2, 1f, SpriteEffects.None, 1f);
+            if (player.GetDialogue == null) return;
 
-            Texture2D speaker = player.GetDialogue().speakerBody;
-            spriteBatch.Draw(speaker, drawPosition, null, Color.White, 0f, speaker.Size() / 2, 1f, SpriteEffects.None, 1f);
+            if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            {
+                Main.NewText("redrawing");
+
+                foreach (UIElement child in Children)
+                {
+                    if (child is OptionButton)
+                    {
+                        Main.NewText("removing option");
+                        child.Remove();
+                    }
+                }
+
+                int optionNumber = 1;
+                foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
+                {
+                    Vector2 position = OptionPosition(optionNumber);
+                    ModUtils.AddElement(button, (int)position.X, (int)position.Y, 200, 100, BackPanel);
+                    Main.NewText("draw: " + button.GetText());
+
+                    optionNumber++;
+                }
+
+                shouldRedraw = false;
+            }
+
+            base.Update(gameTime);
         }
 
-        private void DrawText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition)
+        private Vector2 OptionPosition(int optionNumber)
         {
-            int progress = (int)MathHelper.Lerp(0, player.GetDialogue().displayText.Length, DrawTimer / (float)player.GetDialogue().drawTime);
-            var text = player.GetDialogue().displayText.Substring(0, progress);
+            switch (optionNumber)
+            {
+                case 1:
+                    return new Vector2(0, 50);
+                case 2:
+                    return new Vector2(400, 50);
+                case 3:
+                    return new Vector2(0, 150);
+                case 4:
+                    return new Vector2(400, 150);
+            }
+
+            return new Vector2(0, 0);
+        }
+
+        private void DrawText(DialoguePlayer player)
+        {
+            int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText(dialogueID).Length, DrawTimer / (float)player.GetDialogue().drawTime);
+            var text = player.GetDialogue().GetText(dialogueID).Substring(0, progress);
 
             // If for some reason there are no colors specified don't parse the brackets
             if (player.GetDialogue().bracketColor != null)
@@ -109,26 +170,31 @@ namespace OvermorrowMod.Common.Cutscenes
                 text = builder.ToString();
             }
 
-            TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, 0f, Color.White, Color.Black, Vector2.Zero, Vector2.One, out int hoveredSnippet, MAXIMUM_LENGTH, 2f);
+            Text.SetText(text);
+        }
+
+        private void DrawBackdrop(DialoguePlayer player)
+        {
+            Portrait.SetImage(player.GetDialogue().speakerBody);
         }
     }
 
     public class OptionButton : UIElement
     {
         private string displayText;
-        private Dialogue nextState;
+        private string linkID;
 
-        public OptionButton(string displayText, Dialogue nextState)
+        public OptionButton(string displayText, string linkID)
         {
             this.displayText = displayText;
-            this.nextState = nextState;
+            this.linkID = linkID;
         }
+
+        public string GetText() => displayText;
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             Vector2 pos = GetDimensions().ToRectangle().TopLeft();
-
             bool isHovering = ContainsPoint(Main.MouseScreen);
 
             if (isHovering)
@@ -142,7 +208,13 @@ namespace OvermorrowMod.Common.Cutscenes
         public override void MouseDown(UIMouseEvent evt)
         {
             Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
-            Main.LocalPlayer.GetModPlayer<DialoguePlayer>().SetDialogue(nextState);
+
+            // On the click action, go back into the parent and set the dialogue node to the one stored in here
+            DialogueState parent = Parent as DialogueState;
+            parent.dialogueID = linkID;
+            parent.shouldRedraw = true;
+
+            Main.NewText("changing id to " + linkID);
         }
     }
 }

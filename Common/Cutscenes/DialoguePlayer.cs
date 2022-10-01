@@ -3,6 +3,7 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using System.Xml;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -46,24 +47,94 @@ namespace OvermorrowMod.Common.Cutscenes
         public int drawTime;
 
         public string bracketColor;
-        public List<OptionButton> options;
+        public XmlDocument xmlDoc;
 
-        public Dialogue(Texture2D speakerBody, string displayText, int drawTime, string bracketColor, List<OptionButton> options = null)
+        public Dialogue(Texture2D speakerBody, string displayText, int drawTime, string bracketColor, XmlDocument xmlDoc)
         {
             this.speakerBody = speakerBody;
             this.displayText = displayText;
             this.drawTime = drawTime;
 
             this.bracketColor = bracketColor;
-            this.options = options;
+            this.xmlDoc = xmlDoc;
         }
 
-        public void AddOptions(OptionButton option)
+        public string GetText(string id)
         {
-            if (options.Count < 4) options.Add(option);
-        }
-    }
+            XmlNode starting = FindNode(id);
 
+            var children = starting.ChildNodes;
+            foreach (XmlNode child in children)
+            {
+                if (child.Name == "Message") return child.InnerText;
+            }
+
+            return null;
+        }
+
+        public List<OptionButton> GetOptions(string id)
+        {
+            List<OptionButton> optionButtons = new List<OptionButton>();
+
+            XmlNode starting = FindNode(id);
+            var children = starting.ChildNodes;
+            foreach (XmlNode child in children)
+            {
+                if (child.Name == "Options")
+                {
+                    foreach (XmlNode option in child.ChildNodes)
+                    {
+                        optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value));
+                    }
+                }
+            }
+
+            return optionButtons.Count > 0 ? optionButtons : null;
+        }
+
+        private XmlNode FindNode(string id)
+        {
+            var cringe = xmlDoc.GetElementsByTagName("DialogueNode");
+            foreach (XmlNode node in cringe)
+            {
+                if (node.Attributes["id"].Value == id) return node;
+            }
+
+            return null;
+        }
+
+        /*public void Find(XmlDocument doc, string id)
+        {
+            var cringe = doc.GetElementsByTagName("DialogueNode");
+            XmlNode starting = null;
+            foreach (XmlNode node in cringe)
+            {
+                //Console.Write(node.Value);
+                //Console.Write(node.Attributes["id"].Value);
+                if (node.Attributes["id"].Value == id)
+                {
+                    starting = node;
+                }
+            }
+
+            var children = starting.ChildNodes;
+            foreach (XmlNode child in children)
+            {
+                if (child.Name == "msg") Console.WriteLine(child.InnerText);
+
+                if (child.Name == "options")
+                {
+                    foreach (XmlNode option in child.ChildNodes)
+                    {
+                        Console.WriteLine(option.InnerText);
+                    }
+                }
+                //Console.WriteLine(child.Name);
+                //Console.WriteLine(child.Name + " : " + child.InnerText);
+            }
+        }
+        */
+    }
 
     public class DialoguePlayer : ModPlayer
     {
@@ -76,20 +147,19 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool distanceGuide = false;
         public bool guideGreeting = false;
 
-        public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, List<OptionButton> options)
+        public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
         {
-            CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, Color.White.Hex3(), options);
+            CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, new Color(52, 201, 235).Hex3(), xmlDoc);
         }
 
-        public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, Color color)
+        /*public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, Color color)
         {
             CurrentDialogue = new Dialogue(speakerBody, displayText, drawTime, color.Hex3());
-        }
+        }*/
 
-        public void SetDialogue(Dialogue dialogue)
-        {
-            CurrentDialogue = dialogue;
-        }
+        public void SetDialogue(Dialogue dialogue) => CurrentDialogue = dialogue;
+
+        public void ClearDialogue() => CurrentDialogue = null;
 
         public Dialogue GetDialogue() => CurrentDialogue;
 

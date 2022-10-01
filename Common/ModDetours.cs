@@ -46,40 +46,12 @@ namespace OvermorrowMod.Common
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
-                Main.NewText("blocked");
 
                 XmlDocument doc = new XmlDocument();
-                OvermorrowModFile.Instance.Logger.Debug("File Names: " + string.Join(", ", OvermorrowModFile.Instance.GetFileNames()));
                 string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/test.xml"));
                 doc.LoadXml(text);
 
-                var dialogue = doc.GetElementsByTagName("DialogueNode");
-                XmlNode starting = null;
-                foreach (XmlNode node in dialogue)
-                {
-                    if (node.Attributes["id"].Value == "start")
-                    {
-                        starting = node;
-                    }
-                }
-
-                var children = starting.ChildNodes;
-                foreach (XmlNode child in children)
-                {
-                    if (child.Name == "Message") Main.NewText(child.InnerText);
-
-                    /*if (child.Name == "options")
-                    {
-                        foreach (XmlNode option in child.ChildNodes)
-                        {
-                            Console.WriteLine(option.InnerText);
-                        }
-                    }*/
-                    //Console.WriteLine(child.Name);
-                    //Console.WriteLine(child.Name + " : " + child.InnerText);
-                }
-
-                player.SetDialogue(texture, npc.GetChat(), 20, Color.White);
+                player.SetDialogue(texture, npc.GetChat(), 20, doc);
                 player.AddedDialogue = true;
             }
 

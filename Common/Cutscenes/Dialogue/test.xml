@@ -1,6 +1,6 @@
 <Dialogue>
 	<DialogueNode id="start">
-		<Message>hello, i am stryke. i have been here forever.</Message>
+		<Message>hello, i am [stryke]. i have been here [forever].</Message>
 		<Portrait>cool</Portrait>
 		<Options>
 			<Option link="yes">wow thats so cool, what do you do?</Option>
