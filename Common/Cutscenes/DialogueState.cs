@@ -20,8 +20,8 @@ namespace OvermorrowMod.Common.Cutscenes
         const float DIALOGUE_DELAY = 30;
         const float MAXIMUM_LENGTH = 500;
 
-        private float xPosition = Main.screenWidth / 2f - (MAXIMUM_LENGTH / 2f);
-        private int yPosition = 375;
+        private const int WIDTH = 650;
+        private const int HEIGHT = 300;
 
         private UIPanel BackPanel = new UIPanel();
         private UIText Text = new UIText("");
@@ -31,7 +31,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool shouldRedraw = true;
         public override void OnInitialize()
         {
-            ModUtils.AddElement(BackPanel, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 650, 300, this);
+            ModUtils.AddElement(BackPanel, Main.screenWidth / 2 - (WIDTH / 2), Main.screenHeight / 2 - 250, WIDTH, HEIGHT, this);
             ModUtils.AddElement(Text, 0, 0, 650, 300, BackPanel);
             ModUtils.AddElement(Portrait, 0, 0, 650, 300, BackPanel);
 
@@ -45,10 +45,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory)
             {
-                DrawTimer = 0;
-                DelayTimer = 0;
-                dialogueID = "start";
-                shouldRedraw = true;
+                ResetTimers();
+                SetID("start");
 
                 player.ClearDialogue();
                 player.AddedDialogue = false;
@@ -79,23 +77,22 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 Main.NewText("redrawing");
 
-                foreach (UIElement child in BackPanel.Children)
-                {
-                    if (child is OptionButton)
-                    {
-                        Main.NewText("removing option");
-                        child.Remove();
-                    }
-                }
+                // Removes the options and then readds the elements back
+                BackPanel.RemoveAllChildren();
+                ModUtils.AddElement(Text, 0, 0, 650, 300, BackPanel);
+                ModUtils.AddElement(Portrait, 0, 0, 650, 300, BackPanel);
 
                 int optionNumber = 1;
-                foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
+                if (player.GetDialogue().GetOptions(dialogueID) != null)
                 {
-                    Vector2 position = OptionPosition(optionNumber);
-                    ModUtils.AddElement(button, (int)position.X, (int)position.Y, 200, 100, BackPanel);
-                    Main.NewText("draw: " + button.GetText());
+                    foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
+                    {
+                        Vector2 position = OptionPosition(optionNumber);
+                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, WIDTH / 2, 100, BackPanel);
+                        Main.NewText("draw: " + button.GetText());
 
-                    optionNumber++;
+                        optionNumber++;
+                    }
                 }
 
                 shouldRedraw = false;
@@ -111,11 +108,11 @@ namespace OvermorrowMod.Common.Cutscenes
                 case 1:
                     return new Vector2(0, 50);
                 case 2:
-                    return new Vector2(400, 50);
+                    return new Vector2(WIDTH / 2, 50);
                 case 3:
                     return new Vector2(0, 150);
                 case 4:
-                    return new Vector2(400, 150);
+                    return new Vector2(WIDTH / 2, 150);
             }
 
             return new Vector2(0, 0);
@@ -170,6 +167,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 text = builder.ToString();
             }
 
+            Main.NewText(text);
             Text.SetText(text);
         }
 
@@ -182,6 +180,14 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             DrawTimer = 0;
             DelayTimer = 0;
+        }
+
+        public void SetID(string id)
+        {
+            Text.SetText("");
+
+            shouldRedraw = true;
+            dialogueID = id;
         }
     }
 
@@ -218,9 +224,8 @@ namespace OvermorrowMod.Common.Cutscenes
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
             if (Parent.Parent is DialogueState parent)
             {
-                parent.dialogueID = linkID;
                 parent.ResetTimers();
-                parent.shouldRedraw = true;
+                parent.SetID(linkID);
 
                 Main.NewText("changing id to " + linkID);
             }
