@@ -41,28 +41,24 @@ namespace OvermorrowMod.Common.Cutscenes
         public override void Draw(SpriteBatch spriteBatch)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-            if (player.GetDialogue == null) return;
 
-            if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory)
+            if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogue() == null)
             {
+                player.ClearDialogue();
+
                 ResetTimers();
                 SetID("start");
-
-                player.ClearDialogue();
-                player.AddedDialogue = false;
-
+       
                 return;
             }
 
             DrawBackdrop(player);
 
-            if (DelayTimer++ > DIALOGUE_DELAY)
+            if (DelayTimer++ >= DIALOGUE_DELAY)
             {
                 if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
                 DrawText(player);
             }
-
-            //Main.npcChatText = "";
 
             base.Draw(spriteBatch);
         }
@@ -71,7 +67,7 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            if (player.GetDialogue == null) return;
+            if (player.GetDialogue() == null) return;
 
             if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
@@ -83,7 +79,11 @@ namespace OvermorrowMod.Common.Cutscenes
                 ModUtils.AddElement(Portrait, 0, 0, 650, 300, BackPanel);
 
                 int optionNumber = 1;
-                if (player.GetDialogue().GetOptions(dialogueID) != null)
+                if (player.GetDialogue() == null) Main.NewText("NULL");
+                //var test = player.GetDialogue().GetOptions(dialogueID);
+                //if (player.GetDialogue().GetOptions(dialogueID) != null)
+
+                if (player.GetDialogue() != null)
                 {
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
@@ -167,7 +167,6 @@ namespace OvermorrowMod.Common.Cutscenes
                 text = builder.ToString();
             }
 
-            Main.NewText(text);
             Text.SetText(text);
         }
 

@@ -41,7 +41,7 @@ namespace OvermorrowMod.Common
         static void GUIChatDrawInner(On.Terraria.Main.orig_GUIChatDrawInner orig, Main self)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-            if (!player.AddedDialogue && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            if (player.GetDialogue() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
@@ -52,7 +52,7 @@ namespace OvermorrowMod.Common
                 doc.LoadXml(text);
 
                 player.SetDialogue(texture, npc.GetChat(), 20, doc);
-                player.AddedDialogue = true;
+                //player.AddedDialogue = true;
             }
 
             //orig(self);
