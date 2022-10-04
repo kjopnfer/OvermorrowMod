@@ -83,7 +83,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 //var test = player.GetDialogue().GetOptions(dialogueID);
                 //if (player.GetDialogue().GetOptions(dialogueID) != null)
 
-                if (player.GetDialogue() != null)
+                if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null)
                 {
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
