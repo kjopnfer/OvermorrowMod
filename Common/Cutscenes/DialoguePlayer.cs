@@ -16,8 +16,8 @@ namespace OvermorrowMod.Common.Cutscenes
         public int showTime;
         public string bracketColor;
 
-        public bool openAnimation;
-        public bool closeAnimation;
+        private bool openAnimation;
+        private bool closeAnimation;
 
         /// <summary>
         /// Used to store information about a dialogue object
@@ -37,6 +37,9 @@ namespace OvermorrowMod.Common.Cutscenes
             this.openAnimation = openAnimation;
             this.closeAnimation = closeAnimation;
         }
+
+        public bool ShouldOpen() => openAnimation;
+        public bool ShouldClose() => closeAnimation;
     }
 
     public class Dialogue

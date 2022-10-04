@@ -7,6 +7,8 @@ using OvermorrowMod.Core;
 using System.Text;
 using Terraria.GameContent;
 using Terraria.UI.Chat;
+using Terraria.Audio;
+using ReLogic.Utilities;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -25,6 +27,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private int xPosition = 200;
         private int yPosition = Main.screenHeight - 375/*169*/;
+
+        private SlotId drawSound;
 
         // This determines whether the UI is shown or not
         public override void Draw(SpriteBatch spriteBatch)
@@ -46,6 +50,8 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 if (DrawTimer < player.GetPopup().drawTime) return;
 
+                if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
+
                 if (HoldTimer <= player.GetPopup().showTime)
                 {
                     if (!Main.gamePaused) HoldTimer++;
@@ -55,7 +61,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 else
                 {
                     if (!Main.gamePaused) CloseTimer++;
-                    if (!player.GetPopup().closeAnimation) CloseTimer = (int)CLOSE_TIME;
+                    if (!player.GetPopup().ShouldClose()) CloseTimer = (int)CLOSE_TIME;
 
                     // Remove the dialogue from the list and reset counters
                     if (CloseTimer == CLOSE_TIME)
@@ -75,12 +81,21 @@ namespace OvermorrowMod.Common.Cutscenes
             OpenTimer = 0;
             CloseTimer = 0;
             DelayTimer = 0;
+
+            if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
         }
 
         private void DrawPopup(SpriteBatch spriteBatch, DialoguePlayer player)
         {
+            if (OpenTimer == 0 && player.GetPopup().ShouldOpen()) SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PopupShow")
+            {
+                Volume = 1.25f,
+                PitchVariance = 1.1f,
+                MaxInstances = 2,
+            }, Main.LocalPlayer.Center);
+
             Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack").Value;
-            if (!player.GetPopup().openAnimation) OpenTimer = (int)OPEN_TIME;
+            if (!player.GetPopup().ShouldOpen()) OpenTimer = (int)OPEN_TIME;
             float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(OpenTimer++, 0, OPEN_TIME) / OPEN_TIME);
 
             spriteBatch.Reload(SpriteSortMode.Immediate);
@@ -116,6 +131,17 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private void DrawText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition)
         {
+            if (!SoundEngine.TryGetActiveSound(drawSound, out var result))
+            {
+                drawSound = SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw")
+                {
+                    Volume = 1.25f,
+                    PitchVariance = 1.1f,
+                    MaxInstances = 1,
+                    //SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest
+                }, Main.LocalPlayer.Center);
+            }
+
             // We need to detect if any color coded text is present, if it is then skip forward by the progression
             int progress = (int)MathHelper.Lerp(0, player.GetPopup().displayText.Length, DrawTimer / (float)player.GetPopup().drawTime);
             var text = player.GetPopup().displayText.Substring(0, progress);
