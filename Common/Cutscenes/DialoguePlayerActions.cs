@@ -11,7 +11,7 @@ namespace OvermorrowMod.Common.Cutscenes
     public partial class DialoguePlayer : ModPlayer
     {
         public bool pickupWood = false;
-        public bool distanceGuide = false;
+        public bool outDistanceDialogue = false;
         public bool guideGreeting = false;
 
         private int greetCounter = 0;
