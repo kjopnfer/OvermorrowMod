@@ -42,15 +42,11 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool ShouldClose() => closeAnimation;
     }
 
-    public class DialoguePlayer : ModPlayer
+    public partial class DialoguePlayer : ModPlayer
     {
         private Queue<Popup> PopupQueue = new Queue<Popup>();
 
         public bool AddedDialogue = false;
-
-        public bool pickupWood = false;
-        public bool distanceGuide = false;
-        public bool guideGreeting = false;
 
         public void AddPopup(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, Color bracketColor, bool openAnimation = true, bool closeAnimation = true)
         {

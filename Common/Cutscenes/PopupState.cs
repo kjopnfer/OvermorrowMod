@@ -119,11 +119,11 @@ namespace OvermorrowMod.Common.Cutscenes
             float xOffset = MathHelper.Lerp(-155, 0, drawProgress);
             if (HoldTimer >= player.GetPopup().showTime)
             {
-                spriteBatch.Draw(player.GetPopup().speakerPortrait, new Vector2(xPosition + xOffset, yPosition), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
+                spriteBatch.Draw(player.GetPopup().speakerPortrait, new Vector2(xPosition - 36 + xOffset, yPosition - 16), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
             }
             else
             {
-                spriteBatch.Draw(player.GetPopup().speakerPortrait, new Vector2(xPosition + xOffset, yPosition), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
+                spriteBatch.Draw(player.GetPopup().speakerPortrait, new Vector2(xPosition - 36 + xOffset, yPosition - 16), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
             }
 
             spriteBatch.Reload(SpriteSortMode.Deferred);
