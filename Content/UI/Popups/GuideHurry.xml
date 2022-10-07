@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Popup>
+	<Text npcPortrait="Guide" drawTime="90" displayTime="120" bracketColorR="52" bracketColorG="201" bracketColorB="235">Where are you off to in such a hurry?</Text>
+</Popup>

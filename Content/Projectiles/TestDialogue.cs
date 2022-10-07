@@ -28,9 +28,9 @@ namespace OvermorrowMod.Content.Projectiles
 
         public override void AI()
         {
-            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            /*DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug").Value;
-            /*if (Projectile.ai[0]++ == 0)
+            if (Projectile.ai[0]++ == 0)
             {
                 Main.NewText("a");
                 player.AddPopup(texture, "John Cena", "Do you enjoy going through hell? ", 60, 120, Color.LimeGreen, new Color(52, 201, 235));
@@ -60,7 +60,7 @@ namespace OvermorrowMod.Content.Projectiles
             {
                 texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Rhiannon/Menacing").Value;
                 player.AddPopup(texture, "its ya boi", "STOP POSTING ABOUT AMONG US! I'M TIRED OF SEEING IT! MY FRIENDS ON TIKTOK SEND ME MEMES, ON DISCORD IT'S FUCKING MEMES! I was in a server, right? and ALL OF THE CHANNELS were just among us stuff. ", 60, 120, Color.Orange, "FF0000");
-            }*/
+            }
 
             if (Projectile.ai[0]++ == 0)
             {
@@ -81,7 +81,7 @@ namespace OvermorrowMod.Content.Projectiles
             else if (Projectile.ai[0] == 240)
             {
                 player.AddPopup(texture, "You have no stake in this battle. [No] one gave you any say in this matter!", 60, 120, new Color(52, 201, 235), false, true);
-            }  
+            }*/  
         }
 
         public override void Kill(int timeLeft)
