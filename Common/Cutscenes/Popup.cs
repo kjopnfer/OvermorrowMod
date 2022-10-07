@@ -18,32 +18,10 @@ namespace OvermorrowMod.Common.Cutscenes
         public int showTime;
         public string bracketColor;
 
-        private bool openAnimation;
-        private bool closeAnimation;
-
         private XmlDocument xmlDoc;
         private XmlNodeList nodeList;
 
         private int nodeIterator = 0;
-
-        /// <summary>
-        /// Used to store information about a dialogue object
-        /// </summary>
-        /// <param name="displayText">The text to be displayed</param>
-        /// <param name="drawTime">The amount of time it takes to completely draw the text</param>
-        /// <param name="showTime">How long the text remains on screen after fully drawing</param>
-        /// <param name="bracketColor">The hex color of the text when enclosed in brackets</param>
-        public Popup(Texture2D speakerPortrait, string displayText, int drawTime, int showTime, string bracketColor, bool openAnimation, bool closeAnimation)
-        {
-            this.speakerPortrait = speakerPortrait;
-            this.displayText = displayText;
-            this.drawTime = drawTime;
-            this.showTime = showTime;
-            this.bracketColor = bracketColor;
-
-            this.openAnimation = openAnimation;
-            this.closeAnimation = closeAnimation;
-        }
 
         public Popup(XmlDocument xmlDoc)
         {

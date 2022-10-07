@@ -23,7 +23,6 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
                 dialoguePlayer.AddPopup(doc);
-                //dialoguePlayer.AddPopup(texture, "Hello there! That's an unfamiliar face, you must be new around here.", 90, 120, new Color(52, 201, 235), true, true);
                 dialoguePlayer.guideGreeting = true;
             }
 

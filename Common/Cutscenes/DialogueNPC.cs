@@ -35,7 +35,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
                         XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideHurry.xml");
                         dialoguePlayer.AddPopup(doc);
-                        //dialoguePlayer.AddPopup(texture, "Where are you off to in such a hurry?", 60, 120, new Color(52, 201, 235), true, true);
                     }
                     else if (xDistance < 25 * 16) // The dialogue should run if the player has FIRST been within 25 blocks and THEN they leave
                     {
