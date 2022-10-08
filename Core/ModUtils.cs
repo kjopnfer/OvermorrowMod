@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
@@ -318,6 +319,15 @@ namespace OvermorrowMod.Core
         public static float EaseOutQuint(float x)
         {
             return (float)(1 - Math.Pow(1 - x, 5));
+        }
+
+        public static XmlDocument GetXML(string directory)
+        {
+            XmlDocument doc = new XmlDocument();
+            string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(directory));
+            doc.LoadXml(text);
+
+            return doc;
         }
     }
 }

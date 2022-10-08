@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Core;
 using System;
+using System.Xml;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -37,10 +38,8 @@ namespace OvermorrowMod.Common
             {
                 dialoguePlayer.pickupWood = true;
 
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-
-                dialoguePlayer.AddDialogue(texture, "Gathering [wood] I see, good thinking. Wood's useful for all sorts of things.", 90, 120, new Color(52, 201, 235), true, false);
-                dialoguePlayer.AddDialogue(texture, "If you need ideas just bring me some and I'll show you what you can make with it.", 90, 120, new Color(52, 201, 235), false, true);
+                XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideWood.xml");
+                dialoguePlayer.AddPopup(doc);
             }
 
             return base.OnPickup(item, player);
