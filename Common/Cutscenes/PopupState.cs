@@ -14,12 +14,6 @@ namespace OvermorrowMod.Common.Cutscenes
 {
     public class PopupState : UIState
     {
-        private int DrawTimer;
-        private int HoldTimer;
-        private int OpenTimer;
-        private int CloseTimer;
-        private int DelayTimer;
-
         const float OPEN_TIME = 15;
         const float CLOSE_TIME = 10;
         const float MAXIMUM_LENGTH = 280;
@@ -28,8 +22,6 @@ namespace OvermorrowMod.Common.Cutscenes
         private int xPosition = 235;
         private int yPosition = Main.screenHeight - 375/*169*/;
 
-        private SlotId drawSound;
-
         public override void Draw(SpriteBatch spriteBatch)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -37,35 +29,38 @@ namespace OvermorrowMod.Common.Cutscenes
 
             Popup currentPopup = player.GetPopup();
             Vector2 textPosition = new Vector2(xPosition - 95, yPosition - 25);
-            DrawPopup(spriteBatch, player, currentPopup);
+            //DrawPopup(spriteBatch, player, currentPopup);
+            currentPopup.DrawPopup(spriteBatch, player);
 
 
-            if (DrawTimer < currentPopup.GetDrawTime() && OpenTimer >= OPEN_TIME)
+            //if (DrawTimer < currentPopup.GetDrawTime() && OpenTimer >= OPEN_TIME)
+            if (currentPopup.DrawTimer < currentPopup.GetDrawTime() && currentPopup.OpenTimer >= OPEN_TIME)
             {
-                if (DelayTimer++ < DIALOGUE_DELAY) return;
-                if (!Main.gamePaused) DrawTimer++;
+                if (currentPopup.DelayTimer++ < DIALOGUE_DELAY) return;
+                if (!Main.gamePaused) currentPopup.DrawTimer++;
 
-                DrawText(spriteBatch, player, textPosition, currentPopup);
+                //DrawText(spriteBatch, player, textPosition, currentPopup);
+                currentPopup.DrawText(spriteBatch, player, textPosition);
             }
             else // Hold the dialogue for the amount of time specified
             {
-                if (DrawTimer < currentPopup.GetDrawTime()) return;
+                if (currentPopup.DrawTimer < currentPopup.GetDrawTime()) return;
 
-                if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
+                if (SoundEngine.TryGetActiveSound(currentPopup.drawSound, out var result)) result.Stop();
 
-                if (HoldTimer <= currentPopup.GetDisplayTime())
+                if (currentPopup.HoldTimer <= currentPopup.GetDisplayTime())
                 {
-                    if (!Main.gamePaused) HoldTimer++;
+                    if (!Main.gamePaused) currentPopup.HoldTimer++;
 
-                    HoldText(spriteBatch, player, textPosition, currentPopup);
+                    currentPopup.HoldText(spriteBatch, player, textPosition);
                 }
                 else
                 {
-                    if (!Main.gamePaused) CloseTimer++;
-                    if (!currentPopup.ShouldClose()) CloseTimer = (int)CLOSE_TIME;
+                    if (!Main.gamePaused) currentPopup.CloseTimer++;
+                    if (!currentPopup.ShouldClose()) currentPopup.CloseTimer = (int)CLOSE_TIME;
 
                     // Remove the dialogue from the list and reset counters
-                    if (CloseTimer == CLOSE_TIME)
+                    if (currentPopup.CloseTimer == CLOSE_TIME)
                     {
                         if (currentPopup.GetNodeIteration() < currentPopup.GetListLength() - 1)
                         {
@@ -76,165 +71,11 @@ namespace OvermorrowMod.Common.Cutscenes
                             player.RemovePopup();
                         }
 
-                        ResetTimers();
+                        //ResetTimers();
+                        currentPopup.ResetTimers();
                     }
                 }
             }
         }
-
-        #region Helper Methods
-        private void ResetTimers()
-        {
-            DrawTimer = 0;
-            HoldTimer = 0;
-            OpenTimer = 0;
-            CloseTimer = 0;
-            DelayTimer = 0;
-
-            if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
-        }
-
-        private void DrawPopup(SpriteBatch spriteBatch, DialoguePlayer player, Popup currentPopup)
-        {
-            if (OpenTimer == 0 && currentPopup.ShouldOpen()) SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PopupShow")
-            {
-                Volume = 1.25f,
-                PitchVariance = 1.1f,
-                MaxInstances = 2,
-            }, Main.LocalPlayer.Center);
-
-            Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack").Value;
-            if (!currentPopup.ShouldOpen()) OpenTimer = (int)OPEN_TIME;
-            float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(OpenTimer++, 0, OPEN_TIME) / OPEN_TIME);
-
-            spriteBatch.Reload(SpriteSortMode.Immediate);
-
-            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
-            effect.Parameters["WhiteoutProgress"].SetValue(1 - drawProgress);
-            effect.CurrentTechnique.Passes["Whiteout"].Apply();
-
-            float xScale = MathHelper.Lerp(1.25f, 1, drawProgress);
-            float yScale = MathHelper.Lerp(0, 1, drawProgress);
-            if (HoldTimer >= currentPopup.GetDrawTime())
-            {
-                xScale = 1;
-                yScale = MathHelper.Lerp(1, 0, CloseTimer / 15f);
-            }
-
-            spriteBatch.Draw(backDrop, new Vector2(xPosition + 48, yPosition + 7), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
-
-            float scale = MathHelper.Lerp(0.5f, 1f, drawProgress);
-            float xOffset = MathHelper.Lerp(-155, 0, drawProgress);
-            if (HoldTimer >= currentPopup.GetDisplayTime())
-            {
-                spriteBatch.Draw(currentPopup.GetPortrait(), new Vector2(xPosition - 36 + xOffset, yPosition - 16), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
-            }
-            else
-            {
-                spriteBatch.Draw(currentPopup.GetPortrait(), new Vector2(xPosition - 36 + xOffset, yPosition - 16), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
-            }
-
-            spriteBatch.Reload(SpriteSortMode.Deferred);
-        }
-
-        private void DrawText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition, Popup currentPopup)
-        {
-            if (!SoundEngine.TryGetActiveSound(drawSound, out var result))
-            {
-                drawSound = SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw")
-                {
-                    Volume = 1.25f,
-                    PitchVariance = 1.1f,
-                    MaxInstances = 1,
-                    //SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest
-                }, Main.LocalPlayer.Center);
-            }
-
-            // We need to detect if any color coded text is present, if it is then skip forward by the progression
-            int progress = (int)MathHelper.Lerp(0, currentPopup.GetText().Length, DrawTimer / (float)currentPopup.GetDrawTime());
-            var text = currentPopup.GetText().Substring(0, progress);
-
-            // If for some reason there are no colors specified don't parse the brackets
-            if (currentPopup.GetColorHex() != null)
-            {
-                // The number of opening brackets MUST be the same as the number of closing brackets
-                int numOpen = 0;
-                int numClose = 0;
-
-                // Create a new string, adding in hex tags whenever an opening bracket is found
-                var builder = new StringBuilder();
-                builder.Append("    "); // Appends to the beginning of the string
-
-                foreach (var character in text)
-                {
-                    if (character == '[') // Insert the hex tag if an opening bracket is found
-                    {
-                        builder.Append("[c/" + currentPopup.GetColorHex() + ":");
-                        numOpen++;
-                    }
-                    else
-                    {
-                        if (character == ']')
-                        {
-                            numClose++;
-                        }
-
-                        builder.Append(character);
-                    }
-                }
-
-                if (numOpen != numClose)
-                {
-                    builder.Append(']');
-                }
-
-                // Final check for if the tag has two brackets but no characters inbetween
-                var hexTag = "[c/" + currentPopup.GetColorHex() + ":]";
-                if (builder.ToString().Contains(hexTag))
-                {
-                    builder.Replace(hexTag, "[c/" + currentPopup.GetColorHex() + ": ]");
-                }
-
-                text = builder.ToString();
-            }
-
-            TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
-
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out var hoveredSnippet, MAXIMUM_LENGTH);
-        }
-
-        private void HoldText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition, Popup currentPopup)
-        {
-            var text = currentPopup.GetText();
-
-            if (currentPopup.GetColorHex() != null)
-            {
-                // Create a new string, adding in hex tags whenever an opening bracket is found
-                var builder = new StringBuilder();
-                builder.Append("    ");
-
-                foreach (var character in text)
-                {
-                    // Insert the hex tag if an opening bracket is found
-                    if (character == '[')
-                    {
-                        builder.Append("[c/" + currentPopup.GetColorHex() + ":");
-                    }
-                    else
-                    {
-                        builder.Append(character);
-                    }
-                }
-
-                if (!builder.ToString().Contains(']') && builder.ToString().Contains('[')) builder.Append(']');
-
-                text = builder.ToString();
-            }
-
-            TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out var hoveredSnippet, MAXIMUM_LENGTH);
-        }
-        #endregion
     }
 }
