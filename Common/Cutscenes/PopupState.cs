@@ -25,7 +25,7 @@ namespace OvermorrowMod.Common.Cutscenes
         const float MAXIMUM_LENGTH = 280;
         const float DIALOGUE_DELAY = 30;
 
-        private int xPosition = 200;
+        private int xPosition = 235;
         private int yPosition = Main.screenHeight - 375/*169*/;
 
         private SlotId drawSound;
@@ -35,17 +35,17 @@ namespace OvermorrowMod.Common.Cutscenes
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
             if (player.GetQueueLength() <= 0) return;
 
-            Vector2 textPosition = new Vector2(xPosition - 95, yPosition - 25);
-            DrawPopup(spriteBatch, player);
-
             Popup currentPopup = player.GetPopup();
+            Vector2 textPosition = new Vector2(xPosition - 95, yPosition - 25);
+            DrawPopup(spriteBatch, player, currentPopup);
+
 
             if (DrawTimer < currentPopup.GetDrawTime() && OpenTimer >= OPEN_TIME)
             {
                 if (DelayTimer++ < DIALOGUE_DELAY) return;
                 if (!Main.gamePaused) DrawTimer++;
 
-                DrawText(spriteBatch, player, textPosition);
+                DrawText(spriteBatch, player, textPosition, currentPopup);
             }
             else // Hold the dialogue for the amount of time specified
             {
@@ -57,7 +57,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     if (!Main.gamePaused) HoldTimer++;
 
-                    HoldText(spriteBatch, player, textPosition);
+                    HoldText(spriteBatch, player, textPosition, currentPopup);
                 }
                 else
                 {
@@ -94,10 +94,8 @@ namespace OvermorrowMod.Common.Cutscenes
             if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
         }
 
-        private void DrawPopup(SpriteBatch spriteBatch, DialoguePlayer player)
+        private void DrawPopup(SpriteBatch spriteBatch, DialoguePlayer player, Popup currentPopup)
         {
-            Popup currentPopup = player.GetPopup();
-
             if (OpenTimer == 0 && currentPopup.ShouldOpen()) SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PopupShow")
             {
                 Volume = 1.25f,
@@ -140,10 +138,8 @@ namespace OvermorrowMod.Common.Cutscenes
             spriteBatch.Reload(SpriteSortMode.Deferred);
         }
 
-        private void DrawText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition)
+        private void DrawText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition, Popup currentPopup)
         {
-            Popup currentPopup = player.GetPopup();
-
             if (!SoundEngine.TryGetActiveSound(drawSound, out var result))
             {
                 drawSound = SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw")
@@ -203,15 +199,13 @@ namespace OvermorrowMod.Common.Cutscenes
                 text = builder.ToString();
             }
 
-            int hoveredSnippet = 0;
             TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
 
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out hoveredSnippet, MAXIMUM_LENGTH);
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out var hoveredSnippet, MAXIMUM_LENGTH);
         }
 
-        private void HoldText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition)
+        private void HoldText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition, Popup currentPopup)
         {
-            Popup currentPopup = player.GetPopup();
             var text = currentPopup.GetText();
 
             if (currentPopup.GetColorHex() != null)
@@ -238,9 +232,8 @@ namespace OvermorrowMod.Common.Cutscenes
                 text = builder.ToString();
             }
 
-            int hoveredSnippet = 0;
             TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out hoveredSnippet, MAXIMUM_LENGTH);
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out var hoveredSnippet, MAXIMUM_LENGTH);
         }
         #endregion
     }
