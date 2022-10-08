@@ -18,11 +18,9 @@ namespace OvermorrowMod.Common.Cutscenes
             PopupQueue.Enqueue(new Popup(xmlDoc));
         }
 
-        public Popup GetPopup() => PopupQueue.Peek();
-
         public void ClearPopup() => PopupQueue.Clear();
 
-        public void RemovePopup() => PopupQueue.Dequeue();
+        public Popup RemovePopup() => PopupQueue.Dequeue();
 
         public int GetQueueLength() => PopupQueue.Count;
     }

@@ -22,13 +22,14 @@ namespace OvermorrowMod.Common.Cutscenes
         public int CloseTimer;
         public int DelayTimer;
 
-        private const float OPEN_TIME = 15;
-        private const float CLOSE_TIME = 10;
-        private const float MAXIMUM_LENGTH = 280;
-        private const float DIALOGUE_DELAY = 30;
+        // If I make them consts it gets angry lol
+        public readonly float OPEN_TIME = 15;
+        public readonly float CLOSE_TIME = 10;
+        public readonly float MAXIMUM_LENGTH = 280;
+        public readonly float DIALOGUE_DELAY = 30;
 
-        private int xPosition = 235;
-        private int yPosition = Main.screenHeight - 375/*169*/;
+        //private int xPosition = 235;
+        //private int yPosition = Main.screenHeight - 375/*169*/;
 
         public SlotId drawSound;
 
@@ -80,7 +81,7 @@ namespace OvermorrowMod.Common.Cutscenes
         /// <returns></returns>
         public bool ShouldClose() => nodeIterator == nodeList.Count - 1;
 
-        public void DrawPopup(SpriteBatch spriteBatch, DialoguePlayer player)
+        public void DrawPopup(SpriteBatch spriteBatch, Vector2 textPosition)
         {
             if (OpenTimer == 0 && ShouldOpen()) SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PopupShow")
             {
@@ -108,23 +109,26 @@ namespace OvermorrowMod.Common.Cutscenes
                 yScale = MathHelper.Lerp(1, 0, CloseTimer / 15f);
             }
 
-            spriteBatch.Draw(backDrop, new Vector2(xPosition + 48, yPosition + 7), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
+            //spriteBatch.Draw(backDrop, new Vector2(xPosition + 48, yPosition + 7), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
+            spriteBatch.Draw(backDrop, new Vector2(textPosition.X + 96 + 30, textPosition.Y + 36), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
 
             float scale = MathHelper.Lerp(0.5f, 1f, drawProgress);
             float xOffset = MathHelper.Lerp(-155, 0, drawProgress);
             if (HoldTimer >= GetDisplayTime())
             {
-                spriteBatch.Draw(GetPortrait(), new Vector2(xPosition - 36 + xOffset, yPosition - 16), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
+                //spriteBatch.Draw(GetPortrait(), new Vector2(xPosition - 36 + xOffset, yPosition - 16), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
+                spriteBatch.Draw(GetPortrait(), new Vector2(textPosition.X + 62 + xOffset, textPosition.Y + 14), null, Color.White, 0f, backDrop.Size() / 2, new Vector2(xScale, yScale), SpriteEffects.None, 1f);
             }
             else
             {
-                spriteBatch.Draw(GetPortrait(), new Vector2(xPosition - 36 + xOffset, yPosition - 16), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
+                //spriteBatch.Draw(GetPortrait(), new Vector2(xPosition - 36 + xOffset, yPosition - 16), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
+                spriteBatch.Draw(GetPortrait(), new Vector2(textPosition.X + 62 + xOffset, textPosition.Y + 14), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
             }
 
             spriteBatch.Reload(SpriteSortMode.Deferred);
         }
 
-        public void DrawText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition)
+        public void DrawText(SpriteBatch spriteBatch, Vector2 textPosition)
         {
             if (!SoundEngine.TryGetActiveSound(drawSound, out var result))
             {
@@ -190,7 +194,7 @@ namespace OvermorrowMod.Common.Cutscenes
             ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out var hoveredSnippet, MAXIMUM_LENGTH);
         }
 
-        public void HoldText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition)
+        public void HoldText(SpriteBatch spriteBatch, Vector2 textPosition)
         {
             var text = GetText();
 

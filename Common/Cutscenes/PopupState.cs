@@ -9,73 +9,83 @@ using Terraria.GameContent;
 using Terraria.UI.Chat;
 using Terraria.Audio;
 using ReLogic.Utilities;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
     public class PopupState : UIState
     {
-        const float OPEN_TIME = 15;
-        const float CLOSE_TIME = 10;
-        const float MAXIMUM_LENGTH = 280;
-        const float DIALOGUE_DELAY = 30;
+        const float OFFSET_DISTANCE = 125;
 
         private int xPosition = 235;
         private int yPosition = Main.screenHeight - 375/*169*/;
 
+        private List<Popup> PopupList = new List<Popup>();
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-            if (player.GetQueueLength() <= 0) return;
 
-            Popup currentPopup = player.GetPopup();
-            Vector2 textPosition = new Vector2(xPosition - 95, yPosition - 25);
-            //DrawPopup(spriteBatch, player, currentPopup);
-            currentPopup.DrawPopup(spriteBatch, player);
-
-
-            //if (DrawTimer < currentPopup.GetDrawTime() && OpenTimer >= OPEN_TIME)
-            if (currentPopup.DrawTimer < currentPopup.GetDrawTime() && currentPopup.OpenTimer >= OPEN_TIME)
+            if (PopupList.Count < 3)
             {
-                if (currentPopup.DelayTimer++ < DIALOGUE_DELAY) return;
-                if (!Main.gamePaused) currentPopup.DrawTimer++;
-
-                //DrawText(spriteBatch, player, textPosition, currentPopup);
-                currentPopup.DrawText(spriteBatch, player, textPosition);
-            }
-            else // Hold the dialogue for the amount of time specified
-            {
-                if (currentPopup.DrawTimer < currentPopup.GetDrawTime()) return;
-
-                if (SoundEngine.TryGetActiveSound(currentPopup.drawSound, out var result)) result.Stop();
-
-                if (currentPopup.HoldTimer <= currentPopup.GetDisplayTime())
+                if (player.GetQueueLength() != 0)
                 {
-                    if (!Main.gamePaused) currentPopup.HoldTimer++;
-
-                    currentPopup.HoldText(spriteBatch, player, textPosition);
+                    PopupList.Add(player.RemovePopup());
                 }
-                else
+            }
+
+            int offset = 0;
+            List<Popup> PopupRemoval = new List<Popup>(PopupList);
+            foreach (Popup currentPopup in PopupList)
+            {
+                Vector2 textPosition = new Vector2(xPosition - 95, yPosition - 25 - (OFFSET_DISTANCE * offset));
+                currentPopup.DrawPopup(spriteBatch, textPosition);
+
+                offset++;
+                if (currentPopup.DrawTimer < currentPopup.GetDrawTime() && currentPopup.OpenTimer >= currentPopup.OPEN_TIME)
                 {
-                    if (!Main.gamePaused) currentPopup.CloseTimer++;
-                    if (!currentPopup.ShouldClose()) currentPopup.CloseTimer = (int)CLOSE_TIME;
+                    if (currentPopup.DelayTimer++ < currentPopup.DIALOGUE_DELAY) continue;
+                    if (!Main.gamePaused) currentPopup.DrawTimer++;
 
-                    // Remove the dialogue from the list and reset counters
-                    if (currentPopup.CloseTimer == CLOSE_TIME)
+                    currentPopup.DrawText(spriteBatch, textPosition);
+                }
+                else // Hold the dialogue for the amount of time specified
+                {
+                    if (currentPopup.DrawTimer < currentPopup.GetDrawTime()) continue;
+
+                    if (SoundEngine.TryGetActiveSound(currentPopup.drawSound, out var result)) result.Stop();
+
+                    if (currentPopup.HoldTimer <= currentPopup.GetDisplayTime())
                     {
-                        if (currentPopup.GetNodeIteration() < currentPopup.GetListLength() - 1)
-                        {
-                            currentPopup.GetNextNode();
-                        }
-                        else
-                        {
-                            player.RemovePopup();
-                        }
+                        if (!Main.gamePaused) currentPopup.HoldTimer++;
 
-                        //ResetTimers();
-                        currentPopup.ResetTimers();
+                        currentPopup.HoldText(spriteBatch, textPosition);
+                    }
+                    else
+                    {
+                        if (!Main.gamePaused) currentPopup.CloseTimer++;
+                        if (!currentPopup.ShouldClose()) currentPopup.CloseTimer = (int)currentPopup.CLOSE_TIME;
+
+                        // Remove the dialogue from the list and reset counters
+                        if (currentPopup.CloseTimer == currentPopup.CLOSE_TIME)
+                        {
+                            if (currentPopup.GetNodeIteration() < currentPopup.GetListLength() - 1)
+                            {
+                                currentPopup.GetNextNode();
+                                currentPopup.ResetTimers();
+                            }
+                            else
+                            {
+                                PopupRemoval.Remove(currentPopup);
+                            }
+                        }
                     }
                 }
+
+                //Main.NewText(offset + "=> delay:" + currentPopup.DelayTimer +  " / draw:" + currentPopup.DrawTimer + " / open:" + currentPopup.OpenTimer + " / hold: " + currentPopup.HoldTimer + " / close: " + currentPopup.CloseTimer);
             }
+
+            PopupList = new List<Popup>(PopupRemoval);
         }
     }
 }
