@@ -13,7 +13,7 @@ using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Content.WorldGeneration
 {
-    public class CartGeneration : ModSystem
+    public class TownGeneration : ModSystem
     {
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
@@ -91,7 +91,6 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(197, 130, 57)] = ModContent.TileType<CastleRoof>(),
                 [new Color(154, 100, 57)] = TileID.WoodBlock,
                 [new Color(152, 119, 85)] = TileID.Rope,
-                [new Color(40, 37, 35)] = TileID.WoodenBeam,
                 [new Color(105, 99, 94)] = ModContent.TileType<CastleBrick>(),
                 [new Color(67, 65, 64)] = ModContent.TileType<DarkCastleBrick>(),
                 [new Color(115, 78, 48)] = TileID.Adamantite,
@@ -102,7 +101,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(70, 67, 72)] = WallID.StoneSlab,
                 [new Color(73, 64, 56)] = WallID.Wood,
                 [new Color(40, 34, 29)] = WallID.BorealWood,
-                [new Color(40, 37, 35)] = WallID.GrayBrick,
+                [new Color(40, 37, 35)] = ModContent.WallType<CastleWall>(),
                 [new Color(70, 67, 72)] = WallID.Stone,
                 [new Color(42, 50, 46)] = WallID.EbonstoneBrick,
                 [new Color(87, 43, 20)] = WallID.RedBrick,

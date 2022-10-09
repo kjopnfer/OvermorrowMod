@@ -20,8 +20,23 @@ namespace OvermorrowMod.Content.Tiles.Town
             TileObjectData.newTile.Width = 1;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.CoordinateHeights = new int[2] { 16, 16 };
+
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.Origin = new Point16(0, 1);
+
+            TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
+
+            TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleOnTable1x1);
+            TileObjectData.newAlternate.Width = 1;
+            TileObjectData.newAlternate.Height = 2;
+            TileObjectData.newAlternate.CoordinateHeights = new int[2] { 16, 16 };
+
+            TileObjectData.newAlternate.UsesCustomCanPlace = true;
+            TileObjectData.newAlternate.Origin = new Point16(0, 1);
+
+            TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
+            TileObjectData.addAlternate(1);
+
             TileObjectData.addTile(Type);
 
             AddMapEntry(new Color(78, 67, 62));
