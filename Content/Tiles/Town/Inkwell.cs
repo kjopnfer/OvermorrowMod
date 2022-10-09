@@ -14,7 +14,6 @@ namespace OvermorrowMod.Content.Tiles.Town
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
-            Main.tileLighted[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.StyleOnTable1x1);
             TileObjectData.newTile.Width = 1;
@@ -44,7 +43,7 @@ namespace OvermorrowMod.Content.Tiles.Town
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 14, 34, ModContent.ItemType<Content.Items.Placeable.Furniture.Inkwell>());
+            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 34, 14, ModContent.ItemType<Content.Items.Placeable.Furniture.Inkwell>());
         }
     }
 }

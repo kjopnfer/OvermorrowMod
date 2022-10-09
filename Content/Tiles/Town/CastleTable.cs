@@ -17,7 +17,6 @@ namespace OvermorrowMod.Content.Tiles.Town
             Main.tileNoAttach[Type] = true;
             Main.tileTable[Type] = true;
             Main.tileSolidTop[Type] = true;
-            Main.tileLighted[Type] = true;
 
             TileObjectData.newTile.Width = 3;
             TileObjectData.newTile.Height = 2;
@@ -44,7 +43,7 @@ namespace OvermorrowMod.Content.Tiles.Town
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 144, 80, ModContent.ItemType<Items.Placeable.Furniture.CastleTable>());
+            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 48, 32, ModContent.ItemType<Items.Placeable.Furniture.CastleTable>());
         }
     }
 
@@ -57,7 +56,6 @@ namespace OvermorrowMod.Content.Tiles.Town
             Main.tileNoAttach[Type] = true;
             Main.tileTable[Type] = true;
             Main.tileSolidTop[Type] = true;
-            Main.tileLighted[Type] = true;
 
             TileObjectData.newTile.Width = 3;
             TileObjectData.newTile.Height = 2;
@@ -85,7 +83,7 @@ namespace OvermorrowMod.Content.Tiles.Town
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 144, 80, ModContent.ItemType<Items.Placeable.Furniture.CastleTable_Alt>());
+            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 48, 32, ModContent.ItemType<Items.Placeable.Furniture.CastleTable_Alt>());
         }
     }
 }
