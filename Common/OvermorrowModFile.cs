@@ -46,7 +46,6 @@ namespace OvermorrowMod.Common
         public Asset<Effect> TrailShader;
         public Asset<Effect> TextShader;
         public Asset<Effect> Whiteout;
-        public Asset<Effect> RadialBlur;
         public Asset<Effect> Portal;
         public Asset<Texture2D> BlurTestTexture;
 
