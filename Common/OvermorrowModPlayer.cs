@@ -3,9 +3,7 @@ using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.NPCs;
-using OvermorrowMod.Content.Projectiles.Accessory;
 using System;
-using OvermorrowMod.Content.Items.Accessories.Expert;
 using OvermorrowMod.Content.UI;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,6 +12,11 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using OvermorrowMod.Content.Items.Consumable;
+using System.Collections.Generic;
+using OvermorrowMod.Common.Cutscenes;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common
 {
@@ -64,7 +67,6 @@ namespace OvermorrowMod.Common
         public static readonly int MAX_DASH_TIMER = 35;
 
         // Accessory Counters
-        public int dripplerStack;
         public int shieldCounter;
         public int sandCount;
         public int sandMode = 0;
@@ -78,25 +80,12 @@ namespace OvermorrowMod.Common
 
         // Buffs
         public bool atomBuff;
-        public bool explosionBuff;
-        public bool graniteSpearBuff;
-        public bool goldWind;
-        public bool iorichGuardianShield;
-        public bool lightningCloud;
-        public bool mirrorBuff;
-        public bool moonBuff;
-        public bool slimeBuff;
         public bool smolBoi;
-        public bool shroomBuff;
-        public bool treeBuff;
-        public bool vineBuff;
-        // public bool windBuff;
+        public bool iorichGuardianShield;
 
         // Misc
-        public int BowEnergyCount = 0;
         public int IorichGuardianEnergy = 0;
         public int PlatformTimer = 0;
-        public int ScytheHitCount = 0;
 
         public Vector2 AltarCoordinates;
         public bool UIToggled = false;
@@ -124,53 +113,35 @@ namespace OvermorrowMod.Common
             SkyArmor = false;
 
             atomBuff = false;
-            explosionBuff = false;
-            graniteSpearBuff = false;
-            goldWind = false;
-            lightningCloud = false;
-            mirrorBuff = false;
-            moonBuff = false;
-            slimeBuff = false;
             smolBoi = false;
-            shroomBuff = false;
-            treeBuff = false;
-            vineBuff = false;
             // windBuff = false;
             MouseLampPlay = false;
 
             minionCounts = 0;
+        }
 
-            bool dashAccessoryEquipped = false;
+        public override void OnEnterWorld(Player player)
+        {        
+            // Manually apply them because the random reroll doesn't seem to work half the time
+            int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
 
-            //This is the loop used in vanilla to update/check the not-vanity accessories
-            for (int i = 3; i < 8 + Player.extraAccessorySlots; i++)
-            {
-                Item item = Player.armor[i];
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<RangedReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.rangedPrefixes[Main.rand.Next(0, ReforgeStone.rangedPrefixes.Length)]);
 
-                //Set the flag for the ExampleDashAccessory being equipped if we have it equipped OR immediately return if any of the accessories are
-                // one of the higher-priority ones
-                if (item.type == ModContent.ItemType<StormShield>())
-                    dashAccessoryEquipped = true;
-                else if (item.type == ItemID.EoCShield || item.type == ItemID.MasterNinjaGear || item.type == ItemID.Tabi)
-                    return;
-            }
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<MagicReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);
 
-            //If we don't have the ExampleDashAccessory equipped or the player has the Solor armor set equipped, return immediately
-            //Also return if the player is currently on a mount, since dashes on a mount look weird, or if the dash was already activated
-            if (!dashAccessoryEquipped || Player.setSolar || Player.mount.Active || DashActive)
-                return;
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
 
-            //When a directional key is pressed and released, vanilla starts a 15 tick (1/4 second) timer during which a second press activates a dash
-            //If the timers are set to 15, then this is the first press just processed by the vanilla logic.  Otherwise, it's a double-tap
-            if (Player.controlRight && Player.releaseRight && Player.doubleTapCardinalTimer[DashRight] < 15)
-                DashDir = DashRight;
-            else if (Player.controlLeft && Player.releaseLeft && Player.doubleTapCardinalTimer[DashLeft] < 15)
-                DashDir = DashLeft;
-            else
-                return;  //No dash was activated, return
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<RangedReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.rangedPrefixes[Main.rand.Next(0, ReforgeStone.rangedPrefixes.Length)]);
 
-            DashActive = true;
-            DashType = 0;
+            item = Item.NewItem(null, player.Center, ModContent.ItemType<MagicReforge>(), 1, false, -1);
+            Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);
+
+            base.OnEnterWorld(player);
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
@@ -197,22 +168,6 @@ namespace OvermorrowMod.Common
             {
                 Player.statMana += damage / 5;
                 Player.ManaEffect(damage / 5);
-            }
-        }
-
-        public override void Hurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit)
-        {
-            if (BloodyHeart)
-            {
-                int projectiles = 3;
-                if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == Player.whoAmI)
-                {
-                    for (int i = 0; i < projectiles; i++)
-                    {
-                        Projectile.NewProjectile(Player.GetSource_OnHurt(null), Player.Center, new Vector2(7).RotatedBy(MathHelper.ToRadians((360 / projectiles) * i + i)), ModContent.ProjectileType<BouncingBlood>(), 19, 2, Player.whoAmI);
-                    }
-                }
-                NPC.NewNPC(null, (int)Player.position.X, (int)Player.position.Y, ModContent.NPCType<BloodHeal>());
             }
         }
 
@@ -277,14 +232,6 @@ namespace OvermorrowMod.Common
             }
         }
 
-        public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
-        {
-            if (mirrorBuff)
-            {
-                damage /= 2;
-            }
-        }
-
         public override void PostUpdate()
         {
             if (Bloodmana)
@@ -329,116 +276,6 @@ namespace OvermorrowMod.Common
         public override void PreUpdate()
         {
             PlatformTimer--;
-        }
-
-        public override void UpdateEquips()
-        {
-            if (DripplerEye)
-            {
-                Player.GetCritChance(DamageClass.Ranged) += dripplerStack;
-            }
-
-            if (StormScale) // Create sparks while moving, increase defense if health is below 50%
-            {
-                if (Player.statLife <= Player.statLifeMax2 * 0.5f)
-                {
-                    Player.statDefense += 5;
-                }
-
-                if (Player.velocity.X != 0 || Player.velocity.Y != 0)
-                {
-                    if (sparkCounter % 30 == 0)
-                    {
-                        if (Main.netMode != NetmodeID.MultiplayerClient && Main.myPlayer == Player.whoAmI)
-                        {
-                            for (int i = 0; i < Main.rand.Next(1, 3); i++)
-                            {
-                                Projectile.NewProjectile(Player.GetSource_Misc("OvermorrowStormScale"), Player.Center.X, Player.Center.Y + Main.rand.Next(-15, 18), 0, 0, ModContent.ProjectileType<ElectricSparksFriendly>(), 20, 1, Player.whoAmI, 0, 0);
-                            }
-                        }
-                    }
-                    sparkCounter++;
-                }
-            }
-
-            if (TreeNecklace)
-            {
-                Lighting.AddLight(Player.Center, 0f, 1.5f, 0f);
-
-                // The player is standing still
-                if (Player.velocity == Vector2.Zero)
-                {
-                    treeCounter++;
-                    if (treeCounter % 60 == 0 && treeDefenseStack <= 15)
-                    {
-                        treeDefenseStack++;
-                    }
-                }
-                else // Reset the counter
-                {
-                    treeCounter = 0;
-                    treeDefenseStack = 0;
-                }
-
-                Player.statDefense += treeDefenseStack;
-            }
-
-
-            if (graniteSpearBuff)
-            {
-                var damage = Player.GetDamage(DamageClass.Summon) += 0.1f;
-            }
-
-            /* Unused?
-             * if (windBuff)
-            {
-                if (Player.HeldItem.DamageType == DamageClass.Ranged)
-                {
-                    Player.moveSpeed += 0.85f;
-                    TrailTimer++;
-                    if (TrailTimer > 3 && Player.velocity.X > 0 || TrailTimer > 3 && Player.velocity.X < 0 || TrailTimer > 3 && Player.velocity.Y < 0 || TrailTimer > 3 && Player.velocity.Y > 0)
-                    {
-                        Projectile.NewProjectile(Player.GetProjectileSource_Buff(Player.FindBuffIndex(ModContent.BuffType<WindBuff>()), Player.Center.X, Player.Center.Y, Player.velocity.X, Player.velocity.Y, ModContent.ProjectileType<PlayerMoveWave>(), 15, 0, Main.myPlayer);
-                        TrailTimer = 0;
-                    }
-                }
-            } */
-
-            if (slimeBuff)
-            {
-                Player.jumpSpeedBoost += 3f;
-            }
-
-            if (goldWind)
-            {
-                Player.moveSpeed += 1f;
-            }
-        }
-
-        public override void UpdateLifeRegen()
-        {
-            if (treeBuff)
-            {
-                // lifeRegen is measured in 1/2 life per second. Therefore, this effect causes 2 life gained per second.
-                Player.lifeRegen += 4;
-            }
-        }
-
-        public override void PreUpdateMovement()
-        {
-            if (Player.HasBuff(ModContent.BuffType<Paralyzed>()) || Player.HasBuff(ModContent.BuffType<Cutscene>()))
-            {
-                if (Player.controlJump)
-                {
-                    Player.velocity.Y = 0;
-                }
-
-                if (Player.mount.Active) Player.QuickMount();
-
-                Player.velocity.X = 0;
-            }
-
-            base.PreUpdateMovement();
         }
 
         public override void PostUpdateRunSpeeds()
@@ -489,36 +326,8 @@ namespace OvermorrowMod.Common
             }
         }
 
-        private int slimeCounter = 0;
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            if (slimeBuff && slimeCounter > 0)
-            {
-                slimeCounter--;
-            }
-
-            if (Player.justJumped && slimeBuff && slimeCounter == 0)
-            {
-                Vector2 vector4 = new Vector2(Player.position.X + (float)Player.width * 0.5f, Player.position.Y + (float)Player.height * 0.5f);
-
-                for (int j = 0; j < 5; j++)
-                {
-                    Vector2 vector5 = new Vector2(j - 2, -4f);
-                    vector5.X *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
-                    vector5.Y *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
-                    vector5.Normalize();
-                    vector5 *= 4f + (float)Main.rand.Next(-50, 51) * 0.01f;
-                    int proj = Projectile.NewProjectile(null, vector4.X, vector4.Y, vector5.X, vector5.Y, ProjectileID.SpikedSlimeSpike, 16, 0f, Main.myPlayer);
-
-                    Main.projectile[proj].friendly = true;
-                    Main.projectile[proj].hostile = false;
-                }
-
-                Player.statLife += 2;
-                Player.HealEffect(2);
-                slimeCounter = 45;
-            }
-
             if (OvermorrowModFile.SandModeKey.JustPressed && ArmBracer)
             {
                 if (sandMode == 0) // Defense
@@ -533,14 +342,6 @@ namespace OvermorrowMod.Common
                 }
             }
 
-            if (OvermorrowModFile.AmuletKey.JustPressed && ArtemisAmulet && amuletCounter == 0)
-            {
-                Vector2 position = Main.MouseWorld;
-
-                Projectile.NewProjectile(null, position, new Vector2(0), ModContent.ProjectileType<ArtemisRune>(), 0, 5f, Main.myPlayer);
-
-                amuletCounter = 900;
-            }
 
             if (OvermorrowModFile.ToggleUI.JustPressed)
             {

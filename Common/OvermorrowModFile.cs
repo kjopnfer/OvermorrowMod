@@ -46,7 +46,8 @@ namespace OvermorrowMod.Common
         public Asset<Effect> TrailShader;
         public Asset<Effect> TextShader;
         public Asset<Effect> Whiteout;
-
+        public Asset<Effect> RadialBlur;
+        public Asset<Effect> Portal;
         public Asset<Texture2D> BlurTestTexture;
 
         public static Effect BigTentacle;
@@ -96,6 +97,7 @@ namespace OvermorrowMod.Common
                 Whiteout = Assets.Request<Effect>("Effects/Whiteout");
                 RadialBlur = Assets.Request<Effect>("Effects/CenterBlurShader");
                 BlurTestTexture = Assets.Request<Texture2D>("Effects/testpattern");
+                Portal = Assets.Request<Effect>("Effects/PortalOverride");
 
                 BigTentacle = Assets.Request<Effect>("Effects/BigTentacle", AssetRequestMode.ImmediateLoad).Value;
                 //Dissolve = Assets.Request<Effect>("Effects/Dissolve", AssetRequestMode.ImmediateLoad).Value;

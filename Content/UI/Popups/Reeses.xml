@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Popup>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">[REESE'S PUFFS]</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">[REESE'S PUFFS]</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">EAT 'EM UP</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">EAT 'EM UP</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">EAT 'EM UP</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">EAT 'EM UP</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">[REESE'S PUFFS]</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">[REESE'S PUFFS]</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">EAT 'EM UP</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">EAT 'EM UP</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">EAT 'EM UP</Text>
+	<Text npcPortrait="Merchant" drawTime="10" displayTime="20" bracketColorR="52" bracketColorG="201" bracketColorB="235">EAT 'EM UP</Text>
+</Popup>

@@ -37,5 +37,7 @@ namespace OvermorrowMod.Core
         public const string WorldGen = Content + "WorldGeneration/";
 
         #endregion
+
+        public const string Popup = "Content/UI/Popups/";
     }
 }

@@ -1,5 +1,4 @@
 using OvermorrowMod.Content.Buffs.Debuffs;
-using OvermorrowMod.Content.Projectiles.Accessory;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -43,41 +42,6 @@ namespace OvermorrowMod.Common
             if (projectile.type == 30)
             {
                 target.immune[projectile.owner] = 0;
-            }
-        }
-
-        public override void Kill(Projectile projectile, int timeLeft)
-        {
-            Player player = Main.player[projectile.owner];
-            var modPlayer = player.GetModPlayer<OvermorrowModPlayer>();
-            if (modPlayer.ShatteredOrb && !spawnedBlood && projectile.DamageType == DamageClass.Magic)
-            {
-                // This thing is absolutely insane without the explosion chance
-                if (Main.rand.NextBool(6))
-                {
-                    // I'm lazy
-                    // Determine if the projectiles go straight or at an angle
-                    int randChoice = Main.rand.Next(2);
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        var source = projectile.GetSource_FromThis();
-                        if (randChoice == 0)
-                        {
-                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, -6f, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 6, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 6f, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, -6, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                        }
-                        else
-                        {
-                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 0f, 6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 6, 0f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, 0f, -6f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                            Projectile.NewProjectile(source, projectile.Center.X, projectile.Center.Y, -6, 0f, ModContent.ProjectileType<BloodyBallFriendly>(), projectile.damage / 4, 2f, projectile.owner, 0f, 0f);
-                        }
-                    }
-                    spawnedBlood = true;
-                }
             }
         }
 
