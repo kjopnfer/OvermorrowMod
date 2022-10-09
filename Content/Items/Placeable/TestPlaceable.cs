@@ -1,4 +1,4 @@
-using OvermorrowMod.Content.Tiles.Carts;
+using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core;
 using Terraria.ID;
 using Terraria.ModLoader;

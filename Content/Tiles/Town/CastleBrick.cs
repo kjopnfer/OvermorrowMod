@@ -3,9 +3,9 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles.Carts
+namespace OvermorrowMod.Content.Tiles.Town
 {
-    public class DarkCastleBrick : ModTile
+    public class CastleBrick : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -17,9 +17,6 @@ namespace OvermorrowMod.Content.Tiles.Carts
             Main.tileMerge[Type][ModContent.TileType<CastleRoof>()] = true;
             Main.tileMerge[ModContent.TileType<CastleRoof>()][Type] = true;
 
-            Main.tileMerge[Type][ModContent.TileType<CastleBrick>()] = true;
-            Main.tileMerge[ModContent.TileType<CastleBrick>()][Type] = true;
-
             Main.tileMerge[Type][TileID.Grass] = true;
             Main.tileMerge[TileID.Grass][Type] = true;
 
@@ -27,7 +24,7 @@ namespace OvermorrowMod.Content.Tiles.Carts
             MineResist = 2f;
 
             ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.RuinBrick>();
-            AddMapEntry(new Color(67, 65, 64));
+            AddMapEntry(new Color(105, 99, 94));
         }
     }
 }

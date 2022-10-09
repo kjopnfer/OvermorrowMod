@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Tiles.Carts
+namespace OvermorrowMod.Content.Tiles.Town
 {
     public class CastleRoof : ModTile
     {

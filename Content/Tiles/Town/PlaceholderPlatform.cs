@@ -9,7 +9,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace OvermorrowMod.Content.Tiles.Carts
+namespace OvermorrowMod.Content.Tiles.Town
 {
     internal class PlaceholderPlatform : ModTile
     {

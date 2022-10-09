@@ -1,6 +1,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
-using Block = OvermorrowMod.Content.Tiles.Carts.CastlePlatform;
+using Block = OvermorrowMod.Content.Tiles.Town.CastlePlatform;
 
 
 namespace OvermorrowMod.Content.Items.Placeable.Tiles

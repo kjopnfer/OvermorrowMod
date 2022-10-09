@@ -1,6 +1,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
-using Block = OvermorrowMod.Content.Tiles.Carts.Inkwell;
+using Block = OvermorrowMod.Content.Tiles.Town.Inkwell;
 
 namespace OvermorrowMod.Content.Items.Placeable.Furniture
 {

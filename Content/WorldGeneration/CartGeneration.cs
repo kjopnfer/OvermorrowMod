@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.Tiles.Carts;
+using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;

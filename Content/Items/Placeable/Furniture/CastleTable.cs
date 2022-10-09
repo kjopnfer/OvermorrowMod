@@ -1,6 +1,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
-using Block = OvermorrowMod.Content.Tiles.Carts.CastleTable;
+using Block = OvermorrowMod.Content.Tiles.Town.CastleTable;
 
 namespace OvermorrowMod.Content.Items.Placeable.Furniture
 {
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = 2000;
-            Item.createTile = ModContent.TileType<Content.Tiles.Carts.CastleTable_Alt>();
+            Item.createTile = ModContent.TileType<Content.Tiles.Town.CastleTable_Alt>();
         }
     }
 }

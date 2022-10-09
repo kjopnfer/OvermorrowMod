@@ -4,7 +4,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace OvermorrowMod.Content.Tiles.Carts
+namespace OvermorrowMod.Content.Tiles.Town
 {
     public class CastlePlatform : ModTile
     {
