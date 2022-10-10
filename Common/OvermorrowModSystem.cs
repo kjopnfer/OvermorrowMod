@@ -2,17 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
-using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Common.VanillaOverrides;
 using OvermorrowMod.Content.UI;
-using OvermorrowMod.Core;
-using ReLogic.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using OvermorrowMod.Common.Cutscenes;
 
 namespace OvermorrowMod.Common
 {
@@ -28,9 +26,11 @@ namespace OvermorrowMod.Common
         internal UserInterface MyInterface;
         internal UserInterface AltarUI;
         internal UserInterface TitleInterface;
+        internal UserInterface ScreenInterface;
 
         internal AltarUI Altar;
-        internal TitleCard TitleCard;
+        public TitleCard TitleCard;
+        public ScreenColor ScreenColor;
 
         internal TrajectoryDraw trajectoryDraw;
         private UserInterface trajDraw;
@@ -71,6 +71,10 @@ namespace OvermorrowMod.Common
                 TitleInterface = new UserInterface();
                 TitleCard = new TitleCard();
                 TitleInterface.SetState(TitleCard);
+
+                ScreenInterface = new UserInterface();
+                ScreenColor = new ScreenColor();
+                ScreenInterface.SetState(ScreenColor);
             }
         }
 
@@ -96,42 +100,6 @@ namespace OvermorrowMod.Common
             trajDraw?.Update(gameTime);
 
             bowCargDraw?.Update(gameTime);
-        }
-
-        internal void BossTitle(int BossID)
-        {
-            string BossName;
-            string BossTitle;
-            Color titleColor = Color.White;
-            Color nameColor = Color.White;
-
-            switch (BossID)
-            {
-                case 1:
-                    BossName = "eye of cthulhu";
-                    BossTitle = "the gamer";
-                    break;
-                default:
-                    BossName = "snoop dogg";
-                    BossTitle = "high king";
-                    nameColor = Color.LimeGreen;
-                    titleColor = Color.Green;
-                    break;
-
-            }
-            Vector2 nameSize = FontAssets.DeathText.Value.MeasureString(BossName);
-            Vector2 titleSize = FontAssets.DeathText.Value.MeasureString(BossTitle);
-            float nameOffset = (Main.screenWidth / 2) - nameSize.X / 2f;
-            float titleOffset = (Main.screenWidth / 2) - titleSize.X / 2f;
-
-            //Main.spriteBatch.Reload(BlendState.Additive);
-            Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.Textures + "GamerTag").Value;
-            float backOffset = (Main.screenWidth / 2);
-            Main.spriteBatch.Draw(backDrop, new Vector2(backOffset, 0), null, Color.White, 0f, backDrop.Size() / 2, 1f, SpriteEffects.None, 1f);
-            //Main.spriteBatch.Reload(BlendState.AlphaBlend);
-
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, FontAssets.DeathText.Value, BossTitle, new Vector2(titleOffset, 50), titleColor, 0f, Vector2.Zero, 0.6f, 0, 0f);
-            DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, FontAssets.DeathText.Value, BossName, new Vector2(nameOffset, 100), nameColor, 0f, Vector2.Zero, 1f, 0, 0f);
         }
 
         public override void PostDrawTiles()
@@ -168,17 +136,10 @@ namespace OvermorrowMod.Common
                 AddInterfaceLayer(layers, TitleInterface, TitleCard, mouseTextIndex, TitleCard.visible, "Title Card");
             }
 
-            OvermorrowModPlayer modPlayer = Main.player[Main.myPlayer].GetModPlayer<OvermorrowModPlayer>();
-            if (modPlayer.ShowText)
+            int cursorIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Cursor"));
+            if (cursorIndex != -1)
             {
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                "OvermorrowMod: Title",
-                delegate
-                {
-                    BossTitle(modPlayer.TitleID);
-                    return true;
-                },
-                InterfaceScaleType.UI));
+                AddInterfaceLayer(layers, ScreenInterface, ScreenColor, cursorIndex, ScreenColor.visible, "Screen Color");
             }
 
             mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));

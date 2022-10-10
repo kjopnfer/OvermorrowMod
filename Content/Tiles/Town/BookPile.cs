@@ -15,7 +15,6 @@ namespace OvermorrowMod.Content.Tiles.Town
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileSolidTop[Type] = true;
-            Main.tileTable[Type] = true;
 
             TileObjectData.newAlternate.CopyFrom(TileObjectData.StyleOnTable1x1);
             TileObjectData.newTile.Width = 2;
@@ -29,7 +28,7 @@ namespace OvermorrowMod.Content.Tiles.Town
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.AnchorAlternateTiles = new int[] { ModContent.TileType<BookPile>() };
+
             TileObjectData.addTile(Type);
         }
 

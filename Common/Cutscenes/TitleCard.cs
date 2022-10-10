@@ -7,7 +7,7 @@ using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace OvermorrowMod.Content.UI
+namespace OvermorrowMod.Common.Cutscenes
 {
     public class TitleCard : UIState
     {
