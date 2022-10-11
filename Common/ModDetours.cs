@@ -20,6 +20,8 @@ namespace OvermorrowMod.Common
         public static void Load()
         {
             #region Hide UI
+            On.Terraria.Main.DrawInterface_36_Cursor += DrawInterface_36_Cursor;
+
             //On.Terraria.Main.DrawNPCChatButtons += DrawNPCChatButtons;
             /*On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.Draw += Draw;
             On.Terraria.Main.DrawHealthBar += DrawHealthBar;
@@ -42,6 +44,8 @@ namespace OvermorrowMod.Common
         public static void Unload()
         {
             #region Hide UI
+            On.Terraria.Main.DrawInterface_36_Cursor -= DrawInterface_36_Cursor;
+
             //On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtons;
             /*On.Terraria.GameContent.UI.ResourceSets.PlayerResourceSetsManager.Draw -= Draw;
 
@@ -61,6 +65,12 @@ namespace OvermorrowMod.Common
             Main.OnResolutionChanged -= Main_OnResolutionChanged;
         }
 
+        private static void DrawInterface_36_Cursor(On.Terraria.Main.orig_DrawInterface_36_Cursor orig)
+        {
+            if (OvermorrowModSystem.Instance.ScreenColor.IsVisible()) return;
+
+            orig();
+        }
 
         private static void SetTalkNPC(On.Terraria.Player.orig_SetTalkNPC orig, Player self, int npcIndex, bool fromNet)
         {

@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using OvermorrowMod.Common.Cutscenes;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
+using ReLogic.Content;
+using Terraria.GameContent;
 
 namespace OvermorrowMod.Common
 {
@@ -118,6 +120,34 @@ namespace OvermorrowMod.Common
             MouseLampPlay = false;
 
             minionCounts = 0;
+        }
+
+        // Example of how to replace cursor texture to remember for later
+        public override void PostUpdateMiscEffects()
+        {
+            /*if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
+            {
+                Asset<Texture2D> emptyTex = ModContent.Request<Texture2D>(AssetDirectory.Empty);
+                Asset<Texture2D> cursor0 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_0");
+                Asset<Texture2D> cursor1 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_1");
+                Asset<Texture2D> cursor11 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_11");
+                Asset<Texture2D> cursor12 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_12");
+
+                if (OvermorrowModSystem.Instance.ScreenColor.IsVisible())
+                {
+                    TextureAssets.Cursors[0] = emptyTex;
+                    TextureAssets.Cursors[1] = emptyTex;
+                    TextureAssets.Cursors[11] = emptyTex;
+                    TextureAssets.Cursors[12] = emptyTex;
+                }
+                else
+                {
+                    TextureAssets.Cursors[0] = cursor0;
+                    TextureAssets.Cursors[1] = cursor1;
+                    TextureAssets.Cursors[11] = cursor11;
+                    TextureAssets.Cursors[12] = cursor12;
+                }
+            }*/
         }
 
         public override void OnEnterWorld(Player player)

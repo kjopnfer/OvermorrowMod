@@ -20,6 +20,9 @@ namespace OvermorrowMod.Common.Cutscenes
         private float drawTime;
         private float holdTime;
         private float fadeTime;
+
+        public bool IsVisible() => visible;
+
         public void SetDarkness(float drawTime, float holdTime, float fadeTime, float opacity = 1)
         {
             this.drawTime = drawTime;
@@ -29,6 +32,7 @@ namespace OvermorrowMod.Common.Cutscenes
             this.fadeTimer = fadeTime;
             visible = true;
         }
+
 
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -53,7 +57,7 @@ namespace OvermorrowMod.Common.Cutscenes
                         float progress = (Utils.Clamp(fadeTimer, 0, fadeTime) / fadeTime);
                         DrawDarkness(spriteBatch, progress);
                     }
-                    else if (fadeTimer == 0)
+                    else if (fadeTimer <= 0)
                     {
                         ResetCounters();
                         visible = false;
