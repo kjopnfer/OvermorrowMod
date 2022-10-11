@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Core;
 using ReLogic.Graphics;
 using Terraria;
@@ -21,9 +22,12 @@ namespace OvermorrowMod.Common.Cutscenes
         private float holdTime;
         private float fadeTime;
 
+        private bool lockMouse;
+        private Vector2 storedMousePosition;
+
         public bool IsVisible() => visible;
 
-        public void SetDarkness(float drawTime, float holdTime, float fadeTime, float opacity = 1)
+        public void SetDarkness(float drawTime, float holdTime, float fadeTime, bool lockMouse = false, float opacity = 1)
         {
             this.drawTime = drawTime;
             this.holdTime = holdTime;
@@ -31,12 +35,19 @@ namespace OvermorrowMod.Common.Cutscenes
 
             this.fadeTimer = fadeTime;
             visible = true;
-        }
 
+            this.lockMouse = lockMouse;
+            if (this.lockMouse)
+            {
+                storedMousePosition = new Vector2(Main.mouseX, Main.mouseY);
+            }
+        }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (!visible) return;
+
+            if (lockMouse) Mouse.SetPosition(0, 0);
 
             if (drawTimer++ < drawTime)
             {
@@ -61,6 +72,12 @@ namespace OvermorrowMod.Common.Cutscenes
                     {
                         ResetCounters();
                         visible = false;
+
+                        if (lockMouse)
+                        {
+                            Mouse.SetPosition((int)storedMousePosition.X, (int)storedMousePosition.Y);
+                            lockMouse = false;
+                        }
                     }
                 }
             }

@@ -152,7 +152,7 @@ namespace OvermorrowMod.Common
 
         public override void OnEnterWorld(Player player)
         {
-            OvermorrowModSystem.Instance.ScreenColor.SetDarkness(60, 240, 120);
+            OvermorrowModSystem.Instance.ScreenColor.SetDarkness(0, 60, 120, true);
 
             // Manually apply them because the random reroll doesn't seem to work half the time
             int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.NPCs.Bosses.Eye;
@@ -67,7 +68,10 @@ namespace OvermorrowMod.Common
 
         private static void DrawInterface_36_Cursor(On.Terraria.Main.orig_DrawInterface_36_Cursor orig)
         {
-            if (OvermorrowModSystem.Instance.ScreenColor.IsVisible()) return;
+            if (OvermorrowModSystem.Instance.ScreenColor.IsVisible())
+            {
+                return;
+            }
 
             orig();
         }
