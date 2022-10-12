@@ -17,6 +17,7 @@ namespace OvermorrowMod.Content.Tiles.Town
             TileObjectData.newTile.Width = 6;
             TileObjectData.newTile.Height = 3;
             TileObjectData.newTile.CoordinateHeights = new int[3] { 16, 16, 16 };
+            TileObjectData.newTile.DrawYOffset = 2;
 
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.Origin = new Point16(2, 2);
