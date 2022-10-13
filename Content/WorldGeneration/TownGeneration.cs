@@ -32,6 +32,21 @@ namespace OvermorrowMod.Content.WorldGeneration
             base.ModifyWorldGenTasks(tasks, ref totalWeight);
         }
 
+        private int GetRandomTent()
+        {
+            switch (Main.rand.Next(1, 4))
+            {
+                case 1:
+                    return ModContent.TileType<GreenTent>();
+                case 2:
+                    return ModContent.TileType<BlueTent>();
+                case 3:
+                    return ModContent.TileType<BlueTent>();
+            }
+
+            return 0;
+        }
+
         private void GenerateCamp(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Setting Up Camp";
@@ -51,9 +66,9 @@ namespace OvermorrowMod.Content.WorldGeneration
                 {
                     validArea = true;
 
-                    WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x + 1, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x - 1, y, TileID.Grass, true, true);
 
                     WorldGen.KillTile(x - 1, y - 1);
                     WorldGen.KillTile(x, y - 1);
@@ -61,14 +76,12 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                     ModUtils.PlaceObject(x, y - 1, TileID.Campfire);
                     Wiring.ToggleCampFire(x, y - 1, Framing.GetTileSafely(x, y - 1), false, true);
-                    //Wiring.TripWire(x - 1, y - 1, 48, 32);
-                    //Wiring.HitSwitch(x, y - 1);
                 }
                 else
                 {
                     y += 1;
                     tile = Framing.GetTileSafely(x, y);
-                } 
+                }
             }
             #endregion
 
@@ -84,12 +97,12 @@ namespace OvermorrowMod.Content.WorldGeneration
                 {
                     validArea = true;
 
-                    WorldGen.PlaceTile(x - 2, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x + 2, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x + 3, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x - 2, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x - 1, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x + 1, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x + 2, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x + 3, y, TileID.Grass, true, true);
 
                     WorldGen.KillTile(x - 2, y - 1);
                     WorldGen.KillTile(x - 1, y - 1);
@@ -98,7 +111,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     WorldGen.KillTile(x + 2, y - 1);
                     WorldGen.KillTile(x + 3, y - 1);
 
-                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<GreenTent>());
+                    ModUtils.PlaceObject(x, y - 1, GetRandomTent());
                 }
                 else
                 {
@@ -120,12 +133,12 @@ namespace OvermorrowMod.Content.WorldGeneration
                 {
                     validArea = true;
 
-                    WorldGen.PlaceTile(x - 2, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x + 2, y, TileID.Adamantite, true, true);
-                    WorldGen.PlaceTile(x + 3, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x - 2, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x - 1, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x + 1, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x + 2, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x + 3, y, TileID.Grass, true, true);
 
                     WorldGen.KillTile(x - 2, y - 1);
                     WorldGen.KillTile(x - 1, y - 1);
