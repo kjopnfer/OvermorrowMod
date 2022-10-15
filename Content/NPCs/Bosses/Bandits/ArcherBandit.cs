@@ -17,6 +17,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 {
     public class ArcherBandit : ModNPC
     {
+        private int DodgeCooldown = 0;
+        private int JumpDirection;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Archer Bandit");
@@ -40,11 +42,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
         private ref float AIState => ref NPC.ai[0];
         private ref float AICounter => ref NPC.ai[1];
+        private ref float DodgeCounter => ref NPC.ai[2];
 
         private enum AIStates
         {
             Walk = 0,
-            LongShot = 1
+            Jump = 1,
+            LongShot = 2,
+            AngleShot = 3
         }
 
         public void Move(Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
@@ -107,22 +112,53 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         AICounter = 0;
 
                         if (NPC.Center.X > target.Center.X) // The NPC is to the right of the player, therefore move to the right 
-                        {  
+                        {
                             Move(target.Center + new Vector2(12 * 16), 0.35f, 1.2f, 2f);
                         }
                         else
                         {
                             Move(target.Center - new Vector2(12 * 16), 0.35f, 1.2f, 2f);
                         }
+
+                        // The player is too close, set a timer to determine if they should perform a jump or roll
+                        if (xDistance < 4 * 16)
+                        {
+                            if (DodgeCounter++ >= 60 && DodgeCooldown-- <= 0)
+                            {
+                                NPC.velocity = Vector2.Zero;
+
+                                AIState = (int)AIStates.Jump;
+                                AICounter = 0;
+                                DodgeCounter = 0;
+                            }
+                        }
                     }
                     else
                     {
                         if (AICounter++ == 60)
                         {
-                            AIState = (int)AIStates.LongShot;
+                            AIState = Main.rand.NextBool() ? (int)AIStates.LongShot : (int)AIStates.AngleShot;
                             AICounter = 0;
                         }
-                    }       
+                    }
+
+                    break;
+                case (int)AIStates.Jump:
+                    FrameUpdate(FrameType.Jump);
+
+                    if (AICounter++ == 0)
+                    {
+                        //JumpDirection = NPC.Center.X > target.Center.X ? 1 : -1;
+                        int jumpDirection = NPC.Center.X > target.Center.X ? 5 : -5;
+                        NPC.velocity = new Vector2(jumpDirection, -6);
+                    }
+
+                    if (NPC.collideY && NPC.velocity.Y == 0)
+                    {
+                        AIState = (int)AIStates.Walk;
+                        AICounter = 0;
+                        DodgeCooldown = 30;
+                    }
 
                     break;
                 case (int)AIStates.LongShot:
@@ -140,13 +176,28 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     }
 
                     break;
+                case (int)AIStates.AngleShot:
+                    NPC.velocity = Vector2.Zero;
+                    NPC.aiStyle = -1;
+
+                    if (FrameUpdate(FrameType.AngleShot))
+                    {
+                        // Handle shooting here
+                    }
+                    else
+                    {
+                        AIState = (int)AIStates.Walk;
+                        AICounter = 0;
+                    }
+
+                    break;
             }
         }
 
         int xFrame = 1;
         int yFrame = 0;
 
-        const int MAX_COLUMNS = 3;
+        const int MAX_COLUMNS = 4;
         public override void FindFrame(int frameHeight)
         {
             NPC.spriteDirection = NPC.direction;
@@ -160,7 +211,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         {
             Walk,
             Jump,
-            LongShot
+            LongShot,
+            AngleShot
         }
 
         float tempCounter = 0;
@@ -169,12 +221,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             switch (type)
             {
                 case FrameType.Walk:
+                    xFrame = 3;
+
                     if (NPC.velocity.X != 0)
                     {
-                        NPC.direction = (int)Vector2.Normalize(new Vector2(NPC.velocity.X, NPC.velocity.Y)).X;
+                        NPC.direction = Math.Sign(NPC.velocity.X);
                     }
-                    
-                    xFrame = 2;
 
                     if (NPC.velocity.X == 0 && NPC.velocity.Y == 0) // Frame for when the NPC is standing still
                     {
@@ -200,6 +252,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         }
                     }
                     break;
+                case FrameType.Jump:
+                    if (NPC.velocity.X != 0)
+                    {
+                        NPC.direction = -Math.Sign(NPC.velocity.X);
+                    }
+
+                    xFrame = 0;
+                    yFrame = 1;
+                    break;
                 case FrameType.LongShot:
                     xFrame = 1;
 
@@ -224,6 +285,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         }
                     }
 
+                    break;
+                case FrameType.AngleShot:
+                    xFrame = 2;
+
+                    if (tempCounter++ < 60) // NPC stands in the ready position prior to drawing back the bow
+                    {
+                        if (yFrame > 0) yFrame = 0;
+                    }
+                    else
+                    {
+                        if (tempCounter > 68)
+                        {
+                            if (yFrame == 10)
+                            {
+                                yFrame = 0;
+                                tempCounter = 0;
+
+                                return false;
+                            }
+
+                            yFrame++;
+                            tempCounter = 60;
+                        }
+                    }
                     break;
             }
 
