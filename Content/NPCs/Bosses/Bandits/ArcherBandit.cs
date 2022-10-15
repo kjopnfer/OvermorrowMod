@@ -33,7 +33,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             NPC.lifeMax = 340;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath39;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.5f;
             NPC.boss = true;
             NPC.npcSlots = 10f;
         }
@@ -44,7 +44,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         private enum AIStates
         {
             Walk = 0,
-            DrawBow = 1
+            LongShot = 1
         }
 
         public void Move(Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
@@ -99,21 +99,37 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             switch (AIState)
             {
                 case (int)AIStates.Walk:
-                    Move(target.Center, 0.2f, 1f, 2f);
                     FrameUpdate(FrameType.Walk);
 
-                    if (AICounter++ == 240)
+                    float xDistance = Math.Abs(NPC.Center.X - target.Center.X);
+                    if (xDistance < 12 * 16) // Try to stay within 12 tiles away from the player
                     {
-                        AIState = (int)AIStates.DrawBow;
                         AICounter = 0;
+
+                        if (NPC.Center.X > target.Center.X) // The NPC is to the right of the player, therefore move to the right 
+                        {  
+                            Move(target.Center + new Vector2(12 * 16), 0.35f, 1.2f, 2f);
+                        }
+                        else
+                        {
+                            Move(target.Center - new Vector2(12 * 16), 0.35f, 1.2f, 2f);
+                        }
                     }
+                    else
+                    {
+                        if (AICounter++ == 60)
+                        {
+                            AIState = (int)AIStates.LongShot;
+                            AICounter = 0;
+                        }
+                    }       
 
                     break;
-                case (int)AIStates.DrawBow:
+                case (int)AIStates.LongShot:
                     NPC.velocity = Vector2.Zero;
                     NPC.aiStyle = -1;
 
-                    if (FrameUpdate(FrameType.DrawBow))
+                    if (FrameUpdate(FrameType.LongShot))
                     {
                         // Handle shooting here
                     }
@@ -144,7 +160,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         {
             Walk,
             Jump,
-            DrawBow
+            LongShot
         }
 
         float tempCounter = 0;
@@ -153,6 +169,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             switch (type)
             {
                 case FrameType.Walk:
+                    if (NPC.velocity.X != 0)
+                    {
+                        NPC.direction = (int)Vector2.Normalize(new Vector2(NPC.velocity.X, NPC.velocity.Y)).X;
+                    }
+                    
                     xFrame = 2;
 
                     if (NPC.velocity.X == 0 && NPC.velocity.Y == 0) // Frame for when the NPC is standing still
@@ -179,7 +200,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         }
                     }
                     break;
-                case FrameType.DrawBow:
+                case FrameType.LongShot:
                     xFrame = 1;
 
                     if (tempCounter++ < 60) // NPC stands in the ready position prior to drawing back the bow
