@@ -19,6 +19,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
     {
         private int DodgeCooldown = 0;
         private int JumpDirection;
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
+        public override bool? CanHitNPC(NPC target) => false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Archer Bandit");
@@ -137,7 +140,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     {
                         if (AICounter++ == 60)
                         {
-                            AIState = Main.rand.NextBool() ? (int)AIStates.LongShot : (int)AIStates.AngleShot;
+                            //AIState = Main.rand.NextBool() ? (int)AIStates.LongShot : (int)AIStates.AngleShot;
+                            AIState = (int)AIStates.LongShot;
                             AICounter = 0;
                         }
                     }
@@ -155,6 +159,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                     if (NPC.collideY && NPC.velocity.Y == 0)
                     {
+                        NPC.velocity.X = 0;
+
                         AIState = (int)AIStates.Walk;
                         AICounter = 0;
                         DodgeCooldown = 30;
@@ -167,7 +173,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                     if (FrameUpdate(FrameType.LongShot))
                     {
-                        // Handle shooting here
+                        if (yFrame == 6 && tempCounter == 62)
+                        {
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitX * 12 * NPC.direction, ModContent.ProjectileType<FlameArrow>(), NPC.damage, 2f, Main.myPlayer);
+                        }
                     }
                     else
                     {
