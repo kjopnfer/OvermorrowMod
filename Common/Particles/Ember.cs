@@ -14,7 +14,7 @@ public class Ember : CustomParticle
     public override void OnSpawn()
     {
         // The fade-in progress
-        particle.customData[1] = Main.rand.NextFloat(0.3f, 0.8f);
+        particle.customData[1] = Main.rand.NextFloat(0.3f, 0.4f);
         //particle.customData[1] = Main.rand.NextFloat(0.2f, 0.3f);
         particle.alpha = 0f;
         particle.scale = particle.customData[1];
@@ -40,7 +40,7 @@ public class Ember : CustomParticle
 
         Texture2D tex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
         spriteBatch.Draw(tex, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.7f, 0f, tex.Size() / 2, particle.scale * 1.5f, SpriteEffects.None, 0f);
-        spriteBatch.Draw(tex, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.4f, 0f, tex.Size() / 2, particle.scale * 3f, SpriteEffects.None, 0f);
+        spriteBatch.Draw(tex, particle.position - Main.screenPosition, null, Color.White * particle.alpha * 0.4f, 0f, tex.Size() / 2, particle.scale * 3f, SpriteEffects.None, 0f);
 
         spriteBatch.Reload(BlendState.AlphaBlend);
     }
