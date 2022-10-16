@@ -179,11 +179,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                             {
                                 float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
                                 float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                                Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(5, 10);
+                                Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(4, 7);
                                 Color color = Color.Orange;
 
                                 Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
                             }
+
+                            float particleScale = Main.rand.NextFloat(0.4f, 0.5f);
+                            float particleRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+                            float particleTime = 90;
+
+                            Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center, Vector2.Zero, Color.Orange, 1, particleScale, particleRotation, particleTime);
 
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitX * 12 * NPC.direction, ModContent.ProjectileType<FlameArrow>(), NPC.damage, 2f, Main.myPlayer);
                         }
@@ -207,11 +213,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                             {
                                 float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
                                 float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                                Vector2 RandomVelocity = new Vector2(-1, 1).RotatedBy(randomAngle) * Main.rand.Next(5, 10);
+                                Vector2 RandomVelocity = new Vector2(-1, 1).RotatedBy(randomAngle) * Main.rand.Next(4, 7);
                                 Color color = Color.Purple;
 
                                 Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
                             }
+
+                            float particleScale = 0.1f;
+                            float particleRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+                            float particleTime = 90;
+
+                            Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26, -28), Vector2.Zero, Color.Purple, 1, particleScale, particleRotation, particleTime);
 
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -7) , ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
                         }
@@ -390,8 +402,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                 Main.spriteBatch.Reload(BlendState.Additive);
 
-                Texture2D glowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_ArrowGlow").Value;
                 Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
+
+                Texture2D flare = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flare_01").Value;
+                float scale = MathHelper.Lerp(0, 1, progress);
+                spriteBatch.Draw(flare, NPC.Center - screenPos + new Vector2(26, -28), null, frameColor, NPC.rotation, flare.Size() / 2, scale, spriteEffects, 0);
+
+                float colorStrength = MathHelper.Lerp(0, 1f, progress);
+                Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, 0, colorStrength);
+
+                Texture2D glowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_ArrowGlow").Value;
                 spriteBatch.Draw(glowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, frameColor * progress, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
 
                 Main.spriteBatch.Reload(BlendState.AlphaBlend);
@@ -406,16 +426,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-
-            float xOffset = NPC.direction == 1 ? 11 : -10;
-            Vector2 drawOffset = new Vector2(xOffset, -4);
 
             if ((AIState == (int)AIStates.LongShot || AIState == (int)AIStates.AngleShot) && yFrame == 5)
             {
-                spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
-
                 int frameOffset = xFrame == 1 ? 0 : 60;
                 Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
                 Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
