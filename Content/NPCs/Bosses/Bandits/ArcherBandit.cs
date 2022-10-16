@@ -289,18 +289,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     }
                     else
                     {
-                        if (tempCounter > 68)
+                        if (yFrame == 5) // Holds the frame for half a second longer 
                         {
-                            if (yFrame == 10)
+                            if (tempCounter > 98)
                             {
-                                yFrame = 0;
-                                tempCounter = 0;
-
-                                return false;
+                                yFrame++;
+                                tempCounter = 60;
                             }
+                        }
+                        else
+                        {
+                            if (tempCounter > 68)
+                            {
 
-                            yFrame++;
-                            tempCounter = 60;
+                                if (yFrame == 10)
+                                {
+                                    yFrame = 0;
+                                    tempCounter = 0;
+
+                                    return false;
+                                }
+
+                                yFrame++;
+                                tempCounter = 60;
+                            }
                         }
                     }
 
@@ -346,13 +358,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             {
                 spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
-                Texture2D bowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Bow").Value;
                 int frameOffset = xFrame == 1 ? 0 : 60;
                 Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
-
-
                 Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
-                spriteBatch.Draw(bowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, Color.White, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
+
+                Main.spriteBatch.Reload(BlendState.Additive);
+
+                Texture2D glowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_ArrowGlow").Value;
+                spriteBatch.Draw(glowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, Color.Orange * progress, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                Main.spriteBatch.Reload(BlendState.AlphaBlend);
             }
             else
             {
@@ -360,6 +377,41 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             }
 
             return false;
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            float xOffset = NPC.direction == 1 ? 11 : -10;
+            Vector2 drawOffset = new Vector2(xOffset, -4);
+
+            if (AIState == (int)AIStates.LongShot && xFrame == 1 && yFrame == 5)
+            {
+                spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                int frameOffset = xFrame == 1 ? 0 : 60;
+                Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
+                Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
+
+                Texture2D bowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Bow").Value;
+                spriteBatch.Draw(bowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+                float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
+
+                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+                effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+                effect.Parameters["WhiteoutProgress"].SetValue(progress);
+                effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+                Texture2D arrowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Arrow").Value;
+                spriteBatch.Draw(arrowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+            }
         }
     }
 }
