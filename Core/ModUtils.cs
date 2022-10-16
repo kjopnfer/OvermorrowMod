@@ -346,6 +346,14 @@ namespace OvermorrowMod.Core
             return (float)(1 - Math.Pow(1 - x, 5));
         }
 
+        public static Color Lerp3(Color a, Color b, Color c, float t)
+        {
+            if (t < 0.5f) // 0.0 to 0.5 goes to a -> b
+                return Color.Lerp(a, b, t / 0.5f);
+            else // 0.5 to 1.0 goes to b -> c
+                return Color.Lerp(b, c, (t - 0.5f) / 0.5f);
+        }
+
         public static XmlDocument GetXML(string directory)
         {
             XmlDocument doc = new XmlDocument();
