@@ -168,29 +168,36 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     break;
                 case (int)AIStates.LongShot:
                     NPC.velocity = Vector2.Zero;
-                    NPC.aiStyle = -1;
 
                     if (FrameUpdate(FrameType.LongShot))
                     {
-                        if (yFrame == 6 && tempCounter == 62)
+                        if (yFrame == 6)
                         {
-                            for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                            if (tempCounter == 61)
                             {
-                                float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
-                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                                Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(4, 7);
-                                Color color = Color.Orange;
+                                float particleScale = Main.rand.NextFloat(0.2f, 0.3f);
+                                float particleRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+                                float particleTime = 90;
 
-                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
+                                Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26, 0), Vector2.Zero, Color.Orange, 1, particleScale, particleRotation, particleTime);
                             }
 
-                            float particleScale = Main.rand.NextFloat(0.4f, 0.5f);
-                            float particleRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-                            float particleTime = 90;
+                            if (tempCounter == 62)
+                            {
+                                for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                                {
+                                    float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
+                                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
+                                    Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(4, 7);
+                                    Color color = Color.Orange;
 
-                            Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26, 0), Vector2.Zero, Color.Orange, 1, particleScale, particleRotation, particleTime);
+                                    Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
+                                }
 
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitX * 12 * NPC.direction, ModContent.ProjectileType<FlameArrow>(), NPC.damage, 2f, Main.myPlayer);
+                                Lighting.AddLight(NPC.Center + new Vector2(26, -28), 2f, 2f * 0.65f, 0);
+
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitX * 12 * NPC.direction, ModContent.ProjectileType<FlameArrow>(), NPC.damage, 2f, Main.myPlayer);
+                            }
                         }
                     }
                     else
@@ -202,29 +209,37 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     break;
                 case (int)AIStates.AngleShot:
                     NPC.velocity = Vector2.Zero;
-                    NPC.aiStyle = -1;
 
                     if (FrameUpdate(FrameType.AngleShot))
                     {
-                        if (yFrame == 6 && tempCounter == 62)
+                        if (yFrame == 6)
                         {
-                            for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                            if (tempCounter == 61)
                             {
-                                float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
-                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                                Vector2 RandomVelocity = new Vector2(-1, 1).RotatedBy(randomAngle) * Main.rand.Next(4, 7);
-                                Color color = Color.Purple;
+                                float particleScale = Main.rand.NextFloat(0.2f, 0.3f);
+                                float particleRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+                                float particleTime = 90;
 
-                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
+                                Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26, -28), Vector2.Zero, Color.Purple, 1, particleScale, particleRotation, particleTime);
                             }
 
-                            float particleScale = 0.1f;
-                            float particleRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-                            float particleTime = 90;
+                            if (tempCounter == 62)
+                            {
+                                for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                                {
+                                    float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
+                                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
+                                    Vector2 RandomVelocity = new Vector2(-1, 1).RotatedBy(randomAngle) * Main.rand.Next(4, 7);
+                                    Color color = Color.Purple;
 
-                            Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26, -28), Vector2.Zero, Color.Purple, 1, particleScale, particleRotation, particleTime);
+                                    Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
+                                }
 
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -7), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+
+                                Lighting.AddLight(NPC.Center + new Vector2(26, -28), 2f, 0, 2f);
+
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -7), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+                            }
                         }
                     }
                     else
@@ -400,7 +415,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
 
                 Main.spriteBatch.Reload(BlendState.Additive);
-                
+
                 float colorStrength = MathHelper.Lerp(0, 1f, progress);
                 Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
 

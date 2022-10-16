@@ -66,10 +66,10 @@ namespace OvermorrowMod.Common.Particles
 
             float fadeTime = maxTime - 10;
 ;
-            float progress = ModUtils.EaseOutQuad(particle.activeTime / maxTime);
-            particle.scale = MathHelper.SmoothStep(particle.scale, maxSize, progress);
+            float progress = ModUtils.EaseOutCirc(particle.activeTime / maxTime);
+            particle.scale = MathHelper.Lerp(particle.scale, maxSize, progress);
             //particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, Utils.Clamp(particle.activeTime - 10, 0, fadeTime) / fadeTime);
-            particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, particle.activeTime / maxTime);
+            particle.alpha = MathHelper.Lerp(particle.alpha, 0, particle.activeTime / maxTime);
 
             if (particle.activeTime > maxTime) particle.Kill();
         }

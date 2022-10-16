@@ -87,7 +87,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
             float progress = 1;
-            if (CollideTile) progress = (Utils.Clamp(AICounter++, 0, 120) / 120f) - 1f;
+            if (CollideTile) progress = 1f - (Utils.Clamp(AICounter++, 0, 120) / 120f);
 
             Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
             effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
