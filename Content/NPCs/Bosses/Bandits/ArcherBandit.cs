@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using System;
@@ -175,6 +176,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     {
                         if (yFrame == 6 && tempCounter == 62)
                         {
+                            for (int i = 0; i < Main.rand.Next(5, 9); i++)
+                            {
+                                float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
+                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
+                                Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(5, 10);
+                                Color color = Color.Orange;
+
+                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
+                            }
+
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitX * 12 * NPC.direction, ModContent.ProjectileType<FlameArrow>(), NPC.damage, 2f, Main.myPlayer);
                         }
                     }

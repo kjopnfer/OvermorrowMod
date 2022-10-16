@@ -30,6 +30,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         public float TrailSize(float progress) => 20;
         public Type TrailType() => typeof(TorchTrail);
 
+        public override Color? GetAlpha(Color lightColor) => Color.White;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 30;
@@ -38,7 +39,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 16;
+            Projectile.width = Projectile.height = 12;
             Projectile.friendly = false;
             Projectile.hostile = true;
             Projectile.ignoreWater = true;
@@ -46,8 +47,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Projectile.timeLeft = 600;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 5;
+            Projectile.hide = true;
 
-            DrawOffsetX = -16;
+            //DrawOffsetX = -16;
+        }
+
+        private ref float AICounter => ref Projectile.ai[0];
+
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            behindNPCsAndTiles.Add(index);
         }
 
         public override void AI()
@@ -70,34 +79,59 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.Reload(BlendState.Additive);
-
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(254, 121, 2) * 0.65f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, texture.Size() / 2, Projectile.scale * 0.7f, SpriteEffects.None, 0f);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(216, 44, 4) * 0.3f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, texture.Size() / 2, Projectile.scale * 1.2f, SpriteEffects.None, 0f);
-
-            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
-
-            var offset = new Vector2(Projectile.width / 2f, Projectile.height / 2f);
-            var trailLength = ProjectileID.Sets.TrailCacheLength[Projectile.type];
-            var fadeMult = 1f / trailLength;
-            for (int i = 1; i < trailLength; i++)
+            if (Projectile.extraUpdates != 0)
             {
-                Main.spriteBatch.Draw(texture, Projectile.oldPos[i] - Main.screenPosition + offset, null, new Color(254, 121, 2) * (1f - fadeMult * i) * 0.5f, Projectile.oldRot[i], texture.Size() / 2f, Projectile.scale * (trailLength - i) / trailLength * 1.5f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(texture, Projectile.oldPos[i] - Main.screenPosition + offset, null, new Color(254, 121, 2) * (1f - fadeMult * i) * 0.2f, Projectile.oldRot[i], texture.Size() / 2f, Projectile.scale * (trailLength - i) / trailLength * 3f, SpriteEffects.None, 0);
+                Main.spriteBatch.Reload(BlendState.Additive);
+
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(254, 121, 2) * 0.65f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, texture.Size() / 2, Projectile.scale * 0.7f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(216, 44, 4) * 0.3f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, texture.Size() / 2, Projectile.scale * 1.2f, SpriteEffects.None, 0f);
+
+                texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
+
+                var offset = new Vector2(Projectile.width / 2f, Projectile.height / 2f);
+                var trailLength = ProjectileID.Sets.TrailCacheLength[Projectile.type];
+                var fadeMult = 1f / trailLength;
+                for (int i = 1; i < trailLength; i++)
+                {
+                    Main.spriteBatch.Draw(texture, Projectile.oldPos[i] - Main.screenPosition + offset, null, new Color(254, 121, 2) * (1f - fadeMult * i) * 0.5f, Projectile.oldRot[i], texture.Size() / 2f, Projectile.scale * (trailLength - i) / trailLength * 1.5f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(texture, Projectile.oldPos[i] - Main.screenPosition + offset, null, new Color(254, 121, 2) * (1f - fadeMult * i) * 0.2f, Projectile.oldRot[i], texture.Size() / 2f, Projectile.scale * (trailLength - i) / trailLength * 3f, SpriteEffects.None, 0);
+                }
+
+                Main.spriteBatch.Reload(BlendState.AlphaBlend);
             }
 
-            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(254, 121, 2) * 0.5f, 0f, texture.Size() / 2, Projectile.scale * 1.5f, SpriteEffects.None, 0f);
-            //Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(253, 221, 3) * 0.2f, 0f, texture.Size() / 2, Projectile.scale * 3f, SpriteEffects.None, 0f);
 
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+            Texture2D arrow = TextureAssets.Projectile[Projectile.type].Value;
+            //int directionOffset = Projectile.velocity.X > 0 ? 
+            Main.spriteBatch.Draw(arrow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, arrow.Size() / 2, Projectile.scale, SpriteEffects.None, 0f);
 
-            return base.PreDraw(ref lightColor);
+            return false;
         }
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
             target.AddBuff(BuffID.OnFire, 120);
+        }
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            for (int i = 0; i < Main.rand.Next(16, 24); i++)
+            {
+                float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
+                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
+                //Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(5, 10);
+                Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity).RotatedBy(randomAngle) * Main.rand.Next(8, 13);
+
+                Color color = Color.Orange;
+
+                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale);
+            }
+
+            Projectile.extraUpdates = 0;
+            Projectile.velocity = Projectile.velocity / 10000;
+
+            return false;
         }
     }
 }
