@@ -19,7 +19,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
     public class ArcherBandit : ModNPC
     {
         private int DodgeCooldown = 0;
-        private int JumpDirection;
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override bool? CanHitNPC(NPC target) => false;
@@ -342,7 +341,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
             float xOffset = NPC.direction == 1 ? 11 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -4);
-            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            if (AIState == (int)AIStates.LongShot && xFrame == 1 && yFrame == 5)
+            {
+                spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+                Texture2D bowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Bow").Value;
+                int frameOffset = xFrame == 1 ? 0 : 60;
+                Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
+
+
+                Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
+                spriteBatch.Draw(bowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, Color.White, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+            }
+            else
+            {
+                spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+            }
 
             return false;
         }

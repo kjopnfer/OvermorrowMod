@@ -25,12 +25,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         }
 
         public Color TrailColor(float progress) => Lerp3(new Color(216, 44, 4), new Color(254, 121, 2), new Color(253, 221, 3), progress) * progress;
-
-        //public Color TrailColor(float progress) => Color.Lerp(new Color(216, 44, 4), new Color(254, 121, 2), progress) * progress;
         public float TrailSize(float progress) => 20;
         public Type TrailType() => typeof(TorchTrail);
 
-        public override Color? GetAlpha(Color lightColor) => Color.White;
+        //public override Color? GetAlpha(Color lightColor) => Color.White;
+        public override void OnHitPlayer(Player target, int damage, bool crit) => target.AddBuff(BuffID.OnFire, 120);
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) => behindNPCsAndTiles.Add(index);
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 30;
@@ -48,30 +49,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 5;
             Projectile.hide = true;
-
-            //DrawOffsetX = -16;
         }
 
         private ref float AICounter => ref Projectile.ai[0];
-
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
-            behindNPCsAndTiles.Add(index);
-        }
+        private bool CollideTile = false;
 
         public override void AI()
         {
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool(3) && !CollideTile)
             {
                 int dust = Dust.NewDust(new Vector2(Projectile.position.X + Projectile.velocity.X, Projectile.position.Y + Projectile.velocity.Y), Projectile.width, Projectile.height, DustID.RainbowMk2, Projectile.velocity.X, Projectile.velocity.Y, 100, new Color(253, 254, 255), Main.rand.NextFloat(0.5f, 0.7f));
                 Main.dust[dust].noGravity = true;
-            }
-
-            if (Main.rand.NextBool(3))
-            {
-                Vector2 randomOffset = new Vector2(Main.rand.Next(-4, 0), Main.rand.Next(-2, 2));
-                float randomRotation = Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2);
-                //Particle.CreateParticle(Particle.ParticleType<Ember>(), Projectile.Center + randomOffset, -Vector2.UnitX.RotatedBy(randomRotation), new Color(216, 44, 4));
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
@@ -101,17 +89,22 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 Main.spriteBatch.Reload(BlendState.AlphaBlend);
             }
 
+            Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+            float progress = 1;
+            if (CollideTile) progress = (Utils.Clamp(AICounter++, 0, 120) / 120f) - 1f;
+
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+            effect.Parameters["WhiteoutProgress"].SetValue(progress);
+            effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
             Texture2D arrow = TextureAssets.Projectile[Projectile.type].Value;
-            //int directionOffset = Projectile.velocity.X > 0 ? 
             Main.spriteBatch.Draw(arrow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, arrow.Size() / 2, Projectile.scale, SpriteEffects.None, 0f);
+            
+            Main.spriteBatch.Reload(SpriteSortMode.Deferred);
 
             return false;
-        }
-
-        public override void OnHitPlayer(Player target, int damage, bool crit)
-        {
-            target.AddBuff(BuffID.OnFire, 120);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -120,7 +113,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             {
                 float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
                 float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
-                //Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(5, 10);
                 Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity).RotatedBy(randomAngle) * Main.rand.Next(8, 13);
 
                 Color color = Color.Orange;
@@ -128,8 +120,11 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale);
             }
 
+            Projectile.timeLeft = 120;
             Projectile.extraUpdates = 0;
             Projectile.velocity = Projectile.velocity / 10000;
+
+            CollideTile = true;
 
             return false;
         }
