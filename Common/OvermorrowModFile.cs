@@ -17,6 +17,9 @@ using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+//Mercenaries
+using OvermorrowMod.Content.NPCs.Mercenary;
+using static OvermorrowMod.Content.NPCs.Mercenary.Paladin.Paladin;
 
 namespace OvermorrowMod.Common
 {
@@ -53,6 +56,12 @@ namespace OvermorrowMod.Common
         //public static Effect Dissolve;
 
         public static List<Asset<Texture2D>> TrailTextures;
+        //Mercenaries
+        internal List<MercenaryDrawHelper> drawHelpers = new List<MercenaryDrawHelper>();
+        public override void PostSetupContent()
+        {
+            drawHelpers.Add(new PaladinDrawHelper());
+        }
 
         public static void PremultiplyTexture(ref Texture2D texture)
         {
