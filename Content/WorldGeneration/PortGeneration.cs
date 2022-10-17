@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.WorldGeneration
     {
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
-            int WaterChestIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
+            int WaterChestIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Water Chests"));
             if (WaterChestIndex != -1)
             {
                 tasks.Insert(WaterChestIndex + 1, new PassLegacy("Ocean Port", GeneratePort));
@@ -30,8 +30,6 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             int x = 100;
             int y = (int)(Main.worldSurface * 0.35f);
-            //int x = WorldGen.leftBeachEnd;
-            //int y = (int)WorldGen.worldSurface;
 
             Tile tile = Framing.GetTileSafely(x, y);
 
@@ -65,15 +63,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             {
                 if (tile.HasTile && tile.TileType == TileID.Sand && tile.LiquidAmount <= 0)
                 {
-                    validTile = true;
-
-                    for (int i = 0; i < 5; i++)
-                    {
-                        for (int j = 0; j < 5; j++)
-                        {
-                            WorldGen.PlaceTile(x + i, y + j, TileID.ObsidianBrick);
-                        }
-                    }
+                    validTile = true;                    
                 }
                 else
                 {
@@ -84,7 +74,14 @@ namespace OvermorrowMod.Content.WorldGeneration
                 }
             }
 
-            //PlacePort(x, y);  
+            WorldGen.PlaceTile(x, y, TileID.Adamantite, false, true);
+
+            // the names so nice you say it twice
+            // why the FUCK do i have to generate this twice to make it even show up in the world
+            for (int _ = 0; _ < 2; _++)
+            {
+                PlacePort(x + 25, y - 2);
+            }
         }
 
         public static void PlacePort(int x, int y)
@@ -111,11 +108,13 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/PortArena_Clear").Value;
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
-            TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
+            TileClear.Generate(x - TileClear.width, y - (TileClear.height / 2), true, true);
 
             Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/PortArena").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping, null, null);
-            TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
+            TileGen.Generate(x - TileClear.width, y - (TileClear.height / 2), true, true);
+
+            WorldGen.PlaceTile(x - TileClear.width, y - (TileClear.height / 2), TileID.Adamantite, false, true);
         }
     }
 }
