@@ -54,7 +54,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     y++;
                     tile = Framing.GetTileSafely(x, y);
 
-                    WorldGen.PlaceTile(x, y, TileID.ObsidianBrick);
+                    //WorldGen.PlaceTile(x, y, TileID.ObsidianBrick);
                 }
             }
 
@@ -70,7 +70,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     x++;
                     tile = Framing.GetTileSafely(x, y);
 
-                    WorldGen.PlaceTile(x, y, TileID.ObsidianBrick);
+                    //WorldGen.PlaceTile(x, y, TileID.ObsidianBrick);
                 }
             }
 
@@ -80,7 +80,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             // why the FUCK do i have to generate this twice to make it even show up in the world
             for (int _ = 0; _ < 2; _++)
             {
-                PlacePort(x + 25, y - 2);
+                PlacePort(x + 45, y + 10);
             }
         }
 
@@ -108,13 +108,13 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/PortArena_Clear").Value;
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
-            TileClear.Generate(x - TileClear.width, y - (TileClear.height / 2), true, true);
+            //TileClear.Generate(x - TileClear.width, y - (TileClear.height / 2), true, true);
 
             Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/PortArena").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping, null, null);
-            TileGen.Generate(x - TileClear.width, y - (TileClear.height / 2), true, true);
+            TileGen.Generate(x - TileGen.width, y - TileGen.height, true, true);
 
-            WorldGen.PlaceTile(x - TileClear.width, y - (TileClear.height / 2), TileID.Adamantite, false, true);
+            WorldGen.PlaceTile(x - TileGen.width, y - TileGen.height, TileID.Adamantite, false, true);
         }
     }
 }
