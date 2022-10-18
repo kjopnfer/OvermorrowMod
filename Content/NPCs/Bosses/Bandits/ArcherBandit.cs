@@ -19,6 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
     public class ArcherBandit : ModNPC
     {
         private int DodgeCooldown = 0;
+        private bool CanJump = true;
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override bool? CanHitNPC(NPC target) => false;
@@ -116,24 +117,42 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                         if (NPC.Center.X > target.Center.X) // The NPC is to the right of the player, therefore move to the right 
                         {
+                            CanJump = true;
                             Move(target.Center + new Vector2(12 * 16), 0.35f, 1.2f, 2f);
                         }
                         else
                         {
-                            Move(target.Center - new Vector2(12 * 16), 0.35f, 1.2f, 2f);
+                            Dust.NewDust(new Vector2((int)NPC.BottomLeft.X / 16, (int)NPC.BottomLeft.Y / 16), 1, 1, DustID.Torch);
+
+                            // Check if the tile below the NPC is empty
+                            if (Framing.GetTileSafely((int)NPC.BottomLeft.X / 16, (int)NPC.BottomLeft.Y / 16).HasTile)
+                            {
+                                CanJump = true;
+                                Move(target.Center - new Vector2(12 * 16), 0.35f, 1.2f, 2f);
+                            }
+                            else
+                            {
+                                CanJump = false;
+
+                                NPC.velocity = Vector2.Zero;
+                                Main.NewText("stop there is no tile here");
+                            }
                         }
 
                         // The player is too close, set a timer to determine if they should perform a jump or roll
-                        if (xDistance < 4 * 16)
+                        if (xDistance < 4 * 16 && CanJump)
                         {
-                            if (DodgeCounter++ >= 60 && DodgeCooldown-- <= 0)
+                            if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 12, (int)NPC.BottomLeft.Y / 16).HasTile)
                             {
-                                NPC.velocity = Vector2.Zero;
+                                if (DodgeCounter++ >= 60 && DodgeCooldown-- <= 0)
+                                {
+                                    NPC.velocity = Vector2.Zero;
 
-                                AIState = (int)AIStates.Jump;
-                                AICounter = 0;
-                                DodgeCounter = 0;
-                            }
+                                    AIState = (int)AIStates.Jump;
+                                    AICounter = 0;
+                                    DodgeCounter = 0;
+                                }
+                            }            
                         }
                     }
                     else
