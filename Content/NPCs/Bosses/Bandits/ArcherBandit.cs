@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
     public class ArcherBandit : ModNPC
     {
         private int DodgeCooldown = 0;
-        private bool CanJump = true;
+        private int AngleShots = 0;
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override bool? CanHitNPC(NPC target) => false;
@@ -53,7 +53,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Walk = 0,
             Jump = 1,
             LongShot = 2,
-            AngleShot = 3
+            AngleShot = 3,
+            JumpShot = 4
         }
 
         public void Move(Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
@@ -107,6 +108,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
             switch (AIState)
             {
+                #region Walk
                 case (int)AIStates.Walk:
                     FrameUpdate(FrameType.Walk);
 
@@ -117,8 +119,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                         if (NPC.Center.X > target.Center.X) // The NPC is to the right of the player, therefore move to the right 
                         {
-                            CanJump = true;
-                            Move(target.Center + new Vector2(12 * 16), 0.35f, 1.2f, 2f);
+                            Move(target.Center + new Vector2(12 * 16), 0.4f, 1.2f, 2f);
                         }
                         else
                         {
@@ -127,52 +128,55 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                             // Check if the tile below the NPC is empty
                             if (Framing.GetTileSafely((int)NPC.BottomLeft.X / 16, (int)NPC.BottomLeft.Y / 16).HasTile)
                             {
-                                CanJump = true;
                                 Move(target.Center - new Vector2(12 * 16), 0.35f, 1.2f, 2f);
                             }
                             else
                             {
-                                CanJump = false;
-
                                 NPC.velocity = Vector2.Zero;
                                 Main.NewText("stop there is no tile here");
                             }
                         }
 
                         // The player is too close, set a timer to determine if they should perform a jump or roll
-                        if (xDistance < 4 * 16 && CanJump)
+                        if (xDistance < 4 * 16)
                         {
-                            if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 12, (int)NPC.BottomLeft.Y / 16).HasTile)
+                            if (DodgeCounter++ >= 20 && DodgeCooldown-- <= 0)
                             {
-                                if (DodgeCounter++ >= 60 && DodgeCooldown-- <= 0)
-                                {
-                                    NPC.velocity = Vector2.Zero;
+                                NPC.velocity = Vector2.Zero;
 
-                                    AIState = (int)AIStates.Jump;
-                                    AICounter = 0;
-                                    DodgeCounter = 0;
-                                }
-                            }            
+                                AIState = (int)AIStates.Jump;
+                                AICounter = 0;
+                                DodgeCounter = 0;
+                            }
                         }
                     }
                     else
                     {
                         if (AICounter++ == 60)
                         {
-                            AIState = Main.rand.NextBool() ? (int)AIStates.LongShot : (int)AIStates.AngleShot;
+                            AIState = Main.rand.NextBool() ? (int)AIStates.JumpShot : (int)AIStates.JumpShot;
                             //AIState = (int)AIStates.AngleShot;
                             AICounter = 0;
                         }
                     }
-
                     break;
+                #endregion
+                #region Jump
                 case (int)AIStates.Jump:
                     FrameUpdate(FrameType.Jump);
 
                     if (AICounter++ == 0)
                     {
                         int jumpDirection = NPC.Center.X > target.Center.X ? 5 : -5;
-                        NPC.velocity = new Vector2(jumpDirection, -6);
+
+                        if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
+                        {
+                            NPC.velocity = new Vector2(jumpDirection, -6);
+                        }
+                        else // The NPC will jump off the ledge if they jump, therefore launch in the other direction
+                        {
+                            NPC.velocity = new Vector2(-jumpDirection, -6);
+                        }
                     }
 
                     if (NPC.collideY && NPC.velocity.Y == 0)
@@ -181,10 +185,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                         AIState = (int)AIStates.Walk;
                         AICounter = 0;
-                        DodgeCooldown = 30;
+                        DodgeCooldown = 15;
                     }
 
                     break;
+                #endregion
+                #region LongShot
                 case (int)AIStates.LongShot:
                     NPC.velocity = Vector2.Zero;
 
@@ -198,7 +204,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                                 float particleRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
                                 float particleTime = 90;
 
-                                Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26, 0), Vector2.Zero, Color.Orange, 1, particleScale, particleRotation, particleTime);
+                                Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26 * NPC.direction, 0), Vector2.Zero, Color.Orange, 1, particleScale, particleRotation, particleTime);
                             }
 
                             if (tempCounter == 62)
@@ -207,7 +213,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                                 {
                                     float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
                                     float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                                    Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(4, 7);
+                                    Vector2 RandomVelocity = -Vector2.UnitX.RotatedBy(randomAngle) * Main.rand.Next(4, 7) * NPC.direction;
                                     Color color = Color.Orange;
 
                                     Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
@@ -226,6 +232,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     }
 
                     break;
+                #endregion
+                #region AngleShot
                 case (int)AIStates.AngleShot:
                     NPC.velocity = Vector2.Zero;
 
@@ -239,7 +247,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                                 float particleRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
                                 float particleTime = 90;
 
-                                Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26, -28), Vector2.Zero, Color.Purple, 1, particleScale, particleRotation, particleTime);
+                                Particle.CreateParticle(Particle.ParticleType<RingSolid>(), NPC.Center + new Vector2(26 * NPC.direction, -28), Vector2.Zero, Color.Purple, 1, particleScale, particleRotation, particleTime);
                             }
 
                             if (tempCounter == 62)
@@ -263,11 +271,51 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     }
                     else
                     {
-                        AIState = (int)AIStates.Walk;
-                        AICounter = 0;
+                        if (AngleShots++ < 2)
+                        {
+                            AIState = (int)AIStates.AngleShot;
+                            AICounter = 0;
+                        }
+                        else
+                        {
+                            AIState = (int)AIStates.Walk;
+                            AICounter = 0;
+                            AngleShots = 0;
+                        }
                     }
 
                     break;
+                #endregion
+                #region JumpShot
+                case (int)AIStates.JumpShot:
+                    FrameUpdate(FrameType.Jump);
+
+                    const int JUMP_HEIGHT = -11;
+                    if (AICounter++ == 0)
+                    {
+                        int jumpDirection = NPC.Center.X > target.Center.X ? 3 : -3;
+
+                        if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
+                        {
+                            NPC.velocity = new Vector2(jumpDirection, JUMP_HEIGHT);
+                        }
+                        else // The NPC will jump off the ledge if they jump, therefore launch in the other direction
+                        {
+                            NPC.velocity = new Vector2(-jumpDirection, JUMP_HEIGHT);
+                        }
+                    }
+
+                    if (NPC.collideY && NPC.velocity.Y == 0)
+                    {
+                        NPC.velocity.X = 0;
+
+                        AIState = (int)AIStates.Walk;
+                        AICounter = 0;
+                        DodgeCooldown = 15;
+                    }
+
+                    break;
+                #endregion
             }
         }
 
@@ -289,7 +337,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Walk,
             Jump,
             LongShot,
-            AngleShot
+            AngleShot,
+            JumpShot
         }
 
         float tempCounter = 0;
@@ -297,6 +346,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         {
             switch (type)
             {
+                #region Walk
                 case FrameType.Walk:
                     xFrame = 3;
 
@@ -329,6 +379,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         }
                     }
                     break;
+                #endregion
+                #region Jump
                 case FrameType.Jump:
                     if (NPC.velocity.X != 0)
                     {
@@ -338,6 +390,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     xFrame = 0;
                     yFrame = 1;
                     break;
+                #endregion
+                #region LongShot
                 case FrameType.LongShot:
                     xFrame = 1;
 
@@ -375,7 +429,37 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     }
 
                     break;
+                #endregion
+                #region AngleShot
                 case FrameType.AngleShot:
+                    xFrame = 2;
+
+                    if (AngleShots > 0 && tempCounter < 55) tempCounter = 65; // If the NPC has fired the first angled shot, make it take less time
+
+                    if (tempCounter++ < 60) // NPC stands in the ready position prior to drawing back the bow
+                    {
+                        if (yFrame > 0) yFrame = 0;
+                    }
+                    else
+                    {
+                        if (tempCounter > 68)
+                        {
+                            if (yFrame == 10)
+                            {
+                                yFrame = 0;
+                                tempCounter = 0;
+
+                                return false;
+                            }
+
+                            yFrame++;
+                            tempCounter = 60;
+                        }
+                    }
+                    break;
+                #endregion
+                #region JumpShot
+                case FrameType.JumpShot:
                     xFrame = 2;
 
                     if (tempCounter++ < 60) // NPC stands in the ready position prior to drawing back the bow
@@ -410,6 +494,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         }
                     }
                     break;
+                    #endregion
             }
 
             return true;
@@ -423,7 +508,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             float xOffset = NPC.direction == 1 ? 11 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -4);
 
-            if ((AIState == (int)AIStates.LongShot || AIState == (int)AIStates.AngleShot) && yFrame == 5)
+            if (AIState == (int)AIStates.LongShot && yFrame == 5)
             {
                 spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
 
@@ -465,7 +550,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         {
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            if ((AIState == (int)AIStates.LongShot || AIState == (int)AIStates.AngleShot) && yFrame == 5)
+            if (AIState == (int)AIStates.LongShot && yFrame == 5)
             {
                 int frameOffset = xFrame == 1 ? 0 : 60;
                 Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
@@ -493,7 +578,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 Texture2D flare = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flare_01").Value;
                 float scale = MathHelper.Lerp(0, 1, progress);
 
-                Vector2 flareOffset = xFrame == 1 ? new Vector2(34, -3) : new Vector2(26, -28);
+                Vector2 flareOffset = xFrame == 1 ? new Vector2(34 * NPC.direction, -3) : new Vector2(26 * NPC.direction, -28);
                 spriteBatch.Draw(flare, NPC.Center - screenPos + flareOffset, null, frameColor, NPC.rotation, flare.Size() / 2, scale, spriteEffects, 0);
 
                 Main.spriteBatch.Reload(BlendState.AlphaBlend);
