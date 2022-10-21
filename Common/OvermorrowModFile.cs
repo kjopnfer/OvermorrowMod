@@ -164,7 +164,6 @@ namespace OvermorrowMod.Common
             HexLoader.Load(false);
             ILEdits.Load();
             Particle.Load();
-            Trail.Load();
             Quests.Quests.Load(this);
 
             foreach (Type type in Code.GetTypes())
@@ -204,7 +203,6 @@ namespace OvermorrowMod.Common
             Quests.Quests.Unload();
             ILEdits.Unload();
             Particle.Unload();
-            Trail.Unload();
 
             SandModeKey = null;
             AmuletKey = null;

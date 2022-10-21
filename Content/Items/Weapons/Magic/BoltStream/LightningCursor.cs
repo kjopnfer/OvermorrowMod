@@ -3,6 +3,7 @@ using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Core;
+using OvermorrowMod.Core.Interfaces;
 using System;
 using Terraria;
 using Terraria.ModLoader;

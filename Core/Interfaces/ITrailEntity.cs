@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace OvermorrowMod.Common.Primitives
+namespace OvermorrowMod.Core.Interfaces
 {
     public interface ITrailEntity
     {

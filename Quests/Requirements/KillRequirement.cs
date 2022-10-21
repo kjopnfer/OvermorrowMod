@@ -1,4 +1,5 @@
-﻿using OvermorrowMod.Quests.State;
+﻿using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Quests.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;

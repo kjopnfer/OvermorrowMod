@@ -10,6 +10,7 @@ using OvermorrowMod.Common.Primitives.Trails;
 using System;
 using System.Collections.Generic;
 using OvermorrowMod.Content.Dusts;
+using OvermorrowMod.Core.Interfaces;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {

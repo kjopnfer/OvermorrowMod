@@ -11,6 +11,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using OvermorrowMod.Common.Cutscenes;
+using OvermorrowMod.Common.Detours;
 
 namespace OvermorrowMod.Common
 {
@@ -44,7 +45,7 @@ namespace OvermorrowMod.Common
 
         public override void PostUpdateEverything()
         {
-            Trail.UpdateTrails();
+            PrimitiveDrawing.UpdateTrails();
         }
 
         public override void Load()

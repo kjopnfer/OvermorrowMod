@@ -66,13 +66,7 @@ namespace OvermorrowMod.Common.Particles
             ParticleNames = null;
             CustomParticle.CustomParticles = null;
         }
-        public static void Draw(On.Terraria.Main.orig_DrawInterface orig, Main self, GameTime time)
-        {
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, null, null, null, Main.UIScaleMatrix);
-            DrawParticles(Main.spriteBatch);
-            Main.spriteBatch.End();
-            orig(self, time);
-        }
+
         public static void UpdateParticles()
         {
             foreach (Particle particle in particles)

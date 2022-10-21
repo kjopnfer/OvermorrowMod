@@ -1,6 +1,6 @@
 ﻿using Terraria;
 
-namespace OvermorrowMod.Quests
+namespace OvermorrowMod.Core.Interfaces
 {
     public interface IQuestReward
     {

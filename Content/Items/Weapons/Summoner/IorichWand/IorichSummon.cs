@@ -7,6 +7,7 @@ using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Content.Buffs;
 using OvermorrowMod.Content.Buffs.Summon;
 using OvermorrowMod.Core;
+using OvermorrowMod.Core.Interfaces;
 using System;
 using Terraria;
 using Terraria.Audio;

@@ -1,7 +1,8 @@
-﻿using OvermorrowMod.Quests.State;
+﻿using OvermorrowMod.Quests;
+using OvermorrowMod.Quests.State;
 using Terraria;
 
-namespace OvermorrowMod.Quests
+namespace OvermorrowMod.Core.Interfaces
 {
     public interface IQuestRequirement
     {
