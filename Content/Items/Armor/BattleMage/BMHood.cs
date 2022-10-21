@@ -1,4 +1,5 @@
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Players;
 using OvermorrowMod.Content.Items.Materials;
 using Terraria;
 using Terraria.ID;

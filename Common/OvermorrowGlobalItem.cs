@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common.Players;
 using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Core;
 using System;

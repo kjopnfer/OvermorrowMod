@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Players;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ObjectData;

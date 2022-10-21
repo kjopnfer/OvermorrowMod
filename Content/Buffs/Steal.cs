@@ -1,4 +1,5 @@
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Players;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using Terraria;
 using Terraria.ID;

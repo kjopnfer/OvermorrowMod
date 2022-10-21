@@ -1,4 +1,4 @@
-using OvermorrowMod.Common;
+using OvermorrowMod.Common.Players;
 using OvermorrowMod.Content.Projectiles.Pets;
 using Terraria;
 using Terraria.ModLoader;

@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OvermorrowMod.Common.Players;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Eye
 {
