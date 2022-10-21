@@ -20,11 +20,16 @@ using Terraria.ModLoader;
 //Mercenaries
 using OvermorrowMod.Content.NPCs.Mercenary;
 using static OvermorrowMod.Content.NPCs.Mercenary.Paladin.Paladin;
+using OvermorrowMod.Common.Detours;
 
 namespace OvermorrowMod.Common
 {
     public partial class OvermorrowModFile : Mod
     {
+        private Vector2 lastScreenSize;
+        private Vector2 lastViewSize;
+        private Viewport lastViewPort;
+
         // Hotkeys
         public static ModKeybind SandModeKey;
         public static ModKeybind ToggleUI;
@@ -46,6 +51,7 @@ namespace OvermorrowMod.Common
         public Asset<Effect> Shockwave2;
         public Asset<Effect> Tentacle;
         public Asset<Effect> TentacleBlack;
+        public Asset<Effect> TileOverlay;
         public Asset<Effect> TrailShader;
         public Asset<Effect> TextShader;
         public Asset<Effect> Whiteout;
@@ -86,6 +92,10 @@ namespace OvermorrowMod.Common
 
             if (!Main.dedServ)
             {
+                lastScreenSize = new Vector2(Main.screenWidth, Main.screenHeight);
+                lastViewSize = Main.ViewSize;
+                lastViewPort = Main.graphics.GraphicsDevice.Viewport;
+
                 // TODO: These are gone, need to figure out what to do.
                 // Main.logoTexture = Instance.GetTexture("logo");
                 // Main.logo2Texture = Instance.GetTexture("logo");
@@ -101,6 +111,7 @@ namespace OvermorrowMod.Common
                 Tentacle = Assets.Request<Effect>("Effects/Tentacle");
                 TentacleBlack = Assets.Request<Effect>("Effects/TentacleBlack");
                 TextShader = Assets.Request<Effect>("Effects/TextShader");
+                TileOverlay = Assets.Request<Effect>("Effects/TileOverlay");
                 TrailShader = Assets.Request<Effect>("Effects/Trail");
                 Whiteout = Assets.Request<Effect>("Effects/Whiteout");
                 RadialBlur = Assets.Request<Effect>("Effects/CenterBlurShader");
@@ -178,6 +189,7 @@ namespace OvermorrowMod.Common
             Shockwave = null;
             Tentacle = null;
             TentacleBlack = null;
+            TileOverlay = null;
             TrailShader = null;
             TextShader = null;
             Whiteout = null;
@@ -336,5 +348,19 @@ namespace OvermorrowMod.Common
             orig(self, finalTexture, screenTarget1, screenTarget2, clearColor);
         }
 
+        public void CheckScreenSize()
+        {
+            if (!Main.dedServ && !Main.gameMenu)
+            {
+                if (lastScreenSize != new Vector2(Main.screenWidth, Main.screenHeight))
+                {
+                    if (Detours.TileOverlay.projTarget != null) Detours.TileOverlay.ResizeTarget();
+                }
+
+                lastScreenSize = new Vector2(Main.screenWidth, Main.screenHeight);
+                lastViewSize = Main.ViewSize;
+                lastViewPort = Main.graphics.GraphicsDevice.Viewport;
+            }
+        }
     }
 }

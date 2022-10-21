@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.NPCs.Bosses.Eye;
@@ -40,6 +41,12 @@ namespace OvermorrowMod.Common
             On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
             Main.OnResolutionChanged += Main_OnResolutionChanged;
             OvermorrowModFile.Instance.CreateRender();
+
+            TileOverlay.ResizeTarget();
+
+            On.Terraria.Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
+            Main.OnPreDraw += TileOverlay.Main_OnPreDraw;
+            On.Terraria.Main.Update += TileOverlay.Main_Update;
         }
 
         public static void Unload()
@@ -64,6 +71,12 @@ namespace OvermorrowMod.Common
 
             On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
             Main.OnResolutionChanged -= Main_OnResolutionChanged;
+
+            On.Terraria.Main.DrawProjectiles -= TileOverlay.Main_DrawProjectiles;
+            Main.OnPreDraw -= TileOverlay.Main_OnPreDraw;
+            On.Terraria.Main.Update -= TileOverlay.Main_Update;
+
+            TileOverlay.projTarget = null;
         }
 
         private static void DrawInterface_36_Cursor(On.Terraria.Main.orig_DrawInterface_36_Cursor orig)
