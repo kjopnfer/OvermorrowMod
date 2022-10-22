@@ -49,7 +49,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
     public class SlimeExplosion : ModProjectile, ITileOverlay
     {
-        private const int MAX_TIME = 600;
+        private const int MAX_TIME = 300;
         private bool OnFire = false;
         public override string Texture => AssetDirectory.Textures + "SLIME";
         public override void SetStaticDefaults()
@@ -91,6 +91,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 Vector2 RandomPosition = Projectile.Center + Vector2.UnitX * Main.rand.Next((int)(-Projectile.width / 2f), (int)(Projectile.width / 2f));
                 if (Projectile.ai[0]++ % 3 == 0)
                     Particle.CreateParticle(Particle.ParticleType<Flames>(), RandomPosition, -Vector2.UnitY * Main.rand.Next(6, 9), Color.Orange, 1f, Main.rand.NextFloat(0.35f, 0.4f), Main.rand.NextFloat(0, MathHelper.PiOver2), Main.rand.NextFloat(0.01f, 0.015f));
+
+                int HEIGHT = 500;
+                Rectangle hitRectangle = new Rectangle((int)Projectile.TopLeft.X, (int)Projectile.Top.Y - HEIGHT, Projectile.width, HEIGHT);
+
+                foreach (Player player in Main.player)
+                {
+                    if (!player.active) continue;
+
+                    if (player.Hitbox.Intersects(hitRectangle))
+                    {
+                        player.Hurt(PlayerDeathReason.LegacyDefault(), 25, 0, false, false, false, -1);
+                    }
+                }
             }
         }
 

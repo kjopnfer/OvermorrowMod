@@ -114,7 +114,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     FrameUpdate(FrameType.Walk);
 
                     float xDistance = Math.Abs(NPC.Center.X - target.Center.X);
-                    if (xDistance < 12 * 16) // Try to stay within 12 tiles away from the player
+                    if (xDistance < 10 * 16) // Try to stay within 10 tiles away from the player
                     {
                         AICounter = 0;
 
@@ -288,6 +288,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 #endregion
                 #region JumpShot
                 case (int)AIStates.JumpShot:
+                    const int JUMP_HEIGHT = -11;
+
                     FrameUpdate(FrameType.JumpShot);
 
                     if (AICounter++ == 0)
@@ -306,9 +308,13 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         Projectile.NewProjectile(null, NPC.Center, new Vector2(-1, -3), ModContent.ProjectileType<SlimeGrenade>(), 0, 0f, Main.myPlayer);
                     }
 
-                    //Main.NewText(MiscCounter++);
-                    /*const int JUMP_HEIGHT = -11;
-                    if (AICounter++ == 0)
+                    if (NPC.collideY && NPC.velocity.Y == 0 && MiscCounter == 0)
+                    {
+                        NPC.velocity.X = 0;
+                        MiscCounter = 1;
+                    }
+
+                    if (MiscCounter == 1)
                     {
                         int jumpDirection = NPC.Center.X > target.Center.X ? 3 : -3;
 
@@ -320,29 +326,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         {
                             NPC.velocity = new Vector2(-jumpDirection, JUMP_HEIGHT);
                         }
-
-                        Projectile.NewProjectile(null, NPC.Center, new Vector2(-1, -3), ModContent.ProjectileType<SlimeGrenade>(), 0, 0f, Main.myPlayer);
                     }
 
-                    // Fire an arrow somewhere at the peak of the jump
-                    if (MiscCounter++ == 30)
+                    if (MiscCounter >= 1)
                     {
-                        Projectile.NewProjectile(null, NPC.Center, new Vector2(-6, 6), ModContent.ProjectileType<FlameArrow>(), 26, 0f, Main.myPlayer);
-                    }*/
+                        if (MiscCounter++ == 30)
+                        {
+                            Projectile.NewProjectile(null, NPC.Center, new Vector2(-6, 6), ModContent.ProjectileType<FlameArrow>(), 26, 0f, Main.myPlayer);
+                        }
+                    }
 
-                    if (NPC.collideY && NPC.velocity.Y == 0)
+                    if (NPC.collideY && NPC.velocity.Y == 0 && MiscCounter > 1)
                     {
                         NPC.velocity.X = 0;
-                        //MiscCounter = 1;
                         AIState = (int)AIStates.Walk;
                         AICounter = 0;
                         MiscCounter = 0;
                         DodgeCooldown = 15;
-                    }
-
-                    if (MiscCounter == 1)
-                    {
-
                     }
 
                     break;
@@ -493,7 +493,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 case FrameType.JumpShot:
                     xFrame = 0;
 
-                    Main.NewText("tempcounter " + tempCounter);
+                    //Main.NewText("tempcounter " + tempCounter);
                     yFrame = 1;
                     /*if (tempCounter++ == 0)
                     {
