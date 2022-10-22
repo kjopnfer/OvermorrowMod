@@ -101,8 +101,6 @@ namespace OvermorrowMod.Common.Detours
 
             if (tileTarget == null || projTarget == null) return;
 
-
-            //Effect effect = Filters.Scene["OverTileShader"].GetShader().Shader;
             Effect effect = OvermorrowModFile.Instance.TileOverlay.Value;
             if (effect is null) return;
 

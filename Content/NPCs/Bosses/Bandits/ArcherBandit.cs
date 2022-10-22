@@ -46,7 +46,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
         private ref float AIState => ref NPC.ai[0];
         private ref float AICounter => ref NPC.ai[1];
-        private ref float DodgeCounter => ref NPC.ai[2];
+        private ref float MiscCounter => ref NPC.ai[2];
+        private ref float DodgeCounter => ref NPC.ai[3];
 
         private enum AIStates
         {
@@ -133,7 +134,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                             else
                             {
                                 NPC.velocity = Vector2.Zero;
-                                Main.NewText("stop there is no tile here");
                             }
                         }
 
@@ -288,9 +288,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 #endregion
                 #region JumpShot
                 case (int)AIStates.JumpShot:
-                    FrameUpdate(FrameType.Jump);
+                    FrameUpdate(FrameType.JumpShot);
 
-                    const int JUMP_HEIGHT = -11;
+                    if (AICounter++ == 0)
+                    {
+                        int jumpDirection = NPC.Center.X > target.Center.X ? 7 : -7;
+
+                        if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
+                        {
+                            NPC.velocity = new Vector2(jumpDirection, -4);
+                        }
+                        else // The NPC will jump off the ledge if they jump, therefore launch in the other direction
+                        {
+                            NPC.velocity = new Vector2(-jumpDirection, -4);
+                        }
+
+                        Projectile.NewProjectile(null, NPC.Center, new Vector2(-1, -3), ModContent.ProjectileType<SlimeGrenade>(), 0, 0f, Main.myPlayer);
+                    }
+
+                    //Main.NewText(MiscCounter++);
+                    /*const int JUMP_HEIGHT = -11;
                     if (AICounter++ == 0)
                     {
                         int jumpDirection = NPC.Center.X > target.Center.X ? 3 : -3;
@@ -303,19 +320,33 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         {
                             NPC.velocity = new Vector2(-jumpDirection, JUMP_HEIGHT);
                         }
+
+                        Projectile.NewProjectile(null, NPC.Center, new Vector2(-1, -3), ModContent.ProjectileType<SlimeGrenade>(), 0, 0f, Main.myPlayer);
                     }
+
+                    // Fire an arrow somewhere at the peak of the jump
+                    if (MiscCounter++ == 30)
+                    {
+                        Projectile.NewProjectile(null, NPC.Center, new Vector2(-6, 6), ModContent.ProjectileType<FlameArrow>(), 26, 0f, Main.myPlayer);
+                    }*/
 
                     if (NPC.collideY && NPC.velocity.Y == 0)
                     {
                         NPC.velocity.X = 0;
-
+                        //MiscCounter = 1;
                         AIState = (int)AIStates.Walk;
                         AICounter = 0;
+                        MiscCounter = 0;
                         DodgeCooldown = 15;
                     }
 
+                    if (MiscCounter == 1)
+                    {
+
+                    }
+
                     break;
-                #endregion
+                    #endregion
             }
         }
 
@@ -460,39 +491,30 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 #endregion
                 #region JumpShot
                 case FrameType.JumpShot:
-                    xFrame = 2;
+                    xFrame = 0;
 
-                    if (tempCounter++ < 60) // NPC stands in the ready position prior to drawing back the bow
+                    Main.NewText("tempcounter " + tempCounter);
+                    yFrame = 1;
+                    /*if (tempCounter++ == 0)
                     {
-                        if (yFrame > 0) yFrame = 0;
+                        yFrame = 2;
                     }
-                    else
+
+                    if (tempCounter == 18)
                     {
-                        if (yFrame == 5)
-                        {
-                            if (tempCounter > 98)
-                            {
-                                yFrame++;
-                                tempCounter = 60;
-                            }
-                        }
-                        else
-                        {
-                            if (tempCounter > 68)
-                            {
-                                if (yFrame == 10)
-                                {
-                                    yFrame = 0;
-                                    tempCounter = 0;
-
-                                    return false;
-                                }
-
-                                yFrame++;
-                                tempCounter = 60;
-                            }
-                        }
+                        yFrame = 3;
                     }
+
+                    if (tempCounter == 26)
+                    {
+                        yFrame = 4;
+                    }
+
+                    if (tempCounter == 32)
+                    {
+                        yFrame = 1;
+                    }*/
+
                     break;
                     #endregion
             }
@@ -508,36 +530,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             float xOffset = NPC.direction == 1 ? 11 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -4);
 
+
             if (AIState == (int)AIStates.LongShot && yFrame == 5)
             {
-                spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
-
-                int frameOffset = xFrame == 1 ? 0 : 60;
-                Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
-                Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
-
-                float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
-
-                Main.spriteBatch.Reload(BlendState.Additive);
-
-                float colorStrength = MathHelper.Lerp(0, 1f, progress);
-                Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
-
-                if (xFrame == 1)
-                {
-                    Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, colorStrength * 0.65f, 0);
-                }
-                else
-                {
-                    Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, 0, colorStrength);
-
-                }
-
-                Texture2D glowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_ArrowGlow").Value;
-                spriteBatch.Draw(glowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, frameColor * progress, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
-
-                Main.spriteBatch.Reload(BlendState.AlphaBlend);
+                PreDrawLongShot(spriteBatch, screenPos, drawColor);
             }
+            /*else if (AIState == (int)AIStates.JumpShot && yFrame == 3)
+            {
+
+            }*/
             else
             {
                 spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
@@ -548,41 +549,92 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
             if (AIState == (int)AIStates.LongShot && yFrame == 5)
             {
-                int frameOffset = xFrame == 1 ? 0 : 60;
-                Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
-                Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
-
-                Texture2D bowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Bow").Value;
-                spriteBatch.Draw(bowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
-
-                Main.spriteBatch.Reload(SpriteSortMode.Immediate);
-
-                float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
-
-                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-                effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
-                effect.Parameters["WhiteoutProgress"].SetValue(progress);
-                effect.CurrentTechnique.Passes["Whiteout"].Apply();
-
-                Texture2D arrowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Arrow").Value;
-                spriteBatch.Draw(arrowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
-
-                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
-                Main.spriteBatch.Reload(BlendState.Additive);
-
-                Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
-                Texture2D flare = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flare_01").Value;
-                float scale = MathHelper.Lerp(0, 1, progress);
-
-                Vector2 flareOffset = xFrame == 1 ? new Vector2(34 * NPC.direction, -3) : new Vector2(26 * NPC.direction, -28);
-                spriteBatch.Draw(flare, NPC.Center - screenPos + flareOffset, null, frameColor, NPC.rotation, flare.Size() / 2, scale, spriteEffects, 0);
-
-                Main.spriteBatch.Reload(BlendState.AlphaBlend);
+                PostDrawLongShot(spriteBatch, screenPos, drawColor);
             }
+        }
+
+        private void PreDrawJumpShot(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            float xOffset = NPC.direction == 1 ? 11 : -10;
+            Vector2 drawOffset = new Vector2(xOffset, -4);
+        }
+
+        private void PreDrawLongShot(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            float xOffset = NPC.direction == 1 ? 11 : -10;
+            Vector2 drawOffset = new Vector2(xOffset, -4);
+
+            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            int frameOffset = xFrame == 1 ? 0 : 60;
+            Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
+            Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
+
+            float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
+
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            float colorStrength = MathHelper.Lerp(0, 1f, progress);
+            Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
+
+            if (xFrame == 1)
+            {
+                Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, colorStrength * 0.65f, 0);
+            }
+            else
+            {
+                Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, 0, colorStrength);
+            }
+
+            Texture2D glowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_ArrowGlow").Value;
+            spriteBatch.Draw(glowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, frameColor * progress, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+
+        private void PostDrawLongShot(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            int frameOffset = xFrame == 1 ? 0 : 60;
+            Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
+            Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
+
+            Texture2D bowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Bow").Value;
+            spriteBatch.Draw(bowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+            float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
+
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+            effect.Parameters["WhiteoutProgress"].SetValue(progress);
+            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+            Texture2D arrowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Arrow").Value;
+            spriteBatch.Draw(arrowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
+            Texture2D flare = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flare_01").Value;
+            float scale = MathHelper.Lerp(0, 1, progress);
+
+            Vector2 flareOffset = xFrame == 1 ? new Vector2(34 * NPC.direction, -3) : new Vector2(26 * NPC.direction, -28);
+            spriteBatch.Draw(flare, NPC.Center - screenPos + flareOffset, null, frameColor, NPC.rotation, flare.Size() / 2, scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
 }
