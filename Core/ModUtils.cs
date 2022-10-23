@@ -323,18 +323,30 @@ namespace OvermorrowMod.Core
             return 1 - (1 - x) * (1 - x);
         }
 
-        public static float EaseOutCirc(float x) {
+        public static float EaseOutCirc(float x)
+        {
             return (float)Math.Sqrt(1 - Math.Pow(x - 1, 2));
         }
 
-    /// <summary>
-    /// Modified version of Player.Hurt, which ignores defense.
-    /// </summary>
-    /// <param name="player"></param>
-    /// <param name="damage"></param>
-    /// <param name="dramatic"></param>
-    /// <param name="dot"></param>
-    public static void HurtDirect(this Player player, PlayerDeathReason deathReason, int damage, bool dramatic = false, bool dot = false)
+        public static float EaseInQuad(float x)
+        {
+            return x * x;
+        }
+
+        public static float EaseInQuart(float x)
+        {
+            return x * x * x * x;
+        }
+
+
+        /// <summary>
+        /// Modified version of Player.Hurt, which ignores defense.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="damage"></param>
+        /// <param name="dramatic"></param>
+        /// <param name="dot"></param>
+        public static void HurtDirect(this Player player, PlayerDeathReason deathReason, int damage, bool dramatic = false, bool dot = false)
         {
             CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, damage, dramatic, dot);
             player.statLife -= damage;
