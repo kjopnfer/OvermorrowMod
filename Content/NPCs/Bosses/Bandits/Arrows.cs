@@ -142,7 +142,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         public Type TrailType() => typeof(TorchTrail);
         public override bool? CanDamage() => !CollideTile;
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) => behindNPCsAndTiles.Add(index);
-        public override bool ShouldUpdatePosition() => false;
+        public override bool ShouldUpdatePosition() => !CollideTile;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 30;
@@ -158,7 +158,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Projectile.tileCollide = true;
             Projectile.timeLeft = 600;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 0;
+            Projectile.extraUpdates = 1;
             Projectile.hide = true;
         }
 
@@ -171,6 +171,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
         private bool CollideTile = false;
 
+        private float InitialVelocityX;
+        private Vector2 InitialVelocity;
+        private Vector2 InitialPosition;
         public override void OnSpawn(IEntitySource source)
         {
             SplitTime = Main.rand.Next(6, 10);
@@ -180,8 +183,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             // Sets the gravity for the initial arrow only
             if (ArrowGravity == 0)
             {
-                ArrowGravity = Main.rand.NextFloat(0.18f, 0.21f);
+                ArrowGravity = Main.rand.NextFloat(0.35f, 0.4f);
             }
+
+            InitialVelocity = Projectile.velocity;
+            InitialVelocityX = Projectile.velocity.X;
+            InitialPosition = Projectile.Center;
         }
 
         float counter = 0;
@@ -193,17 +200,19 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 Main.dust[dust].noGravity = true;
             }
 
-            NPC npc = Main.npc[(int)Projectile.ai[0]];
+            /*NPC npc = Main.npc[(int)Projectile.ai[0]];
             Player player = Main.player[(int)Projectile.ai[1]];
             float flyTime = 60;
             //float progress = ModUtils.EaseInQuad(Utils.Clamp(counter++, 0, flyTime) / flyTime);
-            if (counter > 35) counter++;
+            //float progress = ModUtils.Bezier(0, 0.33f, 0.66f, 1, Utils.Clamp(counter++, 0, flyTime) / flyTime);
+            //if (counter > 35) counter++;
             float progress = Utils.Clamp(counter++, 0, flyTime) / flyTime;
+            //float progress = (float)Math.Sinh(Utils.Clamp(!CollideTile ? counter++ : counter, 0, flyTime) / flyTime);
 
             if (counter >= flyTime) CollideTile = true;
 
             int TOP_HEIGHT = 336;
-            int NPC_OFFSET = 172;
+            int NPC_OFFSET = 156;
             Dust.NewDust(npc.Center + new Vector2(-NPC_OFFSET, -TOP_HEIGHT), 1, 1, DustID.Torch);
             Dust.NewDust(ShootPosition + new Vector2(48, -TOP_HEIGHT), 1, 1, DustID.CursedTorch);
 
@@ -213,8 +222,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             {
                 float futureProgress = Utils.Clamp(counter + 1, 0, flyTime) / flyTime;
                 Projectile.rotation = Projectile.DirectionTo(ModUtils.Bezier(npc.Center, ShootPosition, npc.Center + new Vector2(-NPC_OFFSET, -TOP_HEIGHT), ShootPosition + new Vector2(48, -TOP_HEIGHT), futureProgress)).ToRotation() - MathHelper.PiOver2;
-            }
-            /*if (AICounter == SplitTime)
+            }*/
+            if (AICounter == SplitTime)
             {
                 //float randomGravity = Main.rand.NextFloat(0.16f, 0.19f);
                 //Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity, Projectile.type, Projectile.damage, 0f, Main.myPlayer, -1, randomGravity);
@@ -231,20 +240,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 }
                 else
                 {
-                    AICounter++;
+                    //AICounter++;
                     //Projectile.velocity.Y += AICounter++ < 60 ? (ArrowGravity / 2f) : ArrowGravity;
-                    Projectile.velocity.Y += ArrowGravity;
+
+                    if (AICounter++ > 15 && AICounter < 25)
+                        Projectile.velocity.Y += ArrowGravity / 2f;
+                    else
+                        Projectile.velocity.Y += ArrowGravity;
                 }
 
                 if (Projectile.velocity.X > 0)
-                    Projectile.velocity.X -= 0.035f;
+                    Projectile.velocity.X -= 0.039f;
                 else
-                    Projectile.velocity.X += 0.035f;
+                    Projectile.velocity.X += 0.039f;
 
-                if (Projectile.velocity.Y >= 5) Projectile.velocity.Y = 5;
+                if (Projectile.velocity.Y >= 10) Projectile.velocity.Y = 10;
 
                 Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
-            }*/
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -254,8 +267,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 Main.spriteBatch.Reload(BlendState.Additive);
 
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
-                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(179, 124, 204) * 0.65f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, texture.Size() / 2, Projectile.scale * 0.7f, SpriteEffects.None, 0f);
-                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(153, 78, 173) * 0.3f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, texture.Size() / 2, Projectile.scale * 1.2f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(179, 124, 204) * 0.65f, Projectile.rotation + MathHelper.Pi, texture.Size() / 2, Projectile.scale * 0.7f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(153, 78, 173) * 0.3f, Projectile.rotation + MathHelper.Pi, texture.Size() / 2, Projectile.scale * 1.2f, SpriteEffects.None, 0f);
 
                 texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
 
@@ -306,6 +319,182 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(8, 13);
 
                     Color color = Color.Purple;
+
+                    Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale);
+                }
+
+                Projectile.timeLeft = 150;
+                Projectile.extraUpdates = 0;
+
+                CollideTile = true;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), InitialPosition, new Vector2(InitialVelocity.X + Main.rand.NextFloat(-1.25f, -0.75f), InitialVelocity.Y), ModContent.ProjectileType<ShadowArrow>(), Projectile.damage, 2f, Main.myPlayer, 0, 0);
+
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), InitialPosition, new Vector2(InitialVelocity.X + Main.rand.NextFloat(0.75f, 1.25f), InitialVelocity.Y), ModContent.ProjectileType<ShadowArrow>(), Projectile.damage, 2f, Main.myPlayer, 0, 0);
+
+                    //Projectile.NewProjectile(Projectile.GetSource_FromAI(), InitialPosition, new Vector2(InitialVelocity.X + Main.rand.NextFloat(-2, 2), InitialVelocity.Y), ModContent.ProjectileType<ShadowArrow>(), Projectile.damage, 2f, Main.myPlayer, 0, 0);
+                    //Projectile.NewProjectile(Projectile.GetSource_FromAI(), InitialPosition, new Vector2(InitialVelocity.X + Main.rand.NextFloat(-2, 2), -Main.rand.NextFloat(12, 16.5f)), ModContent.ProjectileType<ShadowArrow>(), Projectile.damage, 2f, Main.myPlayer, 0, 0);
+                }
+            }
+
+            return false;
+        }
+    }
+
+    public class ShadowArrow : ModProjectile, ITrailEntity
+    {
+        public Vector2 ShootPosition;
+        public override string Texture => AssetDirectory.Boss + "Bandits/FlameArrow";
+        public Color TrailColor(float progress) => Color.Black * progress;
+        public float TrailSize(float progress) => 20;
+        public Type TrailType() => typeof(TorchTrail);
+        public override bool? CanDamage() => !CollideTile;
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) => behindNPCsAndTiles.Add(index);
+        public override bool ShouldUpdatePosition() => !CollideTile;
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 30;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.width = Projectile.height = 12;
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = true;
+            Projectile.timeLeft = 600;
+            Projectile.penetrate = -1;
+            Projectile.extraUpdates = 1;
+            Projectile.hide = true;
+        }
+
+        private ref float FadeCounter => ref Projectile.localAI[0];
+        private ref float SplitTime => ref Projectile.localAI[1];
+
+
+        private ref float AICounter => ref Projectile.ai[0];
+        private ref float ArrowGravity => ref Projectile.ai[1];
+
+        private bool CollideTile = false;
+
+        private float InitialVelocityX;
+        private Vector2 InitialVelocity;
+        private Vector2 InitialPosition;
+        public override void OnSpawn(IEntitySource source)
+        {
+            SplitTime = Main.rand.Next(6, 10);
+
+            // Sets the gravity for the initial arrow only
+            if (ArrowGravity == 0)
+            {
+                ArrowGravity = Main.rand.NextFloat(0.35f, 0.4f);
+            }
+
+            InitialVelocity = Projectile.velocity;
+            InitialVelocityX = Projectile.velocity.X;
+            InitialPosition = Projectile.Center;
+        }
+
+        float counter = 0;
+        public override void AI()
+        {
+            if (Main.rand.NextBool(3) && !CollideTile)
+            {
+                int dust = Dust.NewDust(new Vector2(Projectile.position.X + Projectile.velocity.X, Projectile.position.Y + Projectile.velocity.Y), Projectile.width, Projectile.height, DustID.RainbowMk2, Projectile.velocity.X, Projectile.velocity.Y, 100, new Color(105, 43, 128), Main.rand.NextFloat(0.5f, 0.7f));
+                Main.dust[dust].noGravity = true;
+            }
+
+            if (!CollideTile)
+            {
+                if (AICounter == -1) // The child arrows will have passed in -1 to make sure they don't split AND use the provided gravity
+                {
+                    Projectile.velocity.Y += ArrowGravity;
+                }
+                else
+                {
+                    //AICounter++;
+                    //Projectile.velocity.Y += AICounter++ < 60 ? (ArrowGravity / 2f) : ArrowGravity;
+
+                    if (AICounter++ > 15 && AICounter < 25)
+                        Projectile.velocity.Y += ArrowGravity / 2f;
+                    else
+                        Projectile.velocity.Y += ArrowGravity;
+                }
+
+                if (Projectile.velocity.X > 0)
+                    Projectile.velocity.X -= 0.039f;
+                else
+                    Projectile.velocity.X += 0.039f;
+
+                if (Projectile.velocity.Y >= 10) Projectile.velocity.Y = 10;
+
+                Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+            }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (!CollideTile)
+            {
+                Main.spriteBatch.Reload(BlendState.Additive);
+
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(179, 124, 204) * 0.65f, Projectile.rotation + MathHelper.Pi, texture.Size() / 2, Projectile.scale * 0.7f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(153, 78, 173) * 0.3f, Projectile.rotation + MathHelper.Pi, texture.Size() / 2, Projectile.scale * 1.2f, SpriteEffects.None, 0f);
+
+                texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
+
+                var offset = new Vector2(Projectile.width / 2f, Projectile.height / 2f);
+                var trailLength = ProjectileID.Sets.TrailCacheLength[Projectile.type];
+                var fadeMult = 1f / trailLength;
+                for (int i = 1; i < trailLength; i++)
+                {
+                    Main.spriteBatch.Draw(texture, Projectile.oldPos[i] - Main.screenPosition + offset, null, new Color(105, 43, 128) * (1f - fadeMult * i) * 0.5f, Projectile.oldRot[i], texture.Size() / 2f, Projectile.scale * (trailLength - i) / trailLength * 1.5f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(texture, Projectile.oldPos[i] - Main.screenPosition + offset, null, new Color(105, 43, 128) * (1f - fadeMult * i) * 0.2f, Projectile.oldRot[i], texture.Size() / 2f, Projectile.scale * (trailLength - i) / trailLength * 3f, SpriteEffects.None, 0);
+                }
+
+                Main.spriteBatch.Reload(BlendState.AlphaBlend);
+            }
+
+            Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+            float progress = 1;
+            if (CollideTile)
+            {
+                progress = 1f - (Utils.Clamp(FadeCounter - 30, 0, 120) / 120f);
+                if (!Main.gamePaused) FadeCounter++;
+            }
+
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+            effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
+            effect.Parameters["WhiteoutProgress"].SetValue(progress);
+            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+            Texture2D arrow = TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 embedOffset = CollideTile ? Vector2.UnitY * 5 : Vector2.Zero;
+
+            Main.spriteBatch.Draw(arrow, Projectile.Center + embedOffset - Main.screenPosition, null, lightColor, Projectile.rotation, arrow.Size() / 2, Projectile.scale, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+
+            return false;
+        }
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            if (!CollideTile)
+            {
+                for (int i = 0; i < Main.rand.Next(16, 24); i++)
+                {
+                    float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
+                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
+                    Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(8, 13);
+
+                    Color color = Color.Black;
 
                     Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale);
                 }

@@ -41,7 +41,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             NPC.lifeMax = 340;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath39;
-            NPC.knockBackResist = 0.5f;
+            NPC.knockBackResist = 0;
             NPC.boss = true;
             NPC.npcSlots = 10f;
         }
@@ -57,7 +57,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Jump = 1,
             LongShot = 2,
             AngleShot = 3,
-            JumpShot = 4
+            JumpShot = 4,
+            Stun = 5
         }
 
         public void Move(Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
@@ -156,7 +157,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     {
                         if (AICounter++ == 60)
                         {
-                            AIState = Main.rand.NextBool() ? (int)AIStates.AngleShot : (int)AIStates.AngleShot;
+                            AIState = Main.rand.NextBool() ? (int)AIStates.AngleShot : (int)AIStates.LongShot;
                             //AIState = (int)AIStates.AngleShot;
                             AICounter = 0;
                         }
@@ -173,7 +174,18 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                         if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
                         {
-                            NPC.velocity = new Vector2(jumpDirection, -4);
+                            // Check if the right side of the NPC is near a solid block
+                            if ((!Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 1, (int)NPC.BottomLeft.Y / 16).TileType != TileID.WoodenBeam) &&
+                                (!Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 15, (int)NPC.BottomLeft.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 15, (int)NPC.BottomLeft.Y / 16).TileType != TileID.WoodenBeam))
+                            {
+                                NPC.velocity = new Vector2(jumpDirection, -4);
+                            }
+                            else
+                            {
+                                NPC.velocity = new Vector2(-jumpDirection, -4);
+                                Main.NewText("tile behind me");
+                            }
+
                         }
                         else // The NPC will jump off the ledge if they jump, therefore launch in the other direction
                         {
@@ -229,7 +241,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     }
                     else
                     {
-                        if (RepeatShots++ < 1)
+                        if (RepeatShots++ < 0)
                         {
                             AIState = (int)AIStates.LongShot;
                             AICounter = 0;
@@ -263,9 +275,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                             if (tempCounter == 62)
                             {
-                                DialoguePlayer dialoguePlayer = target.GetModPlayer<DialoguePlayer>();
+                                /*DialoguePlayer dialoguePlayer = target.GetModPlayer<DialoguePlayer>();
                                 XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "Archer.xml");
-                                dialoguePlayer.AddPopup(doc);
+                                dialoguePlayer.AddPopup(doc);*/
 
                                 for (int i = 0; i < Main.rand.Next(3, 6); i++)
                                 {
@@ -277,22 +289,29 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                                     Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
                                 }
 
-
                                 Lighting.AddLight(NPC.Center + new Vector2(26, -28), 2f, 0, 2f);
 
-                                //Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -12), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+                                //Vector2 initialVelocity = 7 * new Vector2((float)Math.Cos(45), (float)Math.Sin(45));
 
-                                for (int i = -1; i <= 1; i += 2)
+                                // Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -12), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+                                //for (int i = 0; i < 4; i++)
+                                //{
+                                //    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(Main.rand.NextFloat(6, 10) * NPC.direction, -Main.rand.NextFloat(12, 17)), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+                                //}
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(Main.rand.NextFloat(6, 10) * NPC.direction, -Main.rand.NextFloat(12, 16.5f)), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+
+
+                                /*for (int i = -1; i <= 1; i += 2)
                                 {
                                     SplitArrow arrow = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -12), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, NPC.whoAmI, target.whoAmI).ModProjectile as SplitArrow;
                                     arrow.ShootPosition = (target.Center + Vector2.UnitX * 32 * i) + new Vector2(target.velocity.X * 4, 0);
-                                }
+                                }*/
                             }
                         }
                     }
                     else
                     {
-                        if (RepeatShots++ < 2)
+                        if (RepeatShots++ < 0)
                         {
                             AIState = (int)AIStates.AngleShot;
                             AICounter = 0;
@@ -317,13 +336,16 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     {
                         int jumpDirection = NPC.Center.X > target.Center.X ? 7 : -7;
 
-                        if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
+                        // Check if the right side of the NPC is near a solid block
+                        if ((!Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 1, (int)NPC.BottomLeft.Y / 16).TileType != TileID.WoodenBeam) &&
+                            (!Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 15, (int)NPC.BottomLeft.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 15, (int)NPC.BottomLeft.Y / 16).TileType != TileID.WoodenBeam))
                         {
                             NPC.velocity = new Vector2(jumpDirection, -4);
                         }
-                        else // The NPC will jump off the ledge if they jump, therefore launch in the other direction
+                        else
                         {
                             NPC.velocity = new Vector2(-jumpDirection, -4);
+                            Main.NewText("tile behind me");
                         }
 
                         Projectile.NewProjectile(null, NPC.Center, new Vector2(-1, -3), ModContent.ProjectileType<SlimeGrenade>(), 0, 0f, Main.myPlayer);
@@ -367,6 +389,24 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     }
 
                     break;
+                #endregion
+                #region Stun
+                case (int)AIStates.Stun:
+                    FrameUpdate(FrameType.Stun);
+
+                    if (NPC.collideY && NPC.velocity.Y == 0)
+                    {
+                        NPC.velocity.X = 0;
+                    }
+
+                    if (AICounter++ == 120)
+                    {
+                        AIState = (int)AIStates.Walk;
+                        AICounter = 0;
+                        MiscCounter = 0;
+                    }
+                    break;
+
                     #endregion
             }
         }
@@ -384,13 +424,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             NPC.frame.Y = frameHeight * yFrame;
         }
 
+        public override void OnHitByItem(Player player, Item item, int damage, float knockback, bool crit)
+        {
+            if (AIState == (int)AIStates.AngleShot || (AIState == (int)AIStates.LongShot))
+            {
+                Main.NewText("stun");
+
+                AIState = (int)AIStates.Stun;
+                AICounter = 0;
+                NPC.velocity = new Vector2(2 * -NPC.direction, -2);
+            }
+        }
+
         private enum FrameType
         {
             Walk,
             Jump,
             LongShot,
             AngleShot,
-            JumpShot
+            JumpShot,
+            Stun
         }
 
         float tempCounter = 0;
@@ -551,6 +604,21 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         {
                             yFrame = 1;
                         }
+                    }
+
+                    break;
+                #endregion
+                #region Stun
+                case FrameType.Stun:
+                    xFrame = 0;
+
+                    if (NPC.velocity.Y != 0)
+                    {
+                        yFrame = 1;
+                    }
+                    else if (NPC.collideY)
+                    {
+                        yFrame = 0;
                     }
 
                     break;
