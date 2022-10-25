@@ -147,7 +147,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                             {
                                 NPC.velocity = Vector2.Zero;
 
-                                AIState = Main.rand.NextBool() ? (int)AIStates.JumpShot : (int)AIStates.Jump;
+                                AIState = Main.rand.NextBool() ? (int)AIStates.JumpShot : (int)AIStates.JumpShot;
                                 AICounter = 0;
                                 DodgeCounter = 0;
                             }
@@ -175,15 +175,14 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
                         {
                             // Check if the right side of the NPC is near a solid block
-                            if ((!Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 1, (int)NPC.BottomLeft.Y / 16).TileType != TileID.WoodenBeam) &&
-                                (!Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 15, (int)NPC.BottomLeft.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 15, (int)NPC.BottomLeft.Y / 16).TileType != TileID.WoodenBeam))
-                            {
-                                NPC.velocity = new Vector2(jumpDirection, -4);
-                            }
-                            else
+                            if ((Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).TileType != TileID.WoodenBeam))
                             {
                                 NPC.velocity = new Vector2(-jumpDirection, -4);
                                 Main.NewText("tile behind me");
+                            }
+                            else
+                            {
+                                NPC.velocity = new Vector2(jumpDirection * (Main.rand.NextBool(3) ? -1 : 1), -4);
                             }
 
                         }
@@ -336,19 +335,26 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     {
                         int jumpDirection = NPC.Center.X > target.Center.X ? 7 : -7;
 
-                        // Check if the right side of the NPC is near a solid block
-                        if ((!Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 1, (int)NPC.BottomLeft.Y / 16).TileType != TileID.WoodenBeam) &&
-                            (!Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 15, (int)NPC.BottomLeft.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) + 15, (int)NPC.BottomLeft.Y / 16).TileType != TileID.WoodenBeam))
+                        if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
                         {
-                            NPC.velocity = new Vector2(jumpDirection, -4);
+                            // Check if the right side of the NPC is near a solid block
+                            if ((Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).TileType != TileID.WoodenBeam))
+                            {
+                                NPC.velocity = new Vector2(-jumpDirection, -4);
+                            }
+                            else
+                            {
+                                NPC.velocity = new Vector2(jumpDirection, -4);
+                                Main.NewText("tile behind me FIRE");
+                            }
+
                         }
                         else
                         {
                             NPC.velocity = new Vector2(-jumpDirection, -4);
-                            Main.NewText("tile behind me");
                         }
 
-                        Projectile.NewProjectile(null, NPC.Center, new Vector2(-1, -3), ModContent.ProjectileType<SlimeGrenade>(), 0, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(null, NPC.Center, new Vector2(-5 * NPC.direction, -3), ModContent.ProjectileType<SlimeGrenade>(), 0, 0f, Main.myPlayer);
                     }
 
                     if (NPC.collideY && NPC.velocity.Y == 0 && MiscCounter == 0)
