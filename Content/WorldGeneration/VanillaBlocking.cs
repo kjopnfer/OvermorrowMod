@@ -24,38 +24,39 @@ namespace OvermorrowMod.Content.WorldGeneration
     {
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
-            int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Sand"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
+            int PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Sand"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
-            BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Slush Check"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Generate Ice Biome"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Full Desert"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
-            BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Slush"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
-
-            BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Ice"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
-
-
-            BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Full Desert"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Oasis"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
             int DungeonIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dungeon"));
             if (DungeonIndex != -1) tasks.RemoveAt(DungeonIndex);
 
-            BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Corruption"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Corruption"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
-            BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
-            BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle Trees"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle Trees"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
-            BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Buried Chests"));
-            if (BiomeIndex != -1) tasks.RemoveAt(BiomeIndex);
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Buried Chests"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
+        }
+
+        private void RemovePass(List<GenPass> tasks, string passName)
+        {
+            int PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("passName"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
         }
     }
 }
