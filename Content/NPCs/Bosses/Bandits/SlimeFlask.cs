@@ -15,13 +15,12 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 {
-    public class SlimeGrenade : ModProjectile
+    public class SlimeFlask : ModProjectile
     {
-        public override string Texture => AssetDirectory.Boss + "Bandits/FlameArrow";
         public override bool? CanDamage() => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Slime Grenade");
+            DisplayName.SetDefault("Slime Flask");
         }
 
         public override void SetDefaults()
@@ -39,6 +38,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         {
             Projectile.velocity.Y += 0.28f;
             if (Projectile.velocity.Y >= 5) Projectile.velocity.Y = 5;
+
+            Projectile.rotation += 0.12f;
         }
 
         public override void Kill(int timeLeft)
@@ -51,7 +52,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
     {
         private const int MAX_TIME = 300;
         private bool OnFire = false;
-        public override string Texture => AssetDirectory.Textures + "SLIME";
+        public override string Texture => AssetDirectory.Textures + "Slime_" + Main.rand.Next(1, 4);
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("SLIME EXPLOSION");
@@ -71,7 +72,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         {
             counter += (float)(Math.PI / 2f) / MAX_TIME;
 
-            Projectile.scale = 0.5f;
+            Projectile.scale = 1.5f;
 
             if (!OnFire)
             {
@@ -88,9 +89,12 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
             if (OnFire)
             {
+                Lighting.AddLight(Projectile.Center, 2f, 0, 0);
+
                 Vector2 RandomPosition = Projectile.Center + Vector2.UnitX * Main.rand.Next((int)(-Projectile.width / 2f), (int)(Projectile.width / 2f));
-                if (Projectile.ai[0]++ % 3 == 0)
-                    Particle.CreateParticle(Particle.ParticleType<Flames>(), RandomPosition, -Vector2.UnitY * Main.rand.Next(6, 9), Color.Orange, 1f, Main.rand.NextFloat(0.35f, 0.4f), Main.rand.NextFloat(0, MathHelper.PiOver2), Main.rand.NextFloat(0.01f, 0.015f));
+                if (Projectile.ai[0]++ % 2 == 0)
+                    for (int i = 0; i < 2; i++)
+                        Particle.CreateParticle(Particle.ParticleType<Flames>(), RandomPosition, -Vector2.UnitY * Main.rand.Next(6, 9), Color.Orange, 1f, Main.rand.NextFloat(0.45f, 0.55f), Main.rand.NextFloat(0, MathHelper.PiOver2), Main.rand.NextFloat(0.01f, 0.015f));
 
                 int HEIGHT = 500;
                 Rectangle hitRectangle = new Rectangle((int)Projectile.TopLeft.X, (int)Projectile.Top.Y - HEIGHT, Projectile.width, HEIGHT);
@@ -102,6 +106,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     if (player.Hitbox.Intersects(hitRectangle))
                     {
                         player.Hurt(PlayerDeathReason.LegacyDefault(), 25, 0, false, false, false, -1);
+                        player.AddBuff(BuffID.OnFire, 180);
                     }
                 }
             }
