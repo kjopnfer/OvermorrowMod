@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.NPCs;
@@ -16,6 +17,8 @@ using System.Collections.Generic;
 using OvermorrowMod.Common.Cutscenes;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
+using ReLogic.Content;
+using Terraria.GameContent;
 
 namespace OvermorrowMod.Common
 {
@@ -119,8 +122,38 @@ namespace OvermorrowMod.Common
             minionCounts = 0;
         }
 
+        // Example of how to replace cursor texture to remember for later
+        public override void PostUpdateMiscEffects()
+        {
+            /*if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
+            {
+                Asset<Texture2D> emptyTex = ModContent.Request<Texture2D>(AssetDirectory.Empty);
+                Asset<Texture2D> cursor0 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_0");
+                Asset<Texture2D> cursor1 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_1");
+                Asset<Texture2D> cursor11 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_11");
+                Asset<Texture2D> cursor12 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_12");
+
+                if (OvermorrowModSystem.Instance.ScreenColor.IsVisible())
+                {
+                    TextureAssets.Cursors[0] = emptyTex;
+                    TextureAssets.Cursors[1] = emptyTex;
+                    TextureAssets.Cursors[11] = emptyTex;
+                    TextureAssets.Cursors[12] = emptyTex;
+                }
+                else
+                {
+                    TextureAssets.Cursors[0] = cursor0;
+                    TextureAssets.Cursors[1] = cursor1;
+                    TextureAssets.Cursors[11] = cursor11;
+                    TextureAssets.Cursors[12] = cursor12;
+                }
+            }*/
+        }
+
         public override void OnEnterWorld(Player player)
-        {        
+        {
+            OvermorrowModSystem.Instance.ScreenColor.SetDarkness(0, 60, 60, true);
+
             // Manually apply them because the random reroll doesn't seem to work half the time
             int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
             Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
@@ -141,22 +174,6 @@ namespace OvermorrowMod.Common
             Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);
 
             base.OnEnterWorld(player);
-        }
-
-        private int greetCounter = 0;
-        public override void PostUpdateBuffs()
-        {
-            DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-
-            if (!dialoguePlayer.guideGreeting && greetCounter++ == 180)
-            {
-                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/Guide/GuideSmug", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-
-                dialoguePlayer.AddPopup(texture, "Hello there! That's an unfamiliar face, you must be new around here.", 90, 120, new Color(52, 201, 235), true, true);
-                dialoguePlayer.guideGreeting = true;
-            }
-
-            base.PostUpdateBuffs();
         }
 
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)

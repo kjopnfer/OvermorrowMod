@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.State;
 using System;
 using Terraria;

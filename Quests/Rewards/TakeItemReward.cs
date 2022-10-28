@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OvermorrowMod.Core.Interfaces;
+using System;
 using Terraria;
 
 namespace OvermorrowMod.Quests.Rewards

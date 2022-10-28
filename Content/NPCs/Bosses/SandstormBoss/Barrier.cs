@@ -4,6 +4,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Core;
+using OvermorrowMod.Core.Interfaces;
 using System;
 using Terraria;
 using Terraria.GameContent;

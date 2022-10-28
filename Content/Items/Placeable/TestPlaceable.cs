@@ -1,3 +1,4 @@
+using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Placeable
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = 2000;
-            Item.createTile = TileType<Content.Tiles.DesertTemple.snek>();
+            Item.createTile = ModContent.TileType<JunkPile>();
         }
     }
 }

@@ -5,6 +5,7 @@ using OvermorrowMod.Common.Cutscenes;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
@@ -171,12 +172,12 @@ namespace OvermorrowMod.Core
             return (float)Math.Sqrt(mag.X * mag.X + mag.Y * mag.Y);
         }
 
-        public static void Move(this NPC npc, Vector2 pos, float speed, float divider)
-        {
-            Vector2 vel = npc.DirectionTo(pos) * speed;
-            npc.velocity = (npc.velocity * divider + vel) / (divider + 1);
-        }
-
+        /// <summary>
+        /// Moves the npc to a Vector2.
+        /// The lower the turnResistance, the less time it takes to adjust direction.
+        /// Example: npc.Move(new Vector2(100, 0), 10, 14);
+        /// toPlayer makes the vector consider the player.Center for you.
+        /// </summary>
         public static void Move(this NPC npc, Vector2 vector, float speed, float turnResistance = 10f,
             bool toPlayer = false)
         {
@@ -264,6 +265,7 @@ namespace OvermorrowMod.Core
         public static void Kill(this NPC npc)
         {
             npc.life = 0;
+            npc.HitEffect();
             npc.NPCLoot();
             npc.active = false;
 
@@ -318,9 +320,54 @@ namespace OvermorrowMod.Core
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
 
+        public static float EaseOutQuad(float x)
+        {
+            return 1 - (1 - x) * (1 - x);
+        }
+
+        public static float EaseOutCirc(float x) {
+            return (float)Math.Sqrt(1 - Math.Pow(x - 1, 2));
+        }
+
+    /// <summary>
+    /// Modified version of Player.Hurt, which ignores defense.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="damage"></param>
+    /// <param name="dramatic"></param>
+    /// <param name="dot"></param>
+    public static void HurtDirect(this Player player, PlayerDeathReason deathReason, int damage, bool dramatic = false, bool dot = false)
+        {
+            CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, damage, dramatic, dot);
+            player.statLife -= damage;
+
+            if (player.statLife <= 0)
+            {
+                player.statLife = 0;
+                player.KillMe(deathReason, 10, 0);
+            }
+        }
+
         public static float EaseOutQuint(float x)
         {
             return (float)(1 - Math.Pow(1 - x, 5));
+        }
+
+        public static Color Lerp3(Color a, Color b, Color c, float t)
+        {
+            if (t < 0.5f) // 0.0 to 0.5 goes to a -> b
+                return Color.Lerp(a, b, t / 0.5f);
+            else // 0.5 to 1.0 goes to b -> c
+                return Color.Lerp(b, c, (t - 0.5f) / 0.5f);
+        }
+
+        public static XmlDocument GetXML(string directory)
+        {
+            XmlDocument doc = new XmlDocument();
+            string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes(directory));
+            doc.LoadXml(text);
+
+            return doc;
         }
 
         public static void AddElement(UIElement element, int x, int y, int width, int height, UIElement appendTo)

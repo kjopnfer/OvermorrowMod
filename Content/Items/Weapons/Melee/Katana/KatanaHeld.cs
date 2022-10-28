@@ -52,7 +52,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             float mult = Lerp(Utils.GetLerpValue(0f, SwingTime, Projectile.timeLeft));
             float alpha = (float)Math.Sin(mult * Math.PI);
             Vector2 pos = player.Center + Projectile.velocity * (80f - mult * 60f);
-            Main.EntitySpriteDraw(slash, pos - Main.screenPosition, null, new Color(56, 38, 208) * alpha, Projectile.velocity.ToRotation() - MathHelper.PiOver2, slash.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
+            //Main.EntitySpriteDraw(slash, pos - Main.screenPosition, null, new Color(56, 38, 208) * alpha, Projectile.velocity.ToRotation() - MathHelper.PiOver2, slash.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
             var off = new Vector2(Projectile.width / 2f, Projectile.height / 2f);
             Texture2D texture2D16 = ModContent.Request<Texture2D>(AssetDirectory.Melee + "Katana/Katana_Afterimage").Value;

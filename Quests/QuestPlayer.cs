@@ -76,7 +76,7 @@ namespace OvermorrowMod.Quests
                 {
                     if (markerCounter % 30 == 0)
                     {
-                        Particle.CreateParticle(Particle.ParticleType<Pulse2>(), (req.Requirement as TravelRequirement).Location * 16f,
+                        Particle.CreateParticle(Particle.ParticleType<Pulse>(), (req.Requirement as TravelRequirement).Location * 16f,
                             Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
                     }
 

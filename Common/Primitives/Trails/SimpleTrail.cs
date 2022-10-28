@@ -36,8 +36,10 @@ namespace OvermorrowMod.Common.Primitives.Trails
             if (Positions.Count < 2) return;
             for (int i = 0; i < Positions.Count - 1; i++)
             {
-                float prog1 = (float)(i) / (float)Positions.Capacity;
-                float prog2 = (float)(i + 1) / (float)Positions.Capacity;
+                float prog1 = (float)(i) / (float)Positions.Count;
+                float prog2 = (float)(i + 1) / (float)Positions.Count;
+                //float prog1 = (float)(i) / (float)Positions.Capacity;
+                //float prog2 = (float)(i + 1) / (float)Positions.Capacity;
                 Vector2 pos1 = Positions[i];
                 Vector2 pos2 = Positions[i + 1];
 
