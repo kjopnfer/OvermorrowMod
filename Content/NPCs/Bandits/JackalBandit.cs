@@ -149,7 +149,9 @@ namespace OvermorrowMod.Content.NPCs.Bandits
                             if (target.Hitbox.Intersects(hitbox))
                             {
                                 target.Hurt(PlayerDeathReason.LegacyDefault(), 25, 0, false, false, false, -1);
-                                target.velocity = new Vector2(26 * NPC.direction, -4);
+                                //target.velocity = new Vector2(26 * NPC.direction, -4);
+                                target.velocity = new Vector2(78 * NPC.direction, -48);
+
                                 Main.NewText("holy SHIT");
                             }
                         }
