@@ -1,4 +1,3 @@
-using OvermorrowMod.Content.Tiles.Town;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Placeable.Furniture
@@ -13,7 +12,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
 
         public override void SetDefaults()
         {
-            Item.DefaultToPlaceableTile(ModContent.TileType<TownChair>(), 0);
+            Item.DefaultToPlaceableTile(ModContent.TileType<Content.Tiles.Town.TownChair>(), 0);
             Item.width = 16;
             Item.height = 32;
             Item.maxStack = 9999;
