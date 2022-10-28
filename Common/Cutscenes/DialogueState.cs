@@ -57,6 +57,7 @@ namespace OvermorrowMod.Common.Cutscenes
             if (DelayTimer++ >= DIALOGUE_DELAY)
             {
                 if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
+
                 DrawText(player);
             }
 
@@ -80,6 +81,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 int optionNumber = 1;
                 if (player.GetDialogue() == null) Main.NewText("NULL");
+                if (DrawTimer < player.GetDialogue().drawTime) return;
+
                 //var test = player.GetDialogue().GetOptions(dialogueID);
                 //if (player.GetDialogue().GetOptions(dialogueID) != null)
 

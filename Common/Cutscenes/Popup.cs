@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using System.Xml;
@@ -141,7 +140,6 @@ namespace OvermorrowMod.Common.Cutscenes
                 }, Main.LocalPlayer.Center);
             }
 
-            // We need to detect if any color coded text is present, if it is then skip forward by the progression
             int progress = (int)MathHelper.Lerp(0, GetText().Length, DrawTimer / (float)GetDrawTime());
             var text = GetText().Substring(0, progress);
 
