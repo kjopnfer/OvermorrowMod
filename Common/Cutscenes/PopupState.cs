@@ -1,14 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.UI;
-using OvermorrowMod.Core;
-using System.Text;
-using Terraria.GameContent;
-using Terraria.UI.Chat;
 using Terraria.Audio;
-using ReLogic.Utilities;
 using System.Collections.Generic;
 
 namespace OvermorrowMod.Common.Cutscenes
@@ -22,11 +16,9 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private List<Popup> PopupList = new List<Popup>();
 
-        // This determines whether the UI is shown or not
         public override void Draw(SpriteBatch spriteBatch)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-            if (player.GetQueueLength() <= 0) return;
 
             if (PopupList.Count < 3)
             {
@@ -80,27 +72,7 @@ namespace OvermorrowMod.Common.Cutscenes
                             {
                                 PopupRemoval.Remove(currentPopup);
                             }
-
-        private void HoldText(SpriteBatch spriteBatch, DialoguePlayer player, Vector2 textPosition)
-        {
-            var text = player.GetPopup().displayText;
-
-            if (player.GetPopup().bracketColor != null)
-            {
-                // Create a new string, adding in hex tags whenever an opening bracket is found
-                var builder = new StringBuilder();
-                builder.Append("    ");
-
-                foreach (var character in text)
-                {
-                    // Insert the hex tag if an opening bracket is found
-                    if (character == '[')
-                    {
-                        builder.Append("[c/" + player.GetPopup().bracketColor + ":");
                         }
-                    else
-                    {
-                        builder.Append(character);
                     }
                 }
 
@@ -109,6 +81,5 @@ namespace OvermorrowMod.Common.Cutscenes
 
             PopupList = new List<Popup>(PopupRemoval);
         }
-        #endregion
     }
 }

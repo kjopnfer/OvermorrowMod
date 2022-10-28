@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.NPCs;
 using OvermorrowMod.Common.Particles;
@@ -11,6 +12,7 @@ using OvermorrowMod.Content.NPCs.Carts;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
+using System.Xml;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -52,6 +54,7 @@ namespace OvermorrowMod.Common
             On.Terraria.Player.SlopingCollision += CustomCollision.Player_PlatformCollision;
             On.Terraria.Main.DrawInterface += ParticleDrawing.DrawParticles;
             On.Terraria.Main.DrawDust += DrawOverlay;
+            On.Terraria.Main.GUIChatDrawInner += GUIChatDrawInner;
             On.Terraria.Player.SetTalkNPC += SetTalkNPC;
 
             On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture;
@@ -97,6 +100,7 @@ namespace OvermorrowMod.Common
             On.Terraria.Player.SlopingCollision -= CustomCollision.Player_PlatformCollision;
             On.Terraria.Main.DrawInterface -= ParticleDrawing.DrawParticles;
             On.Terraria.Main.DrawDust -= DrawOverlay;
+            On.Terraria.Main.GUIChatDrawInner -= GUIChatDrawInner;
             On.Terraria.Player.SetTalkNPC -= SetTalkNPC;
 
             On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
@@ -107,6 +111,26 @@ namespace OvermorrowMod.Common
             On.Terraria.Main.Update -= TileOverlay.Main_Update;
 
             TileOverlay.projTarget = null;
+        }
+
+        static void GUIChatDrawInner(On.Terraria.Main.orig_GUIChatDrawInner orig, Main self)
+        {
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            if (player.GetDialogue() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+
+                NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+
+                XmlDocument doc = new XmlDocument();
+                string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/test.xml"));
+                doc.LoadXml(text);
+
+                player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                //player.AddedDialogue = true;
+            }
+
+            //orig(self);
         }
 
         private static void DrawInterface_36_Cursor(On.Terraria.Main.orig_DrawInterface_36_Cursor orig)

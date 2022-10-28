@@ -23,7 +23,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 DialogueState = new DialogueState();
                 DialogueUI = new UserInterface();
-                DialogueUI.SetState(DialogueState);*/
+                DialogueUI.SetState(DialogueState);
             }
         }
 
