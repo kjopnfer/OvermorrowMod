@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common
+namespace OvermorrowMod.Common.Players
 {
     public partial class OvermorrowModPlayer : ModPlayer
     {

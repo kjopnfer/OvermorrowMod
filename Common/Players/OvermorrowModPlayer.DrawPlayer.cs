@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common
+namespace OvermorrowMod.Common.Players
 {
     public partial class OvermorrowModPlayer : ModPlayer
     {

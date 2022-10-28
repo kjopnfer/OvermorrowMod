@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common.Players;
 using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Content.Buffs;

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Players;
 using OvermorrowMod.Common.Cutscenes;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,7 @@ namespace OvermorrowMod.Core
             float nearY = vec.Y > rect.Bottom ? rect.Bottom : vec.Y < rect.Top ? rect.Top : vec.Y;
             return new Vector2(nearX, nearY);
         }
-        private static float Bezier(float x1, float x2, float x3, float x4, float t)
+        public static float Bezier(float x1, float x2, float x3, float x4, float t)
         {
             return (float)(
                 x1 * Math.Pow(1 - t, 3) +
@@ -81,6 +82,7 @@ namespace OvermorrowMod.Core
                 x4 * Math.Pow(t, 3)
                 );
         }
+
         public static Vector2 Bezier(Vector2 from, Vector2 to, Vector2 cp1, Vector2 cp2, float amount)
         {
             Vector2 output = new Vector2();
@@ -325,18 +327,39 @@ namespace OvermorrowMod.Core
             return 1 - (1 - x) * (1 - x);
         }
 
-        public static float EaseOutCirc(float x) {
+        public static float EaseOutCirc(float x)
+        {
             return (float)Math.Sqrt(1 - Math.Pow(x - 1, 2));
         }
 
-    /// <summary>
-    /// Modified version of Player.Hurt, which ignores defense.
-    /// </summary>
-    /// <param name="player"></param>
-    /// <param name="damage"></param>
-    /// <param name="dramatic"></param>
-    /// <param name="dot"></param>
-    public static void HurtDirect(this Player player, PlayerDeathReason deathReason, int damage, bool dramatic = false, bool dot = false)
+        public static float EaseOutQuint(float x)
+        {
+            return (float)(1 - Math.Pow(1 - x, 5));
+        }
+
+        public static float EaseInQuad(float x)
+        {
+            return x * x;
+        }
+
+        public static float EaseInCubic(float x)
+        {
+            return x * x * x;
+        }
+
+        public static float EaseInQuart(float x)
+        {
+            return x * x * x * x;
+        }
+
+        /// <summary>
+        /// Modified version of Player.Hurt, which ignores defense.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="damage"></param>
+        /// <param name="dramatic"></param>
+        /// <param name="dot"></param>
+        public static void HurtDirect(this Player player, PlayerDeathReason deathReason, int damage, bool dramatic = false, bool dot = false)
         {
             CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y, player.width, player.height), CombatText.DamagedFriendly, damage, dramatic, dot);
             player.statLife -= damage;
@@ -346,11 +369,6 @@ namespace OvermorrowMod.Core
                 player.statLife = 0;
                 player.KillMe(deathReason, 10, 0);
             }
-        }
-
-        public static float EaseOutQuint(float x)
-        {
-            return (float)(1 - Math.Pow(1 - x, 5));
         }
 
         public static Color Lerp3(Color a, Color b, Color c, float t)

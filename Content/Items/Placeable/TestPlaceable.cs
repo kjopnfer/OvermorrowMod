@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Placeable
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = 2000;
-            Item.createTile = ModContent.TileType<JunkPile>();
+            Item.createTile = TileType<PottedPlants>();
         }
     }
 }

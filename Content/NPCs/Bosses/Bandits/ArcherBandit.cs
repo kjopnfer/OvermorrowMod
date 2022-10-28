@@ -1,11 +1,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using System;
 using System.Linq;
+using System.Xml;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Events;
@@ -19,8 +21,9 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
     public class ArcherBandit : ModNPC
     {
         private int DodgeCooldown = 0;
-        private int AngleShots = 0;
+        private int RepeatShots = 0;
 
+        private bool isNaked = false;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override bool? CanHitNPC(NPC target) => false;
         public override void SetStaticDefaults()
@@ -39,14 +42,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             NPC.lifeMax = 340;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath39;
-            NPC.knockBackResist = 0.5f;
+            NPC.knockBackResist = 0;
             NPC.boss = true;
             NPC.npcSlots = 10f;
         }
 
         private ref float AIState => ref NPC.ai[0];
         private ref float AICounter => ref NPC.ai[1];
-        private ref float DodgeCounter => ref NPC.ai[2];
+        private ref float MiscCounter => ref NPC.ai[2];
+        private ref float DodgeCounter => ref NPC.ai[3];
 
         private enum AIStates
         {
@@ -54,7 +58,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Jump = 1,
             LongShot = 2,
             AngleShot = 3,
-            JumpShot = 4
+            JumpShot = 4,
+            Stun = 5
         }
 
         public void Move(Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
@@ -113,7 +118,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     FrameUpdate(FrameType.Walk);
 
                     float xDistance = Math.Abs(NPC.Center.X - target.Center.X);
-                    if (xDistance < 12 * 16) // Try to stay within 12 tiles away from the player
+                    if (xDistance < 10 * 16) // Try to stay within 10 tiles away from the player
                     {
                         AICounter = 0;
 
@@ -133,18 +138,17 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                             else
                             {
                                 NPC.velocity = Vector2.Zero;
-                                Main.NewText("stop there is no tile here");
                             }
                         }
 
                         // The player is too close, set a timer to determine if they should perform a jump or roll
-                        if (xDistance < 4 * 16)
+                        if (xDistance < 6 * 16)
                         {
-                            if (DodgeCounter++ >= 20 && DodgeCooldown-- <= 0)
+                            if (DodgeCounter++ >= 10 && DodgeCooldown-- <= 0)
                             {
                                 NPC.velocity = Vector2.Zero;
 
-                                AIState = (int)AIStates.Jump;
+                                AIState = Main.rand.NextBool() ? (int)AIStates.JumpShot : (int)AIStates.JumpShot;
                                 AICounter = 0;
                                 DodgeCounter = 0;
                             }
@@ -154,7 +158,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                     {
                         if (AICounter++ == 60)
                         {
-                            AIState = Main.rand.NextBool() ? (int)AIStates.JumpShot : (int)AIStates.JumpShot;
+                            AIState = Main.rand.NextBool() ? (int)AIStates.AngleShot : (int)AIStates.LongShot;
                             //AIState = (int)AIStates.AngleShot;
                             AICounter = 0;
                         }
@@ -167,15 +171,25 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                     if (AICounter++ == 0)
                     {
-                        int jumpDirection = NPC.Center.X > target.Center.X ? 5 : -5;
+                        int jumpDirection = NPC.Center.X > target.Center.X ? 8 : -8;
 
                         if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
                         {
-                            NPC.velocity = new Vector2(jumpDirection, -6);
+                            // Check if the right side of the NPC is near a solid block
+                            if ((Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).TileType != TileID.WoodenBeam))
+                            {
+                                NPC.velocity = new Vector2(-jumpDirection, -4);
+                                Main.NewText("tile behind me");
+                            }
+                            else
+                            {
+                                NPC.velocity = new Vector2(jumpDirection * (Main.rand.NextBool(3) ? -1 : 1), -4);
+                            }
+
                         }
                         else // The NPC will jump off the ledge if they jump, therefore launch in the other direction
                         {
-                            NPC.velocity = new Vector2(-jumpDirection, -6);
+                            NPC.velocity = new Vector2(-jumpDirection, -4);
                         }
                     }
 
@@ -185,7 +199,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                         AIState = (int)AIStates.Walk;
                         AICounter = 0;
-                        DodgeCooldown = 15;
+                        DodgeCooldown = 0;
                     }
 
                     break;
@@ -221,14 +235,23 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                                 Lighting.AddLight(NPC.Center + new Vector2(26, -28), 2f, 2f * 0.65f, 0);
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitX * 12 * NPC.direction, ModContent.ProjectileType<FlameArrow>(), NPC.damage, 2f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitX * 12 * NPC.direction, ModContent.ProjectileType<FlameArrow>(), NPC.damage * 2, 2f, Main.myPlayer);
                             }
                         }
                     }
                     else
                     {
-                        AIState = (int)AIStates.Walk;
-                        AICounter = 0;
+                        if (RepeatShots++ < 0)
+                        {
+                            AIState = (int)AIStates.LongShot;
+                            AICounter = 0;
+                        }
+                        else
+                        {
+                            AIState = (int)AIStates.Walk;
+                            AICounter = 0;
+                            RepeatShots = 0;
+                        }
                     }
 
                     break;
@@ -252,26 +275,43 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                             if (tempCounter == 62)
                             {
+                                /*DialoguePlayer dialoguePlayer = target.GetModPlayer<DialoguePlayer>();
+                                XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "Archer.xml");
+                                dialoguePlayer.AddPopup(doc);*/
+
                                 for (int i = 0; i < Main.rand.Next(3, 6); i++)
                                 {
                                     float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
                                     float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                                    Vector2 RandomVelocity = new Vector2(-1, 1).RotatedBy(randomAngle) * Main.rand.Next(4, 7);
+                                    Vector2 RandomVelocity = new Vector2(-1 * NPC.direction, 1).RotatedBy(randomAngle) * Main.rand.Next(4, 7);
                                     Color color = Color.Purple;
 
                                     Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
                                 }
 
-
                                 Lighting.AddLight(NPC.Center + new Vector2(26, -28), 2f, 0, 2f);
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -7), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+                                //Vector2 initialVelocity = 7 * new Vector2((float)Math.Cos(45), (float)Math.Sin(45));
+
+                                // Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -12), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+                                //for (int i = 0; i < 4; i++)
+                                //{
+                                //    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(Main.rand.NextFloat(6, 10) * NPC.direction, -Main.rand.NextFloat(12, 17)), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+                                //}
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(Main.rand.NextFloat(6, 10) * NPC.direction, -Main.rand.NextFloat(12, 16.5f)), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
+
+
+                                /*for (int i = -1; i <= 1; i += 2)
+                                {
+                                    SplitArrow arrow = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -12), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, NPC.whoAmI, target.whoAmI).ModProjectile as SplitArrow;
+                                    arrow.ShootPosition = (target.Center + Vector2.UnitX * 32 * i) + new Vector2(target.velocity.X * 4, 0);
+                                }*/
                             }
                         }
                     }
                     else
                     {
-                        if (AngleShots++ < 2)
+                        if (RepeatShots++ < 0)
                         {
                             AIState = (int)AIStates.AngleShot;
                             AICounter = 0;
@@ -280,7 +320,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         {
                             AIState = (int)AIStates.Walk;
                             AICounter = 0;
-                            AngleShots = 0;
+                            RepeatShots = 0;
                         }
                     }
 
@@ -288,10 +328,42 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 #endregion
                 #region JumpShot
                 case (int)AIStates.JumpShot:
-                    FrameUpdate(FrameType.Jump);
-
                     const int JUMP_HEIGHT = -11;
+
+                    FrameUpdate(FrameType.JumpShot);
+
                     if (AICounter++ == 0)
+                    {
+                        int jumpDirection = NPC.Center.X > target.Center.X ? 7 : -7;
+
+                        if (Framing.GetTileSafely((int)(NPC.BottomLeft.X / 16) - 15, (int)NPC.BottomLeft.Y / 16).HasTile)
+                        {
+                            // Check if the right side of the NPC is near a solid block
+                            if ((Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).HasTile && Framing.GetTileSafely((int)(NPC.Center.X / 16) + 1, (int)NPC.Center.Y / 16).TileType != TileID.WoodenBeam))
+                            {
+                                NPC.velocity = new Vector2(-jumpDirection, -4);
+                            }
+                            else
+                            {
+                                NPC.velocity = new Vector2(jumpDirection, -4);
+                                Main.NewText("tile behind me FIRE");
+                            }
+                        }
+                        else
+                        {
+                            NPC.velocity = new Vector2(-jumpDirection, -4);
+                        }
+
+                        Projectile.NewProjectile(null, NPC.Center, new Vector2(-5 * NPC.direction, -3), ModContent.ProjectileType<SlimeFlask>(), 0, 0f, Main.myPlayer);
+                    }
+
+                    if (NPC.collideY && NPC.velocity.Y == 0 && MiscCounter == 0)
+                    {
+                        NPC.velocity.X = 0;
+                        MiscCounter = 1;
+                    }
+
+                    if (MiscCounter == 1)
                     {
                         int jumpDirection = NPC.Center.X > target.Center.X ? 3 : -3;
 
@@ -305,31 +377,80 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         }
                     }
 
-                    if (NPC.collideY && NPC.velocity.Y == 0)
+                    if (MiscCounter >= 1)
+                    {
+                        if (MiscCounter++ == 30)
+                        {
+                            for (int i = 0; i < Main.rand.Next(3, 6); i++)
+                            {
+                                float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
+                                float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
+                                Vector2 RandomVelocity = new Vector2(1 * -NPC.direction, -1).RotatedBy(randomAngle) * Main.rand.Next(4, 7);
+                                Color color = Color.Orange;
+
+                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center, RandomVelocity, color, 1, randomScale);
+                            }
+
+                            Projectile.NewProjectile(null, NPC.Center, new Vector2(-6 * -NPC.direction, 6), ModContent.ProjectileType<FlameArrow>(), 26, 0f, Main.myPlayer);
+                        }
+                    }
+
+                    if (NPC.collideY && NPC.velocity.Y == 0 && MiscCounter > 1)
                     {
                         NPC.velocity.X = 0;
-
                         AIState = (int)AIStates.Walk;
                         AICounter = 0;
+                        MiscCounter = 0;
                         DodgeCooldown = 15;
                     }
 
                     break;
                 #endregion
+                #region Stun
+                case (int)AIStates.Stun:
+                    FrameUpdate(FrameType.Stun);
+
+                    if (NPC.collideY && NPC.velocity.Y == 0)
+                    {
+                        NPC.velocity.X = 0;
+                    }
+
+                    if (AICounter++ == 120)
+                    {
+                        AIState = (int)AIStates.Walk;
+                        AICounter = 0;
+                        MiscCounter = 0;
+                    }
+                    break;
+
+                    #endregion
             }
         }
 
         int xFrame = 1;
         int yFrame = 0;
 
-        const int MAX_COLUMNS = 4;
+        const int MAX_COLUMNS = 8;
         public override void FindFrame(int frameHeight)
         {
             NPC.spriteDirection = NPC.direction;
             NPC.frame.Width = TextureAssets.Npc[NPC.type].Value.Width / MAX_COLUMNS;
 
-            NPC.frame.X = NPC.frame.Width * xFrame;
+            int xFrameOffset = isNaked ? 0 : 4;
+            NPC.frame.X = NPC.frame.Width * (xFrame + xFrameOffset);
             NPC.frame.Y = frameHeight * yFrame;
+        }
+
+        public override void OnHitByItem(Player player, Item item, int damage, float knockback, bool crit)
+        {
+            if (AIState == (int)AIStates.AngleShot || (AIState == (int)AIStates.LongShot))
+            {
+                Main.NewText("stun");
+
+                AIState = (int)AIStates.Stun;
+                AICounter = 0;
+                NPC.velocity = new Vector2(2 * -NPC.direction, -2);
+            }
         }
 
         private enum FrameType
@@ -338,12 +459,15 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             Jump,
             LongShot,
             AngleShot,
-            JumpShot
+            JumpShot,
+            Stun
         }
 
         float tempCounter = 0;
         private bool FrameUpdate(FrameType type)
         {
+            if (NPC.life <= NPC.lifeMax * 0.76f) isNaked = true;
+
             switch (type)
             {
                 #region Walk
@@ -434,33 +558,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                 case FrameType.AngleShot:
                     xFrame = 2;
 
-                    if (AngleShots > 0 && tempCounter < 55) tempCounter = 65; // If the NPC has fired the first angled shot, make it take less time
-
-                    if (tempCounter++ < 60) // NPC stands in the ready position prior to drawing back the bow
-                    {
-                        if (yFrame > 0) yFrame = 0;
-                    }
-                    else
-                    {
-                        if (tempCounter > 68)
-                        {
-                            if (yFrame == 10)
-                            {
-                                yFrame = 0;
-                                tempCounter = 0;
-
-                                return false;
-                            }
-
-                            yFrame++;
-                            tempCounter = 60;
-                        }
-                    }
-                    break;
-                #endregion
-                #region JumpShot
-                case FrameType.JumpShot:
-                    xFrame = 2;
+                    //if (RepeatShots > 0 && tempCounter < 55) tempCounter = 65; // If the NPC has fired the first angled shot, make it take less time
 
                     if (tempCounter++ < 60) // NPC stands in the ready position prior to drawing back the bow
                     {
@@ -494,6 +592,55 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                         }
                     }
                     break;
+                #endregion
+                #region JumpShot
+                case FrameType.JumpShot:
+                    xFrame = 0;
+
+                    //Main.NewText("tempcounter " + tempCounter);
+                    if (MiscCounter == 0)
+                    {
+                        yFrame = 1;
+                    }
+                    else
+                    {
+                        if (tempCounter++ == 0)
+                        {
+                            yFrame = 2;
+                        }
+
+                        if (tempCounter == 18)
+                        {
+                            yFrame = 3;
+                        }
+
+                        if (tempCounter == 26)
+                        {
+                            yFrame = 4;
+                        }
+
+                        if (tempCounter == 32)
+                        {
+                            yFrame = 1;
+                        }
+                    }
+
+                    break;
+                #endregion
+                #region Stun
+                case FrameType.Stun:
+                    xFrame = 0;
+
+                    if (NPC.velocity.Y != 0)
+                    {
+                        yFrame = 1;
+                    }
+                    else if (NPC.collideY)
+                    {
+                        yFrame = 0;
+                    }
+
+                    break;
                     #endregion
             }
 
@@ -508,35 +655,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
             float xOffset = NPC.direction == 1 ? 11 : -10;
             Vector2 drawOffset = new Vector2(xOffset, -4);
 
-            if (AIState == (int)AIStates.LongShot && yFrame == 5)
+
+            if ((AIState == (int)AIStates.LongShot || AIState == (int)AIStates.AngleShot) && yFrame == 5)
             {
-                spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
-
-                int frameOffset = xFrame == 1 ? 0 : 60;
-                Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
-                Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
-
-                float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
-
-                Main.spriteBatch.Reload(BlendState.Additive);
-
-                float colorStrength = MathHelper.Lerp(0, 1f, progress);
-                Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
-
-                if (xFrame == 1)
-                {
-                    Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, colorStrength * 0.65f, 0);
-                }
-                else
-                {
-                    Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, 0, colorStrength);
-
-                }
-
-                Texture2D glowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_ArrowGlow").Value;
-                spriteBatch.Draw(glowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, frameColor * progress, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
-
-                Main.spriteBatch.Reload(BlendState.AlphaBlend);
+                PreDrawLongShot(spriteBatch, screenPos, drawColor);
             }
             else
             {
@@ -548,41 +670,112 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+
+            if ((AIState == (int)AIStates.LongShot || AIState == (int)AIStates.AngleShot) && yFrame == 5)
+            {
+                PostDrawLongShot(spriteBatch, screenPos, drawColor);
+            }
+            else if (AIState == (int)AIStates.JumpShot && (yFrame == 2 || yFrame == 3))
+            {
+                PostDrawJumpShot(spriteBatch, screenPos, drawColor);
+            }
+        }
+
+        private void PostDrawJumpShot(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            if (AIState == (int)AIStates.LongShot && yFrame == 5)
+            float xOffset = NPC.direction == 1 ? 11 : -10;
+            Vector2 drawOffset = new Vector2(xOffset, -4);
+
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            Color frameColor = Color.Orange;
+            Texture2D flare = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flare_01").Value;
+            float progress = Utils.Clamp(tempCounter, 0, 26) / 26f;
+            float scale = MathHelper.Lerp(0, 1, progress);
+
+            Vector2 flareOffset = new Vector2(26 * NPC.direction, 14);
+
+            float colorStrength = MathHelper.Lerp(0, 1.5f, progress);
+            Lighting.AddLight(NPC.Center + new Vector2(26 * NPC.direction, 14), colorStrength, colorStrength * 0.65f, 0);
+
+            spriteBatch.Draw(flare, NPC.Center - screenPos + flareOffset, null, frameColor, NPC.rotation, flare.Size() / 2, scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+
+        private void PreDrawLongShot(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            float xOffset = NPC.direction == 1 ? 11 : -10;
+            Vector2 drawOffset = new Vector2(xOffset, -4);
+
+            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            int frameOffset = xFrame == 1 ? 0 : 60;
+            Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
+            Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
+
+            float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
+
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            float colorStrength = MathHelper.Lerp(0, 1f, progress);
+            Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
+
+            if (xFrame == 1)
             {
-                int frameOffset = xFrame == 1 ? 0 : 60;
-                Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
-                Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
-
-                Texture2D bowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Bow").Value;
-                spriteBatch.Draw(bowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
-
-                Main.spriteBatch.Reload(SpriteSortMode.Immediate);
-
-                float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
-
-                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-                effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
-                effect.Parameters["WhiteoutProgress"].SetValue(progress);
-                effect.CurrentTechnique.Passes["Whiteout"].Apply();
-
-                Texture2D arrowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Arrow").Value;
-                spriteBatch.Draw(arrowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
-
-                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
-                Main.spriteBatch.Reload(BlendState.Additive);
-
-                Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
-                Texture2D flare = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flare_01").Value;
-                float scale = MathHelper.Lerp(0, 1, progress);
-
-                Vector2 flareOffset = xFrame == 1 ? new Vector2(34 * NPC.direction, -3) : new Vector2(26 * NPC.direction, -28);
-                spriteBatch.Draw(flare, NPC.Center - screenPos + flareOffset, null, frameColor, NPC.rotation, flare.Size() / 2, scale, spriteEffects, 0);
-
-                Main.spriteBatch.Reload(BlendState.AlphaBlend);
+                Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, colorStrength * 0.65f, 0);
             }
+            else
+            {
+                Lighting.AddLight(NPC.Center + new Vector2(26, -28), colorStrength, 0, colorStrength);
+            }
+
+            Texture2D glowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_ArrowGlow").Value;
+            spriteBatch.Draw(glowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, frameColor * progress, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+
+        private void PostDrawLongShot(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            int frameOffset = xFrame == 1 ? 0 : 60;
+            Rectangle drawRectangle = new Rectangle(frameOffset, 0, 60, 60);
+            Vector2 bowOffset = new Vector2(NPC.direction == 1 ? 11 : -10, -4);
+
+            Texture2D bowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Bow").Value;
+            spriteBatch.Draw(bowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+            float progress = Utils.Clamp(tempCounter - 68, 0, 30) / 30f;
+
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+            effect.Parameters["WhiteoutProgress"].SetValue(progress);
+            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+            Texture2D arrowFrame = ModContent.Request<Texture2D>(AssetDirectory.Boss + "Bandits/ArcherBandit_Arrow").Value;
+            spriteBatch.Draw(arrowFrame, NPC.Center - screenPos + bowOffset, drawRectangle, drawColor, NPC.rotation, drawRectangle.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+            Main.spriteBatch.Reload(BlendState.Additive);
+
+            Color frameColor = xFrame == 1 ? Color.Orange : Color.Purple;
+            Texture2D flare = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flare_01").Value;
+            float scale = MathHelper.Lerp(0, 1, progress);
+
+            Vector2 flareOffset = xFrame == 1 ? new Vector2(34 * NPC.direction, -3) : new Vector2(26 * NPC.direction, -28);
+            spriteBatch.Draw(flare, NPC.Center - screenPos + flareOffset, null, frameColor, NPC.rotation, flare.Size() / 2, scale, spriteEffects, 0);
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
 }

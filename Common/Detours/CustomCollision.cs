@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.NPCs;
+using OvermorrowMod.Common.Players;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using System;
 using Terraria;

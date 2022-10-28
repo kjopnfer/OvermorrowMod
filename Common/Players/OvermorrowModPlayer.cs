@@ -20,7 +20,7 @@ using OvermorrowMod.Core;
 using ReLogic.Content;
 using Terraria.GameContent;
 
-namespace OvermorrowMod.Common
+namespace OvermorrowMod.Common.Players
 {
     partial class OvermorrowModPlayer : ModPlayer
     {
