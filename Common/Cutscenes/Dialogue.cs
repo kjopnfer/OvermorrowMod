@@ -14,6 +14,10 @@ namespace OvermorrowMod.Common.Cutscenes
         public string bracketColor;
         public XmlDocument xmlDoc;
 
+        private XmlNodeList textList;
+
+        private int textIterator = 0;
+
         public Dialogue(Texture2D speakerBody, string displayText, int drawTime, string bracketColor, XmlDocument xmlDoc)
         {
             this.speakerBody = speakerBody;
@@ -22,9 +26,17 @@ namespace OvermorrowMod.Common.Cutscenes
 
             this.bracketColor = bracketColor;
             this.xmlDoc = xmlDoc;
+
+            UpdateList("start");
         }
 
-        public string GetText(string id)
+        public int GetTextListLength() => textList.Count;
+
+        public int GetTextIteration() => textIterator;
+
+        public void IncrementText() => textIterator++;
+
+        /*public string GetText(string id)
         {
             XmlNode starting = FindNode(id);
 
@@ -35,6 +47,31 @@ namespace OvermorrowMod.Common.Cutscenes
             }
 
             return null;
+        }*/
+
+        /// <summary>
+        /// Grabs a list of texts based on the node ID
+        /// </summary>
+        /// <param name="id"></param>
+        public void UpdateList(string id)
+        {
+            textIterator = 0;
+            XmlNode starting = FindNode(id);
+            var children = starting.ChildNodes;
+
+            foreach (XmlNode child in children)
+            {
+                if (child.Name == "Dialogue")
+                {
+                    textList = child.SelectNodes(".//Text");
+                }
+            }
+        }
+
+        public string GetText(string id)
+        {
+            XmlNode node = textList[textIterator];
+            return node.InnerText;
         }
 
         public List<OptionButton> GetOptions(string id)
@@ -67,35 +104,5 @@ namespace OvermorrowMod.Common.Cutscenes
 
             return null;
         }
-
-        /*public void Find(XmlDocument doc, string id)
-        {
-            var cringe = doc.GetElementsByTagName("DialogueNode");
-            XmlNode starting = null;
-            foreach (XmlNode node in cringe)
-            {
-                //Console.Write(node.Value);
-                //Console.Write(node.Attributes["id"].Value);
-                if (node.Attributes["id"].Value == id)
-                {
-                    starting = node;
-                }
-            }
-            var children = starting.ChildNodes;
-            foreach (XmlNode child in children)
-            {
-                if (child.Name == "msg") Console.WriteLine(child.InnerText);
-                if (child.Name == "options")
-                {
-                    foreach (XmlNode option in child.ChildNodes)
-                    {
-                        Console.WriteLine(option.InnerText);
-                    }
-                }
-                //Console.WriteLine(child.Name);
-                //Console.WriteLine(child.Name + " : " + child.InnerText);
-            }
-        }
-        */
     }
 }

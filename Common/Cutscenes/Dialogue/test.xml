@@ -1,6 +1,9 @@
 <Dialogue>
 	<DialogueNode id="start">
-		<Message>hello, i am [stryke]. i have been here [forever].</Message>
+		<Dialogue>
+			<Text>hello, i am [stryke].</Text>
+			<Text>i have been here [forever].</Text>
+		</Dialogue>
 		<Portrait>cool</Portrait>
 		<Options>
 			<Option link="yes">wow thats so cool, what do you do?</Option>
@@ -10,7 +13,10 @@
 	</DialogueNode>
 
 	<DialogueNode id="yes">
-		<Message>i am a spriter</Message>
+		<Dialogue>
+			<Text>i am a spriter</Text>
+			<Text>i put pixels onto a blank canvas</Text>
+		</Dialogue>
 		<Portrait>cool</Portrait>
 		<Options>
 			<Option link="no">didnt ask</Option>
@@ -18,12 +24,16 @@
 	</DialogueNode>
 
 	<DialogueNode id="no">
-		<Message>thats rude bro</Message>
+		<Dialogue>
+			<Text>thats rude bro</Text>
+		</Dialogue>
 		<Portrait>cool</Portrait>
 	</DialogueNode>
 
 	<DialogueNode id="what">
-		<Message>what</Message>
+		<Dialogue>
+			<Text>what</Text>
+		</Dialogue>
 		<Portrait>cool</Portrait>
 	</DialogueNode>
 </Dialogue>
