@@ -12,6 +12,23 @@ using Terraria.GameContent.UI.Elements;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
+    /// <summary>
+    /// Literally just an invisible UIPanel to draw the buttons and content on
+    /// </summary>
+    internal class DummyPanel : UIPanel
+    {
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime); // don't remove.
+        }
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Empty).Value;
+            spriteBatch.Draw(texture, GetDimensions().ToRectangle(), Color.White);
+        }
+    }
+
     public class DialogueState : UIState
     {
         private int DrawTimer;
@@ -23,6 +40,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private const int WIDTH = 650;
         private const int HEIGHT = 300;
 
+        private DummyPanel DrawSpace = new DummyPanel();
         private UIPanel BackPanel = new UIPanel();
         private UIText Text = new UIText("");
         private UIImage Portrait = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Empty));
@@ -31,9 +49,10 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool shouldRedraw = true;
         public override void OnInitialize()
         {
-            ModUtils.AddElement(BackPanel, Main.screenWidth / 2 - (WIDTH / 2), Main.screenHeight / 2 - 250, WIDTH, HEIGHT, this);
-            ModUtils.AddElement(Text, 0, 0, 650, 300, BackPanel);
-            ModUtils.AddElement(Portrait, 0, 0, 650, 300, BackPanel);
+            ModUtils.AddElement(DrawSpace, Main.screenWidth / 2 - (WIDTH / 2), Main.screenHeight / 2 - 250, WIDTH * 2, HEIGHT * 2, this);
+            ModUtils.AddElement(BackPanel, Main.screenWidth / 2 - (WIDTH / 2), Main.screenHeight / 2 - 250, WIDTH, HEIGHT - 100, DrawSpace);
+            ModUtils.AddElement(Text, 0, 0, 650, 300, DrawSpace);
+            ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
 
             base.OnInitialize();
         }
@@ -75,9 +94,10 @@ namespace OvermorrowMod.Common.Cutscenes
                 Main.NewText("redrawing");
 
                 // Removes the options and then readds the elements back
-                BackPanel.RemoveAllChildren();
-                ModUtils.AddElement(Text, 0, 0, 650, 300, BackPanel);
-                ModUtils.AddElement(Portrait, 0, 0, 650, 300, BackPanel);
+                DrawSpace.RemoveAllChildren();
+                ModUtils.AddElement(BackPanel, 0, -25, 650, 200, DrawSpace);
+                ModUtils.AddElement(Text, 0, 0, 650, 300, DrawSpace);
+                ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
 
                 int optionNumber = 1;
                 if (player.GetDialogue() == null) Main.NewText("NULL");
@@ -91,7 +111,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
                         Vector2 position = OptionPosition(optionNumber);
-                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, WIDTH / 2, 100, BackPanel);
+                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, DrawSpace);
                         Main.NewText("draw: " + button.GetText());
 
                         optionNumber++;
@@ -109,13 +129,13 @@ namespace OvermorrowMod.Common.Cutscenes
             switch (optionNumber)
             {
                 case 1:
-                    return new Vector2(0, 50);
+                    return new Vector2(0, 200);
                 case 2:
-                    return new Vector2(WIDTH / 2, 50);
+                    return new Vector2(WIDTH / 2, 200);
                 case 3:
-                    return new Vector2(0, 150);
+                    return new Vector2(0, 300);
                 case 4:
-                    return new Vector2(WIDTH / 2, 150);
+                    return new Vector2(WIDTH / 2, 300);
             }
 
             return new Vector2(0, 0);
@@ -216,7 +236,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
-            Utils.DrawBorderString(spriteBatch, displayText, pos, Color.White);
+            Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(0, 25), Color.White);
         }
 
         public override void MouseDown(UIMouseEvent evt)
