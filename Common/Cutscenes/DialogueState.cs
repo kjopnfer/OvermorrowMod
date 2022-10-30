@@ -102,7 +102,10 @@ namespace OvermorrowMod.Common.Cutscenes
                 ModUtils.AddElement(Text, 0, 0, 650, 300, DrawSpace);
                 ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
 
-                if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                // Determines which button type is shown in the bottom right corner
+                if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                    ModUtils.AddElement(new ExitButton(), 575, 145, 50, 25, DrawSpace);
+                else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
                     ModUtils.AddElement(new NextButton("420"), 575, 145, 50, 25, DrawSpace);
 
                 int optionNumber = 1;
@@ -257,6 +260,38 @@ namespace OvermorrowMod.Common.Cutscenes
                 parent.shouldRedraw = true;
 
                 Main.NewText("incrementing counter " + player.GetDialogue().GetTextIteration() + " / " + player.GetDialogue().GetTextListLength());
+            }
+        }
+    }
+
+    public class ExitButton : UIElement
+    {
+        public ExitButton() { }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+            bool isHovering = ContainsPoint(Main.MouseScreen);
+
+            if (isHovering)
+            {
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
+            }
+
+            Utils.DrawBorderString(spriteBatch, "Close", pos /*+ new Vector2(0, 25)*/, Color.White);
+        }
+
+        public override void MouseDown(UIMouseEvent evt)
+        {
+            Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
+
+            // On the click action, go back into the parent and set the dialogue node to the one stored in here
+            if (Parent.Parent is DialogueState parent)
+            {
+                parent.ResetTimers();
+                parent.SetID("start");
+
+                Main.LocalPlayer.SetTalkNPC(-1);
             }
         }
     }
