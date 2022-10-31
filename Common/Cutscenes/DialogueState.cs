@@ -9,6 +9,7 @@ using Terraria.GameContent;
 using Terraria.UI.Chat;
 using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
+using OvermorrowMod.Quests;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -48,6 +49,7 @@ namespace OvermorrowMod.Common.Cutscenes
         private UIImage Portrait = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Empty));
 
         public string dialogueID = "start";
+        public bool drawQuest = false;
         public bool shouldRedraw = true;
         public override void OnInitialize()
         {
@@ -69,6 +71,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 ResetTimers();
                 SetID("start");
+                if (drawQuest) drawQuest = false;
 
                 return;
             }
@@ -94,6 +97,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
+
                 //Main.NewText("redrawing");
 
                 // Removes the options and then readds the elements back
@@ -102,14 +106,23 @@ namespace OvermorrowMod.Common.Cutscenes
                 ModUtils.AddElement(Text, 0, 0, 650, 300, DrawSpace);
                 ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
 
-                // Determines which button type is shown in the bottom right corner
-                if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
-                    ModUtils.AddElement(new ExitButton(), 575, 145, 50, 25, DrawSpace);
-                else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
-                    ModUtils.AddElement(new NextButton("420"), 575, 145, 50, 25, DrawSpace);
+                if (DrawTimer >= player.GetDialogue().drawTime)
+                {
+                    var npc = Main.npc[Main.LocalPlayer.talkNPC];
+                    var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+                    if (quest != null && dialogueID == "start" && dialogue.GetTextIteration() == 0)
+                    {
+                        ModUtils.AddElement(new QuestButton(), 575, 50, 50, 25, DrawSpace);
+                    }
 
+                    // Determines which button type is shown in the bottom right corner
+                    if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                        ModUtils.AddElement(new ExitButton(), 575, 145, 50, 25, DrawSpace);
+                    else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                        ModUtils.AddElement(new NextButton(), 575, 145, 50, 25, DrawSpace);
+                }
+                
                 int optionNumber = 1;
-                if (player.GetDialogue() == null) Main.NewText("NULL");
                 if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
 
                 if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null)
@@ -149,8 +162,13 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private void DrawText(DialoguePlayer player)
         {
+            string text = drawQuest ? "draw quest" : player.GetDialogue().GetText(dialogueID);
+
             int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText(dialogueID).Length, DrawTimer / (float)player.GetDialogue().drawTime);
-            var text = player.GetDialogue().GetText(dialogueID).Substring(0, progress);
+            if (drawQuest) progress = (int)MathHelper.Lerp(0, text.Length, DrawTimer / (float)player.GetDialogue().drawTime); // This needs to be changed
+
+            var displayText = text.Substring(0, progress);
+
 
             // If for some reason there are no colors specified don't parse the brackets
             if (player.GetDialogue().bracketColor != null)
@@ -163,7 +181,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 var builder = new StringBuilder();
                 builder.Append("    "); // Appends to the beginning of the string
 
-                foreach (var character in text)
+                foreach (var character in displayText)
                 {
                     if (character == '[') // Insert the hex tag if an opening bracket is found
                     {
@@ -193,10 +211,10 @@ namespace OvermorrowMod.Common.Cutscenes
                     builder.Replace(hexTag, "[c/" + player.GetDialogue().bracketColor + ": ]");
                 }
 
-                text = builder.ToString();
+                displayText = builder.ToString();
             }
 
-            Text.SetText(text);
+            Text.SetText(displayText);
         }
 
         private void DrawBackdrop(DialoguePlayer player)
@@ -225,14 +243,47 @@ namespace OvermorrowMod.Common.Cutscenes
         }
     }
 
+    public class QuestButton : UIElement
+    {
+        public QuestButton() { }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+            bool isHovering = ContainsPoint(Main.MouseScreen);
+
+            if (isHovering)
+            {
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
+            }
+
+            Utils.DrawBorderString(spriteBatch, "Quest", pos /*+ new Vector2(0, 25)*/, Color.White);
+        }
+
+        public override void MouseDown(UIMouseEvent evt)
+        {
+            Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
+
+            // On the click action, go back into the parent and set the dialogue node to the one stored in here
+            if (Parent.Parent is DialogueState parent)
+            {
+                Main.NewText("quest BUTTON");
+                parent.ResetTimers();
+                parent.shouldRedraw = true;
+                parent.drawQuest = true;
+                //DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+                //player.GetDialogue().IncrementText();
+                //parent.ResetTimers();
+                //parent.shouldRedraw = true;
+                //
+                //Main.NewText("incrementing counter " + player.GetDialogue().GetTextIteration() + " / " + player.GetDialogue().GetTextListLength());
+            }
+        }
+    }
+
     public class NextButton : UIElement
     {
-        private string linkID;
-
-        public NextButton(string linkID)
-        {
-            this.linkID = linkID;
-        }
+        public NextButton() { }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
