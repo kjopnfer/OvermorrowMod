@@ -39,10 +39,8 @@ namespace OvermorrowMod.Quests
                     text = requirement.ID;
                     if (Main.mouseLeft)
                     {
-                        SoundEngine.PlaySound(SoundID.Item20, Main.LocalPlayer.position);
                         modPlayer.SelectedLocation = requirement.ID;
                         Main.mapFullscreen = false;
-                        SoundEngine.PlaySound(SoundID.Item20, requirement.Location * 16);
                     }
                 }
             }

@@ -134,19 +134,36 @@ namespace OvermorrowMod.Common.Cutscenes
                     }
                     else // The UI drawing when the player has clicked on the Quest button
                     {
-                        if (questCounter < quest.DialogueCount - 1)
-                            ModUtils.AddElement(new NextButton(), 575, 145, 50, 25, DrawSpace);
 
-                        if (questCounter == quest.DialogueCount - 1)
+                        if (!isDoing)
                         {
-                            Main.NewText("draw accept button??");
-                            for (int i = 1; i <= 2; i++)
-                            {
-                                Vector2 position = OptionPosition(i);
-                                string questText = i == 1 ? "Accept" : "Decline";
-                                ModUtils.AddElement(new OptionButton(questText, "none"), (int)position.X, (int)position.Y, 285, 75, DrawSpace);
+                            if (questCounter < quest.DialogueCount - 1)
+                                ModUtils.AddElement(new NextButton(), 575, 145, 50, 25, DrawSpace);
 
-                                Main.NewText(position);
+                            if (questCounter == quest.DialogueCount - 1)
+                            {
+                                for (int i = 1; i <= 2; i++)
+                                {
+                                    Vector2 position = OptionPosition(i);
+                                    string questText = i == 1 ? "Accept" : "Decline";
+                                    ModUtils.AddElement(new OptionButton(questText, "none"), (int)position.X, (int)position.Y, 285, 75, DrawSpace);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //Main.NewText("player is doing a quest");
+                            var state = Quests.Quests.State.GetActiveQuestState(Main.LocalPlayer.GetModPlayer<QuestPlayer>(), quest);
+                            if (quest.CheckRequirements(Main.LocalPlayer.GetModPlayer<QuestPlayer>(), state))
+                            {
+                                if (questCounter < quest.EndDialogueCount - 1)
+                                    ModUtils.AddElement(new NextButton(), 575, 145, 50, 25, DrawSpace);
+
+                                if (questCounter == quest.EndDialogueCount - 1)
+                                {
+                                    Vector2 position = OptionPosition(1);
+                                    ModUtils.AddElement(new OptionButton("Turn In", "none"), (int)position.X, (int)position.Y, 285, 75, DrawSpace);
+                                }
                             }
                         }
                     }
@@ -196,13 +213,32 @@ namespace OvermorrowMod.Common.Cutscenes
             var npc = Main.npc[Main.LocalPlayer.talkNPC];
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
-            string text = drawQuest ? quest.GetDialogue(questCounter) : player.GetDialogue().GetText(dialogueID);
+            string text = player.GetDialogue().GetText(dialogueID);
+            if (drawQuest)
+            {
+                if (!isDoing)
+                {
+                    text = quest.GetDialogue(questCounter);
+                }
+                else
+                {
+                    // The namespace is named the same thing as the variable lol
+                    var state = Quests.Quests.State.GetActiveQuestState(Main.LocalPlayer.GetModPlayer<QuestPlayer>(), quest);
+                    if (quest.CheckRequirements(Main.LocalPlayer.GetModPlayer<QuestPlayer>(), state))
+                    {
+                        text = quest.GetEndDialogue(questCounter);
+                    }
+                    else
+                    {
+                        text = quest.GetHint(Main.rand.Next(0, quest.HintCount - 1));
+                    }
+                }
+            }
 
             int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText(dialogueID).Length, DrawTimer / (float)player.GetDialogue().drawTime);
             if (drawQuest) progress = (int)MathHelper.Lerp(0, text.Length, DrawTimer / (float)player.GetDialogue().drawTime); // TODO: This needs to be changed
 
             var displayText = text.Substring(0, progress);
-
 
             // If for some reason there are no colors specified don't parse the brackets
             if (player.GetDialogue().bracketColor != null)
@@ -328,17 +364,20 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public override void MouseDown(UIMouseEvent evt)
         {
-            Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
+            SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
             if (Parent.Parent is DialogueState parent)
             {
                 DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-                player.GetDialogue().IncrementText();
+
+                if (parent.drawQuest)
+                    parent.questCounter++;
+                else
+                    player.GetDialogue().IncrementText();
+
                 parent.ResetTimers();
                 parent.shouldRedraw = true;
-
-                if (parent.drawQuest) parent.questCounter++;
 
                 Main.NewText("incrementing counter " + player.GetDialogue().GetTextIteration() + " / " + player.GetDialogue().GetTextListLength());
             }
@@ -364,7 +403,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public override void MouseDown(UIMouseEvent evt)
         {
-            Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
+            SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
             if (Parent.Parent is DialogueState parent)
@@ -405,7 +444,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public override void MouseDown(UIMouseEvent evt)
         {
-            Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
+            SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
             if (Parent.Parent is DialogueState parent)
@@ -416,36 +455,47 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     parent.SetID(linkID);
                     Main.NewText("changing id to " + linkID);
+                    return;
                 }
-                else
+
+                NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+                QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
+
+                var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
+                switch (displayText)
                 {
-                    if (displayText != "Accept")
-                    {
+                    case "Accept":
+                        questPlayer.AddQuest(quest);
+                        questNPC.TakeQuest();
+
+                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
+                        {
+                            Volume = 0.9f,
+                            PitchVariance = 0.2f,
+                            MaxInstances = 3,
+                        }, npc.Center);
+
+                        // Run the Quest Accepted UI
+                        Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
+
                         Main.LocalPlayer.SetTalkNPC(-1);
-                        return;
-                    }
+                        break;
+                    case "Decline":
+                        Main.LocalPlayer.SetTalkNPC(-1);
+                        break;
+                    case "Turn In":
+                        questPlayer.CompleteQuest(quest.QuestID);
+                        SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
+                        {
+                            Volume = 0.9f,
+                            PitchVariance = 0.2f,
+                            MaxInstances = 3,
+                        }, npc.Center);
 
-                    NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
-
-                    QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-                    QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
-
-                    var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
-
-                    questPlayer.AddQuest(quest);
-                    questNPC.TakeQuest();
-
-                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
-                    {
-                        Volume = 0.9f,
-                        PitchVariance = 0.2f,
-                        MaxInstances = 3,
-                    }, npc.Center);
-
-                    // Run the Quest Accepted UI
-                    Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
-
-                    Main.LocalPlayer.SetTalkNPC(-1);
+                        Main.LocalPlayer.SetTalkNPC(-1);
+                        break;
                 }
             }
         }
