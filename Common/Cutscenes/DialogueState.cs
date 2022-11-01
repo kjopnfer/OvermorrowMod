@@ -51,6 +51,9 @@ namespace OvermorrowMod.Common.Cutscenes
         public string dialogueID = "start";
         public bool drawQuest = false;
         public bool shouldRedraw = true;
+
+        public int questCounter = 0;
+
         public override void OnInitialize()
         {
             ModUtils.AddElement(DrawSpace, Main.screenWidth / 2 - (WIDTH / 2), Main.screenHeight / 2 - 250, WIDTH * 2, HEIGHT * 2, this);
@@ -71,7 +74,11 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 ResetTimers();
                 SetID("start");
-                if (drawQuest) drawQuest = false;
+                if (drawQuest)
+                {
+                    drawQuest = false;
+                    questCounter = 0;
+                }
 
                 return;
             }
@@ -97,7 +104,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
-
                 //Main.NewText("redrawing");
 
                 // Removes the options and then readds the elements back
@@ -106,26 +112,50 @@ namespace OvermorrowMod.Common.Cutscenes
                 ModUtils.AddElement(Text, 0, 0, 650, 300, DrawSpace);
                 ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
 
+                // Handles the drawing of the UI after the dialogue has finished drawing
                 if (DrawTimer >= player.GetDialogue().drawTime)
                 {
                     var npc = Main.npc[Main.LocalPlayer.talkNPC];
                     var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
-                    if (quest != null && dialogueID == "start" && dialogue.GetTextIteration() == 0)
-                    {
-                        ModUtils.AddElement(new QuestButton(), 575, 50, 50, 25, DrawSpace);
-                    }
 
-                    // Determines which button type is shown in the bottom right corner
-                    if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
-                        ModUtils.AddElement(new ExitButton(), 575, 145, 50, 25, DrawSpace);
-                    else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
-                        ModUtils.AddElement(new NextButton(), 575, 145, 50, 25, DrawSpace);
+                    if (!drawQuest)
+                    {
+                        if (quest != null && dialogueID == "start" && dialogue.GetTextIteration() == 0)
+                        {
+                            ModUtils.AddElement(new QuestButton(), 575, 50, 50, 25, DrawSpace);
+                        }
+
+                        // Determines which button type is shown in the bottom right corner
+                        if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                            ModUtils.AddElement(new ExitButton(), 575, 145, 50, 25, DrawSpace);
+                        else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                            ModUtils.AddElement(new NextButton(), 575, 145, 50, 25, DrawSpace);
+                    }
+                    else // The UI drawing when the player has clicked on the Quest button
+                    {
+                        if (questCounter < quest.DialogueCount - 1)
+                            ModUtils.AddElement(new NextButton(), 575, 145, 50, 25, DrawSpace);
+
+                        if (questCounter == quest.DialogueCount - 1)
+                        {
+                            Main.NewText("draw accept button??");
+                            for (int i = 1; i <= 2; i++)
+                            {
+                                Vector2 position = OptionPosition(i);
+                                string questText = i == 1 ? "Accept" : "Decline";
+                                ModUtils.AddElement(new OptionButton(questText, "none"), (int)position.X, (int)position.Y, 285, 75, DrawSpace);
+
+                                Main.NewText(position);
+                            }
+                        }
+                    }
                 }
-                
+
+                // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
                 int optionNumber = 1;
                 if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
 
-                if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null)
+                if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null && !drawQuest)
                 {
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
@@ -162,10 +192,13 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private void DrawText(DialoguePlayer player)
         {
-            string text = drawQuest ? "draw quest" : player.GetDialogue().GetText(dialogueID);
+            var npc = Main.npc[Main.LocalPlayer.talkNPC];
+            var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
+            string text = drawQuest ? quest.GetDialogue(questCounter) : player.GetDialogue().GetText(dialogueID);
 
             int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText(dialogueID).Length, DrawTimer / (float)player.GetDialogue().drawTime);
-            if (drawQuest) progress = (int)MathHelper.Lerp(0, text.Length, DrawTimer / (float)player.GetDialogue().drawTime); // This needs to be changed
+            if (drawQuest) progress = (int)MathHelper.Lerp(0, text.Length, DrawTimer / (float)player.GetDialogue().drawTime); // TODO: This needs to be changed
 
             var displayText = text.Substring(0, progress);
 
@@ -271,12 +304,6 @@ namespace OvermorrowMod.Common.Cutscenes
                 parent.ResetTimers();
                 parent.shouldRedraw = true;
                 parent.drawQuest = true;
-                //DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-                //player.GetDialogue().IncrementText();
-                //parent.ResetTimers();
-                //parent.shouldRedraw = true;
-                //
-                //Main.NewText("incrementing counter " + player.GetDialogue().GetTextIteration() + " / " + player.GetDialogue().GetTextListLength());
             }
         }
     }
@@ -309,6 +336,8 @@ namespace OvermorrowMod.Common.Cutscenes
                 player.GetDialogue().IncrementText();
                 parent.ResetTimers();
                 parent.shouldRedraw = true;
+
+                if (parent.drawQuest) parent.questCounter++;
 
                 Main.NewText("incrementing counter " + player.GetDialogue().GetTextIteration() + " / " + player.GetDialogue().GetTextListLength());
             }
@@ -381,9 +410,17 @@ namespace OvermorrowMod.Common.Cutscenes
             if (Parent.Parent is DialogueState parent)
             {
                 parent.ResetTimers();
-                parent.SetID(linkID);
 
-                Main.NewText("changing id to " + linkID);
+                if (!parent.drawQuest)
+                {
+                    parent.SetID(linkID);
+                    Main.NewText("changing id to " + linkID);
+                }
+                else
+                {
+                    if (displayText == "Accept") Main.NewText("quest accept");
+                    Main.LocalPlayer.SetTalkNPC(-1);
+                }
             }
         }
     }
