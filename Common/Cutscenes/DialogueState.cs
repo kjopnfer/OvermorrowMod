@@ -10,6 +10,7 @@ using Terraria.UI.Chat;
 using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
 using OvermorrowMod.Quests;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -418,7 +419,32 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
                 else
                 {
-                    if (displayText == "Accept") Main.NewText("quest accept");
+                    if (displayText != "Accept")
+                    {
+                        Main.LocalPlayer.SetTalkNPC(-1);
+                        return;
+                    }
+
+                    NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+
+                    QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+                    QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
+
+                    var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
+                    questPlayer.AddQuest(quest);
+                    questNPC.TakeQuest();
+
+                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
+                    {
+                        Volume = 0.9f,
+                        PitchVariance = 0.2f,
+                        MaxInstances = 3,
+                    }, npc.Center);
+
+                    // Run the Quest Accepted UI
+                    Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
+
                     Main.LocalPlayer.SetTalkNPC(-1);
                 }
             }
