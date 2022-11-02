@@ -1,0 +1,359 @@
+﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.ID;
+using Terraria.DataStructures;
+using Terraria.ObjectData;
+using Terraria.ModLoader;
+using OvermorrowMod.Core;
+
+namespace OvermorrowMod.Common.TilePiles
+{
+    internal class TilePiles : ModTile
+    {
+        public override void SetStaticDefaults()
+        {
+            Main.tileNoAttach[Type] = true;
+            Main.tileFrameImportant[Type] = true;
+
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+            TileObjectData.addTile(Type);
+        }
+
+        public override void PlaceInWorld(int i, int j, Item item)
+        {
+            base.PlaceInWorld(i, j, item);
+            OvermorrowModSystem.Instance.tilePiles.Add(new TilePile(new Vector2(i, j), "3x3"));
+            /*switch (Main.rand.Next(3))
+            {
+                case 0:
+                    OvermorrowModSystem.Instance.tilePiles.Add(new TilePile(new Vector2(i, j), "3x3"));
+                    break;
+                case 1:
+                    OvermorrowModSystem.Instance.tilePiles.Add(new TilePile(new Vector2(i, j), "4x4"));
+                    break;
+                case 2:
+                    OvermorrowModSystem.Instance.tilePiles.Add(new TilePile(new Vector2(i, j), "5x4"));
+                    break;
+            }*/
+
+        }
+
+        public override void MouseOver(int i, int j)
+        {
+            if (GetTilePileIndex3x3(i, j) != -1)
+            {
+                foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex3x3(i, j)].PileContents)
+                {
+                    if (tileObject.active)
+                    {
+                        if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()))
+                        {
+                            Main.instance.MouseText($"Take {tileObject.name}");
+                            tileObject.selected = true;
+                        }
+                    }
+                }
+            }
+        }
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            base.PostDraw(i, j, spriteBatch);
+            bool activeObjects = false;
+            if (GetTilePileIndex(i, j) != -1)
+            {
+                foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex(i, j)]?.PileContents)
+                {
+                    if (tileObject.dependency >= 0)
+                        if (!OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex(i, j)].PileContents[tileObject.dependency].active)
+                        {
+                            if (tileObject.active)
+                            {
+                                tileObject.active = false;
+                                Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                                //play breaking sound
+                            }
+                        }
+                    if (tileObject.active)
+                    {
+
+                        Rectangle rect = tileObject.rectangle;
+                        Vector2 pos = new Vector2(rect.X, rect.Y) - Main.screenPosition;
+                        Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+                        Vector2 wiggleOffset = Vector2.Zero;
+                        float wiggleRotation = 0f;
+
+                        if (tileObject.selected)
+                        {
+
+                            if (tileObject.wiggleTimer++ < 20 && tileObject.wiggleTimer > 3)
+                            {
+                                wiggleOffset = new Vector2((float)Math.Sin(tileObject.wiggleTimer * 4), -1f);
+                                wiggleRotation = (float)Math.Sin(tileObject.wiggleTimer * 2) / 10f;
+                            }
+
+                            if (tileObject.wiggleTimer > 60)
+                                tileObject.wiggleTimer = 0;
+                        }
+                        else
+                            tileObject.wiggleTimer += 2;
+
+                        rect.X = (int)(pos.X + zero.X + wiggleOffset.X) + rect.Width / 2;
+                        rect.Y = (int)(pos.Y + zero.Y + wiggleOffset.Y) + rect.Height / 2;
+
+                        spriteBatch.Draw(tileObject.texture, rect, null, tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j), wiggleRotation,
+                            new Vector2(rect.Width / 2, rect.Height / 2), SpriteEffects.None, 1f);
+                        if (Main.rand.NextBool(180))
+                        {
+                            int d = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.TintableDustLighted, 0f, 0f, 254, Color.White, 0.5f);
+                            Main.dust[d].velocity *= 0f;
+                        }
+                        tileObject.selected = false;
+                        activeObjects = true;
+                    }
+                }
+                if (!activeObjects)
+                    WorldGen.KillTile(i, j);
+            }
+        }
+
+        public override bool RightClick(int i, int j)
+        {
+            if (GetTilePileIndex3x3(i, j) != -1)
+            {
+                foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex3x3(i, j)].PileContents)
+                {
+                    if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()) && tileObject.active)
+                    {
+                        tileObject.active = false;
+                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                        //play grab sound
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            if (!fail)
+            {
+                int index = GetTilePileIndex3x3(i, j);
+                if (index != -1)
+                    OvermorrowModSystem.Instance.tilePiles.RemoveAt(index);
+            }
+        }
+
+        public int GetTilePileIndex(int i, int j)
+        {
+            int index = 0;
+            foreach (TilePile pile in OvermorrowModSystem.Instance.tilePiles)
+            {
+                if (i == pile.position.X && j == pile.position.Y)
+                    return index;
+                index++;
+            }
+            return -1;
+        }
+
+        public int GetTilePileIndex3x3(int i, int j)
+        {
+            int index = 0;
+            foreach (TilePile pile in OvermorrowModSystem.Instance.tilePiles)
+            {
+                if ((i - 1 == pile.position.X && j + 2 == pile.position.Y) ||
+                    (i == pile.position.X && j + 2 == pile.position.Y) ||
+                    (i + 1 == pile.position.X && j + 2 == pile.position.Y) ||
+                    (i - 1 == pile.position.X && j == pile.position.Y) ||
+                    (i == pile.position.X && j == pile.position.Y) ||
+                    (i + 1 == pile.position.X && j == pile.position.Y) ||
+                    (i - 1 == pile.position.X && j + 1 == pile.position.Y) ||
+                    (i == pile.position.X && j + 1 == pile.position.Y) ||
+                    (i + 1 == pile.position.X && j + 1 == pile.position.Y))
+                    return index;
+                index++;
+            }
+            return -1;
+        }
+
+    }
+
+    internal class TileObject
+    {
+        internal string name;
+        internal Rectangle rectangle;
+        internal Texture2D texture;
+        internal int ID;
+        private int minStack;
+        private int maxStack;
+        internal bool active;
+        internal bool selected;
+        internal int dependency;
+        internal int wiggleTimer;
+
+        public TileObject(string identifier, Vector2 coordinates, int x, int y, int dependency)
+        {
+            switch (identifier)
+            {
+                case "Crate_S":
+                    name = "Crate";
+                    rectangle.Width = 28;
+                    rectangle.Height = 18;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "Crate_S", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.WoodenCrate;
+                    minStack = 1;
+                    maxStack = 1;
+                    break;
+                case "Crate_M":
+                    name = "Crate";
+                    rectangle.Width = 32;
+                    rectangle.Height = 22;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "Crate_M", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.WoodenCrate;
+                    minStack = 1;
+                    maxStack = 1;
+                    break;
+                case "Cloth_S":
+                    name = "Silk";
+                    rectangle.Width = 26;
+                    rectangle.Height = 10;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "Cloth_S", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.Silk;
+                    minStack = 2;
+                    maxStack = 5;
+                    break;
+                case "Cloth_L":
+                    name = "Silk";
+                    rectangle.Width = 30;
+                    rectangle.Height = 12;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "Cloth_L", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.Silk;
+                    minStack = 3;
+                    maxStack = 8;
+                    break;
+                case "BookStack_S1":
+                    name = "Books";
+                    rectangle.Width = 18;
+                    rectangle.Height = 10;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "BookStack_S1", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.Book;
+                    minStack = 2;
+                    maxStack = 4;
+                    break;
+                case "BookStack_S2":
+                    name = "Books";
+                    rectangle.Width = 20;
+                    rectangle.Height = 10;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "BookStack_S2", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.Book;
+                    minStack = 2;
+                    maxStack = 4;
+                    break;
+                case "BookStack_S3":
+                    name = "Books";
+                    rectangle.Width = 20;
+                    rectangle.Height = 12;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "BookStack_S3", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.Book;
+                    minStack = 2;
+                    maxStack = 4;
+                    break;
+                case "Backpack_S":
+                    name = "Backpack";
+                    rectangle.Width = 20;
+                    rectangle.Height = 16;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "Backpack_S", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.StoneBlock;
+                    minStack = 1;
+                    maxStack = 1;
+                    break;
+                case "Backpack_Sr":
+                    name = "Backpack";
+                    rectangle.Width = 20;
+                    rectangle.Height = 16;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "Backpack_Sr", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.StoneBlock;
+                    minStack = 1;
+                    maxStack = 1;
+                    break;
+                case "Sack_S":
+                    name = "Sack";
+                    rectangle.Width = 18;
+                    rectangle.Height = 20;
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.TilePiles + "Sack_S", AssetRequestMode.ImmediateLoad).Value;
+                    ID = ItemID.DirtBlock;
+                    minStack = 3;
+                    maxStack = 9;
+                    break;
+            }
+            rectangle.X = ((int)coordinates.X - 1) * 16 + x;
+            rectangle.Y = ((int)coordinates.Y - 2) * 16 + y;
+            active = true;
+            selected = false;
+            this.dependency = dependency;
+            wiggleTimer = 0;
+        }
+
+        public int GetRandomStack() => Main.rand.Next(maxStack - minStack) + minStack;
+
+    }
+
+    internal class TilePile
+    {
+        private Vector2 _position;
+        internal TileObject[] PileContents;
+
+        internal TilePile(Vector2 position, string size)
+        {
+            _position = position;
+            switch (size)
+            {
+                case "3x3":
+                    switch (Main.rand.Next(4))
+                    {
+                        case 0:
+                            PileContents = new TileObject[2];
+                            PileContents[0] = new TileObject("BookStack_S3", position, 16, 38, -1);
+                            PileContents[1] = new TileObject("BookStack_S2", position, 18, 28, 0);
+                            break;
+                        case 1:
+                            PileContents = new TileObject[4];
+                            PileContents[0] = new TileObject("Crate_S", position, 4, 32, -1);
+                            PileContents[1] = new TileObject("Crate_M", position, 18, 28, -1);
+                            PileContents[2] = new TileObject("Cloth_L", position, 18, 26, 1);
+                            PileContents[3] = new TileObject("BookStack_S3", position, 24, 14, 2);
+                            break;
+                        case 2:
+                            PileContents = new TileObject[4];
+                            PileContents[0] = new TileObject("Crate_S", position, 18, 32, -1);
+                            PileContents[1] = new TileObject("Cloth_S", position, 18, 30, 0);
+                            PileContents[2] = new TileObject("BookStack_S3", position, 22, 18, 1);
+                            PileContents[3] = new TileObject("Sack_S", position, 4, 30, -1);
+                            break;
+                        case 3:
+                            PileContents = new TileObject[3];
+                            PileContents[0] = new TileObject("Crate_S", position, 6, 32, -1);
+                            PileContents[1] = new TileObject("Crate_S", position, 8, 14, 0);
+                            PileContents[2] = new TileObject("Backpack_Sr", position, 26, 34, -1);
+                            break;
+                    }
+                    break;
+                case "4x4":
+
+                    break;
+                case "5x4":
+
+                    break;
+            }
+        }
+
+        internal Vector2 position
+        {
+            get => _position;
+        }
+
+    }
+}
