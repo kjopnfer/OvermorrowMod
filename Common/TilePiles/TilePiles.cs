@@ -8,6 +8,7 @@ using Terraria.DataStructures;
 using Terraria.ObjectData;
 using Terraria.ModLoader;
 using OvermorrowMod.Core;
+using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Common.TilePiles
 {
@@ -19,33 +20,17 @@ namespace OvermorrowMod.Common.TilePiles
             Main.tileFrameImportant[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<TilePile>().Hook_AfterPlacement, -1, 0, true);
             TileObjectData.addTile(Type);
-        }
-
-        public override void PlaceInWorld(int i, int j, Item item)
-        {
-            base.PlaceInWorld(i, j, item);
-            OvermorrowModSystem.Instance.tilePiles.Add(new TilePile(new Vector2(i, j), "3x3"));
-            /*switch (Main.rand.Next(3))
-            {
-                case 0:
-                    OvermorrowModSystem.Instance.tilePiles.Add(new TilePile(new Vector2(i, j), "3x3"));
-                    break;
-                case 1:
-                    OvermorrowModSystem.Instance.tilePiles.Add(new TilePile(new Vector2(i, j), "4x4"));
-                    break;
-                case 2:
-                    OvermorrowModSystem.Instance.tilePiles.Add(new TilePile(new Vector2(i, j), "5x4"));
-                    break;
-            }*/
-
         }
 
         public override void MouseOver(int i, int j)
         {
-            if (GetTilePileIndex3x3(i, j) != -1)
+            TilePile pile = FindTE(i, j);
+
+            if (pile != null)
             {
-                foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex3x3(i, j)].PileContents)
+                foreach (TileObject tileObject in pile.PileContents)
                 {
                     if (tileObject.active)
                     {
@@ -62,12 +47,16 @@ namespace OvermorrowMod.Common.TilePiles
         {
             base.PostDraw(i, j, spriteBatch);
             bool activeObjects = false;
-            if (GetTilePileIndex(i, j) != -1)
+
+            TilePile pile = FindTE(i, j);
+
+            if (pile != null)
             {
-                foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex(i, j)]?.PileContents)
+                //foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex(i, j)]?.PileContents)
+                foreach (TileObject tileObject in pile.PileContents)
                 {
                     if (tileObject.dependency >= 0)
-                        if (!OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex(i, j)].PileContents[tileObject.dependency].active)
+                        if (!pile.PileContents[tileObject.dependency].active)
                         {
                             if (tileObject.active)
                             {
@@ -76,6 +65,7 @@ namespace OvermorrowMod.Common.TilePiles
                                 //play breaking sound
                             }
                         }
+
                     if (tileObject.active)
                     {
 
@@ -114,12 +104,12 @@ namespace OvermorrowMod.Common.TilePiles
                         activeObjects = true;
                     }
                 }
-                if (!activeObjects)
-                    WorldGen.KillTile(i, j);
+
+                //if (!activeObjects) WorldGen.KillTile(i, j);
             }
         }
 
-        public override bool RightClick(int i, int j)
+        /*public override bool RightClick(int i, int j)
         {
             if (GetTilePileIndex3x3(i, j) != -1)
             {
@@ -135,16 +125,23 @@ namespace OvermorrowMod.Common.TilePiles
                 }
             }
             return true;
-        }
+        }*/
 
-        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        public static TilePile FindTE(int i, int j)
         {
-            if (!fail)
+            Tile tile = Main.tile[i, j];
+            int left = i - tile.TileFrameX / 18;
+            int top = j - tile.TileFrameY / 18;
+
+            int index = ModContent.GetInstance<TilePile>().Find(left, top);
+            if (index == -1)
             {
-                int index = GetTilePileIndex3x3(i, j);
-                if (index != -1)
-                    OvermorrowModSystem.Instance.tilePiles.RemoveAt(index);
+                return null;
             }
+
+            TilePile entity = (TilePile)TileEntity.ByID[index];
+            return entity;
+
         }
 
         public int GetTilePileIndex(int i, int j)
@@ -158,30 +155,123 @@ namespace OvermorrowMod.Common.TilePiles
             }
             return -1;
         }
-
-        public int GetTilePileIndex3x3(int i, int j)
-        {
-            int index = 0;
-            foreach (TilePile pile in OvermorrowModSystem.Instance.tilePiles)
-            {
-                if ((i - 1 == pile.position.X && j + 2 == pile.position.Y) ||
-                    (i == pile.position.X && j + 2 == pile.position.Y) ||
-                    (i + 1 == pile.position.X && j + 2 == pile.position.Y) ||
-                    (i - 1 == pile.position.X && j == pile.position.Y) ||
-                    (i == pile.position.X && j == pile.position.Y) ||
-                    (i + 1 == pile.position.X && j == pile.position.Y) ||
-                    (i - 1 == pile.position.X && j + 1 == pile.position.Y) ||
-                    (i == pile.position.X && j + 1 == pile.position.Y) ||
-                    (i + 1 == pile.position.X && j + 1 == pile.position.Y))
-                    return index;
-                index++;
-            }
-            return -1;
-        }
-
     }
 
-    internal class TileObject
+    public abstract class BaseTilePile : ModTileEntity
+    {
+        private Vector2 _position;
+        internal Vector2 position
+        {
+            get => _position;
+        }
+
+        internal TileObject[] PileContents;
+
+        public enum TileStyle
+        {
+            Style3x3,
+            Style4x4,
+            Style5x4,
+        }
+
+        public virtual TileStyle Style => TileStyle.Style3x3;
+
+        public override void SaveData(TagCompound tag)
+        {
+            tag["_position"] = _position;
+            tag["PileContents"] = PileContents;
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            _position = tag.Get<Vector2>("_position");
+            PileContents = tag.Get<TileObject[]>("PileContents");
+        }
+
+        public virtual void CreateTilePile() { }
+
+        public void SetPosition(Vector2 position) => _position = position;
+
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<TilePiles>())
+            {
+                Kill(Position.X, Position.Y);
+            }
+
+            return tile.HasTile && tile.TileType == ModContent.TileType<TilePiles>();
+        }
+    }
+
+    public class TileObjectSerializer : TagSerializer<TileObject, TagCompound>
+    {
+        public override TagCompound Serialize(TileObject value) => new TagCompound
+        {
+            ["identifier"] = value.identifier,
+            ["xCoordinate"] = value.coordinates.X,
+            ["yCoordinate"] = value.coordinates.Y,
+            ["x"] = value.x,
+            ["y"] = value.y,
+            ["dependency"] = value.dependency
+        };
+
+        public override TileObject Deserialize(TagCompound tag) => new TileObject(
+            tag.GetString("identifier"),
+            new Vector2(tag.GetFloat("xCoordinate"), tag.GetFloat("yCoordinate")),
+            tag.GetInt("x"),
+            tag.GetInt("y"),
+            tag.GetInt("dependency"));
+    }
+
+    public class TilePile : BaseTilePile
+    {
+        public override TileStyle Style => TileStyle.Style3x3;
+
+        public override void CreateTilePile()
+        {
+            switch (Main.rand.Next(4))
+            {
+                case 0:
+                    PileContents = new TileObject[2];
+                    PileContents[0] = new TileObject("BookStack_S3", position, 16, 38, -1);
+                    PileContents[1] = new TileObject("BookStack_S2", position, 18, 28, 0);
+                    break;
+                case 1:
+                    PileContents = new TileObject[4];
+                    PileContents[0] = new TileObject("Crate_S", position, 4, 32, -1);
+                    PileContents[1] = new TileObject("Crate_M", position, 18, 28, -1);
+                    PileContents[2] = new TileObject("Cloth_L", position, 18, 26, 1);
+                    PileContents[3] = new TileObject("BookStack_S3", position, 24, 14, 2);
+                    break;
+                case 2:
+                    PileContents = new TileObject[4];
+                    PileContents[0] = new TileObject("Crate_S", position, 18, 32, -1);
+                    PileContents[1] = new TileObject("Cloth_S", position, 18, 30, 0);
+                    PileContents[2] = new TileObject("BookStack_S3", position, 22, 18, 1);
+                    PileContents[3] = new TileObject("Sack_S", position, 4, 30, -1);
+                    break;
+                case 3:
+                    PileContents = new TileObject[3];
+                    PileContents[0] = new TileObject("Crate_S", position, 6, 32, -1);
+                    PileContents[1] = new TileObject("Crate_S", position, 8, 14, 0);
+                    PileContents[2] = new TileObject("Backpack_Sr", position, 26, 34, -1);
+                    break;
+            }
+        }
+
+        public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
+        {
+            int id = Place(i, j);
+            TilePile te = ByID[id] as TilePile;
+            te.SetPosition(new Vector2(i, j));
+            te.CreateTilePile();
+
+            return id;
+        }
+    }
+
+    public class TileObject
     {
         internal string name;
         internal Rectangle rectangle;
@@ -194,8 +284,19 @@ namespace OvermorrowMod.Common.TilePiles
         internal int dependency;
         internal int wiggleTimer;
 
+        public string identifier;
+        public Vector2 coordinates;
+        public int x;
+        public int y;
+
         public TileObject(string identifier, Vector2 coordinates, int x, int y, int dependency)
         {
+            this.identifier = identifier;
+            this.coordinates = coordinates;
+            this.x = x;
+            this.y = y;
+
+
             switch (identifier)
             {
                 case "Crate_S":
@@ -301,7 +402,7 @@ namespace OvermorrowMod.Common.TilePiles
 
     }
 
-    internal class TilePile
+    /*internal class TilePile
     {
         private Vector2 _position;
         internal TileObject[] PileContents;
@@ -342,7 +443,7 @@ namespace OvermorrowMod.Common.TilePiles
                     }
                     break;
                 case "4x4":
-
+                     
                     break;
                 case "5x4":
 
@@ -355,5 +456,5 @@ namespace OvermorrowMod.Common.TilePiles
             get => _position;
         }
 
-    }
+    }*/
 }
