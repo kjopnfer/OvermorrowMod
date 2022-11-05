@@ -7,11 +7,11 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.Items.Armor.Galvan
 {
     [AutoloadEquip(EquipType.Head)]
-    public class SkyHead : ModItem
+    public class GalvanHead : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Galvan Helmet");
+            DisplayName.SetDefault("Galvan Helmet");
             Tooltip.SetDefault("7% increased move speed \n2% increased ranged damage");
         }
 

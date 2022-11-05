@@ -5,11 +5,11 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.Items.Armor.Galvan
 {
     [AutoloadEquip(EquipType.Legs)]
-    public class SkyLegs : ModItem
+    public class GalvanBoots : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Galvan Boots");
+            DisplayName.SetDefault("Galvan Boots");
             Tooltip.SetDefault("10% increased movement speed \n2% increased ranged damage");
         }
 

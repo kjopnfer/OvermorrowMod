@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Armor.Galvan
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Galvan Breastplate");
+            DisplayName.SetDefault("Ancient Galvan Breastplate");
             Tooltip.SetDefault("7% increased move speed \n2% increased ranged damage");
         }
 
