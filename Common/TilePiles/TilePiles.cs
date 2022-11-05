@@ -43,6 +43,7 @@ namespace OvermorrowMod.Common.TilePiles
                 }
             }
         }
+
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             base.PostDraw(i, j, spriteBatch);
@@ -68,7 +69,6 @@ namespace OvermorrowMod.Common.TilePiles
 
                     if (tileObject.active)
                     {
-
                         Rectangle rect = tileObject.rectangle;
                         Vector2 pos = new Vector2(rect.X, rect.Y) - Main.screenPosition;
                         Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
@@ -77,7 +77,6 @@ namespace OvermorrowMod.Common.TilePiles
 
                         if (tileObject.selected)
                         {
-
                             if (tileObject.wiggleTimer++ < 20 && tileObject.wiggleTimer > 3)
                             {
                                 wiggleOffset = new Vector2((float)Math.Sin(tileObject.wiggleTimer * 4), -1f);
@@ -93,13 +92,13 @@ namespace OvermorrowMod.Common.TilePiles
                         rect.X = (int)(pos.X + zero.X + wiggleOffset.X) + rect.Width / 2;
                         rect.Y = (int)(pos.Y + zero.Y + wiggleOffset.Y) + rect.Height / 2;
 
-                        spriteBatch.Draw(tileObject.texture, rect, null, tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j), wiggleRotation,
-                            new Vector2(rect.Width / 2, rect.Height / 2), SpriteEffects.None, 1f);
+                        spriteBatch.Draw(tileObject.texture, rect, null, tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j), wiggleRotation, rect.Size() / 2f, SpriteEffects.None, 1f);
                         if (Main.rand.NextBool(180))
                         {
                             int d = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.TintableDustLighted, 0f, 0f, 254, Color.White, 0.5f);
                             Main.dust[d].velocity *= 0f;
                         }
+
                         tileObject.selected = false;
                         activeObjects = true;
                     }
@@ -109,11 +108,13 @@ namespace OvermorrowMod.Common.TilePiles
             }
         }
 
-        /*public override bool RightClick(int i, int j)
+        public override bool RightClick(int i, int j)
         {
-            if (GetTilePileIndex3x3(i, j) != -1)
+            TilePile pile = FindTE(i, j);
+
+            if (pile != null)
             {
-                foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex3x3(i, j)].PileContents)
+                foreach (TileObject tileObject in pile.PileContents)
                 {
                     if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()) && tileObject.active)
                     {
@@ -124,8 +125,9 @@ namespace OvermorrowMod.Common.TilePiles
                     }
                 }
             }
+
             return true;
-        }*/
+        }
 
         public static TilePile FindTE(int i, int j)
         {
@@ -142,18 +144,6 @@ namespace OvermorrowMod.Common.TilePiles
             TilePile entity = (TilePile)TileEntity.ByID[index];
             return entity;
 
-        }
-
-        public int GetTilePileIndex(int i, int j)
-        {
-            int index = 0;
-            foreach (TilePile pile in OvermorrowModSystem.Instance.tilePiles)
-            {
-                if (i == pile.position.X && j == pile.position.Y)
-                    return index;
-                index++;
-            }
-            return -1;
         }
     }
 
@@ -401,60 +391,4 @@ namespace OvermorrowMod.Common.TilePiles
         public int GetRandomStack() => Main.rand.Next(maxStack - minStack) + minStack;
 
     }
-
-    /*internal class TilePile
-    {
-        private Vector2 _position;
-        internal TileObject[] PileContents;
-
-        internal TilePile(Vector2 position, string size)
-        {
-            _position = position;
-            switch (size)
-            {
-                case "3x3":
-                    switch (Main.rand.Next(4))
-                    {
-                        case 0:
-                            PileContents = new TileObject[2];
-                            PileContents[0] = new TileObject("BookStack_S3", position, 16, 38, -1);
-                            PileContents[1] = new TileObject("BookStack_S2", position, 18, 28, 0);
-                            break;
-                        case 1:
-                            PileContents = new TileObject[4];
-                            PileContents[0] = new TileObject("Crate_S", position, 4, 32, -1);
-                            PileContents[1] = new TileObject("Crate_M", position, 18, 28, -1);
-                            PileContents[2] = new TileObject("Cloth_L", position, 18, 26, 1);
-                            PileContents[3] = new TileObject("BookStack_S3", position, 24, 14, 2);
-                            break;
-                        case 2:
-                            PileContents = new TileObject[4];
-                            PileContents[0] = new TileObject("Crate_S", position, 18, 32, -1);
-                            PileContents[1] = new TileObject("Cloth_S", position, 18, 30, 0);
-                            PileContents[2] = new TileObject("BookStack_S3", position, 22, 18, 1);
-                            PileContents[3] = new TileObject("Sack_S", position, 4, 30, -1);
-                            break;
-                        case 3:
-                            PileContents = new TileObject[3];
-                            PileContents[0] = new TileObject("Crate_S", position, 6, 32, -1);
-                            PileContents[1] = new TileObject("Crate_S", position, 8, 14, 0);
-                            PileContents[2] = new TileObject("Backpack_Sr", position, 26, 34, -1);
-                            break;
-                    }
-                    break;
-                case "4x4":
-                     
-                    break;
-                case "5x4":
-
-                    break;
-            }
-        }
-
-        internal Vector2 position
-        {
-            get => _position;
-        }
-
-    }*/
 }
