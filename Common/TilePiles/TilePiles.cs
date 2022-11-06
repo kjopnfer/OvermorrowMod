@@ -24,30 +24,15 @@ namespace OvermorrowMod.Common.TilePiles
             TileObjectData.addTile(Type);
         }
 
-        public override void MouseOver(int i, int j)
-        {
-            TilePile pile = FindTE(i, j);
-
-            if (pile != null)
-            {
-                foreach (TileObject tileObject in pile.PileContents)
-                {
-                    if (tileObject.active)
-                    {
-                        if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()))
-                        {
-                            Main.instance.MouseText($"Take {tileObject.name}");
-                            tileObject.selected = true;
-                        }
-                    }
-                }
-            }
-        }
+        // Used for debugging, set to true to draw the tile matrix for the associated tile
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => false;
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            base.PostDraw(i, j, spriteBatch);
             bool activeObjects = false;
+
+            Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.TileFrameX != 0 || tile.TileFrameY != 0) return;
 
             TilePile pile = FindTE(i, j);
 
@@ -57,6 +42,7 @@ namespace OvermorrowMod.Common.TilePiles
                 foreach (TileObject tileObject in pile.PileContents)
                 {
                     if (tileObject.dependency >= 0)
+                    {
                         if (!pile.PileContents[tileObject.dependency].active)
                         {
                             if (tileObject.active)
@@ -66,6 +52,7 @@ namespace OvermorrowMod.Common.TilePiles
                                 //play breaking sound
                             }
                         }
+                    }
 
                     if (tileObject.active)
                     {
@@ -87,16 +74,23 @@ namespace OvermorrowMod.Common.TilePiles
                                 tileObject.wiggleTimer = 0;
                         }
                         else
+                        {
                             tileObject.wiggleTimer += 2;
+                        }
 
                         rect.X = (int)(pos.X + zero.X + wiggleOffset.X) + rect.Width / 2;
                         rect.Y = (int)(pos.Y + zero.Y + wiggleOffset.Y) + rect.Height / 2;
 
-                        spriteBatch.Draw(tileObject.texture, rect, null, tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j), wiggleRotation, rect.Size() / 2f, SpriteEffects.None, 1f);
+                        Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                        Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
+                        Color hoverColor = tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j);
+
+                        spriteBatch.Draw(tileObject.texture, pos + offScreenRange, null, hoverColor, wiggleRotation, Vector2.Zero, 1f, SpriteEffects.None, 0);
+
                         if (Main.rand.NextBool(180))
                         {
-                            int d = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.TintableDustLighted, 0f, 0f, 254, Color.White, 0.5f);
-                            Main.dust[d].velocity *= 0f;
+                            //int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.TintableDustLighted, 0f, 0f, 254, Color.White, 0.5f);
+                            //Main.dust[d].velocity *= 0f;
                         }
 
                         tileObject.selected = false;
@@ -104,7 +98,27 @@ namespace OvermorrowMod.Common.TilePiles
                     }
                 }
 
-                //if (!activeObjects) WorldGen.KillTile(i, j);
+                if (!activeObjects) WorldGen.KillTile(i, j);
+            }
+        }
+
+        public override void MouseOver(int i, int j)
+        {
+            TilePile pile = FindTE(i, j);
+
+            if (pile != null)
+            {
+                foreach (TileObject tileObject in pile.PileContents)
+                {
+                    if (tileObject.active)
+                    {
+                        if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()))
+                        {
+                            Main.instance.MouseText($"Take {tileObject.name}");
+                            tileObject.selected = true;
+                        }
+                    }
+                }
             }
         }
 
@@ -254,7 +268,7 @@ namespace OvermorrowMod.Common.TilePiles
         {
             int id = Place(i, j);
             TilePile te = ByID[id] as TilePile;
-            te.SetPosition(new Vector2(i, j));
+            te.SetPosition(new Vector2(i + 1, j + 2));
             te.CreateTilePile();
 
             return id;
@@ -380,15 +394,17 @@ namespace OvermorrowMod.Common.TilePiles
                     maxStack = 9;
                     break;
             }
+
+            this.dependency = dependency;
+
             rectangle.X = ((int)coordinates.X - 1) * 16 + x;
             rectangle.Y = ((int)coordinates.Y - 2) * 16 + y;
             active = true;
             selected = false;
-            this.dependency = dependency;
+
             wiggleTimer = 0;
         }
 
         public int GetRandomStack() => Main.rand.Next(maxStack - minStack) + minStack;
-
     }
 }
