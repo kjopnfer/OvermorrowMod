@@ -29,7 +29,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     if (dialoguePlayer.outDistanceDialogue) return base.PreAI(npc);
 
                     float xDistance = Math.Abs(npc.Center.X - player.Center.X);
-                    if (xDistance > 25 * 16 && playerInRange)
+                    if (xDistance > 25 * 16 && playerInRange && player.velocity.X != 0)
                     {
                         dialoguePlayer.outDistanceDialogue = true;
 
