@@ -9,6 +9,7 @@ using Terraria.ObjectData;
 using Terraria.ModLoader;
 using OvermorrowMod.Core;
 using Terraria.ModLoader.IO;
+using Terraria.GameContent.Metadata;
 
 namespace OvermorrowMod.Common.TilePiles
 {
@@ -20,7 +21,13 @@ namespace OvermorrowMod.Common.TilePiles
             Main.tileFrameImportant[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.SwaysInWindBasic[Type] = true;
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<TilePile>().Hook_AfterPlacement, -1, 0, true);
+
+            MinPick = 55;
+
             TileObjectData.addTile(Type);
         }
 
@@ -36,87 +43,118 @@ namespace OvermorrowMod.Common.TilePiles
 
             TilePile pile = FindTE(i, j);
 
-            if (pile != null)
+            if (pile == null) return;
+
+            //foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex(i, j)]?.PileContents)
+            foreach (TileObject tileObject in pile.PileContents)
             {
-                //foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex(i, j)]?.PileContents)
-                foreach (TileObject tileObject in pile.PileContents)
+                if (tileObject.dependency >= 0)
                 {
-                    if (tileObject.dependency >= 0)
+                    if (!pile.PileContents[tileObject.dependency].active)
                     {
-                        if (!pile.PileContents[tileObject.dependency].active)
+                        if (tileObject.active)
                         {
-                            if (tileObject.active)
-                            {
-                                tileObject.active = false;
-                                Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
-                                //play breaking sound
-                            }
+                            tileObject.active = false;
+                            Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                            //play breaking sound
                         }
-                    }
-
-                    if (tileObject.active)
-                    {
-                        Rectangle rect = tileObject.rectangle;
-                        Vector2 pos = new Vector2(rect.X, rect.Y) - Main.screenPosition;
-                        Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                        Vector2 wiggleOffset = Vector2.Zero;
-                        float wiggleRotation = 0f;
-
-                        if (tileObject.selected)
-                        {
-                            if (tileObject.wiggleTimer++ < 20 && tileObject.wiggleTimer > 3)
-                            {
-                                wiggleOffset = new Vector2((float)Math.Sin(tileObject.wiggleTimer * 4), -1f);
-                                wiggleRotation = (float)Math.Sin(tileObject.wiggleTimer * 2) / 10f;
-                            }
-
-                            if (tileObject.wiggleTimer > 60)
-                                tileObject.wiggleTimer = 0;
-                        }
-                        else
-                        {
-                            tileObject.wiggleTimer += 2;
-                        }
-
-                        rect.X = (int)(pos.X + zero.X + wiggleOffset.X) + rect.Width / 2;
-                        rect.Y = (int)(pos.Y + zero.Y + wiggleOffset.Y) + rect.Height / 2;
-
-                        Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-                        Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-                        Color hoverColor = tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j);
-
-                        spriteBatch.Draw(tileObject.texture, pos + offScreenRange, null, hoverColor, wiggleRotation, Vector2.Zero, 1f, SpriteEffects.None, 0);
-
-                        if (Main.rand.NextBool(180))
-                        {
-                            //int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.TintableDustLighted, 0f, 0f, 254, Color.White, 0.5f);
-                            //Main.dust[d].velocity *= 0f;
-                        }
-
-                        tileObject.selected = false;
-                        activeObjects = true;
                     }
                 }
 
-                if (!activeObjects) WorldGen.KillTile(i, j);
+                if (!tileObject.active) continue;
+
+                Rectangle rect = tileObject.rectangle;
+                Vector2 pos = new Vector2(rect.X, rect.Y) - Main.screenPosition;
+                Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+                Vector2 wiggleOffset = Vector2.Zero;
+                float wiggleRotation = 0f;
+
+                if (tileObject.selected)
+                {
+                    if (tileObject.wiggleTimer++ < 20 && tileObject.wiggleTimer > 3)
+                    {
+                        wiggleOffset = new Vector2((float)Math.Sin(tileObject.wiggleTimer * 4), -1f);
+                        wiggleRotation = (float)Math.Sin(tileObject.wiggleTimer * 2) / 10f;
+                    }
+
+                    if (tileObject.wiggleTimer > 60) tileObject.wiggleTimer = 0;
+
+                    if (Main.LocalPlayer.HeldItem.pick > 0 && Main.LocalPlayer.itemAnimation > 0 && tileObject.interactType == (int)TileObject.InteractionType.Mine)
+                    {
+                        Main.NewText("trying to mine the thing");
+
+                        if (Main.rand.NextBool(180))
+                        {
+                            int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.Dirt, 0f, 0f, 254, Color.White, 0.5f);
+                            Main.dust[d].velocity *= 0f;
+                        }
+                    }
+
+                    if (Main.LocalPlayer.HeldItem.axe > 0 && Main.LocalPlayer.itemAnimation > 0 && tileObject.interactType == (int)TileObject.InteractionType.Chop)
+                    {
+                        Main.NewText("trying to chop the thing");
+
+                        if (Main.rand.NextBool(180))
+                        {
+                            int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.Dirt, 0f, 0f, 254, Color.White, 0.5f);
+                            Main.dust[d].velocity *= 0f;
+                        }
+                    }
+                }
+                else
+                {
+                    tileObject.wiggleTimer += 2;
+                }
+
+                rect.X = (int)(pos.X + zero.X + wiggleOffset.X) + rect.Width / 2;
+                rect.Y = (int)(pos.Y + zero.Y + wiggleOffset.Y) + rect.Height / 2;
+
+                Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
+                Color hoverColor = tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j);
+
+                spriteBatch.Draw(tileObject.texture, pos + offScreenRange, null, hoverColor, wiggleRotation, Vector2.Zero, 1f, SpriteEffects.None, 0);
+
+                if (Main.rand.NextBool(180))
+                {
+                    //int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.TintableDustLighted, 0f, 0f, 254, Color.White, 0.5f);
+                    //Main.dust[d].velocity *= 0f;
+                }
+
+                tileObject.selected = false;
+                activeObjects = true;
+
             }
+
+            if (!activeObjects) WorldGen.KillTile(i, j);
+
         }
 
         public override void MouseOver(int i, int j)
         {
             TilePile pile = FindTE(i, j);
 
-            if (pile != null)
+            if (pile == null) return;
+
+            foreach (TileObject tileObject in pile.PileContents)
             {
-                foreach (TileObject tileObject in pile.PileContents)
+                if (!tileObject.active) continue;
+
+                if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()))
                 {
-                    if (tileObject.active)
+                    tileObject.selected = true;
+
+                    switch (tileObject.interactType)
                     {
-                        if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()))
-                        {
+                        case (int)TileObject.InteractionType.Click:
                             Main.instance.MouseText($"Take {tileObject.name}");
-                            tileObject.selected = true;
-                        }
+                            break;
+                        case (int)TileObject.InteractionType.Chop:
+                            Main.instance.MouseText($"Chop {tileObject.name}");
+                            break;
+                        case (int)TileObject.InteractionType.Mine:
+                            Main.instance.MouseText($"Mine {tileObject.name}");
+                            break;
                     }
                 }
             }
@@ -217,7 +255,8 @@ namespace OvermorrowMod.Common.TilePiles
             ["yCoordinate"] = value.coordinates.Y,
             ["x"] = value.x,
             ["y"] = value.y,
-            ["dependency"] = value.dependency
+            ["dependency"] = value.dependency,
+            ["interactType"] = value.interactType
         };
 
         public override TileObject Deserialize(TagCompound tag) => new TileObject(
@@ -225,7 +264,8 @@ namespace OvermorrowMod.Common.TilePiles
             new Vector2(tag.GetFloat("xCoordinate"), tag.GetFloat("yCoordinate")),
             tag.GetInt("x"),
             tag.GetInt("y"),
-            tag.GetInt("dependency"));
+            tag.GetInt("dependency"),
+            tag.GetInt("interactType"));
     }
 
     public class TilePile : BaseTilePile
@@ -238,28 +278,28 @@ namespace OvermorrowMod.Common.TilePiles
             {
                 case 0:
                     PileContents = new TileObject[2];
-                    PileContents[0] = new TileObject("BookStack_S3", position, 16, 38, -1);
-                    PileContents[1] = new TileObject("BookStack_S2", position, 18, 28, 0);
+                    PileContents[0] = new TileObject("BookStack_S3", position, 16, 38, -1, (int)TileObject.InteractionType.Click);
+                    PileContents[1] = new TileObject("BookStack_S2", position, 18, 28, 0, (int)TileObject.InteractionType.Chop);
                     break;
                 case 1:
                     PileContents = new TileObject[4];
-                    PileContents[0] = new TileObject("Crate_S", position, 4, 32, -1);
-                    PileContents[1] = new TileObject("Crate_M", position, 18, 28, -1);
-                    PileContents[2] = new TileObject("Cloth_L", position, 18, 26, 1);
-                    PileContents[3] = new TileObject("BookStack_S3", position, 24, 14, 2);
+                    PileContents[0] = new TileObject("Crate_S", position, 4, 32, -1, (int)TileObject.InteractionType.Click);
+                    PileContents[1] = new TileObject("Crate_M", position, 18, 28, -1, (int)TileObject.InteractionType.Chop);
+                    PileContents[2] = new TileObject("Cloth_L", position, 18, 26, 1, (int)TileObject.InteractionType.Mine);
+                    PileContents[3] = new TileObject("BookStack_S3", position, 24, 14, 2, (int)TileObject.InteractionType.Click);
                     break;
                 case 2:
                     PileContents = new TileObject[4];
-                    PileContents[0] = new TileObject("Crate_S", position, 18, 32, -1);
-                    PileContents[1] = new TileObject("Cloth_S", position, 18, 30, 0);
-                    PileContents[2] = new TileObject("BookStack_S3", position, 22, 18, 1);
-                    PileContents[3] = new TileObject("Sack_S", position, 4, 30, -1);
+                    PileContents[0] = new TileObject("Crate_S", position, 18, 32, -1, (int)TileObject.InteractionType.Click);
+                    PileContents[1] = new TileObject("Cloth_S", position, 18, 30, 0, (int)TileObject.InteractionType.Mine);
+                    PileContents[2] = new TileObject("BookStack_S3", position, 22, 18, 1, (int)TileObject.InteractionType.Click);
+                    PileContents[3] = new TileObject("Sack_S", position, 4, 30, -1, (int)TileObject.InteractionType.Chop);
                     break;
                 case 3:
                     PileContents = new TileObject[3];
-                    PileContents[0] = new TileObject("Crate_S", position, 6, 32, -1);
-                    PileContents[1] = new TileObject("Crate_S", position, 8, 14, 0);
-                    PileContents[2] = new TileObject("Backpack_Sr", position, 26, 34, -1);
+                    PileContents[0] = new TileObject("Crate_S", position, 6, 32, -1, (int)TileObject.InteractionType.Click);
+                    PileContents[1] = new TileObject("Crate_S", position, 8, 14, 0, (int)TileObject.InteractionType.Mine);
+                    PileContents[2] = new TileObject("Backpack_Sr", position, 26, 34, -1, (int)TileObject.InteractionType.Chop);
                     break;
             }
         }
@@ -268,7 +308,7 @@ namespace OvermorrowMod.Common.TilePiles
         {
             int id = Place(i, j);
             TilePile te = ByID[id] as TilePile;
-            te.SetPosition(new Vector2(i + 1, j + 2));
+            te.SetPosition(new Vector2(i + 1, j + 2)); // TODO: The origin is in the top left corner, change to scale based on Style
             te.CreateTilePile();
 
             return id;
@@ -293,13 +333,25 @@ namespace OvermorrowMod.Common.TilePiles
         public int x;
         public int y;
 
-        public TileObject(string identifier, Vector2 coordinates, int x, int y, int dependency)
+        public enum InteractionType
+        {
+            Mine = 0,
+            Chop = 1,
+            Click = 2,
+        }
+
+        public int interactType;
+
+        //public virtual int InteractType => (int)InteractionType.Click;
+
+        public TileObject(string identifier, Vector2 coordinates, int x, int y, int dependency, int interactType)
         {
             this.identifier = identifier;
             this.coordinates = coordinates;
             this.x = x;
             this.y = y;
 
+            this.interactType = interactType;
 
             switch (identifier)
             {
