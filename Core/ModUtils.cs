@@ -30,6 +30,49 @@ namespace OvermorrowMod.Core
                 stopRain = typeof(Main).GetMethod("StopRain", BindingFlags.Static | BindingFlags.NonPublic);
             }
         }
+        public static void Move(this NPC npc, Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
+        {
+            if (npc.Center.X < targetPosition.X)
+            {
+                npc.velocity.X += moveSpeed;
+
+                if (npc.velocity.X > maxSpeed) npc.velocity.X = maxSpeed;
+            }
+            else if (npc.Center.X > targetPosition.X)
+            {
+                npc.velocity.X -= moveSpeed;
+
+                if (npc.velocity.X < -maxSpeed) npc.velocity.X = -maxSpeed;
+            }   
+
+            if (npc.collideY && npc.velocity.Y == 0)
+            {
+                Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY, 1, false, 0);
+
+                #region Jump Handling
+                if (npc.collideX || CheckGap(npc))
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                #endregion
+            }
+        }
+
+        private static bool CheckGap(NPC npc)
+        {
+            Rectangle npcHitbox = npc.getRect();
+
+            Vector2 checkLeft = new Vector2(npcHitbox.BottomLeft().X, npcHitbox.BottomLeft().Y);
+            Vector2 checkRight = new Vector2(npcHitbox.BottomRight().X, npcHitbox.BottomRight().Y);
+            Vector2 hitboxDetection = (npc.velocity.X < 0 ? checkLeft : checkRight) / 16;
+
+            int directionOffset = npc.direction;
+
+            Tile tile = Framing.GetTileSafely((int)hitboxDetection.X + directionOffset, (int)hitboxDetection.Y);
+
+            return !tile.HasTile;
+        }
 
         public static void SandstormStuff()
         {
