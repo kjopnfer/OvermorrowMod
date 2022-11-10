@@ -61,22 +61,21 @@ namespace OvermorrowMod.Content.NPCs.Town
                 case (int)AIStates.Run:
                     if (AICounter++ == 0)
                     {
-                        Main.NewText("setting move position");
-
                         Vector2 anchorPoint = new Vector2(Main.spawnTileX, Main.spawnTileY) * 16; // TODO: Replace with where the town spawns
 
                         int direction = Main.rand.NextBool() ? 1 : -1;
 
                         // Randomly choose an x position within 30 tiles of the anchor point, but 8 to 12 tiles away from this NPC
-                        float xPosition = Main.rand.Next(8, 12);
+                        float xPosition = Main.rand.Next(15, 19) * 16;
                         movePosition = new Vector2(NPC.Center.X + (xPosition * direction), anchorPoint.Y);
 
                         // Check if this position chosen doesn't go out of bounds
-                        float distance = Vector2.Distance(anchorPoint, movePosition);
-                        if (distance > 30) // Go the opposite direction otherwise
+                        float checkDistance = Math.Abs(anchorPoint.X - movePosition.X);
+
+                        if (checkDistance > 45 * 16) // Go the opposite direction otherwise
                         {
                             Main.NewText("out of bounds");
-                            movePosition.X *= -1;
+                            movePosition = new Vector2(NPC.Center.X + (xPosition * -direction), anchorPoint.Y);
                         }
                     }
 
@@ -88,24 +87,38 @@ namespace OvermorrowMod.Content.NPCs.Town
 
                             NPC.velocity.Y -= 12;
                         }
-
-                        if (Main.tile[(NPC.Hitbox.Center.X - 1) / 16, NPC.Hitbox.Bottom / 16].LeftSlope || Main.tile[(NPC.Hitbox.Center.X - 1) / 16, NPC.Hitbox.Bottom / 16].BottomSlope || Main.tile[(NPC.Hitbox.Center.X - 1) / 16, NPC.Hitbox.Bottom / 16].RightSlope)
-                        {
-                            Main.NewText("FUUUUUUUUUCK");
-
-                            NPC.velocity.Y -= 12;
-                        }
-
                     }
 
-                    NPC.Move(movePosition, 12f);
+                    if (Main.tile[(int)(NPC.Hitbox.BottomLeft().X) / 16, NPC.Hitbox.Bottom / 16].LeftSlope ||
+                            Main.tile[(int)(NPC.Hitbox.BottomLeft().X) / 16, NPC.Hitbox.Bottom / 16].BottomSlope ||
+                            Main.tile[(int)(NPC.Hitbox.BottomLeft().X) / 16, NPC.Hitbox.Bottom / 16].RightSlope)
+                    {
+                        Main.NewText("FUUUUUUUUUCK 2");
+
+                        NPC.velocity.Y -= 12;
+                    }
+
+                    if (Main.tile[(int)(NPC.Hitbox.BottomRight().X) / 16, NPC.Hitbox.Bottom / 16].LeftSlope ||
+                            Main.tile[(int)(NPC.Hitbox.BottomRight().X) / 16, NPC.Hitbox.Bottom / 16].BottomSlope ||
+                            Main.tile[(int)(NPC.Hitbox.BottomRight().X) / 16, NPC.Hitbox.Bottom / 16].RightSlope)
+                    {
+                        Main.NewText("FUUUUUUUUUCK 3");
+
+                        NPC.velocity.Y -= 12;
+                    }
+
+                    if (NPC.collideX) NPC.velocity.Y -= 12;
+
+                    NPC.Move(movePosition, 7f);
                     Dust.NewDust(movePosition, 16, 16, DustID.AmberBolt);
 
                     FrameUpdate(FrameType.Run);
 
-                    if (AICounter == 120)
+                    float xDistance = Math.Abs(NPC.Center.X - movePosition.X);
+
+                    if (AICounter == 120 || xDistance < 1)
                     {
-                        Main.NewText("idle state");
+                        NPC.velocity.X = 0;
 
                         AIState = (int)AIStates.Idle;
                         AICounter = 0;
