@@ -9,6 +9,7 @@ using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using OvermorrowMod.Content.NPCs.Carts;
+using OvermorrowMod.Content.NPCs.Town;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
@@ -123,10 +124,26 @@ namespace OvermorrowMod.Common
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
 
                 XmlDocument doc = new XmlDocument();
-                string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/test.xml"));
-                doc.LoadXml(text);
+                ModContent.NPCType<TownKid>();
+                switch (npc.type)
+                {
+                    case NPCID.Guide:
+                        string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/test.xml"));
+                        doc.LoadXml(text);
 
-                player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                        player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                        break;
+
+                }
+
+                if (npc.type == ModContent.NPCType<TownKid>())
+                {
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
+                    doc.LoadXml(text);
+
+                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                }
+                
                 //player.AddedDialogue = true;
             }
 

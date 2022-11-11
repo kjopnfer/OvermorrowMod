@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Town
 
         public override void SetDefaults()
         {
-            NPC.width = 22;
+            NPC.width = 12;
             NPC.height = 38;
             NPC.townNPC = true;
             NPC.friendly = true;
