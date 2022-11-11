@@ -45,6 +45,13 @@ namespace OvermorrowMod.Content.NPCs.Town
 
         public override void AI()
         {
+            foreach (Player player in Main.player)
+            {
+                if (!player.active) continue;
+
+                if (player.talkNPC == NPC.whoAmI) return;
+            }
+
             switch (AIState)
             {
                 case (int)AIStates.Idle:
@@ -66,8 +73,8 @@ namespace OvermorrowMod.Content.NPCs.Town
                         int direction = Main.rand.NextBool() ? 1 : -1;
 
                         // Randomly choose an x position within 30 tiles of the anchor point, but 8 to 12 tiles away from this NPC
-                        float xPosition = Main.rand.Next(15, 19) * 16;
-                        movePosition = new Vector2(NPC.Center.X + (xPosition * direction), anchorPoint.Y);
+                        float xPosition = Main.rand.Next(19, 26) * 16;
+                        movePosition = new Vector2(NPC.Center.X + (xPosition * direction), anchorPoint.Y + 256);
 
                         // Check if this position chosen doesn't go out of bounds
                         float checkDistance = Math.Abs(anchorPoint.X - movePosition.X);
@@ -79,42 +86,16 @@ namespace OvermorrowMod.Content.NPCs.Town
                         }
                     }
 
-                    if (Main.tile[NPC.Hitbox.Center.X / 16, NPC.Hitbox.Bottom / 16].HasTile)
-                    {
-                        if (Main.tile[NPC.Hitbox.Center.X / 16, NPC.Hitbox.Bottom / 16].LeftSlope || Main.tile[NPC.Hitbox.Center.X / 16, NPC.Hitbox.Bottom / 16].BottomSlope || Main.tile[NPC.Hitbox.Center.X / 16, NPC.Hitbox.Bottom / 16].RightSlope)
-                        {
-                            Main.NewText("FUUUUUUUUUCK");
-
-                            NPC.velocity.Y -= 12;
-                        }
-                    }
-
-                    if (Main.tile[(int)(NPC.Hitbox.BottomLeft().X) / 16, NPC.Hitbox.Bottom / 16].LeftSlope ||
-                            Main.tile[(int)(NPC.Hitbox.BottomLeft().X) / 16, NPC.Hitbox.Bottom / 16].BottomSlope ||
-                            Main.tile[(int)(NPC.Hitbox.BottomLeft().X) / 16, NPC.Hitbox.Bottom / 16].RightSlope)
-                    {
-                        Main.NewText("FUUUUUUUUUCK 2");
-
-                        NPC.velocity.Y -= 12;
-                    }
-
-                    if (Main.tile[(int)(NPC.Hitbox.BottomRight().X) / 16, NPC.Hitbox.Bottom / 16].LeftSlope ||
-                            Main.tile[(int)(NPC.Hitbox.BottomRight().X) / 16, NPC.Hitbox.Bottom / 16].BottomSlope ||
-                            Main.tile[(int)(NPC.Hitbox.BottomRight().X) / 16, NPC.Hitbox.Bottom / 16].RightSlope)
-                    {
-                        Main.NewText("FUUUUUUUUUCK 3");
-
-                        NPC.velocity.Y -= 12;
-                    }
-
                     if (NPC.collideX) NPC.velocity.Y -= 12;
-
-                    NPC.Move(movePosition, 7f);
-                    Dust.NewDust(movePosition, 16, 16, DustID.AmberBolt);
 
                     FrameUpdate(FrameType.Run);
 
                     float xDistance = Math.Abs(NPC.Center.X - movePosition.X);
+
+                    float moveSpeed = xDistance <= 3 * 16 ? 3f : 7f;
+
+                    NPC.Move(movePosition, moveSpeed);
+                    Dust.NewDust(movePosition, 16, 16, DustID.AmberBolt);
 
                     if (AICounter == 120 || xDistance < 1)
                     {

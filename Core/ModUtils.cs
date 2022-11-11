@@ -43,10 +43,52 @@ namespace OvermorrowMod.Core
                 npc.velocity.X -= moveSpeed;
 
                 if (npc.velocity.X < -maxSpeed) npc.velocity.X = -maxSpeed;
-            }   
+            }
+
+            /*if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].HasTile)
+            {
+                if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].LeftSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].BottomSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+            }*/
 
             if (npc.collideY && npc.velocity.Y == 0)
             {
+
+                if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].LeftSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].BottomSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
                 Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY, 1, false, 0);
 
                 #region Jump Handling
