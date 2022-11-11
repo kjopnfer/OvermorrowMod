@@ -1,0 +1,35 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text>hello, i am [stryke]. </Text>
+			<Text>i have been here [forever].</Text>
+		</Dialogue>
+		<Options>
+			<Option link="yes">wow thats so cool, what do you do?</Option>
+			<Option link="no">didnt ask</Option>
+			<Option link="what" action="exit">what</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="yes">
+		<Dialogue>
+			<Text>i am a spriter</Text>
+			<Text>i put pixels onto a blank canvas</Text>
+		</Dialogue>
+		<Options>
+			<Option link="no">didnt ask</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="no">
+		<Dialogue>
+			<Text>thats rude bro</Text>
+		</Dialogue>
+	</DialogueNode>
+
+	<DialogueNode id="what">
+		<Dialogue>
+			<Text>what</Text>
+		</Dialogue>
+	</DialogueNode>
+</Dialogue>

@@ -1,14 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.UI;
-using OvermorrowMod.Core;
-using System.Text;
-using Terraria.GameContent;
-using Terraria.UI.Chat;
 using Terraria.Audio;
-using ReLogic.Utilities;
 using System.Collections.Generic;
 
 namespace OvermorrowMod.Common.Cutscenes
