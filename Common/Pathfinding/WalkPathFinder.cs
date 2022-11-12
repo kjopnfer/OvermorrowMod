@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,16 @@ namespace OvermorrowMod.Common.Pathfinding
     public class WalkPathFinderInfo
     {
         public float StartYSpeed;
-        public IEnumerable<bool> JumpSwitches;
+        public bool[] JumpSwitches;
         public bool IsJumpRight;
+    }
+
+    public enum AIState
+    {
+        Leaping,
+        Idle,
+        Falling,
+        Moving
     }
 
     /// <summary>
@@ -19,10 +28,11 @@ namespace OvermorrowMod.Common.Pathfinding
     /// </summary>
     public class WalkPathFinder : BasePathFinder<WalkPathFinderInfo>
     {
-        private float[] _jumpSpeeds = new[] { 20f / 16f };
+        private float[] _jumpSpeeds = new[] { 7f / 16f, 5.5f / 16f };
         private float _moveSpeed = 4f / 16f;
-        private float _gravity = 1f / 16f;
+        private float _gravity = 0.3f / 16f;
         private int _maxFallDepth = 20;
+        private float _maxFallSpeed = 10f / 16f;
 
         public WalkPathFinder(int xSize, int ySize, int timeout, int maxDivergence) : base(timeout, maxDivergence)
         {
@@ -46,6 +56,7 @@ namespace OvermorrowMod.Common.Pathfinding
         // This should be a power of 2, i.e. 4 is 0b11 so we check permuations 00, 01, 10, 11.
         // 10 here indicates not moving in the first half, then moving in the second 
         private readonly int _numPermutations = 4;
+        private readonly int _numPermutationsLog = 2;
 
         private void BuildLeapTargets()
         {
@@ -59,31 +70,22 @@ namespace OvermorrowMod.Common.Pathfinding
                     {
                         var permutations = GetPermutations(i, _numPermutations);
                         var numChanges = (int)Math.Log2(_numPermutations);
-                        var arch = SimulateJumpArch(_gravity, -jumpSpeed, _moveSpeed * dir, numChanges, permutations);
-
-                        var steps = new List<(int, int)>();
-                        foreach (var step in arch)
+                        var arch = SimulateJumpArch(_gravity, -jumpSpeed, _maxFallSpeed, _moveSpeed * dir, numChanges, permutations);
+                        var steps = arch.ToArray();
+                        var lastStep = steps.Last();
+                        _leapTargets.Add(new RelativeCoordinate<WalkPathFinderInfo>
                         {
-                            steps.Add((step.XPos, step.YPos));
-                            if (step.IsFalling)
+                            Cost = lastStep.Cost,
+                            Curve = steps,
+                            X = (short)lastStep.XPos,
+                            Y = (short)lastStep.YPos,
+                            Info = new WalkPathFinderInfo
                             {
-                                var last = steps.Last();
-                                if (Math.Abs(last.Item1) <= 1 && Math.Abs(last.Item2) <= 1) continue;
-                                _leapTargets.Add(new RelativeCoordinate<WalkPathFinderInfo>
-                                {
-                                    Cost = step.Step * _moveSpeed * 1.2f,
-                                    Curve = steps.ToArray(),
-                                    X = (short)last.Item1,
-                                    Y = (short)last.Item2,
-                                    Info = new WalkPathFinderInfo
-                                    {
-                                        StartYSpeed = -jumpSpeed,
-                                        JumpSwitches = permutations,
-                                        IsJumpRight = dir > 0
-                                    }
-                                });
+                                StartYSpeed = -jumpSpeed,
+                                JumpSwitches = permutations.ToArray(),
+                                IsJumpRight = dir > 0
                             }
-                        }
+                        });
                     }
                 }
             }
@@ -97,15 +99,7 @@ namespace OvermorrowMod.Common.Pathfinding
             }
         }
 
-        struct JumpPathStep
-        {
-            public int XPos;
-            public int YPos;
-            public bool IsFalling;
-            public int Step;
-        }
-
-        private IEnumerable<JumpPathStep> SimulateJumpArch(float gravity, float initialY, float xSpeed, int numChanges, IEnumerable<bool> permutation)
+        private IEnumerable<JumpPathStep> SimulateJumpArch(float gravity, float initialY, float maxYSpeed, float xSpeed, int numChanges, IEnumerable<bool> permutation)
         {
             var arch = new HashSet<(int, int)>();
 
@@ -138,7 +132,7 @@ namespace OvermorrowMod.Common.Pathfinding
                         XPos = rxpos,
                         YPos = rypos,
                         IsFalling = yv >= 0,
-                        Step = iter
+                        Cost = iter * _moveSpeed * 1.1f
                     };
                 }
                 xpos += xv;
@@ -152,7 +146,7 @@ namespace OvermorrowMod.Common.Pathfinding
 
         protected override IEnumerable<RelativeCoordinate<WalkPathFinderInfo>> LeapTargets => _leapTargets;
 
-        protected override bool IsParabolicLeap => false;
+        protected override bool IsBestEffort => true;
 
         protected override IEnumerable<RelativeCoordinate<WalkPathFinderInfo>> MoveTargets => _moveTargets;
 
@@ -160,7 +154,7 @@ namespace OvermorrowMod.Common.Pathfinding
 
         protected override IEnumerable<RelativeCoordinate<WalkPathFinderInfo>> GetFallTargets(int x, int y, WalkPathFinderInfo info)
         {
-            float ySpeed = info?.StartYSpeed ?? 0;
+            float ySpeed = -(info?.StartYSpeed ?? 0);
             float maxXPos = x;
             float minXPos = x;
 
@@ -170,10 +164,10 @@ namespace OvermorrowMod.Common.Pathfinding
             passableColumns.Add((int)maxXPos);
 
             int ticks = 0;
-            while (y - yPos < _maxFallDepth && passableColumns.Any())
+            while (yPos - y < _maxFallDepth && passableColumns.Any())
             {
                 ticks++;
-                ySpeed += _gravity;
+                ySpeed = Math.Min(_maxFallSpeed, ySpeed + _gravity);
                 yPos += ySpeed;
                 if ((int)yPos == lastYPos)
                 {
@@ -184,7 +178,7 @@ namespace OvermorrowMod.Common.Pathfinding
                 for (int i = (int)minXPos; i <= (int)maxXPos; i++)
                 {
                     if (!passableColumns.Contains(i)) continue;
-                    if (!CanFitInTile(State, i, (int)yPos))
+                    if (!CanFitInTile(base.State, i, (int)yPos))
                     {
                         passableColumns.Remove(i);
                         if (i == (int)minXPos) minXPos = (int)minXPos + 1;
@@ -192,15 +186,15 @@ namespace OvermorrowMod.Common.Pathfinding
                         continue;
                     }
 
-                    if (CanStandOn(State, i, (int)yPos))
+                    if (CanStandOn(base.State, i, (int)yPos))
                     {
                         yield return new RelativeCoordinate<WalkPathFinderInfo>
                         {
-                            Cost = ticks * _moveSpeed * 1.2f,
+                            Cost = ticks * _moveSpeed * 1.1f,
                             X = (short)(i - x),
                             Y = (short)((int)yPos - y)
                         };
-                        if (!CanFallThrough(i, (int)yPos))
+                        if (!CanFallThrough(base.State, i, (int)yPos))
                         {
                             passableColumns.Remove(i);
                             if (i == (int)minXPos) minXPos = (int)minXPos + 1;
@@ -210,12 +204,12 @@ namespace OvermorrowMod.Common.Pathfinding
                     }
                 }
 
-                if (CanFitInTile(State, (int)minXPos - 1, (int)yPos))
+                if (CanFitInTile(base.State, (int)minXPos - 1, (int)yPos))
                 {
                     minXPos -= _moveSpeed;
                     passableColumns.Add((int)minXPos);
                 }
-                if (CanFitInTile(State, (int)maxXPos + 1, (int)yPos))
+                if (CanFitInTile(base.State, (int)maxXPos + 1, (int)yPos))
                 {
                     maxXPos += _moveSpeed;
                     passableColumns.Add((int)maxXPos);
@@ -226,6 +220,151 @@ namespace OvermorrowMod.Common.Pathfinding
         #endregion
 
         #region Execution
+        public AIState State { get; private set; } = AIState.Idle;
+        private int _tick;
+        private int _numTicks;
+
+        private int _lastX;
+        private int _lastY;
+        private int _targetX;
+        private int _targetY;
+
+        private PossibleMove<WalkPathFinderInfo> _activeMove;
+
+        private AIState GetStateFromMove()
+        {
+            if (_activeMove == null) return AIState.Idle;
+            if (_activeMove.IsLeap) return AIState.Leaping;
+            if (_activeMove.IsFall) return AIState.Falling;
+            return AIState.Moving;
+        }
+
+        private void TickNextMove(Vector2 position)
+        {
+            _activeMove = Next((int)(position.X / 16f),
+                            (int)(position.Y / 16f),
+                            _targetX,
+                            _targetY);
+            _tick = 0;
+            State = GetStateFromMove();
+        }
+
+        public void SetTarget(Vector2 target)
+        {
+            _targetX = (int)(target.X / 16f);
+            _targetY = ProjectToGround(_targetX, (int)(target.Y / 16f));
+        }
+
+        public Vector2 GetVelocity(Vector2 position, Vector2 velocity)
+        {
+            int roundX = (int)(position.X / 16f);
+            int roundY = (int)(position.Y / 16f);
+            bool isStill = State != AIState.Idle
+                && (velocity.X != 0f || velocity.Y != 0f);
+            // velocity.Y = Math.Min(_maxFallSpeed * 16f, velocity.Y + _gravity * 16f);
+            if (isStill
+                && roundX == _lastX
+                && roundY == _lastY) return velocity;
+
+            _lastX = roundX;
+            _lastY = roundY;
+
+            if (State != AIState.Idle && roundX == _targetX && roundY == _targetY)
+            {
+                _tick = 0;
+                State = AIState.Idle;
+                velocity.X = 0f;
+                return velocity;
+            }
+
+
+            switch (State)
+            {
+                case AIState.Idle:
+                    if (_tick++ > 120)
+                    {
+                        TickNextMove(position);
+                        return GetVelocity(position, velocity);
+                    }
+                    return new Vector2(0, 0);
+                case AIState.Leaping:
+                    if (_tick == 0)
+                    {
+                        velocity.Y = _activeMove.Info.StartYSpeed * 16f - 0.5f;
+                        _numTicks = (int)Math.Abs(_activeMove.Info.StartYSpeed * 2 / _gravity);
+                    }
+                    else if (velocity.Y == 0f && CanStandOn(base.State, roundX, roundY))
+                    {
+                        TickNextMove(position);
+                        return GetVelocity(position, velocity);
+                    }
+                    int idx = (int)(_numPermutationsLog * (float)_tick / _numTicks);
+                    
+                    bool shouldMove = idx >= _numPermutationsLog ? false : _activeMove.Info.JumpSwitches[idx];
+                    if (shouldMove)
+                    {
+                        velocity.X = _activeMove.Info.IsJumpRight ? _moveSpeed * 16f : -_moveSpeed * 16f;
+                    }
+                    _tick++;
+                    return velocity;
+                case AIState.Moving:
+                    {
+                        TickNextMove(position);
+                        if (State == AIState.Moving)
+                        {
+                            float diff = _activeMove.XTarget * 16f - position.X + 8f;
+                            if (diff > 0)
+                            {
+                                velocity.X = _moveSpeed * 16f;
+                            }
+                            else
+                            {
+                                velocity.X = -_moveSpeed * 16f;
+                            }
+
+                            float yDiff = _activeMove.YTarget * 16f - position.Y;
+                            if (yDiff < -4f)
+                            {
+                                velocity.Y = -_moveSpeed * 16f;
+                            }
+                            else
+                            {
+                                velocity.Y = 0f;
+                            }
+                        }
+                        else
+                        {
+                            return GetVelocity(position, velocity);
+                        }
+                        return velocity;
+                    }
+                    
+                case AIState.Falling:
+                    {
+                        if (_tick != 0 && velocity.Y == 0f && CanStandOn(base.State, roundX, roundY))
+                        {
+                            TickNextMove(position);
+                            return GetVelocity(position, velocity);
+                        }
+                        _tick++;
+                        float diff = _activeMove.XTarget * 16f - position.X + 8f;
+                        if (diff > 0)
+                        {
+                            velocity.X = _moveSpeed * 16f;
+                        }
+                        else
+                        {
+                            velocity.X = -_moveSpeed * 16f;
+                        }
+                        return velocity;
+                    }
+                    
+            }
+            State = AIState.Idle;
+            return velocity;
+        }
+
+
         #endregion
     }
 }

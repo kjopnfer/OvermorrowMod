@@ -59,7 +59,7 @@ namespace OvermorrowMod.Common
 
         public override void PostUpdateTime()
         {
-            int x = (int)(Main.CurrentPlayer.position.X / 16f);
+            /* int x = (int)(Main.CurrentPlayer.position.X / 16f);
             int y = (int)(Main.CurrentPlayer.position.Y / 16f);
 
             if (curX == 0 && curY == 0)
@@ -69,6 +69,7 @@ namespace OvermorrowMod.Common
             }
 
             var path = pf.Next(curX, curY, x, y);
+
             if (path == null || path.Cost == 0)
             {
                 curX = Main.spawnTileX;
@@ -81,12 +82,12 @@ namespace OvermorrowMod.Common
                 Dust.NewDust(new Vector2(curX * 16f, curY * 16f), 8, 8, DustID.WitherLightning);
             }
 
-            base.PostUpdateTime();
+            base.PostUpdateTime(); */
         }
 
         public override void PostDrawTiles()
         {
-            pf.Visualize(1);
+            // pf.Visualize(0);
         }
 
         // Worldgen Debugging
