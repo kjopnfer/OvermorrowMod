@@ -18,7 +18,11 @@ namespace OvermorrowMod.Content.Tiles.Town
             Main.tileLavaDeath[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2Top);
-            TileObjectData.newTile.Width = 2;
+            TileObjectData.newTile.Height = 4;
+            TileObjectData.newTile.Width = 4;
+
+            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16 };
+
             TileObjectData.addTile(Type);
 
             AddMapEntry(new Color(207, 167, 87));
