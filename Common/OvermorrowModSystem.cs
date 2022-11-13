@@ -25,11 +25,9 @@ namespace OvermorrowMod.Common
 
         private GameTime _lastUpdateUiGameTime;
         internal UserInterface MyInterface;
-        internal UserInterface AltarUI;
         internal UserInterface TitleInterface;
         internal UserInterface ScreenInterface;
 
-        internal AltarUI Altar;
         public TitleCard TitleCard;
         public ScreenColor ScreenColor;
 
@@ -52,12 +50,7 @@ namespace OvermorrowMod.Common
         {
             if (!Main.dedServ)
             {
-                AltarUI = new UserInterface();
-
                 MyInterface = new UserInterface();
-
-                Altar = new AltarUI();
-                Altar.Activate();
 
                 trajectoryDraw = new TrajectoryDraw();
                 trajectoryDraw.Activate();
@@ -91,11 +84,6 @@ namespace OvermorrowMod.Common
             if (MyInterface?.CurrentState != null && !Main.gameMenu)
             {
                 MyInterface.Update(gameTime);
-            }
-
-            if (AltarUI?.CurrentState != null && !Main.gameMenu)
-            {
-                AltarUI.Update(gameTime);
             }
 
             trajDraw?.Update(gameTime);
@@ -183,17 +171,6 @@ namespace OvermorrowMod.Common
                     }
                     return true;
                 }, InterfaceScaleType.UI));
-        }
-
-
-        internal void ShowAltar()
-        {
-            AltarUI?.SetState(Altar);
-        }
-
-        internal void HideAltar()
-        {
-            AltarUI?.SetState(null);
         }
 
         internal void HideMyUI()

@@ -373,22 +373,6 @@ namespace OvermorrowMod.Common.Players
                     Main.NewText("Swapped to Defense Mode", Color.Yellow);
                 }
             }
-
-
-            if (OvermorrowModFile.ToggleUI.JustPressed)
-            {
-                Main.NewText("a");
-                //ModContent.GetInstance<OvermorrowModFile>().ShowAltar();
-            }
-
-            if (UIToggled && IsInRange(AltarCoordinates))
-            {
-                ModContent.GetInstance<OvermorrowModSystem>().ShowAltar();
-            }
-            /*else
-            {
-                ModContent.GetInstance<OvermorrowModFile>().HideAltar();
-            }*/
         }
 
         public void DashMovement()
