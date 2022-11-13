@@ -17,19 +17,37 @@ namespace OvermorrowMod.Content.UI.Altar
 {
     public class AltarState : UIState
     {
-        private int DrawCounter = 0;
+        public int DrawCounter = 0;
 
         private AltarSlot SlotContainer = new AltarSlot();
+
+        public override void OnInitialize()
+        {
+
+
+            base.OnInitialize();
+        }
+
         public override void Update(GameTime gameTime)
         {
-            if (!Main.LocalPlayer.GetModPlayer<AltarPlayer>().NearAltar) return;
+            //Main.NewText(DrawCounter);
+
+            if (!Main.LocalPlayer.GetModPlayer<AltarPlayer>().NearAltar)
+            {
+                if (DrawCounter > 0 && !Main.gamePaused) DrawCounter--;
+                //return;
+            }
+            else
+            {
+                if (DrawCounter < 60 && !Main.gamePaused) DrawCounter++;
+            }
 
             this.RemoveAllChildren();
 
-            Vector2 slotOffset = new Vector2(8, -64);
-            //Vector2 position = AltarWorld.AltarPosition + new Vector2(16, -48) - slotOffset - Main.screenPosition;
-            //ModUtils.AddElement(SlotContainer, (int)position.X, (int)position.Y, 52, 52, this);
+            float yOffset = MathHelper.Lerp(-64, -80, Utils.Clamp(DrawCounter, 0, 60) / 60f);
+            Vector2 slotOffset = new Vector2(8, yOffset);
             Append(SlotContainer);
+
             SlotContainer.SetCenter(AltarWorld.AltarPosition + slotOffset - Main.screenPosition);
 
             base.Update(gameTime);
@@ -37,7 +55,7 @@ namespace OvermorrowMod.Content.UI.Altar
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (!Main.LocalPlayer.GetModPlayer<AltarPlayer>().NearAltar) return;
+            //if (!Main.LocalPlayer.GetModPlayer<AltarPlayer>().NearAltar) return;
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Altar/AltarContainer").Value;
             //spriteBatch.Draw(texture, AltarWorld.AltarPosition + new Vector2(16, -48) - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2, 1f, SpriteEffects.None, 1f);
@@ -59,13 +77,35 @@ namespace OvermorrowMod.Content.UI.Altar
             base.Draw(spriteBatch);
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Altar/AltarContainer").Value;
-            spriteBatch.Draw(texture, GetDimensions().Center(), new Rectangle(0, 0, 52, 52), Color.White, 0, texture.Size() / 2f, 1, 0, 0);
+            if (!Item.IsAir) texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Altar/AltarContainer_Active").Value;
+
+            if (Parent is AltarState parent)
+            {
+                canDraw = true;
+                if (parent.DrawCounter == 0) canDraw = false;
+
+                float progress = parent.DrawCounter / 60f;
+
+                itemOpacity = MathHelper.Lerp(0, 1, progress);
+                float opacity = MathHelper.Lerp(0, 1, progress);
+                spriteBatch.Draw(texture, GetDimensions().Center(), new Rectangle(0, 0, 52, 52), Color.White * opacity, 0, texture.Size() / 2f, 1, 0, 0);
+            }
         }
 
         public void SetCenter(Vector2 position)
         {
             Left.Set(position.X - Width.Pixels / 2, 0);
             Top.Set(position.Y - Height.Pixels / 2, 0);
+        }
+
+        public override bool CheckValid(Item item)
+        {
+            if (Parent is AltarState parent && parent.DrawCounter == 60)
+            {
+                return item.type == ItemID.Bunny;
+            }
+
+            return false;
         }
 
         /*public override bool CheckValid(Item item)

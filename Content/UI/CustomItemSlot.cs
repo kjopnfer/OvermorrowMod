@@ -92,6 +92,8 @@ namespace OvermorrowMod.Content.UI
         private readonly int _context;
         private readonly float _scale;
 
+        protected bool canDraw = true;
+        protected float itemOpacity = 1;
         public CustomItemSlot(int context = ItemSlot.Context.BankItem, float scale = 1f)
         {
             _context = context;
@@ -128,7 +130,7 @@ namespace OvermorrowMod.Content.UI
             if (ContainsPoint(Main.MouseScreen) && !PlayerInput.IgnoreMouseInterface)
             {
                 Main.LocalPlayer.mouseInterface = true;
-                if (CheckValid(Main.mouseItem))
+                if (CheckValid(Main.mouseItem) || Main.mouseItem.IsAir)
                 {
                     // Handle handles all the click and hover actions based on the context.
                     ItemSlot.Handle(ref Item, _context);
@@ -136,7 +138,8 @@ namespace OvermorrowMod.Content.UI
             }
 
             // Draw draws the slot itself and Item. Depending on context, the color will change, as will drawing other things like stack counts.
-            ItemSlot.Draw(spriteBatch, ref Item, _context, rectangle.TopLeft());
+            if (canDraw)
+                ItemSlot.Draw(spriteBatch, ref Item, _context, rectangle.TopLeft(), Color.White * itemOpacity);
 
             Main.inventoryScale = oldScale;
             TextureAssets.InventoryBack2 = oldTexture;
