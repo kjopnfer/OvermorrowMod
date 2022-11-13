@@ -33,7 +33,7 @@ namespace OvermorrowMod.Content.UI.Altar
                         AltarUI.Draw(Main.spriteBatch, new GameTime());
                         return true;
                     },
-                    InterfaceScaleType.UI)
+                    InterfaceScaleType.Game)
                 );
             }
         }

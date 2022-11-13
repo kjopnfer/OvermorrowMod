@@ -26,9 +26,11 @@ namespace OvermorrowMod.Content.UI.Altar
 
             this.RemoveAllChildren();
 
-            Vector2 slotOffset = new Vector2(SlotContainer.Width.Pixels / 2f, SlotContainer.Height.Pixels) * Main.UIScale;
-            Vector2 position = AltarWorld.AltarPosition + new Vector2(16, -48) - slotOffset - Main.screenPosition;
-            ModUtils.AddElement(SlotContainer, (int)position.X, (int)position.Y, 52, 52, this);
+            Vector2 slotOffset = new Vector2(8, -64);
+            //Vector2 position = AltarWorld.AltarPosition + new Vector2(16, -48) - slotOffset - Main.screenPosition;
+            //ModUtils.AddElement(SlotContainer, (int)position.X, (int)position.Y, 52, 52, this);
+            Append(SlotContainer);
+            SlotContainer.SetCenter(AltarWorld.AltarPosition + slotOffset - Main.screenPosition);
 
             base.Update(gameTime);
         }
@@ -58,6 +60,12 @@ namespace OvermorrowMod.Content.UI.Altar
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Altar/AltarContainer").Value;
             spriteBatch.Draw(texture, GetDimensions().Center(), new Rectangle(0, 0, 52, 52), Color.White, 0, texture.Size() / 2f, 1, 0, 0);
+        }
+
+        public void SetCenter(Vector2 position)
+        {
+            Left.Set(position.X - Width.Pixels / 2, 0);
+            Top.Set(position.Y - Height.Pixels / 2, 0);
         }
 
         /*public override bool CheckValid(Item item)
