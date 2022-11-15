@@ -12,12 +12,14 @@ using ReLogic.Utilities;
 using System.Collections.Generic;
 using OvermorrowMod.Content.Tiles.Altar;
 using Terraria.ID;
+using OvermorrowMod.Common;
 
 namespace OvermorrowMod.Content.UI.Altar
 {
     public class AltarState : UIState
     {
         public int DrawCounter = 0;
+        public int RotationCounter = 0;
 
         private AltarSlot SlotContainer = new AltarSlot();
 
@@ -35,11 +37,18 @@ namespace OvermorrowMod.Content.UI.Altar
             if (!Main.LocalPlayer.GetModPlayer<AltarPlayer>().NearAltar)
             {
                 if (DrawCounter > 0 && !Main.gamePaused) DrawCounter--;
+
+                RotationCounter = 0;
                 //return;
             }
             else
             {
-                if (DrawCounter < 60 && !Main.gamePaused) DrawCounter++;
+                if (!Main.gamePaused)
+                {
+                    if (DrawCounter < 60) DrawCounter++;
+                    else if (DrawCounter >= 60 && RotationCounter < 180) RotationCounter++;
+
+                }
             }
 
             this.RemoveAllChildren();
@@ -88,7 +97,26 @@ namespace OvermorrowMod.Content.UI.Altar
 
                 itemOpacity = MathHelper.Lerp(0, 1, progress);
                 float opacity = MathHelper.Lerp(0, 1, progress);
+
                 spriteBatch.Draw(texture, GetDimensions().Center(), new Rectangle(0, 0, 52, 52), Color.White * opacity, 0, texture.Size() / 2f, 1, 0, 0);
+
+                Texture2D fillBar = ModContent.Request<Texture2D>(AssetDirectory.UI + "Altar/AltarBar_Filled").Value;
+                //spriteBatch.Draw(fillBar, GetDimensions().Center(), null, Color.White * opacity, MathHelper.ToRadians(0), new Vector2(fillBar.Width / 2f, fillBar.Height), 1, 0, 0);
+
+                float fillProgress = MathHelper.Lerp(0, 0.5f, Utils.Clamp(parent.RotationCounter, 0, 180) / 180f);
+
+                Main.spriteBatch.Reload(SpriteSortMode.Immediate);
+
+                Effect effect = OvermorrowModFile.Instance.RadialFade.Value;
+                effect.Parameters["progress"].SetValue(fillProgress);
+                effect.CurrentTechnique.Passes["RadialFade"].Apply();
+
+                spriteBatch.Draw(fillBar, GetDimensions().Center(), new Rectangle(0, 0, 104, 52), Color.White * opacity, 0f, fillBar.Size() / 2f, 1, 0, 0);
+
+                Main.spriteBatch.Reload(SpriteSortMode.Deferred);
+
+                Texture2D progressBar = ModContent.Request<Texture2D>(AssetDirectory.UI + "Altar/AltarBar").Value;
+                spriteBatch.Draw(progressBar, GetDimensions().Center(), null, Color.White * opacity, 0, progressBar.Size() / 2f, 1, 0, 0);
             }
         }
 

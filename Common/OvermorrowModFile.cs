@@ -46,6 +46,7 @@ namespace OvermorrowMod.Common
         public Asset<Effect> Dissolve;
         public Asset<Effect> Flash;
         public Asset<Effect> RadialBlur;
+        public Asset<Effect> RadialFade;
         public Asset<Effect> Ring;
         public Asset<Effect> Shockwave;
         public Asset<Effect> Shockwave2;
@@ -106,6 +107,8 @@ namespace OvermorrowMod.Common
                 Dissolve = Assets.Request<Effect>("Effects/Dissolve");
                 Flash = Assets.Request<Effect>("Effects/Flash");
                 Ring = Assets.Request<Effect>("Effects/Ring");
+                RadialBlur = Assets.Request<Effect>("Effects/CenterBlurShader");
+                RadialFade = Assets.Request<Effect>("Effects/RadialFade");
                 Shockwave = Assets.Request<Effect>("Effects/Shockwave1");
                 Shockwave2 = Assets.Request<Effect>("Effects/ShockwaveEffect");
                 Tentacle = Assets.Request<Effect>("Effects/Tentacle");
@@ -114,7 +117,6 @@ namespace OvermorrowMod.Common
                 TileOverlay = Assets.Request<Effect>("Effects/TileOverlay");
                 TrailShader = Assets.Request<Effect>("Effects/Trail");
                 Whiteout = Assets.Request<Effect>("Effects/Whiteout");
-                RadialBlur = Assets.Request<Effect>("Effects/CenterBlurShader");
                 BlurTestTexture = Assets.Request<Texture2D>("Effects/testpattern");
                 Portal = Assets.Request<Effect>("Effects/PortalOverride");
 
@@ -184,6 +186,7 @@ namespace OvermorrowMod.Common
             Dissolve = null;
             Flash = null;
             RadialBlur = null;
+            RadialFade = null;
             Ring = null;
             Shockwave = null;
             Tentacle = null;
