@@ -74,16 +74,24 @@ namespace OvermorrowMod.Content.Tiles.Altar
     public class AltarWorld : ModSystem
     {
         public static Vector2 AltarPosition;
+        public static int SacrificeBonus;
+        public static int SacrificePoints;
 
-        // TODO: Add data persistance for the position
+        public static readonly int MAX_SACRIFICE = 100;
+
         public override void SaveWorldData(TagCompound tag)
         {
             tag["AltarPosition"] = AltarPosition;
+            tag["SacrificeBonus"] = SacrificeBonus;
+            tag["SacrificePoints"] = SacrificePoints;
+
         }
 
         public override void LoadWorldData(TagCompound tag)
         {
             AltarPosition = tag.Get<Vector2>("AltarPosition");
+            SacrificeBonus = tag.Get<int>("SacrificeBonus");
+            SacrificePoints = tag.Get<int>("SacrificePoints");
         }
     }
 
