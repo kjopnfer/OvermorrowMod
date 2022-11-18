@@ -172,6 +172,7 @@ namespace OvermorrowMod.Content.UI.Altar
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Altar/AltarButton").Value;
                 if (isHovering)
                 {
+                    Main.LocalPlayer.mouseInterface = true;
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Altar/AltarButton_Hover").Value;
                 }
 
@@ -190,10 +191,11 @@ namespace OvermorrowMod.Content.UI.Altar
 
         public override void MouseDown(UIMouseEvent evt)
         {
-            SoundEngine.PlaySound(SoundID.MenuTick);
-
             if (Parent is AltarState parent)
             {
+                if (parent.DrawCounter < 60f) return;
+                SoundEngine.PlaySound(SoundID.MenuTick);
+
                 foreach (UIElement element in parent.Children)
                 {
                     if (element is AltarSlot itemSlot)
