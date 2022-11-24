@@ -1,0 +1,23 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text>Nice camp eh? But it's not enough, trust me.</Text>
+			<Text>Not against the [monsters] that come out when it gets dark.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="1">Monsters?</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="1">
+		<Dialogue>
+			<Text>Lately there haven't been many around, but even a few can be dangerous if you don't have a good [weapon] to fight them off.</Text>
+			<Text>I'm trying to build a shelter before nightfall, but chopping wood is exhausting work.</Text>
+			<Text>I left my axe in that stump over there to take a break.</Text>
+			<Text>Tell you what, if you chop me the wood I need I'll let you keep it.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="exit" action="exit">Ok</Option>
+		</Options>
+	</DialogueNode>
+</Dialogue>
