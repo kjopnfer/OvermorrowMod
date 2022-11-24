@@ -86,7 +86,17 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     foreach (XmlNode option in child.ChildNodes)
                     {
-                        optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value));
+                        if (option.Attributes == null) continue;
+
+                        if (option.Attributes["action"] != null)
+                        {
+                            if (option.Attributes["action"].Value == "exit")
+                            {
+                                optionButtons.Add(new OptionButton(option.InnerText, "none", "exit"));
+                            }
+                        }
+                        else if (option.Attributes["link"] != null)
+                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value));
                     }
                 }
             }

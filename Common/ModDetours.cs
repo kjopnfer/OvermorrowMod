@@ -141,6 +141,7 @@ namespace OvermorrowMod.Common
                     string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
                     doc.LoadXml(text);
 
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);
                 }
                 

@@ -423,11 +423,13 @@ namespace OvermorrowMod.Common.Cutscenes
     {
         private string displayText;
         private string linkID;
+        private string action;
 
-        public OptionButton(string displayText, string linkID)
+        public OptionButton(string displayText, string linkID, string action = "none")
         {
             this.displayText = displayText;
             this.linkID = linkID;
+            this.action = action;
         }
 
         public string GetText() => displayText;
@@ -454,6 +456,16 @@ namespace OvermorrowMod.Common.Cutscenes
             if (Parent.Parent is DialogueState parent)
             {
                 parent.ResetTimers();
+
+                if (action != "none")
+                {
+                    switch (action)
+                    {
+                        case "exit":
+                            Main.LocalPlayer.SetTalkNPC(-1);
+                            return;
+                    }
+                }
 
                 if (!parent.drawQuest)
                 {
