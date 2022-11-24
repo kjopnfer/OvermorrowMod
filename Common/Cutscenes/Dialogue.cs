@@ -71,6 +71,12 @@ namespace OvermorrowMod.Common.Cutscenes
         public string GetText(string id)
         {
             XmlNode node = textList[textIterator];
+            if (node.Attributes["time"] != null)
+            {
+                string value = node.Attributes["time"].Value;
+                drawTime = int.Parse(value);
+            }
+
             return node.InnerText;
         }
 
