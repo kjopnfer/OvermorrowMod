@@ -324,6 +324,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (isHovering)
             {
+                Main.LocalPlayer.mouseInterface = true;
                 spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
@@ -356,6 +357,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (isHovering)
             {
+                Main.LocalPlayer.mouseInterface = true;
                 spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
@@ -395,6 +397,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (isHovering)
             {
+                Main.LocalPlayer.mouseInterface = true;
                 spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
@@ -436,6 +439,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (isHovering)
             {
+                Main.LocalPlayer.mouseInterface = true;
                 spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
