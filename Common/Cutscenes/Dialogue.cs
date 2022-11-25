@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Xml;
 using System.Collections.Generic;
+using Terraria;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -75,6 +76,8 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 string value = node.Attributes["time"].Value;
                 drawTime = int.Parse(value);
+
+                //Main.NewText("drawTime: " + drawTime);
             }
 
             if (node.Attributes["color"] != null)
