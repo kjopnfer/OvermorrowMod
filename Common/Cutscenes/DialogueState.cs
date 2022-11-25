@@ -26,8 +26,10 @@ namespace OvermorrowMod.Common.Cutscenes
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Empty).Value;
-            spriteBatch.Draw(texture, GetDimensions().ToRectangle(), Color.White);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
+            //spriteBatch.Draw(texture, GetDimensions().ToRectangle(), Color.White);
+            //spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, 1, 0, 0);
+
         }
     }
 
@@ -57,10 +59,10 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public override void OnInitialize()
         {
-            ModUtils.AddElement(DrawSpace, Main.screenWidth / 2 - (WIDTH / 2), Main.screenHeight / 2 - 250, WIDTH * 2, HEIGHT * 2, this);
-            ModUtils.AddElement(BackPanel, Main.screenWidth / 2 - (WIDTH / 2), Main.screenHeight / 2 - 250, WIDTH, HEIGHT - 100, DrawSpace);
-            ModUtils.AddElement(Text, 0, 0, 650, 300, DrawSpace);
-            ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
+            ModUtils.AddElement(DrawSpace, Main.screenWidth / 2 - WIDTH, Main.screenHeight / 2 - HEIGHT, WIDTH * 2, HEIGHT * 2, this);
+            //ModUtils.AddElement(BackPanel, Main.screenWidth / 2, Main.screenHeight / 2, WIDTH, HEIGHT - 100, DrawSpace);
+            //ModUtils.AddElement(Text, 0, 0, 650, 300, DrawSpace);
+            //ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
 
             base.OnInitialize();
         }
@@ -84,13 +86,13 @@ namespace OvermorrowMod.Common.Cutscenes
                 return;
             }
 
-            DrawBackdrop(player);
+            DrawBackdrop(player, spriteBatch);
 
             if (DelayTimer++ >= DIALOGUE_DELAY)
             {
                 if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
 
-                DrawText(player);
+                DrawText(player, spriteBatch, new Vector2(0, 0));
             }
 
             base.Draw(spriteBatch);
@@ -108,10 +110,12 @@ namespace OvermorrowMod.Common.Cutscenes
                 //Main.NewText("redrawing");
 
                 // Removes the options and then readds the elements back
-                DrawSpace.RemoveAllChildren();
-                ModUtils.AddElement(BackPanel, 0, -25, 650, 200, DrawSpace);
-                ModUtils.AddElement(Text, 0, 0, 650, 300, DrawSpace);
-                ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
+                //DrawSpace.RemoveAllChildren();
+                this.RemoveAllChildren();
+
+                //ModUtils.AddElement(BackPanel, 0, -25, 650, 200, DrawSpace);
+                //ModUtils.AddElement(Text, 0, 0, 350, 300, DrawSpace);
+                //ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
 
                 // Handles the drawing of the UI after the dialogue has finished drawing
                 if (DrawTimer >= player.GetDialogue().drawTime)
@@ -128,13 +132,12 @@ namespace OvermorrowMod.Common.Cutscenes
 
                         // Determines which button type is shown in the bottom right corner
                         if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
-                            ModUtils.AddElement(new ExitButton(), 575, 145, 50, 25, DrawSpace);
+                            ModUtils.AddElement(new ExitButton(), (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 50, 25, this);
                         else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
-                            ModUtils.AddElement(new NextButton(), 575, 145, 50, 25, DrawSpace);
+                            ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
                     }
                     else // The UI drawing when the player has clicked on the Quest button
                     {
-
                         if (!isDoing)
                         {
                             if (questCounter < quest.DialogueCount - 1)
@@ -178,7 +181,9 @@ namespace OvermorrowMod.Common.Cutscenes
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
                         Vector2 position = OptionPosition(optionNumber);
-                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, DrawSpace);
+                        //ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, DrawSpace);
+                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, this);
+
                         //Main.NewText("draw: " + button.GetText());
 
                         optionNumber++;
@@ -193,10 +198,12 @@ namespace OvermorrowMod.Common.Cutscenes
 
         private Vector2 OptionPosition(int optionNumber)
         {
+            Vector2 screenPosition = new Vector2(Main.screenWidth, Main.screenHeight) / 2f;
+
             switch (optionNumber)
             {
                 case 1:
-                    return new Vector2(0, 200);
+                    return screenPosition + new Vector2(-250, 25);
                 case 2:
                     return new Vector2(WIDTH / 2, 200);
                 case 3:
@@ -208,7 +215,7 @@ namespace OvermorrowMod.Common.Cutscenes
             return new Vector2(0, 0);
         }
 
-        private void DrawText(DialoguePlayer player)
+        private void DrawText(DialoguePlayer player, SpriteBatch spriteBatch, Vector2 textPosition)
         {
             var npc = Main.npc[Main.LocalPlayer.talkNPC];
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
@@ -284,12 +291,22 @@ namespace OvermorrowMod.Common.Cutscenes
                 displayText = builder.ToString();
             }
 
-            Text.SetText(displayText);
+            TextSnippet[] snippets = ChatManager.ParseMessage(displayText, Color.White).ToArray();
+
+            float MAX_LENGTH = 400;
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 2f) + new Vector2(-150, -200), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAX_LENGTH);
+            //Text.SetText(displayText);
         }
 
-        private void DrawBackdrop(DialoguePlayer player)
+        private void DrawBackdrop(DialoguePlayer player, SpriteBatch spriteBatch)
         {
-            Portrait.SetImage(player.GetDialogue().speakerBody);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
+            spriteBatch.Draw(texture, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f), null, Color.White * 0.75f, 0, texture.Size() / 2f, new Vector2(1.25f, 1), 0, 0);
+
+            Texture2D speaker = player.GetDialogue().speakerBody;
+            Vector2 offset = new Vector2(-200, -20);
+            spriteBatch.Draw(speaker, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offset, null, Color.White, 0, speaker.Size() / 2f, 1f, 0, 0);
+            //Portrait.SetImage(player.GetDialogue().speakerBody);
         }
 
         public void ResetTimers()
@@ -336,7 +353,8 @@ namespace OvermorrowMod.Common.Cutscenes
             Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            if (Parent.Parent is DialogueState parent)
+            //if (Parent.Parent is DialogueState parent)
+            if (Parent is DialogueState parent)
             {
                 Main.NewText("quest BUTTON");
                 parent.ResetTimers();
@@ -369,7 +387,8 @@ namespace OvermorrowMod.Common.Cutscenes
             SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            if (Parent.Parent is DialogueState parent)
+            //if (Parent.Parent is DialogueState parent)
+            if (Parent is DialogueState parent)
             {
                 DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
@@ -436,6 +455,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+
             Vector2 pos = GetDimensions().ToRectangle().TopLeft();
             bool isHovering = ContainsPoint(Main.MouseScreen);
 
@@ -445,7 +465,10 @@ namespace OvermorrowMod.Common.Cutscenes
                 spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
-            Utils.DrawBorderString(spriteBatch, displayText, pos /*+ new Vector2(0, 25)*/, Color.White);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
+            spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White * 0.75f, 0, texture.Size() / 2f, new Vector2(0.55f, 0.5f), 0, 0);
+
+            Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(25, 0), Color.White);
         }
 
         public override void MouseDown(UIMouseEvent evt)
@@ -453,7 +476,8 @@ namespace OvermorrowMod.Common.Cutscenes
             SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            if (Parent.Parent is DialogueState parent)
+            //if (Parent.Parent is DialogueState parent)
+            if (Parent is DialogueState parent)
             {
                 parent.ResetTimers();
 
