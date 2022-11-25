@@ -48,7 +48,7 @@ namespace OvermorrowMod.Common.Cutscenes
             XmlNode node = nodeList[nodeIterator];
             return node.InnerText;
         }
-        
+
         public Texture2D GetPortrait() => ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/" + nodeList[nodeIterator].Attributes["npcPortrait"].Value, ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
         public int GetDrawTime() => Convert.ToInt32(nodeList[nodeIterator].Attributes["drawTime"].Value);
@@ -57,11 +57,12 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public string GetColorHex()
         {
-            int r = Convert.ToInt32(nodeList[nodeIterator].Attributes["bracketColorR"].Value);
-            int g = Convert.ToInt32(nodeList[nodeIterator].Attributes["bracketColorG"].Value);
-            int b = Convert.ToInt32(nodeList[nodeIterator].Attributes["bracketColorB"].Value);
+            if (nodeList[nodeIterator].Attributes["color"] != null)
+            {
+                return nodeList[nodeIterator].Attributes["color"].Value;
+            }
 
-            return new Color(r, g, b).Hex3();
+            return null;
         }
 
         public int GetNodeIteration() => nodeIterator;
