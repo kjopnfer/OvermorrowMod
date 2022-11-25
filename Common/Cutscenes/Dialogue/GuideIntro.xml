@@ -2,7 +2,7 @@
 	<DialogueNode id="start">
 		<Dialogue>
 			<Text time="30">Nice camp eh? But it's not enough, trust me.</Text>
-			<Text time="45">Not against the [monsters] that come out when it gets dark.</Text>
+			<Text color="FF5733" time="45">Not against the [monsters] that come out when it gets dark.</Text>
 		</Dialogue>
 		<Options>
 			<Option link="1">Monsters?</Option>
@@ -11,7 +11,7 @@
 
 	<DialogueNode id="1">
 		<Dialogue>
-			<Text time="60">Lately there haven't been many around, but even a few can be dangerous if you don't have a good [weapon] to fight them off.</Text>
+			<Text color="34C9EB" time="60">Lately there haven't been many around, but even a few can be dangerous if you don't have a good [weapon] to fight them off.</Text>
 			<Text time="30">I'm trying to build a shelter before nightfall, but chopping wood is exhausting work.</Text>
 			<Text time="30">I left my axe in that stump over there to take a break.</Text>
 			<Text time="30">Tell you what, if you chop me the wood I need I'll let you keep it.</Text>

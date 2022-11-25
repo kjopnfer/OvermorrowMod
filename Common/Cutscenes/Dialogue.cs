@@ -77,6 +77,12 @@ namespace OvermorrowMod.Common.Cutscenes
                 drawTime = int.Parse(value);
             }
 
+            if (node.Attributes["color"] != null)
+            {
+                string value = node.Attributes["color"].Value;
+                bracketColor = value;
+            }
+
             return node.InnerText;
         }
 
