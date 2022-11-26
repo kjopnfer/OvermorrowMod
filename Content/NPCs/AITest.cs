@@ -15,7 +15,16 @@ namespace OvermorrowMod.Content.NPCs
 {
     public class AITest : ModNPC
     {
-        private WalkPathFinder _pf = new WalkPathFinder(SharedAIState.State2x2, 400, 100);
+        private WalkPathFinder _pf = new WalkPathFinder(SharedAIState.State2x2, new WalkPathFinderProperties
+        {
+            Acceleration = 1.0f,
+            JumpSpeeds = new[] { 7f / 16f, 5.5f / 16f },
+            MoveSpeed = 4f / 16f,
+            MaxFallDepth = 50,
+            NumPermutationSteps = 2,
+            Timeout = 200,
+            MaxDivergence = 50,
+        });
 
         public override void SetStaticDefaults()
         {

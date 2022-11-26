@@ -25,26 +25,78 @@ namespace OvermorrowMod.Common.Pathfinding
         Stepping
     }
 
+    public class WalkPathFinderProperties
+    {
+        /// <summary>
+        /// List of legal jump speeds. The AI can pick from these.
+        /// More options increases complexity. Speed is given in tiles, so divide actual speed by 16f.
+        /// </summary>
+        public float[] JumpSpeeds { get; set; }
+        /// <summary>
+        /// Move speed. Given in tiles, so divide by 16f.
+        /// </summary>
+        public float MoveSpeed { get; set; }
+        /// <summary>
+        /// Gravity. Should almost universally be equal to 0.3f / 16f
+        /// </summary>
+        public float Gravity { get; set; } = 0.3f / 16f;
+        /// <summary>
+        /// Maximum number of vertical tiles to calculate falling. If this is very high the AI might lag when encountering big drops.
+        /// The AI will never intentionally fall further than this.
+        /// </summary>
+        public int MaxFallDepth { get; set; }
+        /// <summary>
+        /// Maximum fall speed. Should generally be equal to 10f / 16f
+        /// </summary>
+        public float MaxFallSpeed { get; set; } = 10f / 16f;
+        private int _numPermutations;
+        /// <summary>
+        /// Number of times the AI can change direction during a jump.
+        /// Higher increases complexity.
+        /// </summary>
+        public int NumPermutationSteps { get => _numPermutations; set => _numPermutations = value; }
+        public int NumPermutations => (int)Math.Pow(_numPermutations, 2);
+        /// <summary>
+        /// Maximum acceleration. Helps make movement smoother.
+        /// </summary>
+        public float Acceleration { get; set; }
+        /// <summary>
+        /// Maximum number of steps to visit calculate during a run of the AI.
+        /// </summary>
+        public int Timeout { get; set; }
+        /// <summary>
+        /// Maximum number of steps to visit that do not get the AI any closer to the target.
+        /// The higher this is, the more complex terrain the AI can navigate, but it can increase lag.
+        /// </summary>
+        public int MaxDivergence { get; set; }
+    }
+
     /// <summary>
     /// Test path finder only capable of walking on flat surfaces, moving up one and down one.
     /// </summary>
     public class WalkPathFinder : BasePathFinder<WalkPathFinderInfo>
     {
-        private float[] _jumpSpeeds = new[] { 7f / 16f, 5.5f / 16f };
-        private float _moveSpeed = 4f / 16f;
-        private float _gravity = 0.3f / 16f;
-        private int _maxFallDepth = 50;
-        private float _maxFallSpeed = 10f / 16f;
+        private readonly float[] _jumpSpeeds = new[] { 7f / 16f, 5.5f / 16f };
+        private readonly float _moveSpeed = 4f / 16f;
+        private readonly float _gravity = 0.3f / 16f;
+        private readonly int _maxFallDepth = 50;
+        private readonly float _maxFallSpeed = 10f / 16f;
 
-        public WalkPathFinder(PathFinderState state, int timeout, int maxDivergence) : base(state, timeout, maxDivergence)
+        public WalkPathFinder(PathFinderState state, WalkPathFinderProperties props) : base(state, props.Timeout, props.MaxDivergence)
         {
+            _jumpSpeeds = props.JumpSpeeds;
+            _moveSpeed = props.MoveSpeed;
+            _gravity = props.Gravity;
+            _maxFallDepth = props.MaxFallDepth;
+            _maxFallSpeed = props.MaxFallSpeed;
+            _numPermutations = props.NumPermutations;
+            _numPermutationsLog = props.NumPermutationSteps;
+            _acceleration = props.Acceleration;
             BuildLeapTargets();
             _moveTargets = new[]
             {
                 new RelativeCoordinate<WalkPathFinderInfo> { X = -1, Y = 0, Cost = 1f },
                 new RelativeCoordinate<WalkPathFinderInfo> { X = 1, Y = 0, Cost = 1f },
-                // new RelativeCoordinate<WalkPathFinderInfo> { X = -1, Y = -1, Cost = 1f },
-                // new RelativeCoordinate<WalkPathFinderInfo> { X = 1, Y = -1, Cost = 1f }
             };
         }
 
