@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Popup>
-	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Hello there! That's an unfamiliar face, you must be new around here.</Text>
+	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Hello there! You must be ${name}</Text>
+	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Looks like I made it to the right place.</Text>
 </Popup>

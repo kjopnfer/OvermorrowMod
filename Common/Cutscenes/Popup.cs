@@ -43,10 +43,17 @@ namespace OvermorrowMod.Common.Cutscenes
             this.nodeList = xmlDoc.GetElementsByTagName("Text");
         }
 
+        /// <summary>
+        /// Parses and returns the current text for the dialogue node
+        /// </summary>
+        /// <returns></returns>
         public string GetText()
         {
             XmlNode node = nodeList[nodeIterator];
-            return node.InnerText;
+            var text = node.InnerText;
+            text = text.Replace("${name}", Main.LocalPlayer.name);
+
+            return text;
         }
 
         public Texture2D GetPortrait() => ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/" + nodeList[nodeIterator].Attributes["npcPortrait"].Value, ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
