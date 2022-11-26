@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.Ambient.WaterCave;
 using OvermorrowMod.Content.Tiles.Ores;
@@ -51,6 +52,11 @@ namespace OvermorrowMod.Common
             }*/
         }
         #endregion
+
+        public override void PostDrawTiles()
+        {
+            // SharedAIState.State2x2.Visualize();
+        }
 
         // Worldgen Debugging
         public static bool JustPressed(Keys key)
