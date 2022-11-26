@@ -69,6 +69,20 @@ namespace OvermorrowMod.Common.Pathfinding
         /// The higher this is, the more complex terrain the AI can navigate, but it can increase lag.
         /// </summary>
         public int MaxDivergence { get; set; }
+
+        /// <summary>
+        /// How long the AI will wait after becoming idle. It can become idle by reaching its goal, or by being unable to find a path.
+        /// This is in number of "ticks", which is effectively the number of calls to GetVelocity.
+        /// If you call GetVelocity in the AI method, this is in 60ths of a second. Default is 120 = 2 seconds.
+        /// </summary>
+        public int IdleDelay { get; set; } = 120;
+
+        /// <summary>
+        /// For how long the AI will attempt a move. In ticks, see description of IdleDelay for what a tick is.
+        /// Once this many ticks has passed, the AI will give up and try to calculate a new path. This can help
+        /// getting the AI unstuck.
+        /// </summary>
+        public int MoveTimeout { get; set; } = 240;
     }
 
     /// <summary>
@@ -76,11 +90,14 @@ namespace OvermorrowMod.Common.Pathfinding
     /// </summary>
     public class WalkPathFinder : BasePathFinder<WalkPathFinderInfo>
     {
-        private readonly float[] _jumpSpeeds = new[] { 7f / 16f, 5.5f / 16f };
-        private readonly float _moveSpeed = 4f / 16f;
-        private readonly float _gravity = 0.3f / 16f;
-        private readonly int _maxFallDepth = 50;
-        private readonly float _maxFallSpeed = 10f / 16f;
+        private readonly float[] _jumpSpeeds;
+        private readonly float _moveSpeed;
+        private readonly float _gravity;
+        private readonly int _maxFallDepth;
+        private readonly float _maxFallSpeed;
+
+        private readonly int _moveTimeout;
+        private readonly int _idleDelay;
 
         public WalkPathFinder(PathFinderState state, WalkPathFinderProperties props) : base(state, props.Timeout, props.MaxDivergence)
         {
@@ -92,6 +109,8 @@ namespace OvermorrowMod.Common.Pathfinding
             _numPermutations = props.NumPermutations;
             _numPermutationsLog = props.NumPermutationSteps;
             _acceleration = props.Acceleration;
+            _moveTimeout = props.MoveTimeout;
+            _idleDelay = props.IdleDelay;
             BuildLeapTargets();
             _moveTargets = new[]
             {
@@ -286,7 +305,7 @@ namespace OvermorrowMod.Common.Pathfinding
         {
             if (_activeMove == null)
             {
-                if (_tick == 0) _tick = 110;
+                if (_tick == 0) _tick = _idleDelay - 10;
                 return AIState.Idle;
             }
             if (_activeMove.IsLeap) return AIState.Leaping;
@@ -339,7 +358,7 @@ namespace OvermorrowMod.Common.Pathfinding
             switch (CurrentState)
             {
                 case AIState.Idle:
-                    if (_tick > 120)
+                    if (_tick > _idleDelay)
                     {
                         TickNextMove(position);
                         GetVelocity(ref position, ref velocity);
@@ -435,7 +454,7 @@ namespace OvermorrowMod.Common.Pathfinding
             }
             _tick++;
             // After 4 seconds of idle, give up on the current move.
-            if (_tick > 240)
+            if (_tick > _moveTimeout)
             {
                 TickNextMove(position);
             }
