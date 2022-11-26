@@ -122,6 +122,14 @@ namespace OvermorrowMod.Common.Players
             minionCounts = 0;
         }
 
+        public override void ModifyStartingInventory(IReadOnlyDictionary<string, List<Item>> itemsByMod, bool mediumCoreDeath)
+        {
+            foreach (var list in itemsByMod)
+            {
+                list.Value.Clear();
+            }
+        }
+
         // Example of how to replace cursor texture to remember for later
         public override void PostUpdateMiscEffects()
         {
@@ -155,7 +163,7 @@ namespace OvermorrowMod.Common.Players
             OvermorrowModSystem.Instance.ScreenColor.SetDarkness(0, 60, 60, true);
 
             // Manually apply them because the random reroll doesn't seem to work half the time
-            int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
+            /*int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
             Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
 
             item = Item.NewItem(null, player.Center, ModContent.ItemType<RangedReforge>(), 1, false, -1);
@@ -171,7 +179,7 @@ namespace OvermorrowMod.Common.Players
             Main.item[item].Prefix(ReforgeStone.rangedPrefixes[Main.rand.Next(0, ReforgeStone.rangedPrefixes.Length)]);
 
             item = Item.NewItem(null, player.Center, ModContent.ItemType<MagicReforge>(), 1, false, -1);
-            Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);
+            Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);*/
 
             base.OnEnterWorld(player);
         }
