@@ -1,3 +1,4 @@
+using OvermorrowMod.Common.Pathfinding;
 using OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns;
 using Terraria;
 using Terraria.DataStructures;
@@ -8,8 +9,15 @@ namespace OvermorrowMod.Common
 {
     public class OvermorrowGlobalTiles : GlobalTile
     {
+        public override void PlaceInWorld(int i, int j, int type, Item item)
+        {
+            SharedAIState.State2x2.Invalidate(i, j);
+            base.PlaceInWorld(i, j, type, item);
+        }
+
         public override bool Drop(int i, int j, int type)
         {
+            SharedAIState.State2x2.Invalidate(i, j);
             if (Main.netMode != NetmodeID.MultiplayerClient && !WorldGen.noTileActions && !WorldGen.gen)
             {
                 if (Main.rand.NextBool(6))
