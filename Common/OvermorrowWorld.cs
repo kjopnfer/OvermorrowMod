@@ -53,41 +53,9 @@ namespace OvermorrowMod.Common
         }
         #endregion
 
-        public static WalkPathFinder pf = new WalkPathFinder(2, 2, 1000, 200);
-        private int curX;
-        private int curY;
-
-        public override void PostUpdateTime()
-        {
-            /* int x = (int)(Main.CurrentPlayer.position.X / 16f);
-            int y = (int)(Main.CurrentPlayer.position.Y / 16f);
-
-            if (curX == 0 && curY == 0)
-            {
-                curX = Main.spawnTileX;
-                curY = Main.spawnTileY;
-            }
-
-            var path = pf.Next(curX, curY, x, y);
-
-            if (path == null || path.Cost == 0)
-            {
-                curX = Main.spawnTileX;
-                curY = Main.spawnTileY;
-            }
-            else
-            {
-                curX = path.XTarget;
-                curY = path.YTarget;
-                Dust.NewDust(new Vector2(curX * 16f, curY * 16f), 8, 8, DustID.WitherLightning);
-            }
-
-            base.PostUpdateTime(); */
-        }
-
         public override void PostDrawTiles()
         {
-            // pf.Visualize(0);
+            // SharedAIState.State2x2.Visualize();
         }
 
         // Worldgen Debugging

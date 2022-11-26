@@ -68,6 +68,67 @@ namespace OvermorrowMod.Common.Pathfinding
         public Dictionary<(int, int), bool> CanStandOnTile { get; } = new();
         public Dictionary<(int, int), bool> CanFallThroughTile { get; } = new();
         public HashSet<(int, int)> LocalVisitedState { get; set; }
+        public (int X, int Y) EntitySize { get; }
+
+        public PathFinderState(int width, int height)
+        {
+            EntitySize = (width, height);
+        }
+
+        public void Visualize()
+        {
+            Main.spriteBatch.Begin();
+            foreach (var ((x, y), fit) in CanFitInTile)
+            {
+                if (!CanStandOnTile.TryGetValue((x, y), out bool stand)) continue;
+                var fallThrough = CanFallThroughTile.GetValueOrDefault((x, y));
+
+                if (fallThrough)
+                {
+                    Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
+                        new Vector2(x * 16f, y * 16f) - Main.screenPosition,
+                        new Rectangle(0, 0, 16, 16),
+                        new Color(1.0f, 0f, 0f, 0.2f));
+                }
+                else if (fit && stand)
+                {
+                    Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
+                        new Vector2(x * 16f, y * 16f) - Main.screenPosition,
+                        new Rectangle(0, 0, 16, 16),
+                        new Color(0f, 1.0f, 0f, 0.2f));
+                }
+                else if (fit)
+                {
+                    Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
+                        new Vector2(x * 16f, y * 16f) - Main.screenPosition,
+                        new Rectangle(0, 0, 16, 16),
+                        new Color(0f, 0f, 1.00f, 0.2f));
+                }
+                else
+                {
+                    Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
+                        new Vector2(x * 16f, y * 16f) - Main.screenPosition,
+                        new Rectangle(0, 0, 16, 16),
+                        new Color(1.0f, 1.0f, 0f, 0.2f));
+                }
+            }
+            Main.spriteBatch.End();
+        }
+
+        // Invalidate states related to this tile
+        public void Invalidate(int x, int y)
+        {
+            for (int i = x - EntitySize.X; i < x + EntitySize.X * 2; i++)
+            {
+                if (i < 0 || i > Main.tile.Width) continue;
+                for (int j = y - EntitySize.Y; j < y + EntitySize.Y * 2; j++)
+                {
+                    if (j < 0 || j > Main.tile.Height) continue;
+                    CanFitInTile.Remove((i, j));
+                    CanStandOnTile.Remove((i, j));
+                }
+            }
+        }
     }
 
     public abstract class BasePathFinder<TExtraInfo>
@@ -80,15 +141,16 @@ namespace OvermorrowMod.Common.Pathfinding
         /// </summary>
         /// <param name="timeout">Maximum number of tiles to visit before timing out</param>
         /// <param name="maxDivergence">Maximum number of steps with no improvement</param>
-        public BasePathFinder(int timeout, int maxDivergence)
+        public BasePathFinder(PathFinderState state, int timeout, int maxDivergence)
         {
             _stepTimeout = timeout;
             _maxDivergence = maxDivergence;
+            State = state;
         }
 
         PossibleMove<TExtraInfo> CurrentMove;
 
-        protected PathFinderState State { get; private set; } = new PathFinderState();
+        protected PathFinderState State { get; }
 
         /// <summary>
         /// Static list of where this path finder can leap, i.e. move through the air.
@@ -105,14 +167,6 @@ namespace OvermorrowMod.Common.Pathfinding
         protected abstract IEnumerable<RelativeCoordinate<TExtraInfo>> MoveTargets { get; }
 
         /// <summary>
-        /// Size of the entity in tile coordinates. The pathfinder will only find paths that something this large can pass through.
-        /// Make this a little larger than life to help the AI not make mistakes.
-        /// The AI always assumes that the coordinate of the entity is in the bottom left corner, since
-        /// the center is likely to be a floating point number. It operates on discrete tiles only.
-        /// </summary>
-        protected abstract (int X, int Y) EntitySize { get; }
-
-        /// <summary>
         /// True if the AI should work in best-effort mode, where the closest point is returned, even if it is not exact.
         /// </summary>
         protected abstract bool IsBestEffort { get; }
@@ -122,66 +176,7 @@ namespace OvermorrowMod.Common.Pathfinding
         /// </summary>
         protected abstract IEnumerable<RelativeCoordinate<TExtraInfo>> GetFallTargets(int x, int y, TExtraInfo info);
 
-        public void Visualize(int vsMode = 0)
-        {
-            Main.spriteBatch.Begin();
-            if (vsMode == 0)
-            {
-                foreach (var ((x, y), fit) in State.CanFitInTile)
-                {
-                    if (!State.CanStandOnTile.TryGetValue((x, y), out bool stand)) continue;
-                    var fallThrough = State.CanFallThroughTile.GetValueOrDefault((x, y));
-
-                    if (fallThrough)
-                    {
-                        Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
-                            new Vector2(x * 16f, y * 16f) - Main.screenPosition,
-                            new Rectangle(0, 0, 16, 16),
-                            new Color(1.0f, 0f, 0f, 0.2f));
-                    }
-                    else if (fit && stand)
-                    {
-                        Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
-                            new Vector2(x * 16f, y * 16f) - Main.screenPosition,
-                            new Rectangle(0, 0, 16, 16),
-                            new Color(0f, 1.0f, 0f, 0.2f));
-                    }
-                    else if (fit)
-                    {
-                        Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
-                            new Vector2(x * 16f, y * 16f) - Main.screenPosition,
-                            new Rectangle(0, 0, 16, 16),
-                            new Color(0f, 0f, 1.00f, 0.2f));
-                    }
-                    else
-                    {
-                        Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
-                            new Vector2(x * 16f, y * 16f) - Main.screenPosition,
-                            new Rectangle(0, 0, 16, 16),
-                            new Color(1.0f, 1.0f, 0f, 0.2f));
-                    }
-                }
-            } else if (vsMode == 1)
-            {
-                /* if (moves != null)
-                {
-                    var visited = new HashSet<(int, int)>();
-                    foreach (var move in moves.UnorderedItems)
-                    {
-                        var x = move.Element.XTarget;
-                        var y = move.Element.YTarget;
-                        if (!visited.Add((x, y))) continue;
-                        Main.spriteBatch.Draw(TextureAssets.Tile[TileID.Stone].Value,
-                        new Vector2(x * 16f, y * 16f) - Main.screenPosition,
-                        new Rectangle(0, 0, 16, 16),
-                        new Color(0f, 1.0f, 0f, 0.2f));
-                    }
-                } */
-            }
-            
-            Main.spriteBatch.End();
-        }
-
+        
         /// <summary>
         /// Return the next move for the pathfinder, movement code is responsible for actually executing the move there.
         /// Returns null 
@@ -190,34 +185,24 @@ namespace OvermorrowMod.Common.Pathfinding
         public virtual PossibleMove<TExtraInfo> Next(int x, int y, int targetX, int targetY)
         {
             targetY = ProjectToGround(targetX, targetY);
-            var move = GetNextMove(x, y, targetX, targetY);
-            if (move == null)
+            if (CurrentMove == null || _lastXTarget != targetX || _lastYTarget != targetY)
             {
                 CurrentMove = GetBestPath(State, x, y, targetX, targetY);
-                move = GetNextMove(x, y, targetX, targetY);
+                _lastXTarget = targetX;
+                _lastYTarget = targetY;
+                return GetNextMove(x, y);
             }
-
-            // If move is still null we can't find a path.
-            return move;
-        }
-
-        // Invalidate states related to this tile
-        public void InvalidateState(int x, int y)
-        {
-            bool hit = false;
-            for (int i = x - EntitySize.X; i < x + EntitySize.X * 2; i++)
+            else
             {
-                if (i < 0 || i > Main.tile.Width) continue;
-                for (int j = y - EntitySize.Y; j < y + EntitySize.Y * 2; j++)
+                var move = GetNextMove(x, y);
+                if (move == null)
                 {
-                    if (j < 0 || j > Main.tile.Height) continue;
-                    hit |= State.CanFitInTile.Remove((i, j));
-                    hit |= State.CanStandOnTile.Remove((i, j));
+                    CurrentMove = GetBestPath(State, x, y, targetX, targetY);
+                    _lastXTarget = targetX;
+                    _lastYTarget = targetY;
+                    return GetNextMove(x, y);
                 }
-            }
-            if (hit)
-            {
-                CurrentMove = null;
+                return move;
             }
         }
 
@@ -298,31 +283,29 @@ namespace OvermorrowMod.Common.Pathfinding
             return null;
         }
 
-        private PossibleMove<TExtraInfo> GetNextMove(int x, int y, int targetX, int targetY)
+        private int _lastXTarget;
+        private int _lastYTarget;
+
+        private PossibleMove<TExtraInfo> GetNextMove(int x, int y)
         {
             if (CurrentMove == null) return null;
-            if (CurrentMove.XTarget != targetX || CurrentMove.YTarget != targetY)
-            {
-                CurrentMove = null;
-                return null;
-            }
 
-            var idx = Array.FindIndex(CurrentMove.Parents, a => a is not null && a.XStart == x && a.YStart == y);
             PossibleMove<TExtraInfo> move;
-            if (idx < 0)
+            if (CurrentMove.XStart == x && CurrentMove.YStart == y)
             {
                 move = CurrentMove;
                 CurrentMove = null;
-                if (move.XStart != x || move.YStart != y)
-                {
-                    return null;
-                }
             }
             else
             {
+                var idx = Array.FindIndex(CurrentMove.Parents, a => a.XStart == x && a.YStart == y);
+                if (idx < 0)
+                {
+                    return null;
+                }
                 move = CurrentMove.Parents[idx];
-                CurrentMove.Parents[idx] = null;
             }
+
             return move;
         }
 
@@ -340,6 +323,30 @@ namespace OvermorrowMod.Common.Pathfinding
             if (parent.XStart == parent.XTarget && parent.YStart == parent.YTarget)
             {
                 parents = Array.Empty<PossibleMove<TExtraInfo>>();
+                bool canStand = CanStandOn(state, x, y);
+                if (!canStand || CanFallThrough(x, y))
+                {
+                    foreach (var fall in GetFallTargets(x, y, parent.Info))
+                    {
+                        int xDiff2 = (targetX - x - fall.X);
+                        int yDiff2 = (targetY - y - fall.Y);
+                        yield return new PossibleMove<TExtraInfo>
+                        {
+                            Cost = fall.Cost,
+                            XTarget = x + fall.X,
+                            YTarget = y + fall.Y,
+                            XStart = x,
+                            YStart = y ,
+                            Fitness = (float)Math.Sqrt(xDiff2 * xDiff2 + yDiff2 * yDiff2),
+                            IsFall = true,
+                            Info = fall.Info,
+                            Parents = parents,
+                            CumulativeCost = parent.CumulativeCost + fall.Cost
+                        };
+                    }
+                    if (!canStand) yield break;
+                } 
+
             }
             else
             {
@@ -376,7 +383,7 @@ namespace OvermorrowMod.Common.Pathfinding
                 }
 
 
-                if (finalStep != null)
+                if (finalStep != null && (finalStep.Value.XPos != 0 || finalStep.Value.YPos != 0))
                 {
                     var jumpStep = finalStep.Value;
                     int xDiff = (targetX - x - jumpStep.XPos);
@@ -469,7 +476,7 @@ namespace OvermorrowMod.Common.Pathfinding
                             IsFall = true,
                             Info = fall.Info,
                             Parents = fallParents,
-                            CumulativeCost = parent.CumulativeCost + target.Cost
+                            CumulativeCost = parent.CumulativeCost + target.Cost + fall.Cost
                         };
                     }
                 }
@@ -478,9 +485,9 @@ namespace OvermorrowMod.Common.Pathfinding
 
         private bool CanFitInTile(int x, int y)
         {
-            for (int i = x; i < x + EntitySize.X; i++)
+            for (int i = x; i < x + State.EntitySize.X; i++)
             {
-                for (int j = y; j < y + EntitySize.Y; j++)
+                for (int j = y; j < y + State.EntitySize.Y; j++)
                 {
                     if (i >= Main.tile.Width || j >= Main.tile.Width) return false;
                     var tile = Main.tile[i, j];
@@ -501,9 +508,9 @@ namespace OvermorrowMod.Common.Pathfinding
         private bool CanStandOn(int x, int y)
         {
             if (y == Main.tile.Height - 1) return true;
-            for (int i = x; i < x + EntitySize.X; i++)
+            for (int i = x; i < x + State.EntitySize.X; i++)
             {
-                var tile = Main.tile[i, y + EntitySize.Y];
+                var tile = Main.tile[i, y + State.EntitySize.Y];
                 if (tile.HasUnactuatedTile && (Main.tileSolidTop[tile.TileType] || Main.tileSolid[tile.TileType])) return true;
             }
             return false;
@@ -520,9 +527,9 @@ namespace OvermorrowMod.Common.Pathfinding
         private bool CanFallThrough(int x, int y)
         {
             if (y == Main.tile.Height - 1) return false;
-            for (int i = x; i < x + EntitySize.X; i++)
+            for (int i = x; i < x + State.EntitySize.X; i++)
             {
-                var tile = Main.tile[i, y + EntitySize.Y];
+                var tile = Main.tile[i, y + State.EntitySize.Y];
                 if (tile.HasUnactuatedTile && !Main.tileSolidTop[tile.TileType]) return false;
             }
             return true;

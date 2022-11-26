@@ -1,4 +1,6 @@
-﻿using OvermorrowMod.Common.Pathfinding;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Pathfinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,7 @@ namespace OvermorrowMod.Content.NPCs
 {
     public class AITest : ModNPC
     {
-        private WalkPathFinder _pf = new WalkPathFinder(2, 2, 400, 100);
+        private WalkPathFinder _pf = new WalkPathFinder(SharedAIState.State2x2, 400, 100);
 
         public override void SetStaticDefaults()
         {
@@ -52,14 +54,13 @@ namespace OvermorrowMod.Content.NPCs
 
         public override bool? CanFallThroughPlatforms()
         {
-            return _pf.State == AIState.Falling;
+            return _pf.ShouldFallThroughPlatforms(NPC.velocity, NPC.position);
         }
 
         public override void AI()
         {
             _pf.SetTarget(Main.CurrentPlayer.position);
-            var vel = _pf.GetVelocity(NPC.position, NPC.velocity);
-            NPC.velocity = vel;
+            _pf.GetVelocity(ref NPC.position, ref NPC.velocity);
         }
     }
 }

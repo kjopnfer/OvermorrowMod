@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.ID;
 
 namespace OvermorrowMod.Common.Pathfinding
 {
@@ -20,7 +21,8 @@ namespace OvermorrowMod.Common.Pathfinding
         Leaping,
         Idle,
         Falling,
-        Moving
+        Moving,
+        Stepping
     }
 
     /// <summary>
@@ -31,19 +33,18 @@ namespace OvermorrowMod.Common.Pathfinding
         private float[] _jumpSpeeds = new[] { 7f / 16f, 5.5f / 16f };
         private float _moveSpeed = 4f / 16f;
         private float _gravity = 0.3f / 16f;
-        private int _maxFallDepth = 20;
+        private int _maxFallDepth = 50;
         private float _maxFallSpeed = 10f / 16f;
 
-        public WalkPathFinder(int xSize, int ySize, int timeout, int maxDivergence) : base(timeout, maxDivergence)
+        public WalkPathFinder(PathFinderState state, int timeout, int maxDivergence) : base(state, timeout, maxDivergence)
         {
-            EntitySize = (xSize, ySize);
             BuildLeapTargets();
             _moveTargets = new[]
             {
                 new RelativeCoordinate<WalkPathFinderInfo> { X = -1, Y = 0, Cost = 1f },
                 new RelativeCoordinate<WalkPathFinderInfo> { X = 1, Y = 0, Cost = 1f },
-                new RelativeCoordinate<WalkPathFinderInfo> { X = -1, Y = -1, Cost = 1f },
-                new RelativeCoordinate<WalkPathFinderInfo> { X = 1, Y = -1, Cost = 1f }
+                // new RelativeCoordinate<WalkPathFinderInfo> { X = -1, Y = -1, Cost = 1f },
+                // new RelativeCoordinate<WalkPathFinderInfo> { X = 1, Y = -1, Cost = 1f }
             };
         }
 
@@ -123,8 +124,8 @@ namespace OvermorrowMod.Common.Pathfinding
                     enumerator.MoveNext();
                 }
                 float xv = enumerator.Current ? xSpeed : 0;
-                int rxpos = (int)xpos;
-                int rypos = (int)ypos;
+                int rxpos = (int)Math.Ceiling(xpos);
+                int rypos = (int)Math.Ceiling(ypos);
                 if (arch.Add((rxpos, rypos)))
                 {
                     yield return new JumpPathStep
@@ -149,8 +150,6 @@ namespace OvermorrowMod.Common.Pathfinding
         protected override bool IsBestEffort => true;
 
         protected override IEnumerable<RelativeCoordinate<WalkPathFinderInfo>> MoveTargets => _moveTargets;
-
-        protected override (int X, int Y) EntitySize { get; }
 
         protected override IEnumerable<RelativeCoordinate<WalkPathFinderInfo>> GetFallTargets(int x, int y, WalkPathFinderInfo info)
         {
@@ -220,23 +219,34 @@ namespace OvermorrowMod.Common.Pathfinding
         #endregion
 
         #region Execution
-        public AIState State { get; private set; } = AIState.Idle;
+        public AIState CurrentState { get; private set; } = AIState.Idle;
         private int _tick;
         private int _numTicks;
 
-        private int _lastX;
-        private int _lastY;
         private int _targetX;
         private int _targetY;
+
+        private float _acceleration = 1.0f;
 
         private PossibleMove<WalkPathFinderInfo> _activeMove;
 
         private AIState GetStateFromMove()
         {
-            if (_activeMove == null) return AIState.Idle;
+            if (_activeMove == null)
+            {
+                if (_tick == 0) _tick = 110;
+                return AIState.Idle;
+            }
             if (_activeMove.IsLeap) return AIState.Leaping;
             if (_activeMove.IsFall) return AIState.Falling;
+            if (_activeMove.YTarget - _activeMove.YStart < 0) return AIState.Stepping;
             return AIState.Moving;
+        }
+
+        private void ModifyXSpeed(float target, ref Vector2 velocity)
+        {
+            float diff = target - velocity.X;
+            velocity.X += Math.Clamp(diff, -_acceleration, _acceleration);
         }
 
         private void TickNextMove(Vector2 position)
@@ -246,7 +256,7 @@ namespace OvermorrowMod.Common.Pathfinding
                             _targetX,
                             _targetY);
             _tick = 0;
-            State = GetStateFromMove();
+            CurrentState = GetStateFromMove();
         }
 
         public void SetTarget(Vector2 target)
@@ -255,113 +265,128 @@ namespace OvermorrowMod.Common.Pathfinding
             _targetY = ProjectToGround(_targetX, (int)(target.Y / 16f));
         }
 
-        public Vector2 GetVelocity(Vector2 position, Vector2 velocity)
+        public bool ShouldFallThroughPlatforms(Vector2 velocity, Vector2 position)
+        {
+            if (CurrentState != AIState.Falling) return false;
+            return position.Y + velocity.Y + 4f < _activeMove.YTarget * 16f; 
+        }
+
+        public void GetVelocity(ref Vector2 position, ref Vector2 velocity)
         {
             int roundX = (int)(position.X / 16f);
             int roundY = (int)(position.Y / 16f);
-            bool isStill = State != AIState.Idle
-                && (velocity.X != 0f || velocity.Y != 0f);
-            // velocity.Y = Math.Min(_maxFallSpeed * 16f, velocity.Y + _gravity * 16f);
-            if (isStill
-                && roundX == _lastX
-                && roundY == _lastY) return velocity;
 
-            _lastX = roundX;
-            _lastY = roundY;
-
-            if (State != AIState.Idle && roundX == _targetX && roundY == _targetY)
+            if (CurrentState != AIState.Idle && roundX == _targetX && roundY == _targetY)
             {
                 _tick = 0;
-                State = AIState.Idle;
-                velocity.X = 0f;
-                return velocity;
+                CurrentState = AIState.Idle;
+                ModifyXSpeed(0f, ref velocity);
+                return;
             }
 
-
-            switch (State)
+            switch (CurrentState)
             {
                 case AIState.Idle:
-                    if (_tick++ > 120)
+                    if (_tick > 120)
                     {
                         TickNextMove(position);
-                        return GetVelocity(position, velocity);
+                        GetVelocity(ref position, ref velocity);
+                        break;
                     }
-                    return new Vector2(0, 0);
+                    ModifyXSpeed(0f, ref velocity);
+                    break;
                 case AIState.Leaping:
                     if (_tick == 0)
                     {
-                        velocity.Y = _activeMove.Info.StartYSpeed * 16f - 0.5f;
+                        velocity.Y = _activeMove.Info.StartYSpeed * 16f - 0.2f;
                         _numTicks = (int)Math.Abs(_activeMove.Info.StartYSpeed * 2 / _gravity);
                     }
-                    else if (velocity.Y == 0f && CanStandOn(base.State, roundX, roundY))
+                    else if (velocity.Y == 0f && CanStandOn(base.State, roundX, roundY) || _activeMove.XTarget == roundX && _activeMove.YTarget == roundY)
                     {
                         TickNextMove(position);
-                        return GetVelocity(position, velocity);
+                        GetVelocity(ref position, ref velocity);
+                        break;
                     }
                     int idx = (int)(_numPermutationsLog * (float)_tick / _numTicks);
                     
                     bool shouldMove = idx >= _numPermutationsLog ? false : _activeMove.Info.JumpSwitches[idx];
                     if (shouldMove)
                     {
-                        velocity.X = _activeMove.Info.IsJumpRight ? _moveSpeed * 16f : -_moveSpeed * 16f;
+                        ModifyXSpeed(_activeMove.Info.IsJumpRight ? _moveSpeed * 16f : -_moveSpeed * 16f, ref velocity);
                     }
-                    _tick++;
-                    return velocity;
+                    break;
                 case AIState.Moving:
                     {
-                        TickNextMove(position);
-                        if (State == AIState.Moving)
+                        if (velocity.X == 0)
                         {
-                            float diff = _activeMove.XTarget * 16f - position.X + 8f;
-                            if (diff > 0)
-                            {
-                                velocity.X = _moveSpeed * 16f;
-                            }
-                            else
-                            {
-                                velocity.X = -_moveSpeed * 16f;
-                            }
-
-                            float yDiff = _activeMove.YTarget * 16f - position.Y;
-                            if (yDiff < -4f)
-                            {
-                                velocity.Y = -_moveSpeed * 16f;
-                            }
-                            else
-                            {
-                                velocity.Y = 0f;
-                            }
+                            position.Y = _activeMove.YTarget * 16f;
+                        } 
+                        if (roundX == _activeMove.XTarget)
+                        {
+                            TickNextMove(position);
+                        }
+                        if (CurrentState == AIState.Moving)
+                        {
+                            float diff = _activeMove.XTarget * 16f - position.X;
+                            ModifyXSpeed(Math.Clamp(diff, -_moveSpeed * 16f, _moveSpeed * 16f), ref velocity);
                         }
                         else
                         {
-                            return GetVelocity(position, velocity);
+                            GetVelocity(ref position, ref velocity);
                         }
-                        return velocity;
+                        break;
+                    }
+                case AIState.Stepping:
+                    {
+                        if (_activeMove.XTarget == roundX)
+                        {
+                            TickNextMove(position);
+                            GetVelocity(ref position, ref velocity);
+                        }
+                        else
+                        {
+                            float diff = _activeMove.XTarget * 16f - position.X;
+                            ModifyXSpeed(Math.Clamp(diff, -_moveSpeed * 16f, _moveSpeed * 16f), ref velocity);
+
+
+                            float yDiff = _activeMove.YTarget * 16f - position.Y;
+                            if (yDiff < -0.1f)
+                            {
+                                velocity.Y = Math.Max(yDiff - _gravity * 16f, -2f);
+                            }
+                        }
+                        break;
                     }
                     
                 case AIState.Falling:
                     {
-                        if (_tick != 0 && velocity.Y == 0f && CanStandOn(base.State, roundX, roundY))
+                        if (_tick != 0 && velocity.Y == 0f && CanStandOn(base.State, roundX, roundY)
+                            || _activeMove.XTarget == roundX && _activeMove.YTarget == roundY)
                         {
                             TickNextMove(position);
-                            return GetVelocity(position, velocity);
-                        }
-                        _tick++;
-                        float diff = _activeMove.XTarget * 16f - position.X + 8f;
-                        if (diff > 0)
-                        {
-                            velocity.X = _moveSpeed * 16f;
+                            GetVelocity(ref position, ref velocity);
                         }
                         else
                         {
-                            velocity.X = -_moveSpeed * 16f;
+                            float diff = _activeMove.XTarget * 16f - position.X;
+                            if (Math.Sign(diff) == Math.Sign(velocity.X) || velocity.X == 0f)
+                            {
+                                ModifyXSpeed(Math.Clamp(diff, -_moveSpeed * 16f, _moveSpeed * 16f), ref velocity);
+                            }
+                            else
+                            {
+                                // ModifyXSpeed(0f, ref velocity);
+                            }
                         }
-                        return velocity;
+                        break;
                     }
-                    
             }
-            State = AIState.Idle;
-            return velocity;
+            _tick++;
+            // After 4 seconds of idle, give up on the current move.
+            if (_tick > 240)
+            {
+                TickNextMove(position);
+            }
         }
 
 
