@@ -21,6 +21,7 @@ using Terraria.ModLoader;
 using OvermorrowMod.Content.NPCs.Mercenary;
 using static OvermorrowMod.Content.NPCs.Mercenary.Paladin.Paladin;
 using OvermorrowMod.Common.Detours;
+using OvermorrowMod.Common.TilePiles;
 
 namespace OvermorrowMod.Common
 {
@@ -170,6 +171,7 @@ namespace OvermorrowMod.Common
             {
                 HexLoader.TryRegisteringHex(type);
                 Particle.TryRegisteringParticle(type);
+                TileObjects.RegisterTileObject(type);
             }
 
             base.Load();
@@ -203,6 +205,7 @@ namespace OvermorrowMod.Common
             Quests.Quests.Unload();
             ILEdits.Unload();
             Particle.Unload();
+            TileObjects.Unload();
 
             SandModeKey = null;
             AmuletKey = null;
