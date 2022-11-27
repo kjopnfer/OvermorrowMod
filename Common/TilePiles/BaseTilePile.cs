@@ -48,7 +48,7 @@ namespace OvermorrowMod.Common.TilePiles
 
         public void SetPosition(Vector2 position) => _position = position;
 
-        public override bool IsTileValidForEntity(int x, int y)
+        /*public override bool IsTileValidForEntity(int x, int y)
         {
             Tile tile = Main.tile[x, y];
             if (!tile.HasTile || tile.TileType != ModContent.TileType<TilePiles>())
@@ -57,6 +57,6 @@ namespace OvermorrowMod.Common.TilePiles
             }
 
             return tile.HasTile && tile.TileType == ModContent.TileType<TilePiles>();
-        }
+        }*/
     }
 }

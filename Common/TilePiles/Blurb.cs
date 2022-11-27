@@ -9,7 +9,7 @@ namespace OvermorrowMod.Common.TilePiles
         {
             Item.height = 16; Item.width = 16;
             Item.useStyle = ItemUseStyleID.Swing; Item.useTime = 15; Item.useAnimation = 15;
-            Item.createTile = Mod.Find<ModTile>("TilePiles").Type;
+            Item.createTile = Mod.Find<ModTile>("LootPile").Type;
         }
     }
 }

@@ -13,7 +13,8 @@ using Terraria.GameContent.Metadata;
 
 namespace OvermorrowMod.Common.TilePiles
 {
-    internal class TilePiles : ModTile
+    // Base template for the physical tile piles, would probably be inherited by classes like ModTilePile_3x3 or ModTilePile_2x2 or something
+    public abstract class ModTilePile<TEntity> : ModTile where TEntity : BaseTilePile
     {
         public override bool CanExplode(int i, int j) => false;
         public override bool CreateDust(int i, int j, ref int type) => false;
@@ -24,14 +25,10 @@ namespace OvermorrowMod.Common.TilePiles
             Main.tileNoAttach[Type] = true;
             Main.tileFrameImportant[Type] = true;
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3); // Probably should be changeable within the child
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<BasicLoot>().Hook_AfterPlacement, -1, 0, true);
 
-            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
-            TileID.Sets.SwaysInWindBasic[Type] = true;
-            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<TilePile>().Hook_AfterPlacement, -1, 0, true);
-
-            MinPick = 55;
-
+            MinPick = 55; // debugging
             TileObjectData.addTile(Type);
         }
 
@@ -45,7 +42,7 @@ namespace OvermorrowMod.Common.TilePiles
             Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameX != 0 || tile.TileFrameY != 0) return;
 
-            TilePile pile = FindTE(i, j);
+            TEntity pile = FindTE(i, j);
 
             if (pile == null) return;
 
@@ -136,7 +133,7 @@ namespace OvermorrowMod.Common.TilePiles
 
         public override void MouseOver(int i, int j)
         {
-            TilePile pile = FindTE(i, j);
+            TEntity pile = FindTE(i, j);
 
             if (pile == null) return;
 
@@ -166,7 +163,7 @@ namespace OvermorrowMod.Common.TilePiles
 
         public override bool RightClick(int i, int j)
         {
-            TilePile pile = FindTE(i, j);
+            TEntity pile = FindTE(i, j);
 
             if (pile != null)
             {
@@ -185,25 +182,41 @@ namespace OvermorrowMod.Common.TilePiles
             return true;
         }
 
-        public static TilePile FindTE(int i, int j)
+        public static TEntity FindTE(int i, int j)
         {
             Tile tile = Main.tile[i, j];
             int left = i - tile.TileFrameX / 18;
             int top = j - tile.TileFrameY / 18;
 
-            int index = ModContent.GetInstance<TilePile>().Find(left, top);
+            int index = ModContent.GetInstance<TEntity>().Find(left, top);
             if (index == -1)
             {
                 return null;
             }
 
-            TilePile entity = (TilePile)TileEntity.ByID[index];
+            TEntity entity = (TEntity)TileEntity.ByID[index];
             return entity;
 
         }
     }
 
-    public class TilePile : BaseTilePile
+    public class LootPile : ModTilePile<BasicLoot>
+    {
+        public override void SetStaticDefaults()
+        {
+            Main.tileNoAttach[Type] = true;
+            Main.tileFrameImportant[Type] = true;
+
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3); // Probably should be changeable within the child
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<BasicLoot>().Hook_AfterPlacement, -1, 0, true);
+
+            MinPick = 55; // debugging
+            TileObjectData.addTile(Type);
+        }
+    }
+
+    // The Tile Pile type that is tied to the in-world Tile
+    public class BasicLoot : BaseTilePile
     {
         public override TileStyle Style => TileStyle.Style3x3;
 
@@ -242,11 +255,22 @@ namespace OvermorrowMod.Common.TilePiles
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
         {
             int id = Place(i, j);
-            TilePile te = ByID[id] as TilePile;
+            BasicLoot te = ByID[id] as BasicLoot;
             te.SetPosition(new Vector2(i + 1, j + 2)); // TODO: The origin is in the top left corner, change to scale based on Style
             te.CreateTilePile();
 
             return id;
+        }
+
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<LootPile>())
+            {
+                Kill(Position.X, Position.Y);
+            }
+
+            return tile.HasTile && tile.TileType == ModContent.TileType<LootPile>();
         }
     }
 }
