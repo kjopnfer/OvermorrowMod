@@ -1,10 +1,5 @@
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using OvermorrowMod.Core;
 using System.Collections.Generic;
 using System;
 
@@ -12,18 +7,22 @@ namespace OvermorrowMod.Common.TilePiles
 {
     public class TileObjects
     {
-        public static Dictionary<Type, int> TileObjectTypes;
-        public static Dictionary<int, Texture2D> TileObjectTextures;
-        public static Dictionary<int, string> TileObjectNames;
+        //public static Dictionary<Type, int> TileObjectTypes;
+        //public static Dictionary<int, Texture2D> TileObjectTextures;
+        //public static Dictionary<int, string> TileObjectNames;
+        public static Dictionary<Type, string> TileObjectTypes;
+        public static Dictionary<string, Texture2D> TileObjectTextures;
+        public static Dictionary<string, string> TileObjectNames;
 
-        public static Texture2D GetTexture(int type) => TileObjectTextures[type];
-        public static int ObjectType<T>() where T : TileObject => TileObjectTypes[typeof(T)];
+        public static Texture2D GetTexture(string type) => TileObjectTextures[type];
+        public static string ObjectType<T>() where T : TileObject => TileObjectTypes[typeof(T)];
 
         public static void Load()
         {
-            TileObjectTypes = new Dictionary<Type, int>();
-            TileObjectTextures = new Dictionary<int, Texture2D>();
-            TileObjectNames = new Dictionary<int, string>();
+            TileObjectTypes = new Dictionary<Type, string>();
+            TileObjectTextures = new Dictionary<string, Texture2D>();
+            TileObjectNames = new Dictionary<string, string>();
+            TileObject.TileObjects = new Dictionary<string, TileObject>();
         }
 
         public static void Unload()
@@ -31,6 +30,7 @@ namespace OvermorrowMod.Common.TilePiles
             TileObjectTypes = null;
             TileObjectTextures = null;
             TileObjectNames = null;
+            TileObject.TileObjects = null;
         }
 
         public static void RegisterTileObject(Type type)
@@ -38,14 +38,15 @@ namespace OvermorrowMod.Common.TilePiles
             Type baseType = typeof(TileObject);
             if (type.IsSubclassOf(baseType) && !type.IsAbstract && type != baseType)
             {
-                int id = TileObjectTypes.Count;
+                //int id = TileObjectTypes.Count;
+                string id = type.Name;
                 TileObjectTypes.Add(type, id);
 
                 TileObject tileObject = (TileObject)Activator.CreateInstance(type);
                 tileObject.SetDefaults();
                 TileObject.TileObjects.Add(id, tileObject);
 
-                var texture = ModContent.Request<Texture2D>(tileObject.Texture ?? type.FullName.Replace('.', '/')).Value;
+                var texture = ModContent.Request<Texture2D>(tileObject.Texture ?? type.FullName.Replace('.', '/'), ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 TileObjectTextures.Add(id, texture);
                 TileObjectNames.Add(id, type.Name);
             }
@@ -54,7 +55,7 @@ namespace OvermorrowMod.Common.TilePiles
 
     public class TileObject
     {
-        public static Dictionary<int, TileObject> TileObjects;
+        public static Dictionary<string, TileObject> TileObjects;
 
         private int _width;
         private int _height;
@@ -97,6 +98,8 @@ namespace OvermorrowMod.Common.TilePiles
             get => _maxStack;
             set => _maxStack = value;
         }
+
+        public static TileObject GetTileObject(string type) => TileObjects[type];
 
         public virtual string Texture { get { return null; } private set { } }
         public virtual void SetDefaults() {}

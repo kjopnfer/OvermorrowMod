@@ -165,6 +165,7 @@ namespace OvermorrowMod.Common
             HexLoader.Load(false);
             ILEdits.Load();
             Particle.Load();
+            TileObjects.Load();
             Quests.Quests.Load(this);
 
             foreach (Type type in Code.GetTypes())
