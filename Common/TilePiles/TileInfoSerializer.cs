@@ -3,9 +3,9 @@ using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Common.TilePiles
 {
-    public class TileObjectSerializer : TagSerializer<TileObject, TagCompound>
+    public class TileInfoSerializer : TagSerializer<TileInfo, TagCompound>
     {
-        public override TagCompound Serialize(TileObject value) => new TagCompound
+        public override TagCompound Serialize(TileInfo value) => new TagCompound
         {
             ["identifier"] = value.identifier,
             ["xCoordinate"] = value.coordinates.X,
@@ -16,7 +16,7 @@ namespace OvermorrowMod.Common.TilePiles
             ["interactType"] = value.interactType
         };
 
-        public override TileObject Deserialize(TagCompound tag) => new TileObject(
+        public override TileInfo Deserialize(TagCompound tag) => new TileInfo(
             tag.GetString("identifier"),
             new Vector2(tag.GetFloat("xCoordinate"), tag.GetFloat("yCoordinate")),
             tag.GetInt("x"),

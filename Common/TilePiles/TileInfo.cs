@@ -8,7 +8,7 @@ using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.TilePiles
 {
-    public class TileObject
+    public class TileInfo
     {
         internal string name;
         internal Rectangle rectangle;
@@ -37,7 +37,7 @@ namespace OvermorrowMod.Common.TilePiles
 
         //public virtual int InteractType => (int)InteractionType.Click;
 
-        public TileObject(string identifier, Vector2 coordinates, int x, int y, int dependency, int interactType)
+        public TileInfo(string identifier, Vector2 coordinates, int x, int y, int dependency, int interactType)
         {
             this.identifier = identifier;
             this.coordinates = coordinates;

@@ -21,7 +21,7 @@ namespace OvermorrowMod.Common.TilePiles
             get => _position;
         }
 
-        internal TileObject[] PileContents;
+        internal TileInfo[] PileContents;
 
         public enum TileStyle
         {
@@ -41,7 +41,7 @@ namespace OvermorrowMod.Common.TilePiles
         public override void LoadData(TagCompound tag)
         {
             _position = tag.Get<Vector2>("_position");
-            PileContents = tag.Get<TileObject[]>("PileContents");
+            PileContents = tag.Get<TileInfo[]>("PileContents");
         }
 
         public virtual void CreateTilePile() { }
