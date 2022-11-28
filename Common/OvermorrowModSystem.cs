@@ -24,8 +24,6 @@ namespace OvermorrowMod.Common
             Instance = this;
         }
 
-        internal List<BasicLoot> tilePiles = new List<BasicLoot>();
-
         private GameTime _lastUpdateUiGameTime;
         internal UserInterface MyInterface;
         internal UserInterface AltarUI;

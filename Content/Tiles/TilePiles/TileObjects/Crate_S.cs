@@ -1,6 +1,7 @@
+using OvermorrowMod.Common.TilePiles;
 using Terraria.ID;
 
-namespace OvermorrowMod.Common.TilePiles
+namespace OvermorrowMod.Content.Tiles.TilePiles.TileObjects
 {
     public class Crate_S : TileObject
     {

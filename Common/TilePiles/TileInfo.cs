@@ -50,6 +50,7 @@ namespace OvermorrowMod.Common.TilePiles
             rectangle.Height = tileObject.height;
             texture = TileObjects.TileObjectTextures[identifier];
             ID = tileObject.itemID;
+            name = tileObject.name;
             minStack = tileObject.minStack;
             maxStack = tileObject.maxStack;
 
