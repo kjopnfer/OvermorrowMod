@@ -203,13 +203,13 @@ namespace OvermorrowMod.Common.Cutscenes
             switch (optionNumber)
             {
                 case 1:
-                    return screenPosition + new Vector2(-250, 25);
+                    return screenPosition + new Vector2(-300, 25);
                 case 2:
-                    return new Vector2(WIDTH / 2, 200);
+                    return screenPosition + new Vector2(0, 25);
                 case 3:
-                    return new Vector2(0, 300);
+                    return screenPosition + new Vector2(-300, 150);
                 case 4:
-                    return new Vector2(WIDTH / 2, 300);
+                    return screenPosition + new Vector2(0, 150);
             }
 
             return new Vector2(0, 0);
