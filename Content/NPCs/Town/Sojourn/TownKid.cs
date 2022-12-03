@@ -8,7 +8,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.NPCs.Town
+namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 {
     [AutoloadHead]
     public class TownKid : ModNPC

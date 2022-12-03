@@ -9,7 +9,7 @@ using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using OvermorrowMod.Content.NPCs.Carts;
-using OvermorrowMod.Content.NPCs.Town;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
@@ -144,7 +144,22 @@ namespace OvermorrowMod.Common
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);
                 }
-                
+                else if (npc.type == ModContent.NPCType<SojournGuard>())
+                {
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
+                    doc.LoadXml(text);
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                }
+                else if (npc.type == ModContent.NPCType<SojournGuard2>())
+                {
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
+                    doc.LoadXml(text);
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                }
                 //player.AddedDialogue = true;
             }
 

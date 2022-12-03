@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Base;
-using OvermorrowMod.Content.NPCs.Town;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
@@ -284,7 +284,11 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             if (spawnNPC)
             {
+                NPC.NewNPC(null, (x - (TileClear.width / 2) + 14) * 16, (y - (TileClear.height) + 26) * 16, ModContent.NPCType<SojournGuard>());
+
                 NPC.NewNPC(null, (x - (TileClear.width / 2) + 110) * 16, (y - (TileClear.height) + 45) * 16, ModContent.NPCType<TownKid>());
+
+                NPC.NewNPC(null, (x - (TileClear.width / 2) + 201) * 16, (y - (TileClear.height) + 43) * 16, ModContent.NPCType<SojournGuard2>());
             }
             /*WorldGen.PlaceTile(x - (TileClear.width / 2) + 30, y - (TileClear.height) + 35, ModContent.TileType<CartSign>());
 
