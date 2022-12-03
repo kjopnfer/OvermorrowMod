@@ -114,6 +114,7 @@ namespace OvermorrowMod.Common
             TileOverlay.projTarget = null;
         }
 
+        // TODO: Separate these into a different file
         static void GUIChatDrawInner(On.Terraria.Main.orig_GUIChatDrawInner orig, Main self)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -146,7 +147,7 @@ namespace OvermorrowMod.Common
                 }
                 else if (npc.type == ModContent.NPCType<SojournGuard>())
                 {
-                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard.xml"));
                     doc.LoadXml(text);
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
