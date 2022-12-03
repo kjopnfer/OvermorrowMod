@@ -77,7 +77,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
                         int direction = Main.rand.NextBool() ? 1 : -1;
 
                         // Randomly choose an x position within 30 tiles of the anchor point, but 8 to 12 tiles away from this NPC
-                        float xPosition = Main.rand.Next(19, 26) * 16;
+                        float xPosition = Main.rand.Next(60, 75) * 16;
                         movePosition = new Vector2(NPC.Center.X + (xPosition * direction), anchorPoint.Y + 256);
 
                         // Check if this position chosen doesn't go out of bounds
@@ -98,10 +98,13 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
                     float moveSpeed = xDistance <= 3 * 16 ? 6f : 14f;
 
-                    NPC.Move(movePosition, 2f, moveSpeed, 3f);
+                    //NPC.Move(movePosition, moveSpeed);
+                    NPC.Move(movePosition, 1f, 4f, 2f);
+
+                    //NPC.Move(movePosition, 2f, moveSpeed, 3f);
                     Dust.NewDust(movePosition, 16, 16, DustID.AmberBolt);
 
-                    if (AICounter == 300 || xDistance < 1)
+                    if (AICounter == 300 || xDistance < 16)
                     {
                         NPC.velocity.X = 0;
 
