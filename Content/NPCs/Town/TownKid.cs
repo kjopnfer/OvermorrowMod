@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Content.WorldGeneration;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
@@ -9,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.NPCs.Town
 {
+    [AutoloadHead]
     public class TownKid : ModNPC
     {
         public override void SetStaticDefaults()
@@ -55,9 +57,10 @@ namespace OvermorrowMod.Content.NPCs.Town
             switch (AIState)
             {
                 case (int)AIStates.Idle:
-                    FrameUpdate(FrameType.Idle);
+                    FrameUpdate(FrameType.Run);
 
                     NPC.TargetClosest();
+                    //NPC.Move(Main.LocalPlayer.Center, 1, 6f, 6f);
 
                     if (AICounter++ == 180)
                     {
@@ -68,8 +71,9 @@ namespace OvermorrowMod.Content.NPCs.Town
                 case (int)AIStates.Run:
                     if (AICounter++ == 0)
                     {
-                        Vector2 anchorPoint = new Vector2(Main.spawnTileX, Main.spawnTileY) * 16; // TODO: Replace with where the town spawns
+                        Vector2 anchorPoint = new Vector2(TownGeneration.SojournLocation.X, TownGeneration.SojournLocation.Y);
 
+                        Dust.NewDust(anchorPoint, 2, 2, DustID.Torch);
                         int direction = Main.rand.NextBool() ? 1 : -1;
 
                         // Randomly choose an x position within 30 tiles of the anchor point, but 8 to 12 tiles away from this NPC
@@ -79,7 +83,7 @@ namespace OvermorrowMod.Content.NPCs.Town
                         // Check if this position chosen doesn't go out of bounds
                         float checkDistance = Math.Abs(anchorPoint.X - movePosition.X);
 
-                        if (checkDistance > 45 * 16) // Go the opposite direction otherwise
+                        if (checkDistance > 96 * 16) // Go the opposite direction otherwise
                         {
                             Main.NewText("out of bounds");
                             movePosition = new Vector2(NPC.Center.X + (xPosition * -direction), anchorPoint.Y);
@@ -92,12 +96,12 @@ namespace OvermorrowMod.Content.NPCs.Town
 
                     float xDistance = Math.Abs(NPC.Center.X - movePosition.X);
 
-                    float moveSpeed = xDistance <= 3 * 16 ? 3f : 7f;
+                    float moveSpeed = xDistance <= 3 * 16 ? 6f : 14f;
 
-                    NPC.Move(movePosition, moveSpeed);
+                    NPC.Move(movePosition, 2f, moveSpeed, 3f);
                     Dust.NewDust(movePosition, 16, 16, DustID.AmberBolt);
 
-                    if (AICounter == 120 || xDistance < 1)
+                    if (AICounter == 300 || xDistance < 1)
                     {
                         NPC.velocity.X = 0;
 

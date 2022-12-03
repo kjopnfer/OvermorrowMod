@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Base;
+using OvermorrowMod.Content.NPCs.Town;
 using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
@@ -9,21 +10,33 @@ using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.WorldBuilding;
 
 namespace OvermorrowMod.Content.WorldGeneration
 {
     public class TownGeneration : ModSystem
     {
+        public static Vector2 SojournLocation;
+        public override void SaveWorldData(TagCompound tag)
+        {
+            tag["SojournLocation"] = SojournLocation;
+        }
+
+        public override void LoadWorldData(TagCompound tag)
+        {
+            SojournLocation = tag.Get<Vector2>("SojournLocation");
+        }
+
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
-            int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
+            int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Planting Trees"));
             if (BiomeIndex != -1)
             {
                 tasks.Insert(BiomeIndex + 1, new PassLegacy("Ruined Town", GenerateTown));
             }
 
-            int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Guide"));
+            int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (GuideIndex != -1)
             {
                 tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
@@ -49,7 +62,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         private void GenerateCamp(GenerationProgress progress, GameConfiguration config)
         {
-            progress.Message = "Setting Up Camp";
+            progress.Message = "Setting up camp";
 
             int startX = Main.spawnTileX;
             int startY = Main.spawnTileY;
@@ -160,7 +173,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         private void GenerateTown(GenerationProgress progress, GameConfiguration config)
         {
-            progress.Message = "Creating Town";
+            progress.Message = "Creating town";
 
             // I don't know why the first one doesn't generate dude
             for (int _ = 0; _ < 2; _++)
@@ -189,7 +202,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                     Tile aboveTile = Framing.GetTileSafely(x, y - 1);
                     // We have the tile but we want to check if its a grass block, if it isn't restart the process
-                    if (tile.TileType == TileID.Dirt && tile.WallType == WallID.None && !aboveTile.HasTile && Main.tileSolid[tile.TileType])
+                    if (tile.TileType == TileID.Grass && tile.WallType == WallID.None && !aboveTile.HasTile && Main.tileSolid[tile.TileType])
                     {
                         validArea = true;
                     }
@@ -207,36 +220,45 @@ namespace OvermorrowMod.Content.WorldGeneration
                     }
                 }
 
-                PlaceTown(x, y + 30);
+                SojournLocation = new Vector2(x, y + 30) * 16;
+
+                // this is so fucking stupid
+                if (_ == 1)
+                {
+                    PlaceTown(x, y + 30, true);
+                }
+                else // this isnt supposed to do anything
+                {
+                    PlaceTown(x, y + 30);
+                }
                 //PlaceTown(x, y + 60);
             }
         }
 
-        public static void PlaceTown(int x, int y)
+        public static void PlaceTown(int x, int y, bool spawnNPC = false)
         {
             Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
             {
-                [new Color(69, 132, 64)] = TileID.Grass,
+                [new Color(55, 140, 100)] = TileID.Grass,
                 [new Color(101, 67, 41)] = TileID.Dirt,
                 [new Color(84, 68, 55)] = TileID.ClayBlock,
-                [new Color(128, 128, 128)] = TileID.Stone,
+                [new Color(113, 114, 117)] = TileID.StoneSlab,
                 [new Color(197, 130, 57)] = ModContent.TileType<CastleRoof>(),
                 [new Color(154, 100, 57)] = TileID.WoodBlock,
                 [new Color(152, 119, 85)] = TileID.Rope,
+                [new Color(50, 22, 3)] = TileID.WoodenBeam,
                 [new Color(105, 99, 94)] = ModContent.TileType<CastleBrick>(),
                 [new Color(67, 65, 64)] = ModContent.TileType<DarkCastleBrick>(),
-                [new Color(115, 78, 48)] = TileID.Adamantite,
+                [new Color(115, 78, 48)] = ModContent.TileType<CastlePlatform>(),
             };
 
             Dictionary<Color, int> WallMapping = new Dictionary<Color, int>
             {
-                [new Color(70, 67, 72)] = WallID.StoneSlab,
+                [new Color(80, 83, 90)] = WallID.StoneSlab,
                 [new Color(73, 64, 56)] = WallID.Wood,
                 [new Color(40, 34, 29)] = WallID.BorealWood,
                 [new Color(40, 37, 35)] = ModContent.WallType<CastleWall>(),
                 [new Color(70, 67, 72)] = WallID.Stone,
-                [new Color(42, 50, 46)] = WallID.EbonstoneBrick,
-                [new Color(87, 43, 20)] = WallID.RedBrick,
                 [new Color(115, 78, 48)] = WallID.BorealWood,
             };
 
@@ -251,16 +273,20 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(0, 0, 0)] = -2
             };
 
-            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Tower_Clear").Value;
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown_Clear").Value;
             TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
             TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Tower").Value;
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown").Value;
             Texture2D SlopeMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown_Slope").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping, null, null, SlopeMap, SlopeMapping);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            WorldGen.PlaceTile(x - (TileClear.width / 2) + 30, y - (TileClear.height) + 35, ModContent.TileType<CartSign>());
+            if (spawnNPC)
+            {
+                NPC.NewNPC(null, (x - (TileClear.width / 2) + 110) * 16, (y - (TileClear.height) + 45) * 16, ModContent.NPCType<TownKid>());
+            }
+            /*WorldGen.PlaceTile(x - (TileClear.width / 2) + 30, y - (TileClear.height) + 35, ModContent.TileType<CartSign>());
 
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 41, y - (TileClear.height) + 31, ModContent.TileType<CartLamp>());
 
@@ -277,7 +303,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                         //WorldGen.KillTile(x - (TileClear.width / 2) + i, y - (TileClear.height) + j, true);
                     }
                 }
-            }
+            }*/
+
             /*WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 + 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
             WorldGen.PlaceTile(x - (TileClear.width / 2) + 85 - 1, y + 25 - (TileClear.height), TileID.ObsidianBrick, false, true);
