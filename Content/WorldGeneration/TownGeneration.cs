@@ -288,6 +288,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                 NPC.NewNPC(null, (x - (TileClear.width / 2) + 110) * 16, (y - (TileClear.height) + 45) * 16, ModContent.NPCType<TownKid>());
 
+                NPC.NewNPC(null, (x - (TileClear.width / 2) + 105) * 16, (y - (TileClear.height) + 44) * 16, ModContent.NPCType<SojournGuard3>());
+
                 NPC.NewNPC(null, (x - (TileClear.width / 2) + 201) * 16, (y - (TileClear.height) + 43) * 16, ModContent.NPCType<SojournGuard2>());
             }
             /*WorldGen.PlaceTile(x - (TileClear.width / 2) + 30, y - (TileClear.height) + 35, ModContent.TileType<CartSign>());

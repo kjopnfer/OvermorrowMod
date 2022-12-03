@@ -1,0 +1,45 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text time="60">Hey. I hope you’ve got something to report. And I don’t mean the kid, his parents will have my head if I rough him up again.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="1">Beat up a kid?</Option>
+			<Option link="2">You look bored…</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="1">
+		<Dialogue>
+			<Text time="180">The kid’s asking for it! He’s a pain in the rear of the entire town, and frankly I’m a bit sick of him causing all this trouble. I give him all these warnings, but as soon as I take matters into my hands I’m the asshole. So I’ve decided: I don’t care about him anymore. He’s their problem now.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="3">Seems a bit aggressive.</Option>
+			<Option link="2">You look bored…</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="2">
+		<Dialogue>
+			<Text time="120">Can you blame me? Sojourn is on the edge of the world, on the brink of the unknown. Prime adventure terrain, right? Nope, nothing out here but trees and slimes! And to top it off, nobody new ever shows up! I haven’t had a proper fight in years!</Text>
+		</Dialogue>
+		<Options>
+			<Option link="4">Anything to do?</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="3">
+		<Dialogue>
+			<Text time="120">Look here, I joined this guard to see some action, but god damn it this place is boring. Nothing ever fights back except some weak monsters, but lately, even those have stopped showing. I don’t even know why they bother with us…</Text>
+		</Dialogue>
+		<Options>
+			<Option link="4">Anything to do?</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="4">
+		<Dialogue>
+			<Text time="150">What’re you doing askin’ me?! All I ever do is stand around here watching paint dry! If you’re looking for company, there’re a few others that live here. The Guard over by the well is fine, I guess. Or you could talk to the Merchant in the house over there. If you don’t wanna chat with someone, you’re outta luck as far as I’m concerned.</Text>
+		</Dialogue>
+	</DialogueNode>
+</Dialogue>

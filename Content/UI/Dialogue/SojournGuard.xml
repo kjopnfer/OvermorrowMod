@@ -11,8 +11,7 @@
 
 	<DialogueNode id="1">
 		<Dialogue>
-			<Text time="60">You new around here or something?</Text>
-			<Text time="60">That snot-nosed little kid runs around causing chaos to everyone around here.</Text>
+			<Text time="75">You new around here or something? That snot-nosed little kid runs around causing chaos to everyone around here.</Text>
 			<Text time="120">If you want someone to do something about it, take it up with the other two guards. They’re always complaining about being bored…</Text>
 		</Dialogue>
 		<Options>
@@ -33,8 +32,7 @@
 
 	<DialogueNode id="2">
 		<Dialogue>
-			<Text time="60">Sojourn ain’t guarding itself, and heaven knows the others don’t bother watching these walls.</Text>
-			<Text time="90">Listen, one day, that ol’ Lord of the Moon is coming back, and when he does, someone’s gotta be on the lookout!</Text>
+			<Text time="120">Sojourn ain’t guarding itself, and heaven knows the others don’t bother watching these walls. Listen, one day, that ol’ Lord of the Moon is coming back, and when he does, someone’s gotta be on the lookout!</Text>
 		</Dialogue>
 		<Options>
 			<Option link="3">Lord of the Moon?</Option>
@@ -44,10 +42,7 @@
 
 	<DialogueNode id="3">
 		<Dialogue>
-			<Text time="60">What? You mean don’t know the legends?</Text>
-			<Text time="60">I thought everyone knew them!</Text>
-			<Text time="60">Well, something’s coming, and you best bet we gotta be ready when it does!</Text>
-			<Text time="60">How everyone else sits by and wastes time like this is beyond me!</Text>
+			<Text time="120">What? You mean don’t know the legends? I thought everyone knew them! Well, something’s coming, and you best bet we gotta be ready when it does! How everyone else sits by and wastes time like this is beyond me!</Text>
 		</Dialogue>
 		<Options>
 			<Option link="4">Sounds exhausting…</Option>
@@ -56,9 +51,7 @@
 
 	<DialogueNode id="4">
 		<Dialogue>
-			<Text time="120">Well, I dunno how to tell you this, but it’s my job. We’re the first line of defense, and if those screwballs don’t like it, then that’s that.</Text>
-			<Text time="120">And if whatever’s making those monsters disappear comes and kills us all, well then I suppose I can give them an earful that I tried to warn them!</Text>
-			<Text time="45">Now go away, I’m busy.</Text>
+			<Text time="120">Well, I dunno how to tell you this, but it’s my job. We’re the first line of defense, and if those screwballs don’t like it, then that’s that. And if whatever’s making those monsters disappear comes and kills us all, well then I suppose I can give them an earful that I tried to warn them! Now go away, I’m busy.</Text>
 		</Dialogue>
 	</DialogueNode>
 </Dialogue>

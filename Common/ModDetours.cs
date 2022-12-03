@@ -155,7 +155,15 @@ namespace OvermorrowMod.Common
                 }
                 else if (npc.type == ModContent.NPCType<SojournGuard2>())
                 {
-                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard2.xml"));
+                    doc.LoadXml(text);
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                }
+                else if (npc.type == ModContent.NPCType<SojournGuard3>())
+                {
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard3.xml"));
                     doc.LoadXml(text);
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;

@@ -85,4 +85,27 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             return false;
         }
     }
+
+    [AutoloadHead]
+    public class SojournGuard3 : TownGuard
+    {
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Town Guard");
+            Main.npcFrameCount[NPC.type] = 1;
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            var spriteEffects = NPC.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            float xOffset = NPC.direction == 1 ? 0 : 0;
+            Vector2 drawOffset = new Vector2(xOffset, -10);
+
+            spriteBatch.Draw(texture, NPC.Center + drawOffset - Main.screenPosition, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0);
+
+            return false;
+        }
+    }
 }
