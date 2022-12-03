@@ -128,7 +128,7 @@ namespace OvermorrowMod.Common
                 switch (npc.type)
                 {
                     case NPCID.Guide:
-                        string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/test.xml"));
+                        string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
                         doc.LoadXml(text);
 
                         player.SetDialogue(texture, npc.GetChat(), 20, doc);
