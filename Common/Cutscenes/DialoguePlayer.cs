@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using System.Xml;
+using Terraria.ModLoader.IO;
+using System.Linq;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -12,7 +14,20 @@ namespace OvermorrowMod.Common.Cutscenes
         private Queue<Popup> PopupQueue = new Queue<Popup>();
         private Dialogue CurrentDialogue;
 
+        // Used to store any flags triggered by the player when speaking to NPCs
+        public HashSet<string> DialogueFlags = new HashSet<string>();
+
         public bool AddedDialogue = false;
+
+        public override void SaveData(TagCompound tag)
+        {
+            tag["DialogueFlags"] = DialogueFlags.ToList();
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            DialogueFlags = tag.Get<List<string>>("DialogueFlags").ToHashSet();
+        }
 
         public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
         {

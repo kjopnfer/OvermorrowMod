@@ -124,6 +124,13 @@ namespace OvermorrowMod.Common.Cutscenes
             var cringe = xmlDoc.GetElementsByTagName("DialogueNode");
             foreach (XmlNode node in cringe)
             {
+                // This is might cause problems somewhere down the line, idk, I forgot what Main.LocalPlayer does
+                if (node.Attributes["flag"] != null)
+                {
+                    Main.LocalPlayer.GetModPlayer<DialoguePlayer>().DialogueFlags.Add(node.Attributes["flag"].Value);
+                    //Main.NewText(node.Attributes["flag"].Value);
+                }
+
                 if (node.Attributes["id"].Value == id) return node;
             }
 
