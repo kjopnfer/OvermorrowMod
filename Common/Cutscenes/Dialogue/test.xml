@@ -1,5 +1,5 @@
 <Dialogue>
-	<DialogueNode id="start">
+	<DialogueNode id="start" flag="SojournGuard_4">
 		<Dialogue>
 			<Text>hello, i am [stryke]. </Text>
 			<Text>i have been here [forever].</Text>
