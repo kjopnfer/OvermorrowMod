@@ -85,13 +85,16 @@
 			<Option link="7">Why become a guard?</Option>
 		</Options>
 	</DialogueNode>
-	
+
 	<DialogueNode id="5" flag="SojournGuard3_5">
 		<Dialogue>
 			<Text time="60">Oh yeah, he loves talking about all sorts of beasties, always telling us about some freaky thing that’s gonna eat the town or something.</Text>
 			<Text time="60">If I’m being honest, I kinda like to hear all the stories he’s got to tell, and I can’t help but respect his dedication to the job.</Text>
 			<Text time="90">But hey, don’t tell him I said that! I’m willing to bet it’d all go to his head, and if he knew I respected the hell out of him, then I wouldn’t be able to poke fun at him anymore.</Text>
 		</Dialogue>
+		<Options>
+			<Option link="2.2">Magic Well?</Option>
+		</Options>
 	</DialogueNode>
 
 	<DialogueNode id="7">

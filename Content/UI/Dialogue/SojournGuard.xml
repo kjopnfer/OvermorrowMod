@@ -49,7 +49,7 @@
 		</Options>
 	</DialogueNode>
 
-	<DialogueNode id="4">
+	<DialogueNode id="4" flag="SojournGuard_4">
 		<Dialogue>
 			<Text time="120">Well, I dunno how to tell you this, but it’s my job. We’re the first line of defense, and if those screwballs don’t like it, then that’s that. And if whatever’s making those monsters disappear comes and kills us all, well then I suppose I can give them an earful that I tried to warn them! Now go away, I’m busy.</Text>
 		</Dialogue>
