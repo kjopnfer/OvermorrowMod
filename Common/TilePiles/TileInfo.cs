@@ -46,13 +46,13 @@ namespace OvermorrowMod.Common.TilePiles
             this.dependency = dependency;
 
             TileObject tileObject = TileObject.GetTileObject(identifier);
-            rectangle.Width = tileObject.width;
-            rectangle.Height = tileObject.height;
+            rectangle.Width = tileObject.Width;
+            rectangle.Height = tileObject.Height;
             texture = TileObjects.TileObjectTextures[identifier];
-            ID = tileObject.itemID;
-            name = tileObject.name;
-            minStack = tileObject.minStack;
-            maxStack = tileObject.maxStack;
+            ID = tileObject.ItemID;
+            name = tileObject.Name;
+            minStack = tileObject.MinStack;
+            maxStack = tileObject.MaxStack;
 
             rectangle.X = ((int)coordinates.X - 1) * 16 + x;
             rectangle.Y = ((int)coordinates.Y - 2) * 16 + y;

@@ -7,12 +7,12 @@ namespace OvermorrowMod.Content.Tiles.TilePiles.TileObjects
     {
         public override void SetDefaults()
         {
-            name = "Crate";
-            width = 32;
-            height = 22;
-            itemID = ItemID.WoodenCrate;
-            minStack = 1;
-            maxStack = 1;
+            Name = "Crate";
+            Width = 32;
+            Height = 22;
+            ItemID = Terraria.ID.ItemID.WoodenCrate;
+            MinStack = 1;
+            MaxStack = 1;
         }
     }
 }

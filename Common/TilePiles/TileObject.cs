@@ -57,47 +57,17 @@ namespace OvermorrowMod.Common.TilePiles
     {
         public static Dictionary<string, TileObject> TileObjects;
 
-        private int _width;
-        private int _height;
-        private string _name;
-        private int _itemID;
-        private int _minStack;
-        private int _maxStack;
+        public int Width { get; set; }
 
-        public int width
-        {
-            get => _width;
-            set => _width = value;
-        }
+        public int Height { get; set; }
 
-        public int height
-        {
-            get => _height;
-            set => _height = value;
-        }
+        public string Name { get; set; }
 
-        public string name
-        {
-            get => _name;
-            set => _name = value;
-        }
+        public int ItemID { get; set; }
 
-        public int itemID
-        {
-            get => _itemID;
-            set => _itemID = value;
-        }
-        public int minStack
-        {
-            get => _minStack;
-            set => _minStack = value;
-        }
+        public int MinStack { get; set; }
 
-        public int maxStack
-        {
-            get => _maxStack;
-            set => _maxStack = value;
-        }
+        public int MaxStack { get; set; }
 
         public static TileObject GetTileObject(string type) => TileObjects[type];
 
