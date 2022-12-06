@@ -108,4 +108,5 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
             return false;
         }
     }
+
 }

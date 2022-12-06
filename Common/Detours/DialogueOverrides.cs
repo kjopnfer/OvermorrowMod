@@ -62,6 +62,24 @@ namespace OvermorrowMod.Common.Detours
                 else if (npc.type == ModContent.NPCType<SojournGuard3>())
                 {
                     string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard3.xml"));
+
+                    // If the player has interacted with Moxley and has spoken to this NPC the first time
+                    if (player.DialogueFlags.Contains("SojournGuard_4") && player.kittFirst)
+                    {
+                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard3_3.xml"));
+                    }
+                    else
+                    {
+                        // If you finish 'Anything to Do?' and 'Visitors' AND talk to Moxley, load the second version
+                        if (player.DialogueFlags.Contains("SojournGuard_4") && player.DialogueFlags.Contains("SojournGuard3_4") && player.DialogueFlags.Contains("SojournGuard3_5"))
+                        {
+                            text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard3_2.xml"));
+                        }
+                    }
+
+                    // The player has spoken to this NPC once already
+                    if (player.kittFirst) player.kittFirst = false;
+
                     doc.LoadXml(text);
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;

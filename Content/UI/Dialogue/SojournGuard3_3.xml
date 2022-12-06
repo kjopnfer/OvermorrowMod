@@ -6,6 +6,7 @@
 		<Options>
 			<Option link="1">Beat up a kid?</Option>
 			<Option link="2">You look bored…</Option>
+			<Option link="6"></Option>
 		</Options>
 	</DialogueNode>
 
@@ -29,6 +30,7 @@
 		</Dialogue>
 		<Options>
 			<Option link="4">Visitors?</Option>
+			<Option link="6">The Watchman says...</Option>
 		</Options>
 	</DialogueNode>
 
@@ -56,5 +58,28 @@
 			<Text time="90">The Guard over by the well is fine, I guess. Or you could talk to the Merchant in the house over there.</Text>
 			<Text time="60">If you don't wanna chat with someone, you're outta luck as far as I'm concerned.</Text>
 		</Dialogue>
+	</DialogueNode>
+
+	<DialogueNode id="6">
+		<Dialogue>
+			<Text time="75">What, you believe that? The Watchman never shuts up about Cthulhu and the Aberrants, but nothing ever comes of it.</Text>
+			<Text time="90">Can’t believe I used to take his stories seriously. As for the monsters, I don’t buy his crackpot conspiracies about their disappearances.</Text>
+			<Text time="60">My bet is they just got bored and looked for a more interesting place to take over.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="7">Abberants?</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="7">
+		<Dialogue>
+			<Text time="60">Eh, it’s not as interesting as you’d think.</Text>
+			<Text time="75">A few visitors came by in a spook a couple weeks back, saying they’d seen the Eye of Cthulhu.</Text>
+			<Text time="75">I made certain that wasn’t true. Was probably just a cloud or overgrown demon eye, something like that.</Text>
+			<Text time="60">Gets dark this time of year, probably just seeing some things.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="4">Visitors?</Option>
+		</Options>
 	</DialogueNode>
 </Dialogue>
