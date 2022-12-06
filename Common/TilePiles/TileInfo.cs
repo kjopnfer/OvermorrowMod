@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.TilePiles
@@ -23,6 +24,13 @@ namespace OvermorrowMod.Common.TilePiles
         public Vector2 coordinates;
         public int x;
         public int y;
+
+        public int breakCount;
+        public int tileDurability;
+        public int tileDust;
+        public SoundStyle hitSound;
+        public SoundStyle deathSound;
+        public SoundStyle grabSound;
 
         public enum InteractionType
         {
@@ -53,6 +61,11 @@ namespace OvermorrowMod.Common.TilePiles
             name = tileObject.Name;
             minStack = tileObject.MinStack;
             maxStack = tileObject.MaxStack;
+            tileDurability = tileObject.Durability;
+            tileDust = tileObject.TileDust;
+            hitSound = tileObject.HitSound;
+            deathSound = tileObject.DeathSound;
+            grabSound = tileObject.GrabSound;
 
             rectangle.X = ((int)coordinates.X - 1) * 16 + x;
             rectangle.Y = ((int)coordinates.Y - 2) * 16 + y;

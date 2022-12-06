@@ -2,14 +2,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria.ModLoader;
 using System.Collections.Generic;
 using System;
+using Terraria.Audio;
+using Terraria.ID;
 
 namespace OvermorrowMod.Common.TilePiles
 {
     public class TileObjects
     {
-        //public static Dictionary<Type, int> TileObjectTypes;
-        //public static Dictionary<int, Texture2D> TileObjectTextures;
-        //public static Dictionary<int, string> TileObjectNames;
         public static Dictionary<Type, string> TileObjectTypes;
         public static Dictionary<string, Texture2D> TileObjectTextures;
         public static Dictionary<string, string> TileObjectNames;
@@ -38,7 +37,6 @@ namespace OvermorrowMod.Common.TilePiles
             Type baseType = typeof(TileObject);
             if (type.IsSubclassOf(baseType) && !type.IsAbstract && type != baseType)
             {
-                //int id = TileObjectTypes.Count;
                 string id = type.Name;
                 TileObjectTypes.Add(type, id);
 
@@ -57,20 +55,19 @@ namespace OvermorrowMod.Common.TilePiles
     {
         public static Dictionary<string, TileObject> TileObjects;
 
+        public int Durability { get; set; }
+        public SoundStyle HitSound { get; set; } = SoundID.Dig;
+        public SoundStyle DeathSound { get; set; } = SoundID.Dig;
+        public SoundStyle GrabSound { get; set; } = SoundID.Dig;
+        public int TileDust { get; set; } = DustID.Dirt;
         public int Width { get; set; }
-
         public int Height { get; set; }
-
         public string Name { get; set; }
-
         public int ItemID { get; set; }
-
         public int MinStack { get; set; }
-
         public int MaxStack { get; set; }
 
         public static TileObject GetTileObject(string type) => TileObjects[type];
-
         public virtual string Texture { get { return null; } private set { } }
         public virtual void SetDefaults() {}
     }

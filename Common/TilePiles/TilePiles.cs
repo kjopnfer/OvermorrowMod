@@ -11,6 +11,7 @@ using OvermorrowMod.Core;
 using Terraria.ModLoader.IO;
 using Terraria.GameContent.Metadata;
 using OvermorrowMod.Content.Tiles.TilePiles;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Common.TilePiles
 {
@@ -47,7 +48,6 @@ namespace OvermorrowMod.Common.TilePiles
 
             if (pile == null) return;
 
-            //foreach (TileObject tileObject in OvermorrowModSystem.Instance.tilePiles[GetTilePileIndex(i, j)]?.PileContents)
             foreach (TileInfo tileObject in pile.PileContents)
             {
                 if (tileObject.dependency >= 0)
@@ -58,8 +58,20 @@ namespace OvermorrowMod.Common.TilePiles
                         {
                             tileObject.active = false;
                             Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
-                            //play breaking sound
+
+                            SoundEngine.PlaySound(tileObject.deathSound);
                         }
+                    }
+                }
+
+                if (tileObject.breakCount >= tileObject.tileDurability)
+                {
+                    if (tileObject.active)
+                    {
+                        tileObject.active = false;
+                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+
+                        SoundEngine.PlaySound(tileObject.deathSound);
                     }
                 }
 
@@ -81,25 +93,39 @@ namespace OvermorrowMod.Common.TilePiles
 
                     if (tileObject.wiggleTimer > 60) tileObject.wiggleTimer = 0;
 
-                    if (Main.LocalPlayer.HeldItem.pick > 0 && Main.LocalPlayer.itemAnimation > 0 && tileObject.interactType == (int)TileInfo.InteractionType.Mine)
+                    Player player = Main.LocalPlayer;
+                    if (player.itemTime == 0)
                     {
-                        Main.NewText("trying to mine the thing");
+                        player.ApplyItemTime(player.HeldItem);
+                    }
 
-                        if (Main.rand.NextBool(180))
+                    if (player.HeldItem.pick > 0 && player.itemAnimation > 0 && tileObject.interactType == (int)TileInfo.InteractionType.Mine)
+                    {
+                        if (player.itemTime <= player.itemTimeMax / 3)
                         {
-                            int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.Dirt, 0f, 0f, 254, Color.White, 0.5f);
-                            Main.dust[d].velocity *= 0f;
+                            SoundEngine.PlaySound(tileObject.hitSound);
+                            tileObject.breakCount += player.HeldItem.pick;
+
+                            for (int _ = 0; _ < 5; _++)
+                            {
+                                int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, tileObject.tileDust, 0f, 0f);
+                                Main.dust[d].velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi);
+                            }
                         }
                     }
 
-                    if (Main.LocalPlayer.HeldItem.axe > 0 && Main.LocalPlayer.itemAnimation > 0 && tileObject.interactType == (int)TileInfo.InteractionType.Chop)
+                    if (player.HeldItem.axe > 0 && player.itemAnimation > 0 && tileObject.interactType == (int)TileInfo.InteractionType.Chop)
                     {
-                        Main.NewText("trying to chop the thing");
-
-                        if (Main.rand.NextBool(180))
+                        if (player.itemTime <= player.itemTimeMax / 3)
                         {
-                            int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.Dirt, 0f, 0f, 254, Color.White, 0.5f);
-                            Main.dust[d].velocity *= 0f;
+                            SoundEngine.PlaySound(tileObject.hitSound);
+                            tileObject.breakCount += player.HeldItem.axe;
+
+                            for (int _ = 0; _ < 5; _++)
+                            {
+                                int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, tileObject.tileDust, 0f, 0f);
+                                Main.dust[d].velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi);
+                            }
                         }
                     }
                 }
@@ -119,17 +145,15 @@ namespace OvermorrowMod.Common.TilePiles
 
                 if (Main.rand.NextBool(180))
                 {
-                    //int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.TintableDustLighted, 0f, 0f, 254, Color.White, 0.5f);
-                    //Main.dust[d].velocity *= 0f;
+                    int d = Dust.NewDust(new Vector2(tileObject.rectangle.X, tileObject.rectangle.Y), rect.Width, rect.Height, DustID.TintableDustLighted, 0f, 0f, 254, Color.White, 0.5f);
+                    Main.dust[d].velocity *= 0f;
                 }
 
                 tileObject.selected = false;
                 activeObjects = true;
-
             }
 
             if (!activeObjects) WorldGen.KillTile(i, j);
-
         }
 
         public override void MouseOver(int i, int j)
@@ -174,7 +198,8 @@ namespace OvermorrowMod.Common.TilePiles
                     {
                         tileObject.active = false;
                         Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
-                        //play grab sound
+
+                        SoundEngine.PlaySound(tileObject.grabSound);
                         break;
                     }
                 }
@@ -201,5 +226,5 @@ namespace OvermorrowMod.Common.TilePiles
         }
     }
 
-    
+
 }
