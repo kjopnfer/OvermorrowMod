@@ -1,0 +1,77 @@
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Cutscenes;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Core;
+using System.Xml;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace OvermorrowMod.Common.Detours
+{
+    public class DialogueOverrides
+    {
+        public static void GUIChatDrawInner(On.Terraria.Main.orig_GUIChatDrawInner orig, Main self)
+        {
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            if (player.GetDialogue() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/Guide/Guide", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                XmlDocument doc = new XmlDocument();
+
+                #region Vanilla
+                switch (npc.type)
+                {
+                    case NPCID.Guide:
+                        string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
+                        doc.LoadXml(text);
+
+                        player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                        break;
+
+                }
+                #endregion
+
+                #region Modded
+                // I'm sorry but apparently there is no other way lol
+                if (npc.type == ModContent.NPCType<TownKid>())
+                {
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
+                    doc.LoadXml(text);
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                }
+                else if (npc.type == ModContent.NPCType<SojournGuard>())
+                {
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard.xml"));
+                    doc.LoadXml(text);
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                }
+                else if (npc.type == ModContent.NPCType<SojournGuard2>())
+                {
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard2.xml"));
+                    doc.LoadXml(text);
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                }
+                else if (npc.type == ModContent.NPCType<SojournGuard3>())
+                {
+                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard3.xml"));
+                    doc.LoadXml(text);
+
+                    texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                }
+
+                #endregion
+            }
+
+            //orig(self);
+        }
+    }
+}
