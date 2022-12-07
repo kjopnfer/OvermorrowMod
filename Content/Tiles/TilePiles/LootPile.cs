@@ -36,54 +36,29 @@ namespace OvermorrowMod.Content.Tiles.TilePiles
             {
                 case 0:
                     PileContents = new TileInfo[2];
-                    PileContents[0] = new TileInfo(ObjectType<Crate_S>(), position, 16, 38, -1, (int)TileInfo.InteractionType.Click);
-                    PileContents[1] = new TileInfo(ObjectType<Crate_M>(), position, 18, 28, 0, (int)TileInfo.InteractionType.Chop);
+                    PileContents[0] = new TileInfo(ObjectType<BookStack_S3>(), position, 16, 38, -1, (int)TileInfo.InteractionType.Click);
+                    PileContents[1] = new TileInfo(ObjectType<BookStack_S2>(), position, 18, 28, 0, (int)TileInfo.InteractionType.Click);
                     break;
                 case 1:
                     PileContents = new TileInfo[4];
                     PileContents[0] = new TileInfo(ObjectType<Crate_S>(), position, 4, 32, -1, (int)TileInfo.InteractionType.Click);
-                    PileContents[1] = new TileInfo(ObjectType<Crate_M>(), position, 18, 28, -1, (int)TileInfo.InteractionType.Chop);
-                    PileContents[2] = new TileInfo(ObjectType<Crate_S>(), position, 18, 26, 1, (int)TileInfo.InteractionType.Mine);
-                    PileContents[3] = new TileInfo(ObjectType<Crate_S>(), position, 24, 14, 2, (int)TileInfo.InteractionType.Click);
+                    PileContents[1] = new TileInfo(ObjectType<Crate_M>(), position, 18, 28, -1, (int)TileInfo.InteractionType.Click);
+                    PileContents[2] = new TileInfo(ObjectType<Cloth_L>(), position, 18, 26, 1, (int)TileInfo.InteractionType.Click);
+                    PileContents[3] = new TileInfo(ObjectType<BookStack_S3>(), position, 24, 14, 2, (int)TileInfo.InteractionType.Click);
                     break;
                 case 2:
                     PileContents = new TileInfo[4];
                     PileContents[0] = new TileInfo(ObjectType<Crate_S>(), position, 18, 32, -1, (int)TileInfo.InteractionType.Click);
-                    PileContents[1] = new TileInfo(ObjectType<Crate_M>(), position, 18, 30, 0, (int)TileInfo.InteractionType.Mine);
-                    PileContents[2] = new TileInfo(ObjectType<Crate_S>(), position, 22, 18, 1, (int)TileInfo.InteractionType.Click);
-                    PileContents[3] = new TileInfo(ObjectType<Crate_S>(), position, 4, 30, -1, (int)TileInfo.InteractionType.Chop);
+                    PileContents[1] = new TileInfo(ObjectType<Cloth_S>(), position, 18, 30, 0, (int)TileInfo.InteractionType.Click);
+                    PileContents[2] = new TileInfo(ObjectType<BookStack_S3>(), position, 22, 18, 1, (int)TileInfo.InteractionType.Click);
+                    PileContents[3] = new TileInfo(ObjectType<Sack_S>(), position, 4, 30, -1, (int)TileInfo.InteractionType.Click);
                     break;
                 case 3:
                     PileContents = new TileInfo[3];
                     PileContents[0] = new TileInfo(ObjectType<Crate_S>(), position, 6, 32, -1, (int)TileInfo.InteractionType.Click);
-                    PileContents[1] = new TileInfo(ObjectType<Crate_M>(), position, 8, 14, 0, (int)TileInfo.InteractionType.Mine);
-                    PileContents[2] = new TileInfo(ObjectType<Crate_S>(), position, 26, 34, -1, (int)TileInfo.InteractionType.Chop);
+                    PileContents[1] = new TileInfo(ObjectType<Crate_S>(), position, 8, 14, 0, (int)TileInfo.InteractionType.Click);
+                    PileContents[2] = new TileInfo(ObjectType<Backpack_Sr>(), position, 26, 34, -1, (int)TileInfo.InteractionType.Click);
                     break;
-                    /*case 0:
-                        PileContents = new TileInfo[2];
-                        PileContents[0] = new TileInfo("BookStack_S3", position, 16, 38, -1, (int)TileInfo.InteractionType.Click);
-                        PileContents[1] = new TileInfo("BookStack_S2", position, 18, 28, 0, (int)TileInfo.InteractionType.Chop);
-                        break;
-                    case 1:
-                        PileContents = new TileInfo[4];
-                        PileContents[0] = new TileInfo("Crate_S", position, 4, 32, -1, (int)TileInfo.InteractionType.Click);
-                        PileContents[1] = new TileInfo("Crate_M", position, 18, 28, -1, (int)TileInfo.InteractionType.Chop);
-                        PileContents[2] = new TileInfo("Cloth_L", position, 18, 26, 1, (int)TileInfo.InteractionType.Mine);
-                        PileContents[3] = new TileInfo("BookStack_S3", position, 24, 14, 2, (int)TileInfo.InteractionType.Click);
-                        break;
-                    case 2:
-                        PileContents = new TileInfo[4];
-                        PileContents[0] = new TileInfo("Crate_S", position, 18, 32, -1, (int)TileInfo.InteractionType.Click);
-                        PileContents[1] = new TileInfo("Cloth_S", position, 18, 30, 0, (int)TileInfo.InteractionType.Mine);
-                        PileContents[2] = new TileInfo("BookStack_S3", position, 22, 18, 1, (int)TileInfo.InteractionType.Click);
-                        PileContents[3] = new TileInfo("Sack_S", position, 4, 30, -1, (int)TileInfo.InteractionType.Chop);
-                        break;
-                    case 3:
-                        PileContents = new TileInfo[3];
-                        PileContents[0] = new TileInfo("Crate_S", position, 6, 32, -1, (int)TileInfo.InteractionType.Click);
-                        PileContents[1] = new TileInfo("Crate_S", position, 8, 14, 0, (int)TileInfo.InteractionType.Mine);
-                        PileContents[2] = new TileInfo("Backpack_Sr", position, 26, 34, -1, (int)TileInfo.InteractionType.Chop);
-                        break;*/
             }
         }
 
