@@ -13,8 +13,9 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool pickupWood = false;
         public bool outDistanceDialogue = false;
         public bool guideGreeting = false;
-
+        public bool kittFirst = true;
         private int greetCounter = 0;
+
         public override void PostUpdateBuffs()
         {
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();

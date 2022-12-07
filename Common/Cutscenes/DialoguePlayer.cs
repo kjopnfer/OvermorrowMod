@@ -22,11 +22,13 @@ namespace OvermorrowMod.Common.Cutscenes
         public override void SaveData(TagCompound tag)
         {
             tag["DialogueFlags"] = DialogueFlags.ToList();
+            //tag["kittFirst"] = kittFirst;
         }
 
         public override void LoadData(TagCompound tag)
         {
             DialogueFlags = tag.Get<List<string>>("DialogueFlags").ToHashSet();
+            //kittFirst = tag.Get<bool>("kittFirst");
         }
 
         public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
