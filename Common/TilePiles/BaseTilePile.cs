@@ -44,7 +44,7 @@ namespace OvermorrowMod.Common.TilePiles
             PileContents = tag.Get<TileInfo[]>("PileContents");
         }
 
-        public virtual void CreateTilePile() { }
+        public abstract void CreateTilePile();
 
         public void SetPosition(Vector2 position) => _position = position;
 
