@@ -85,7 +85,9 @@ namespace OvermorrowMod.Common.TilePiles
 
                 if (tileObject.selected)
                 {
-                    if (tileObject.wiggleTimer++ < 20 && tileObject.wiggleTimer > 3)
+                    if (tileObject.canWiggle) tileObject.wiggleTimer++;
+
+                    if (tileObject.wiggleTimer < 20 && tileObject.wiggleTimer > 3)
                     {
                         wiggleOffset = new Vector2((float)Math.Sin(tileObject.wiggleTimer * 4), -1f);
                         wiggleRotation = (float)Math.Sin(tileObject.wiggleTimer * 2) / 10f;
@@ -131,7 +133,7 @@ namespace OvermorrowMod.Common.TilePiles
                 }
                 else
                 {
-                    tileObject.wiggleTimer += 2;
+                    if (tileObject.canWiggle) tileObject.wiggleTimer += 2;
                 }
 
                 rect.X = (int)(pos.X + zero.X + wiggleOffset.X) + rect.Width / 2;

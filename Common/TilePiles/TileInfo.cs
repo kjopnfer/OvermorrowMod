@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.TilePiles
 {
@@ -31,6 +29,7 @@ namespace OvermorrowMod.Common.TilePiles
         public SoundStyle hitSound;
         public SoundStyle deathSound;
         public SoundStyle grabSound;
+        public bool canWiggle;
 
         public enum InteractionType
         {
@@ -66,6 +65,7 @@ namespace OvermorrowMod.Common.TilePiles
             hitSound = tileObject.HitSound;
             deathSound = tileObject.DeathSound;
             grabSound = tileObject.GrabSound;
+            canWiggle = tileObject.CanWiggle;
 
             rectangle.X = ((int)coordinates.X - 1) * 16 + x;
             rectangle.Y = ((int)coordinates.Y - 2) * 16 + y;

@@ -66,6 +66,7 @@ namespace OvermorrowMod.Common.TilePiles
         public int ItemID { get; set; }
         public int MinStack { get; set; }
         public int MaxStack { get; set; }
+        public bool CanWiggle { get; set; } = true;
 
         public static TileObject GetTileObject(string type) => TileObjects[type];
         public virtual string Texture { get { return null; } private set { } }
