@@ -1,10 +1,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
+using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
@@ -49,6 +52,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         private void GenerateCamp(GenerationProgress progress, GameConfiguration config)
         {
+            var logger = OvermorrowModFile.Instance.Logger;
+
             progress.Message = "Setting Up Camp";
 
             int startX = Main.spawnTileX;
@@ -66,16 +71,23 @@ namespace OvermorrowMod.Content.WorldGeneration
                 {
                     validArea = true;
 
-                    WorldGen.PlaceTile(x + 1, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x - 1, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
 
                     WorldGen.KillTile(x - 1, y - 1);
                     WorldGen.KillTile(x, y - 1);
                     WorldGen.KillTile(x + 1, y - 1);
 
-                    ModUtils.PlaceObject(x, y - 1, TileID.Campfire);
-                    Wiring.ToggleCampFire(x, y - 1, Framing.GetTileSafely(x, y - 1), false, true);
+                    //ModUtils.PlaceObject(x, y - 1, TileID.Campfire);
+                    //Wiring.ToggleCampFire(x, y - 1, Framing.GetTileSafely(x, y - 1), false, true);
+                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<LootPile>());
+                    int id = ModContent.GetInstance<BasicLoot>().Place(x - 1, y - 3); // this represents the top left corner
+                    BasicLoot te = TileEntity.ByID[id] as BasicLoot;
+                    te.SetPosition(new Vector2(x, y - 1));
+                    te.CreateTilePile();
+
+                    logger.Debug("placed a thing: [" + x + ", " + (y - 1) + "] -> position: [" + (x + 1) + "," + (y + 2) + "]");
                 }
                 else
                 {
@@ -97,12 +109,12 @@ namespace OvermorrowMod.Content.WorldGeneration
                 {
                     validArea = true;
 
-                    WorldGen.PlaceTile(x - 2, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x - 1, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x + 1, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x + 2, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x + 3, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x - 2, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x + 2, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x + 3, y, TileID.Adamantite, true, true);
 
                     WorldGen.KillTile(x - 2, y - 1);
                     WorldGen.KillTile(x - 1, y - 1);
@@ -111,7 +123,14 @@ namespace OvermorrowMod.Content.WorldGeneration
                     WorldGen.KillTile(x + 2, y - 1);
                     WorldGen.KillTile(x + 3, y - 1);
 
-                    ModUtils.PlaceObject(x, y - 1, GetRandomTent());
+                    //ModUtils.PlaceObject(x, y - 1, GetRandomTent());
+                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<AxeStump>());
+                    int id = ModContent.GetInstance<AxeLoot>().Place(x - 1, y - 3);
+                    AxeLoot te = TileEntity.ByID[id] as AxeLoot;
+                    te.SetPosition(new Vector2(x, y - 1));
+                    te.CreateTilePile();
+
+                    logger.Debug("placed a thing 2: [" + x + ", " + (y - 1) + "] -> position: [" + (x + 1) + "," + (y + 2) + "]");
                 }
                 else
                 {
@@ -133,12 +152,12 @@ namespace OvermorrowMod.Content.WorldGeneration
                 {
                     validArea = true;
 
-                    WorldGen.PlaceTile(x - 2, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x - 1, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x + 1, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x + 2, y, TileID.Grass, true, true);
-                    WorldGen.PlaceTile(x + 3, y, TileID.Grass, true, true);
+                    WorldGen.PlaceTile(x - 2, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x + 2, y, TileID.Adamantite, true, true);
+                    WorldGen.PlaceTile(x + 3, y, TileID.Adamantite, true, true);
 
                     WorldGen.KillTile(x - 2, y - 1);
                     WorldGen.KillTile(x - 1, y - 1);
@@ -147,7 +166,15 @@ namespace OvermorrowMod.Content.WorldGeneration
                     WorldGen.KillTile(x + 2, y - 1);
                     WorldGen.KillTile(x + 3, y - 1);
 
-                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<BlueTent>(), 0, 1);
+                    //ModUtils.PlaceObject(x, y - 1, ModContent.TileType<BlueTent>(), 0, 1);
+                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<LootPile>());
+                    int id = ModContent.GetInstance<BasicLoot>().Place(x - 1, y - 3);
+                    BasicLoot te = TileEntity.ByID[id] as BasicLoot;
+                    //te.SetPosition(new Vector2(x + 1, y + 2));
+                    te.SetPosition(new Vector2(x, y - 1));
+                    te.CreateTilePile();
+
+                    logger.Debug("placed a thing 3: [" + x + ", " + (y - 1) + "] -> position: [" + (x + 1) + "," + (y + 2) + "]");
                 }
                 else
                 {

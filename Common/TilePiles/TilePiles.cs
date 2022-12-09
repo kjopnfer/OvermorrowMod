@@ -1,15 +1,11 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.ObjectData;
 using Terraria.ModLoader;
-using OvermorrowMod.Core;
-using Terraria.ModLoader.IO;
-using Terraria.GameContent.Metadata;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using Terraria.Audio;
 using OvermorrowMod.Content.Items.Misc;
@@ -47,7 +43,14 @@ namespace OvermorrowMod.Common.TilePiles
 
             TEntity pile = FindTE(i, j);
 
+            Main.NewText("finding [" + i + ", " + j + "]");
+
             if (pile == null) return;
+
+            foreach (TileInfo tileObject in pile.PileContents)
+            {
+                Main.NewText("active " + tileObject.name);
+            }
 
             foreach (TileInfo tileObject in pile.PileContents)
             {
