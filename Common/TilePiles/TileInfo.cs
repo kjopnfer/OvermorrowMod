@@ -17,6 +17,7 @@ namespace OvermorrowMod.Common.TilePiles
         internal bool selected;
         internal int dependency;
         internal int wiggleTimer;
+        public int hitDelay;
 
         public string identifier;
         public Vector2 coordinates;

@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Tiles.TilePiles.TileObjects
             DeathSound = SoundID.Dig;
             GrabSound = SoundID.Dig;
             ItemID = Terraria.ID.ItemID.Wood;
-            Durability = 140;
+            Durability = 100;
             MinStack = 1;
             MaxStack = 1;
             CanWiggle = false;

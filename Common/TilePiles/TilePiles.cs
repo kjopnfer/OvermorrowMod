@@ -12,6 +12,7 @@ using Terraria.ModLoader.IO;
 using Terraria.GameContent.Metadata;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using Terraria.Audio;
+using OvermorrowMod.Content.Items.Misc;
 
 namespace OvermorrowMod.Common.TilePiles
 {
@@ -86,6 +87,7 @@ namespace OvermorrowMod.Common.TilePiles
                 if (tileObject.selected)
                 {
                     if (tileObject.canWiggle) tileObject.wiggleTimer++;
+                    if (tileObject.hitDelay > 0) tileObject.hitDelay--;
 
                     if (tileObject.wiggleTimer < 20 && tileObject.wiggleTimer > 3)
                     {
@@ -103,10 +105,11 @@ namespace OvermorrowMod.Common.TilePiles
 
                     if (player.HeldItem.pick > 0 && player.itemAnimation > 0 && tileObject.interactType == (int)TileInfo.InteractionType.Mine)
                     {
-                        if (player.itemTime <= player.itemTimeMax / 3)
+                        if (player.itemTime <= player.itemTimeMax / 3 && tileObject.hitDelay <= 0)
                         {
                             SoundEngine.PlaySound(tileObject.hitSound);
                             tileObject.breakCount += player.HeldItem.pick;
+                            tileObject.hitDelay = player.HeldItem.useTime / 2;
 
                             for (int _ = 0; _ < 5; _++)
                             {
@@ -118,10 +121,12 @@ namespace OvermorrowMod.Common.TilePiles
 
                     if (player.HeldItem.axe > 0 && player.itemAnimation > 0 && tileObject.interactType == (int)TileInfo.InteractionType.Chop)
                     {
-                        if (player.itemTime <= player.itemTimeMax / 3)
+                        if (player.itemTime <= player.itemTimeMax / 3 && tileObject.hitDelay <= 0)
                         {
+                            //Main.NewText(player.itemTime + " / " + player.itemTimeMax);
                             SoundEngine.PlaySound(tileObject.hitSound);
                             tileObject.breakCount += player.HeldItem.axe;
+                            tileObject.hitDelay = player.HeldItem.useTime / 2;
 
                             for (int _ = 0; _ < 5; _++)
                             {
@@ -172,16 +177,19 @@ namespace OvermorrowMod.Common.TilePiles
                 {
                     tileObject.selected = true;
 
+                    Player player = Main.LocalPlayer;
+                    player.cursorItemIconEnabled = true;
+
                     switch (tileObject.interactType)
                     {
                         case (int)TileInfo.InteractionType.Click:
-                            Main.instance.MouseText($"Take {tileObject.name}");
+                            player.cursorItemIconID = ModContent.ItemType<EmptyItem>();
                             break;
                         case (int)TileInfo.InteractionType.Chop:
-                            Main.instance.MouseText($"Chop {tileObject.name}");
+                            player.cursorItemIconID = ItemID.IronAxe;
                             break;
                         case (int)TileInfo.InteractionType.Mine:
-                            Main.instance.MouseText($"Mine {tileObject.name}");
+                            player.cursorItemIconID = ItemID.IronPickaxe;
                             break;
                     }
                 }
