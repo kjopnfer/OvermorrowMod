@@ -11,6 +11,7 @@ using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
 using OvermorrowMod.Quests;
 using Terraria.Audio;
+using OvermorrowMod.Common.NPCs;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -510,6 +511,35 @@ namespace OvermorrowMod.Common.Cutscenes
             Utils.DrawBorderString(spriteBatch, displayText, pos + new Vector2(25, 0), Color.White);
         }
 
+        public static int NPCToShop(int type)
+        {
+            switch (type)
+            {
+                case 17: return 1;
+                case 19: return 2;
+                case 20: return 3;
+                case 38: return 4;
+                case 54: return 5;
+                case 107: return 6;
+                case 108: return 7;
+                case 124: return 8;
+                case 142: return 9;
+                case 160: return 10;
+                case 178: return 11;
+                case 207: return 12;
+                case 208: return 13;
+                case 209: return 14;
+                case 227: return 15;
+                case 228: return 16;
+                case 229: return 17;
+                case 353: return 18;
+                case 368: return 19;
+                case 453: return 20;
+                case 550: return 21;
+                default: return 22;
+            }
+        }
+
         public override void MouseDown(UIMouseEvent evt)
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
@@ -534,6 +564,27 @@ namespace OvermorrowMod.Common.Cutscenes
                         case "marker":
                             break;
                         case "shop":
+                            int type = Main.npc[Main.LocalPlayer.talkNPC].type;
+                            Main.NewText(type);
+
+                            Main.NewText("wtf?");
+
+                            Main.player[Main.myPlayer].chest = -1;
+                            Main.npcChatText = "";
+
+                            int shop = NPC.NewNPC(null, (int)Main.LocalPlayer.Center.X, (int)Main.LocalPlayer.Center.Y, ModContent.NPCType<ShopHandler>(), Main.LocalPlayer.whoAmI);
+                            Main.LocalPlayer.SetTalkNPC(shop);
+
+                            Main.recBigList = false;
+                            Main.playerInventory = true;
+                            Main.InGuideCraftMenu = false;
+                            Main.InReforgeMenu = false;
+
+                            // Sets the player to the NPC's shop ID, currently DOESNT check for modded NPCs yet
+                            Main.SetNPCShopIndex(NPCToShop(type));
+
+                            Main.instance.shop[Main.npcShop].SetupShop(Main.npcShop < Main.MaxShopIDs - 1 ? Main.npcShop : type);
+                 
                             return;
                     }
                 }

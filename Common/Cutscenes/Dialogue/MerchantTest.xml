@@ -1,5 +1,5 @@
 <Dialogue>
-	<DialogueNode id="start" flag="intro_done">
+	<DialogueNode id="start">
 		<Dialogue>
 			<Text time="60">Nice camp eh? But it's not enough, trust me.</Text>
 			<Text color="FF5733" time="60">Not against the [monsters] that come out when it gets dark.</Text>

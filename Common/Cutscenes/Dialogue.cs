@@ -142,6 +142,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                     }
                                     break;
                                 case "shop":
+                                    optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, "shop"));
                                     break;
                                 case "quest":
                                     break;

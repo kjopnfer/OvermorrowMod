@@ -20,11 +20,18 @@ namespace OvermorrowMod.Common.Detours
                 NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                 XmlDocument doc = new XmlDocument();
 
+                string text;
                 #region Vanilla
                 switch (npc.type)
                 {
                     case NPCID.Guide:
-                        string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
+                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/GuideIntro.xml"));
+                        doc.LoadXml(text);
+
+                        player.SetDialogue(texture, npc.GetChat(), 20, doc);
+                        break;
+                    case NPCID.Merchant:
+                        text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/MerchantTest.xml"));
                         doc.LoadXml(text);
 
                         player.SetDialogue(texture, npc.GetChat(), 20, doc);
@@ -37,7 +44,7 @@ namespace OvermorrowMod.Common.Detours
                 // I'm sorry but apparently there is no other way lol
                 if (npc.type == ModContent.NPCType<TownKid>())
                 {
-                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
                     doc.LoadXml(text);
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -45,7 +52,7 @@ namespace OvermorrowMod.Common.Detours
                 }
                 else if (npc.type == ModContent.NPCType<SojournGuard>())
                 {
-                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard.xml"));
                     doc.LoadXml(text);
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -53,7 +60,7 @@ namespace OvermorrowMod.Common.Detours
                 }
                 else if (npc.type == ModContent.NPCType<SojournGuard2>())
                 {
-                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard2.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard2.xml"));
                     doc.LoadXml(text);
 
                     texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "Full/dog", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
@@ -61,7 +68,7 @@ namespace OvermorrowMod.Common.Detours
                 }
                 else if (npc.type == ModContent.NPCType<SojournGuard3>())
                 {
-                    string text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard3.xml"));
+                    text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Content/UI/Dialogue/SojournGuard3.xml"));
 
                     // If the player has interacted with Moxley and has spoken to this NPC the first time
                     if (player.DialogueFlags.Contains("SojournGuard_4") && player.kittFirst)
