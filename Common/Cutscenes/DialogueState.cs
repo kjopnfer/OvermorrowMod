@@ -149,7 +149,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                 {
                                     Vector2 position = OptionPosition(i);
                                     string questText = i == 1 ? "Accept" : "Decline";
-                                    ModUtils.AddElement(new OptionButton(questText, "none"), (int)position.X, (int)position.Y, 285, 75, DrawSpace);
+                                    //ModUtils.AddElement(new OptionButton(questText, "none"), (int)position.X, (int)position.Y, 285, 75, DrawSpace);
                                 }
                             }
                         }
@@ -165,7 +165,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                 if (questCounter == quest.EndDialogueCount - 1)
                                 {
                                     Vector2 position = OptionPosition(1);
-                                    ModUtils.AddElement(new OptionButton("Turn In", "none"), (int)position.X, (int)position.Y, 285, 75, DrawSpace);
+                                    //ModUtils.AddElement(new OptionButton("Turn In", "none"), (int)position.X, (int)position.Y, 285, 75, DrawSpace);
                                 }
                             }
                         }
@@ -444,12 +444,51 @@ namespace OvermorrowMod.Common.Cutscenes
         private string linkID;
         private string action;
 
-        public OptionButton(string displayText, string linkID, string action = "none")
+        private int itemID;
+        private string itemName;
+        private int stack;
+
+        public OptionButton(string displayText, string linkID, string action)
         {
             this.displayText = displayText;
             this.linkID = linkID;
             this.action = action;
         }
+
+        /// <summary>
+        /// <para>Used to handle button with a vanilla item action. Vanilla uses static ids for their items which can be passed directly.</para> 
+        /// For modded items, the name of the file must be used instead.
+        /// </summary>
+        /// <param name="displayText">The text displayed on the dialogue option.</param>
+        /// <param name="itemID">The STATIC ID for the vanilla item.</param>
+        /// <param name="stack">The number of items given, defaults to 1.</param>
+        public OptionButton(string displayText, string linkID, int itemID, int stack = 1)
+        {
+            this.displayText = displayText;
+            this.linkID = linkID;
+            this.itemID = itemID;
+            this.itemName = null;
+            this.stack = stack;
+            this.action = "item";
+        }
+
+        /// <summary>
+        /// <para>Used to handle button with a modded item action. Modded items can be found by their file name string.</para> 
+        /// For vanilla items, the id of the item must be used instead.
+        /// </summary>
+        /// <param name="displayText">The text displayed on the dialogue option.</param>
+        /// <param name="itemName">The FILE NAME for the modded item.</param>
+        /// <param name="stack">The number of items given, defaults to 1.</param>
+        public OptionButton(string displayText, string linkID, string itemName, int stack = 1)
+        {
+            this.displayText = displayText;
+            this.linkID = linkID;
+            this.itemName = itemName;
+            this.itemID = -1;
+            this.stack = stack;
+            this.action = "item";
+        }
+
 
         public string GetText() => displayText;
 
@@ -485,8 +524,16 @@ namespace OvermorrowMod.Common.Cutscenes
                 {
                     switch (action)
                     {
-                        case "exit":
-                            Main.LocalPlayer.SetTalkNPC(-1);
+                        case "item":
+                            if (itemID != -1 && itemName == null)
+                                Main.LocalPlayer.QuickSpawnItem(null, itemID, stack);
+                            else if (itemName != null && itemID == -1)
+                                Main.LocalPlayer.QuickSpawnItem(null, OvermorrowModFile.Instance.Find<ModItem>(itemName).Type, stack);
+                            //Main.LocalPlayer.SetTalkNPC(-1);
+                            break;
+                        case "marker":
+                            break;
+                        case "shop":
                             return;
                     }
                 }
@@ -498,7 +545,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     return;
                 }
 
-                NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                /*NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                 QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
                 QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
 
@@ -536,7 +583,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                         Main.LocalPlayer.SetTalkNPC(-1);
                         break;
-                }
+                }*/
             }
         }
     }

@@ -103,15 +103,52 @@ namespace OvermorrowMod.Common.Cutscenes
                     {
                         if (option.Attributes == null) continue;
 
+                        // options will always have a linkID since the options cannot exit the text
+                        // click on item button, gives item and then advance text
+
+                        // click on marker button, puts marker and then advance text
+
+                        // click on button, advance the text
+
+                        // click on button, open shop, exit dialogue
+
+
                         if (option.Attributes["action"] != null)
                         {
-                            if (option.Attributes["action"].Value == "exit")
+                            switch (option.Attributes["action"].Value)
                             {
-                                optionButtons.Add(new OptionButton(option.InnerText, "none", "exit"));
+                                case "item":
+                                    if (option.Attributes["item-type"].Value != null)
+                                    {
+                                        var itemID = option.Attributes["item-type"].Value;
+                                        var isNumber = int.TryParse(itemID, out _);
+
+                                        int itemStack = option.Attributes["item-stack"] != null ? int.Parse(option.Attributes["item-stack"].Value) : 1;
+
+                                        if (isNumber) // The string could be parsed as a number, therefore it's vanilla.
+                                        {
+                                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, int.Parse(itemID), itemStack));
+                                        }
+                                        else // Otherwise, it's modded so don't parse.
+                                        {
+                                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, itemID, itemStack));
+                                        }
+                                    }
+                                    break;
+                                case "marker":
+                                    if (option.Attributes["marker-type"].Value != "null")
+                                    {
+
+                                    }
+                                    break;
+                                case "shop":
+                                    break;
+                                case "quest":
+                                    break;
                             }
                         }
                         else if (option.Attributes["link"] != null)
-                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value));
+                            optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, "none"));
                     }
                 }
             }
