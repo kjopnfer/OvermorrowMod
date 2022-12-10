@@ -132,7 +132,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                         // Determines which button type is shown in the bottom right corner
                         if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
-                            ModUtils.AddElement(new ExitButton(), (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 50, 25, this);
+                            ModUtils.AddElement(new ExitButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
                         else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
                             ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
                     }
@@ -400,7 +400,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 parent.ResetTimers();
                 parent.shouldRedraw = true;
 
-                Main.NewText("incrementing counter " + player.GetDialogue().GetTextIteration() + " / " + player.GetDialogue().GetTextListLength());
+                //Main.NewText("incrementing counter " + player.GetDialogue().GetTextIteration() + " / " + player.GetDialogue().GetTextListLength());
             }
         }
     }
@@ -428,7 +428,7 @@ namespace OvermorrowMod.Common.Cutscenes
             SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            if (Parent.Parent is DialogueState parent)
+            if (Parent is DialogueState parent)
             {
                 parent.ResetTimers();
                 parent.SetID("start");
@@ -541,7 +541,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (!parent.drawQuest)
                 {
                     parent.SetID(linkID);
-                    Main.NewText("changing id to " + linkID);
+                    //Main.NewText("changing id to " + linkID);
                     return;
                 }
 

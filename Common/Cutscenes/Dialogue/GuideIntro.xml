@@ -5,7 +5,7 @@
 			<Text color="FF5733" time="60">Not against the [monsters] that come out when it gets dark.</Text>
 		</Dialogue>
 		<Options>
-			<Option link="1" action="item" item-type="9" item-stack="99">Monsters?</Option>
+			<Option link="1" action="item" item-type="HeavenBlade" item-stack="99">Monsters?</Option>
 		</Options>
 	</DialogueNode>
 

@@ -9,7 +9,7 @@ using OvermorrowMod.Common.Primitives;
 using OvermorrowMod.Content.NPCs.Bosses.Eye;
 using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using OvermorrowMod.Content.NPCs.Carts;
-using OvermorrowMod.Content.NPCs.Town;
+using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
