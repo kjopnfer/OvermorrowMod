@@ -6,6 +6,7 @@ using Terraria;
 using System.Xml;
 using Terraria.ModLoader.IO;
 using System.Linq;
+using Terraria.GameInput;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -18,6 +19,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public HashSet<string> DialogueFlags = new HashSet<string>();
 
         public bool AddedDialogue = false;
+        public bool LockPlayer = false;
 
         public override void SaveData(TagCompound tag)
         {
@@ -52,5 +54,51 @@ namespace OvermorrowMod.Common.Cutscenes
         public Popup RemovePopup() => PopupQueue.Dequeue();
 
         public int GetQueueLength() => PopupQueue.Count;
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if (!LockPlayer) return;
+
+            Player player = Main.LocalPlayer;
+
+            if (!player.mount.Active || !player.mount.Cart)
+            {
+                if (triggersSet.Grapple)
+                {
+                    triggersSet.Grapple = false;
+                    player.controlHook = false;
+                }
+
+                if (triggersSet.Up)
+                {
+                    triggersSet.Up = false;
+                    player.controlUp = false;
+                }
+
+                if (triggersSet.Down)
+                {
+                    triggersSet.Down = false;
+                    player.controlDown = false;
+                }
+
+                if (triggersSet.Left)
+                {
+                    triggersSet.Left = false;
+                    player.controlLeft = false;
+                }
+
+                if (triggersSet.Right)
+                {
+                    triggersSet.Right = false;
+                    player.controlRight = false;
+                }
+
+                if (triggersSet.Jump)
+                {
+                    triggersSet.Jump = false;
+                    player.controlJump = false;
+                }
+            }
+        }
     }
 }

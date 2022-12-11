@@ -12,6 +12,7 @@ using Terraria.GameContent.UI.Elements;
 using OvermorrowMod.Quests;
 using Terraria.Audio;
 using OvermorrowMod.Common.NPCs;
+using Microsoft.Xna.Framework.Input;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -68,6 +69,42 @@ namespace OvermorrowMod.Common.Cutscenes
             base.OnInitialize();
         }
 
+        public bool canInteract = true;
+        public int interactDelay = 0;
+        private void HandlePlayerInteraction()
+        {
+            if (!canInteract) return;
+
+            if (Main.mouseLeft && interactDelay == 0)
+            {
+                interactDelay = 10;
+                Main.NewText("click left");
+            }
+
+            //Main.NewText(Main.keyState.GetPressedKeys());
+            if (ModUtils.CheckKeyPress() && interactDelay == 0)
+            {
+                interactDelay = 10;
+                Main.NewText("key pressed");
+            }
+            //KeyboardState ks = Main.keyState;
+            //Main.NewText(ks.GetPressedKeys());
+
+            if (interactDelay > 0) interactDelay--;
+        }
+
+        private void LockPlayer()
+        {
+            Player player = Main.LocalPlayer;
+
+            player.mouseInterface = true;
+            player.immune = true;
+            player.immuneTime = 60;
+            player.immuneNoBlink = true;
+
+            player.GetModPlayer<DialoguePlayer>().LockPlayer = true;
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -75,6 +112,7 @@ namespace OvermorrowMod.Common.Cutscenes
             if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogue() == null)
             {
                 player.ClearDialogue();
+                player.LockPlayer = false;
 
                 ResetTimers();
                 SetID("start");
@@ -87,6 +125,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 return;
             }
 
+            LockPlayer();
             DrawBackdrop(player, spriteBatch);
 
             if (DelayTimer++ >= DIALOGUE_DELAY)
@@ -108,15 +147,10 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
             {
-                //Main.NewText("redrawing");
-
                 // Removes the options and then readds the elements back
-                //DrawSpace.RemoveAllChildren();
                 this.RemoveAllChildren();
 
-                //ModUtils.AddElement(BackPanel, 0, -25, 650, 200, DrawSpace);
-                //ModUtils.AddElement(Text, 0, 0, 350, 300, DrawSpace);
-                //ModUtils.AddElement(Portrait, 0, 0, 650, 300, DrawSpace);
+                HandlePlayerInteraction();
 
                 // Handles the drawing of the UI after the dialogue has finished drawing
                 if (DrawTimer >= player.GetDialogue().drawTime)
@@ -137,7 +171,7 @@ namespace OvermorrowMod.Common.Cutscenes
                         else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
                             ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
                     }
-                    else // The UI drawing when the player has clicked on the Quest button
+                    /*else // The UI drawing when the player has clicked on the Quest button
                     {
                         if (!isDoing)
                         {
@@ -170,7 +204,7 @@ namespace OvermorrowMod.Common.Cutscenes
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
 
                 // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
@@ -182,10 +216,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
                     {
                         Vector2 position = OptionPosition(optionNumber);
-                        //ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, DrawSpace);
                         ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, this);
-
-                        //Main.NewText("draw: " + button.GetText());
 
                         optionNumber++;
                     }
@@ -565,9 +596,6 @@ namespace OvermorrowMod.Common.Cutscenes
                             break;
                         case "shop":
                             int type = Main.npc[Main.LocalPlayer.talkNPC].type;
-                            Main.NewText(type);
-
-                            Main.NewText("wtf?");
 
                             Main.player[Main.myPlayer].chest = -1;
                             Main.npcChatText = "";
