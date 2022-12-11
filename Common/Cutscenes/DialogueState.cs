@@ -80,17 +80,29 @@ namespace OvermorrowMod.Common.Cutscenes
 
             if ((Main.mouseLeft || ModUtils.CheckKeyPress()) && interactDelay == 0 && DelayTimer >= DIALOGUE_DELAY)
             {
+                DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+                Dialogue dialogue = player.GetDialogue();
+
                 interactDelay = 10;
 
-                if (DrawTimer < Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogue().drawTime)
+                if (DrawTimer < dialogue.drawTime)
                 {
-                    DrawTimer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogue().drawTime;
+                    DrawTimer = dialogue.drawTime;
                     Main.NewText("complete text during drawing");
                 }
                 else
                 {
-                    AdvanceText();
-                    Main.NewText("advance to next dialogue after drawing");
+
+                    if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                    {
+                        ExitText();
+                        Main.NewText("exited");
+                    }
+                    else
+                    {
+                        AdvanceText();
+                        Main.NewText("advance to next dialogue after drawing");
+                    }
                 }
             }
 
@@ -108,6 +120,14 @@ namespace OvermorrowMod.Common.Cutscenes
 
             ResetTimers();
             shouldRedraw = true;
+        }
+
+        private void ExitText()
+        {
+            ResetTimers();
+            SetID("start");
+
+            Main.LocalPlayer.SetTalkNPC(-1);
         }
 
         private void LockPlayer()
@@ -236,7 +256,16 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
 
                 canInteract = false;
-                Main.NewText("waiting for player to select option");
+                if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                {
+                    canInteract = true;
+                    Main.NewText("waiting for player to click to exit");
+                }
+                else
+                {
+                    canInteract = false;
+                    Main.NewText("waiting for player to select option");     
+                }
 
                 if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null && !drawQuest)
                 {
