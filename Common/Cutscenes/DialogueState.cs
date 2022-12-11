@@ -75,22 +75,39 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             if (!canInteract) return;
 
-            if (Main.mouseLeft && interactDelay == 0)
+            Main.NewText("awaiting actions");
+            //Main.NewText(DrawTimer + " / " + Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogue().drawTime);
+
+            if ((Main.mouseLeft || ModUtils.CheckKeyPress()) && interactDelay == 0 && DelayTimer >= DIALOGUE_DELAY)
             {
                 interactDelay = 10;
-                Main.NewText("click left");
+
+                if (DrawTimer < Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogue().drawTime)
+                {
+                    DrawTimer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogue().drawTime;
+                    Main.NewText("complete text during drawing");
+                }
+                else
+                {
+                    AdvanceText();
+                    Main.NewText("advance to next dialogue after drawing");
+                }
             }
 
-            //Main.NewText(Main.keyState.GetPressedKeys());
-            if (ModUtils.CheckKeyPress() && interactDelay == 0)
-            {
-                interactDelay = 10;
-                Main.NewText("key pressed");
-            }
             //KeyboardState ks = Main.keyState;
             //Main.NewText(ks.GetPressedKeys());
 
             if (interactDelay > 0) interactDelay--;
+        }
+
+        private void AdvanceText()
+        {
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+
+            player.GetDialogue().IncrementText();
+
+            ResetTimers();
+            shouldRedraw = true;
         }
 
         private void LockPlayer()
@@ -126,6 +143,8 @@ namespace OvermorrowMod.Common.Cutscenes
             }
 
             LockPlayer();
+            HandlePlayerInteraction();
+
             DrawBackdrop(player, spriteBatch);
 
             if (DelayTimer++ >= DIALOGUE_DELAY)
@@ -150,7 +169,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 // Removes the options and then readds the elements back
                 this.RemoveAllChildren();
 
-                HandlePlayerInteraction();
+                canInteract = true;
 
                 // Handles the drawing of the UI after the dialogue has finished drawing
                 if (DrawTimer >= player.GetDialogue().drawTime)
@@ -169,7 +188,12 @@ namespace OvermorrowMod.Common.Cutscenes
                         if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
                             ModUtils.AddElement(new ExitButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
                         else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                        {
+                            //Main.NewText("add next button");
+                            canInteract = true;
+
                             ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
+                        }
                     }
                     /*else // The UI drawing when the player has clicked on the Quest button
                     {
@@ -210,6 +234,9 @@ namespace OvermorrowMod.Common.Cutscenes
                 // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
                 int optionNumber = 1;
                 if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
+
+                canInteract = false;
+                Main.NewText("waiting for player to select option");
 
                 if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null && !drawQuest)
                 {
@@ -612,7 +639,7 @@ namespace OvermorrowMod.Common.Cutscenes
                             Main.SetNPCShopIndex(NPCToShop(type));
 
                             Main.instance.shop[Main.npcShop].SetupShop(Main.npcShop < Main.MaxShopIDs - 1 ? Main.npcShop : type);
-                 
+
                             return;
                     }
                 }
