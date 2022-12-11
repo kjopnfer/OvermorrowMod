@@ -13,6 +13,7 @@ using OvermorrowMod.Quests;
 using Terraria.Audio;
 using OvermorrowMod.Common.NPCs;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -58,7 +59,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool shouldRedraw = true;
 
         public int questCounter = 0;
-
+        public int continueButtonCounter = 0; // i have this stupid thing because for some reason i delete all the buttons every tick
         public override void OnInitialize()
         {
             ModUtils.AddElement(DrawSpace, Main.screenWidth / 2 - WIDTH, Main.screenHeight / 2 - HEIGHT, WIDTH * 2, HEIGHT * 2, this);
@@ -75,7 +76,7 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             if (!canInteract) return;
 
-            Main.NewText("awaiting actions");
+            //Main.NewText("awaiting actions");
             //Main.NewText(DrawTimer + " / " + Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogue().drawTime);
 
             if ((Main.mouseLeft || ModUtils.CheckKeyPress()) && interactDelay == 0 && DelayTimer >= DIALOGUE_DELAY)
@@ -88,20 +89,16 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (DrawTimer < dialogue.drawTime)
                 {
                     DrawTimer = dialogue.drawTime;
-                    Main.NewText("complete text during drawing");
                 }
                 else
                 {
-
                     if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
                     {
                         ExitText();
-                        Main.NewText("exited");
                     }
                     else
                     {
                         AdvanceText();
-                        Main.NewText("advance to next dialogue after drawing");
                     }
                 }
             }
@@ -205,9 +202,9 @@ namespace OvermorrowMod.Common.Cutscenes
                         }
 
                         // Determines which button type is shown in the bottom right corner
-                        if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
-                            ModUtils.AddElement(new ExitButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
-                        else if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                        //if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                        //    ModUtils.AddElement(new ExitButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
+                        if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
                         {
                             //Main.NewText("add next button");
                             canInteract = true;
@@ -259,12 +256,10 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
                 {
                     canInteract = true;
-                    Main.NewText("waiting for player to click to exit");
                 }
                 else
                 {
                     canInteract = false;
-                    Main.NewText("waiting for player to select option");     
                 }
 
                 if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null && !drawQuest)
@@ -454,6 +449,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
     public class NextButton : UIElement
     {
+        private int buttonCounter;
         public NextButton() { }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -464,10 +460,19 @@ namespace OvermorrowMod.Common.Cutscenes
             if (isHovering)
             {
                 Main.LocalPlayer.mouseInterface = true;
-                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
+                //spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
             }
 
-            Utils.DrawBorderString(spriteBatch, "Next", pos /*+ new Vector2(0, 25)*/, Color.White);
+            if (Parent is DialogueState parent)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
+                //spriteBatch.Draw(texture, GetDimensions().ToRectangle(), null, Color.White * 0.25f);
+                //Main.NewText("buttoncounter: " + buttonCounter);
+                float xOffset = MathHelper.Lerp(-10, 0, (float)(Math.Sin(parent.continueButtonCounter++ / 20f) / 2 + 0.5f));
+                spriteBatch.Draw(texture, pos + new Vector2(20 + xOffset, 10), null, Color.White * 0.75f, 0, texture.Size() / 2f, 1f, 0, 0);
+
+            }
+            //Utils.DrawBorderString(spriteBatch, "Next", pos /*+ new Vector2(0, 25)*/, Color.White);
         }
 
         public override void MouseDown(UIMouseEvent evt)
