@@ -9,7 +9,8 @@ namespace OvermorrowMod.Quests
     {
         TakeQuest,
         CompleteQuest,
-        ResetQuests
+        ResetQuests,
+        TickQuestRequirements
     }
 
     internal class QuestPacketHandler : PacketHandler
@@ -54,6 +55,24 @@ namespace OvermorrowMod.Quests
             Main.player[fromWho].GetModPlayer<QuestPlayer>().CompleteQuest(questId);
         }
 
+        public void TickQuestRequirements(int toWho, int fromWho, string questId)
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer) return;
+            var packet = GetPacket((byte)QuestPacketType.TickQuestRequirements, fromWho);
+            packet.Write(questId);
+            packet.Send(toWho, fromWho);
+        }
+
+        private void RecTickQuestREquirements(BinaryReader reader, int fromWho)
+        {
+            var questId = reader.ReadString();
+            if (Main.netMode == NetmodeID.Server)
+            {
+                TickQuestRequirements(-1, fromWho, questId);
+            }
+            Main.player[fromWho].GetModPlayer<QuestPlayer>().TickQuestRequirements(questId);
+        }
+
         public void ResetQuest(int toWho, int fromWho)
         {
             if (Main.netMode == NetmodeID.SinglePlayer) return;
@@ -83,6 +102,9 @@ namespace OvermorrowMod.Quests
                     break;
                 case (byte)QuestPacketType.ResetQuests:
                     RecResetQuest(fromWho);
+                    break;
+                case (byte)QuestPacketType.TickQuestRequirements:
+                    RecTickQuestREquirements(reader, fromWho);
                     break;
             }
         }

@@ -1,12 +1,18 @@
 ﻿using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.State;
+using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
 {
     public abstract class BaseCompositeRequirement : IQuestRequirement
     {
-        public IQuestRequirement[] Clauses { get; }
+        public abstract IEnumerable<IQuestRequirement> GetActiveClauses(QuestPlayer player, BaseQuestState state);
+
+        public virtual IEnumerable<IQuestRequirement> AllClauses => Clauses;
+
+        protected IQuestRequirement[] Clauses { get; }
 
         public string ID { get; }
 
@@ -23,7 +29,7 @@ namespace OvermorrowMod.Quests.Requirements
             return null;
         }
 
-        public abstract bool IsCompleted(QuestPlayer player, BaseQuestState state);
+        public abstract bool TryCompleteRequirement(QuestPlayer player, BaseQuestState state);
 
         public void ResetState(Player player)
         {
@@ -32,5 +38,9 @@ namespace OvermorrowMod.Quests.Requirements
                 req.ResetState(player);
             }
         }
+
+        public abstract bool CanHandInRequirement(QuestPlayer player, BaseQuestState state);
+
+        public abstract bool IsCompleted(QuestPlayer player, BaseQuestState state);
     }
 }

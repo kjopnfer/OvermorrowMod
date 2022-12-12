@@ -5,22 +5,21 @@ using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
 {
-    public class HousingRequirement : IQuestRequirement
+    public class HousingRequirement : BaseQuestRequirement<CompletableRequirementState>
     {
         private readonly int npcType;
-        public string ID { get; }
 
-        public HousingRequirement(int npcType)
+        public HousingRequirement(string id, int npcType) : base(id)
         {
             if (npcType <= 0) throw new ArgumentException($"Invalid NPC Type: {npcType}");
             this.npcType = npcType;
-            ID = null;
         }
 
-        public string Description => $"{Lang.GetNPCNameValue(npcType)} must have a home";
+        public override string Description => $"{Lang.GetNPCNameValue(npcType)} must have a home";
 
-        public bool IsCompleted(QuestPlayer player, BaseQuestState state)
+        protected override bool IsRequirementCompletable(QuestPlayer player, BaseQuestState state, CompletableRequirementState reqState)
         {
+            // This requirement is checked on hand-in, so we need to return true from here
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 if (Main.npc[i].type == npcType)
@@ -31,11 +30,9 @@ namespace OvermorrowMod.Quests.Requirements
             return false;
         }
 
-        public void ResetState(Player player) { }
-
-        public BaseRequirementState GetNewState()
+        protected override void CompleteRequirement(QuestPlayer player, BaseQuestState state, CompletableRequirementState reqState)
         {
-            return null;
+            // This method does nothing, because no active action is taken to complete the requirement.
         }
     }
 }

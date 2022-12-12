@@ -20,4 +20,31 @@ namespace OvermorrowMod.Quests.State
         {
         }
     }
+
+    public class CompletableRequirementState : BaseRequirementState
+    {
+        public bool IsCompleted { get; set; }
+
+        public CompletableRequirementState(IQuestRequirement requirement) : base(requirement)
+        {
+        }
+
+        public override void Load(TagCompound tag)
+        {
+            IsCompleted = tag.GetBool("isCompleted");
+        }
+
+        public override TagCompound SerializeData()
+        {
+            return new TagCompound
+            {
+                ["isCompleted"] = IsCompleted
+            };
+        }
+
+        public override void Reset()
+        {
+            IsCompleted = false;
+        }
+    }
 }
