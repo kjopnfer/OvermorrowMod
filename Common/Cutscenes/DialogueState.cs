@@ -468,8 +468,8 @@ namespace OvermorrowMod.Common.Cutscenes
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
                 //spriteBatch.Draw(texture, GetDimensions().ToRectangle(), null, Color.White * 0.25f);
                 //Main.NewText("buttoncounter: " + buttonCounter);
-                float xOffset = MathHelper.Lerp(-10, 0, (float)(Math.Sin(parent.continueButtonCounter++ / 20f) / 2 + 0.5f));
-                spriteBatch.Draw(texture, pos + new Vector2(20 + xOffset, 10), null, Color.White * 0.75f, 0, texture.Size() / 2f, 1f, 0, 0);
+                float xOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(parent.continueButtonCounter++ / 20f) / 2 + 0.5f));
+                spriteBatch.Draw(texture, pos + new Vector2(20, 10 + xOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
 
             }
             //Utils.DrawBorderString(spriteBatch, "Next", pos /*+ new Vector2(0, 25)*/, Color.White);
