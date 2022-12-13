@@ -81,11 +81,13 @@ namespace OvermorrowMod.Content.WorldGeneration
 
                     //ModUtils.PlaceObject(x, y - 1, TileID.Campfire);
                     //Wiring.ToggleCampFire(x, y - 1, Framing.GetTileSafely(x, y - 1), false, true);
-                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<LootPile>());
+                    /*ModUtils.PlaceObject(x, y - 1, ModContent.TileType<LootPile>());
                     int id = ModContent.GetInstance<BasicLoot>().Place(x - 1, y - 3); // this represents the top left corner
                     BasicLoot te = TileEntity.ByID[id] as BasicLoot;
                     te.SetPosition(new Vector2(x, y - 1));
-                    te.CreateTilePile();
+                    te.CreateTilePile();*/
+
+                    ModUtils.PlaceTilePile<LootPile, BasicLoot>(x, y - 1);
 
                     logger.Debug("placed a thing: [" + x + ", " + (y - 1) + "] -> position: [" + (x + 1) + "," + (y + 2) + "]");
                 }
@@ -124,11 +126,13 @@ namespace OvermorrowMod.Content.WorldGeneration
                     WorldGen.KillTile(x + 3, y - 1);
 
                     //ModUtils.PlaceObject(x, y - 1, GetRandomTent());
-                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<AxeStump>());
+                    /*ModUtils.PlaceObject(x, y - 1, ModContent.TileType<AxeStump>());
                     int id = ModContent.GetInstance<AxeLoot>().Place(x - 1, y - 3);
                     AxeLoot te = TileEntity.ByID[id] as AxeLoot;
                     te.SetPosition(new Vector2(x, y - 1));
-                    te.CreateTilePile();
+                    te.CreateTilePile();*/
+
+                    ModUtils.PlaceTilePile<AxeStump, AxeLoot>(x, y - 1);
 
                     logger.Debug("placed a thing 2: [" + x + ", " + (y - 1) + "] -> position: [" + (x + 1) + "," + (y + 2) + "]");
                 }
@@ -167,12 +171,14 @@ namespace OvermorrowMod.Content.WorldGeneration
                     WorldGen.KillTile(x + 3, y - 1);
 
                     //ModUtils.PlaceObject(x, y - 1, ModContent.TileType<BlueTent>(), 0, 1);
-                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<LootPile>());
+                    /*ModUtils.PlaceObject(x, y - 1, ModContent.TileType<LootPile>());
                     int id = ModContent.GetInstance<BasicLoot>().Place(x - 1, y - 3);
                     BasicLoot te = TileEntity.ByID[id] as BasicLoot;
                     //te.SetPosition(new Vector2(x + 1, y + 2));
                     te.SetPosition(new Vector2(x, y - 1));
-                    te.CreateTilePile();
+                    te.CreateTilePile();*/
+
+                    ModUtils.PlaceTilePile<LootPile, BasicLoot>(x, y - 1);
 
                     logger.Debug("placed a thing 3: [" + x + ", " + (y - 1) + "] -> position: [" + (x + 1) + "," + (y + 2) + "]");
                 }
