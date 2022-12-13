@@ -14,17 +14,6 @@ namespace OvermorrowMod.Content.Tiles.TilePiles
     public class AxeStump : ModTilePile<AxeLoot>
     {
         public override string Texture => AssetDirectory.TilePiles + "Grid_3x3";
-        public override void SetStaticDefaults()
-        {
-            Main.tileNoAttach[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3); // Probably should be changeable within the child
-            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<AxeLoot>().Hook_AfterPlacement, -1, 0, true);
-
-            MinPick = 55; // debugging
-            TileObjectData.addTile(Type);
-        }
     }
 
     public class AxeLoot : BaseTilePile
@@ -53,7 +42,6 @@ namespace OvermorrowMod.Content.Tiles.TilePiles
             Tile tile = Main.tile[x, y];
             if (!tile.HasTile || tile.TileType != ModContent.TileType<AxeStump>())
             {
-                Main.NewText("death");
                 Kill(Position.X, Position.Y);
             }
 

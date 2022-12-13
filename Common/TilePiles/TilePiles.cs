@@ -43,14 +43,7 @@ namespace OvermorrowMod.Common.TilePiles
 
             TEntity pile = FindTE(i, j);
 
-            Main.NewText("finding [" + i + ", " + j + "]");
-
             if (pile == null) return;
-
-            foreach (TileInfo tileObject in pile.PileContents)
-            {
-                Main.NewText("active " + tileObject.name);
-            }
 
             foreach (TileInfo tileObject in pile.PileContents)
             {
@@ -126,7 +119,6 @@ namespace OvermorrowMod.Common.TilePiles
                     {
                         if (player.itemTime <= player.itemTimeMax / 3 && tileObject.hitDelay <= 0)
                         {
-                            //Main.NewText(player.itemTime + " / " + player.itemTimeMax);
                             SoundEngine.PlaySound(tileObject.hitSound);
                             tileObject.breakCount += player.HeldItem.axe;
                             tileObject.hitDelay = player.HeldItem.useTime / 2;
@@ -235,9 +227,6 @@ namespace OvermorrowMod.Common.TilePiles
 
             TEntity entity = (TEntity)TileEntity.ByID[index];
             return entity;
-
         }
     }
-
-
 }

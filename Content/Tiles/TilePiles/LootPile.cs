@@ -78,9 +78,6 @@ namespace OvermorrowMod.Content.Tiles.TilePiles
             Tile tile = Main.tile[x, y];
             if (!tile.HasTile || tile.TileType != ModContent.TileType<LootPile>())
             {
-                var logger = OvermorrowModFile.Instance.Logger;
-                logger.Debug("death");
-
                 Kill(Position.X, Position.Y);
             }
 

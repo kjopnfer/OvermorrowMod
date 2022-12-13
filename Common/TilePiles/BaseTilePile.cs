@@ -1,15 +1,6 @@
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using Terraria;
-using Terraria.ID;
-using Terraria.DataStructures;
-using Terraria.ObjectData;
 using Terraria.ModLoader;
-using OvermorrowMod.Core;
 using Terraria.ModLoader.IO;
-using Terraria.GameContent.Metadata;
 
 namespace OvermorrowMod.Common.TilePiles
 {
@@ -47,16 +38,5 @@ namespace OvermorrowMod.Common.TilePiles
         public abstract void CreateTilePile();
 
         public void SetPosition(Vector2 position) => _position = position;
-
-        /*public override bool IsTileValidForEntity(int x, int y)
-        {
-            Tile tile = Main.tile[x, y];
-            if (!tile.HasTile || tile.TileType != ModContent.TileType<TilePiles>())
-            {
-                Kill(Position.X, Position.Y);
-            }
-
-            return tile.HasTile && tile.TileType == ModContent.TileType<TilePiles>();
-        }*/
     }
 }

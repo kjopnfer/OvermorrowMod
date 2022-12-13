@@ -41,8 +41,6 @@ namespace OvermorrowMod.Common.TilePiles
 
         public int interactType;
 
-        //public virtual int InteractType => (int)InteractionType.Click;
-
         public TileInfo(string identifier, Vector2 coordinates, int x, int y, int dependency, int interactType)
         {
             this.identifier = identifier;
