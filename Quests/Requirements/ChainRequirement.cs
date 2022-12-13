@@ -40,7 +40,12 @@ namespace OvermorrowMod.Quests.Requirements
 
         public override bool TryCompleteRequirement(QuestPlayer player, BaseQuestState state)
         {
-            return GetActiveClause(player, state)?.CanHandInRequirement(player, state) ?? false;
+            var active = GetActiveClause(player, state);
+            if (active != null)
+            {
+                active.TryCompleteRequirement(player, state);
+            }
+            return IsCompleted(player, state);
         }
     }
 }
