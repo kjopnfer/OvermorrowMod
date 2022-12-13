@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
+using OvermorrowMod.Common.TilePiles;
+using OvermorrowMod.Content.Tiles.TilePiles;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,6 +12,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Core
 {
@@ -52,6 +55,16 @@ namespace OvermorrowMod.Core
         public static void StopRain()
         {
             stopRain.Invoke(null, null);
+        }
+
+        
+        public static void PlaceTilePile<T, TE>(int x, int y) where T : ModTilePile<TE> where TE : BaseTilePile
+        {
+            PlaceObject(x, y, ModContent.TileType<T>());
+            int id = ModContent.GetInstance<TE>().Place(x - 1, y - 2); // this represents the top left corner
+            TE te = TileEntity.ByID[id] as TE;
+            te.SetPosition(new Vector2(x, y));
+            te.CreateTilePile();
         }
 
         public static Rectangle toRect(Vector2 pos, int w, int h)

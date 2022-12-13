@@ -12,6 +12,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Detours;
+using OvermorrowMod.Common.TilePiles;
 
 namespace OvermorrowMod.Common
 {
