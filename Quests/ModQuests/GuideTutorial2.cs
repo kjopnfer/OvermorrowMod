@@ -18,8 +18,8 @@ namespace OvermorrowMod.Quests.ModQuests
             {
                 new OrRequirement(
                     "ore_or",
-                    new ItemRequirement(ItemID.CopperOre, 40),
-                    new ItemRequirement(ItemID.TinOre, 40))
+                    new ItemRequirement("copperOre", ItemID.CopperOre, 40, false),
+                    new ItemRequirement("tinOre", ItemID.TinOre, 40, false))
             };
             Rewards = new[]
             {

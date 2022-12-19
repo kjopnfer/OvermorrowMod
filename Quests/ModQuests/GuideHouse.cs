@@ -21,7 +21,7 @@ namespace OvermorrowMod.Quests.ModQuests
         {
             Requirements = new[]
             {
-                new HousingRequirement(NPCID.Guide)
+                new HousingRequirement("guideHouse", NPCID.Guide)
             };
             Rewards = new[]
             {

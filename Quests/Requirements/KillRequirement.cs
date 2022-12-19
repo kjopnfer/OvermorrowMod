@@ -25,6 +25,29 @@ namespace OvermorrowMod.Quests.Requirements
         // I don't know how to show each of the required types, lol
         public string Description => $"#{TargetNumber} from any of {string.Join(", ", NPCTypes.Select(typ => Lang.GetNPCNameValue(typ)))}";
 
+        public bool TryCompleteRequirement(QuestPlayer player, BaseQuestState state)
+        {
+            // For this requirement, we implement the interface directly, since we don't want to use the completable state
+            // In this case there are no side-effects, so TryCompleteRequirement is just a check for whether it is already
+            // completed.
+            return IsCompleted(player, state);
+        }
+
+        public void ResetState(Player player)
+        {
+        }
+
+        public BaseRequirementState GetNewState()
+        {
+            return new KillRequirementState(this);
+        }
+
+        public bool CanHandInRequirement(QuestPlayer player, BaseQuestState state)
+        {
+            // Since this is completed by an external trigger, it can never be handed in.
+            return false;
+        }
+
         public bool IsCompleted(QuestPlayer player, BaseQuestState state)
         {
             var reqState = state.GetRequirementState(this) as KillRequirementState;
@@ -36,15 +59,6 @@ namespace OvermorrowMod.Quests.Requirements
             }
 
             return remaining <= 0;
-        }
-
-        public void ResetState(Player player)
-        {
-        }
-
-        public BaseRequirementState GetNewState()
-        {
-            return new KillRequirementState(this);
         }
     }
 }

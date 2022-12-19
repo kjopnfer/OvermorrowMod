@@ -59,7 +59,6 @@ namespace OvermorrowMod.Quests.State
 
         public BaseRequirementState GetRequirementState(IQuestRequirement req)
         {
-            if (req.ID == null) return null;
             return RequirementStates.GetValueOrDefault(req.ID);
         }
     }

@@ -6,7 +6,7 @@ using Terraria;
 
 namespace OvermorrowMod.Quests.Requirements
 {
-    public class TravelRequirement : IQuestRequirement
+    public class TravelRequirement : BaseQuestRequirement<TravelRequirementState>
     {
         private Vector2? location = null;
         public Vector2 Location { get
@@ -15,35 +15,24 @@ namespace OvermorrowMod.Quests.Requirements
                 return location.Value;
             } }
         private readonly Func<Vector2> locationGenerator;
-        public string ID { get; }
 
-        public TravelRequirement(Func<Vector2> locationGenerator, string ID)
+        public TravelRequirement(Func<Vector2> locationGenerator, string id) : base(id)
         {
             this.locationGenerator = locationGenerator;
-            this.ID = ID;
         }
 
-        public string Description => $"Travel to {location}";
+        public override string Description => $"Travel to {location}";
 
-        public bool IsCompleted(QuestPlayer player, BaseQuestState state)
+        protected override bool IsRequirementCompletable(QuestPlayer player, BaseQuestState state, TravelRequirementState reqState)
         {
-            var reqState = state.GetRequirementState(this) as TravelRequirementState;
-
-            return reqState.Traveled;
+            // In this class, we are using the completable requirement state, but it is set to completed externally,
+            // so we don't actually need to do anything in here. Just return false from here so that we don't get "turn in" on
+            // NPCs, and do nothing in `CompleteRequirement`
+            return false;
         }
 
-        public void ResetState(Player player)
+        protected override void CompleteRequirement(QuestPlayer player, BaseQuestState state, TravelRequirementState reqState)
         {
-            if (player.GetModPlayer<QuestPlayer>().SelectedLocation == ID)
-            {
-                player.GetModPlayer<QuestPlayer>().SelectedLocation = null;
-            }
-            location = null;
-        }
-
-        public BaseRequirementState GetNewState()
-        {
-            return new TravelRequirementState(this);
         }
     }
 }

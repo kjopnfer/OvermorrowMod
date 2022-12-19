@@ -68,7 +68,7 @@ namespace OvermorrowMod.Quests
 
             foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<TravelRequirementState>(modPlayer))
             {
-                if (modPlayer.SelectedLocation != req.Requirement.ID || req.Traveled) continue;
+                if (modPlayer.SelectedLocation != req.Requirement.ID || req.IsCompleted) continue;
 
                 var requirement = req.Requirement as TravelRequirement;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Netcode;
 using OvermorrowMod.Quests.State;
 using ReLogic.Graphics;
 using System;
@@ -66,7 +67,7 @@ namespace OvermorrowMod.Quests
             {
                 var modPlayer = player.GetModPlayer<QuestPlayer>();
                 var state = State.GetActiveQuestState(modPlayer, quest);
-                return quest.CheckRequirements(modPlayer, state) ? "Turn In" : "Quest";
+                return quest.CanHandInQuest(modPlayer, state) ? "Turn In" : "Quest";
             }
             return "Quest";
         }
@@ -83,7 +84,13 @@ namespace OvermorrowMod.Quests
             {
                 var modPlayer = player.GetModPlayer<QuestPlayer>();
                 var state = State.GetActiveQuestState(modPlayer, quest);
-                if (quest.CheckRequirements(modPlayer, state))
+
+                if (quest.CanHandInQuest(modPlayer, state))
+                {
+                    NetworkMessageHandler.Quests.TickQuestRequirements(-1, -1, quest.QuestID);
+                }
+
+                if (quest.TryUpdateQuestRequirements(modPlayer, state))
                 {
                     questPlayer.CompleteQuest(quest.QuestID);
                     SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
