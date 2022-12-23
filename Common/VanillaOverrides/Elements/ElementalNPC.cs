@@ -7,8 +7,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements {
     public partial class ElementalNPC : GlobalNPC
     {
         public override bool InstancePerEntity => true;
-        public List<Element> ElementResistance = new List<Element>() { Element.None };
-        public List<Element> ElementWeakness = new List<Element>() { Element.None };
+        public HashSet<Element> ElementResistance = new HashSet<Element>() { Element.None };
+        public HashSet<Element> ElementWeakness = new HashSet<Element>() { Element.None };
 
         public override void ModifyHitByItem(NPC npc, Player player, Item item, ref int damage, ref float knockback, ref bool crit)
         {

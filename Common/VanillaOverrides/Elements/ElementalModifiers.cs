@@ -21,6 +21,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
     {
         private static Dictionary<Element, HashSet<Element>> ElementalResistance = new Dictionary<Element, HashSet<Element>>()
         {
+            { Element.None, new HashSet<Element> { } },
             { Element.Fire, new HashSet<Element>() { Element.Nature, Element.Wind } },
             { Element.Ice, new HashSet<Element>() { Element.Water, Element.Nature } },
             { Element.Water, new HashSet<Element>() { Element.Nature, Element.Fire } },
@@ -28,10 +29,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             { Element.Nature, new HashSet<Element> { Element.Water, Element.Light} },
             { Element.Wind, new HashSet<Element>() { Element.Earth, Element.Wind } },
             { Element.Electric, new HashSet<Element> { Element.Water, Element.Nature} },
+            { Element.Light, new HashSet<Element> { } },
+            { Element.Dark, new HashSet<Element> { } },
         };
 
         private static Dictionary<Element, HashSet<Element>> ElementalWeakness = new Dictionary<Element, HashSet<Element>>()
         {
+            { Element.None, new HashSet<Element> { } },
             { Element.Fire, new HashSet<Element>() { Element.Water, Element.Earth } },
             { Element.Ice, new HashSet<Element>() { Element.Fire, Element.Light} },
             { Element.Water, new HashSet<Element>() { Element.Electric, Element.Ice } },
@@ -55,25 +59,44 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             return resistance.Contains(incomingElement);
         }
 
-        public static float CheckInteraction(List<Element> incomingElements, List<Element> elementalResistance, List<Element> elementalWeakness)
+        public static float CheckInteraction(HashSet<Element> incomingElements, HashSet<Element> elementalResistance, HashSet<Element> elementalWeakness)
         {
             float result = 1;
 
-            foreach (Element resistance in elementalResistance)
+            foreach (Element incomingElement in incomingElements)
             {
-                foreach (Element incomingElement in incomingElements)
+                if (elementalWeakness.Contains(incomingElement))
                 {
-                    if (CheckResistance(incomingElement, resistance)) result -= 0.5f;
-                }         
-            }
+                    Main.NewText("dealing MORE DAMAGE");
+                    result += 0.5f;
+                }
 
-            foreach (Element weakness in elementalResistance)
-            {
-                foreach (Element incomingElement in incomingElements)
+                if (elementalResistance.Contains(incomingElement))
                 {
-                    if (CheckWeakness(incomingElement, weakness)) result += 0.5f;
+                    Main.NewText("dealing LESS DAMAGE");
+                    result -= 0.5f;
                 }
             }
+            /*foreach (Element incomingElement in incomingElements)
+            {
+                foreach (Element weakness in elementalWeakness)
+                {
+                    if (CheckWeakness(incomingElement, weakness))
+                    {
+                        Main.NewText("dealing MORE DAMAGE");
+                        result += 0.5f;
+                    }
+                }
+
+                foreach (Element resistance in elementalResistance)
+                {
+                    if (CheckResistance(incomingElement, resistance))
+                    {
+                        Main.NewText("dealing LESS DAMAGE");
+                        result -= 0.5f;
+                    }
+                }
+            }*/
 
             return result < 0 ? 0 : result;
         }

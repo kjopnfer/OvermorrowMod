@@ -21,14 +21,18 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.Pinky:
                 case NPCID.GreenSlime:
                 case NPCID.BlueSlime:
-                    ElementWeakness = new List<Element> { Element.Fire };
-                    ElementResistance = new List<Element> { Element.Water };
+                case NPCID.SlimeRibbonWhite:
+                case NPCID.SlimeRibbonYellow:
+                case NPCID.SlimeRibbonGreen:
+                case NPCID.SlimeRibbonRed:
+                    ElementWeakness = new HashSet<Element> { Element.Fire };
+                    ElementResistance = new HashSet<Element> { Element.Water };
                     break;
                 case NPCID.Slimer:
                 case NPCID.Slimer2:
                 case NPCID.Slimeling:
-                    ElementWeakness = new List<Element> { Element.Fire };
-                    ElementResistance = new List<Element> { Element.Water, Element.Dark };
+                    ElementWeakness = new HashSet<Element> { Element.Fire };
+                    ElementResistance = new HashSet<Element> { Element.Water, Element.Dark };
                     break;
                 case NPCID.BigRainZombie:
                 case NPCID.SmallRainZombie:
@@ -66,13 +70,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.TorchZombie:
                 case NPCID.ArmedTorchZombie:
                 case NPCID.MaggotZombie:
-                    ElementWeakness = new List<Element> { Element.Light, Element.Fire };
-                    ElementResistance = new List<Element> { Element.Dark };
+                    ElementWeakness = new HashSet<Element> { Element.Light, Element.Fire };
+                    ElementResistance = new HashSet<Element> { Element.Dark };
                     break;
                 case NPCID.TwiggyZombie:
                 case NPCID.ZombieMushroom:
                 case NPCID.ZombieMushroomHat:
-                    ElementResistance = new List<Element> { Element.Dark, Element.Nature };
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Nature };
                     break;
             }
         }
