@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Terraria;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Elements
 {
     public enum Element
     {
+        None,
         Fire,
         Ice,
         Water,
@@ -15,7 +17,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
         Dark
     }
 
-    public class ElementalModifiers
+    public static class ElementalModifiers
     {
         private static Dictionary<Element, HashSet<Element>> ElementalResistance = new Dictionary<Element, HashSet<Element>>()
         {
@@ -53,13 +55,42 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             return resistance.Contains(incomingElement);
         }
 
-        public static float CheckInteraction(Element incomingElement, Element outgoingElement)
+        public static float CheckInteraction(List<Element> incomingElements, List<Element> elementalResistance, List<Element> elementalWeakness)
         {
-            if (CheckWeakness(incomingElement, outgoingElement)) return 2;
+            float result = 1;
 
-            if (CheckResistance(incomingElement, outgoingElement)) return 0.5f;
+            foreach (Element resistance in elementalResistance)
+            {
+                foreach (Element incomingElement in incomingElements)
+                {
+                    if (CheckResistance(incomingElement, resistance)) result -= 0.5f;
+                }         
+            }
 
-            return 1;
+            foreach (Element weakness in elementalResistance)
+            {
+                foreach (Element incomingElement in incomingElements)
+                {
+                    if (CheckWeakness(incomingElement, weakness)) result += 0.5f;
+                }
+            }
+
+            return result < 0 ? 0 : result;
+        }
+
+        public static ElementalNPC Elemental(this NPC player)
+        {
+            return player.GetGlobalNPC<ElementalNPC>();
+        }
+
+        public static ElementalProjectile Elemental(this Projectile projectile)
+        {
+            return projectile.GetGlobalProjectile<ElementalProjectile>();
+        }
+
+        public static ElementalItem Elemental(this Item item)
+        {
+            return item.GetGlobalItem<ElementalItem>();
         }
     }
 }
