@@ -19,7 +19,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
 
     public static class ElementalModifiers
     {
-        public static float CheckInteraction(HashSet<Element> incomingElements, HashSet<Element> elementalResistance, HashSet<Element> elementalWeakness)
+        public static float GetModifier(HashSet<Element> incomingElements, HashSet<Element> elementalResistance, HashSet<Element> elementalWeakness)
         {
             float result = 1;
 
