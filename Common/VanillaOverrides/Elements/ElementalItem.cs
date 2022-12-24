@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Elements
 {
-    public class ElementalItem : GlobalItem
+    public partial class ElementalItem : GlobalItem
     {
         public override bool InstancePerEntity => true;
         public HashSet<Element> ElementTypes = new HashSet<Element>() { Element.None };
@@ -60,19 +60,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             }
 
             return true;
-        }
-
-        public override void SetDefaults(Item item)
-        {
-            switch (item.type)
-            {
-                case ItemID.WandofSparking:
-                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Nature };
-                    break;
-                case ItemID.IceBlade:
-                    ElementTypes = new HashSet<Element>() { Element.Ice };
-                    break;
-            }
         }
     }
 }
