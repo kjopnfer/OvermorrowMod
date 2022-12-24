@@ -19,10 +19,22 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             {
                 case Element.Fire:
                     return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Fire").Value;
-                case Element.Nature:
-                    return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Nature").Value;
                 case Element.Ice:
                     return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Ice").Value;
+                case Element.Water:
+                    return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Water").Value;
+                case Element.Earth:
+                    return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Earth").Value;
+                case Element.Nature:
+                    return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Nature").Value;
+                case Element.Wind:
+                    return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Wind").Value;
+                case Element.Electric:
+                    return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Electric").Value;
+                case Element.Light:
+                    return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Light").Value;
+                case Element.Dark:
+                    return ModContent.Request<Texture2D>(AssetDirectory.UI + "Elements/Dark").Value;
             }
 
             return null;
