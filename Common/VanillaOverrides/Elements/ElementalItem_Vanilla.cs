@@ -20,6 +20,44 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
         {
             switch (item.type)
             {
+                #region Tools
+                case ItemID.NightmarePickaxe:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.DeathbringerPickaxe:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.MoltenPickaxe:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.ReaverShark:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                case ItemID.SawtoothShark:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                case ItemID.BloodLustCluster:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.WarAxeoftheNight:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.MeteorHamaxe:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.MoltenHamaxe:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.FleshGrinder:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.TheBreaker:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.Rockfish:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                #endregion
                 #region Melee
                 case ItemID.ZombieArm:
                     ElementTypes = new HashSet<Element>() { Element.Dark };
@@ -56,6 +94,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                     break;
                 case ItemID.WhitePhaseblade:
                     ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.Starfury:
+                    ElementTypes = new HashSet<Element>() { Element.Light };
                     break;
                 case ItemID.BeeKeeper:
                     ElementTypes = new HashSet<Element>() { Element.Nature };
@@ -457,6 +498,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                     ElementTypes = new HashSet<Element>() { Element.Fire, Element.Earth };
                     break;
                 case ItemID.ObsidianSkull:
+                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Earth };
+                    break;
+                case ItemID.ObsidianSkullRose:
                     ElementTypes = new HashSet<Element>() { Element.Fire, Element.Earth };
                     break;
                 case ItemID.PutridScent:
