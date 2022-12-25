@@ -33,6 +33,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
         {
             switch (item.type)
             {
+                #region Movement
                 case ItemID.Aglet:
                     ElementTypes = new HashSet<Element>() { Element.Wind };
                     break;
@@ -156,6 +157,95 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case ItemID.WaterWalkingBoots:
                     ElementTypes = new HashSet<Element>() { Element.Water };
                     break;
+                #endregion
+                #region Health and Mana
+                case ItemID.ArcaneFlower:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.MagnetFlower:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.ManaFlower:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.NaturesGift:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                #endregion
+                #region Combat
+                case ItemID.BeeCloak:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.Bezoar:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.CelestialStone:
+                    ElementTypes = new HashSet<Element>() { Element.Light, Element.Dark };
+                    break;
+                case ItemID.EyeoftheGolem:
+                    ElementTypes = new HashSet<Element>() { Element.Light };
+                    break;
+                case ItemID.FireGauntlet:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.FrozenTurtleShell:
+                    ElementTypes = new HashSet<Element>() { Element.Ice };
+                    break;
+                case ItemID.FrozenShield:
+                    ElementTypes = new HashSet<Element>() { Element.Ice };
+                    break;
+                case ItemID.HoneyComb:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.LavaSkull:
+                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Earth };
+                    break;
+                case ItemID.MagmaStone:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.MoonStone:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.MoltenQuiver:
+                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Earth };
+                    break;
+                case ItemID.MoltenSkullRose:
+                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Earth };
+                    break;
+                case ItemID.ObsidianRose:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.ObsidianShield:
+                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Earth };
+                    break;
+                case ItemID.ObsidianSkull:
+                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Earth };
+                    break;
+                case ItemID.PutridScent:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.StalkersQuiver:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.StingerNecklace:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.SunStone:
+                    ElementTypes = new HashSet<Element>() { Element.Light };
+                    break;
+                case ItemID.SweetheartNecklace:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.NecromanticScroll:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.PapyrusScarab:
+                    ElementTypes = new HashSet<Element>() { Element.Dark, Element.Nature };
+                    break;
+                case ItemID.PygmyNecklace:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                    #endregion
             }
         }
 
