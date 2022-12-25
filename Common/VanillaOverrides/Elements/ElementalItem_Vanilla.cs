@@ -20,12 +20,112 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
         {
             switch (item.type)
             {
-                case ItemID.WandofSparking:
-                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Nature };
+                #region Melee
+                case ItemID.ZombieArm:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.BloodButcherer:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.PurpleClubberfish:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
                     break;
                 case ItemID.IceBlade:
                     ElementTypes = new HashSet<Element>() { Element.Ice };
                     break;
+                case ItemID.LightsBane:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.RedPhaseblade:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.OrangePhaseblade:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.YellowPhaseblade:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.GreenPhaseblade:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.BluePhaseblade:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.PurplePhaseblade:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.WhitePhaseblade:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.BeeKeeper:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.BladeofGrass:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.Muramasa:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                case ItemID.FieryGreatsword:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.NightsEdge:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.TheRottedFork:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.Swordfish:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                case ItemID.ThunderSpear:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.DarkLance:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.IceBoomerang:
+                    ElementTypes = new HashSet<Element>() { Element.Ice };
+                    break;
+                case ItemID.ThornChakram:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.Flamarang:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.Shroomerang:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.FlamingMace:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.BallOHurt:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.TheMeatball:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.BlueMoon:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                case ItemID.Sunfury:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.CorruptYoyo:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.CrimsonYoyo:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.JungleYoyo:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                #endregion
+                #region Magic
+                case ItemID.WandofSparking:
+                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Nature };
+                    break;
+                    #endregion
             }
         }
 
@@ -314,7 +414,5 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                     #endregion
             }
         }
-
-   
     }
 }
