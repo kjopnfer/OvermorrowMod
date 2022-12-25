@@ -85,9 +85,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case ItemID.FlurryBoots:
                     ElementTypes = new HashSet<Element>() { Element.Ice };
                     break;
-                case ItemID.FlowerBoots:
-                    ElementTypes = new HashSet<Element> { Element.Nature };
-                    break;
                 case ItemID.FrogFlipper:
                     ElementTypes = new HashSet<Element>() { Element.Water };
                     break;
@@ -156,6 +153,41 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                     break;
                 case ItemID.WaterWalkingBoots:
                     ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                #endregion
+                #region Wings
+                case ItemID.AngelWings:
+                    ElementTypes = new HashSet<Element>() { Element.Light };
+                    break;
+                case ItemID.DemonWings:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.LeafWings:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.FrozenWings:
+                    ElementTypes = new HashSet<Element>() { Element.Ice };
+                    break;
+                case ItemID.BatWings:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.FlameWings:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.GhostWings:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.BoneWings:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.SpookyWings:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.FishronWings:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                case ItemID.WingsSolar:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
                     break;
                 #endregion
                 #region Health and Mana
@@ -244,6 +276,40 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                     break;
                 case ItemID.PygmyNecklace:
                     ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                #endregion
+                #region Miscellaneous
+                case ItemID.FlowerBoots:
+                    ElementTypes = new HashSet<Element> { Element.Nature };
+                    break;
+                case ItemID.JellyfishNecklace:
+                    ElementTypes = new HashSet<Element> { Element.Water };
+                    break;
+                #endregion
+                #region Expert
+                case ItemID.WormScarf:
+                    ElementTypes = new HashSet<Element> { Element.Dark };
+                    break;
+                case ItemID.BrainOfConfusion:
+                    ElementTypes = new HashSet<Element> { Element.Dark };
+                    break;
+                case ItemID.HiveBackpack:
+                    ElementTypes = new HashSet<Element> { Element.Nature };
+                    break;
+                case ItemID.BoneGlove:
+                    ElementTypes = new HashSet<Element> { Element.Dark };
+                    break;
+                case ItemID.BoneHelm:
+                    ElementTypes = new HashSet<Element> { Element.Dark };
+                    break;
+                case ItemID.SporeSac:
+                    ElementTypes = new HashSet<Element> { Element.Nature };
+                    break;
+                case ItemID.ShinyStone:
+                    ElementTypes = new HashSet<Element> { Element.Light };
+                    break;
+                case ItemID.EmpressFlightBooster:
+                    ElementTypes = new HashSet<Element> { Element.Light };
                     break;
                     #endregion
             }
