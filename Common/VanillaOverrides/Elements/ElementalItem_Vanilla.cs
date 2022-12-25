@@ -175,6 +175,39 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case ItemID.WandofSparking:
                     ElementTypes = new HashSet<Element>() { Element.Fire, Element.Nature };
                     break;
+                case ItemID.Vilethorn:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.CrimsonRod:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.WeatherPain:
+                    ElementTypes = new HashSet<Element>() { Element.Wind };
+                    break;
+                case ItemID.AquaScepter:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                case ItemID.Flamelash:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.BeeGun:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.WaterBolt:
+                    ElementTypes = new HashSet<Element>() { Element.Water };
+                    break;
+                case ItemID.DemonScythe:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.BookofSkulls:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.FlowerofFire:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.ThunderStaff:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
                     #endregion
             }
         }
