@@ -208,6 +208,29 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case ItemID.ThunderStaff:
                     ElementTypes = new HashSet<Element>() { Element.Electric };
                     break;
+                #endregion
+                #region Summon
+                case ItemID.HornetStaff:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.ImpStaff:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.DD2FlameburstTowerT1Popper:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.DD2LightningAuraT1Popper:
+                    ElementTypes = new HashSet<Element>() { Element.Electric };
+                    break;
+                case ItemID.FlinxStaff:
+                    ElementTypes = new HashSet<Element>() { Element.Ice };
+                    break;
+                case ItemID.ThornWhip:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.BoneWhip:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
                     #endregion
             }
         }
