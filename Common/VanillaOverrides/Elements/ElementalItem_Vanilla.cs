@@ -121,6 +121,56 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                     ElementTypes = new HashSet<Element>() { Element.Nature };
                     break;
                 #endregion
+                #region Ranged
+                case ItemID.DemonBow:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.TendonBow:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.MoltenFury:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.BeesKnees:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.HellwingBow:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.StarCannon:
+                    ElementTypes = new HashSet<Element>() { Element.Light };
+                    break;
+                case ItemID.PhoenixBlaster:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.MolotovCocktail:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.FrostDaggerfish:
+                    ElementTypes = new HashSet<Element>() { Element.Ice };
+                    break;
+                case ItemID.Beenade:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
+                    break;
+                case ItemID.BoneArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.FlamingArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.FrostburnArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Ice };
+                    break;
+                case ItemID.JestersArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Light };
+                    break;
+                case ItemID.UnholyArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Dark };
+                    break;
+                case ItemID.HellfireArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                #endregion
                 #region Magic
                 case ItemID.WandofSparking:
                     ElementTypes = new HashSet<Element>() { Element.Fire, Element.Nature };
