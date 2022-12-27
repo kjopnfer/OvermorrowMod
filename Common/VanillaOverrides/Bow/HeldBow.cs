@@ -22,7 +22,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public override bool? CanDamage() => false;
         public override bool ShouldUpdatePosition() => false;
 
-
         /// <summary>
         /// The offsets for the top and bottom string endpoints, respectively.
         /// </summary>
@@ -53,7 +52,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 1;
-            Projectile.hide = true; 
+            Projectile.hide = true;
 
             SafeSetDefaults();
         }
@@ -66,6 +65,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public virtual int ArrowType => ProjectileID.None;
         public Projectile LoadedArrow;
         public int LoadedArrowType;
+        public int LoadedArrowItemType;
 
         public override void OnSpawn(IEntitySource source)
         {
@@ -113,27 +113,64 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             player.SetCompositeArmFront(true, stretchAmount, Projectile.rotation - MathHelper.PiOver2);
 
+
             if (player.controlUseItem)
             {
-                drawCounter++;
                 Projectile.timeLeft = 120;
+
+                if (FindAmmo()) drawCounter++;
             }
             else
             {
-                if (drawCounter > 0) drawCounter -= 2;
-                if (drawCounter < 0) drawCounter = 0;
+                if (drawCounter > 0)
+                {
+                    ShootArrow();
+                    drawCounter = 0;
+                }
+                //if (drawCounter > 0) drawCounter -= 2;
+                //if (drawCounter < 0) drawCounter = 0;
             }
         }
 
-        private void FindAmmo()
+        private bool FindAmmo()
         {
-            //Main.NewText("Inventory Type: " + player.inventory[54].Name);
-            //Main.NewText("Inventory Type: " + player.inventory[55].Name);
-            //Main.NewText("Inventory Type: " + player.inventory[56].Name);
-            //Main.NewText("Inventory Type: " + player.inventory[57].Name);
+            #region Ammo Slots
+            LoadedArrowItemType = -1;
+            for (int i = 0; i <= 3; i++)
+            {
+                Item item = player.inventory[54 + i];
+                if (item.type == ItemID.None) continue;
 
-            LoadedArrowType = player.inventory[54].shoot;
-            //Main.NewText(LoadedArrowType);
+                LoadedArrowType = item.shoot;
+                LoadedArrowItemType = item.type;
+
+                return true;
+            }
+            #endregion
+
+
+            if (LoadedArrowItemType == -1) Main.NewText("No ammo found.");
+
+            return false;
+        }
+
+        /// <summary>
+        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty the wrong ammo type.
+        /// </summary>
+        private void AutofillAmmoSlots()
+        {
+
+        }
+
+        private void ShootArrow()
+        {
+            Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
+            Vector2 arrowPosition = player.MountedCenter + arrowOffset;
+
+            Vector2 velocity = Vector2.Normalize(arrowPosition.DirectionTo(Main.MouseWorld));
+            Projectile.NewProjectile(null, arrowPosition, velocity * 8, LoadedArrowType, Projectile.damage, Projectile.knockBack, player.whoAmI);
+
+            LoadedArrowItemType = -1;
         }
 
         public void DrawArrow(Color lightColor)
@@ -145,10 +182,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             //LoadedArrow.Center = arrowPosition;
             //LoadedArrow.rotation = Projectile.rotation + MathHelper.PiOver2;
 
-            FindAmmo();
+            if (LoadedArrowItemType == -1) return;
 
             //Texture2D texture = TextureAssets.Projectile[LoadedArrowType].Value;
-            Texture2D texture = TextureAssets.Item[player.inventory[54].type].Value;
+            Texture2D texture = TextureAssets.Item[LoadedArrowItemType].Value;
 
             Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, lightColor, Projectile.rotation - MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
         }

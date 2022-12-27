@@ -22,6 +22,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
     public class TestBow : ModItem
     {
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<TestBow_Held>()] <= 0;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => false;
 
         public override void SetStaticDefaults()
         {
