@@ -23,14 +23,14 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
 
         /// <summary>
-        /// The positions to endpoints of the string for top and bottom, respectively.
+        /// The offsets for the top and bottom string endpoints, respectively.
         /// </summary>
-        public virtual (Vector2, Vector2) StringPositions => (new Vector2(3, 9), new Vector2(3, 50));
+        public virtual (Vector2, Vector2) StringPositions => (new Vector2(-5, 14), new Vector2(-5, -14));
 
         /// <summary>
         /// The offset for where the bow should be held. Defaults to <c>(13, 0)</c>.
         /// </summary>
-        public virtual Vector2 PositionOffset => new Vector2(13, 0);
+        public virtual Vector2 PositionOffset => new Vector2(15, 0);
 
         /// <summary>
         /// The color of the bow's string.
@@ -82,7 +82,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             if (player.controlUseItem)
             {
                 drawCounter++;
-                Projectile.timeLeft = 60;
+                Projectile.timeLeft = 120;
             }
             else
             {
@@ -93,41 +93,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
         public override bool PreDraw(ref Color lightColor)
         {
+            Vector2 topPosition = Projectile.Center + StringPositions.Item1.RotatedBy(Projectile.rotation);
+            Vector2 bottomPosition = Projectile.Center + StringPositions.Item2.RotatedBy(Projectile.rotation);
+
+            Vector2 armOffset = Vector2.Lerp(Vector2.UnitX * 10, Vector2.UnitX * 1, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
+            Vector2 armPosition = player.MountedCenter + armOffset;
+            Utils.DrawLine(Main.spriteBatch, topPosition, armPosition, StringColor, StringColor, 1.25f);
+            Utils.DrawLine(Main.spriteBatch, bottomPosition, armPosition, StringColor, StringColor, 1.25f);
 
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
-
-            Texture2D stringTexture = TextureAssets.FishingLine.Value;
-
-            Vector2 topPosition = Projectile.Center + new Vector2(-5, -20).RotatedBy(Projectile.rotation);
-            Vector2 bottomPosition = Projectile.Center + new Vector2(-5, 20).RotatedBy(Projectile.rotation);
-            Utils.DrawLine(Main.spriteBatch, topPosition, bottomPosition, StringColor, StringColor, 1.25f);
-
-            /*var armPosition = player.Center;
-            var remainingVector = StringPositions.Item1 - player.Center;
-
-            float rotation = remainingVector.ToRotation();
-            float SIZE = 2;
-            while (true)
-            {
-                float length = remainingVector.Length();
-                if (length < 2 || float.IsNaN(length)) break;
-
-                armPosition += remainingVector * SIZE / length;
-                remainingVector = player.MountedCenter - StringPositions.Item1;
-
-                // Finally, we draw the texture at the coordinates using the lighting information of the tile coordinates of the chain section
-                Main.spriteBatch.Draw(stringTexture, armPosition - Main.screenPosition, null, StringColor, rotation, stringTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
-            }*/
-
-            //Main.spriteBatch.Draw(TextureAssets.FishingLine.Value, null, StringColor);
-            /*float distance = Vector2.Distance(StringPositions.Item1, StringPositions.Item2);
-            float iterations = distance / 2f;
-            for (int i = 0; i < iterations; i++)
-            {
-                float progress = i / iterations;
-                Main.EntitySpriteDraw(stringTexture, position - Main.screenPosition, null, StringColor, 0f, stringTexture.Size() / 2f, 1f, SpriteEffects.None, 0);
-            }*/
 
             return false;
         }
