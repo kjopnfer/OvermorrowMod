@@ -1,7 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Common.VanillaOverrides
+namespace OvermorrowMod.Common.VanillaOverrides.Bow
 {
     //useless useless useless ...for now?
     //Its not usless, I need for 1.4 port

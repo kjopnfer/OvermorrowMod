@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
-using OvermorrowMod.Common.VanillaOverrides;
+using OvermorrowMod.Common.VanillaOverrides.Bow;
 using OvermorrowMod.Content.UI;
 using System.Collections.Generic;
 using Terraria;

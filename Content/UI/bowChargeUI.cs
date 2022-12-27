@@ -14,7 +14,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using Overmorrow.Common;
 using OvermorrowMod.Common;
-using OvermorrowMod.Common.VanillaOverrides;
+using OvermorrowMod.Common.VanillaOverrides.Bow;
 
 namespace OvermorrowMod.Content.UI
 {

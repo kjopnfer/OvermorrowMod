@@ -12,7 +12,7 @@ using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Content.UI;
 using OvermorrowMod.Content.Projectiles.Misc;
 
-namespace OvermorrowMod.Common.VanillaOverrides
+namespace OvermorrowMod.Common.VanillaOverrides.Bow
 {
     public class BowOverride
     {
