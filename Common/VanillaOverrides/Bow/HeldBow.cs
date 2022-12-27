@@ -15,6 +15,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public override bool ShouldUpdatePosition() => false;
 
         /// <summary>
+        /// Determines whether the bow consumes any ammo on use.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public virtual bool CanConsumeAmmo(Player player) => true;
+
+        /// <summary>
         /// The offsets for the top and bottom string endpoints, respectively.
         /// </summary>
         public virtual (Vector2, Vector2) StringPositions => (new Vector2(-5, 14), new Vector2(-5, -14));
@@ -110,6 +117,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             if (player.controlUseItem && drawCounter >= 0)
             {
                 Projectile.timeLeft = 120;
+                if (drawCounter == 0) AutofillAmmoSlots();
 
                 if (FindAmmo()) drawCounter++;
             }
@@ -122,12 +130,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 }
 
                 if (drawCounter < 0) drawCounter++;
-                //if (drawCounter > 0) drawCounter -= 2;
-                //if (drawCounter < 0) drawCounter = 0;
             }
         }
 
-
+        /// <summary>
+        /// Loops through the ammo slots, loads in the first arrow found into the bow.
+        /// </summary>
+        /// <returns></returns>
         private bool FindAmmo()
         {
             #region Ammo Slots
@@ -152,17 +161,32 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         }
 
         /// <summary>
-        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty the wrong ammo type.
+        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty or the wrong ammo type.
         /// </summary>
         private void AutofillAmmoSlots()
         {
+            for (int j = 0; j <= 3; j++) // Check if any of the ammo slots are empty or are not an arrow
+            {
+                Item ammoItem = player.inventory[54 + j];
+                if (ammoItem.type != ItemID.None || ammoItem.ammo == AmmoID.Arrow) continue;
 
+                // Loop through the player's inventory in order to find any useable ammo types to use
+                for (int i = 0; i <= 49; i++)
+                {
+                    Item item = player.inventory[i];
+                    if (item.type == ItemID.None || item.ammo != AmmoID.Arrow) continue;
+
+                    //Main.NewText("Swapping " + i + " with " + (54 + j));
+
+                    Item tempItem = ammoItem;
+                    player.inventory[54 + j] = item;
+                    player.inventory[i] = tempItem;
+
+                    break;
+                }
+            }
         }
 
-        public virtual bool CanConsumeAmmo(Player player)
-        {
-            return true;
-        }
 
         private void ConsumeAmmo()
         {
