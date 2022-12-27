@@ -45,6 +45,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Item.shoot = ModContent.ProjectileType<TestBow_Held>();
             Item.shootSpeed = 10f;
             Item.noUseGraphic = true;
+
+            Item.useAmmo = AmmoID.Arrow;
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
