@@ -19,9 +19,29 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
     }
 
-    public class TestBow : ModItem
+    public class TestBow : ModBow<TestBow_Held>
     {
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<TestBow_Held>()] <= 0;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("The Gamer Bow");
+        }
+
+        public override void SafeSetDefaults()
+        {
+            Item.damage = 69;
+            Item.width = 32;
+            Item.height = 74;
+            Item.autoReuse = true;
+            Item.shootSpeed = 10f;
+            Item.rare = ItemRarityID.Lime;
+            Item.useTime = 22;
+            Item.useAnimation = 22;
+        }
+    }
+
+    public abstract class ModBow<HeldProjectile> : ModItem where HeldProjectile : HeldBow
+    {
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<HeldProjectile>()] <= 0;
         public override bool CanConsumeAmmo(Item ammo, Player player) => false;
 
         public override void SetStaticDefaults()
@@ -29,25 +49,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             DisplayName.SetDefault("Test Held Bow");
         }
 
-        public override void SetDefaults()
+        public virtual void SafeSetDefaults() { }
+        public sealed override void SetDefaults()
         {
-            Item.damage = 89;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 22;
-            Item.useAnimation = 22;
+            Item.DamageType = DamageClass.Ranged;     
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.knockBack = 5;
-
-            Item.UseSound = SoundID.Item5;
-            Item.width = 32;
-            Item.height = 74;
             Item.noMelee = true;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<TestBow_Held>();
-            Item.shootSpeed = 10f;
+            Item.shoot = ModContent.ProjectileType<HeldProjectile>();
             Item.noUseGraphic = true;
-
             Item.useAmmo = AmmoID.Arrow;
+
+            SafeSetDefaults();
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)

@@ -59,7 +59,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
         public virtual void SafeSetDefaults() { }
 
-        public override void SetDefaults()
+        public sealed override void SetDefaults()
         {
             Projectile.width = Projectile.height = 1;
             Projectile.DamageType = DamageClass.Ranged;
