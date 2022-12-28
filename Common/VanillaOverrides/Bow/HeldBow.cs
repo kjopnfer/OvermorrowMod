@@ -45,8 +45,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public virtual float ChargeSpeed => 1;
         public virtual float MaxChargeTime => 60;
         public virtual float ShootDelay => 30;
-
         public virtual float MaxSpeed => 12;
+
+        /// <summary>
+        /// Determines if the bow fires a unique type of arrow. Uses Projectile ID instead of Item ID.
+        /// </summary>
+        public virtual int ArrowType => ProjectileID.None;
+
+        /// <summary>
+        /// Determines what arrow type is needed in order to convert the arrows to if ArrowType is given.
+        /// </summary>
+        public virtual int ConvertArrow => ItemID.None;
 
         public virtual void SafeSetDefaults() { }
 
@@ -62,7 +71,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             SafeSetDefaults();
         }
 
-        public virtual int ArrowType => ProjectileID.None;
         public Projectile LoadedArrow;
         public int LoadedArrowType;
         public int LoadedArrowItemType;
@@ -132,9 +140,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             {
                 Item item = player.inventory[54 + i];
                 if (item.type == ItemID.None || item.ammo != AmmoID.Arrow) continue;
+                if (ConvertArrow != ItemID.None)
+                {
+                    if (item.type != ConvertArrow) continue;
+                }
 
-                LoadedArrowType = item.shoot;
-                LoadedArrowItemType = item.type;
+                if (ArrowType == ProjectileID.None)
+                {
+                    LoadedArrowType = item.shoot;
+                    LoadedArrowItemType = item.type;
+                }
+
                 AmmoSlotID = 54 + i;
 
                 return true;
@@ -190,7 +206,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 velocity = Vector2.Normalize(arrowPosition.DirectionTo(Main.MouseWorld));
             float speed = MathHelper.Lerp(1, MaxSpeed, progress);
 
-            Projectile.NewProjectile(null, arrowPosition, velocity * speed, LoadedArrowType, Projectile.damage, Projectile.knockBack, player.whoAmI);
+            if (ArrowType == ProjectileID.None)
+                Projectile.NewProjectile(null, arrowPosition, velocity * speed, LoadedArrowType, Projectile.damage, Projectile.knockBack, player.whoAmI);
+            else
+                Projectile.NewProjectile(null, arrowPosition, velocity * speed, ArrowType, Projectile.damage, Projectile.knockBack, player.whoAmI);
 
             ConsumeAmmo();
 
@@ -203,12 +222,19 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
             Vector2 arrowPosition = player.MountedCenter + arrowOffset;
 
-            if (LoadedArrowItemType == -1) return;
+            Texture2D texture;
+            if (ArrowType == ProjectileID.None)
+            {
+                if (LoadedArrowItemType == -1) return;
 
-            // ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + projectile_id).Value;
-            Texture2D texture = TextureAssets.Item[LoadedArrowItemType].Value;
-
-            Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, lightColor, Projectile.rotation - MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+                texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;
+                Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+            }
+            else
+            {
+                texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ArrowType).Value;
+                Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+            }
         }
 
         private void DrawBow(Color lightColor)
@@ -220,7 +246,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 armOffset = Vector2.Lerp(restingPosition, Vector2.UnitX * -1, Utils.Clamp(drawCounter, 0, MaxChargeTime) / MaxChargeTime).RotatedBy(Projectile.rotation);
             Vector2 armPosition = player.MountedCenter + armOffset;
 
-            Color color = StringGlow ? StringColor : lightColor.MultiplyRGBA(StringColor);
+            Color color = StringGlow ? StringColor : StringColor * Lighting.Brightness((int)player.Center.X / 16, (int)player.Center.Y / 16);
 
             Utils.DrawLine(Main.spriteBatch, topPosition, armPosition, color, StringColor, 1.25f);
             Utils.DrawLine(Main.spriteBatch, bottomPosition, armPosition, color, StringColor, 1.25f);
