@@ -5,6 +5,35 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Bow
 {
+    public abstract class ModBow<HeldProjectile> : ModItem where HeldProjectile : HeldBow
+    {
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<HeldProjectile>()] <= 0;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => false;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Test Held Bow");
+        }
+
+        public virtual void SafeSetDefaults() { }
+        public sealed override void SetDefaults()
+        {
+            Item.DamageType = DamageClass.Ranged;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.noMelee = true;
+            Item.shoot = ModContent.ProjectileType<HeldProjectile>();
+            Item.noUseGraphic = true;
+            Item.useAmmo = AmmoID.Arrow;
+
+            SafeSetDefaults();
+        }
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+        {
+            type = Item.shoot;
+        }
+    }
+
     public class TestBow_Held : HeldBow
     {
         public override Color StringColor => new Color(45, 35, 65);
@@ -27,35 +56,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Item.rare = ItemRarityID.Lime;
             Item.useTime = 22;
             Item.useAnimation = 22;
-        }
-    }
-
-    public abstract class ModBow<HeldProjectile> : ModItem where HeldProjectile : HeldBow
-    {
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<HeldProjectile>()] <= 0;
-        public override bool CanConsumeAmmo(Item ammo, Player player) => false;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Test Held Bow");
-        }
-
-        public virtual void SafeSetDefaults() { }
-        public sealed override void SetDefaults()
-        {
-            Item.DamageType = DamageClass.Ranged;     
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.shoot = ModContent.ProjectileType<HeldProjectile>();
-            Item.noUseGraphic = true;
-            Item.useAmmo = AmmoID.Arrow;
-
-            SafeSetDefaults();
-        }
-
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        {
-            type = Item.shoot;
         }
     }
 }

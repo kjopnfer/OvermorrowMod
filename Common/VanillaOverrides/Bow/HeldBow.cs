@@ -40,9 +40,24 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         /// </summary>
         public virtual bool StringGlow => false;
 
+        /// <summary>
+        /// Determines how quickly the bow charges per tick
+        /// </summary>
         public virtual float ChargeSpeed => 1;
+
+        /// <summary>
+        /// Determines how many ticks are required for the bow to be fully charged
+        /// </summary>
         public virtual float MaxChargeTime => 60;
+
+        /// <summary>
+        /// Determines the delay inbetween the bow firing projectiles
+        /// </summary>
         public virtual float ShootDelay => 30;
+
+        /// <summary>
+        /// The maximum velocity that the bow's projectiles can be fired as
+        /// </summary>
         public virtual float MaxSpeed => 12;
 
         /// <summary>
@@ -69,9 +84,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             SafeSetDefaults();
         }
 
-        public Projectile LoadedArrow;
-        public int LoadedArrowType;
-        public int LoadedArrowItemType;
+        public Projectile LoadedArrow { private set; get; }
+        public int LoadedArrowType { private set; get; }
+        public int LoadedArrowItemType { private set; get; }
+
         private int AmmoSlotID;
 
         public Player player => Main.player[Projectile.owner];
@@ -83,6 +99,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             player.heldProj = Projectile.whoAmI;
 
+            HandlePlayerDrawing();
+            HandleBowUse();
+        }
+
+        /// <summary>
+        /// Handles the drawing of the player's arm and the bow's rotation
+        /// </summary>
+        private void HandlePlayerDrawing()
+        {
             float bowRotation = Projectile.Center.DirectionTo(Main.MouseWorld).ToRotation();
             Projectile.rotation = bowRotation;
             Projectile.spriteDirection = bowRotation > MathHelper.PiOver2 || bowRotation < -MathHelper.PiOver2 ? -1 : 1;
@@ -98,6 +123,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             player.SetCompositeArmFront(true, stretchAmount, Projectile.rotation - MathHelper.PiOver2);
 
+        }
+
+        /// <summary>
+        /// Handles ammo usage, counters, and arrow firing
+        /// </summary>
+        private void HandleBowUse()
+        {
             if (delayCounter > 0) delayCounter--;
 
             if (player.controlUseItem && drawCounter >= 0)
@@ -132,7 +164,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         /// <returns></returns>
         private bool FindAmmo()
         {
-            #region Ammo Slots
             LoadedArrowItemType = -1;
             for (int i = 0; i <= 3; i++)
             {
@@ -153,10 +184,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
                 return true;
             }
-            #endregion
 
-
-            if (LoadedArrowItemType == -1) Main.NewText("No ammo found.");
+            //if (LoadedArrowItemType == -1) Main.NewText("No ammo found.");
 
             return false;
         }
@@ -188,6 +217,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             }
         }
 
+        /// <summary>
+        /// Consumes the given ammo if allowed and handles any exception cases
+        /// </summary>
         private void ConsumeAmmo()
         {
             if (!CanConsumeAmmo(player)) return;
@@ -196,6 +228,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 player.inventory[AmmoSlotID].stack--;
         }
 
+        /// <summary>
+        /// Handles the code for projectile firing
+        /// </summary>
         private void ShootArrow()
         {
             float progress = Utils.Clamp(drawCounter, 0, MaxChargeTime) / MaxChargeTime;
@@ -216,6 +251,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             LoadedArrowItemType = -1;
         }
 
+        /// <summary>
+        /// Handles the ingame drawing for the projectile on the held bow
+        /// </summary>
+        /// <param name="lightColor"></param>
         private void DrawArrow(Color lightColor)
         {
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
@@ -244,6 +283,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             }
         }
 
+        /// <summary>
+        /// Handles the ingame drawing for the bow's sprite
+        /// </summary>
+        /// <param name="lightColor"></param>
         private void DrawBow(Color lightColor)
         {
             Vector2 topPosition = Projectile.Center + StringPositions.Item1.RotatedBy(Projectile.rotation);
