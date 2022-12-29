@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
-using Terraria.DataStructures;
 using System;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Bow
@@ -194,7 +192,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         {
             if (!CanConsumeAmmo(player)) return;
 
-            player.inventory[AmmoSlotID].stack--;
+            if (player.inventory[AmmoSlotID].type != ItemID.EndlessQuiver)
+                player.inventory[AmmoSlotID].stack--;
         }
 
         private void ShootArrow()
@@ -227,13 +226,21 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             {
                 if (LoadedArrowItemType == -1) return;
 
+                if (LoadedArrowType == ProjectileID.FireArrow) Lighting.AddLight(arrowPosition, 1f, 0.647f, 0);
+                if (LoadedArrowType == ProjectileID.FrostburnArrow) Lighting.AddLight(arrowPosition, 0f, 0.75f, 0.75f);
+                Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
+
                 texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;
-                Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+                Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
             }
             else
             {
+                if (ArrowType == ProjectileID.FireArrow) Lighting.AddLight(arrowPosition, 1f, 0.647f, 0);
+                if (ArrowType == ProjectileID.FrostburnArrow) Lighting.AddLight(arrowPosition, 0f, 0.75f, 0.75f);
+                Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
+
                 texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ArrowType).Value;
-                Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+                Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
             }
         }
 
