@@ -13,6 +13,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace OvermorrowMod.Core
 {
@@ -396,6 +397,24 @@ namespace OvermorrowMod.Core
             doc.LoadXml(text);
 
             return doc;
+        }
+
+        public static void AddElement(UIElement element, int x, int y, int width, int height, UIElement appendTo)
+        {
+            element.Left.Set(x, 0);
+            element.Top.Set(y, 0);
+            element.Width.Set(width, 0);
+            element.Height.Set(height, 0);
+            appendTo.Append(element);
+        }
+
+        public static void AddElement(UIElement element, int x, int y, int width, float widthPercent, int height, float heightPercent, UIElement appendTo)
+        {
+            element.Left.Set(x, 0);
+            element.Top.Set(y, 0);
+            element.Width.Set(width, widthPercent);
+            element.Height.Set(height, heightPercent);
+            appendTo.Append(element);
         }
     }
 }
