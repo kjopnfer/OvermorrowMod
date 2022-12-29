@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using Overmorrow.Common;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using OvermorrowMod.Content.Buffs.Debuffs;
-using OvermorrowMod.Content.UI;
-using OvermorrowMod.Content.Projectiles.Misc;
 using System.Linq;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Bow
