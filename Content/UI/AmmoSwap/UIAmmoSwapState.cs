@@ -33,17 +33,27 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         private Vector2 anchorPosition;
         private bool hasAnchorPosition = false;
 
+        private int buttonDelay = 0;
+
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (Main.keyState.IsKeyDown(Keys.LeftShift) && hasAnchorPosition)
+            if (keepAlive > 0)
             {
-                //Vector2 position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(26, 26);
-                //Utils.DrawLine(spriteBatch, position - Main.screenPosition, Main.MouseWorld, Color.Red);
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "AmmoSlot_Arrow").Value;
+                spriteBatch.Draw(texture, anchorPosition + new Vector2(57, -16), Color.White);
             }
 
             base.Draw(spriteBatch);
         }
 
+        bool canShow = false;
+        int showCounter = 0;
+        int SHOW_TIME = 120;
+
+        int keepAlive = 60;
+
+        bool canSwap = false;
+        int swapCounter = 0;
         public override void Update(GameTime gameTime)
         {
             Player player = Main.LocalPlayer;
@@ -51,32 +61,64 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
             MAX_TIME = 5;
             SCALE_TIME = 5;
-            //Main.NewText("maxtime: " + MAX_TIME);
+            SHOW_TIME = 30;
+            
+            if (buttonDelay > 0) buttonDelay--;
+            
+            if (keepAlive > 0)
+            {
+                if (Main.keyState.IsKeyDown(Keys.Q) && buttonDelay == 0 && !canSwap)
+                {
+                    canShow = true;
+                    buttonDelay = 10;
 
-            if (Main.keyState.IsKeyDown(Keys.Q))
+                    keepAlive = 60;
+
+                    canSwap = true;
+                }
+            }
+            else
+            {
+                if (Main.keyState.IsKeyDown(Keys.Q) && buttonDelay == 0)
+                {
+                    canShow = true;
+                    buttonDelay = 10;
+
+                    keepAlive = 60;
+                }
+            }
+
+            //if (Main.keyState.IsKeyDown(Keys.LeftShift))
+            if (keepAlive > 0)
             {
                 if (drawCounter < MAX_TIME) drawCounter++;
                 if (drawCounter >= MAX_TIME && scaleCounter < SCALE_TIME) scaleCounter++;
 
-                if (!hasAnchorPosition)
-                {
-                    anchorPosition = new Vector2(Main.MouseWorld.X - Main.screenPosition.X - 60, Main.MouseWorld.Y - Main.screenPosition.Y - 60);
-                    hasAnchorPosition = true;
-                }
-                else
-                {
-                    this.RemoveAllChildren();
-                    ModUtils.AddElement(testPanel, (int)anchorPosition.X, (int)anchorPosition.Y, 120, 120, this);
-                    testPanel.RemoveAllChildren();
+                anchorPosition = new Vector2(Main.MouseWorld.X - Main.screenPosition.X - 60, Main.MouseWorld.Y - Main.screenPosition.Y - 60);
 
+                this.RemoveAllChildren();
+                ModUtils.AddElement(testPanel, (int)anchorPosition.X, (int)anchorPosition.Y, 120, 120, this);
+                testPanel.RemoveAllChildren();
 
-                    //Utils.DrawLine(spriteBatch, anchorPosition, Main.MouseWorld, Color.Red);
-
-                    PlaceAmmoSlots();
-
-                }
+                PlaceAmmoSlots();
 
                 closeCounter = (int)CLOSE_TIME;
+
+                if (canSwap)
+                {
+                    rotateCounter = MathHelper.Lerp(0, 90, Utils.Clamp(swapCounter, 0, 10f) / 10f);
+
+                    //if (showCounter++ >= SHOW_TIME)
+                    if (swapCounter++ >= 30)
+                    {
+                        ShiftAmmo();
+                        canSwap = false;
+                        swapCounter = 0;
+
+                        Main.NewText("reset");
+                        //canShow = false;
+                    }
+                }
             }
             else
             {
@@ -87,14 +129,42 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                     this.RemoveAllChildren();
 
                     hasAnchorPosition = false;
+
                     drawCounter = 0;
                     scaleCounter = 0;
 
                     rotateCounter = 0;
+                    showCounter = 0;
                 }
             }
 
+            if (keepAlive > 0) keepAlive--;
+
+            //Main.NewText("keepAlive: " + keepAlive + " swapCounter: " + swapCounter);
+
             base.Update(gameTime);
+        }
+
+        private void ShiftAmmo()
+        {
+            Queue<Item> itemSlots = new Queue<Item>();
+            for (int i = 0; i <= 3; i++)
+            {
+                if (Main.LocalPlayer.inventory[54 + i].ammo == AmmoID.Arrow)
+                {
+                    itemSlots.Enqueue(Main.LocalPlayer.inventory[54 + i]);
+                }
+            }
+
+            Item shiftedItem = itemSlots.Dequeue();
+            itemSlots.Enqueue(shiftedItem);
+
+            int count = itemSlots.Count;
+            //Main.NewText(count);
+            for (int i = 0; i < count; i++)
+            {
+                Main.LocalPlayer.inventory[54 + i] = itemSlots.Dequeue();
+            }
         }
 
         private float rotateCounter = 0;
@@ -117,33 +187,29 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             //int offset = (int)MathHelper.Lerp(0, 40, Utils.Clamp(drawCounter, 0, MAX_TIME) / MAX_TIME);
 
             int offset = (int)MathHelper.Lerp(0, 40, Utils.Clamp(drawCounter, 0, MAX_TIME) / MAX_TIME);
-            Vector2 rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(rotateCounter += 0.5f));
+            Vector2 rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(rotateCounter));
             Vector2 position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
 
             switch (ammoList.Count)
             {
                 case 4:
+                    // LEFTMOST -> TOPMOST
                     ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
-                    rotationOffset = new Vector2(offset, 0).RotatedBy(MathHelper.ToRadians(rotateCounter++));
+                    // TOPMOST -> LEFTMOST
+                    rotationOffset = new Vector2(offset, 0).RotatedBy(MathHelper.ToRadians(rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
+                    ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
-                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
-
-                    rotationOffset = new Vector2(-offset, 0).RotatedBy(MathHelper.ToRadians(rotateCounter++));
+                    // RIGHT MOST -> BOTTOM MOST
+                    rotationOffset = new Vector2(-offset, 0).RotatedBy(MathHelper.ToRadians(rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
+                    ModUtils.AddElement(new AmmoSlot(ammoList[3].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
-                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
-
-                    rotationOffset = new Vector2(0, -offset).RotatedBy(MathHelper.ToRadians(rotateCounter++));
+                    // BOTTOM MOST -> LEFT MOST
+                    rotationOffset = new Vector2(0, -offset).RotatedBy(MathHelper.ToRadians(rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
-
-                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
-
-                    //ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y - offset, 40, 40, testPanel);
-                    //ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X - offset, (int)position.Y, 40, 40, testPanel);
-                    //ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X + offset, (int)position.Y, 40, 40, testPanel);
-                    //ModUtils.AddElement(new AmmoSlot(ammoList[3].shoot), (int)position.X, (int)position.Y + offset, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
                     break;
                 case 3:
                     ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y - offset, 40, 40, testPanel);
