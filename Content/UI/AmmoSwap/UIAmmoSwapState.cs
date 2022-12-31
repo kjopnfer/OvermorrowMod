@@ -31,12 +31,13 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         public float CLOSE_TIME = 5;
 
         private Vector2 anchorPosition;
-        private bool hasAnchorPosition = false;
-
         private int buttonDelay = 0;
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            Player player = Main.LocalPlayer;
+            if (player.HeldItem.DamageType != DamageClass.Ranged) return;
+
             if (keepAlive > 0)
             {
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "AmmoSlot_Arrow").Value;
@@ -46,34 +47,32 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             base.Draw(spriteBatch);
         }
 
-        bool canShow = false;
-        int showCounter = 0;
-        int SHOW_TIME = 120;
-
-        int keepAlive = 60;
-
-        bool canSwap = false;
-        int swapCounter = 0;
+        private int keepAlive = 60;
+        private bool canSwap = false;
+        private int swapCounter = 0;
         public override void Update(GameTime gameTime)
         {
             Player player = Main.LocalPlayer;
-            if (player.HeldItem.DamageType != DamageClass.Ranged) return;
+            if (player.HeldItem.DamageType != DamageClass.Ranged)
+            {
+                this.RemoveAllChildren();
+                drawCounter = 0;
+                scaleCounter = 0;
 
-            MAX_TIME = 5;
-            SCALE_TIME = 5;
-            SHOW_TIME = 30;
-            
+                rotateCounter = 0;
+                keepAlive = 0;
+
+                return;
+            }
+
             if (buttonDelay > 0) buttonDelay--;
             
             if (keepAlive > 0)
             {
                 if (Main.keyState.IsKeyDown(Keys.Q) && buttonDelay == 0 && !canSwap)
                 {
-                    canShow = true;
                     buttonDelay = 10;
-
                     keepAlive = 60;
-
                     canSwap = true;
                 }
             }
@@ -81,14 +80,11 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             {
                 if (Main.keyState.IsKeyDown(Keys.Q) && buttonDelay == 0)
                 {
-                    canShow = true;
                     buttonDelay = 10;
-
                     keepAlive = 60;
                 }
             }
 
-            //if (Main.keyState.IsKeyDown(Keys.LeftShift))
             if (keepAlive > 0)
             {
                 if (drawCounter < MAX_TIME) drawCounter++;
@@ -108,7 +104,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 {
                     rotateCounter = MathHelper.Lerp(0, 90, Utils.Clamp(swapCounter, 0, 10f) / 10f);
 
-                    //if (showCounter++ >= SHOW_TIME)
                     if (swapCounter++ >= 30)
                     {
                         ShiftAmmo();
@@ -116,9 +111,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                         canSwap = false;
                         swapCounter = 0;
                         rotateCounter = 0;
-
-                        //Main.NewText("reset");
-                        //canShow = false;
                     }
                 }
             }
@@ -130,13 +122,10 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 {
                     this.RemoveAllChildren();
 
-                    hasAnchorPosition = false;
-
                     drawCounter = 0;
                     scaleCounter = 0;
 
                     rotateCounter = 0;
-                    showCounter = 0;
                 }
             }
 
@@ -162,7 +151,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             itemSlots.Enqueue(shiftedItem);
 
             int count = itemSlots.Count;
-            //Main.NewText(count);
             for (int i = 0; i < count; i++)
             {
                 Main.LocalPlayer.inventory[54 + i] = itemSlots.Dequeue();
@@ -184,9 +172,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                     ammoList.Add(Main.LocalPlayer.inventory[54 + i]);
                 }
             }
-
-            //Vector2 position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(26, 26);
-            //int offset = (int)MathHelper.Lerp(0, 40, Utils.Clamp(drawCounter, 0, MAX_TIME) / MAX_TIME);
 
             int offset = (int)MathHelper.Lerp(0, 40, Utils.Clamp(drawCounter, 0, MAX_TIME) / MAX_TIME);
             Vector2 rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(rotateCounter));
@@ -253,8 +238,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         bool isHovering => ContainsPoint(Main.MouseScreen);
         public override void Draw(SpriteBatch spriteBatch)
         {
-            //Main.LocalPlayer.mouseInterface = true;
-
             if (Parent.Parent is UIAmmoSwapState swapState)
             {
                 float progress = Utils.Clamp(swapState.scaleCounter, 0.5f, swapState.SCALE_TIME) / swapState.SCALE_TIME;
@@ -270,16 +253,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 Texture2D arrow = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + itemID).Value;
                 spriteBatch.Draw(arrow, GetDimensions().Center(), null, Color.White, MathHelper.PiOver4, arrow.Size() / 2f, itemScale, 0, 0);
             }
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            if (isHovering && !Main.keyState.IsKeyDown(Keys.LeftShift))
-            {
-                //Main.NewText("Selected ammo type: " + itemID);
-            }
-
-            base.Update(gameTime);
         }
     }
 }
