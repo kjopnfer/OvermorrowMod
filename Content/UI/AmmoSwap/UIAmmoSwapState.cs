@@ -112,10 +112,12 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                     if (swapCounter++ >= 30)
                     {
                         ShiftAmmo();
+
                         canSwap = false;
                         swapCounter = 0;
+                        rotateCounter = 0;
 
-                        Main.NewText("reset");
+                        //Main.NewText("reset");
                         //canShow = false;
                     }
                 }
@@ -140,7 +142,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
             if (keepAlive > 0) keepAlive--;
 
-            //Main.NewText("keepAlive: " + keepAlive + " swapCounter: " + swapCounter);
+            //Main.NewText("keepAlive: " + keepAlive + " swapCounter: " + swapCounter + " rotateCounter: " + rotateCounter);
 
             base.Update(gameTime);
         }
@@ -195,6 +197,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 case 4:
                     // LEFTMOST -> TOPMOST
                     ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    //Main.NewText(ammoList[0].Name);
 
                     // TOPMOST -> LEFTMOST
                     rotationOffset = new Vector2(offset, 0).RotatedBy(MathHelper.ToRadians(rotateCounter));
