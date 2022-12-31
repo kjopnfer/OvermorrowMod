@@ -253,7 +253,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         bool isHovering => ContainsPoint(Main.MouseScreen);
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Main.LocalPlayer.mouseInterface = true;
+            //Main.LocalPlayer.mouseInterface = true;
 
             if (Parent.Parent is UIAmmoSwapState swapState)
             {
