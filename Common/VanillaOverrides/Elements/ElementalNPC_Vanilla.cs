@@ -148,6 +148,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.AngryBonesBigHelmet:
                 case NPCID.AngryBonesBigMuscle:
                 case NPCID.PirateGhost:
+                case NPCID.HeadacheSkeleton:
+                case NPCID.MisassembledSkeleton:
+                case NPCID.PantlessSkeleton:
                     ElementWeakness = new HashSet<Element> { Element.Light };
                     ElementResistance = new HashSet<Element> { Element.Dark };
                     break;
@@ -293,10 +296,20 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.BloodEelHead:
                 case NPCID.BloodEelBody:
                 case NPCID.BloodEelTail:
+                case NPCID.BloodJelly:
+                    ElementWeakness = new HashSet<Element> { Element.Electric };
                     ElementResistance = new HashSet<Element> { Element.Dark, Element.Water };
                     break;
+                case NPCID.CorruptGoldfish:
+                case NPCID.Piranha:
+                case NPCID.Shark:
                 case NPCID.DukeFishron:
                     ElementWeakness = new HashSet<Element> { Element.Electric };
+                    ElementResistance = new HashSet<Element> { Element.Water };
+                    break;
+                case NPCID.BlueJellyfish:
+                case NPCID.GreenJellyfish:
+                case NPCID.PinkJellyfish:
                     ElementResistance = new HashSet<Element> { Element.Water };
                     break;
             }
