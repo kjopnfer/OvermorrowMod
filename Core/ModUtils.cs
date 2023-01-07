@@ -119,6 +119,7 @@ namespace OvermorrowMod.Core
             }
             return false;
         }
+
         public static OvermorrowModPlayer Overmorrow(this Player player)
         {
             return player.GetModPlayer<OvermorrowModPlayer>();
