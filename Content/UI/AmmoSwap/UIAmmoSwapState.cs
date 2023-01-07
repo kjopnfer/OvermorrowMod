@@ -163,6 +163,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         /// </summary>
         private void PlaceAmmoSlots()
         {
+            // TODO: MAKE A LIST WITH THEIR INDICES SO THAT THE DRAW/SHIFT CODE CAN PULL FROM CORRECT AREAS
             List<Item> ammoList = new List<Item>();
 
             for (int i = 0; i <= 3; i++)
@@ -182,7 +183,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 case 4:
                     // LEFTMOST -> TOPMOST
                     ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
-                    //Main.NewText(ammoList[0].Name);
 
                     // TOPMOST -> LEFTMOST
                     rotationOffset = new Vector2(offset, 0).RotatedBy(MathHelper.ToRadians(rotateCounter));
