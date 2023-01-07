@@ -12,7 +12,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
         {
             switch (npc.type)
             {
-                case NPCID.JungleSlime:
                 case NPCID.YellowSlime:
                 case NPCID.RedSlime:
                 case NPCID.PurpleSlime:
@@ -25,14 +24,40 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.SlimeRibbonYellow:
                 case NPCID.SlimeRibbonGreen:
                 case NPCID.SlimeRibbonRed:
+                case NPCID.KingSlime:
                     ElementWeakness = new HashSet<Element> { Element.Fire };
                     ElementResistance = new HashSet<Element> { Element.Water };
+                    break;
+                case NPCID.IceSlime:
+                case NPCID.SpikedIceSlime:
+                case NPCID.IceBat:
+                case NPCID.IceTortoise:
+                case NPCID.IceElemental:
+                case NPCID.IceGolem:
+                case NPCID.IcyMerman:
+                    ElementWeakness = new HashSet<Element> { Element.Fire };
+                    ElementResistance = new HashSet<Element> { Element.Water, Element.Ice };
                     break;
                 case NPCID.Slimer:
                 case NPCID.Slimer2:
                 case NPCID.Slimeling:
+                case NPCID.DungeonSlime:
+                case NPCID.Crimslime:
                     ElementWeakness = new HashSet<Element> { Element.Fire };
                     ElementResistance = new HashSet<Element> { Element.Water, Element.Dark };
+                    break;
+                case NPCID.ToxicSludge:
+                case NPCID.SwampThing:
+                case NPCID.JungleSlime:
+                case NPCID.SpikedJungleSlime:
+                    ElementWeakness = new HashSet<Element> { Element.Fire };
+                    ElementResistance = new HashSet<Element> { Element.Water, Element.Nature };
+                    break;
+                case NPCID.FireImp:
+                case NPCID.LavaSlime:
+                case NPCID.Lavabat:
+                    ElementWeakness = new HashSet<Element> { Element.Water };
+                    ElementResistance = new HashSet<Element> { Element.Fire };
                     break;
                 case NPCID.BigRainZombie:
                 case NPCID.SmallRainZombie:
@@ -66,10 +91,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.ArmedZombieTwiggy:
                 case NPCID.ArmedZombieCenx:
                 case NPCID.BloodZombie:
-                case NPCID.ZombieMerman:
                 case NPCID.TorchZombie:
                 case NPCID.ArmedTorchZombie:
                 case NPCID.MaggotZombie:
+                case NPCID.DoctorBones:
+                case NPCID.TheGroom:
+                case NPCID.Frankenstein:
+                case NPCID.Eyezor:
                     ElementWeakness = new HashSet<Element> { Element.Light, Element.Fire };
                     ElementResistance = new HashSet<Element> { Element.Dark };
                     break;
@@ -77,6 +105,146 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.ZombieMushroom:
                 case NPCID.ZombieMushroomHat:
                     ElementResistance = new HashSet<Element> { Element.Dark, Element.Nature };
+                    break;
+                case NPCID.MeteorHead:
+                    ElementWeakness = new HashSet<Element> { Element.Water };
+                    ElementResistance = new HashSet<Element> { Element.Fire, Element.Earth };
+                    break;
+                case NPCID.AngryBones:
+                case NPCID.DarkCaster:
+                case NPCID.CursedSkull:
+                case NPCID.SkeletronHead:
+                case NPCID.SkeletronHand:
+                case NPCID.UndeadMiner:
+                case NPCID.Tim:
+                case NPCID.ArmoredSkeleton:
+                case NPCID.Mummy:
+                case NPCID.DarkMummy:
+                case NPCID.Wraith:
+                case NPCID.CursedHammer:
+                case NPCID.Corruptor:
+                case NPCID.SeekerHead:
+                case NPCID.SeekerBody:
+                case NPCID.SeekerTail:
+                case NPCID.SkeletonArcher:
+                case NPCID.PossessedArmor:
+                case NPCID.Vampire:
+                case NPCID.RuneWizard:
+                case NPCID.CrimsonAxe:
+                case NPCID.FaceMonster:
+                case NPCID.FloatyGross:
+                case NPCID.Reaper:
+                case NPCID.RaggedCaster:
+                case NPCID.Necromancer:
+                case NPCID.NecromancerArmored:
+                case NPCID.BoneLee:
+                case NPCID.GiantCursedSkull:
+                    ElementWeakness = new HashSet<Element> { Element.Light };
+                    ElementResistance = new HashSet<Element> { Element.Dark };
+                    break;
+                case NPCID.UndeadViking:
+                    ElementWeakness = new HashSet<Element> { Element.Light };
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Ice };
+                    break;
+                case NPCID.BlueArmoredBones:
+                case NPCID.BlueArmoredBonesMace:
+                case NPCID.BlueArmoredBonesNoPants:
+                case NPCID.BlueArmoredBonesSword:
+                    ElementWeakness = new HashSet<Element> { Element.Light };
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Water };
+                    break;
+                case NPCID.RustyArmoredBonesAxe:
+                case NPCID.RustyArmoredBonesFlail:
+                case NPCID.RustyArmoredBonesSword:
+                case NPCID.RustyArmoredBonesSwordNoArmor:
+                    ElementWeakness = new HashSet<Element> { Element.Light };
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Earth };
+                    break;
+                case NPCID.HellArmoredBones:
+                case NPCID.HellArmoredBonesMace:
+                case NPCID.HellArmoredBonesSpikeShield:
+                case NPCID.HellArmoredBonesSword:
+                case NPCID.DiabolistRed:
+                case NPCID.DiabolistWhite:
+                    ElementWeakness = new HashSet<Element> { Element.Light };
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Fire };
+                    break;
+                case NPCID.ZombieMerman:
+                    ElementWeakness = new HashSet<Element> { Element.Light };
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Water };
+                    break;
+                case NPCID.LightMummy:
+                case NPCID.EnchantedSword:
+                case NPCID.IlluminantBat:
+                case NPCID.IlluminantSlime:
+                    ElementWeakness = new HashSet<Element> { Element.Dark };
+                    ElementResistance = new HashSet<Element> { Element.Light };
+                    break;
+                case NPCID.Paladin:
+                    ElementResistance = new HashSet<Element> { Element.Light };
+                    break;
+                case NPCID.BoneSerpentHead:
+                case NPCID.BoneSerpentBody:
+                case NPCID.BoneSerpentTail:
+                    ElementWeakness = new HashSet<Element> { Element.Light };
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Fire };
+                    break;
+                case NPCID.Demon:
+                case NPCID.VoodooDemon:
+                case NPCID.RedDevil:
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Fire };
+                    break;
+                case NPCID.Clinger:
+                    ElementWeakness = new HashSet<Element> { Element.Light };
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Fire };
+                    break;
+                case NPCID.Hornet:
+                case NPCID.BlackRecluse:
+                case NPCID.BlackRecluseWall:
+                case NPCID.WallCreeper:
+                case NPCID.WallCreeperWall:
+                case NPCID.MossHornet:
+                case NPCID.Bee:
+                case NPCID.QueenBee:
+                case NPCID.HornetFatty:
+                case NPCID.HornetHoney:
+                case NPCID.HornetLeafy:
+                case NPCID.HornetSpikey:
+                case NPCID.HornetStingy:
+                case NPCID.JungleCreeper:
+                case NPCID.JungleCreeperWall:
+                    ElementWeakness = new HashSet<Element> { Element.Fire };
+                    break;
+                case NPCID.ManEater:
+                case NPCID.Snatcher:
+                case NPCID.AngryTrapper:
+                case NPCID.FungoFish:
+                case NPCID.MushiLadybug:
+                case NPCID.FungiBulb:
+                case NPCID.GiantFungiBulb:
+                case NPCID.Plantera:
+                case NPCID.PlanterasTentacle:
+                    ElementWeakness = new HashSet<Element> { Element.Fire };
+                    ElementResistance = new HashSet<Element> { Element.Nature, Element.Water };
+                    break;
+                case NPCID.Harpy:
+                case NPCID.WyvernHead:
+                case NPCID.WyvernBody:
+                case NPCID.WyvernBody2:
+                case NPCID.WyvernBody3:
+                case NPCID.WyvernLegs:
+                case NPCID.WyvernTail:
+                    ElementWeakness = new HashSet<Element> { Element.Electric };
+                    break;
+                case NPCID.Golem:
+                case NPCID.GolemHead:
+                case NPCID.GolemFistLeft:
+                case NPCID.GolemFistRight:
+                    ElementResistance = new HashSet<Element> { Element.Earth };
+                    break;
+                case NPCID.AngryNimbus:
+                    ElementWeakness = new HashSet<Element> { Element.Nature };
+                    ElementResistance = new HashSet<Element> { Element.Wind, Element.Water, Element.Electric };
                     break;
             }
         }
