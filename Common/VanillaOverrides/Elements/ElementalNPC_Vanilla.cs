@@ -98,6 +98,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.TheGroom:
                 case NPCID.Frankenstein:
                 case NPCID.Eyezor:
+                case NPCID.Drippler:
+                case NPCID.TheBride:
                     ElementWeakness = new HashSet<Element> { Element.Light, Element.Fire };
                     ElementResistance = new HashSet<Element> { Element.Dark };
                     break;
@@ -139,6 +141,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.NecromancerArmored:
                 case NPCID.BoneLee:
                 case NPCID.GiantCursedSkull:
+                case NPCID.SkeletonSniper:
+                case NPCID.TacticalSkeleton:
+                case NPCID.SkeletonCommando:
+                case NPCID.AngryBonesBig:
+                case NPCID.AngryBonesBigHelmet:
+                case NPCID.AngryBonesBigMuscle:
+                case NPCID.PirateGhost:
                     ElementWeakness = new HashSet<Element> { Element.Light };
                     ElementResistance = new HashSet<Element> { Element.Dark };
                     break;
@@ -177,6 +186,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.EnchantedSword:
                 case NPCID.IlluminantBat:
                 case NPCID.IlluminantSlime:
+                case NPCID.HallowBoss:
+                case NPCID.QueenSlimeBoss:
+                case NPCID.QueenSlimeMinionBlue:
+                case NPCID.QueenSlimeMinionPink:
+                case NPCID.QueenSlimeMinionPurple:
                     ElementWeakness = new HashSet<Element> { Element.Dark };
                     ElementResistance = new HashSet<Element> { Element.Light };
                     break;
@@ -198,6 +212,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                     ElementWeakness = new HashSet<Element> { Element.Light };
                     ElementResistance = new HashSet<Element> { Element.Dark, Element.Fire };
                     break;
+                case NPCID.BigHornetStingy:
+                case NPCID.LittleHornetStingy:
+                case NPCID.BigHornetSpikey:
+                case NPCID.LittleHornetSpikey:
+                case NPCID.BigHornetLeafy:
+                case NPCID.LittleHornetLeafy:
+                case NPCID.LittleHornetHoney:
+                case NPCID.BigHornetHoney:
+                case NPCID.LittleHornetFatty:
+                case NPCID.BigHornetFatty:
                 case NPCID.Hornet:
                 case NPCID.BlackRecluse:
                 case NPCID.BlackRecluseWall:
@@ -240,11 +264,40 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case NPCID.GolemHead:
                 case NPCID.GolemFistLeft:
                 case NPCID.GolemFistRight:
+                case NPCID.GraniteGolem:
+                case NPCID.GraniteFlyer:
+                case NPCID.DesertBeast:
+                case NPCID.SandShark:
+                case NPCID.SandSlime:
+                case NPCID.RockGolem:
                     ElementResistance = new HashSet<Element> { Element.Earth };
+                    break;
+                case NPCID.SandsharkCorrupt:
+                case NPCID.SandsharkCrimson:
+                    ElementResistance = new HashSet<Element> { Element.Earth, Element.Dark };
+                    break;
+                case NPCID.SandsharkHallow:
+                    ElementResistance = new HashSet<Element> { Element.Earth, Element.Light };
+                    break;
+                case NPCID.SandElemental:
+                case NPCID.Tumbleweed:
+                    ElementResistance = new HashSet<Element> { Element.Earth, Element.Wind };
                     break;
                 case NPCID.AngryNimbus:
                     ElementWeakness = new HashSet<Element> { Element.Nature };
                     ElementResistance = new HashSet<Element> { Element.Wind, Element.Water, Element.Electric };
+                    break;
+                case NPCID.BloodNautilus:
+                case NPCID.BloodSquid:
+                case NPCID.GoblinShark:
+                case NPCID.BloodEelHead:
+                case NPCID.BloodEelBody:
+                case NPCID.BloodEelTail:
+                    ElementResistance = new HashSet<Element> { Element.Dark, Element.Water };
+                    break;
+                case NPCID.DukeFishron:
+                    ElementWeakness = new HashSet<Element> { Element.Electric };
+                    ElementResistance = new HashSet<Element> { Element.Water };
                     break;
             }
         }
