@@ -196,8 +196,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case ItemID.BoneArrow:
                     ElementTypes = new HashSet<Element>() { Element.Dark };
                     break;
+                case ItemID.HolyArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Light };
+                    break;
+                case ItemID.CursedArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Fire, Element.Dark };
+                    break;
                 case ItemID.FlamingArrow:
                     ElementTypes = new HashSet<Element>() { Element.Fire };
+                    break;
+                case ItemID.ChlorophyteArrow:
+                    ElementTypes = new HashSet<Element>() { Element.Nature };
                     break;
                 case ItemID.FrostburnArrow:
                     ElementTypes = new HashSet<Element>() { Element.Ice };
