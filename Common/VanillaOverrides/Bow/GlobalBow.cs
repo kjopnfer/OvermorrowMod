@@ -10,24 +10,25 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
     public class GlobalBow : GlobalItem
     {
         public override bool InstancePerEntity => true;
+        public Dictionary<int, int> OverridedBows = new Dictionary<int, int>()
+        {
+            { ItemID.DemonBow, ModContent.ProjectileType<TestBow_Held>() }
+        };
 
         public override void SetDefaults(Item item)
         {
-            switch (item.type)
+            if (OverridedBows.ContainsKey(item.type))
             {
-                case ItemID.DemonBow:
-                    item.shoot = ModContent.ProjectileType<TestBow_Held>();
-                    item.noUseGraphic = true;
-                    break;
+                item.shoot = OverridedBows[item.type];
+                item.noUseGraphic = true;
             }
         }
 
         public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player)
         {
-            switch (weapon.type)
+            if (OverridedBows.ContainsKey(weapon.type))
             {
-                case ItemID.DemonBow:
-                    return false;
+                return false;
             }
 
             return base.CanConsumeAmmo(weapon, ammo, player);
@@ -35,10 +36,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
         public override bool CanUseItem(Item item, Player player)
         {
-            switch (item.type)
+            if (OverridedBows.ContainsKey(item.type))
             {
-                case ItemID.DemonBow:
-                    return player.ownedProjectileCounts[item.shoot] <= 0;
+                return player.ownedProjectileCounts[item.shoot] <= 0;
             }
 
             return base.CanUseItem(item, player);
@@ -46,11 +46,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
         public override void ModifyShootStats(Item item, Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            switch (item.type)
+            if (OverridedBows.ContainsKey(item.type))
             {
-                case ItemID.DemonBow:
-                    type = item.shoot;
-                    break;
+                type = item.shoot;
             }
         }
 
