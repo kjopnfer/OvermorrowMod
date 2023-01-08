@@ -258,6 +258,14 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                 case ItemID.ThunderStaff:
                     ElementTypes = new HashSet<Element>() { Element.Electric };
                     break;
+                case ItemID.AmethystStaff:
+                case ItemID.TopazStaff:
+                case ItemID.SapphireStaff:
+                case ItemID.EmeraldStaff:
+                case ItemID.RubyStaff:
+                case ItemID.DiamondStaff:
+                    ElementTypes = new HashSet<Element>() { Element.Earth };
+                    break;
                 #endregion
                 #region Summon
                 case ItemID.HornetStaff:
