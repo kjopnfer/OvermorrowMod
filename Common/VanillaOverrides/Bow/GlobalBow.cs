@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System.Linq;
+using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Bow
 {
@@ -24,23 +25,23 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public override bool InstancePerEntity => true;
         public Dictionary<int, BowStats> OverridedBows = new Dictionary<int, BowStats>()
         {
-            { ItemID.WoodenBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 4) },
-            { ItemID.BorealWoodBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 6) },
-            { ItemID.RichMahoganyBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 6) },
-            { ItemID.PalmWoodBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 6) },
-            { ItemID.EbonwoodBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 8) },
-            { ItemID.ShadewoodBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 8) },
-            { ItemID.CopperBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 6) },
-            { ItemID.TinBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 7) },
-            { ItemID.IronBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 8) },
-            { ItemID.LeadBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 9) },
-            { ItemID.SilverBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 9) },
-            { ItemID.TungstenBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 10) },
-            { ItemID.GoldBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 11) },
-            { ItemID.PlatinumBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 13) },
-            { ItemID.DemonBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 14) },
-            { ItemID.TendonBow, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 19) },
-            { ItemID.MoltenFury, new BowStats(ModContent.ProjectileType<TestBow_Held>(), 31) },
+            { ItemID.WoodenBow, new BowStats(ModContent.ProjectileType<WoodenBow_Held>(), 14) },
+            { ItemID.BorealWoodBow, new BowStats(ModContent.ProjectileType<BorealWoodBow_Held>(), 16) },
+            { ItemID.RichMahoganyBow, new BowStats(ModContent.ProjectileType<RichMahoganyBow_Held>(), 16) },
+            { ItemID.PalmWoodBow, new BowStats(ModContent.ProjectileType<PalmWoodBow_Held>(), 14) },
+            { ItemID.EbonwoodBow, new BowStats(ModContent.ProjectileType<EbonwoodBow_Held>(), 18) },
+            { ItemID.ShadewoodBow, new BowStats(ModContent.ProjectileType<ShadewoodBow_Held>(), 18) },
+            { ItemID.CopperBow, new BowStats(ModContent.ProjectileType<CopperBow_Held>(), 16) },
+            { ItemID.TinBow, new BowStats(ModContent.ProjectileType<TinBow_Held>(), 17) },
+            { ItemID.IronBow, new BowStats(ModContent.ProjectileType<IronBow_Held>(), 18) },
+            { ItemID.LeadBow, new BowStats(ModContent.ProjectileType<LeadBow_Held>(), 19) },
+            { ItemID.SilverBow, new BowStats(ModContent.ProjectileType<SilverBow_Held>(), 19) },
+            { ItemID.TungstenBow, new BowStats(ModContent.ProjectileType<TungstenBow_Held>(), 20) },
+            { ItemID.GoldBow, new BowStats(ModContent.ProjectileType<GoldBow_Held>(), 21) },
+            { ItemID.PlatinumBow, new BowStats(ModContent.ProjectileType<PlatinumBow_Held>(), 23) },
+            { ItemID.DemonBow, new BowStats(ModContent.ProjectileType<DemonBow_Held>(), 24) },
+            { ItemID.TendonBow, new BowStats(ModContent.ProjectileType<TendonBow_Held>(), 29) },
+            { ItemID.MoltenFury, new BowStats(ModContent.ProjectileType<MoltenFury_Held>(), 51) },
         };
 
         public override void SetDefaults(Item item)

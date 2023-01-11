@@ -66,7 +66,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public virtual int ArrowType => ProjectileID.None;
 
         /// <summary>
-        /// Determines what arrow type is needed in order to convert the arrows to if ArrowType is given.
+        /// Determines what arrow type is needed in order to convert the arrows to if ArrowType is given. Uses Item ID.
         /// </summary>
         public virtual int ConvertArrow => ItemID.None;
 

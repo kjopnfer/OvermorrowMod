@@ -3,8 +3,8 @@ using OvermorrowMod.Common.VanillaOverrides.Bow;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla
 {
-    public class WoodenBow_Held : HeldBow
+    public class BorealWoodBow_Held : HeldBow
     {
-        public override Color StringColor => new Color(83, 65, 50);
+        public override Color StringColor => new Color(29, 24, 21);
     }
 }
