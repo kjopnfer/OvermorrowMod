@@ -165,26 +165,43 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         private bool FindAmmo()
         {
             LoadedArrowItemType = -1;
-            for (int i = 0; i <= 3; i++)
+            if (ConvertArrow != ItemID.None) // There is an arrow given for conversion, try to find that arrow.
             {
-                Item item = player.inventory[54 + i];
-                if (item.type == ItemID.None || item.ammo != AmmoID.Arrow) continue;
-                if (ConvertArrow != ItemID.None)
+                for (int i = 0; i <= 3; i++)
                 {
-                    if (item.type != ConvertArrow) continue;
+                    Item item = player.inventory[54 + i];
+                    if (item.type == ItemID.None || item.ammo != AmmoID.Arrow) continue;
+
+                    // The arrow needed to convert is found, so convert the arrow and exit the loop.
+                    if (item.type == ConvertArrow)
+                    {
+                        LoadedArrowType = ArrowType;
+                        LoadedArrowItemType = item.type;
+
+                        AmmoSlotID = 54 + i;
+
+                        return true;
+                    }
                 }
-
-                if (ArrowType == ProjectileID.None)
-                {
-                    LoadedArrowType = item.shoot;
-                    LoadedArrowItemType = item.type;
-                }
-
-                AmmoSlotID = 54 + i;
-
-                return true;
             }
 
+            // If here, then there is no conversion arrow OR no conversion arrow was found.
+            // Thus, run the default behavior to find any arrows to fire.
+            if (LoadedArrowItemType == -1)
+            {
+                for (int i = 0; i <= 3; i++)
+                {
+                    Item item = player.inventory[54 + i];
+                    if (item.type == ItemID.None || item.ammo != AmmoID.Arrow) continue;
+ 
+                    LoadedArrowType = item.shoot;
+                    LoadedArrowItemType = item.type;
+
+                    AmmoSlotID = 54 + i;
+
+                    return true;
+                }
+            }
             //if (LoadedArrowItemType == -1) Main.NewText("No ammo found.");
 
             return false;
@@ -240,10 +257,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 velocity = Vector2.Normalize(arrowPosition.DirectionTo(Main.MouseWorld));
             float speed = MathHelper.Lerp(1, MaxSpeed, progress);
 
-            if (ArrowType == ProjectileID.None)
-                Projectile.NewProjectile(null, arrowPosition, velocity * speed, LoadedArrowType, Projectile.damage, Projectile.knockBack, player.whoAmI);
-            else
-                Projectile.NewProjectile(null, arrowPosition, velocity * speed, ArrowType, Projectile.damage, Projectile.knockBack, player.whoAmI);
+            Projectile.NewProjectile(null, arrowPosition, velocity * speed, LoadedArrowType, Projectile.damage, Projectile.knockBack, player.whoAmI);
 
             ConsumeAmmo();
 
@@ -261,17 +275,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 arrowPosition = player.MountedCenter + arrowOffset;
 
             Texture2D texture;
-            if (ArrowType == ProjectileID.None)
-            {
-                if (LoadedArrowItemType == -1) return;
+            //if (ArrowType == ProjectileID.None)
+            //{
+            if (LoadedArrowItemType == -1) return;
 
-                if (LoadedArrowType == ProjectileID.FireArrow) Lighting.AddLight(arrowPosition, 1f, 0.647f, 0);
-                if (LoadedArrowType == ProjectileID.FrostburnArrow) Lighting.AddLight(arrowPosition, 0f, 0.75f, 0.75f);
-                Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
+            if (LoadedArrowType == ProjectileID.FireArrow) Lighting.AddLight(arrowPosition, 1f, 0.647f, 0);
+            if (LoadedArrowType == ProjectileID.FrostburnArrow) Lighting.AddLight(arrowPosition, 0f, 0.75f, 0.75f);
+            Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
 
-                texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;
-                Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
-            }
+            texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;
+            Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+            /*}
             else
             {
                 if (ArrowType == ProjectileID.FireArrow) Lighting.AddLight(arrowPosition, 1f, 0.647f, 0);
@@ -280,7 +294,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
                 texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ArrowType).Value;
                 Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
-            }
+            }*/
         }
 
         /// <summary>
