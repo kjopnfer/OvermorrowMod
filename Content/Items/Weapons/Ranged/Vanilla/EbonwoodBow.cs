@@ -6,5 +6,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla
     public class EbonwoodBow_Held : HeldBow
     {
         public override Color StringColor => new Color(31, 29, 41);
+        public override int ParentItem => Terraria.ID.ItemID.EbonwoodBow;
     }
 }

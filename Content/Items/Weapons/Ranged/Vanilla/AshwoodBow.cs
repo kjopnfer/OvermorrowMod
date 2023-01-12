@@ -1,4 +1,5 @@
-using Microsoft.Xna.Framework;
+// Shit this thing doesn't exist yet
+/*using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.VanillaOverrides.Bow;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla
@@ -7,4 +8,4 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla
     {
         public override Color StringColor => new Color(54, 54, 78);
     }
-}
+}*/

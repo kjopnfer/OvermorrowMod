@@ -28,7 +28,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             { ItemID.WoodenBow, new BowStats(ModContent.ProjectileType<WoodenBow_Held>(), 14) },
             { ItemID.BorealWoodBow, new BowStats(ModContent.ProjectileType<BorealWoodBow_Held>(), 16) },
             { ItemID.RichMahoganyBow, new BowStats(ModContent.ProjectileType<RichMahoganyBow_Held>(), 16) },
-            { ItemID.PalmWoodBow, new BowStats(ModContent.ProjectileType<PalmWoodBow_Held>(), 14) },
+            { ItemID.PalmWoodBow, new BowStats(ModContent.ProjectileType<PalmWoodBow_Held>(), 16) },
             { ItemID.EbonwoodBow, new BowStats(ModContent.ProjectileType<EbonwoodBow_Held>(), 18) },
             { ItemID.ShadewoodBow, new BowStats(ModContent.ProjectileType<ShadewoodBow_Held>(), 18) },
             { ItemID.CopperBow, new BowStats(ModContent.ProjectileType<CopperBow_Held>(), 16) },

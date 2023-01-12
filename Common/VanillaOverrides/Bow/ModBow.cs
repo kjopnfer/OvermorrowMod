@@ -37,6 +37,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
     public class TestBow_Held : HeldBow
     {
         public override Color StringColor => new Color(45, 35, 65);
+        public override int ParentItem => Terraria.ID.ItemID.BorealWoodBow;
     }
 
     public class TestBow : ModBow<TestBow_Held>

@@ -70,6 +70,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         /// </summary>
         public virtual int ConvertArrow => ItemID.None;
 
+        public abstract int ParentItem { get; }
+
         public virtual void SafeSetDefaults() { }
 
         public sealed override void SetDefaults()
@@ -96,6 +98,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
+            if (player.HeldItem.type != ParentItem) Projectile.Kill();
 
             player.heldProj = Projectile.whoAmI;
 
@@ -144,6 +147,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 {
                     if (drawCounter > MaxChargeTime) drawCounter = MaxChargeTime;
                     drawCounter += ChargeSpeed;
+
+                    // Prevent the player from switching items if they are drawing the bow
+                    player.itemTime = 2;
+                    player.itemAnimation = 2;
                 }
             }
             else
@@ -152,6 +159,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 {
                     ShootArrow();
                     drawCounter = -6;
+
+                    // Prevent the player from switching items if they have shot the bow
+                    player.itemTime = 30;
+                    player.itemAnimation = 30;
                 }
 
                 if (drawCounter < 0) drawCounter++;
