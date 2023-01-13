@@ -292,6 +292,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             if (LoadedArrowType == ProjectileID.FireArrow) Lighting.AddLight(arrowPosition, 1f, 0.647f, 0);
             if (LoadedArrowType == ProjectileID.FrostburnArrow) Lighting.AddLight(arrowPosition, 0f, 0.75f, 0.75f);
+            if (LoadedArrowType == ProjectileID.CursedArrow) Lighting.AddLight(arrowPosition, 0.647f, 1f, 0f);
+
             Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
 
             texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;

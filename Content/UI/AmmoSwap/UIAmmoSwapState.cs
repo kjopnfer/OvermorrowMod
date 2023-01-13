@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
 using Microsoft.Xna.Framework.Input;
+using OvermorrowMod.Common.Configs;
 
 namespace OvermorrowMod.Content.UI.AmmoSwap
 {
@@ -59,7 +60,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             }
 
             if (buttonDelay > 0) buttonDelay--;
-            
+
             if (keepAlive > 0)
             {
                 if (Main.keyState.IsKeyDown(Keys.Q) && buttonDelay == 0 && !canSwap)
@@ -84,6 +85,8 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 if (drawCounter >= MAX_TIME && scaleCounter < SCALE_TIME) scaleCounter++;
 
                 anchorPosition = new Vector2(Main.MouseWorld.X - Main.screenPosition.X - 60, Main.MouseWorld.Y - Main.screenPosition.Y - 60);
+                if (!ModContent.GetInstance<AmmoSwapConfig>().MouseAnchor)
+                    anchorPosition = new Vector2(Main.LocalPlayer.Center.X - Main.screenPosition.X - 60, Main.LocalPlayer.Center.Y - Main.screenPosition.Y - 60);
 
                 this.RemoveAllChildren();
                 ModUtils.AddElement(testPanel, (int)anchorPosition.X, (int)anchorPosition.Y, 120, 120, this);
