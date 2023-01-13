@@ -4,16 +4,8 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
 using OvermorrowMod.Core;
-using System.Text;
-using Terraria.GameContent;
-using Terraria.UI.Chat;
-using Terraria.Audio;
-using ReLogic.Utilities;
 using System.Collections.Generic;
 using Terraria.ID;
-using OvermorrowMod.Common;
-using System;
-using System.Xml;
 using Terraria.GameContent.UI.Elements;
 using Microsoft.Xna.Framework.Input;
 
@@ -156,12 +148,14 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
         private void ShiftAmmo()
         {
+            List<int> itemIndex = new List<int>();
             Queue<Item> itemSlots = new Queue<Item>();
             for (int i = 0; i <= 3; i++)
             {
                 if (Main.LocalPlayer.inventory[54 + i].ammo == AmmoID.Arrow)
                 {
                     itemSlots.Enqueue(Main.LocalPlayer.inventory[54 + i]);
+                    itemIndex.Add(54 + i);
                 }
             }
 
@@ -171,7 +165,8 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             int count = itemSlots.Count;
             for (int i = 0; i < count; i++)
             {
-                Main.LocalPlayer.inventory[54 + i] = itemSlots.Dequeue();
+                int index = itemIndex[i];
+                Main.LocalPlayer.inventory[index] = itemSlots.Dequeue();
             }
         }
 
@@ -182,7 +177,6 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         /// </summary>
         private void PlaceAmmoSlots()
         {
-            // TODO: MAKE A LIST WITH THEIR INDICES SO THAT THE DRAW/SHIFT CODE CAN PULL FROM CORRECT AREAS
             List<Item> ammoList = new List<Item>();
 
             for (int i = 0; i <= 3; i++)
