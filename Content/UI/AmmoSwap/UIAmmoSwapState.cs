@@ -89,7 +89,11 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 ModUtils.AddElement(testPanel, (int)anchorPosition.X, (int)anchorPosition.Y, 120, 120, this);
                 testPanel.RemoveAllChildren();
 
-                PlaceAmmoSlots();
+                if (!PlaceAmmoSlots())
+                {
+                    keepAlive = 0;
+                    return;
+                }
 
                 closeCounter = (int)CLOSE_TIME;
 
@@ -175,7 +179,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         /// <summary>
         /// this method is made by stupid people
         /// </summary>
-        private void PlaceAmmoSlots()
+        private bool PlaceAmmoSlots()
         {
             List<Item> ammoList = new List<Item>();
 
@@ -188,6 +192,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             }
 
             numArrows = ammoList.Count;
+            if (numArrows <= 1) return false;
 
             int offset = (int)MathHelper.Lerp(0, 40, Utils.Clamp(drawCounter, 0, MAX_TIME) / MAX_TIME);
             Vector2 rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(rotateCounter));
@@ -233,6 +238,8 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                     ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
                     break;
             }
+
+            return true;
         }
     }
 
