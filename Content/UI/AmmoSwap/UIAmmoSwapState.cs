@@ -47,6 +47,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             base.Draw(spriteBatch);
         }
 
+        private int numArrows = 0;
         private int keepAlive = 60;
         private bool canSwap = false;
         private int swapCounter = 0;
@@ -102,7 +103,24 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
                 if (canSwap)
                 {
-                    rotateCounter = MathHelper.Lerp(0, 90, Utils.Clamp(swapCounter, 0, 10f) / 10f);
+                    int degrees;
+                    switch (numArrows)
+                    {
+                        case 4:
+                            degrees = 90;
+                            break;
+                        case 3:
+                            degrees = 120;
+                            break;
+                        case 2:
+                            degrees = 180;
+                            break;
+                        default:
+                            degrees = 90;
+                            break;
+                    }
+
+                    rotateCounter = MathHelper.Lerp(0, degrees, Utils.Clamp(swapCounter, 0, 10f) / 10f);
 
                     if (swapCounter++ >= 30)
                     {
@@ -158,6 +176,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         }
 
         private float rotateCounter = 0;
+
         /// <summary>
         /// this method is made by stupid people
         /// </summary>
@@ -173,6 +192,8 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                     ammoList.Add(Main.LocalPlayer.inventory[54 + i]);
                 }
             }
+
+            numArrows = ammoList.Count;
 
             int offset = (int)MathHelper.Lerp(0, 40, Utils.Clamp(drawCounter, 0, MAX_TIME) / MAX_TIME);
             Vector2 rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(rotateCounter));
@@ -200,13 +221,31 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                     ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
                     break;
                 case 3:
-                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y - offset, 40, 40, testPanel);
-                    ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X - offset, (int)position.Y + offset - 8, 40, 40, testPanel);
-                    ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X + offset, (int)position.Y + offset - 8, 40, 40, testPanel);
+                    //offset = (int)MathHelper.Lerp(0, 25, Utils.Clamp(drawCounter, 0, MAX_TIME) / MAX_TIME);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+
+                    rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(120 + rotateCounter));
+                    position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
+                    ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+
+                    rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(240 + rotateCounter));
+                    position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
+                    ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+
+                    //rotationOffset = new Vector2(-offset, 0).RotatedBy(MathHelper.ToRadians(rotateCounter));
+                    //position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
+                    //ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+
+                    //ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X - offset, (int)position.Y + offset - 8, 40, 40, testPanel);
+                    //ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X + offset, (int)position.Y + offset - 8, 40, 40, testPanel);
                     break;
                 case 2:
-                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y - offset, 40, 40, testPanel);
-                    ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X, (int)position.Y + offset, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+
+                    rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(180 + rotateCounter));
+                    position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
+                    ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+
                     break;
             }
         }
