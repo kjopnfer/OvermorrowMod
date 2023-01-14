@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
-using OvermorrowMod.Common.VanillaOverrides;
+using OvermorrowMod.Common.VanillaOverrides.Bow;
 using OvermorrowMod.Content.UI;
 using System.Collections.Generic;
 using Terraria;
@@ -27,25 +27,11 @@ namespace OvermorrowMod.Common
             Instance = this;
         }
 
-        private GameTime _lastUpdateUiGameTime;
-        internal UserInterface MyInterface;
-        internal UserInterface AltarUI;
         internal UserInterface TitleInterface;
         internal UserInterface ScreenInterface;
 
-        internal AltarUI Altar;
         public TitleCard TitleCard;
         public ScreenColor ScreenColor;
-
-        internal TrajectoryDraw trajectoryDraw;
-        private UserInterface trajDraw;
-
-        internal bowChargeDraw BowChargeDraw;
-        private UserInterface bowCargDraw;
-
-        public static bool shid;
-        public static int[] bow2Send;
-        public string faef = "foof";
 
         public override void PostUpdateEverything()
         {
@@ -56,23 +42,6 @@ namespace OvermorrowMod.Common
         {
             if (!Main.dedServ)
             {
-                AltarUI = new UserInterface();
-
-                MyInterface = new UserInterface();
-
-                Altar = new AltarUI();
-                Altar.Activate();
-
-                trajectoryDraw = new TrajectoryDraw();
-                trajectoryDraw.Activate();
-                trajDraw = new UserInterface();
-                trajDraw.SetState(trajectoryDraw);
-
-                BowChargeDraw = new bowChargeDraw();
-                BowChargeDraw.Activate();
-                bowCargDraw = new UserInterface();
-                bowCargDraw.SetState(BowChargeDraw);
-
                 TitleInterface = new UserInterface();
                 TitleCard = new TitleCard();
                 TitleInterface.SetState(TitleCard);
@@ -81,30 +50,6 @@ namespace OvermorrowMod.Common
                 ScreenColor = new ScreenColor();
                 ScreenInterface.SetState(ScreenColor);
             }
-        }
-
-        public override void Unload()
-        {
-            shid = false;
-            bow2Send = new int[] { };
-        }
-
-        public override void UpdateUI(GameTime gameTime)
-        {
-            _lastUpdateUiGameTime = gameTime;
-            if (MyInterface?.CurrentState != null && !Main.gameMenu)
-            {
-                MyInterface.Update(gameTime);
-            }
-
-            if (AltarUI?.CurrentState != null && !Main.gameMenu)
-            {
-                AltarUI.Update(gameTime);
-            }
-
-            trajDraw?.Update(gameTime);
-
-            bowCargDraw?.Update(gameTime);
         }
 
         public static int SojournTiles;
@@ -157,34 +102,8 @@ namespace OvermorrowMod.Common
             {
                 AddInterfaceLayer(layers, ScreenInterface, ScreenColor, cursorIndex, ScreenColor.visible, "Screen Color");
             }
-
-            mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
-            if (mouseTextIndex != -1)
-            {
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "OvermorrowMod: Bow Trajectory",
-                    delegate
-                    {
-                        trajDraw.Draw(Main.spriteBatch, new GameTime());
-                        return true;
-                    },
-                    InterfaceScaleType.Game)
-                );
-            }
-            mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
-            if (mouseTextIndex != -1)
-            {
-                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
-                    "OvermorrowMod: Bow Charge",
-                    delegate
-                    {
-                        bowCargDraw.Draw(Main.spriteBatch, new GameTime());
-                        return true;
-                    },
-                    InterfaceScaleType.Game)
-                );
-            }
         }
+
         public static void AddInterfaceLayer(List<GameInterfaceLayer> layers, UserInterface userInterface, UIState state, int index, bool visible, string customName = null)
         {
             string name = customName == null ? state.ToString() : customName;
@@ -198,22 +117,6 @@ namespace OvermorrowMod.Common
                     }
                     return true;
                 }, InterfaceScaleType.UI));
-        }
-
-
-        internal void ShowAltar()
-        {
-            AltarUI?.SetState(Altar);
-        }
-
-        internal void HideAltar()
-        {
-            AltarUI?.SetState(null);
-        }
-
-        internal void HideMyUI()
-        {
-            MyInterface?.SetState(null);
         }
 
         public override void PreUpdateEntities()

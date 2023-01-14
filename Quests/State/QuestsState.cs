@@ -159,7 +159,7 @@ namespace OvermorrowMod.Quests.State
         public IEnumerable<(BaseQuestState, T)> GetActiveRequirementsOfType<T>(QuestPlayer player) where T : BaseRequirementState
         {
             return GetActiveQuests(player).SelectMany(q =>
-                q.Quest.GetActiveRequirements()
+                q.Quest.GetActiveRequirements(player, q)
                 .Select(req => q.GetRequirementState(req))
                 .OfType<T>()
                 .Select(reqState => (q, reqState)));

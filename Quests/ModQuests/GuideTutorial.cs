@@ -15,8 +15,8 @@ namespace OvermorrowMod.Quests.ModQuests
         {
             Requirements = new[]
             {
-                new ItemRequirement(ItemID.WorkBench, 1),
-                new ItemRequirement(ItemID.Torch, 20)
+                new ItemRequirement("workbench", ItemID.WorkBench, 1, true),
+                new ItemRequirement("torch", ItemID.Torch, 20, true)
             };
             Rewards = new[]
             {

@@ -51,6 +51,16 @@ namespace OvermorrowMod.Quests
 
             quest.Quest.CompleteQuest(Player, true);
         }
+
+        public void TickQuestRequirements(string questId)
+        {
+            var quest = CurrentQuests.FirstOrDefault(q => q.Quest.QuestID == questId);
+            foreach (var req in quest.Quest.Requirements)
+            {
+                req.TryCompleteRequirement(this, quest);
+            }
+        }
+
         public override void SaveData(TagCompound tag)
         {
             tag["questStates"] = Quests.State.GetPerPlayerQuests(this).ToList();
@@ -72,7 +82,7 @@ namespace OvermorrowMod.Quests
         {
             foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<TravelRequirementState>(this))
             {
-                if (!req.Traveled)
+                if (!req.IsCompleted)
                 {
                     if (markerCounter % 30 == 0)
                     {
@@ -82,7 +92,7 @@ namespace OvermorrowMod.Quests
 
                     if (Player.active && Player.Distance((req.Requirement as TravelRequirement).Location * 16) < 50)
                     {
-                        req.Traveled = true;
+                        req.IsCompleted = true;
                     }
                 }
             }

@@ -107,14 +107,25 @@ namespace OvermorrowMod.Quests
 
         /// <summary>
         /// Returns true if all quest goals are completed by the given player.
+        /// This will also turn in objectives that allow it.
         /// </summary>
-        public bool CheckRequirements(QuestPlayer player, BaseQuestState state)
+        public bool TryUpdateQuestRequirements(QuestPlayer player, BaseQuestState state)
+        {
+            bool complete = true;
+            foreach (var requirement in Requirements)
+            {
+                complete &= requirement.TryCompleteRequirement(player, state);
+            }
+            return complete;
+        }
+
+        public bool CanHandInQuest(QuestPlayer player, BaseQuestState state)
         {
             foreach (var requirement in Requirements)
             {
-                if (!requirement.IsCompleted(player, state)) return false;
+                if (requirement.CanHandInRequirement(player, state)) return true;
             }
-            return true;
+            return TryUpdateQuestRequirements(player, state);
         }
 
         /// <summary>
@@ -147,16 +158,59 @@ namespace OvermorrowMod.Quests
 
         public virtual BaseQuestState GetNewState()
         {
-            return new BaseQuestState(this, GetActiveRequirements().Select(req => req.GetNewState()).Where(req => req != null).ToList());
+            return new BaseQuestState(this, GetAllRequirements().Select(req => req.GetNewState()).Where(req => req != null).ToList());
         }
 
-        private IEnumerable<IQuestRequirement> GetRequirements(IQuestRequirement source)
+        private static IEnumerable<IQuestRequirement> GetActiveRequirements(IQuestRequirement source, QuestPlayer player, BaseQuestState state)
         {
             if (source is BaseCompositeRequirement composite)
             {
-                foreach (var req in composite.Clauses)
+                foreach (var req in composite.GetActiveClauses(player, state))
                 {
-                    foreach (var req2 in GetRequirements(req))
+                    foreach (var req2 in GetActiveRequirements(req, player, state))
+                    {
+                        yield return req2;
+                    }
+                }
+            }
+            else
+            {
+                yield return source;
+            }
+        }
+
+        /// <summary>
+        /// Returns all active requirements except Composite requirements, instead unwrapping those.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<IQuestRequirement> GetActiveRequirements(QuestPlayer player, BaseQuestState state)
+        {
+            foreach (var req in Requirements)
+            {
+                foreach (var req2 in GetActiveRequirements(req, player, state))
+                {
+                    yield return req2;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Return all active requirements of the given type
+        /// </summary>
+        /// <typeparam name="T">Requirement type</typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetActiveRequirementsOfType<T>(QuestPlayer player, BaseQuestState state) where T : IQuestRequirement
+        {
+            return GetActiveRequirements(player, state).OfType<T>();
+        }
+
+        private static IEnumerable<IQuestRequirement> GetAllRequirements(IQuestRequirement source)
+        {
+            if (source is BaseCompositeRequirement composite)
+            {
+                foreach (var req in composite.AllClauses)
+                {
+                    foreach (var req2 in GetAllRequirements(req))
                     {
                         yield return req2;
                     }
@@ -172,25 +226,15 @@ namespace OvermorrowMod.Quests
         /// Returns all requirements except Composite requirements, instead unwrapping those.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IQuestRequirement> GetActiveRequirements()
+        public IEnumerable<IQuestRequirement> GetAllRequirements()
         {
             foreach (var req in Requirements)
             {
-                foreach (var req2 in GetRequirements(req))
+                foreach (var req2 in GetAllRequirements(req))
                 {
                     yield return req2;
                 }
             }
-        }
-
-        /// <summary>
-        /// Return all active requirements of the given type
-        /// </summary>
-        /// <typeparam name="T">Requirement type</typeparam>
-        /// <returns></returns>
-        public IEnumerable<T> GetActiveRequirementsOfType<T>() where T : IQuestRequirement
-        {
-            return GetActiveRequirements().OfType<T>();
         }
     }
 }

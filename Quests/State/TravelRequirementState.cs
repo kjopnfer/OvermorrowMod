@@ -1,26 +1,17 @@
 ﻿using OvermorrowMod.Core.Interfaces;
-using Terraria.ModLoader.IO;
+using OvermorrowMod.Quests.Requirements;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OvermorrowMod.Quests.State
 {
-    internal class TravelRequirementState : BaseRequirementState
+    public class TravelRequirementState : CompletableRequirementState
     {
-        public bool Traveled { get; set; }
-
-        public TravelRequirementState(IQuestRequirement requirement) : base(requirement) { }
-
-
-        public override void Load(TagCompound tag)
+        public TravelRequirementState(TravelRequirement requirement) : base(requirement)
         {
-            Traveled = tag.GetBool("traveled");
-        }
-
-        public override TagCompound SerializeData()
-        {
-            return new TagCompound
-            {
-                ["traveled"] = Traveled
-            };
         }
     }
 }
