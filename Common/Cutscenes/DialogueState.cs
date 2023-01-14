@@ -290,7 +290,7 @@ namespace OvermorrowMod.Common.Cutscenes
             string text = player.GetDialogue().GetText(dialogueID);
             if (drawQuest)
             {
-                if (!isDoing)
+                /*if (!isDoing)
                 {
                     text = quest.GetDialogue(questCounter);
                 }
@@ -306,7 +306,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     {
                         text = quest.GetHint(Main.rand.Next(0, quest.HintCount - 1));
                     }
-                }
+                }*/
             }
 
             int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText(dialogueID).Length, DrawTimer / (float)player.GetDialogue().drawTime);
