@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using System;
 using Terraria.Audio;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -15,6 +16,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public override bool ShouldUpdatePosition() => false;
 
         public virtual Vector2 PositionOffset => new Vector2(15, 0);
+
+        public virtual int MaxShots => 6;
 
         public virtual float ProjectileScale => 1;
 
@@ -61,7 +64,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
         }
 
-        private bool inFiringState = false;
+        public int ShotsFired = 0;
         private int shootCounter = 0;
         private int shootTime => player.HeldItem.useTime;
         private int shootAnimation => player.HeldItem.useAnimation;
@@ -71,6 +74,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             {
                 Projectile.timeLeft = 120;
                 shootCounter = shootTime;
+
+                ShotsFired++;
+                if (ShotsFired > MaxShots) ShotsFired = 0;
             }
 
             if (shootCounter > 0)
@@ -88,12 +94,42 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        private void DrawAmmo()
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet_Used").Value;
+
+            //int xOffset = texture.Width / 2;
+            int xOffset = 0;
+
+            for (int i = 0; i < 6; i++)
+            {
+                int textureOffset = 14 * i;
+                Vector2 offset = new Vector2(-30 + 12 * i, 42);
+                //Vector2 offset = new Vector2(-xOffset , 42);
+
+                Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, ProjectileScale, SpriteEffects.None, 1);
+            }
+
+            Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
+            int numBullets = MaxShots - ShotsFired;
+            for (int i = 0; i < numBullets; i++)
+            {
+                int textureOffset = 14 * i;
+                Vector2 offset = new Vector2(-30 + 12 * i, 42);
+                //Vector2 offset = new Vector2(-xOffset , 42);
+
+                Main.spriteBatch.Draw(activeBullets, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, ProjectileScale, SpriteEffects.None, 1);
+            }
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
+
+            DrawAmmo();
 
             return false;
         }
