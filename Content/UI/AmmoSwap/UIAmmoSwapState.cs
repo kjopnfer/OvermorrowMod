@@ -9,6 +9,7 @@ using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
 using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Common.Configs;
+using OvermorrowMod.Common;
 
 namespace OvermorrowMod.Content.UI.AmmoSwap
 {
@@ -63,7 +64,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
             if (keepAlive > 0)
             {
-                if (Main.keyState.IsKeyDown(Keys.Q) && buttonDelay == 0 && !canSwap)
+                if (OvermorrowModFile.AmmoSwapKey.JustPressed && buttonDelay == 0 && !canSwap)
                 {
                     buttonDelay = 10;
                     keepAlive = 60;
@@ -72,7 +73,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             }
             else
             {
-                if (Main.keyState.IsKeyDown(Keys.Q) && buttonDelay == 0)
+                if (OvermorrowModFile.AmmoSwapKey.JustPressed && buttonDelay == 0)
                 {
                     buttonDelay = 10;
                     keepAlive = 60;
