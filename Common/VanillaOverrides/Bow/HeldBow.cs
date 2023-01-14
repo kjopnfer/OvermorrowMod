@@ -5,6 +5,7 @@ using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using System;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Bow
 {
@@ -70,6 +71,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         /// </summary>
         public virtual int ConvertArrow => ItemID.None;
 
+        public virtual SoundStyle DrawbackSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/bowCharge");
+
+        public virtual SoundStyle ShootSound => SoundID.Item5;
         public abstract int ParentItem { get; }
 
         public virtual void SafeSetDefaults() { }
@@ -141,7 +145,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
                 if (delayCounter != 0) return;
 
-                if (drawCounter == 0) AutofillAmmoSlots();
+                if (drawCounter == 0)
+                {
+                    SoundEngine.PlaySound(DrawbackSound);
+                    AutofillAmmoSlots();
+                }
 
                 if (FindAmmo())
                 {
@@ -268,7 +276,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 velocity = Vector2.Normalize(arrowPosition.DirectionTo(Main.MouseWorld));
             float speed = MathHelper.Lerp(1, MaxSpeed, progress);
 
-            Projectile.NewProjectile(null, arrowPosition, velocity * speed, LoadedArrowType, Projectile.damage, Projectile.knockBack, player.whoAmI);
+            SoundEngine.PlaySound(ShootSound);
+            float damage = MathHelper.Lerp(0.25f, 1, Utils.Clamp(drawCounter, 0, MaxChargeTime) / MaxChargeTime) * Projectile.damage;
+            Projectile.NewProjectile(null, arrowPosition, velocity * speed, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
 
             ConsumeAmmo();
 
