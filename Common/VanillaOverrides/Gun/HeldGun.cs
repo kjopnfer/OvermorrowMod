@@ -61,9 +61,31 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
         }
 
+        private bool inFiringState = false;
+        private int shootCounter = 0;
+        private int shootTime => player.HeldItem.useTime;
+        private int shootAnimation => player.HeldItem.useAnimation;
         private void HandleGunUse()
         {
+            if (player.controlUseItem && shootCounter == 0)
+            {
+                Projectile.timeLeft = 120;
+                shootCounter = shootTime;
+            }
 
+            if (shootCounter > 0)
+            {
+                if (shootCounter % shootAnimation == 0)
+                {
+                    Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
+                    Vector2 shootPosition = Projectile.Center + new Vector2(5, -5).RotatedBy(Projectile.rotation) * player.direction;
+                    SoundEngine.PlaySound(SoundID.Item41);
+
+                    Projectile.NewProjectile(null, shootPosition, velocity, ProjectileID.Bullet, Projectile.damage, Projectile.knockBack, player.whoAmI);
+                }
+               
+                if (shootCounter > 0) shootCounter--;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)

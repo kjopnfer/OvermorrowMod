@@ -37,7 +37,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
     public class TestGun_Held : HeldGun
     {
         public override int ParentItem => ModContent.GetInstance<TestGun>().Type;
-        public override Vector2 PositionOffset => new Vector2(26, 0);
+        public override Vector2 PositionOffset => new Vector2(22, 0);
         public override float ProjectileScale => 0.75f;
     }
 
