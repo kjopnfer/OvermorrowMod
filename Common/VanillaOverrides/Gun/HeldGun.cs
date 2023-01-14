@@ -37,6 +37,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             SafeSetDefaults();
         }
 
+        private bool inReloadState = false;
         public Player player => Main.player[Projectile.owner];
         public override void AI()
         {
@@ -46,7 +47,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             player.heldProj = Projectile.whoAmI;
 
             HandleGunDrawing();
-            HandleGunUse();
+
+            if (!inReloadState)
+            {
+                HandleGunUse();
+            }
+            else
+            {
+                HandleReloadAction();
+            }
         }
 
 
@@ -76,21 +85,44 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 shootCounter = shootTime;
 
                 ShotsFired++;
-                if (ShotsFired > MaxShots) ShotsFired = 0;
+                if (ShotsFired > MaxShots)
+                {
+                    Main.NewText("reset");
+
+                    shootCounter = 0;
+                    inReloadState = true;
+                    reloadTime = 60;
+
+                    return;
+                }
             }
 
             if (shootCounter > 0)
             {
                 if (shootCounter % shootAnimation == 0)
                 {
+                    Main.NewText("fire");
+
                     Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
                     Vector2 shootPosition = Projectile.Center + new Vector2(5, -5).RotatedBy(Projectile.rotation) * player.direction;
                     SoundEngine.PlaySound(SoundID.Item41);
 
                     Projectile.NewProjectile(null, shootPosition, velocity, ProjectileID.Bullet, Projectile.damage, Projectile.knockBack, player.whoAmI);
                 }
-               
+
                 if (shootCounter > 0) shootCounter--;
+            }
+        }
+
+        private int reloadTime = 60;
+        private void HandleReloadAction()
+        {
+            if (reloadTime > 0) reloadTime--;
+
+            if (reloadTime == 0)
+            {
+                inReloadState = false;
+                ShotsFired = 0;
             }
         }
 
