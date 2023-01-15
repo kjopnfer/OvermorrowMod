@@ -84,10 +84,11 @@ namespace OvermorrowMod.Common.Particles
 
     public class Smoke : CustomParticle
     {
-        float maxTime = 420;
+        float maxTime = 60;
+        int smokeVariant = 0;
         public override void OnSpawn()
         {
-            particle.color = Color.Lerp(Color.Purple, Color.Violet, particle.scale);
+            //particle.color = Color.Lerp(Color.Purple, Color.Violet, particle.scale);
             particle.customData[0] = Main.rand.Next(3, 6);
             if (Main.rand.NextBool(3))
             {
@@ -96,9 +97,13 @@ namespace OvermorrowMod.Common.Particles
 
             particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
             particle.scale = 0;
+            maxTime = 60;
+            smokeVariant = Main.rand.Next(1, 8);
+
         }
         public override void Update()
         {
+
             if (particle.activeTime > maxTime) particle.Kill();
             /*if (particle.activeTime < 10)
             {
@@ -113,22 +118,25 @@ namespace OvermorrowMod.Common.Particles
                 particle.alpha = 1f - progress;
             }*/
 
-            float progress = (float)(particle.activeTime) / maxTime;
+            float progress = particle.activeTime / (float)maxTime;
             //particle.scale = MathHelper.Lerp(0f, particle.customData[0], progress);
-            particle.scale += 0.05f;
+            particle.scale += 0.0020f;
             particle.alpha = 1f - progress;
 
-            particle.rotation += 0.06f;
-            particle.velocity.Y -= 0.05f;
+            particle.rotation += 0.05f;
+            particle.velocity.Y -= 0.03f;
         }
+
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Reload(BlendState.Additive);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "smoke_0" + smokeVariant).Value;
 
-            Texture2D texture = Particle.GetTexture(particle.type);
+            //Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
 
+            spriteBatch.Reload(BlendState.Additive);
+            
             spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }

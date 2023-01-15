@@ -8,6 +8,7 @@ using System;
 using Terraria.Audio;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
+using OvermorrowMod.Common.Particles;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -112,8 +113,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     recoilTimer = RECOIL_TIME;
 
                     Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
-                    Vector2 shootPosition = Projectile.Center + new Vector2(5, -5).RotatedBy(Projectile.rotation) * player.direction;
+
+                    // TODO: use overrideable shootOffset, make it so facing left multiples y offset by 3 and makes it positive
+                    Vector2 shootOffset = player.direction == 1 ? new Vector2(15, -5) : new Vector2(15, 15);
+                    Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
                     SoundEngine.PlaySound(SoundID.Item41);
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, 0.12f)).RotatedByRandom(MathHelper.ToRadians(25));
+                        Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
+                    }
 
                     Projectile.NewProjectile(null, shootPosition, velocity, ProjectileID.Bullet, Projectile.damage, Projectile.knockBack, player.whoAmI);
                 }
