@@ -56,7 +56,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             if (!inReloadState)
             {
-                HandleGunUse();
+                if (reloadDelay > 0) reloadDelay--;
+
+                if (reloadDelay == 0)
+                    HandleGunUse();
             }
             else
             {
@@ -67,6 +70,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private void HandleGunDrawing()
         {
             if (recoilTimer > 0) recoilTimer--;
+
             float recoilRotation = MathHelper.Lerp(0, MathHelper.ToRadians(-10 * player.direction), Utils.Clamp(recoilTimer, 0, RECOIL_TIME) / (float)RECOIL_TIME);
 
             float gunRotation = Projectile.Center.DirectionTo(Main.MouseWorld).ToRotation() + recoilRotation;
@@ -134,8 +138,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private int reloadTime = 0;
         private int maxReloadTime = 60;
-        private int clickDelay = 0;
 
+        private int clickDelay = 0;
+        private int reloadDelay = 0;
         private int fuckingStop = 10;
         private void HandleReloadAction()
         {
@@ -156,6 +161,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             if (reloadTime == 0)
             {
+                reloadDelay = 30;
+
                 inReloadState = false;
                 ShotsFired = 0;
                 clickDelay = 0;
@@ -211,12 +218,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private int recoilTimer = 0;
         private int RECOIL_TIME = 15;
+        float reloadRotation = 0;
         private void DrawGun(Color lightColor)
         {
             RECOIL_TIME = 15;
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
-            float recoilRotation = MathHelper.Lerp(0, MathHelper.ToRadians(-5), Utils.Clamp(recoilTimer, 0, RECOIL_TIME) / (float)RECOIL_TIME);
 
             Vector2 directionOffset = Vector2.Zero;
             if (player.direction == -1)
@@ -224,8 +231,33 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 directionOffset = new Vector2(0, -10);
             }
 
-            Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
+            if (reloadDelay > 0)
+            {
+                float spinRate = MathHelper.Lerp(0.09f, 0.99f, reloadDelay / 30f);
+                reloadRotation -= spinRate * player.direction;
+            }
+            else
+                reloadRotation = 0;
 
+            Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
+
+            if (shootCounter > 13)
+            {
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+                Texture2D muzzleFlash = ModContent.Request<Texture2D>(AssetDirectory.Textures + "muzzle_05").Value;
+
+                Vector2 muzzleDirectionOffset = player.direction == 1 ? new Vector2(28, -5) : new Vector2(28, 5);
+                Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
+                spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+                Main.spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, spriteEffects, 1);
+                Main.spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, spriteEffects, 1);
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            }
         }
 
         private List<int> ActionTicks = new List<int>() { 45, 75 };
