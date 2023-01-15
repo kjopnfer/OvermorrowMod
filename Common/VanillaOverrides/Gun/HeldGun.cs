@@ -18,6 +18,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public virtual Vector2 PositionOffset => new Vector2(15, 0);
 
+        public virtual bool TwoHanded => false;
+
         public virtual int MaxShots => 6;
 
         public virtual float ProjectileScale => 1;
@@ -63,7 +65,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private void HandleGunDrawing()
         {
-            float gunRotation = Projectile.Center.DirectionTo(Main.MouseWorld).ToRotation();
+            if (recoilTimer > 0) recoilTimer--;
+            float recoilRotation = MathHelper.Lerp(0, MathHelper.ToRadians(-10 * player.direction), Utils.Clamp(recoilTimer, 0, RECOIL_TIME) / (float)RECOIL_TIME);
+
+            float gunRotation = Projectile.Center.DirectionTo(Main.MouseWorld).ToRotation() + recoilRotation;
             Projectile.rotation = gunRotation;
             Projectile.spriteDirection = gunRotation > MathHelper.PiOver2 || gunRotation < -MathHelper.PiOver2 ? -1 : 1;
             player.direction = Projectile.spriteDirection;
@@ -71,8 +76,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Vector2 positionOffset = PositionOffset.RotatedBy(gunRotation);
             Projectile.Center = player.RotatedRelativePoint(player.MountedCenter) + positionOffset;
 
-            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation - MathHelper.PiOver2);
-            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
+            if (TwoHanded)
+                player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation - MathHelper.PiOver2 + recoilRotation);
+
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2 + recoilRotation);
         }
 
         public int ShotsFired = 0;
@@ -102,6 +109,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             {
                 if (shootCounter % shootAnimation == 0)
                 {
+                    recoilTimer = RECOIL_TIME;
+
                     Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
                     Vector2 shootPosition = Projectile.Center + new Vector2(5, -5).RotatedBy(Projectile.rotation) * player.direction;
                     SoundEngine.PlaySound(SoundID.Item41);
@@ -190,11 +199,22 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        private int recoilTimer = 0;
+        private int RECOIL_TIME = 15;
         private void DrawGun(Color lightColor)
         {
+            RECOIL_TIME = 15;
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
+            float recoilRotation = MathHelper.Lerp(0, MathHelper.ToRadians(-5), Utils.Clamp(recoilTimer, 0, RECOIL_TIME) / (float)RECOIL_TIME);
+
+            Vector2 directionOffset = Vector2.Zero;
+            if (player.direction == -1)
+            {
+                directionOffset = new Vector2(0, -10);
+            }
+
+            Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
 
         }
 
@@ -215,7 +235,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             float progress = MathHelper.Lerp(0, bar.Width, 1 - ((float)reloadTime / maxReloadTime));
             Rectangle drawRectangle = new Rectangle(0, 0, (int)progress, bar.Height);
             Vector2 barPosition = player.Center + barOffset;
-      
+
             Main.spriteBatch.Draw(bar, barPosition - Main.screenPosition, drawRectangle, Color.White, 0f, bar.Size() / 2f, scale, SpriteEffects.None, 1);
 
             foreach (int actionTick in ActionTicks)
