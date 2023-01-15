@@ -23,7 +23,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
         {
             float result = 1;
 
-            foreach (Element incomingElement in incomingElements)
+            /*foreach (Element incomingElement in incomingElements)
             {
                 if (elementalWeakness.Contains(incomingElement))
                 {
@@ -36,7 +36,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
                     Main.NewText("dealing LESS DAMAGE");
                     result -= 0.5f;
                 }
-            }
+            }*/
 
             return result < 0 ? 0 : result;
         }

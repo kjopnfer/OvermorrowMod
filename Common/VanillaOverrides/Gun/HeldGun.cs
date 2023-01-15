@@ -7,6 +7,7 @@ using Terraria.GameContent;
 using System;
 using Terraria.Audio;
 using OvermorrowMod.Core;
+using System.Collections.Generic;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -20,6 +21,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual int MaxShots => 6;
 
         public virtual float ProjectileScale => 1;
+
+        public SoundStyle ReloadFinishSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/RevolverReload");
 
         public abstract int ParentItem { get; }
 
@@ -58,7 +61,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-
         private void HandleGunDrawing()
         {
             float gunRotation = Projectile.Center.DirectionTo(Main.MouseWorld).ToRotation();
@@ -87,11 +89,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 ShotsFired++;
                 if (ShotsFired > MaxShots)
                 {
-                    Main.NewText("reset");
-
                     shootCounter = 0;
                     inReloadState = true;
-                    reloadTime = 60;
+                    reloadTime = maxReloadTime;
+                    fuckingStop = 10;
 
                     return;
                 }
@@ -101,8 +102,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             {
                 if (shootCounter % shootAnimation == 0)
                 {
-                    Main.NewText("fire");
-
                     Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
                     Vector2 shootPosition = Projectile.Center + new Vector2(5, -5).RotatedBy(Projectile.rotation) * player.direction;
                     SoundEngine.PlaySound(SoundID.Item41);
@@ -114,16 +113,53 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        private int reloadTime = 60;
+        private int reloadTime = 0;
+        private int maxReloadTime = 60;
+        private int clickDelay = 0;
+
+        private int fuckingStop = 10;
         private void HandleReloadAction()
         {
             if (reloadTime > 0) reloadTime--;
+            if (clickDelay > 0) clickDelay--;
+            if (fuckingStop > 0)
+            {
+                fuckingStop--;
+                return;
+            }
+
+            if (player.controlUseItem && clickDelay == 0)
+            {
+                float clickPercentage = (1 - (float)reloadTime / maxReloadTime);
+                CheckInTick(clickPercentage);
+                clickDelay = 15;
+            }
 
             if (reloadTime == 0)
             {
                 inReloadState = false;
                 ShotsFired = 0;
+                clickDelay = 0;
+
+                SoundEngine.PlaySound(ReloadFinishSound);
             }
+        }
+
+        private void CheckInTick(float clickPercentage)
+        {
+            clickPercentage = clickPercentage * 100;
+
+            //Main.NewText("click at " + clickPercentage);
+            foreach (int actionTick in ActionTicks)
+            {
+                if (clickPercentage >= actionTick - 7 && clickPercentage <= actionTick + 7)
+                {
+                    Main.NewText("hit: " + clickPercentage);
+                    return;
+                }
+            }
+
+            Main.NewText("you missed lol");
         }
 
         private void DrawAmmo()
@@ -139,7 +175,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 Vector2 offset = new Vector2(-30 + 12 * i, 42);
                 //Vector2 offset = new Vector2(-xOffset , 42);
 
-                Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, ProjectileScale, SpriteEffects.None, 1);
+                Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
             }
 
             Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
@@ -150,18 +186,58 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 Vector2 offset = new Vector2(-30 + 12 * i, 42);
                 //Vector2 offset = new Vector2(-xOffset , 42);
 
-                Main.spriteBatch.Draw(activeBullets, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, ProjectileScale, SpriteEffects.None, 1);
+                Main.spriteBatch.Draw(activeBullets, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
+            }
+        }
+
+        private void DrawGun(Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
+
+        }
+
+        private List<int> ActionTicks = new List<int>() { 45, 75 };
+        private void DrawReloadBar()
+        {
+            float scale = 1;
+            if (clickDelay > 0) scale = MathHelper.Lerp(1.25f, 1f, 1 - (clickDelay / 15f));
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunReloadFrame").Value;
+            Vector2 offset = new Vector2(-2, 41);
+
+            Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, scale, SpriteEffects.None, 1);
+
+            Texture2D bar = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunReloadBar").Value;
+            Vector2 barOffset = new Vector2(3, 42.5f);
+
+            float progress = MathHelper.Lerp(0, bar.Width, 1 - ((float)reloadTime / maxReloadTime));
+            Rectangle drawRectangle = new Rectangle(0, 0, (int)progress, bar.Height);
+            Vector2 barPosition = player.Center + barOffset;
+      
+            Main.spriteBatch.Draw(bar, barPosition - Main.screenPosition, drawRectangle, Color.White, 0f, bar.Size() / 2f, scale, SpriteEffects.None, 1);
+
+            foreach (int actionTick in ActionTicks)
+            {
+                float positionPercentage = (float)actionTick / 100;
+                float tickOffset = positionPercentage * bar.Width;
+
+                Texture2D tick = ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadTick").Value;
+                Vector2 tickPosition = barPosition + new Vector2(-51 + tickOffset, 0);
+
+                Main.spriteBatch.Draw(tick, tickPosition - Main.screenPosition, null, Color.White, 0f, tick.Size() / 2f, 1f, SpriteEffects.None, 1);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
-            var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+            DrawGun(lightColor);
 
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
-
-            DrawAmmo();
+            if (reloadTime == 0)
+                DrawAmmo();
+            else
+                DrawReloadBar();
 
             return false;
         }
