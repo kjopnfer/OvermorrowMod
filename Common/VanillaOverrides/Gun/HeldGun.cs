@@ -176,9 +176,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             clickPercentage = clickPercentage * 100;
 
             //Main.NewText("click at " + clickPercentage);
-            foreach (int actionTick in ActionTicks)
+            foreach ((int, int) clickZone in ClickZones)
             {
-                if (clickPercentage >= actionTick - 7 && clickPercentage <= actionTick + 7)
+                if (clickPercentage >= clickZone.Item1 && clickPercentage <= clickZone.Item2)
                 {
                     Main.NewText("hit: " + clickPercentage);
                     return;
@@ -260,7 +260,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        private List<int> ActionTicks = new List<int>() { 45, 75 };
+        private List<(int, int)> ClickZones = new List<(int, int)>() { (45, 75) };
         private void DrawReloadBar()
         {
             float scale = 1;
@@ -274,22 +274,40 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Texture2D bar = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunReloadBar").Value;
             Vector2 barOffset = new Vector2(3, 42.5f);
 
-            float progress = MathHelper.Lerp(0, bar.Width, 1 - ((float)reloadTime / maxReloadTime));
-            Rectangle drawRectangle = new Rectangle(0, 0, (int)progress, bar.Height);
-            Vector2 barPosition = player.Center + barOffset;
+            //float progress = MathHelper.Lerp(0, bar.Width, 1 - ((float)reloadTime / maxReloadTime));
+            //Rectangle drawRectangle = new Rectangle(0, 0, (int)progress, bar.Height);
+            //Vector2 barPosition = player.Center + barOffset;
 
-            Main.spriteBatch.Draw(bar, barPosition - Main.screenPosition, drawRectangle, Color.White, 0f, bar.Size() / 2f, scale, SpriteEffects.None, 1);
+            //Main.spriteBatch.Draw(bar, barPosition - Main.screenPosition, drawRectangle, Color.White, 0f, bar.Size() / 2f, scale, SpriteEffects.None, 1);
 
-            foreach (int actionTick in ActionTicks)
+            
+            foreach ((int, int) clickZone in ClickZones)
             {
-                float positionPercentage = (float)actionTick / 100;
-                float tickOffset = positionPercentage * bar.Width;
+                //float clickWidth = (texture.Width * (float)(clickZone.Item1 / 100) - (texture.Width * (float)(clickZone.Item2 / 100)));
+                float positionPercentage = (float)clickZone.Item1 / 100;
+                //float tickOffset = positionPercentage * texture.Width;
+                float startZone = (clickZone.Item1 / 100f) * texture.Width;
 
-                Texture2D tick = ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadTick").Value;
-                Vector2 tickPosition = barPosition + new Vector2(-51 + tickOffset, 0);
+                Vector2 zoneOffset = new Vector2(-2 + startZone, 41f);
+                Vector2 zonePosition = player.Center + zoneOffset;
 
-                Main.spriteBatch.Draw(tick, tickPosition - Main.screenPosition, null, Color.White, 0f, tick.Size() / 2f, 1f, SpriteEffects.None, 1);
+                float clickWidth = (clickZone.Item2 - clickZone.Item1) / 100f;
+                Texture2D clickTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadZone").Value;
+                Rectangle drawRectangle = new Rectangle(0, 0, (int)(clickTexture.Width * clickWidth), clickTexture.Height);
+                Main.spriteBatch.Draw(clickTexture, zonePosition - Main.screenPosition, drawRectangle, Color.White, 0f, clickTexture.Size() / 2f, scale, SpriteEffects.None, 1);
+
+                //Main.spriteBatch.Draw(tick, tickPosition - Main.screenPosition, null, Color.White, 0f, tick.Size() / 2f, scale, SpriteEffects.None, 1);
             }
+
+            float cursorProgress = MathHelper.Lerp(0, texture.Width, 1 - ((float)reloadTime / maxReloadTime));
+            Texture2D cursor = ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadCursor").Value;
+            Vector2 cursorOffset = new Vector2(-66 + cursorProgress, 42.5f);
+            Vector2 cursorPosition = player.Center + cursorOffset;
+            Main.spriteBatch.Draw(cursor, cursorPosition - Main.screenPosition, null, Color.White, 0f, cursor.Size() / 2f, scale, SpriteEffects.None, 1);
+
+            Texture2D bullet = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
+            Vector2 bulletPosition = player.Center + new Vector2(-68 * scale, 40f);
+            Main.spriteBatch.Draw(bullet, bulletPosition - Main.screenPosition, null, Color.White, 0f, bullet.Size() / 2f, scale, SpriteEffects.None, 1);
         }
 
         public override bool PreDraw(ref Color lightColor)
