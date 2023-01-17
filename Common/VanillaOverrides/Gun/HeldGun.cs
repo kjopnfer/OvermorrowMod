@@ -9,9 +9,77 @@ using Terraria.Audio;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using OvermorrowMod.Common.Particles;
+using Terraria.DataStructures;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
+    public class BulletObject
+    {
+        public int DrawCounter = 0;
+        public int DeathCounter = 0;
+
+        public bool isActive = true;
+        public bool startDeath = false;
+
+        public BulletObject(int DrawCounter = 0)
+        {
+            this.DrawCounter = DrawCounter;
+        }
+
+        public void Update()
+        {
+            if (!isActive) return;
+
+            if (startDeath)
+            {
+                DeathCounter++;
+
+                if (DeathCounter == 15)
+                {
+                    isActive = false;
+                }
+            }
+
+            DrawCounter++;
+        }
+
+        public void Deactivate()
+        {
+            startDeath = true;
+        }
+
+        public void Reset()
+        {
+            DeathCounter = 0;
+
+            startDeath = false;
+            isActive = true;
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Vector2 position)
+        {
+            Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
+            float scale = 1;
+
+            Vector2 positionOffset = Vector2.UnitY * MathHelper.Lerp(-1, 1, (float)Math.Sin(DrawCounter / 30f) * 0.5f + 0.5f);
+            float rotation = MathHelper.Lerp(MathHelper.ToRadians(-8), MathHelper.ToRadians(8), (float)Math.Sin(DrawCounter / 40f) * 0.5f + 0.5f);
+
+            if (startDeath)
+            {
+                if (DeathCounter < 8)
+                {
+                    scale = MathHelper.Lerp(1f, 1.5f, DeathCounter / 8f);
+                }
+                else
+                {
+                    scale = MathHelper.Lerp(1.5f, 0, (DeathCounter - 8) / 7f);
+                }
+            }
+            
+            spriteBatch.Draw(activeBullets, position + positionOffset - Main.screenPosition, null, Color.White, rotation, activeBullets.Size() / 2f, scale, SpriteEffects.None, 1);
+        }
+    }
+
     public abstract class HeldGun : ModProjectile
     {
         public override bool? CanDamage() => false;
@@ -43,6 +111,14 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             SafeSetDefaults();
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            for (int _ = 0; _ < MaxShots; _++)
+            {
+                BulletDisplay.Add(new BulletObject(Main.rand.Next(0, 9) * 7));
+            }
+        }
+
         private bool inReloadState = false;
         public Player player => Main.player[Projectile.owner];
         public override void AI()
@@ -59,7 +135,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 if (reloadDelay > 0) reloadDelay--;
 
                 if (reloadDelay == 0)
+                {
+                    reloadSuccess = false;
                     HandleGunUse();
+                }
             }
             else
             {
@@ -87,6 +166,18 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2 + recoilRotation);
         }
 
+        private void PopBulletDisplay()
+        {
+            for (int i = BulletDisplay.Count - 1; i >= 0; i--)
+            {
+                if (BulletDisplay[i].isActive)
+                {
+                    BulletDisplay[i].Deactivate();
+                    return;
+                }
+            }
+        }
+
         public int ShotsFired = 0;
         private int shootCounter = 0;
         private int shootTime => player.HeldItem.useTime;
@@ -97,6 +188,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             {
                 Projectile.timeLeft = 120;
                 shootCounter = shootTime;
+
+                PopBulletDisplay();
 
                 ShotsFired++;
                 if (ShotsFired > MaxShots)
@@ -136,6 +229,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        private bool reloadFail = false;
+        private bool reloadSuccess = false;
+
         private int reloadTime = 0;
         private int maxReloadTime = 60;
 
@@ -152,44 +248,79 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 return;
             }
 
-            if (player.controlUseItem && clickDelay == 0)
+            if (player.controlUseItem && clickDelay == 0 && !reloadFail)
             {
                 float clickPercentage = (1 - (float)reloadTime / maxReloadTime);
-                CheckInTick(clickPercentage);
                 clickDelay = 15;
+
+                if (CheckInZone(clickPercentage))
+                {
+                    reloadSuccess = true;
+                    ReloadSuccess();
+                }
+                else
+                {
+                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/youmissedthatone") with
+                    {
+                        Volume = 3f
+                    }, player.Center);
+                    reloadFail = true;
+                }
             }
 
             if (reloadTime == 0)
             {
+                reloadFail = false;
+
                 reloadDelay = 30;
 
                 inReloadState = false;
                 ShotsFired = 0;
                 clickDelay = 0;
 
+                for (int i = 0; i < BulletDisplay.Count; i++)
+                    BulletDisplay[i].Reset();
+
                 SoundEngine.PlaySound(ReloadFinishSound);
             }
         }
 
-        private void CheckInTick(float clickPercentage)
+        public virtual void ReloadSuccess()
+        {
+            reloadTime = 0;
+        }
+
+        private bool CheckInZone(float clickPercentage)
         {
             clickPercentage = clickPercentage * 100;
 
-            //Main.NewText("click at " + clickPercentage);
             foreach ((int, int) clickZone in ClickZones)
             {
                 if (clickPercentage >= clickZone.Item1 && clickPercentage <= clickZone.Item2)
                 {
-                    Main.NewText("hit: " + clickPercentage);
-                    return;
+                    return true;
                 }
             }
 
-            Main.NewText("you missed lol");
+            //Main.NewText("you missed lol");
+            return false;
         }
 
+        public List<BulletObject> BulletDisplay = new List<BulletObject>();
         private void DrawAmmo()
         {
+            if (Main.gamePaused) return;
+
+            for (int i = 0; i < BulletDisplay.Count; i++)
+            {
+                if (!BulletDisplay[i].isActive) continue;
+
+                BulletDisplay[i].Update();
+
+                Vector2 offset = new Vector2(-38 + 18 * i, 42);
+                BulletDisplay[i].Draw(Main.spriteBatch, player.Center + offset);
+            }
+
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet_Used").Value;
 
             //int xOffset = texture.Width / 2;
@@ -201,7 +332,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 Vector2 offset = new Vector2(-30 + 12 * i, 42);
                 //Vector2 offset = new Vector2(-xOffset , 42);
 
-                Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
+                //Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
             }
 
             Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
@@ -209,10 +340,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             for (int i = 0; i < numBullets; i++)
             {
                 int textureOffset = 14 * i;
-                Vector2 offset = new Vector2(-30 + 12 * i, 42);
+                Vector2 offset = new Vector2(-30 + 14 * i, 42);
                 //Vector2 offset = new Vector2(-xOffset , 42);
 
-                Main.spriteBatch.Draw(activeBullets, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
+                //Main.spriteBatch.Draw(activeBullets, player.Center + offset - Main.screenPosition, null, Color.White, 0f, activeBullets.Size() / 2f, 1f, SpriteEffects.None, 1);
             }
         }
 
@@ -231,7 +362,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 directionOffset = new Vector2(0, -10);
             }
 
-            if (reloadDelay > 0)
+            if (reloadDelay > 0 && reloadSuccess)
             {
                 float spinRate = MathHelper.Lerp(0.09f, 0.99f, reloadDelay / 30f);
                 reloadRotation -= spinRate * player.direction;
@@ -260,7 +391,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        private List<(int, int)> ClickZones = new List<(int, int)>() { (45, 75) };
+        private List<(int, int)> ClickZones = new List<(int, int)>() { (40, 55) };
         private void DrawReloadBar()
         {
             float scale = 1;
@@ -268,35 +399,19 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunReloadFrame").Value;
             Vector2 offset = new Vector2(-2, 41);
-
             Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, scale, SpriteEffects.None, 1);
 
-            Texture2D bar = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunReloadBar").Value;
-            Vector2 barOffset = new Vector2(3, 42.5f);
-
-            //float progress = MathHelper.Lerp(0, bar.Width, 1 - ((float)reloadTime / maxReloadTime));
-            //Rectangle drawRectangle = new Rectangle(0, 0, (int)progress, bar.Height);
-            //Vector2 barPosition = player.Center + barOffset;
-
-            //Main.spriteBatch.Draw(bar, barPosition - Main.screenPosition, drawRectangle, Color.White, 0f, bar.Size() / 2f, scale, SpriteEffects.None, 1);
-
-            
             foreach ((int, int) clickZone in ClickZones)
             {
-                //float clickWidth = (texture.Width * (float)(clickZone.Item1 / 100) - (texture.Width * (float)(clickZone.Item2 / 100)));
-                float positionPercentage = (float)clickZone.Item1 / 100;
-                //float tickOffset = positionPercentage * texture.Width;
-                float startZone = (clickZone.Item1 / 100f) * texture.Width;
+                float startOffset = (clickZone.Item1 / 100f) * texture.Width;
 
-                Vector2 zoneOffset = new Vector2(-2 + startZone, 41f);
+                Vector2 zoneOffset = new Vector2(-2 + startOffset, 41f);
                 Vector2 zonePosition = player.Center + zoneOffset;
 
                 float clickWidth = (clickZone.Item2 - clickZone.Item1) / 100f;
                 Texture2D clickTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadZone").Value;
                 Rectangle drawRectangle = new Rectangle(0, 0, (int)(clickTexture.Width * clickWidth), clickTexture.Height);
                 Main.spriteBatch.Draw(clickTexture, zonePosition - Main.screenPosition, drawRectangle, Color.White, 0f, clickTexture.Size() / 2f, scale, SpriteEffects.None, 1);
-
-                //Main.spriteBatch.Draw(tick, tickPosition - Main.screenPosition, null, Color.White, 0f, tick.Size() / 2f, scale, SpriteEffects.None, 1);
             }
 
             float cursorProgress = MathHelper.Lerp(0, texture.Width, 1 - ((float)reloadTime / maxReloadTime));
