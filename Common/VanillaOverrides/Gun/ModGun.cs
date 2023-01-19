@@ -39,6 +39,31 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public override int ParentItem => ModContent.GetInstance<TestGun>().Type;
         public override Vector2 PositionOffset => new Vector2(18, -5);
         public override float ProjectileScale => 0.75f;
+
+        public override void OnReloadEnd()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                int gore = Gore.NewGore(null, Projectile.Center, new Vector2(player.direction * -0.01f, 0f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
+                Main.gore[gore].sticky = true;
+            }
+        }
+
+        public override void OnReloadEventSuccess()
+        {
+            reloadTime = 0;
+
+            /*for (int i = 0; i < 6; i++)
+            {
+                int gore = Gore.NewGore(null, Projectile.Center, new Vector2(player.direction * -0.01f, 0f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
+                Main.gore[gore].sticky = true;
+            }*/
+        }
+
+        public override void OnReloadStart()
+        {
+            
+        }
     }
 
     public class TestGun : ModGun<TestGun_Held>

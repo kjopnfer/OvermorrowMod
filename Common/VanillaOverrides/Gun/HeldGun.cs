@@ -13,6 +13,14 @@ using Terraria.DataStructures;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
+    public enum GunType
+    {
+        Revolver,
+        Pistol,
+        Shotgun,
+        Rifle
+    }
+
     public class BulletObject
     {
         public int DrawCounter = 0;
@@ -75,7 +83,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     scale = MathHelper.Lerp(1.5f, 0, (DeathCounter - 8) / 7f);
                 }
             }
-            
+
             spriteBatch.Draw(activeBullets, position + positionOffset - Main.screenPosition, null, Color.White, rotation, activeBullets.Size() / 2f, scale, SpriteEffects.None, 1);
         }
     }
@@ -113,9 +121,19 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void OnSpawn(IEntitySource source)
         {
+            // TODO: make the projectile load from a player dictionary containing the gun and whichever information is available
+            // this is so that the gun doesnt reset whenever the player switches items
+            LoadGunInfo();
+
             for (int _ = 0; _ < MaxShots; _++)
             {
                 BulletDisplay.Add(new BulletObject(Main.rand.Next(0, 9) * 7));
+            }
+
+            // deactivate any bullets that were previously fired and stored
+            for (int i = 0; i < ShotsFired; i++)
+            {
+                BulletDisplay[BulletDisplay.Count - 1 - i].isActive = false;
             }
         }
 
@@ -143,6 +161,47 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             else
             {
                 HandleReloadAction();
+            }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            DrawGun(lightColor);
+
+            if (reloadTime == 0)
+                DrawAmmo();
+            else
+                DrawReloadBar();
+
+            return false;
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            SaveGunInfo();
+        }
+
+        private void LoadGunInfo()
+        {
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+
+            if (gunPlayer.playerGunInfo.ContainsKey(ParentItem))
+            {
+                ShotsFired = gunPlayer.playerGunInfo[ParentItem].shotsFired;
+            }
+        }
+
+        private void SaveGunInfo()
+        {
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+
+            if (!gunPlayer.playerGunInfo.ContainsKey(ParentItem))
+            {
+                gunPlayer.playerGunInfo.Add(ParentItem, new HeldGunInfo(ShotsFired));
+            }
+            else
+            {
+                gunPlayer.playerGunInfo[ParentItem] = new HeldGunInfo(ShotsFired);
             }
         }
 
@@ -207,6 +266,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             {
                 if (shootCounter % shootAnimation == 0)
                 {
+                    OnGunShoot();
+
                     recoilTimer = RECOIL_TIME;
 
                     Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
@@ -229,10 +290,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        /// <summary>
+        /// Allows for the implementation of any actions whenever the gun has fired a bullet.
+        /// Useful for spawning dropped bullet casings or spawning additional projectiles.
+        /// </summary>
+        public virtual void OnGunShoot() { }
+
         private bool reloadFail = false;
         private bool reloadSuccess = false;
 
-        private int reloadTime = 0;
+        public int reloadTime = 0;
         private int maxReloadTime = 60;
 
         private int clickDelay = 0;
@@ -240,6 +307,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private int fuckingStop = 10;
         private void HandleReloadAction()
         {
+            if (reloadTime == maxReloadTime)
+            {
+                OnReloadStart();
+            }
+
             if (reloadTime > 0) reloadTime--;
             if (clickDelay > 0) clickDelay--;
             if (fuckingStop > 0)
@@ -256,7 +328,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 if (CheckInZone(clickPercentage))
                 {
                     reloadSuccess = true;
-                    ReloadSuccess();
+                    OnReloadEventSuccess();
                 }
                 else
                 {
@@ -281,11 +353,26 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 for (int i = 0; i < BulletDisplay.Count; i++)
                     BulletDisplay[i].Reset();
 
+                OnReloadEnd();
+
                 SoundEngine.PlaySound(ReloadFinishSound);
             }
         }
 
-        public virtual void ReloadSuccess()
+        /// <summary>
+        /// Called whenever the gun exits the reloading state
+        /// </summary>
+        public virtual void OnReloadEnd() { }
+
+        /// <summary>
+        /// Called whenever the gun enters the reloading state
+        /// </summary>
+        public virtual void OnReloadStart() { }
+
+        /// <summary>
+        /// Called whenever the player has successfully triggered the event during the reloading state
+        /// </summary>
+        public virtual void OnReloadEventSuccess()
         {
             reloadTime = 0;
         }
@@ -302,7 +389,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 }
             }
 
-            //Main.NewText("you missed lol");
             return false;
         }
 
@@ -319,31 +405,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                 Vector2 offset = new Vector2(-38 + 18 * i, 42);
                 BulletDisplay[i].Draw(Main.spriteBatch, player.Center + offset);
-            }
-
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet_Used").Value;
-
-            //int xOffset = texture.Width / 2;
-            int xOffset = 0;
-
-            for (int i = 0; i < 6; i++)
-            {
-                int textureOffset = 14 * i;
-                Vector2 offset = new Vector2(-30 + 12 * i, 42);
-                //Vector2 offset = new Vector2(-xOffset , 42);
-
-                //Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
-            }
-
-            Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
-            int numBullets = MaxShots - ShotsFired;
-            for (int i = 0; i < numBullets; i++)
-            {
-                int textureOffset = 14 * i;
-                Vector2 offset = new Vector2(-30 + 14 * i, 42);
-                //Vector2 offset = new Vector2(-xOffset , 42);
-
-                //Main.spriteBatch.Draw(activeBullets, player.Center + offset - Main.screenPosition, null, Color.White, 0f, activeBullets.Size() / 2f, 1f, SpriteEffects.None, 1);
             }
         }
 
@@ -391,7 +452,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        private List<(int, int)> ClickZones = new List<(int, int)>() { (40, 55) };
+        public virtual List<(int, int)> ClickZones => new List<(int, int)>() { (40, 55) };
         private void DrawReloadBar()
         {
             float scale = 1;
@@ -423,18 +484,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Texture2D bullet = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
             Vector2 bulletPosition = player.Center + new Vector2(-68 * scale, 40f);
             Main.spriteBatch.Draw(bullet, bulletPosition - Main.screenPosition, null, Color.White, 0f, bullet.Size() / 2f, scale, SpriteEffects.None, 1);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            DrawGun(lightColor);
-
-            if (reloadTime == 0)
-                DrawAmmo();
-            else
-                DrawReloadBar();
-
-            return false;
         }
     }
 }
