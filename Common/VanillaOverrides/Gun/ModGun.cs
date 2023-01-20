@@ -23,7 +23,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<HeldProjectile>();
             Item.noUseGraphic = true;
-            Item.useAmmo = AmmoID.Arrow;
+            Item.useAmmo = AmmoID.Bullet;
 
             SafeSetDefaults();
         }

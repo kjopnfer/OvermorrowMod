@@ -93,6 +93,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public override bool? CanDamage() => false;
         public override bool ShouldUpdatePosition() => false;
 
+        /// <summary>
+        /// Determines whether the gun consumes any ammo on use.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public virtual bool CanConsumeAmmo(Player player) => true;
+
         public virtual Vector2 PositionOffset => new Vector2(15, 0);
 
         public virtual bool TwoHanded => false;
@@ -104,6 +111,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public SoundStyle ReloadFinishSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/RevolverReload");
 
         public abstract int ParentItem { get; }
+
+        /// <summary>
+        /// Determines if the bow fires a unique type of arrow. Uses Projectile ID instead of Item ID.
+        /// </summary>
+        public virtual int BulletType => ProjectileID.None;
+
+        /// <summary>
+        /// Determines what arrow type is needed in order to convert the arrows to if ArrowType is given. Uses Item ID.
+        /// </summary>
+        public virtual int ConvertBullet => ItemID.None;
 
         public virtual void SafeSetDefaults() { }
 
@@ -155,7 +172,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 if (reloadDelay == 0)
                 {
                     reloadSuccess = false;
-                    HandleGunUse();
+
+                    AutofillAmmoSlots();
+
+                    if (FindAmmo()) HandleGunUse();
                 }
             }
             else
@@ -203,6 +223,98 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             {
                 gunPlayer.playerGunInfo[ParentItem] = new HeldGunInfo(ShotsFired);
             }
+        }
+
+        public Projectile LoadedBullet { private set; get; }
+        public int LoadedBulletType { private set; get; }
+        public int LoadedBulletItemType { private set; get; }
+
+        private int AmmoSlotID;
+
+        /// <summary>
+        /// Loops through the ammo slots, loads in the first bullet found into the bow.
+        /// </summary>
+        /// <returns></returns>
+        private bool FindAmmo()
+        {
+            LoadedBulletItemType = -1;
+            if (ConvertBullet != ItemID.None) // There is an arrow given for conversion, try to find that arrow.
+            {
+                for (int i = 0; i <= 3; i++)
+                {
+                    Item item = player.inventory[54 + i];
+                    if (item.type == ItemID.None || item.ammo != AmmoID.Bullet) continue;
+
+                    // The arrow needed to convert is found, so convert the arrow and exit the loop.
+                    if (item.type == ConvertBullet)
+                    {
+                        LoadedBulletType = BulletType;
+                        LoadedBulletItemType = item.type;
+
+                        AmmoSlotID = 54 + i;
+
+                        return true;
+                    }
+                }
+            }
+
+            // If here, then there is no conversion bullet OR no conversion bullet was found.
+            // Thus, run the default behavior to find any bullets to fire.
+            if (LoadedBulletItemType == -1)
+            {
+                for (int i = 0; i <= 3; i++)
+                {
+                    Item item = player.inventory[54 + i];
+                    if (item.type == ItemID.None || item.ammo != AmmoID.Bullet) continue;
+
+                    LoadedBulletType = item.shoot;
+                    LoadedBulletItemType = item.type;
+
+                    AmmoSlotID = 54 + i;
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty or the wrong ammo type.
+        /// </summary>
+        private void AutofillAmmoSlots()
+        {
+            for (int j = 0; j <= 3; j++) // Check if any of the ammo slots are empty or are not an arrow
+            {
+                Item ammoItem = player.inventory[54 + j];
+                if (ammoItem.type != ItemID.None && ammoItem.ammo == AmmoID.Bullet) continue;
+
+                // Loop through the player's inventory in order to find any useable ammo types to use
+                for (int i = 0; i <= 49; i++)
+                {
+                    Item item = player.inventory[i];
+                    if (item.type == ItemID.None || item.ammo != AmmoID.Bullet) continue;
+
+                    //Main.NewText("Swapping " + i + " with " + (54 + j));
+
+                    Item tempItem = ammoItem;
+                    player.inventory[54 + j] = item;
+                    player.inventory[i] = tempItem;
+
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Consumes the given ammo if allowed and handles any exception cases
+        /// </summary>
+        private void ConsumeAmmo()
+        {
+            if (!CanConsumeAmmo(player)) return;
+
+            if (player.inventory[AmmoSlotID].type != ItemID.EndlessMusketPouch)
+                player.inventory[AmmoSlotID].stack--;
         }
 
         private void HandleGunDrawing()
@@ -256,9 +368,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     shootCounter = 0;
                     inReloadState = true;
                     reloadTime = maxReloadTime;
-                    fuckingStop = 10;
+                    reloadBuffer = 10;
 
                     return;
+                }
+                else // Don't want the gun to consume a bullet if it is going into the reload state
+                {
+                    ConsumeAmmo();
                 }
             }
 
@@ -283,7 +399,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                         Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
                     }
 
-                    Projectile.NewProjectile(null, shootPosition, velocity, ProjectileID.Bullet, Projectile.damage, Projectile.knockBack, player.whoAmI);
+                    Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, Projectile.damage, Projectile.knockBack, player.whoAmI);
                 }
 
                 if (shootCounter > 0) shootCounter--;
@@ -304,7 +420,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private int clickDelay = 0;
         private int reloadDelay = 0;
-        private int fuckingStop = 10;
+        private int reloadBuffer = 10;
         private void HandleReloadAction()
         {
             if (reloadTime == maxReloadTime)
@@ -314,9 +430,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             if (reloadTime > 0) reloadTime--;
             if (clickDelay > 0) clickDelay--;
-            if (fuckingStop > 0)
+            if (reloadBuffer > 0)
             {
-                fuckingStop--;
+                reloadBuffer--;
                 return;
             }
 
