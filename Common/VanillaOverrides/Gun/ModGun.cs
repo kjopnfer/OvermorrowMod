@@ -36,6 +36,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
     public class TestGun_Held : HeldGun
     {
+        public override int ConvertBullet => ItemID.MusketBall;
+        public override int BulletType => ProjectileID.VenomBullet;
         public override int ParentItem => ModContent.GetInstance<TestGun>().Type;
         public override Vector2 PositionOffset => new Vector2(18, -5);
         public override float ProjectileScale => 0.75f;

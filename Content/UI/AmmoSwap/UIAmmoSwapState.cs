@@ -7,7 +7,6 @@ using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
-using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Common.Configs;
 using OvermorrowMod.Common;
 
@@ -29,8 +28,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Player player = Main.LocalPlayer;
-            if (player.HeldItem.DamageType != DamageClass.Ranged) return;
+            if (!CheckHeldItemValid()) return;
 
             if (keepAlive > 0)
             {
@@ -47,8 +45,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
         private int swapCounter = 0;
         public override void Update(GameTime gameTime)
         {
-            Player player = Main.LocalPlayer;
-            if (player.HeldItem.DamageType != DamageClass.Ranged)
+            if (!CheckHeldItemValid())
             {
                 this.RemoveAllChildren();
                 drawCounter = 0;
@@ -66,6 +63,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             {
                 if (OvermorrowModFile.AmmoSwapKey.JustPressed && buttonDelay == 0 && !canSwap)
                 {
+                    ModUtils.AutofillAmmoSlots(Main.LocalPlayer, Main.LocalPlayer.HeldItem.useAmmo);
                     buttonDelay = 10;
                     keepAlive = 60;
                     canSwap = true;
@@ -75,6 +73,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             {
                 if (OvermorrowModFile.AmmoSwapKey.JustPressed && buttonDelay == 0)
                 {
+                    ModUtils.AutofillAmmoSlots(Main.LocalPlayer, Main.LocalPlayer.HeldItem.useAmmo);
                     buttonDelay = 10;
                     keepAlive = 60;
                 }
@@ -85,9 +84,11 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 if (drawCounter < MAX_TIME) drawCounter++;
                 if (drawCounter >= MAX_TIME && scaleCounter < SCALE_TIME) scaleCounter++;
 
+                Player player = Main.LocalPlayer;
+
                 anchorPosition = new Vector2(Main.MouseWorld.X - Main.screenPosition.X - 60, Main.MouseWorld.Y - Main.screenPosition.Y - 60);
                 if (!ModContent.GetInstance<AmmoSwapConfig>().MouseAnchor)
-                    anchorPosition = new Vector2(Main.LocalPlayer.Center.X - Main.screenPosition.X - 60, Main.LocalPlayer.Center.Y - Main.screenPosition.Y - 60);
+                    anchorPosition = new Vector2(player.Center.X - Main.screenPosition.X - 60, player.Center.Y - Main.screenPosition.Y - 60);
 
                 this.RemoveAllChildren();
                 ModUtils.AddElement(testPanel, (int)anchorPosition.X, (int)anchorPosition.Y, 120, 120, this);
@@ -154,13 +155,18 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             base.Update(gameTime);
         }
 
+        private bool CheckHeldItemValid()
+        {
+            return Main.LocalPlayer.HeldItem.useAmmo == AmmoID.Bullet || Main.LocalPlayer.HeldItem.useAmmo == AmmoID.Arrow;
+        }
+
         private void ShiftAmmo()
         {
             List<int> itemIndex = new List<int>();
             Queue<Item> itemSlots = new Queue<Item>();
             for (int i = 0; i <= 3; i++)
             {
-                if (Main.LocalPlayer.inventory[54 + i].ammo == AmmoID.Arrow)
+                if (CheckValidAmmo(54 + i))
                 {
                     itemSlots.Enqueue(Main.LocalPlayer.inventory[54 + i]);
                     itemIndex.Add(54 + i);
@@ -180,6 +186,11 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
         private float rotateCounter = 0;
 
+        private bool CheckValidAmmo(int index)
+        {
+            return Main.LocalPlayer.inventory[index].ammo == Main.LocalPlayer.HeldItem.useAmmo;
+        }
+
         /// <summary>
         /// this method is made by stupid people
         /// </summary>
@@ -189,7 +200,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
             for (int i = 0; i <= 3; i++)
             {
-                if (Main.LocalPlayer.inventory[54 + i].ammo == AmmoID.Arrow)
+                if (CheckValidAmmo(54 + i))
                 {
                     ammoList.Add(Main.LocalPlayer.inventory[54 + i]);
                 }
@@ -206,40 +217,40 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
             {
                 case 4:
                     // LEFTMOST -> TOPMOST
-                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[0].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
                     // TOPMOST -> LEFTMOST
                     rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(90 + rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
-                    ModUtils.AddElement(new AmmoSlot(ammoList[3].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[3].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
                     // RIGHT MOST -> BOTTOM MOST
                     rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(180 + rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
-                    ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[2].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
                     // BOTTOM MOST -> LEFT MOST
                     rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(270 + rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
-                    ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[1].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
                     break;
                 case 3:
-                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[0].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
                     rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(120 + rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
-                    ModUtils.AddElement(new AmmoSlot(ammoList[2].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[2].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
                     rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(240 + rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
-                    ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[1].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
                     break;
                 case 2:
-                    ModUtils.AddElement(new AmmoSlot(ammoList[0].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[0].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
 
                     rotationOffset = new Vector2(0, offset).RotatedBy(MathHelper.ToRadians(180 + rotateCounter));
                     position = new Vector2(testPanel.Width.Pixels, testPanel.Height.Pixels) / 2 - new Vector2(28, 26) - rotationOffset;
-                    ModUtils.AddElement(new AmmoSlot(ammoList[1].shoot), (int)position.X, (int)position.Y, 40, 40, testPanel);
+                    ModUtils.AddElement(new AmmoSlot(ammoList[1].type), (int)position.X, (int)position.Y, 40, 40, testPanel);
                     break;
             }
 
@@ -285,8 +296,8 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 if (isHovering) texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "AmmoSlot_Hover").Value;
                 spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, containerScale, 0, 0);
 
-                Texture2D arrow = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + itemID).Value;
-                spriteBatch.Draw(arrow, GetDimensions().Center(), null, Color.White, MathHelper.PiOver4, arrow.Size() / 2f, itemScale, 0, 0);
+                Texture2D arrow = ModContent.Request<Texture2D>("Terraria/Images/Item_" + itemID).Value;
+                spriteBatch.Draw(arrow, GetDimensions().Center(), null, Color.White, -MathHelper.PiOver4 * 3, arrow.Size() / 2f, itemScale, 0, 0);
             }
         }
     }

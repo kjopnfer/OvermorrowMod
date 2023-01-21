@@ -417,5 +417,32 @@ namespace OvermorrowMod.Core
             element.Height.Set(height, heightPercent);
             appendTo.Append(element);
         }
+
+        /// <summary>
+        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty or the wrong ammo type.
+        /// </summary>
+        public static void AutofillAmmoSlots(Player player, int ammoID)
+        {
+            for (int j = 0; j <= 3; j++) // Check if any of the ammo slots are empty or are the right ammo
+            {
+                Item ammoItem = player.inventory[54 + j];
+                if (ammoItem.type != ItemID.None && ammoItem.ammo == ammoID) continue;
+
+                // Loop through the player's inventory in order to find any useable ammo types to use
+                for (int i = 0; i <= 49; i++)
+                {
+                    Item item = player.inventory[i];
+                    if (item.type == ItemID.None || item.ammo != ammoID) continue;
+
+                    //Main.NewText("Swapping " + i + " with " + (54 + j));
+
+                    Item tempItem = ammoItem;
+                    player.inventory[54 + j] = item;
+                    player.inventory[i] = tempItem;
+
+                    break;
+                }
+            }
+        }
     }
 }

@@ -21,73 +21,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         Rifle
     }
 
-    public class BulletObject
-    {
-        public int DrawCounter = 0;
-        public int DeathCounter = 0;
-
-        public bool isActive = true;
-        public bool startDeath = false;
-
-        public BulletObject(int DrawCounter = 0)
-        {
-            this.DrawCounter = DrawCounter;
-        }
-
-        public void Update()
-        {
-            if (!isActive) return;
-
-            if (startDeath)
-            {
-                DeathCounter++;
-
-                if (DeathCounter == 15)
-                {
-                    isActive = false;
-                }
-            }
-
-            DrawCounter++;
-        }
-
-        public void Deactivate()
-        {
-            startDeath = true;
-        }
-
-        public void Reset()
-        {
-            DeathCounter = 0;
-
-            startDeath = false;
-            isActive = true;
-        }
-
-        public void Draw(SpriteBatch spriteBatch, Vector2 position)
-        {
-            Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
-            float scale = 1;
-
-            Vector2 positionOffset = Vector2.UnitY * MathHelper.Lerp(-1, 1, (float)Math.Sin(DrawCounter / 30f) * 0.5f + 0.5f);
-            float rotation = MathHelper.Lerp(MathHelper.ToRadians(-8), MathHelper.ToRadians(8), (float)Math.Sin(DrawCounter / 40f) * 0.5f + 0.5f);
-
-            if (startDeath)
-            {
-                if (DeathCounter < 8)
-                {
-                    scale = MathHelper.Lerp(1f, 1.5f, DeathCounter / 8f);
-                }
-                else
-                {
-                    scale = MathHelper.Lerp(1.5f, 0, (DeathCounter - 8) / 7f);
-                }
-            }
-
-            spriteBatch.Draw(activeBullets, position + positionOffset - Main.screenPosition, null, Color.White, rotation, activeBullets.Size() / 2f, scale, SpriteEffects.None, 1);
-        }
-    }
-
     public abstract class HeldGun : ModProjectile
     {
         public override bool? CanDamage() => false;
@@ -113,12 +46,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public abstract int ParentItem { get; }
 
         /// <summary>
-        /// Determines if the bow fires a unique type of arrow. Uses Projectile ID instead of Item ID.
+        /// Determines if the bow fires a unique type of bullet. Uses Projectile ID instead of Item ID.
         /// </summary>
         public virtual int BulletType => ProjectileID.None;
 
         /// <summary>
-        /// Determines what arrow type is needed in order to convert the arrows to if ArrowType is given. Uses Item ID.
+        /// Determines what bullet type is needed in order to convert the bullet to if BulletType is given. Uses Item ID.
         /// </summary>
         public virtual int ConvertBullet => ItemID.None;
 
@@ -173,7 +106,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 {
                     reloadSuccess = false;
 
-                    AutofillAmmoSlots();
+                    ModUtils.AutofillAmmoSlots(player, AmmoID.Bullet);
 
                     if (FindAmmo()) HandleGunUse();
                 }
@@ -238,14 +171,14 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private bool FindAmmo()
         {
             LoadedBulletItemType = -1;
-            if (ConvertBullet != ItemID.None) // There is an arrow given for conversion, try to find that arrow.
+            if (ConvertBullet != ItemID.None) // There is a bullet given for conversion, try to find that bullet.
             {
                 for (int i = 0; i <= 3; i++)
                 {
                     Item item = player.inventory[54 + i];
                     if (item.type == ItemID.None || item.ammo != AmmoID.Bullet) continue;
 
-                    // The arrow needed to convert is found, so convert the arrow and exit the loop.
+                    // The bullet needed to convert is found, so convert the bullet and exit the loop.
                     if (item.type == ConvertBullet)
                     {
                         LoadedBulletType = BulletType;
@@ -277,33 +210,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty or the wrong ammo type.
-        /// </summary>
-        private void AutofillAmmoSlots()
-        {
-            for (int j = 0; j <= 3; j++) // Check if any of the ammo slots are empty or are not an arrow
-            {
-                Item ammoItem = player.inventory[54 + j];
-                if (ammoItem.type != ItemID.None && ammoItem.ammo == AmmoID.Bullet) continue;
-
-                // Loop through the player's inventory in order to find any useable ammo types to use
-                for (int i = 0; i <= 49; i++)
-                {
-                    Item item = player.inventory[i];
-                    if (item.type == ItemID.None || item.ammo != AmmoID.Bullet) continue;
-
-                    //Main.NewText("Swapping " + i + " with " + (54 + j));
-
-                    Item tempItem = ammoItem;
-                    player.inventory[54 + j] = item;
-                    player.inventory[i] = tempItem;
-
-                    break;
-                }
-            }
         }
 
         /// <summary>
