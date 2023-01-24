@@ -64,17 +64,18 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 if (OvermorrowModFile.AmmoSwapKey.JustPressed && buttonDelay == 0 && !canSwap)
                 {
                     ModUtils.AutofillAmmoSlots(Main.LocalPlayer, Main.LocalPlayer.HeldItem.useAmmo);
-                    buttonDelay = 10;
+                    buttonDelay = 5;
                     keepAlive = 60;
                     canSwap = true;
                 }
             }
             else
             {
+                // This handles the first time the UI is shown, it does not immediately swap to allow the player to view their ammo
                 if (OvermorrowModFile.AmmoSwapKey.JustPressed && buttonDelay == 0)
                 {
                     ModUtils.AutofillAmmoSlots(Main.LocalPlayer, Main.LocalPlayer.HeldItem.useAmmo);
-                    buttonDelay = 10;
+                    buttonDelay = 5;
                     keepAlive = 60;
                 }
             }
@@ -123,7 +124,7 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
                     rotateCounter = MathHelper.Lerp(0, degrees, Utils.Clamp(swapCounter, 0, 10f) / 10f);
 
-                    if (swapCounter++ >= 30)
+                    if (swapCounter++ >= 15)
                     {
                         ShiftAmmo();
 
