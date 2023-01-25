@@ -37,7 +37,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public virtual bool TwoHanded => false;
 
-        public virtual int MaxShots => 6;
+        private int _maxShots = 6;
+        public int MaxShots { get { return _maxShots; } set { if (value <= 0) _maxShots = 1; } }
 
         public virtual float ProjectileScale => 1;
 
@@ -75,10 +76,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             // this is so that the gun doesnt reset whenever the player switches items
             LoadGunInfo();
 
-            for (int _ = 0; _ < MaxShots; _++)
-            {
-                BulletDisplay.Add(new BulletObject(Main.rand.Next(0, 9) * 7));
-            }
+            ReloadBulletDisplay();
 
             // deactivate any bullets that were previously fired and stored
             for (int i = 0; i < ShotsFired; i++)
@@ -97,6 +95,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             player.heldProj = Projectile.whoAmI;
 
             HandleGunDrawing();
+            UpdateBulletDisplay();
 
             if (!inReloadState)
             {
@@ -243,6 +242,26 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2 + recoilRotation);
         }
 
+        private void ReloadBulletDisplay()
+        {
+            for (int _ = 0; _ < MaxShots; _++)
+            {
+                BulletDisplay.Add(new BulletObject(Main.rand.Next(0, 9) * 7));
+            }
+        }
+
+        private void UpdateBulletDisplay()
+        {
+            List<BulletObject> removedList = BulletDisplay;
+
+            for (int i = BulletDisplay.Count - 1; i >= 0; i--)
+            {
+                if (!BulletDisplay[i].isActive) removedList.RemoveAt(i);
+            }
+
+            BulletDisplay = removedList;
+        }
+
         private void PopBulletDisplay()
         {
             for (int i = BulletDisplay.Count - 1; i >= 0; i--)
@@ -297,18 +316,31 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     // TODO: use overrideable shootOffset, make it so facing left multiples y offset by 3 and makes it positive
                     Vector2 shootOffset = player.direction == 1 ? new Vector2(15, -5) : new Vector2(15, 15);
                     Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
-                    SoundEngine.PlaySound(SoundID.Item41);
-
-                    for (int i = 0; i < 4; i++)
-                    {
-                        Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, 0.12f)).RotatedByRandom(MathHelper.ToRadians(25));
-                        Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
-                    }
+                    OnShootEffects(Main.spriteBatch);
 
                     Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, Projectile.damage, Projectile.knockBack, player.whoAmI);
                 }
 
                 if (shootCounter > 0) shootCounter--;
+            }
+        }
+
+        /// <summary>
+        /// Called whenever the gun is fired, used to add miscellaneous effects like particles and dust
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        public virtual void OnShootEffects(SpriteBatch spriteBatch)
+        {
+            Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
+
+            Vector2 shootOffset = player.direction == 1 ? new Vector2(15, -5) : new Vector2(15, 15);
+            Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
+            SoundEngine.PlaySound(SoundID.Item41);
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, 0.12f)).RotatedByRandom(MathHelper.ToRadians(25));
+                Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
             }
         }
 
@@ -322,7 +354,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private bool reloadSuccess = false;
 
         public int reloadTime = 0;
-        private int maxReloadTime = 60;
+        public int maxReloadTime { get; set; } = 60;
 
         private int clickDelay = 0;
         private int reloadDelay = 0;
@@ -372,8 +404,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 ShotsFired = 0;
                 clickDelay = 0;
 
-                for (int i = 0; i < BulletDisplay.Count; i++)
-                    BulletDisplay[i].Reset();
+                /*for (int i = 0; i < BulletDisplay.Count; i++)
+                    BulletDisplay[i].Reset();*/
+                ReloadBulletDisplay();
 
                 OnReloadEnd();
 
@@ -419,13 +452,22 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (Main.gamePaused) return;
 
+            float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value.Width;
+
+            float gapOffset = 6 * Utils.Clamp(BulletDisplay.Count - 1, 0, MaxShots);
+            float total = textureWidth * BulletDisplay.Count + gapOffset;
+
+            float startPosition = (-total / 2) + 8;
+
             for (int i = 0; i < BulletDisplay.Count; i++)
             {
                 if (!BulletDisplay[i].isActive) continue;
 
                 BulletDisplay[i].Update();
 
-                Vector2 offset = new Vector2(-38 + 18 * i, 42);
+                //Vector2 offset = new Vector2(-38 + 18 * i, 42);
+                Vector2 offset = new Vector2(startPosition + 18 * i, 42);
+
                 BulletDisplay[i].Draw(Main.spriteBatch, player.Center + offset);
             }
         }
@@ -455,22 +497,38 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
 
+            DrawGunOnShoot(Main.spriteBatch, lightColor);
+        }
+
+        /// <summary>
+        /// Called whenever the gun is fired within the PreDraw hook, used to add effects such as muzzle flashes
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="lightColor"></param>
+        public virtual void DrawGunOnShoot(SpriteBatch spriteBatch, Color lightColor)
+        {
+            Vector2 directionOffset = Vector2.Zero;
+            if (player.direction == -1)
+            {
+                directionOffset = new Vector2(0, -10);
+            }
+
             if (shootCounter > 13)
             {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
                 Texture2D muzzleFlash = ModContent.Request<Texture2D>(AssetDirectory.Textures + "muzzle_05").Value;
 
                 Vector2 muzzleDirectionOffset = player.direction == 1 ? new Vector2(28, -5) : new Vector2(28, 5);
                 Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
-                spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                var rotationSpriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, spriteEffects, 1);
-                Main.spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, spriteEffects, 1);
+                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
+                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
 
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             }
         }
 

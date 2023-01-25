@@ -36,7 +36,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             DrawCounter++;
         }
-
+        
+        /// <summary>
+        /// Flags the bullet display to start it's death code, does not instantly set isActive to false.
+        /// </summary>
         public void Deactivate()
         {
             startDeath = true;
