@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System.Linq;
-using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla;
+using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Bows;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Bow
 {

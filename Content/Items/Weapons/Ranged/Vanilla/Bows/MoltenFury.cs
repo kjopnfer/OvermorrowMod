@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.VanillaOverrides.Bow;
 using Terraria.ID;
 
-namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla
+namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Bows
 {
     public class MoltenFury_Held : HeldBow
     {

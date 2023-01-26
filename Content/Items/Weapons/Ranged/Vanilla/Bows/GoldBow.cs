@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.VanillaOverrides.Bow;
 
-namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla
+namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Bows
 {
     public class GoldBow_Held : HeldBow
     {
