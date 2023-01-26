@@ -98,15 +98,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public override void OnReloadEventSuccess()
+        public override void OnReloadEventSuccess(ref int reloadTime, ref int BonusDamage, int baseDamage)
         {
             reloadTime = 0;
-
-            /*for (int i = 0; i < 6; i++)
-            {
-                int gore = Gore.NewGore(null, Projectile.Center, new Vector2(player.direction * -0.01f, 0f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
-                Main.gore[gore].sticky = true;
-            }*/
         }
 
         public override void OnReloadStart()

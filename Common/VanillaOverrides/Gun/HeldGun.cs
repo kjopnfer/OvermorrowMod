@@ -324,8 +324,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     SoundEngine.PlaySound(ShootSound);
 
                     OnShootEffects(Main.spriteBatch, velocity, shootPosition);
-                    OnGunShoot(velocity, shootPosition);
 
+                    float damage = Projectile.damage + BonusDamage;
+                    OnGunShoot(velocity, shootPosition, damage);
                 }
 
                 if (shootCounter > 0) shootCounter--;
@@ -342,9 +343,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// Allows for the implementation of any actions whenever the gun has fired a bullet.
         /// Useful for spawning dropped bullet casings or spawning additional projectiles.
         /// </summary>
-        public virtual void OnGunShoot(Vector2 velocity, Vector2 shootPosition)
+        public virtual void OnGunShoot(Vector2 velocity, Vector2 shootPosition, float damage)
         {
-            Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, Projectile.damage, Projectile.knockBack, player.whoAmI);
+            Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, (int)damage, Projectile.knockBack, player.whoAmI);
         }
 
         private bool reloadFail = false;
@@ -360,6 +361,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (reloadTime == MaxReloadTime)
             {
+                BonusDamage = 0; // Set bonus damage to zero, re-apply any bonus damage on reload end (i.e., via GlobalGun)
                 OnReloadStart();
             }
 
@@ -379,7 +381,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 if (CheckInZone(clickPercentage))
                 {
                     reloadSuccess = true;
-                    OnReloadEventSuccess();
+                    OnReloadEventSuccess(ref reloadTime, ref BonusDamage, Projectile.damage);
                 }
                 else
                 {
@@ -411,6 +413,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        private int BonusDamage = 0;
+
         /// <summary>
         /// Called whenever the gun exits the reloading state
         /// </summary>
@@ -422,12 +426,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual void OnReloadStart() { }
 
         /// <summary>
-        /// Called whenever the player has successfully triggered the event during the reloading state
+        /// Called whenever the player has successfully triggered the event during the reloading state. Used to modify reload time or damage.
         /// </summary>
-        public virtual void OnReloadEventSuccess()
-        {
-            reloadTime = 0;
-        }
+        public virtual void OnReloadEventSuccess(ref int reloadTime, ref int BonusDamage, int baseDamge) { }
 
         private bool CheckInZone(float clickPercentage)
         {

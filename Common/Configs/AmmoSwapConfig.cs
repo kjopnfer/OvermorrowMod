@@ -1,10 +1,3 @@
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using System.Linq;
-using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Bows;
 using Terraria.ModLoader.Config;
 using System.ComponentModel;
 
