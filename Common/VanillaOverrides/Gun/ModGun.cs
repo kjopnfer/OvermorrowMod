@@ -1,5 +1,8 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Particles;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -44,8 +47,46 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void SafeSetDefaults()
         {
-            maxReloadTime = 60;
-            base.SafeSetDefaults();
+            MaxReloadTime = 60;
+            MaxShots = 6;
+            RecoilAmount = 10;
+            ShootSound = SoundID.Item41;
+        }
+
+        public override void DrawGunOnShoot(SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
+        {
+            Vector2 directionOffset = Vector2.Zero;
+            if (player.direction == -1)
+            {
+                directionOffset = new Vector2(0, -10);
+            }
+
+            if (shootCounter > 13)
+            {
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+                Texture2D muzzleFlash = ModContent.Request<Texture2D>(Core.AssetDirectory.Textures + "muzzle_05").Value;
+
+                Vector2 muzzleDirectionOffset = player.direction == 1 ? new Vector2(28, -5) : new Vector2(28, 5);
+                Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
+                var rotationSpriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
+                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
+
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            }
+        }
+
+        public override void OnShootEffects(SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, 0.12f)).RotatedByRandom(MathHelper.ToRadians(25));
+                Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
+            }
         }
 
         public override void OnReloadEnd()

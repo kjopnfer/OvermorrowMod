@@ -40,6 +40,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private int _maxShots = 6;
         public int MaxShots { get { return _maxShots; } set { if (value <= 0) _maxShots = 1; } }
 
+        public SoundStyle ShootSound { get; set; } = SoundID.Item41;
+
+        /// <summary>
+        /// Defines the shoot positions for the gun for left and right, respectively.
+        /// </summary>
+        public virtual (Vector2, Vector2) BulletShootPosition => (new Vector2(15, -5), new Vector2(15, 15));
         public virtual float ProjectileScale => 1;
 
         public SoundStyle ReloadFinishSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/RevolverReload");
@@ -222,11 +228,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 player.inventory[AmmoSlotID].stack--;
         }
 
+        public int RecoilAmount { get; set; } = 10;
         private void HandleGunDrawing()
         {
             if (recoilTimer > 0) recoilTimer--;
 
-            float recoilRotation = MathHelper.Lerp(0, MathHelper.ToRadians(-10 * player.direction), Utils.Clamp(recoilTimer, 0, RECOIL_TIME) / (float)RECOIL_TIME);
+            float recoilRotation = MathHelper.Lerp(0, MathHelper.ToRadians(-RecoilAmount * player.direction), Utils.Clamp(recoilTimer, 0, RECOIL_TIME) / (float)RECOIL_TIME);
 
             float gunRotation = Projectile.Center.DirectionTo(Main.MouseWorld).ToRotation() + recoilRotation;
             Projectile.rotation = gunRotation;
@@ -292,7 +299,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 {
                     shootCounter = 0;
                     inReloadState = true;
-                    reloadTime = maxReloadTime;
+                    reloadTime = MaxReloadTime;
                     reloadBuffer = 10;
 
                     return;
@@ -307,18 +314,18 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             {
                 if (shootCounter % shootAnimation == 0)
                 {
-                    OnGunShoot();
-
                     recoilTimer = RECOIL_TIME;
 
                     Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
 
-                    // TODO: use overrideable shootOffset, make it so facing left multiples y offset by 3 and makes it positive
-                    Vector2 shootOffset = player.direction == 1 ? new Vector2(15, -5) : new Vector2(15, 15);
+                    Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item1 : BulletShootPosition.Item2;
                     Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
-                    OnShootEffects(Main.spriteBatch);
 
-                    Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, Projectile.damage, Projectile.knockBack, player.whoAmI);
+                    SoundEngine.PlaySound(ShootSound);
+
+                    OnShootEffects(Main.spriteBatch, velocity, shootPosition);
+                    OnGunShoot(velocity, shootPosition);
+
                 }
 
                 if (shootCounter > 0) shootCounter--;
@@ -329,39 +336,29 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// Called whenever the gun is fired, used to add miscellaneous effects like particles and dust
         /// </summary>
         /// <param name="spriteBatch"></param>
-        public virtual void OnShootEffects(SpriteBatch spriteBatch)
-        {
-            Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
-
-            Vector2 shootOffset = player.direction == 1 ? new Vector2(15, -5) : new Vector2(15, 15);
-            Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
-            SoundEngine.PlaySound(SoundID.Item41);
-
-            for (int i = 0; i < 4; i++)
-            {
-                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, 0.12f)).RotatedByRandom(MathHelper.ToRadians(25));
-                Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
-            }
-        }
+        public virtual void OnShootEffects(SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition) { }
 
         /// <summary>
         /// Allows for the implementation of any actions whenever the gun has fired a bullet.
         /// Useful for spawning dropped bullet casings or spawning additional projectiles.
         /// </summary>
-        public virtual void OnGunShoot() { }
+        public virtual void OnGunShoot(Vector2 velocity, Vector2 shootPosition)
+        {
+            Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, Projectile.damage, Projectile.knockBack, player.whoAmI);
+        }
 
         private bool reloadFail = false;
         private bool reloadSuccess = false;
 
         public int reloadTime = 0;
-        public int maxReloadTime { get; set; } = 60;
+        public int MaxReloadTime { get; set; } = 60;
 
         private int clickDelay = 0;
         private int reloadDelay = 0;
         private int reloadBuffer = 10;
         private void HandleReloadAction()
         {
-            if (reloadTime == maxReloadTime)
+            if (reloadTime == MaxReloadTime)
             {
                 OnReloadStart();
             }
@@ -376,7 +373,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             if (player.controlUseItem && clickDelay == 0 && !reloadFail)
             {
-                float clickPercentage = (1 - (float)reloadTime / maxReloadTime);
+                float clickPercentage = (1 - (float)reloadTime / MaxReloadTime);
                 clickDelay = 15;
 
                 if (CheckInZone(clickPercentage))
@@ -497,7 +494,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
 
-            DrawGunOnShoot(Main.spriteBatch, lightColor);
+            DrawGunOnShoot(Main.spriteBatch, lightColor, shootCounter, shootTime);
         }
 
         /// <summary>
@@ -505,32 +502,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         /// <param name="spriteBatch"></param>
         /// <param name="lightColor"></param>
-        public virtual void DrawGunOnShoot(SpriteBatch spriteBatch, Color lightColor)
-        {
-            Vector2 directionOffset = Vector2.Zero;
-            if (player.direction == -1)
-            {
-                directionOffset = new Vector2(0, -10);
-            }
-
-            if (shootCounter > 13)
-            {
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-
-                Texture2D muzzleFlash = ModContent.Request<Texture2D>(AssetDirectory.Textures + "muzzle_05").Value;
-
-                Vector2 muzzleDirectionOffset = player.direction == 1 ? new Vector2(28, -5) : new Vector2(28, 5);
-                Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
-                var rotationSpriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-
-                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
-                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
-
-                spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-            }
-        }
+        public virtual void DrawGunOnShoot(SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime) { }
 
         public virtual List<(int, int)> ClickZones => new List<(int, int)>() { (40, 55) };
         private void DrawReloadBar()
@@ -555,7 +527,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 Main.spriteBatch.Draw(clickTexture, zonePosition - Main.screenPosition, drawRectangle, Color.White, 0f, clickTexture.Size() / 2f, scale, SpriteEffects.None, 1);
             }
 
-            float cursorProgress = MathHelper.Lerp(0, texture.Width, 1 - ((float)reloadTime / maxReloadTime));
+            float cursorProgress = MathHelper.Lerp(0, texture.Width, 1 - ((float)reloadTime / MaxReloadTime));
             Texture2D cursor = ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadCursor").Value;
             Vector2 cursorOffset = new Vector2(-66 + cursorProgress, 42.5f);
             Vector2 cursorPosition = player.Center + cursorOffset;
