@@ -252,7 +252,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private void ReloadBulletDisplay()
         {
-            for (int _ = 0; _ < MaxShots; _++)
+            Main.NewText(BonusBullets);
+
+            for (int _ = 0; _ < MaxShots + BonusBullets; _++)
             {
                 BulletDisplay.Add(new BulletObject(Main.rand.Next(0, 9) * 7));
             }
@@ -296,7 +298,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 PopBulletDisplay();
 
                 ShotsFired++;
-                if (ShotsFired > MaxShots)
+                if (ShotsFired > MaxShots + BonusBullets)
                 {
                     shootCounter = 0;
                     inReloadState = true;
@@ -363,6 +365,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (reloadTime == MaxReloadTime)
             {
                 BonusDamage = 0; // Set bonus damage to zero, re-apply any bonus damage on reload end (i.e., via GlobalGun)
+                BonusBullets = 0;
+
                 OnReloadStart(player);
             }
 
@@ -382,7 +386,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 if (CheckInZone(clickPercentage))
                 {
                     reloadSuccess = true;
-                    OnReloadEventSuccess(player, ref reloadTime, ref BonusDamage, Projectile.damage);
+                    OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
                 }
                 else
                 {
@@ -404,6 +408,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 ShotsFired = 0;
                 clickDelay = 0;
 
+                Main.NewText("bonus: " + BonusBullets);
                 /*for (int i = 0; i < BulletDisplay.Count; i++)
                     BulletDisplay[i].Reset();*/
                 ReloadBulletDisplay();
@@ -415,6 +420,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
 
         private int BonusDamage = 0;
+        private int BonusBullets = 0;
 
         /// <summary>
         /// Called whenever the gun exits the reloading state
@@ -429,7 +435,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <summary>
         /// Called whenever the player has successfully triggered the event during the reloading state. Used to modify reload time or damage.
         /// </summary>
-        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusDamage, int baseDamge) { }
+        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge) { }
 
         private bool CheckInZone(float clickPercentage)
         {
@@ -453,7 +459,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value.Width;
 
-            float gapOffset = 6 * Utils.Clamp(BulletDisplay.Count - 1, 0, MaxShots);
+            float gapOffset = 6 * Utils.Clamp(BulletDisplay.Count - 1, 0, MaxShots + BonusBullets);
             float total = textureWidth * BulletDisplay.Count + gapOffset;
 
             float startPosition = (-total / 2) + 8;

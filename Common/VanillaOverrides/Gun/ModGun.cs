@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -61,7 +60,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 directionOffset = new Vector2(0, -10);
             }
 
-            if (shootCounter > 13)
+            if (shootCounter > maxShootTime - 9)
             {
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -98,10 +97,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusDamage, int baseDamage)
+        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamage)
         {
             reloadTime = 0;
             BonusDamage = baseDamage;
+            BonusBullets = 6;
+
+            Main.NewText("success: " + BonusBullets);
         }
 
         public override void OnReloadStart(Player player)
