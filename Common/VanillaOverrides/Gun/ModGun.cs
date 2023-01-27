@@ -53,7 +53,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             ShootSound = SoundID.Item41;
         }
 
-        public override void DrawGunOnShoot(SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
+        public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
         {
             Vector2 directionOffset = Vector2.Zero;
             if (player.direction == -1)
@@ -89,7 +89,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public override void OnReloadEnd()
+        public override void OnReloadEnd(Player player)
         {
             for (int i = 0; i < 6; i++)
             {
@@ -98,12 +98,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public override void OnReloadEventSuccess(ref int reloadTime, ref int BonusDamage, int baseDamage)
+        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusDamage, int baseDamage)
         {
             reloadTime = 0;
+            BonusDamage = baseDamage;
         }
 
-        public override void OnReloadStart()
+        public override void OnReloadStart(Player player)
         {
             
         }
@@ -118,7 +119,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void SafeSetDefaults()
         {
-            Item.damage = 69;
+            Item.damage = 50;
             Item.width = 32;
             Item.height = 74;
             Item.autoReuse = true;

@@ -4,11 +4,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
-using System;
 using Terraria.Audio;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
-using OvermorrowMod.Common.Particles;
 using Terraria.DataStructures;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
@@ -33,6 +31,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <returns></returns>
         public virtual bool CanConsumeAmmo(Player player) => true;
 
+        /// <summary>
+        /// Used to determine where the gun is held.
+        /// </summary>
         public virtual Vector2 PositionOffset => new Vector2(15, 0);
 
         public virtual bool TwoHanded => false;
@@ -43,7 +44,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public SoundStyle ShootSound { get; set; } = SoundID.Item41;
 
         /// <summary>
-        /// Defines the shoot positions for the gun for left and right, respectively.
+        /// Defines the shot bullet positions for the gun for left and right, respectively.
         /// </summary>
         public virtual (Vector2, Vector2) BulletShootPosition => (new Vector2(15, -5), new Vector2(15, 15));
         public virtual float ProjectileScale => 1;
@@ -92,7 +93,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
 
         private bool inReloadState = false;
-        public Player player => Main.player[Projectile.owner];
+        private Player player => Main.player[Projectile.owner];
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
@@ -362,7 +363,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (reloadTime == MaxReloadTime)
             {
                 BonusDamage = 0; // Set bonus damage to zero, re-apply any bonus damage on reload end (i.e., via GlobalGun)
-                OnReloadStart();
+                OnReloadStart(player);
             }
 
             if (reloadTime > 0) reloadTime--;
@@ -381,7 +382,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 if (CheckInZone(clickPercentage))
                 {
                     reloadSuccess = true;
-                    OnReloadEventSuccess(ref reloadTime, ref BonusDamage, Projectile.damage);
+                    OnReloadEventSuccess(player, ref reloadTime, ref BonusDamage, Projectile.damage);
                 }
                 else
                 {
@@ -407,7 +408,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     BulletDisplay[i].Reset();*/
                 ReloadBulletDisplay();
 
-                OnReloadEnd();
+                OnReloadEnd(player);
 
                 SoundEngine.PlaySound(ReloadFinishSound);
             }
@@ -418,17 +419,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <summary>
         /// Called whenever the gun exits the reloading state
         /// </summary>
-        public virtual void OnReloadEnd() { }
+        public virtual void OnReloadEnd(Player player) { }
 
         /// <summary>
         /// Called whenever the gun enters the reloading state
         /// </summary>
-        public virtual void OnReloadStart() { }
+        public virtual void OnReloadStart(Player player) { }
 
         /// <summary>
         /// Called whenever the player has successfully triggered the event during the reloading state. Used to modify reload time or damage.
         /// </summary>
-        public virtual void OnReloadEventSuccess(ref int reloadTime, ref int BonusDamage, int baseDamge) { }
+        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusDamage, int baseDamge) { }
 
         private bool CheckInZone(float clickPercentage)
         {
@@ -495,7 +496,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
 
-            DrawGunOnShoot(Main.spriteBatch, lightColor, shootCounter, shootTime);
+            DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime);
         }
 
         /// <summary>
@@ -503,7 +504,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         /// <param name="spriteBatch"></param>
         /// <param name="lightColor"></param>
-        public virtual void DrawGunOnShoot(SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime) { }
+        public virtual void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime) { }
 
         public virtual List<(int, int)> ClickZones => new List<(int, int)>() { (40, 55) };
         private void DrawReloadBar()
