@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -40,6 +41,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
     {
         //public override int ConvertBullet => ItemID.MusketBall;
         //public override int BulletType => ProjectileID.VenomBullet;
+
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(40, 55) };
         public override int ParentItem => ModContent.GetInstance<TestGun>().Type;
         public override Vector2 PositionOffset => new Vector2(18, -5);
         public override float ProjectileScale => 0.75f;
@@ -99,11 +102,14 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamage)
         {
-            reloadTime = 0;
             BonusDamage = baseDamage;
-            BonusBullets = 6;
+            //BonusBullets = 6;
+        }
 
-            Main.NewText("success: " + BonusBullets);
+        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge)
+        {
+            Main.NewText("hit");
+            //reloadTime = 0;
         }
 
         public override void OnReloadStart(Player player)

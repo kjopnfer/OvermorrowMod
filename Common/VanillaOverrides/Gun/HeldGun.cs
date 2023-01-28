@@ -85,6 +85,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             ReloadBulletDisplay();
 
+            _clickZones = ClickZones;
+
             // deactivate any bullets that were previously fired and stored
             for (int i = 0; i < ShotsFired; i++)
             {
@@ -252,8 +254,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private void ReloadBulletDisplay()
         {
-            Main.NewText(BonusBullets);
-
             for (int _ = 0; _ < MaxShots + BonusBullets; _++)
             {
                 BulletDisplay.Add(new BulletObject(Main.rand.Next(0, 9) * 7));
@@ -383,10 +383,14 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 float clickPercentage = (1 - (float)reloadTime / MaxReloadTime);
                 clickDelay = 15;
 
-                if (CheckInZone(clickPercentage))
+                //int zoneIndex = -1;
+                if (CheckInZone(clickPercentage, out int zoneIndex))
                 {
                     reloadSuccess = true;
-                    OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
+                    _clickZones[zoneIndex].HasClicked = true;
+
+                    ReloadEventTrigger(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
+                    //OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
                 }
                 else
                 {
@@ -401,22 +405,34 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (reloadTime == 0)
             {
                 reloadFail = false;
-
                 reloadDelay = 30;
 
                 inReloadState = false;
                 ShotsFired = 0;
                 clickDelay = 0;
 
-                Main.NewText("bonus: " + BonusBullets);
+                if (CheckEventSuccess())
+                    OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
+
                 /*for (int i = 0; i < BulletDisplay.Count; i++)
                     BulletDisplay[i].Reset();*/
                 ReloadBulletDisplay();
 
                 OnReloadEnd(player);
+                ResetReloadZones();
 
                 SoundEngine.PlaySound(ReloadFinishSound);
             }
+        }
+
+        private bool CheckEventSuccess()
+        {
+            foreach (ReloadZone clickZone in _clickZones)
+            {
+                if (!clickZone.HasClicked) return false;
+            }
+
+            return true;
         }
 
         private int BonusDamage = 0;
@@ -433,24 +449,45 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual void OnReloadStart(Player player) { }
 
         /// <summary>
-        /// Called whenever the player has successfully triggered the event during the reloading state. Used to modify reload time or damage.
+        /// Called whenever the player has successfully completed the event during the reloading state. Used to modify reload time or damage.
         /// </summary>
         public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge) { }
 
-        private bool CheckInZone(float clickPercentage)
+        private void ResetReloadZones()
+        {
+            Main.NewText("reset");
+
+            foreach (ReloadZone clickZone in _clickZones)
+            {
+                clickZone.HasClicked = false;
+            }
+        }
+
+        private bool CheckInZone(float clickPercentage, out int zoneIndex)
         {
             clickPercentage = clickPercentage * 100;
 
-            foreach ((int, int) clickZone in ClickZones)
+            int zoneCounter = 0;
+            foreach (ReloadZone clickZone in _clickZones)
             {
-                if (clickPercentage >= clickZone.Item1 && clickPercentage <= clickZone.Item2)
+                if (clickPercentage >= clickZone.StartPercentage && clickPercentage <= clickZone.EndPercentage)
                 {
+                    zoneIndex = zoneCounter;
                     return true;
                 }
+
+                zoneCounter++;
             }
+
+            zoneIndex = -1;
 
             return false;
         }
+
+        /// <summary>
+        /// Called after the player clicks within any of the reload zones. Used to add incremental effects like extra ammo.
+        /// </summary>
+        public virtual void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge) { }
 
         public List<BulletObject> BulletDisplay = new List<BulletObject>();
         private void DrawAmmo()
@@ -512,7 +549,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <param name="lightColor"></param>
         public virtual void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime) { }
 
-        public virtual List<(int, int)> ClickZones => new List<(int, int)>() { (40, 55) };
+
+        private List<ReloadZone> _clickZones;
+        public abstract List<ReloadZone> ClickZones { get; }
+
         private void DrawReloadBar()
         {
             float scale = 1;
@@ -522,15 +562,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Vector2 offset = new Vector2(-2, 41);
             Main.spriteBatch.Draw(texture, player.Center + offset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, scale, SpriteEffects.None, 1);
 
-            foreach ((int, int) clickZone in ClickZones)
+            foreach (ReloadZone clickZone in _clickZones)
             {
-                float startOffset = (clickZone.Item1 / 100f) * texture.Width;
+                float startOffset = (clickZone.StartPercentage / 100f) * texture.Width;
 
                 Vector2 zoneOffset = new Vector2(-2 + startOffset, 41f);
                 Vector2 zonePosition = player.Center + zoneOffset;
 
-                float clickWidth = (clickZone.Item2 - clickZone.Item1) / 100f;
-                Texture2D clickTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadZone").Value;
+                float clickWidth = (clickZone.EndPercentage - clickZone.StartPercentage) / 100f;
+                Texture2D clickTexture = clickZone.HasClicked ? ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadZone_Clicked").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "ReloadZone").Value;
                 Rectangle drawRectangle = new Rectangle(0, 0, (int)(clickTexture.Width * clickWidth), clickTexture.Height);
                 Main.spriteBatch.Draw(clickTexture, zonePosition - Main.screenPosition, drawRectangle, Color.White, 0f, clickTexture.Size() / 2f, scale, SpriteEffects.None, 1);
             }
