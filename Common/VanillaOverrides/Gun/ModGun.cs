@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -41,10 +42,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
     {
         //public override int ConvertBullet => ItemID.MusketBall;
         //public override int BulletType => ProjectileID.VenomBullet;
-
+        public override GunType GunType => GunType.Revolver;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(30, 45), new ReloadZone(60, 75) };
         public override int ParentItem => ModContent.GetInstance<TestGun>().Type;
-        public override Vector2 PositionOffset => new Vector2(18, -5);
+        public override (Vector2, Vector2) PositionOffset => (new Vector2(18, -5), new Vector2(18, -5));
         public override float ProjectileScale => 0.75f;
 
         public override void SafeSetDefaults()
@@ -82,7 +83,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public override void OnShootEffects(SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition)
+        public override void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -118,7 +119,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
     }
 
-    public class TestGun : ModGun<TestGun_Held>
+    public class TestGun : ModGun<Boomstick_Held>
     {
         public override void SetStaticDefaults()
         {
@@ -127,6 +128,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void SafeSetDefaults()
         {
+            // stuff used for revolver
+            /*Item.damage = 50;
+            Item.width = 32;
+            Item.height = 74;
+            Item.autoReuse = true;
+            Item.shootSpeed = 10f;
+            Item.rare = ItemRarityID.Lime;
+            Item.useTime = 22;
+            Item.useAnimation = 22;*/
+
             Item.damage = 50;
             Item.width = 32;
             Item.height = 74;

@@ -32,19 +32,19 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual bool CanConsumeAmmo(Player player) => true;
 
         /// <summary>
-        /// Used to determine where the gun is held.
+        /// Used to determine where the gun is held for the left and right directions, respectively.
         /// </summary>
-        public virtual Vector2 PositionOffset => new Vector2(15, 0);
+        public virtual (Vector2, Vector2) PositionOffset => (new Vector2(15, 0), new Vector2(15, 0));
 
         public virtual bool TwoHanded => false;
 
         private int _maxShots = 6;
-        public int MaxShots { get { return _maxShots; } set { if (value <= 0) _maxShots = 1; } }
+        public int MaxShots { get { return _maxShots; } set { _maxShots = value <= 0 ?  1 : value; } }
 
         public SoundStyle ShootSound { get; set; } = SoundID.Item41;
 
         /// <summary>
-        /// Defines the shot bullet positions for the gun for left and right, respectively.
+        /// Defines the shot bullet positions for the gun for left and right directions, respectively.
         /// </summary>
         public virtual (Vector2, Vector2) BulletShootPosition => (new Vector2(15, -5), new Vector2(15, 15));
         public virtual float ProjectileScale => 1;
@@ -62,6 +62,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// Determines what bullet type is needed in order to convert the bullet to if BulletType is given. Uses Item ID.
         /// </summary>
         public virtual int ConvertBullet => ItemID.None;
+
+        public abstract GunType GunType { get; }
 
         public virtual void SafeSetDefaults() { }
 
@@ -99,7 +101,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
-            if (player.HeldItem.type != ParentItem) Projectile.Kill();
+            if (player.HeldItem.type != ParentItem)
+            {
+                //Main.NewText("death");
+                Projectile.Kill();
+            }
 
             player.heldProj = Projectile.whoAmI;
 
@@ -243,7 +249,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Projectile.spriteDirection = gunRotation > MathHelper.PiOver2 || gunRotation < -MathHelper.PiOver2 ? -1 : 1;
             player.direction = Projectile.spriteDirection;
 
-            Vector2 positionOffset = PositionOffset.RotatedBy(gunRotation);
+
+            Vector2 positionOffset = (player.direction == -1 ? PositionOffset.Item1 : PositionOffset.Item2).RotatedBy(gunRotation);
             Projectile.Center = player.RotatedRelativePoint(player.MountedCenter) + positionOffset;
 
             if (TwoHanded)
@@ -254,7 +261,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private void ReloadBulletDisplay()
         {
-            for (int _ = 0; _ < MaxShots + BonusBullets; _++)
+            for (int _ = 0; _ < MaxShots + BonusAmmo; _++)
             {
                 BulletDisplay.Add(new BulletObject(Main.rand.Next(0, 9) * 7));
             }
@@ -298,7 +305,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 PopBulletDisplay();
 
                 ShotsFired++;
-                if (ShotsFired > MaxShots + BonusBullets)
+                if (ShotsFired > MaxShots + BonusAmmo)
                 {
                     shootCounter = 0;
                     inReloadState = true;
@@ -326,7 +333,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                     SoundEngine.PlaySound(ShootSound);
 
-                    OnShootEffects(Main.spriteBatch, velocity, shootPosition);
+                    OnShootEffects(player, Main.spriteBatch, velocity, shootPosition);
 
                     float damage = Projectile.damage + BonusDamage;
                     OnGunShoot(velocity, shootPosition, damage);
@@ -340,7 +347,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// Called whenever the gun is fired, used to add miscellaneous effects like particles and dust
         /// </summary>
         /// <param name="spriteBatch"></param>
-        public virtual void OnShootEffects(SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition) { }
+        public virtual void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition) { }
 
         /// <summary>
         /// Allows for the implementation of any actions whenever the gun has fired a bullet.
@@ -365,7 +372,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (reloadTime == MaxReloadTime)
             {
                 BonusDamage = 0; // Set bonus damage to zero, re-apply any bonus damage on reload end (i.e., via GlobalGun)
-                BonusBullets = 0;
+                BonusAmmo = 0;
 
                 OnReloadStart(player);
             }
@@ -383,14 +390,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 float clickPercentage = (1 - (float)reloadTime / MaxReloadTime);
                 clickDelay = 15;
 
-                //int zoneIndex = -1;
                 if (CheckInZone(clickPercentage, out int zoneIndex))
                 {
                     reloadSuccess = true;
                     _clickZones[zoneIndex].HasClicked = true;
-
                     
-                    ReloadEventTrigger(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage, GetClicksLeft());
+                    ReloadEventTrigger(player, ref reloadTime, ref BonusAmmo, ref BonusDamage, Projectile.damage, GetClicksLeft());
                     //OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
                 }
                 else
@@ -413,10 +418,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 clickDelay = 0;
 
                 if (CheckEventSuccess())
-                    OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
+                    OnReloadEventSuccess(player, ref reloadTime, ref BonusAmmo, ref BonusDamage, Projectile.damage);
 
-                /*for (int i = 0; i < BulletDisplay.Count; i++)
-                    BulletDisplay[i].Reset();*/
                 ReloadBulletDisplay();
 
                 OnReloadEnd(player);
@@ -437,7 +440,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
 
         private int BonusDamage = 0;
-        private int BonusBullets = 0;
+        private int BonusAmmo = 0;
 
         private int GetClicksLeft()
         {
@@ -463,7 +466,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <summary>
         /// Called after the player clicks within any of the reload zones. Used to add incremental effects like extra ammo.
         /// </summary>
-        public virtual void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamage, int clicksLeft) { }
+        public virtual void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft) { }
 
         /// <summary>
         /// Called whenever the player has successfully completed the event during the reloading state. Used to modify reload time or damage.
@@ -507,7 +510,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value.Width;
 
-            float gapOffset = 6 * Utils.Clamp(BulletDisplay.Count - 1, 0, MaxShots + BonusBullets);
+            float gapOffset = 6 * Utils.Clamp(BulletDisplay.Count - 1, 0, MaxShots + BonusAmmo);
             float total = textureWidth * BulletDisplay.Count + gapOffset;
 
             float startPosition = (-total / 2) + 8;
@@ -540,13 +543,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 directionOffset = new Vector2(0, -10);
             }
 
-            if (reloadDelay > 0 && reloadSuccess)
+            if (GunType == GunType.Revolver)
             {
-                float spinRate = MathHelper.Lerp(0.09f, 0.99f, reloadDelay / 30f);
-                reloadRotation -= spinRate * player.direction;
+                if (reloadDelay > 0 && reloadSuccess)
+                {
+                    float spinRate = MathHelper.Lerp(0.09f, 0.99f, reloadDelay / 30f);
+                    reloadRotation -= spinRate * player.direction;
+                }
+                else
+                    reloadRotation = 0;
             }
-            else
-                reloadRotation = 0;
 
             Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
 
