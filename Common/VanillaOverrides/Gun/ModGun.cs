@@ -42,7 +42,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         //public override int ConvertBullet => ItemID.MusketBall;
         //public override int BulletType => ProjectileID.VenomBullet;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(40, 55) };
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(30, 45), new ReloadZone(60, 75) };
         public override int ParentItem => ModContent.GetInstance<TestGun>().Type;
         public override Vector2 PositionOffset => new Vector2(18, -5);
         public override float ProjectileScale => 0.75f;
@@ -106,15 +106,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             //BonusBullets = 6;
         }
 
-        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge)
+        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge, int clicksLeft)
         {
-            Main.NewText("hit");
-            //reloadTime = 0;
+            if (clicksLeft == 0)
+                reloadTime = 0;
         }
 
         public override void OnReloadStart(Player player)
         {
-            
+
         }
     }
 

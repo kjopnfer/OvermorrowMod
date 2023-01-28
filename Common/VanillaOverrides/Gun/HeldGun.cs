@@ -389,7 +389,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     reloadSuccess = true;
                     _clickZones[zoneIndex].HasClicked = true;
 
-                    ReloadEventTrigger(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
+                    
+                    ReloadEventTrigger(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage, GetClicksLeft());
                     //OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
                 }
                 else
@@ -438,6 +439,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private int BonusDamage = 0;
         private int BonusBullets = 0;
 
+        private int GetClicksLeft()
+        {
+            var numLeft = ClickZones.Count;
+            foreach (ReloadZone clickZone in _clickZones)
+            {
+                if (clickZone.HasClicked) numLeft--;
+            }
+
+            return numLeft;
+        }
+
         /// <summary>
         /// Called whenever the gun exits the reloading state
         /// </summary>
@@ -449,14 +461,17 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual void OnReloadStart(Player player) { }
 
         /// <summary>
+        /// Called after the player clicks within any of the reload zones. Used to add incremental effects like extra ammo.
+        /// </summary>
+        public virtual void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamage, int clicksLeft) { }
+
+        /// <summary>
         /// Called whenever the player has successfully completed the event during the reloading state. Used to modify reload time or damage.
         /// </summary>
-        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge) { }
+        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamage) { }
 
         private void ResetReloadZones()
         {
-            Main.NewText("reset");
-
             foreach (ReloadZone clickZone in _clickZones)
             {
                 clickZone.HasClicked = false;
@@ -484,11 +499,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             return false;
         }
 
-        /// <summary>
-        /// Called after the player clicks within any of the reload zones. Used to add incremental effects like extra ammo.
-        /// </summary>
-        public virtual void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge) { }
-
+   
         public List<BulletObject> BulletDisplay = new List<BulletObject>();
         private void DrawAmmo()
         {
