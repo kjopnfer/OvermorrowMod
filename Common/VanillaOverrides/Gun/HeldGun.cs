@@ -49,7 +49,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual (Vector2, Vector2) BulletShootPosition => (new Vector2(15, -5), new Vector2(15, 15));
         public virtual float ProjectileScale => 1;
 
-        public SoundStyle ReloadFinishSound => new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/RevolverReload");
+        public SoundStyle ReloadFinishSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/RevolverReload");
 
         public abstract int ParentItem { get; }
 
@@ -155,6 +155,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (gunPlayer.playerGunInfo.ContainsKey(ParentItem))
             {
                 ShotsFired = gunPlayer.playerGunInfo[ParentItem].shotsFired;
+                BonusBullets = gunPlayer.playerGunInfo[ParentItem].bonusBullets;
+                BonusDamage = gunPlayer.playerGunInfo[ParentItem].bonusDamage;
+                BonusAmmo = gunPlayer.playerGunInfo[ParentItem].bonusAmmo;
             }
         }
 
@@ -164,11 +167,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             if (!gunPlayer.playerGunInfo.ContainsKey(ParentItem))
             {
-                gunPlayer.playerGunInfo.Add(ParentItem, new HeldGunInfo(ShotsFired));
+                gunPlayer.playerGunInfo.Add(ParentItem, new HeldGunInfo(ShotsFired, BonusBullets, BonusDamage, BonusAmmo));
             }
             else
             {
-                gunPlayer.playerGunInfo[ParentItem] = new HeldGunInfo(ShotsFired);
+                gunPlayer.playerGunInfo[ParentItem] = new HeldGunInfo(ShotsFired, BonusBullets, BonusDamage, BonusAmmo);
             }
         }
 
@@ -333,10 +336,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                     SoundEngine.PlaySound(ShootSound);
 
-                    OnShootEffects(player, Main.spriteBatch, velocity, shootPosition);
+                    OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, BonusBullets);
 
                     float damage = Projectile.damage + BonusDamage;
-                    OnGunShoot(velocity, shootPosition, damage);
+                    OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, BonusBullets);
                 }
 
                 if (shootCounter > 0) shootCounter--;
@@ -347,15 +350,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// Called whenever the gun is fired, used to add miscellaneous effects like particles and dust
         /// </summary>
         /// <param name="spriteBatch"></param>
-        public virtual void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition) { }
+        public virtual void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition, int bonusBullets) { }
 
         /// <summary>
         /// Allows for the implementation of any actions whenever the gun has fired a bullet.
         /// Useful for spawning dropped bullet casings or spawning additional projectiles.
         /// </summary>
-        public virtual void OnGunShoot(Vector2 velocity, Vector2 shootPosition, float damage)
+        public virtual void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
-            Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, (int)damage, Projectile.knockBack, player.whoAmI);
+            Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
         }
 
         private bool reloadFail = false;
@@ -373,6 +376,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             {
                 BonusDamage = 0; // Set bonus damage to zero, re-apply any bonus damage on reload end (i.e., via GlobalGun)
                 BonusAmmo = 0;
+                BonusBullets = 0;
 
                 OnReloadStart(player);
             }
@@ -395,8 +399,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     reloadSuccess = true;
                     _clickZones[zoneIndex].HasClicked = true;
                     
-                    ReloadEventTrigger(player, ref reloadTime, ref BonusAmmo, ref BonusDamage, Projectile.damage, GetClicksLeft());
-                    //OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusDamage, Projectile.damage);
+                    ReloadEventTrigger(player, ref reloadTime, ref BonusBullets, ref BonusAmmo, ref BonusDamage, Projectile.damage, GetClicksLeft());
+                    //OnReloadEventSuccess(player, ref reloadTime, ref o, ref BonusDamage, Projectile.damage);
                 }
                 else
                 {
@@ -418,7 +422,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 clickDelay = 0;
 
                 if (CheckEventSuccess())
-                    OnReloadEventSuccess(player, ref reloadTime, ref BonusAmmo, ref BonusDamage, Projectile.damage);
+                    OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusAmmo, ref BonusDamage, Projectile.damage);
 
                 ReloadBulletDisplay();
 
@@ -439,6 +443,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             return true;
         }
 
+        private int BonusBullets = 0;
         private int BonusDamage = 0;
         private int BonusAmmo = 0;
 
@@ -466,12 +471,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <summary>
         /// Called after the player clicks within any of the reload zones. Used to add incremental effects like extra ammo.
         /// </summary>
-        public virtual void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft) { }
+        public virtual void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft) { }
 
         /// <summary>
         /// Called whenever the player has successfully completed the event during the reloading state. Used to modify reload time or damage.
         /// </summary>
-        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamage) { }
+        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage) { }
 
         private void ResetReloadZones()
         {

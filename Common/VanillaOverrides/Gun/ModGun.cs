@@ -83,7 +83,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public override void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition)
+        public override void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition, int bonusBullets)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -101,13 +101,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamage)
+        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage)
         {
             BonusDamage = baseDamage;
-            //BonusBullets = 6;
         }
-
-        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusDamage, int baseDamge, int clicksLeft)
+       
+        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
         {
             if (clicksLeft == 0)
                 reloadTime = 0;
@@ -138,7 +137,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Item.useTime = 22;
             Item.useAnimation = 22;*/
 
-            Item.damage = 50;
+            Item.damage = 30;
             Item.width = 32;
             Item.height = 74;
             Item.autoReuse = true;
