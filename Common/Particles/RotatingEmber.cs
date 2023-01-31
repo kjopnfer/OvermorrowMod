@@ -1,0 +1,56 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Core;
+using System;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace OvermorrowMod.Common.Particles
+{
+    public class RotatingEmber : CustomParticle
+    {
+        public override string Texture => AssetDirectory.Empty;
+        public float maxTime = Main.rand.Next(4, 7) * 10;
+        public override void OnSpawn()
+        {
+            //particle.customData[0] = particle.scale;
+            particle.scale = 0f;
+            maxTime = Main.rand.Next(8, 10) * 10;
+        }
+
+        public override void Update()
+        {
+            particle.customData[0]++;
+            //particle.position += particle.velocity;
+            particle.velocity = particle.velocity.RotatedBy(MathHelper.ToRadians(3 * particle.customData[1]));
+
+            particle.position += particle.velocity;
+            particle.alpha = (float)(Math.Sin((1f - particle.customData[0] / maxTime) * Math.PI));
+            particle.scale = (1f - particle.customData[0] / maxTime) * particle.customData[2];
+            particle.rotation = particle.velocity.ToRotation();
+
+            if (particle.customData[0] > maxTime) particle.Kill();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+            float heightLerp = MathHelper.Lerp(1f, 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+            float widthLerp = MathHelper.Lerp(0.25f, 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+            Color color = Color.Lerp(particle.color, Color.Red, particle.activeTime / maxTime);
+
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha, particle.rotation + MathHelper.PiOver2, texture.Size() / 2, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
+
+
+            //Texture2D tex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
+            //spriteBatch.Draw(tex, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.7f, 0f, tex.Size() / 2, particle.scale * 1.5f, SpriteEffects.None, 0f);
+            //spriteBatch.Draw(tex, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.4f, 0f, tex.Size() / 2, particle.scale * 3f, SpriteEffects.None, 0f);
+
+            spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+    }
+}
