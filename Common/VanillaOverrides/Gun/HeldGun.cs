@@ -39,7 +39,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual bool TwoHanded => false;
 
         private int _maxShots = 6;
-        public int MaxShots { get { return _maxShots; } set { _maxShots = value <= 0 ?  1 : value; } }
+        public int MaxShots { get { return _maxShots; } set { _maxShots = value <= 0 ? 1 : value; } }
 
         public SoundStyle ShootSound { get; set; } = SoundID.Item41;
 
@@ -98,6 +98,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private bool inReloadState = false;
         private Player player => Main.player[Projectile.owner];
+        public ref float PrimaryCounter => ref Projectile.ai[0];
+        public ref float SecondaryCounter => ref Projectile.ai[1];
+
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
@@ -133,7 +136,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override bool PreDraw(ref Color lightColor)
         {
-            DrawGun(lightColor);
+            if (PreDrawGun(player, Main.spriteBatch, ShotsFired, shootCounter, lightColor))
+                DrawGun(lightColor);
 
             if (reloadTime == 0)
                 DrawAmmo();
@@ -362,13 +366,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
 
         private bool reloadFail = false;
-        private bool reloadSuccess = false;
+        public bool reloadSuccess { get; private set; } = false;
 
         public int reloadTime = 0;
         public int MaxReloadTime { get; set; } = 60;
 
         private int clickDelay = 0;
-        private int reloadDelay = 0;
+        public int reloadDelay { get; private set; } = 0;
         private int reloadBuffer = 10;
         private void HandleReloadAction()
         {
@@ -396,11 +400,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                 if (CheckInZone(clickPercentage, out int zoneIndex))
                 {
-                    reloadSuccess = true;
                     _clickZones[zoneIndex].HasClicked = true;
-                    
+
                     ReloadEventTrigger(player, ref reloadTime, ref BonusBullets, ref BonusAmmo, ref BonusDamage, Projectile.damage, GetClicksLeft());
-                    //OnReloadEventSuccess(player, ref reloadTime, ref o, ref BonusDamage, Projectile.damage);
                 }
                 else
                 {
@@ -422,7 +424,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 clickDelay = 0;
 
                 if (CheckEventSuccess())
+                {
+                    reloadSuccess = true;
                     OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusAmmo, ref BonusDamage, Projectile.damage);
+                }
+                else
+                    OnReloadEventFail(player);
 
                 ReloadBulletDisplay();
 
@@ -486,6 +493,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        public virtual void OnReloadEventFail(Player player) { }
+
         private bool CheckInZone(float clickPercentage, out int zoneIndex)
         {
             clickPercentage = clickPercentage * 100;
@@ -507,7 +516,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             return false;
         }
 
-   
+
         public List<BulletObject> BulletDisplay = new List<BulletObject>();
         private void DrawAmmo()
         {
@@ -535,7 +544,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private int recoilTimer = 0;
         private int RECOIL_TIME = 15;
-        float reloadRotation = 0;
+        public float reloadRotation = 0;
+
+        /// <summary>
+        /// Allows for drawing things behind the projectile. Return false to prevent the default drawing from running.
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <returns></returns>
+        public virtual bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor) { return true; }
+
         private void DrawGun(Color lightColor)
         {
             RECOIL_TIME = 15;
@@ -563,6 +580,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime);
         }
+
 
         /// <summary>
         /// Called whenever the gun is fired within the PreDraw hook, used to add effects such as muzzle flashes

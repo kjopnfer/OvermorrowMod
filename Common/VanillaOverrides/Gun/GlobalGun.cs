@@ -28,6 +28,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public Dictionary<int, GunStats> OverridedGuns = new Dictionary<int, GunStats>()
         {
             { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 30) },
+            { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 42) },
         };
 
         public override void SetDefaults(Item item)
