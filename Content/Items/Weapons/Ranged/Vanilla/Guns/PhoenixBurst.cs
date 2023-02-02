@@ -26,6 +26,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void OnSpawn(IEntitySource source)
         {
+            Projectile.timeLeft = 50;
+
             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PhoenixBurst"));
 
             Projectile.Center = Main.LocalPlayer.Center;
@@ -45,9 +47,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
                 Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(9, 15);
                 Color color = Color.Orange;
 
-                if (Main.rand.NextBool())
-                    Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 2, color, 1, randomScale);
-                //Particle.CreateParticle(Particle.ParticleType<Orb>(), Projectile.Center, RandomVelocity, color, 1, randomScale, 0, 25);
+                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 2, color, 1, randomScale);
 
                 randomScale = Main.rand.NextFloat(20f, 30f);
                 Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity) * Main.rand.Next(5, 7), Color.Orange, 1f, randomScale, 0f, 0f, -1f, randomScale);
@@ -57,9 +57,20 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public ref float AICounter => ref Projectile.ai[0];
         public override void AI()
         {
-            AICounter++;
+            if (AICounter < 20) AICounter++;
             Projectile.scale = MathHelper.Lerp(0.5f, 0, Projectile.timeLeft / 120f);
             Projectile.rotation += 0.08f;
+        }
+
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            hitbox.Width = (int)MathHelper.Lerp(Projectile.width, 512, AICounter / 20f);
+            hitbox.Height = (int)MathHelper.Lerp(Projectile.width, 512, AICounter / 20f);
+
+            hitbox.X = (int)(Projectile.Center.X - hitbox.Width / 2f);
+            hitbox.Y = (int)(Projectile.Center.Y - hitbox.Height / 2f);
+
+            base.ModifyDamageHitbox(ref hitbox);
         }
 
         public override bool PreDraw(ref Color lightColor)

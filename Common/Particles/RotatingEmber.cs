@@ -16,7 +16,7 @@ namespace OvermorrowMod.Common.Particles
         public override void OnSpawn()
         {
             //particle.customData[0] = particle.scale;
-            particle.scale = 0f;
+            //particle.scale = 0f;
             maxTime = Main.rand.Next(8, 10) * 10;
         }
 
@@ -28,7 +28,7 @@ namespace OvermorrowMod.Common.Particles
 
             particle.position += particle.velocity;
             particle.alpha = (float)(Math.Sin((1f - particle.customData[0] / maxTime) * Math.PI));
-            particle.scale = (1f - particle.customData[0] / maxTime) * particle.customData[2];
+            //particle.scale = (1f - particle.customData[0] / maxTime) * particle.customData[2];
             particle.rotation = particle.velocity.ToRotation();
 
             if (particle.customData[0] > maxTime) particle.Kill();
