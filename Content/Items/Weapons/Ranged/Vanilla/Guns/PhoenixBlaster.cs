@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public override GunType GunType => GunType.Pistol;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
 
-        public override (Vector2, Vector2) BulletShootPosition => (new Vector2(0, 0), new Vector2(0, 0));
+        public override (Vector2, Vector2) BulletShootPosition => (new Vector2(10, 20), new Vector2(-10, -10));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(18, -6), new Vector2(16, -4));
         public override float ProjectileScale => 0.75f;
 
@@ -76,8 +76,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
             Main.spriteBatch.Reload(BlendState.AlphaBlend);
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
-
-            Color color = Color.Lerp(Color.Orange, Color.White, progress);
 
             Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
             effect.Parameters["WhiteoutColor"].SetValue(Color.Orange.ToVector3());

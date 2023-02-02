@@ -45,11 +45,6 @@ namespace OvermorrowMod.Common.Particles
 
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha, particle.rotation + MathHelper.PiOver2, texture.Size() / 2, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
 
-
-            //Texture2D tex = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
-            //spriteBatch.Draw(tex, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.7f, 0f, tex.Size() / 2, particle.scale * 1.5f, SpriteEffects.None, 0f);
-            //spriteBatch.Draw(tex, particle.position - Main.screenPosition, null, particle.color * particle.alpha * 0.4f, 0f, tex.Size() / 2, particle.scale * 3f, SpriteEffects.None, 0f);
-
             spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }

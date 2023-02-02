@@ -335,7 +335,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                     Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
 
-                    Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item1 : BulletShootPosition.Item2;
+                    Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
                     Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
 
                     SoundEngine.PlaySound(ShootSound);
