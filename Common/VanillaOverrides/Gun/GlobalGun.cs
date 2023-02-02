@@ -6,6 +6,7 @@ using Terraria.ModLoader;
 using System.Linq;
 using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
 using Terraria.DataStructures;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -39,6 +40,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 item.shoot = gun.GunType;
                 item.damage = gun.GunDamage;
                 item.noUseGraphic = true;
+                item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // just a random sound set to 0
             }
         }
 
