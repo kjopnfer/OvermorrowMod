@@ -4,6 +4,7 @@ using OvermorrowMod.Core;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
@@ -25,6 +26,17 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             Projectile.timeLeft = 30;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+        }
+
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.AddBuff(BuffID.OnFire, 180);
+        }
+
+        public override void OnHitPlayer(Player target, int damage, bool crit)
+        {
+            target.AddBuff(BuffID.OnFire, 240);
         }
 
         public override void OnSpawn(IEntitySource source)

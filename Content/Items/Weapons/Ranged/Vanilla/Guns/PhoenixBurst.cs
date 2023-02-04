@@ -5,6 +5,7 @@ using OvermorrowMod.Core;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
@@ -59,6 +60,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         {
             if (!target.HasBuff<PhoenixMarkBuff>())
             {
+                target.AddBuff(BuffID.OnFire, 360);
                 target.AddBuff(ModContent.BuffType<PhoenixMarkBuff>(), 360);
                 Projectile.NewProjectile(null, target.Center, Vector2.Zero, ModContent.ProjectileType<PhoenixMark>(), 0, 0f, Projectile.owner, target.whoAmI);
             }

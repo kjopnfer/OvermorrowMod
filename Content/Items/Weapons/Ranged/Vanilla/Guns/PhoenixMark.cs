@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 900;
+            Projectile.timeLeft = 360;
         }
 
         public ref float TargetNPC => ref Projectile.ai[0];
@@ -32,7 +32,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         {
             NPC targetNPC = Main.npc[(int)TargetNPC];
             if (!targetNPC.active) Projectile.Kill();
-            if (targetNPC.HasBuff<PhoenixMarkBuff>()) Projectile.timeLeft = 2;
+            if (targetNPC.HasBuff<PhoenixMarkBuff>())
+            {
+                Projectile.timeLeft = 2;
+            }
 
             Projectile.Center = targetNPC.Center;
             AICounter++;
