@@ -9,6 +9,9 @@ namespace OvermorrowMod.Common.Particles
 {
     public class LightSpark : CustomParticle
     {
+        // customData[0] = scale
+        // customData[1] = rotation flag
+        // customData[2] = max time
         public override string Texture => AssetDirectory.Textures + "Spotlight";
         public float maxTime = Main.rand.Next(4, 8) * 10;
         public override void OnSpawn()
@@ -17,6 +20,8 @@ namespace OvermorrowMod.Common.Particles
             //maxTime = particle.customData[1];
             particle.rotation += MathHelper.Pi / 2;
             particle.scale = 0f;
+
+            if (particle.customData[2] != 0) maxTime = particle.customData[2];
         }
 
         public override void Update()
@@ -44,7 +49,8 @@ namespace OvermorrowMod.Common.Particles
             float widthLerp = MathHelper.Lerp(0.25f, 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
             Color color = Color.Lerp(particle.color, Color.Red, particle.activeTime / maxTime);
 
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha, particle.rotation + MathHelper.PiOver2, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
+            float rotationOffset = particle.customData[1] == 1 ? MathHelper.PiOver2 : 0;
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha, particle.rotation + rotationOffset, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
             //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 0f);
 
             spriteBatch.Reload(BlendState.AlphaBlend);

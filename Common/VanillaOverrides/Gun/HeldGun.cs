@@ -139,6 +139,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (PreDrawGun(player, Main.spriteBatch, ShotsFired, shootCounter, lightColor))
                 DrawGun(lightColor);
 
+            DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime);
+
+
             if (reloadTime == 0)
                 DrawAmmo();
             else
@@ -578,12 +581,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
 
-            DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime);
         }
 
 
         /// <summary>
-        /// Called whenever the gun is fired within the PreDraw hook, used to add effects such as muzzle flashes
+        /// Called whenever the gun is fired within the PreDraw hook, used to add effects such as muzzle flashes. Always gets called regardless of PreDraw.
         /// </summary>
         /// <param name="spriteBatch"></param>
         /// <param name="lightColor"></param>

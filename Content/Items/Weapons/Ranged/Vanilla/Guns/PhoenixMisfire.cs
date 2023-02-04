@@ -22,12 +22,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             Projectile.friendly = true;
             Projectile.hostile = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 50;
+            Projectile.timeLeft = 30;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void OnSpawn(IEntitySource source)
         {
-            Projectile.timeLeft = 30;
 
             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PhoenixMisfire"));
 
@@ -46,11 +47,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
                 Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(13, 18);
                 Color color = Color.Orange;
 
-                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale);
+                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale, 0f, 0f, 1f);
 
                 randomScale = Main.rand.NextFloat(3f, 6f);
                 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(9, 12);
-                Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity), Color.Orange, 1f, randomScale, 0f, 0f, -1f, randomScale);
+                Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity), Color.Orange, 1f, randomScale, 0f, 0f, -1f);
 
             }
         }

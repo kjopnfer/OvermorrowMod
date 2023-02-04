@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Core;
 using Terraria;
@@ -21,13 +22,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 85;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void OnSpawn(IEntitySource source)
         {
-            Projectile.timeLeft = 50;
-
             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PhoenixBurst"));
 
             Projectile.Center = Main.LocalPlayer.Center;
@@ -35,7 +36,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
             float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
 
-            Particle.CreateParticle(Particle.ParticleType<Common.Particles.PhoenixBurst>(), Projectile.Center, Vector2.Zero, Color.Orange, 1);
+            //Particle.CreateParticle(Particle.ParticleType<Common.Particles.PhoenixBurst>(), Projectile.Center, Vector2.Zero, Color.Orange, 1);
 
             for (int i = 0; i < 32; i++)
             {
@@ -47,59 +48,77 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
                 Vector2 RandomVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.Next(9, 15);
                 Color color = Color.Orange;
 
-                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 2, color, 1, randomScale);
+                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 2, color, 1, randomScale, 0f, 0f, 1f);
 
                 randomScale = Main.rand.NextFloat(20f, 30f);
                 Particle.CreateParticle(Particle.ParticleType<RotatingEmber>(), Projectile.Center, Vector2.Normalize(RandomVelocity) * Main.rand.Next(5, 7), Color.Orange, 1f, randomScale, 0f, 0f, -1f, randomScale);
             }
         }
 
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            if (!target.HasBuff<PhoenixMarkBuff>())
+            {
+                target.AddBuff(ModContent.BuffType<PhoenixMarkBuff>(), 360);
+                Projectile.NewProjectile(null, target.Center, Vector2.Zero, ModContent.ProjectileType<PhoenixMark>(), 0, 0f, Projectile.owner, target.whoAmI);
+            }
+        }
+
         public ref float AICounter => ref Projectile.ai[0];
         public override void AI()
         {
-            if (AICounter < 20) AICounter++;
-            Projectile.scale = MathHelper.Lerp(0.5f, 0, Projectile.timeLeft / 120f);
+            AICounter++;
+            Projectile.scale = MathHelper.Lerp(0.5f, 0, Projectile.timeLeft / 85f);
             Projectile.rotation += 0.08f;
         }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            hitbox.Width = (int)MathHelper.Lerp(Projectile.width, 512, AICounter / 20f);
-            hitbox.Height = (int)MathHelper.Lerp(Projectile.width, 512, AICounter / 20f);
+            hitbox.Width = (int)MathHelper.Lerp(Projectile.width, 512, Utils.Clamp(AICounter, 0, 20) / 20f);
+            hitbox.Height = (int)MathHelper.Lerp(Projectile.width, 512, Utils.Clamp(AICounter, 0, 20) / 20f);
 
             hitbox.X = (int)(Projectile.Center.X - hitbox.Width / 2f);
             hitbox.Y = (int)(Projectile.Center.Y - hitbox.Height / 2f);
-
-            base.ModifyDamageHitbox(ref hitbox);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            return false;
-
-            /*Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "light_03").Value;
-            float alpha = MathHelper.Lerp(1f, 0f, AICounter / 80f);
-            float scale = MathHelper.Lerp(0, 1.5f, AICounter / 80f);
-            Color color = Color.Lerp(Color.DarkOrange, Color.DarkRed, AICounter / 80f);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * alpha, Projectile.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 1);
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "circle_05").Value;
+            float alpha = MathHelper.Lerp(0.5f, 0f, Utils.Clamp(AICounter, 0f, 80f) / 80f);
+            float scale = MathHelper.Lerp(0f, 6f, Utils.Clamp(AICounter, 0f, 80f) / 80f);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.Red * alpha, Projectile.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 1);
 
             Main.spriteBatch.Reload(BlendState.Additive);
 
-            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "twirl_03").Value;
-            alpha = MathHelper.SmoothStep(1f, 0f, AICounter / 80f);
-            scale = MathHelper.Lerp(0, 1f, AICounter / 60f);
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "light_03").Value;
+            scale = MathHelper.Lerp(0f, 2f, Utils.Clamp(AICounter, 0f, 80f) / 80f);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.OrangeRed * alpha, Projectile.rotation, texture.Size() / 2f, scale + 0.5f, SpriteEffects.None, 1);
 
-            for (int i = 1; i <= 4; i++)
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "twirl_01").Value;
+            alpha = MathHelper.Lerp(1f, 0f, Utils.Clamp(AICounter, 0f, 80f) / 80f);
+            scale = MathHelper.Lerp(0f, 0.5f, Utils.Clamp(AICounter, 0f, 60f) / 60f);
+
+            float iterations = 5;
+            for (int i = 0; i < iterations; i++)
             {
-                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White * alpha, Projectile.rotation + (MathHelper.PiOver2 * i), texture.Size() / 2f, scale, SpriteEffects.None, 1);
+                Color color = Color.Lerp(Color.Red, Color.Orange, i / iterations);
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * alpha, (Projectile.rotation * 2 + MathHelper.ToRadians(10 * i)) * -1, texture.Size() / 2f, scale, SpriteEffects.None, 1);
+
+                scale = MathHelper.Lerp(0f, 1f, Utils.Clamp(AICounter, 0f, 60f) / 60f);
+                float rotationSpeed = MathHelper.Lerp(3, 2, Utils.Clamp(AICounter - 10, 0f, 60f) / 60f);
+
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * alpha, Projectile.rotation * rotationSpeed + MathHelper.ToRadians(25 * i) + MathHelper.ToRadians(240), texture.Size() / 2f, scale, SpriteEffects.FlipHorizontally, 1);
+
+                scale = MathHelper.Lerp(0f, 1.50f, Utils.Clamp(AICounter, 0f, 60f) / 60f);
+                rotationSpeed = MathHelper.Lerp(4, 2, Utils.Clamp(AICounter - 20, 0f, 60f) / 60f);
+
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * alpha, (Projectile.rotation * rotationSpeed + MathHelper.ToRadians(5 * i) + MathHelper.ToRadians(240)) * -1, texture.Size() / 2f, scale, SpriteEffects.None, 1);
             }
 
-            Main.spriteBatch.Reload(BlendState.AlphaBlend);
+            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_05").Value;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.Orange * alpha, Projectile.rotation, texture.Size() / 2f, 1f, SpriteEffects.None, 1);
 
-            alpha = MathHelper.Lerp(1f, 0f, AICounter / 60f);
-            scale = MathHelper.Lerp(0, 2f, AICounter / 100f);
-            texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "flame_01").Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.DarkOrange * alpha, Projectile.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 1);*/
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
 
             return false;
         }
