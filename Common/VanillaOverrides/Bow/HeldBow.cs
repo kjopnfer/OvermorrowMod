@@ -279,9 +279,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             if (LoadedArrowType == ProjectileID.CursedArrow) Lighting.AddLight(arrowPosition, 0.647f, 1f, 0f);
 
             Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
-
+            
             texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;
-            Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+            Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
             /*}
             else
             {
