@@ -15,8 +15,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 {
     public class Revolver_Held : HeldGun
     {
-        //public override int ConvertBullet => ItemID.MusketBall;
-        //public override int BulletType => ProjectileID.VenomBullet;
         public override GunType GunType => GunType.Revolver;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
         public override int ParentItem => ItemID.Revolver;

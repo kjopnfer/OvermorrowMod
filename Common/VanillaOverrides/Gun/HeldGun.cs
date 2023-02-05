@@ -254,7 +254,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             float recoilRotation = MathHelper.Lerp(0, MathHelper.ToRadians(-RecoilAmount * player.direction), Utils.Clamp(recoilTimer, 0, RECOIL_TIME) / (float)RECOIL_TIME);
 
-            float gunRotation = Projectile.Center.DirectionTo(Main.MouseWorld).ToRotation() + recoilRotation;
+
+            float gunRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation() + recoilRotation;
             Projectile.rotation = gunRotation;
             Projectile.spriteDirection = gunRotation > MathHelper.PiOver2 || gunRotation < -MathHelper.PiOver2 ? -1 : 1;
             player.direction = Projectile.spriteDirection;
@@ -336,7 +337,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 {
                     recoilTimer = RECOIL_TIME;
 
-                    Vector2 velocity = Vector2.Normalize(Projectile.Center.DirectionTo(Main.MouseWorld)) * 16;
+                    Vector2 velocity = Vector2.Normalize(player.Center.DirectionTo(Main.MouseWorld)) * 16;
 
                     Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
                     Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);

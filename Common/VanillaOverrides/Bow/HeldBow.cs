@@ -116,7 +116,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         /// </summary>
         private void HandlePlayerDrawing()
         {
-            float bowRotation = Projectile.Center.DirectionTo(Main.MouseWorld).ToRotation();
+            float bowRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation();
             Projectile.rotation = bowRotation;
             Projectile.spriteDirection = bowRotation > MathHelper.PiOver2 || bowRotation < -MathHelper.PiOver2 ? -1 : 1;
             player.direction = Projectile.spriteDirection;
@@ -245,9 +245,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         {
             float progress = Utils.Clamp(drawCounter, 0, MaxChargeTime) / MaxChargeTime;
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, progress).RotatedBy(Projectile.rotation);
-            Vector2 arrowPosition = player.MountedCenter + arrowOffset;
+            Vector2 arrowPosition = player.Center + arrowOffset;
 
-            Vector2 velocity = Vector2.Normalize(arrowPosition.DirectionTo(Main.MouseWorld));
+            Vector2 velocity = Vector2.Normalize(player.Center.DirectionTo(Main.MouseWorld));
             float speed = MathHelper.Lerp(1, MaxSpeed, progress);
 
             SoundEngine.PlaySound(ShootSound);

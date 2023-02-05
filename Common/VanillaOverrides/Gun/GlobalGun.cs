@@ -29,7 +29,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public Dictionary<int, GunStats> OverridedGuns = new Dictionary<int, GunStats>()
         {
             { ItemID.Revolver, new GunStats(ModContent.ProjectileType<Revolver_Held>(), 30) },
-            { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 30) },
+            { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 20) },
             { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32) },
         };
 
