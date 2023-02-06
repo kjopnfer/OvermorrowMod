@@ -9,21 +9,21 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 {
-    public class Boomstick_Held : HeldGun
+    public class QuadBarrel_Held : HeldGun
     {
-        public override int ParentItem => Terraria.ID.ItemID.Boomstick;
+        public override int ParentItem => Terraria.ID.ItemID.QuadBarrelShotgun;
+
         public override GunType GunType => GunType.Shotgun;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(30, 40), new ReloadZone(70, 80) };
-
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 30), new ReloadZone(50, 60), new ReloadZone(80, 90) };
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(15, 15), new Vector2(15, -5));
-        public override (Vector2, Vector2) PositionOffset => (new Vector2(14, -7), new Vector2(14, -2));
+        public override (Vector2, Vector2) PositionOffset => (new Vector2(14, -7), new Vector2(14, -4));
         public override float ProjectileScale => 1f;
         public override bool TwoHanded => true;
 
         public override void SafeSetDefaults()
         {
-            MaxReloadTime = 90;
+            MaxReloadTime = 100;
             MaxShots = 2;
             RecoilAmount = 25;
             ShootSound = Terraria.ID.SoundID.Item36;
@@ -32,11 +32,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
-            int numberProjectiles = Main.rand.Next(3, 5) + BonusBullets;
+            int numberProjectiles = Main.rand.Next(5, 7) + BonusBullets;
 
             for (int i = 0; i < numberProjectiles; i++)
             {
-                Vector2 perturbedSpeed = velocity.RotatedByRandom(MathHelper.ToRadians(8)); 
+                Vector2 perturbedSpeed = velocity.RotatedByRandom(MathHelper.ToRadians(15));
                 Projectile.NewProjectile(null, shootPosition, perturbedSpeed, bulletType, damage, knockBack, player.whoAmI);
             }
         }
@@ -56,7 +56,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
                 Texture2D muzzleFlash = ModContent.Request<Texture2D>(Core.AssetDirectory.Textures + "muzzle_05").Value;
 
-                Vector2 muzzleDirectionOffset = player.direction == 1 ? new Vector2(36, -5) : new Vector2(36, 5);
+                Vector2 muzzleDirectionOffset = player.direction == 1 ? new Vector2(36, 0) : new Vector2(36, 0);
                 Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
                 var rotationSpriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
@@ -81,7 +81,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
                 Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
             }
 
-            player.velocity += -Vector2.Normalize(velocity) * (5 + 1f * bonusBullets);
+            player.velocity += -Vector2.Normalize(velocity) * (3 + 0.5f * bonusBullets);
         }
 
         public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)

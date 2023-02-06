@@ -270,8 +270,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 arrowPosition = player.MountedCenter + arrowOffset;
 
             Texture2D texture;
-            //if (ArrowType == ProjectileID.None)
-            //{
+
             if (LoadedArrowItemType == -1) return;
 
             if (LoadedArrowType == ProjectileID.FireArrow) Lighting.AddLight(arrowPosition, 1f, 0.647f, 0);
@@ -282,16 +281,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             
             texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;
             Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
-            /*}
-            else
-            {
-                if (ArrowType == ProjectileID.FireArrow) Lighting.AddLight(arrowPosition, 1f, 0.647f, 0);
-                if (ArrowType == ProjectileID.FrostburnArrow) Lighting.AddLight(arrowPosition, 0f, 0.75f, 0.75f);
-                Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
-
-                texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + ArrowType).Value;
-                Main.spriteBatch.Draw(texture, arrowPosition - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
-            }*/
         }
 
         /// <summary>

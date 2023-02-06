@@ -31,6 +31,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             { ItemID.Revolver, new GunStats(ModContent.ProjectileType<Revolver_Held>(), 30) },
             { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 20) },
             { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32) },
+            { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrel_Held>(), 20) },
         };
 
         public override void SetDefaults(Item item)
