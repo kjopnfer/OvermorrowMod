@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override GunType GunType => GunType.Shotgun;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 30), new ReloadZone(50, 60), new ReloadZone(80, 90) };
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 30), new ReloadZone(60, 70) };
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(15, 15), new Vector2(15, -5));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(14, -7), new Vector2(14, -4));
         public override float ProjectileScale => 1f;
@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void SafeSetDefaults()
         {
-            MaxReloadTime = 100;
+            MaxReloadTime = 120;
             MaxShots = 2;
             RecoilAmount = 25;
             ShootSound = Terraria.ID.SoundID.Item36;
@@ -86,7 +86,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
         {
-            BonusBullets++;
+            BonusAmmo++;
         }
     }
 }
