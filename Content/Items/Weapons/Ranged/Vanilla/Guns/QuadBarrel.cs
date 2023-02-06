@@ -37,7 +37,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             for (int i = 0; i < numberProjectiles; i++)
             {
                 Vector2 perturbedSpeed = velocity.RotatedByRandom(MathHelper.ToRadians(15));
-                Projectile.NewProjectile(null, shootPosition, perturbedSpeed, bulletType, damage, knockBack, player.whoAmI);
+                Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType), shootPosition, perturbedSpeed, bulletType, damage, knockBack, player.whoAmI);
             }
         }
 

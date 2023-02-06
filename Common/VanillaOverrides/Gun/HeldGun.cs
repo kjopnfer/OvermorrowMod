@@ -365,7 +365,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         public virtual void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
-            Projectile.NewProjectile(null, shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
+            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
         }
 
         private bool reloadFail = false;
