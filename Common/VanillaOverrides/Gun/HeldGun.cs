@@ -400,6 +400,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             // There was a bug where the projectile died immediately after exiting the reload state making it stuck in the reload state forever
             Projectile.timeLeft = 120;
 
+            // Prevent the player from switching items if they are reloading
+            player.itemTime = 2;
+            player.itemAnimation = 2;
+
             if (player.controlUseItem && clickDelay == 0 && !reloadFail)
             {
                 float clickPercentage = (1 - (float)reloadTime / MaxReloadTime);
