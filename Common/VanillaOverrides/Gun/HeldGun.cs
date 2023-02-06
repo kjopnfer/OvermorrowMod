@@ -81,8 +81,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void OnSpawn(IEntitySource source)
         {
-            // TODO: make the projectile load from a player dictionary containing the gun and whichever information is available
-            // this is so that the gun doesnt reset whenever the player switches items
             LoadGunInfo();
 
             ReloadBulletDisplay();
@@ -90,6 +88,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             _clickZones = ClickZones;
 
             // deactivate any bullets that were previously fired and stored
+
             for (int i = 0; i < ShotsFired; i++)
             {
                 BulletDisplay[BulletDisplay.Count - 1 - i].isActive = false;
@@ -140,7 +139,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 DrawGun(lightColor);
 
             DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime);
-
 
             if (reloadTime == 0)
                 DrawAmmo();
@@ -315,9 +313,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                 PopBulletDisplay();
 
-                ShotsFired++;
-                if (ShotsFired > MaxShots + BonusAmmo)
+                if (ShotsFired == MaxShots + BonusAmmo)
                 {
+
                     shootCounter = 0;
                     inReloadState = true;
                     reloadTime = MaxReloadTime;
@@ -327,6 +325,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 }
                 else // Don't want the gun to consume a bullet if it is going into the reload state
                 {
+                    ShotsFired++;
                     ConsumeAmmo();
                 }
             }
@@ -396,6 +395,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 reloadBuffer--;
                 return;
             }
+
+            // Keeps the projectile alive during the reload state
+            // There was a bug where the projectile died immediately after exiting the reload state making it stuck in the reload state forever
+            Projectile.timeLeft = 120;
 
             if (player.controlUseItem && clickDelay == 0 && !reloadFail)
             {
