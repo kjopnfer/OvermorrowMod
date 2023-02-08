@@ -1,5 +1,7 @@
+using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Buffs.Debuffs;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,6 +16,26 @@ namespace OvermorrowMod.Common
         public bool slowedTime = false;
 
         public bool RetractSlow = false;
+
+        public override void OnSpawn(Projectile projectile, IEntitySource source)
+        {
+            /*if (source is EntitySource_ItemUse_WithAmmo { Item:  })
+            {
+                Main.NewText("this is from a held gun");
+            }*/
+
+
+            if (source != null && source.Context != null)
+            {
+
+                if (source is EntitySource_ItemUse_WithAmmo && source.Context.ToString() == "HeldGun")
+                {
+                    //Main.NewText("this is from a held gun");
+
+                    //Main.NewText("??? " + projectile.type);
+                }
+            }
+        }
 
         public override bool PreAI(Projectile projectile)
         {

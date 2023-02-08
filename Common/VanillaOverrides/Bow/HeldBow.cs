@@ -252,7 +252,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             SoundEngine.PlaySound(ShootSound);
             float damage = MathHelper.Lerp(0.25f, 1, Utils.Clamp(drawCounter, 0, MaxChargeTime) / MaxChargeTime) * Projectile.damage;
-            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType), arrowPosition, velocity * speed, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
+            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType, "HeldBow"), arrowPosition, velocity * speed, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
 
             ConsumeAmmo();
 
