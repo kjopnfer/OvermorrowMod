@@ -17,6 +17,13 @@ namespace OvermorrowMod.Common
 
         public bool RetractSlow = false;
 
+        private bool WildEyeCrit = false;
+
+        public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        {
+            if (WildEyeCrit) crit = true;
+        }
+
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
             /*if (source is EntitySource_ItemUse_WithAmmo { Item:  })
@@ -28,12 +35,17 @@ namespace OvermorrowMod.Common
             if (source != null && source.Context != null)
             {
 
-                if (source is EntitySource_ItemUse_WithAmmo && source.Context.ToString() == "HeldGun")
+                if (source is EntitySource_ItemUse_WithAmmo)
                 {
-                    //Main.NewText("this is from a held gun");
+                    if (source.Context.ToString() == "HeldGun")
+                    {
+                        //Main.NewText("this is from a held gun");
+                    }
 
-                    //Main.NewText("??? " + projectile.type);
+                    if (source.Context.ToString() == "WildEyeCrit") WildEyeCrit = true;
                 }
+
+
             }
         }
 

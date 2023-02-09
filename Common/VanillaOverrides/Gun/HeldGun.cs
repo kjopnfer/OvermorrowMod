@@ -125,7 +125,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 if (CanRightClick && rightClickDelay == 0 && shootCounter == 0 && Main.mouseRight)
                 {
                     rightClickDelay = 10;
-                    RightClickEvent(player);
+                    RightClickEvent(player, ref BonusDamage, Projectile.damage);
                 }
 
                 if (reloadDelay == 0)
@@ -147,7 +147,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// Allows for an action to occur whenever the player right clicks. Must have set CanRightClick to true for this method to work.
         /// </summary>
         /// <param name="player"></param>
-        public virtual void RightClickEvent(Player player) { }
+        public virtual void RightClickEvent(Player player, ref int BonusDamage, int baseDamage) { }
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -291,7 +291,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        private void UpdateBulletDisplay()
+        public void UpdateBulletDisplay()
         {
             List<BulletObject> removedList = BulletDisplay;
 
@@ -303,11 +303,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             BulletDisplay = removedList;
         }
 
-        private void PopBulletDisplay()
+        public void PopBulletDisplay()
         {
             for (int i = BulletDisplay.Count - 1; i >= 0; i--)
             {
-                if (BulletDisplay[i].isActive)
+                if (BulletDisplay[i].isActive && !BulletDisplay[i].startDeath)
                 {
                     BulletDisplay[i].Deactivate();
                     return;
