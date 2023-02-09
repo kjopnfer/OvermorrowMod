@@ -55,6 +55,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             }
         }
 
+        public override void HoldItem(Item item, Player player)
+        {
+            if (ModContent.GetModProjectile(item.shoot) is HeldBow && player.ownedProjectileCounts[player.HeldItem.shoot] < 1)
+                Projectile.NewProjectile(null, player.Center, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI);
+        }
+
         public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player)
         {
             if (OverridedBows.ContainsKey(weapon.type))

@@ -7,6 +7,7 @@ using System.Linq;
 using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
 using Terraria.DataStructures;
 using Terraria.Audio;
+using OvermorrowMod.Content.Items.Weapons.Ranged;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -44,6 +45,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 item.noUseGraphic = true;
                 item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // just a random sound set to 0
             }
+        }
+
+        public override void HoldItem(Item item, Player player)
+        {
+            if (ModContent.GetModProjectile(item.shoot) is HeldGun && player.ownedProjectileCounts[player.HeldItem.shoot] < 1)
+                Projectile.NewProjectile(null, player.Center, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI);
         }
 
         public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player)

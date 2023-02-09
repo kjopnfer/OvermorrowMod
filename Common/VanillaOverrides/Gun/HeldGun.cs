@@ -36,6 +36,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         public virtual (Vector2, Vector2) PositionOffset => (new Vector2(15, 0), new Vector2(15, 0));
 
+        public virtual bool CanRightClick => false;
         public virtual bool TwoHanded => false;
 
         private int _maxShots = 6;
@@ -100,23 +101,32 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public ref float PrimaryCounter => ref Projectile.ai[0];
         public ref float SecondaryCounter => ref Projectile.ai[1];
 
+        public int rightClickDelay = 0;
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
             if (player.HeldItem.type != ParentItem)
-            {
-                //Main.NewText("death");
                 Projectile.Kill();
-            }
+            else          
+                Projectile.timeLeft = 5;
+            
 
             player.heldProj = Projectile.whoAmI;
 
             HandleGunDrawing();
             UpdateBulletDisplay();
 
+            if (rightClickDelay > 0) rightClickDelay--;
+
             if (!inReloadState)
             {
                 if (reloadDelay > 0) reloadDelay--;
+
+                if (CanRightClick && rightClickDelay == 0 && shootCounter == 0 && Main.mouseRight)
+                {
+                    rightClickDelay = 10;
+                    RightClickEvent(player);
+                }
 
                 if (reloadDelay == 0)
                 {
@@ -132,6 +142,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 HandleReloadAction();
             }
         }
+
+        /// <summary>
+        /// Allows for an action to occur whenever the player right clicks. Must have set CanRightClick to true for this method to work.
+        /// </summary>
+        /// <param name="player"></param>
+        public virtual void RightClickEvent(Player player) { }
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -252,7 +268,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             float recoilRotation = MathHelper.Lerp(0, MathHelper.ToRadians(-RecoilAmount * player.direction), Utils.Clamp(recoilTimer, 0, RECOIL_TIME) / (float)RECOIL_TIME);
 
-
             float gunRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation() + recoilRotation;
             Projectile.rotation = gunRotation;
             Projectile.spriteDirection = gunRotation > MathHelper.PiOver2 || gunRotation < -MathHelper.PiOver2 ? -1 : 1;
@@ -308,14 +323,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (player.controlUseItem && shootCounter == 0)
             {
-                Projectile.timeLeft = 120;
                 shootCounter = shootTime;
 
                 PopBulletDisplay();
 
                 if (ShotsFired == MaxShots + BonusAmmo)
                 {
-
                     shootCounter = 0;
                     inReloadState = true;
                     reloadTime = MaxReloadTime;
@@ -395,10 +408,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 reloadBuffer--;
                 return;
             }
-
-            // Keeps the projectile alive during the reload state
-            // There was a bug where the projectile died immediately after exiting the reload state making it stuck in the reload state forever
-            Projectile.timeLeft = 120;
 
             // Prevent the player from switching items if they are reloading
             player.itemTime = 2;
