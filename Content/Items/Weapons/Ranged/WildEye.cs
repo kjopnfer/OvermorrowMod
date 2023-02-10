@@ -3,8 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Core;
+using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,7 +20,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override GunType GunType => GunType.Revolver;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(30, 45), new ReloadZone(60, 75) };
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(30, 45) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(20, -4));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(20, -5), new Vector2(20, -4));
@@ -36,19 +39,45 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         private bool WildEyeCrit = false;
         public override void RightClickEvent(Player player, ref int BonusDamage, int baseDamage)
         {
-            if (ShotsFired == 0)
+            if (ShotsFired == 0 && BulletDisplay.Count == MaxShots)
             {
-                Main.NewText("right click");
-
                 for (int i = 0; i < 5; i++)
                 {
                     PopBulletDisplay();
-                    Main.NewText("discard");
                 }
 
                 ShotsFired += 5;
                 WildEyeCrit = true;
-                BonusDamage = baseDamage * 5;
+
+                for (int i = 0; i < 5; i++)
+                {
+                    int gore = Gore.NewGore(null, Projectile.Center, new Vector2(player.direction * -0.01f, 0f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
+                    Main.gore[gore].sticky = true;
+                }
+
+                SoundEngine.PlaySound(SoundID.Item92 with { Pitch = 0.75f });
+
+                float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
+                float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+
+                //Particle.CreateParticle(Particle.ParticleType<Common.Particles.PhoenixBurst>(), Projectile.Center, Vector2.Zero, Color.Orange, 1);
+
+                for (int i = 0; i < 18; i++)
+                {
+                    //randomScale = Main.rand.NextFloat(0.15f, 0.35f);
+                    randomScale = Main.rand.NextFloat(15f, 20f);
+
+                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
+                    Vector2 angleTo = Projectile.DirectionTo(Main.LocalPlayer.Center);
+                    Vector2 RandomVelocity = Vector2.UnitX.RotatedBy(MathHelper.ToRadians(i * 20));
+                    Color color = Color.Red;
+
+                    randomScale = 2;
+                    Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 4, color, 1, randomScale, 0f, 0f, 1f);
+
+                    //randomScale = Main.rand.NextFloat(2, 5f);
+                    //Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, Vector2.Normalize(RandomVelocity) * 0.5f, Color.Red, 1f, randomScale, 0f, 0f, -1f, randomScale);
+                }
             }
         }
 
@@ -57,7 +86,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             string context = WildEyeCrit ? "WildEyeCrit" : "HeldGun";
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, context), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
 
-            if (WildEyeCrit) WildEyeCrit = false;
+        }
+
+        public override void OnReloadEventFail(Player player, ref int BonusAmmo)
+        {
+            BonusAmmo = -1;
         }
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
@@ -98,22 +131,52 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void OnReloadEnd(Player player)
         {
-            for (int i = 0; i < 6; i++)
+            int droppedBullets = WildEyeCrit ? 1 : 6;
+            for (int i = 0; i < droppedBullets; i++)
             {
                 int gore = Gore.NewGore(null, Projectile.Center, new Vector2(player.direction * -0.01f, 0f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
                 Main.gore[gore].sticky = true;
             }
+
+            if (WildEyeCrit) WildEyeCrit = false;
         }
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage)
         {
-            BonusDamage = baseDamage;
+            BonusDamage += baseDamage * 3;
         }
 
         public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
         {
-            if (clicksLeft == 0)
-                reloadTime = 0;
+            //if (clicksLeft == 0)
+            //    reloadTime = 0;
+        }
+
+        public override bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+
+            Vector2 directionOffset = Vector2.Zero;
+            if (player.direction == -1)
+            {
+                directionOffset = new Vector2(0, -10);
+            }
+
+            if (reloadDelay > 0 && reloadSuccess)
+            {
+                float spinRate = MathHelper.Lerp(0.09f, 0.99f, reloadDelay / 30f);
+                reloadRotation -= spinRate * player.direction;
+            }
+            else
+                reloadRotation = 0;
+
+            Color color = lightColor;
+            if (WildEyeCrit && ShotsFired < MaxShots) color = Color.Lerp(Color.Red * 0.5f, lightColor, (float)(Math.Sin(PrimaryCounter++ / 20f) / 2 + 0.5f));
+
+            spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, color, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
+
+            return false;
         }
     }
 

@@ -134,7 +134,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                     ModUtils.AutofillAmmoSlots(player, AmmoID.Bullet);
 
-                    if (FindAmmo()) HandleGunUse();
+                    if (FindAmmo() && rightClickDelay == 0) HandleGunUse();
                 }
             }
             else
@@ -449,7 +449,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusAmmo, ref BonusDamage, Projectile.damage);
                 }
                 else
-                    OnReloadEventFail(player);
+                    OnReloadEventFail(player, ref BonusAmmo);
 
                 ReloadBulletDisplay();
 
@@ -513,7 +513,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public virtual void OnReloadEventFail(Player player) { }
+        /// <summary>
+        /// Used to apply effects whenever the player fails the skill check.
+        /// <para>Decreasing the player's next clip can be doine by passing in a negative value. </para> 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="BonusAmmo"></param>
+        public virtual void OnReloadEventFail(Player player, ref int BonusAmmo) { }
 
         private bool CheckInZone(float clickPercentage, out int zoneIndex)
         {
