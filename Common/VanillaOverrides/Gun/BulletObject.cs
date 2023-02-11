@@ -15,8 +15,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public bool isActive = true;
         public bool startDeath = false;
 
-        public BulletObject(int DrawCounter = 0)
+        private string BulletTexture;
+        public BulletObject(string BulletTexture, int DrawCounter = 0)
         {
+            this.BulletTexture = BulletTexture;
             this.DrawCounter = DrawCounter;
         }
 
@@ -55,7 +57,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
+            Texture2D activeBullets = ModContent.Request<Texture2D>(AssetDirectory.UI + BulletTexture).Value;
             float scale = 1;
 
             Vector2 positionOffset = Vector2.UnitY * MathHelper.Lerp(-1, 1, (float)Math.Sin(DrawCounter / 30f) * 0.5f + 0.5f);

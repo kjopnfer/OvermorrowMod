@@ -16,7 +16,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         Revolver,
         Pistol,
         Shotgun,
-        Rifle
+        Rifle,
+        Minigun
     }
 
     public abstract class HeldGun : ModProjectile
@@ -107,9 +108,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (Main.myPlayer != player.whoAmI) return;
             if (player.HeldItem.type != ParentItem)
                 Projectile.Kill();
-            else          
+            else
                 Projectile.timeLeft = 5;
-            
+
 
             player.heldProj = Projectile.whoAmI;
 
@@ -148,6 +149,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         /// <param name="player"></param>
         public virtual void RightClickEvent(Player player, ref int BonusDamage, int baseDamage) { }
+
+
+        /// <summary>
+        /// This method is only called for minigun types
+        /// </summary>
+        /// <param name="player"></param>
+        public virtual void OnChargeUp(Player player) { }
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -287,7 +295,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             for (int _ = 0; _ < MaxShots + BonusAmmo; _++)
             {
-                BulletDisplay.Add(new BulletObject(Main.rand.Next(0, 9) * 7));
+                BulletDisplay.Add(new BulletObject(BulletTexture(), Main.rand.Next(0, 9) * 7));
             }
         }
 
@@ -319,8 +327,19 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private int shootCounter = 0;
         private int shootTime => player.HeldItem.useTime;
         private int shootAnimation => player.HeldItem.useAnimation;
+
         private void HandleGunUse()
         {
+            if (GunType == GunType.Minigun)
+            {
+                if (player.controlUseItem)
+                {
+
+                }
+
+                return;
+            }
+
             if (player.controlUseItem && shootCounter == 0)
             {
                 shootCounter = shootTime;
@@ -543,12 +562,23 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
 
 
+        private string BulletTexture()
+        {
+            switch (GunType)
+            {
+                case GunType.Shotgun:
+                    return "GunBullet_Shotgun";
+                default:
+                    return "GunBullet";
+            }
+        }
+
         public List<BulletObject> BulletDisplay = new List<BulletObject>();
         private void DrawAmmo()
         {
-            if (Main.gamePaused) return;
+            if (Main.gamePaused || Main.LocalPlayer != Main.player[Projectile.owner]) return;
 
-            float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value.Width;
+            float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.UI + BulletTexture()).Value.Width;
 
             float gapOffset = 6 * Utils.Clamp(BulletDisplay.Count - 1, 0, MaxShots + BonusAmmo);
             float total = textureWidth * BulletDisplay.Count + gapOffset;
@@ -646,7 +676,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Vector2 cursorPosition = player.Center + cursorOffset;
             Main.spriteBatch.Draw(cursor, cursorPosition - Main.screenPosition, null, Color.White, 0f, cursor.Size() / 2f, scale, SpriteEffects.None, 1);
 
-            Texture2D bullet = ModContent.Request<Texture2D>(AssetDirectory.UI + "GunBullet").Value;
+            Texture2D bullet = ModContent.Request<Texture2D>(AssetDirectory.UI + BulletTexture()).Value;
             Vector2 bulletPosition = player.Center + new Vector2(-68 * scale, 40f);
             Main.spriteBatch.Draw(bullet, bulletPosition - Main.screenPosition, null, Color.White, 0f, bullet.Size() / 2f, scale, SpriteEffects.None, 1);
         }
