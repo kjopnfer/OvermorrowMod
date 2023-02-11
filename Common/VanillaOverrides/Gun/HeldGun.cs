@@ -683,7 +683,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             float gapOffset = 6 * Utils.Clamp(BulletDisplay.Count - 1, 0, MaxShots + BonusAmmo);
             float total = textureWidth * BulletDisplay.Count + gapOffset;
 
-            float startPosition = (-total / 2) + 8;
+            float startOffset = BulletTexture() == "GunBullet_Shotgun" ? 12 : 8;
+            float startPosition = (-total / 2) + startOffset;
 
             for (int i = 0; i < BulletDisplay.Count; i++)
             {
