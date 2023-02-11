@@ -75,9 +75,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             int gore = Gore.NewGore(null, shootPosition + shootOffset, new Vector2(player.direction * -0.03f, 0.01f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
             Main.gore[gore].sticky = true;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 12; i++)
             {
-                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, 0.12f)).RotatedByRandom(MathHelper.ToRadians(25));
+                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.08f, 0.2f)).RotatedByRandom(MathHelper.ToRadians(40));
                 Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
             }
 

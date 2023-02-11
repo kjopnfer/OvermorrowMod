@@ -97,7 +97,7 @@ namespace OvermorrowMod.Common.Particles
 
             particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
             particle.scale = 0;
-            maxTime = 60;
+            maxTime = 30;
             smokeVariant = Main.rand.Next(1, 8);
 
         }
@@ -120,7 +120,7 @@ namespace OvermorrowMod.Common.Particles
 
             float progress = particle.activeTime / (float)maxTime;
             //particle.scale = MathHelper.Lerp(0f, particle.customData[0], progress);
-            particle.scale += 0.0020f;
+            particle.scale += 0.005f;
             particle.alpha = 1f - progress;
 
             particle.rotation += 0.05f;
@@ -131,13 +131,7 @@ namespace OvermorrowMod.Common.Particles
         public override void Draw(SpriteBatch spriteBatch)
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "smoke_0" + smokeVariant).Value;
-
-            //Texture2D texture = Particle.GetTexture(particle.type);
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
-
-            spriteBatch.Reload(BlendState.Additive);
-            
-            spriteBatch.Reload(BlendState.AlphaBlend);
         }
     }
     public class Smoke2 : CustomParticle

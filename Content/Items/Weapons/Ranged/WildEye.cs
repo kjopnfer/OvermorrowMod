@@ -60,20 +60,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
                 float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
                 float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
 
-                //Particle.CreateParticle(Particle.ParticleType<Common.Particles.PhoenixBurst>(), Projectile.Center, Vector2.Zero, Color.Orange, 1);
-
                 for (int i = 0; i < 18; i++)
                 {
-                    //randomScale = Main.rand.NextFloat(0.15f, 0.35f);
                     randomScale = Main.rand.NextFloat(15f, 20f);
 
-                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(45), MathHelper.ToRadians(45));
-                    Vector2 angleTo = Projectile.DirectionTo(Main.LocalPlayer.Center);
                     Vector2 RandomVelocity = Vector2.UnitX.RotatedBy(MathHelper.ToRadians(i * 20));
                     Color color = Color.Red;
 
-                    randomScale = 2;
-                    Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 4, color, 1, randomScale, 0f, 0f, 1f);
+                    randomScale = 0.5f;
+                    Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 4, color, 1, randomScale, 0f, 0f, 0f);
 
                     //randomScale = Main.rand.NextFloat(2, 5f);
                     //Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, Vector2.Normalize(RandomVelocity) * 0.5f, Color.Red, 1f, randomScale, 0f, 0f, -1f, randomScale);
@@ -122,9 +117,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition, int bonusBullets)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
             {
-                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, 0.12f)).RotatedByRandom(MathHelper.ToRadians(25));
+                Vector2 particleVelocity = (velocity * Main.rand.NextFloat(0.05f, 0.2f)).RotatedByRandom(MathHelper.ToRadians(40));
                 Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
             }
         }
