@@ -80,7 +80,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         {
             string context = WildEyeCrit ? "WildEyeCrit" : "HeldGun";
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, context), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
-
         }
 
         public override void OnReloadEventFail(Player player, ref int BonusAmmo)

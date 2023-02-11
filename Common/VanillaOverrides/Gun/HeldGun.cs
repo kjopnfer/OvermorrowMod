@@ -8,6 +8,7 @@ using Terraria.Audio;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria.DataStructures;
+using System.IO;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -97,6 +98,28 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(inReloadState);
+            writer.Write(rightClickDelay);
+            writer.Write(shootCounter);
+            writer.Write(chargeCounter);
+            writer.Write(ShotsFired);
+            writer.Write(reloadTime);
+            writer.Write(BonusDamage);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            inReloadState = reader.ReadBoolean();
+            rightClickDelay = reader.ReadInt16();
+            shootCounter = reader.ReadInt16();
+            chargeCounter = reader.ReadInt16();
+            ShotsFired = reader.ReadInt16();
+            reloadTime = reader.ReadInt16();
+            BonusDamage = reader.ReadInt16();
+        }
+
         private bool inReloadState = false;
         private Player player => Main.player[Projectile.owner];
         public ref float PrimaryCounter => ref Projectile.ai[0];
@@ -127,6 +150,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 {
                     rightClickDelay = 10;
                     RightClickEvent(player, ref BonusDamage, Projectile.damage);
+
+                    Projectile.netUpdate = true;
                 }
 
                 if (reloadDelay == 0)
@@ -328,14 +353,85 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private int shootTime => player.HeldItem.useTime;
         private int shootAnimation => player.HeldItem.useAnimation;
 
+        public int chargeCounter { private set; get; } = 0;
+        public int maxChargeTime = 120;
+        public bool hasReleased = false;
         private void HandleGunUse()
         {
             if (GunType == GunType.Minigun)
             {
-                if (player.controlUseItem)
-                {
+                player.HeldItem.useAnimation = 8;
+                player.HeldItem.useTime = 8;
 
+                if (player.controlUseItem && !hasReleased)
+                {
+                    if (chargeCounter < maxChargeTime) chargeCounter++;
+
+                    if (chargeCounter == maxChargeTime)
+                    {
+                        Main.NewText("ShootCounter: " + shootCounter);
+                        if (player.controlUseItem && shootCounter == 0)
+                        {
+                            shootCounter = shootTime;
+
+                            /*PopBulletDisplay();
+
+                            if (ShotsFired == MaxShots + BonusAmmo)
+                            {
+                                shootCounter = 0;
+                                inReloadState = true;
+                                reloadTime = MaxReloadTime;
+                                reloadBuffer = 10;
+
+                                return;
+                            }
+                            else // Don't want the gun to consume a bullet if it is going into the reload state
+                            {
+                                ShotsFired++;
+                                ConsumeAmmo();
+                            }*/
+
+                            Projectile.netUpdate = true;
+                        }
+
+                        if (shootCounter > 0)
+                        {
+                            if (shootCounter % shootAnimation == 0)
+                            {
+                                recoilTimer = RECOIL_TIME;
+
+                                Vector2 velocity = Vector2.Normalize(player.Center.DirectionTo(Main.MouseWorld)) * 16;
+
+                                Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
+                                Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
+
+                                SoundEngine.PlaySound(ShootSound);
+
+                                OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, BonusBullets);
+
+                                float damage = Projectile.damage + BonusDamage;
+                                OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, BonusBullets);
+                            }
+
+                            if (shootCounter > 0) shootCounter--;
+                        }
+                    }
                 }
+                else
+                {
+                    if (chargeCounter > 0)
+                    {
+                        hasReleased = true;
+                        chargeCounter--;
+                    }
+
+                    if (chargeCounter == 0)
+                    {
+                        hasReleased = false;
+                    }
+                }
+
+                Main.NewText(chargeCounter);
 
                 return;
             }
@@ -360,6 +456,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     ShotsFired++;
                     ConsumeAmmo();
                 }
+
+                Projectile.netUpdate = true;
             }
 
             if (shootCounter > 0)
@@ -476,6 +574,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 ResetReloadZones();
 
                 SoundEngine.PlaySound(ReloadFinishSound);
+
+                Projectile.netUpdate = true;
             }
         }
 

@@ -118,7 +118,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
     }
 
-    public class TestGun : ModGun<Boomstick_Held>
+    public class TestGun : ModGun<Minishark_Held>
     {
         public override void SetStaticDefaults()
         {
@@ -143,8 +143,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Item.autoReuse = true;
             Item.shootSpeed = 10f;
             Item.rare = ItemRarityID.Lime;
-            Item.useTime = 22;
-            Item.useAnimation = 22;
+            Item.useTime = 8;
+            Item.useAnimation = 8;
         }
     }
 }
