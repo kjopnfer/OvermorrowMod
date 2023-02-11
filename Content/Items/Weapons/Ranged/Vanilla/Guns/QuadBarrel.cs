@@ -70,7 +70,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition, int bonusBullets)
         {
-            Vector2 shootOffset = new Vector2(-36 * player.direction, 0);
+            Vector2 shootOffset = new Vector2(-40 * player.direction, 0);
 
             int gore = Gore.NewGore(null, shootPosition + shootOffset, new Vector2(player.direction * -0.03f, 0.01f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
             Main.gore[gore].sticky = true;

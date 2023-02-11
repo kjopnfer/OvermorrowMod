@@ -134,7 +134,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             else
                 Projectile.timeLeft = 5;
 
-
             player.heldProj = Projectile.whoAmI;
 
             HandleGunDrawing();
@@ -174,13 +173,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         /// <param name="player"></param>
         public virtual void RightClickEvent(Player player, ref int BonusDamage, int baseDamage) { }
-
-
-        /// <summary>
-        /// This method is only called for minigun types
-        /// </summary>
-        /// <param name="player"></param>
-        public virtual void OnChargeUp(Player player) { }
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -324,6 +316,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        /// <summary>
+        /// Removes a BulletObject from the player's list of bullets.
+        /// </summary>
         public void UpdateBulletDisplay()
         {
             List<BulletObject> removedList = BulletDisplay;
@@ -336,6 +331,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             BulletDisplay = removedList;
         }
 
+        /// <summary>
+        /// Deactivates a single bullet from the player's ammo. Does not remove from the player's bullet list.
+        /// </summary>
         public void PopBulletDisplay()
         {
             for (int i = BulletDisplay.Count - 1; i >= 0; i--)
@@ -360,16 +358,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (GunType == GunType.Minigun)
             {
-                player.HeldItem.useAnimation = 8;
-                player.HeldItem.useTime = 8;
-
                 if (player.controlUseItem && !hasReleased)
                 {
+                    OnChargeUpEffects(player, chargeCounter);
+
                     if (chargeCounter < maxChargeTime) chargeCounter++;
 
                     if (chargeCounter == maxChargeTime)
                     {
-                        Main.NewText("ShootCounter: " + shootCounter);
+                        OnChargeShootEffects(player);
+
                         if (player.controlUseItem && shootCounter == 0)
                         {
                             shootCounter = shootTime;
@@ -390,40 +388,26 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                                 ShotsFired++;
                                 ConsumeAmmo();
                             }*/
-
+                            ConsumeAmmo();
                             Projectile.netUpdate = true;
                         }
 
-                        if (shootCounter > 0)
-                        {
-                            if (shootCounter % shootAnimation == 0)
-                            {
-                                recoilTimer = RECOIL_TIME;
-
-                                Vector2 velocity = Vector2.Normalize(player.Center.DirectionTo(Main.MouseWorld)) * 16;
-
-                                Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
-                                Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
-
-                                SoundEngine.PlaySound(ShootSound);
-
-                                OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, BonusBullets);
-
-                                float damage = Projectile.damage + BonusDamage;
-                                OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, BonusBullets);
-                            }
-
-                            if (shootCounter > 0) shootCounter--;
-                        }
+                        HandleShootAction();
                     }
                 }
                 else
                 {
+                    OnChargeReleaseEffects(player, chargeCounter);
+
+                    shootCounter = 0;
+
                     if (chargeCounter > 0)
                     {
                         hasReleased = true;
-                        chargeCounter--;
+                        chargeCounter -= 2;
                     }
+
+                    if (chargeCounter < 0) chargeCounter = 0;
 
                     if (chargeCounter == 0)
                     {
@@ -431,11 +415,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     }
                 }
 
-                Main.NewText(chargeCounter);
-
                 return;
             }
 
+            HandleAmmoAction();
+            HandleShootAction();
+        }
+
+        private void HandleAmmoAction()
+        {
             if (player.controlUseItem && shootCounter == 0)
             {
                 shootCounter = shootTime;
@@ -459,7 +447,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                 Projectile.netUpdate = true;
             }
+        }
 
+        private void HandleShootAction()
+        {
             if (shootCounter > 0)
             {
                 if (shootCounter % shootAnimation == 0)
@@ -497,6 +488,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
         }
+
+        /// <summary>
+        /// This method is only called for minigun types.
+        /// </summary>
+        public virtual void OnChargeUpEffects(Player player, int chargeCounter) { }
+
+        public virtual void OnChargeReleaseEffects(Player player, int chargeCounter) { }
+
+        public virtual void OnChargeShootEffects(Player player) { }
 
         private bool reloadFail = false;
         public bool reloadSuccess { get; private set; } = false;
