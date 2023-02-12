@@ -16,6 +16,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override GunType GunType => GunType.Minigun;
 
+        public override bool TwoHanded => true;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(20, -4));
@@ -25,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public override void SafeSetDefaults()
         {
             MaxReloadTime = 60;
-            MaxShots = 6;
+            MaxShots = 120;
             RecoilAmount = 5;
             ShootSound = SoundID.Item11;
         }

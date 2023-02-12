@@ -9,6 +9,7 @@ using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria.DataStructures;
 using System.IO;
+using System;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -372,7 +373,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                         {
                             shootCounter = shootTime;
 
-                            /*PopBulletDisplay();
+                            PopBulletDisplay();
 
                             if (ShotsFired == MaxShots + BonusAmmo)
                             {
@@ -387,8 +388,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                             {
                                 ShotsFired++;
                                 ConsumeAmmo();
-                            }*/
-                            ConsumeAmmo();
+                            }
+
                             Projectile.netUpdate = true;
                         }
 
@@ -680,23 +681,65 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             float textureWidth = ModContent.Request<Texture2D>(AssetDirectory.UI + BulletTexture()).Value.Width;
 
-            float gapOffset = 6 * Utils.Clamp(BulletDisplay.Count - 1, 0, MaxShots + BonusAmmo);
-            float total = textureWidth * BulletDisplay.Count + gapOffset;
+            int bulletCounts = BulletDisplay.Count % 10;
+            if (bulletCounts == 0 && BulletDisplay.Count > 0) bulletCounts = 10;
+
+            float gapOffset = 6 * Utils.Clamp(bulletCounts - 1, 0, MaxShots + BonusAmmo);
+            float total = textureWidth * bulletCounts + gapOffset;
 
             float startOffset = BulletTexture() == "GunBullet_Shotgun" ? 12 : 8;
             float startPosition = (-total / 2) + startOffset;
 
-            for (int i = 0; i < BulletDisplay.Count; i++)
+            int startIndex = BulletDisplay.Count - bulletCounts;
+
+            var offsetCounter = 0;
+            for (int i = startIndex; i < BulletDisplay.Count; i++)
             {
                 if (!BulletDisplay[i].isActive) continue;
 
                 BulletDisplay[i].Update();
 
-                //Vector2 offset = new Vector2(-38 + 18 * i, 42);
-                Vector2 offset = new Vector2(startPosition + 18 * i, 42);
-
+                Vector2 offset = new Vector2(startPosition + 18 * offsetCounter, 42);
                 BulletDisplay[i].Draw(Main.spriteBatch, player.Center + offset);
+
+                offsetCounter++;
             }
+
+            DrawAmmoCounter(startPosition, bulletCounts);
+        }
+
+        private void DrawAmmoCounter(float startPosition, int bulletCounts)
+        {
+            if (BulletDisplay.Count > 0)
+            {
+                Texture2D xTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "OverflowDisplay_X").Value;
+
+                Vector2 counterOffset = new Vector2(startPosition + 18 * bulletCounts, 42);
+                Main.spriteBatch.Draw(xTexture, player.Center + counterOffset - Main.screenPosition, null, Color.White, 0f, xTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+
+                Texture2D counterTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "OverflowDisplay_Numbers").Value;
+                int counterTextureWidth = counterTexture.Width / 10;
+                Main.NewText((BulletDisplay.Count));
+
+                int initialCount = BulletDisplay.Count - 1;
+                int firstPlace = GetPlace(initialCount, 100);
+
+                counterOffset = new Vector2(startPosition + 18 * (bulletCounts + 1), 40);
+                Rectangle drawRectangle = new Rectangle(counterTextureWidth * firstPlace, 0, 14, counterTexture.Height);
+                Main.spriteBatch.Draw(counterTexture, player.Center + counterOffset - Main.screenPosition, drawRectangle, Color.White, 0f, xTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+
+                int secondPlace = GetPlace(initialCount, 10);
+
+                //Main.NewText("189: " + GetPlace(69, 100) + ", " + GetPlace(69, 10));
+                counterOffset = new Vector2(startPosition + 18 * (bulletCounts + 2), 40);
+                drawRectangle = new Rectangle(counterTextureWidth * secondPlace, 0, 14, counterTexture.Height);
+                Main.spriteBatch.Draw(counterTexture, player.Center + counterOffset - Main.screenPosition, drawRectangle, Color.White, 0f, xTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+            }
+        }
+
+        public int GetPlace(int value, int place)
+        {
+            return ((value % (place * 10)) - (value % place)) / place;
         }
 
         private int recoilTimer = 0;
