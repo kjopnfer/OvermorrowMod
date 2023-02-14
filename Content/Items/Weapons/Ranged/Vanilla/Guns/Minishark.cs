@@ -13,9 +13,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
     public class Minishark_Held : HeldGun
     {
         public override int ParentItem => ModContent.GetInstance<TestGun>().Type;
-
         public override GunType GunType => GunType.Minigun;
-
         public override bool TwoHanded => true;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
 

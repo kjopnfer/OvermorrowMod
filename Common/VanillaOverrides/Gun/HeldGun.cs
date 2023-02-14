@@ -35,6 +35,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual bool CanConsumeAmmo(Player player) => true;
 
         /// <summary>
+        /// Determines whether or not the gun can reload after firing all the ammo.
+        /// <para>If false, the gun has no ammo clip and the ammo clip is not drawn. Miniguns default to false.</para>
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool CanReload() => GunType == GunType.Minigun ? false : true;
+
+        /// <summary>
         /// Used to determine where the gun is held for the left and right directions, respectively.
         /// </summary>
         public virtual (Vector2, Vector2) PositionOffset => (new Vector2(15, 0), new Vector2(15, 0));
@@ -181,6 +188,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 DrawGun(lightColor);
 
             DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime);
+
+            if (!CanReload()) return false;
 
             if (reloadTime == 0)
                 DrawAmmo();
@@ -373,7 +382,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                         {
                             shootCounter = shootTime;
 
-                            PopBulletDisplay();
+                            if (CanReload()) PopBulletDisplay();
 
                             if (ShotsFired == MaxShots + BonusAmmo)
                             {
@@ -386,7 +395,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                             }
                             else // Don't want the gun to consume a bullet if it is going into the reload state
                             {
-                                ShotsFired++;
+                                if (CanReload()) ShotsFired++;
                                 ConsumeAmmo();
                             }
 
@@ -710,7 +719,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private void DrawAmmoCounter(float startPosition, int bulletCounts)
         {
-            if (BulletDisplay.Count > 0)
+            if (BulletDisplay.Count > 10)
             {
                 Texture2D xTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "OverflowDisplay_X").Value;
 
@@ -730,7 +739,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                 int secondPlace = GetPlace(initialCount, 10);
 
-                //Main.NewText("189: " + GetPlace(69, 100) + ", " + GetPlace(69, 10));
                 counterOffset = new Vector2(startPosition + 18 * (bulletCounts + 2), 40);
                 drawRectangle = new Rectangle(counterTextureWidth * secondPlace, 0, 14, counterTexture.Height);
                 Main.spriteBatch.Draw(counterTexture, player.Center + counterOffset - Main.screenPosition, drawRectangle, Color.White, 0f, xTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
