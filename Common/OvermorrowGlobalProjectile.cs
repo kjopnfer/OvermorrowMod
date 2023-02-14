@@ -26,8 +26,13 @@ namespace OvermorrowMod.Common
         {
             if (WildEyeCrit) crit = true;
 
-            float pointBlankBonus = MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
-            damage += (int)(damage * pointBlankBonus);
+            if (Undertaker)
+            {
+                Main.NewText("wtf");
+
+                float pointBlankBonus = MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
+                damage += (int)(damage * pointBlankBonus);
+            }
         }
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)

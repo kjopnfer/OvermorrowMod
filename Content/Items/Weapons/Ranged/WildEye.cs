@@ -73,6 +73,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
                     //randomScale = Main.rand.NextFloat(2, 5f);
                     //Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, Vector2.Normalize(RandomVelocity) * 0.5f, Color.Red, 1f, randomScale, 0f, 0f, -1f, randomScale);
                 }
+
+                BonusDamage += baseDamage * 3;
             }
         }
 
@@ -137,7 +139,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
         {
-            BonusDamage += baseDamage * 3;
         }
 
         public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
