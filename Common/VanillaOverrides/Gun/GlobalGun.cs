@@ -3,11 +3,9 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Linq;
 using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
 using Terraria.DataStructures;
 using Terraria.Audio;
-using OvermorrowMod.Content.Items.Weapons.Ranged;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -33,6 +31,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 20) },
             { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32) },
             { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrel_Held>(), 20) },
+            { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<Undertaker_Held>(), 13) },
         };
 
         public override void SetDefaults(Item item)

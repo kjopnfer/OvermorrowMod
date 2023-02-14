@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Buffs.Debuffs;
 using Terraria;
@@ -18,10 +19,15 @@ namespace OvermorrowMod.Common
         public bool RetractSlow = false;
 
         private bool WildEyeCrit = false;
+        private bool Undertaker = false;
+        private int UndertakerCounter = 0;
 
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
             if (WildEyeCrit) crit = true;
+
+            float pointBlankBonus = MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
+            damage += (int)(damage * pointBlankBonus);
         }
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
@@ -43,6 +49,7 @@ namespace OvermorrowMod.Common
                     }
 
                     if (source.Context.ToString() == "WildEyeCrit") WildEyeCrit = true;
+                    else if (source.Context.ToString() == "HeldGun_Undertaker") Undertaker = true; 
                 }
 
 
@@ -55,6 +62,8 @@ namespace OvermorrowMod.Common
             {
                 projectile.position -= projectile.velocity * 0.95f;
             }
+
+            if (Undertaker && UndertakerCounter < 15) UndertakerCounter++;
 
             return base.PreAI(projectile);
         }

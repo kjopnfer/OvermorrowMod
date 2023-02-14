@@ -9,21 +9,27 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 {
-    public class Revolver_Held : HeldGun
+    public class Undertaker_Held : HeldGun
     {
         public override GunType GunType => GunType.Revolver;
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
-        public override int ParentItem => ItemID.Revolver;
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 45), new ReloadZone(60, 85) };
+        public override int ParentItem => ItemID.TheUndertaker;
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(15, 16), new Vector2(15, -6));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(18, -5), new Vector2(18, -5));
-        public override float ProjectileScale => 0.75f;
+        public override float ProjectileScale => 0.9f;
 
         public override void SafeSetDefaults()
         {
             MaxReloadTime = 60;
-            MaxShots = 6;
+            MaxShots = 4;
             RecoilAmount = 10;
             ShootSound = SoundID.Item41;
+        }
+
+        public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
+        {
+            string context = "HeldGun_Undertaker";
+            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, context), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
         }
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
@@ -41,12 +47,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
                 Texture2D muzzleFlash = ModContent.Request<Texture2D>(Core.AssetDirectory.Textures + "muzzle_05").Value;
 
-                Vector2 muzzleDirectionOffset = player.direction == 1 ? new Vector2(28, -5) : new Vector2(28, 5);
+                Vector2 muzzleDirectionOffset = player.direction == -1 ? new Vector2(36, 4) : new Vector2(36, -5);
                 Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
                 var rotationSpriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
-                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.05f, rotationSpriteEffects, 1);
+                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Red * 0.85f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.08f, rotationSpriteEffects, 1);
+                spriteBatch.Draw(muzzleFlash, muzzleOffset - Main.screenPosition, null, Color.Orange * 0.6f, Projectile.rotation + MathHelper.PiOver2, muzzleFlash.Size() / 2f, 0.08f, rotationSpriteEffects, 1);
 
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
@@ -73,17 +79,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
         {
-            BonusDamage = baseDamage;
+            BonusAmmo = 2;
+            useTimeModifier = -10;
         }
 
-        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
-        {
-            if (clicksLeft == 0) reloadTime = 0;
-        }
 
-        public override void OnReloadStart(Player player)
+        public override void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier)
         {
-
+            BonusAmmo = -2;
         }
     }
 }

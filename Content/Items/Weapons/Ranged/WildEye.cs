@@ -82,7 +82,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, context), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
         }
 
-        public override void OnReloadEventFail(Player player, ref int BonusAmmo)
+        public override void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier)
         {
             BonusAmmo = -1;
         }
@@ -135,7 +135,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             if (WildEyeCrit) WildEyeCrit = false;
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage)
+        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
         {
             BonusDamage += baseDamage * 3;
         }

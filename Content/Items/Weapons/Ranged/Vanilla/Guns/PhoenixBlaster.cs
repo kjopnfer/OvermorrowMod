@@ -48,12 +48,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             }
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage)
+        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
         {
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<PhoenixBurst>(), Projectile.damage, 10f, player.whoAmI);
         }
 
-        public override void OnReloadEventFail(Player player, ref int BonusAmmo)
+        public override void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier)
         {
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<PhoenixMisfire>(), (int)(Projectile.damage / 2f), 0, player.whoAmI);
         }

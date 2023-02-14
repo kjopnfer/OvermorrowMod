@@ -187,7 +187,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (PreDrawGun(player, Main.spriteBatch, ShotsFired, shootCounter, lightColor))
                 DrawGun(lightColor);
 
-            DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime);
+            DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime + useTimeModifier);
 
             if (!CanReload()) return false;
 
@@ -361,6 +361,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         private int shootTime => player.HeldItem.useTime;
         private int shootAnimation => player.HeldItem.useAnimation;
 
+        private int useTimeModifier = 0;
+
         public int chargeCounter { private set; get; } = 0;
         public int maxChargeTime = 120;
         public bool hasReleased = false;
@@ -380,7 +382,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                         if (player.controlUseItem && shootCounter == 0)
                         {
-                            shootCounter = shootTime;
+                            shootCounter = shootTime + useTimeModifier;
 
                             if (CanReload()) PopBulletDisplay();
 
@@ -436,7 +438,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (player.controlUseItem && shootCounter == 0)
             {
-                shootCounter = shootTime;
+                shootCounter = shootTime + useTimeModifier;
 
                 PopBulletDisplay();
 
@@ -463,7 +465,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (shootCounter > 0)
             {
-                if (shootCounter % shootAnimation == 0)
+                if (shootCounter % (shootAnimation + useTimeModifier) == 0)
                 {
                     recoilTimer = RECOIL_TIME;
 
@@ -524,6 +526,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 BonusDamage = 0; // Set bonus damage to zero, re-apply any bonus damage on reload end (i.e., via GlobalGun)
                 BonusAmmo = 0;
                 BonusBullets = 0;
+                useTimeModifier = 0;
 
                 OnReloadStart(player);
             }
@@ -573,10 +576,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 if (CheckEventSuccess())
                 {
                     reloadSuccess = true;
-                    OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusAmmo, ref BonusDamage, Projectile.damage);
+                    OnReloadEventSuccess(player, ref reloadTime, ref BonusBullets, ref BonusAmmo, ref BonusDamage, Projectile.damage, ref useTimeModifier);
                 }
                 else
-                    OnReloadEventFail(player, ref BonusAmmo);
+                    OnReloadEventFail(player, ref BonusAmmo, ref useTimeModifier);
 
                 ReloadBulletDisplay();
 
@@ -632,7 +635,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <summary>
         /// Called whenever the player has successfully completed the event during the reloading state. Used to modify reload time or damage.
         /// </summary>
-        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage) { }
+        public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier) { }
 
         private void ResetReloadZones()
         {
@@ -648,7 +651,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         /// <param name="player"></param>
         /// <param name="BonusAmmo"></param>
-        public virtual void OnReloadEventFail(Player player, ref int BonusAmmo) { }
+        public virtual void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier) { }
 
         private bool CheckInZone(float clickPercentage, out int zoneIndex)
         {

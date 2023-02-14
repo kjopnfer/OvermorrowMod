@@ -101,7 +101,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage)
+        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
         {
             BonusDamage = baseDamage;
         }
