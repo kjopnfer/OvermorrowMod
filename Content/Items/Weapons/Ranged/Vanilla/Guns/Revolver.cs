@@ -80,10 +80,5 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         {
             if (clicksLeft == 0) reloadTime = 0;
         }
-
-        public override void OnReloadStart(Player player)
-        {
-
-        }
     }
 }

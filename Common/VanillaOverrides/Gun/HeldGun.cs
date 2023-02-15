@@ -99,7 +99,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             _clickZones = ClickZones;
 
             // deactivate any bullets that were previously fired and stored
-
             for (int i = 0; i < ShotsFired; i++)
             {
                 BulletDisplay[BulletDisplay.Count - 1 - i].isActive = false;

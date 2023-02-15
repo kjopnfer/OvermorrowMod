@@ -28,8 +28,6 @@ namespace OvermorrowMod.Common
 
             if (Undertaker)
             {
-                Main.NewText("wtf");
-
                 float pointBlankBonus = MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
                 damage += (int)(damage * pointBlankBonus);
             }

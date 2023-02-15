@@ -57,21 +57,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
                 SoundEngine.PlaySound(SoundID.Item92 with { Pitch = 0.75f });
 
-                float randomScale = Main.rand.NextFloat(0.35f, 0.5f);
-                float randomRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-
                 for (int i = 0; i < 18; i++)
                 {
-                    randomScale = Main.rand.NextFloat(15f, 20f);
-
                     Vector2 RandomVelocity = Vector2.UnitX.RotatedBy(MathHelper.ToRadians(i * 20));
                     Color color = Color.Red;
 
-                    randomScale = 0.5f;
+                    float randomScale = 0.5f;
                     Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity * 4, color, 1, randomScale, 0f, 0f, 0f);
-
-                    //randomScale = Main.rand.NextFloat(2, 5f);
-                    //Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, Vector2.Normalize(RandomVelocity) * 0.5f, Color.Red, 1f, randomScale, 0f, 0f, -1f, randomScale);
                 }
 
                 BonusDamage += baseDamage * 3;
@@ -135,16 +127,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             }
 
             if (WildEyeCrit) WildEyeCrit = false;
-        }
-
-        public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
-        {
-        }
-
-        public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
-        {
-            //if (clicksLeft == 0)
-            //    reloadTime = 0;
         }
 
         public override bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor)
