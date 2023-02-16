@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void SafeSetDefaults()
         {
-            MaxReloadTime = 60;
+            MaxReloadTime = 40;
             MaxShots = 10;
             RecoilAmount = 15;
             ShootSound = Terraria.ID.SoundID.Item41;
@@ -60,8 +60,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor)
         {
-            MaxReloadTime = 40;
-
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 

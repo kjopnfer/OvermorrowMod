@@ -32,6 +32,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32) },
             { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrel_Held>(), 20) },
             { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<Undertaker_Held>(), 13) },
+            { ItemID.Handgun, new GunStats(ModContent.ProjectileType<Handgun_Held>(), 22) },
+            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 10) },
+            { ItemID.Musket, new GunStats(ModContent.ProjectileType<Musket_Held>(), 136) },
         };
 
         public override void SetDefaults(Item item)
@@ -44,6 +47,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 item.noUseGraphic = true;
                 item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // just a random sound set to 0
             }
+
+            if (item.type == ItemID.Handgun) item.useTime = 18;
         }
 
         public override void HoldItem(Item item, Player player)
