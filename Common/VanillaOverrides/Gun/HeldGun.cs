@@ -20,7 +20,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         Shotgun,
         Musket,
         Rifle,
-        Minigun
+        Minigun,
+        Launcher
     }
 
     public abstract class HeldGun : ModProjectile

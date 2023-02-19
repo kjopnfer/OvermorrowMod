@@ -542,7 +542,7 @@ namespace OvermorrowMod.Common.Particles
         }
     }
 
-    public class Shockwave : CustomParticle
+    /*public class Shockwave : CustomParticle
     {
         public override string Texture => AssetDirectory.Textures + "Perlin";
         public float maxSize { get { return particle.customData[0]; } set { particle.customData[0] = value; } }
@@ -591,5 +591,5 @@ namespace OvermorrowMod.Common.Particles
             // restart spritebatch again so effect doesnt continue to be applied
             spriteBatch.Reload(SpriteSortMode.Deferred);
         }
-    }
+    }*/
 }
