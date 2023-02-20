@@ -18,6 +18,7 @@ namespace OvermorrowMod.Common
         public bool slowedTime = false;
 
         public bool RetractSlow = false;
+        private bool HasRebounded = false;
 
         private bool WildEyeCrit = false;
         private bool Undertaker = false;
@@ -39,6 +40,22 @@ namespace OvermorrowMod.Common
             {
                 damage += (int)(damage * 0.10f);
             }
+
+            if (player.GetModPlayer<GunPlayer>().CowBoySet)
+            {
+                NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
+                if (closestNPC != null)
+                {
+                    projectile.usesLocalNPCImmunity = true;
+                    projectile.localNPCHitCooldown = -1;
+                    projectile.velocity = Vector2.Normalize(projectile.DirectionTo(closestNPC.Center)) * 12f;
+                    if (!HasRebounded)
+                    {
+                        projectile.penetrate = 2;
+                        HasRebounded = true;
+                    }
+                }
+            }
         }
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
@@ -51,13 +68,14 @@ namespace OvermorrowMod.Common
             if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item gun)
             {
                 if (gun.GetWeaponType() == GunType.Revolver)
-                    Main.NewText("ee");
+                {
+
+                }
             }
 
 
             if (source != null && source.Context != null)
             {
-
                 if (source is EntitySource_ItemUse_WithAmmo)
                 {
                     if (source.Context.ToString() == "HeldGun")

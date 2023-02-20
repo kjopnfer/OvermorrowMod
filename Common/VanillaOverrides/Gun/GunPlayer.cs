@@ -24,6 +24,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
     public class GunPlayer : ModPlayer
     {
+        public bool CowBoySet;
         public bool GraniteLauncher;
 
         /// <summary>
@@ -33,6 +34,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public override void ResetEffects()
         {
+            CowBoySet = false;
             GraniteLauncher = false;
         }
 

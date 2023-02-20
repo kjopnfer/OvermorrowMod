@@ -35,6 +35,7 @@ namespace OvermorrowMod.Common.VanillaOverrides
             if (set == "CowBoySet")
             {
                 player.setBonus = "Critical hits with Revolvers rebound to the nearest enemy";
+                player.GetModPlayer<GunPlayer>().CowBoySet = true;
             }
 
             base.UpdateArmorSet(player, set);
