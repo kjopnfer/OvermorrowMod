@@ -25,12 +25,19 @@ namespace OvermorrowMod.Common
 
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
+            Player player = Main.player[projectile.owner];
+
             if (WildEyeCrit) crit = true;
 
             if (Undertaker)
             {
                 float pointBlankBonus = MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
                 damage += (int)(damage * pointBlankBonus);
+            }
+
+            if (player.CheckArmorEquipped(ItemID.CowboyHat) && crit && projectile.DamageType == DamageClass.Ranged)
+            {
+                damage += (int)(damage * 0.10f);
             }
         }
 
@@ -61,8 +68,6 @@ namespace OvermorrowMod.Common
                     if (source.Context.ToString() == "WildEyeCrit") WildEyeCrit = true;
                     else if (source.Context.ToString() == "HeldGun_Undertaker") Undertaker = true;
                 }
-
-
             }
         }
 

@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher;
+using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -32,7 +34,7 @@ namespace OvermorrowMod.Common.VanillaOverrides
         {
             if (set == "CowBoySet")
             {
-                player.setBonus = "\nCritical hits with Revolvers rebound to the nearest enemy";
+                player.setBonus = "Critical hits with Revolvers rebound to the nearest enemy";
             }
 
             base.UpdateArmorSet(player, set);
@@ -64,6 +66,9 @@ namespace OvermorrowMod.Common.VanillaOverrides
             }
         }
 
+        /// <summary>
+        /// Determines whether or not the item is equipped in vanity based on if the 'Social' tooltip is displayed
+        /// </summary>
         private bool CheckInVanity(List<TooltipLine> tooltips)
         {
             for (int lines = 0; lines < tooltips.Count; lines++)
@@ -74,35 +79,52 @@ namespace OvermorrowMod.Common.VanillaOverrides
             return false;
         }
 
+      
+        public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage)
+        {
+            //if (player.CheckArmorEquipped(ItemID.CowboyHat)) Main.NewText("a" + player.armor[0].ToString());
+        }
+
+        public override void ModifyWeaponCrit(Item item, Player player, ref float crit)
+        {
+            if (player.CheckArmorEquipped(ItemID.CowboyJacket) && item.DamageType == DamageClass.Ranged)
+            {
+                if (item.GetWeaponType() == GunType.Revolver)
+                {
+
+                    crit += 1f;
+                    //Main.NewText("a");
+                }
+                else
+                {
+                    crit += 0.1f;
+                    //Main.NewText("b");
+                }
+                //Main.NewText("e" + player.armor[1].ToString());
+            }
+        }
+
+        public override void ModifyWeaponKnockback(Item item, Player player, ref StatModifier knockback)
+        {
+            //Main.NewText("i" + player.armor[2].ToString());
+        }
+
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-
             if (CheckInVanity(tooltips)) return;
 
             switch (item.type)
             {
                 case ItemID.CowboyHat:
-                    tooltips.Add(new TooltipLine(Mod, "Tooltip", "Increased critical strike damage by 5%\n"));
+                    tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike damage by 5%"));
                     break;
                 case ItemID.CowboyJacket:
-                    tooltips.Add(new TooltipLine(Mod, "Tooltip", "Increased critical strike chance for Revolvers by 10%"));
+                    tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike chance by 10%\nRevolvers gain an additional 5% critical strike chance"));
                     break;
                 case ItemID.CowboyPants:
-                    tooltips.Add(new TooltipLine(Mod, "Tooltip", "Increased movement speed by 10%"));
+                    tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased movement speed by 10%"));
                     break;
             }
-
-            /*for (int lines = 0; lines < tooltips.Count; lines++)
-            {
-                if (tooltips[lines].Name == "Speed")
-                {
-                    tooltips.RemoveAt(lines);
-                    tooltips.Insert(lines, new TooltipLine(Mod, "Charge",
-                        string.Format("Takes {0} {1} to fully charge",
-                        (BowsToOverride[i].ChargeTime - (float)trajectoryPlayer.bowTimingReduce) / 60f,
-                        ((float)BowsToOverride[i].ChargeTime / 60f == 1f) ? "second" : "seconds")));
-                }
-            }*/
         }
     }
 }

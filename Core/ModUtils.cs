@@ -59,6 +59,19 @@ namespace OvermorrowMod.Core
             stopRain.Invoke(null, null);
         }
 
+        /// <summary>
+        /// Determines whether or not the armor is equipped in a non-vanity slot
+        /// </summary>
+        public static bool CheckArmorEquipped(this Player player, int type)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (player.armor[i].type == type) return true;
+            }
+
+            return false;
+        }
+
         public static void SetWeaponType(this Item item, GunType gunType)
         {
             item.GetGlobalItem<GlobalGun>().WeaponType = gunType;
