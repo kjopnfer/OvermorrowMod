@@ -159,6 +159,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
     public class WildEye : ModGun<WildEye_Held>
     {
+        public override GunType GunType => GunType.Revolver;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Wild Eye");

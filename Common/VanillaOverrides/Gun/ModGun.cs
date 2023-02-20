@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
+using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -11,6 +12,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
     public abstract class ModGun<HeldProjectile> : ModItem where HeldProjectile : HeldGun
     {
+        public abstract GunType GunType { get; }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<HeldProjectile>()] <= 0;
         public override bool CanConsumeAmmo(Item ammo, Player player) => false;
 
@@ -22,6 +24,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual void SafeSetDefaults() { }
         public sealed override void SetDefaults()
         {
+            Item.SetWeaponType(GunType);
+
             Item.DamageType = DamageClass.Ranged;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -120,6 +124,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
     public class TestGun : ModGun<Minishark_Held>
     {
+        public override GunType GunType => GunType.Minigun;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("The Gamer Gun");

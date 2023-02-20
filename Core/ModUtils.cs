@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
 using OvermorrowMod.Common.TilePiles;
+using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using System;
 using System.Collections.Generic;
@@ -58,7 +59,16 @@ namespace OvermorrowMod.Core
             stopRain.Invoke(null, null);
         }
 
-        
+        public static void SetWeaponType(this Item item, GunType gunType)
+        {
+            item.GetGlobalItem<GlobalGun>().WeaponType = gunType;
+        }
+
+        public static GunType GetWeaponType(this Item item)
+        {
+            return item.GetGlobalItem<GlobalGun>().WeaponType;
+        }
+
         public static void PlaceTilePile<T, TE>(int x, int y) where T : ModTilePile<TE> where TE : BaseTilePile
         {
             PlaceObject(x, y, ModContent.TileType<T>());

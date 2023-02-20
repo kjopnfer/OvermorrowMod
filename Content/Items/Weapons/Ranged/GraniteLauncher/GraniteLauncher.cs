@@ -101,6 +101,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
     public class GraniteLauncher : ModGun<GraniteLauncher_Held>
     {
+        public override GunType GunType => GunType.Launcher;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Shockshard Launcher");
@@ -113,7 +114,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             Item.width = 32;
             Item.height = 74;
             Item.autoReuse = true;
-            Item.shootSpeed = 10f;
+            Item.shootSpeed = 20f;
             Item.rare = ItemRarityID.Orange;
             Item.useTime = 22;
             Item.useAnimation = 22;

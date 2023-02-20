@@ -57,7 +57,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             Projectile.hostile = false;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = true;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = 600;
             Projectile.penetrate = -1;
             Projectile.hide = true;
             Projectile.extraUpdates = 2;

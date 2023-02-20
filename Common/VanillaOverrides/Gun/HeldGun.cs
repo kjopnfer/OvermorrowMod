@@ -15,6 +15,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
     public enum GunType
     {
+        None,
         Revolver,
         Pistol,
         Shotgun,

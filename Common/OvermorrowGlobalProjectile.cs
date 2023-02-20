@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Buffs.Debuffs;
+using OvermorrowMod.Core;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -40,6 +41,12 @@ namespace OvermorrowMod.Common
                 Main.NewText("this is from a held gun");
             }*/
 
+            if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item gun)
+            {
+                if (gun.GetWeaponType() == GunType.Revolver)
+                    Main.NewText("ee");
+            }
+
 
             if (source != null && source.Context != null)
             {
@@ -52,7 +59,7 @@ namespace OvermorrowMod.Common
                     }
 
                     if (source.Context.ToString() == "WildEyeCrit") WildEyeCrit = true;
-                    else if (source.Context.ToString() == "HeldGun_Undertaker") Undertaker = true; 
+                    else if (source.Context.ToString() == "HeldGun_Undertaker") Undertaker = true;
                 }
 
 

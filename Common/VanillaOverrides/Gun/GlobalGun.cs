@@ -13,11 +13,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
     {
         public int GunType;
         public int GunDamage;
+        public GunType WeaponType;
 
-        public GunStats(int GunType, int GunDamage)
+        public GunStats(int GunType, int GunDamage, GunType WeaponType)
         {
             this.GunType = GunType;
             this.GunDamage = GunDamage;
+            this.WeaponType = WeaponType;
         }
     }
 
@@ -25,16 +27,18 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
     {
         public override bool InstancePerEntity => true;
 
+        public GunType WeaponType = GunType.None;
+
         public Dictionary<int, GunStats> OverridedGuns = new Dictionary<int, GunStats>()
         {
-            { ItemID.Revolver, new GunStats(ModContent.ProjectileType<Revolver_Held>(), 30) },
-            { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 20) },
-            { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32) },
-            { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrel_Held>(), 20) },
-            { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<Undertaker_Held>(), 13) },
-            { ItemID.Handgun, new GunStats(ModContent.ProjectileType<Handgun_Held>(), 22) },
-            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 10) },
-            { ItemID.Musket, new GunStats(ModContent.ProjectileType<Musket_Held>(), 136) },
+            { ItemID.Revolver, new GunStats(ModContent.ProjectileType<Revolver_Held>(), 30, GunType.Revolver) },
+            { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 20, GunType.Shotgun) },
+            { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32, GunType.Pistol) },
+            { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrel_Held>(), 20, GunType.Shotgun) },
+            { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<Undertaker_Held>(), 13, GunType.Revolver) },
+            { ItemID.Handgun, new GunStats(ModContent.ProjectileType<Handgun_Held>(), 22, GunType.Pistol) },
+            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 10, GunType.Minigun) },
+            { ItemID.Musket, new GunStats(ModContent.ProjectileType<Musket_Held>(), 136, GunType.Musket) },
         };
 
         public override void SetDefaults(Item item)
@@ -46,9 +50,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 item.damage = gun.GunDamage;
                 item.noUseGraphic = true;
                 item.UseSound = new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw") { Volume = 0f }; // just a random sound set to 0
+
+                WeaponType = gun.WeaponType;
             }
 
-            if (item.type == ItemID.Handgun) item.useTime = 18;
+            if (item.type == ItemID.Handgun) item.useTime = item.useAnimation = 18;
         }
 
         public override void HoldItem(Item item, Player player)
