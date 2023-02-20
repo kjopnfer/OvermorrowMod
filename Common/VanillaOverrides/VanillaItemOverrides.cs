@@ -80,7 +80,7 @@ namespace OvermorrowMod.Common.VanillaOverrides
             return false;
         }
 
-      
+
         public override void ModifyWeaponDamage(Item item, Player player, ref StatModifier damage)
         {
             //if (player.CheckArmorEquipped(ItemID.CowboyHat)) Main.NewText("a" + player.armor[0].ToString());
@@ -91,17 +91,9 @@ namespace OvermorrowMod.Common.VanillaOverrides
             if (player.CheckArmorEquipped(ItemID.CowboyJacket) && item.DamageType == DamageClass.Ranged)
             {
                 if (item.GetWeaponType() == GunType.Revolver)
-                {
-
-                    crit += 1f;
-                    //Main.NewText("a");
-                }
+                    crit += 10f;
                 else
-                {
-                    crit += 0.1f;
-                    //Main.NewText("b");
-                }
-                //Main.NewText("e" + player.armor[1].ToString());
+                    crit += 5f;
             }
         }
 
@@ -120,7 +112,7 @@ namespace OvermorrowMod.Common.VanillaOverrides
                     tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike damage by 5%"));
                     break;
                 case ItemID.CowboyJacket:
-                    tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike chance by 10%\nRevolvers gain an additional 5% critical strike chance"));
+                    tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike chance by 5%\nRevolvers gain an additional 5% critical strike chance"));
                     break;
                 case ItemID.CowboyPants:
                     tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased movement speed by 10%"));
