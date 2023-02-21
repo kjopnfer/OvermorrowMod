@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Core;
@@ -41,8 +42,10 @@ namespace OvermorrowMod.Common
                 damage += (int)(damage * 0.10f);
             }
 
-            if (player.GetModPlayer<GunPlayer>().CowBoySet)
+            if (player.GetModPlayer<GunPlayer>().CowBoySet && crit)
             {
+                
+
                 NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
                 if (closestNPC != null)
                 {

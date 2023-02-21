@@ -71,7 +71,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         }
 
         private float randomCrackRotation = MathHelper.ToRadians(Main.rand.Next(0, 18) * 20);
-        float offsetAmount = 15;
+        float offsetAmount = 20;
 
         public bool CollideTile = false;
         public bool HasActivated = false;
@@ -80,10 +80,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         public ref float AICounter => ref Projectile.ai[1];
         public override void AI()
         {
+            Lighting.AddLight(Projectile.Center, new Vector3(0, 0.7f, 0.7f));
+
             if (AICounter < 120 && CollideTile)
             {
-                float brightness = MathHelper.Lerp(1, 0, AICounter / 120f);
-                Lighting.AddLight(Projectile.Center, new Vector3(0, 0.7f, 0.7f) * brightness);
+                //float brightness = MathHelper.Lerp(1, 0, AICounter / 120f);
                 AICounter++;
             }
 
@@ -100,14 +101,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
                     Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center + positionOffset, RandomVelocity, color, 1, randomScale);
                 }
 
-                Lighting.AddLight(Projectile.Center, new Vector3(0, 0.7f, 0.7f));
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
         }
 
         public void ActivateNextChain()
         {
-            Projectile.timeLeft = 180;
+            Projectile.timeLeft = 600;
 
             foreach (Projectile projectile in Main.projectile)
             {
@@ -170,7 +170,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             if (CollideTile)
             {
                 Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
-                Main.spriteBatch.Draw(texture, Projectile.Center + embedOffset.RotatedBy(Projectile.rotation) - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, 1, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(texture, Projectile.Center + embedOffset.RotatedBy(Projectile.rotation) - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 1, SpriteEffects.None, 0);
             }
 
             Main.spriteBatch.Reload(SpriteSortMode.Deferred);

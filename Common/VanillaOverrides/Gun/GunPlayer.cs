@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher;
 using System.Collections.Generic;
 using Terraria;
@@ -27,6 +28,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public bool CowBoySet;
         public bool GraniteLauncher;
 
+        public int GraniteEnergyCount = 0;
+
         /// <summary>
         /// Used to preserve data between guns whenever swapped to prevent reload skipping
         /// </summary>
@@ -42,8 +45,18 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (crit && proj.DamageType == DamageClass.Ranged)
             {
-                //for (int i = 0; i < 3; i++)
-                Projectile.NewProjectile(null, target.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 3, ModContent.ProjectileType<GraniteEnergy>(), 0, 0f, Player.whoAmI);
+                if (Player.GetModPlayer<GunPlayer>().GraniteEnergyCount < 8)
+                {
+                    for (int i = 0; i < Main.rand.Next(2, 4); i++)
+                    {
+                        float randomScale = Main.rand.NextFloat(0.1f, 0.15f);
+
+                        Color color = Color.Cyan;
+                        Particle.CreateParticle(Particle.ParticleType<Pulse>(), proj.Center, Vector2.Zero, color, 1, randomScale);
+                    }
+
+                    Projectile.NewProjectile(null, target.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 3, ModContent.ProjectileType<GraniteEnergy>(), 0, 0f, Player.whoAmI);
+                }
             }
 
             base.OnHitNPCWithProj(proj, target, damage, knockback, crit);

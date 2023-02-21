@@ -46,9 +46,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         }
 
         public ref float AICounter => ref Projectile.ai[0];
+        Player player => Main.player[Projectile.owner];
+
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
             if (!player.active) Projectile.Kill();
 
             if (AICounter > 45)
@@ -69,7 +70,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
             if (Projectile.Hitbox.Intersects(player.Hitbox) && AICounter > 120)
             {
-                Particle.CreateParticle(Particle.ParticleType<LightBurst>(), Projectile.Center, Vector2.Zero, Color.Cyan * 0.8f, 1, 0.75f, MathHelper.ToRadians(Main.rand.Next(0, 360)));
 
                 for (int i = 0; i < Main.rand.Next(2, 4); i++)
                 {
@@ -82,6 +82,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
                 Projectile.Kill();
             }
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            Particle.CreateParticle(Particle.ParticleType<LightBurst>(), Projectile.Center, Vector2.Zero, Color.Cyan * 0.8f, 1, 0.75f, MathHelper.ToRadians(Main.rand.Next(0, 360)));
+            player.GetModPlayer<GunPlayer>().GraniteEnergyCount++;
         }
 
         private void AdjustMagnitude(ref Vector2 vector)

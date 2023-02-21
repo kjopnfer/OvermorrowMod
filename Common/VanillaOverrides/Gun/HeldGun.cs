@@ -37,6 +37,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <returns></returns>
         public virtual bool CanConsumeAmmo(Player player) => true;
 
+        public virtual bool CanUseGun(Player player) => true;
+
         /// <summary>
         /// Determines whether or not the gun can reload after firing all the ammo.
         /// <para>If false, the gun has no ammo clip and the ammo clip is not drawn. Miniguns default to false.</para>
@@ -184,6 +186,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <param name="player"></param>
         public virtual void RightClickEvent(Player player, ref int BonusDamage, int baseDamage) { }
 
+        public virtual bool PreDrawAmmo(Player player, SpriteBatch spriteBatch) { return true; }
         public override bool PreDraw(ref Color lightColor)
         {
             if (PreDrawGun(player, Main.spriteBatch, ShotsFired, shootCounter, lightColor))
@@ -191,12 +194,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             DrawGunOnShoot(player, Main.spriteBatch, lightColor, shootCounter, shootTime + useTimeModifier);
 
-            if (!CanReload()) return false;
-
-            if (reloadTime == 0)
-                DrawAmmo();
+            if (reloadTime == 0 && PreDrawAmmo(player, Main.spriteBatch))
+            {
+                if (CanReload()) DrawAmmo();
+            }
             else
-                DrawReloadBar();
+                if (CanReload()) DrawReloadBar();
 
             return false;
         }
@@ -242,7 +245,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <summary>
         /// Loops through the ammo slots, loads in the first bullet found into the bow.
         /// </summary>
-        /// <returns></returns>
         private bool FindAmmo()
         {
             LoadedBulletItemType = -1;
@@ -372,63 +374,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (GunType == GunType.Minigun)
             {
-                if (player.controlUseItem && !hasReleased)
-                {
-                    OnChargeUpEffects(player, chargeCounter);
-
-                    if (chargeCounter < maxChargeTime) chargeCounter++;
-
-                    if (chargeCounter == maxChargeTime)
-                    {
-                        OnChargeShootEffects(player);
-
-                        if (player.controlUseItem && shootCounter == 0)
-                        {
-                            shootCounter = shootTime + useTimeModifier;
-
-                            if (CanReload()) PopBulletDisplay();
-
-                            if (ShotsFired == MaxShots + BonusAmmo)
-                            {
-                                shootCounter = 0;
-                                inReloadState = true;
-                                reloadTime = MaxReloadTime;
-                                reloadBuffer = 10;
-
-                                return;
-                            }
-                            else // Don't want the gun to consume a bullet if it is going into the reload state
-                            {
-                                if (CanReload()) ShotsFired++;
-                                ConsumeAmmo();
-                            }
-
-                            Projectile.netUpdate = true;
-                        }
-
-                        HandleShootAction();
-                    }
-                }
-                else
-                {
-                    OnChargeReleaseEffects(player, chargeCounter);
-
-                    shootCounter = 0;
-
-                    if (chargeCounter > 0)
-                    {
-                        hasReleased = true;
-                        chargeCounter -= 2;
-                    }
-
-                    if (chargeCounter < 0) chargeCounter = 0;
-
-                    if (chargeCounter == 0)
-                    {
-                        hasReleased = false;
-                    }
-                }
-
+                HandleMinigunUse();
                 return;
             }
 
@@ -436,9 +382,69 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             HandleShootAction();
         }
 
+        private void HandleMinigunUse()
+        {
+            if (player.controlUseItem && !hasReleased && CanUseGun(player))
+            {
+                OnChargeUpEffects(player, chargeCounter);
+
+                if (chargeCounter < maxChargeTime) chargeCounter++;
+
+                if (chargeCounter == maxChargeTime)
+                {
+                    OnChargeShootEffects(player);
+
+                    if (player.controlUseItem && shootCounter == 0)
+                    {
+                        shootCounter = shootTime + useTimeModifier;
+
+                        if (CanReload()) PopBulletDisplay();
+
+                        if (ShotsFired == MaxShots + BonusAmmo)
+                        {
+                            shootCounter = 0;
+                            inReloadState = true;
+                            reloadTime = MaxReloadTime;
+                            reloadBuffer = 10;
+
+                            return;
+                        }
+                        else // Don't want the gun to consume a bullet if it is going into the reload state
+                        {
+                            if (CanReload()) ShotsFired++;
+                            ConsumeAmmo();
+                        }
+
+                        Projectile.netUpdate = true;
+                    }
+
+                    HandleShootAction();
+                }
+            }
+            else
+            {
+                OnChargeReleaseEffects(player, chargeCounter);
+
+                shootCounter = 0;
+
+                if (chargeCounter > 0)
+                {
+                    hasReleased = true;
+                    chargeCounter -= 2;
+                }
+
+                if (chargeCounter < 0) chargeCounter = 0;
+
+                if (chargeCounter == 0)
+                {
+                    hasReleased = false;
+                }
+            }
+        }
+
         private void HandleAmmoAction()
         {
-            if (player.controlUseItem && shootCounter == 0)
+            if (player.controlUseItem && shootCounter == 0 && CanUseGun(player))
             {
                 shootCounter = shootTime + useTimeModifier;
 
@@ -455,7 +461,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 }
                 else // Don't want the gun to consume a bullet if it is going into the reload state
                 {
-                    ShotsFired++;
+                    if (CanReload()) ShotsFired++;
                     ConsumeAmmo();
                 }
 

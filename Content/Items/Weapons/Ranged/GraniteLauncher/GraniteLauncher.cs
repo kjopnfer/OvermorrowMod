@@ -24,6 +24,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(30, 45) };
 
         public override bool CanReload() => false;
+
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(20, -4));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(20, -5), new Vector2(20, -4));
 
@@ -39,6 +40,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             ShootSound = SoundID.Item92;
         }
 
+        public override bool CanUseGun(Player player)
+        {
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+
+            return gunPlayer.GraniteEnergyCount > 0;
+        }
+
         private int shardCounter = 0;
         public override void RightClickEvent(Player player, ref int BonusDamage, int baseDamage)
         {
@@ -52,6 +60,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             }
 
             Main.NewText("arm granite shards");
+            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/ElectricActivate") { Volume = 0.5f });
+
             shardCounter = 0;
         }
 
@@ -62,8 +72,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
         public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+
             string context = "GraniteLauncher";
             Projectile.NewProjectile(player.GetSource_ItemUse(player.HeldItem, context), shootPosition, velocity, ModContent.ProjectileType<GraniteShard>(), damage, knockBack, player.whoAmI, shardCounter);
+
+            if (gunPlayer.GraniteEnergyCount > 0) gunPlayer.GraniteEnergyCount--;
 
             shardCounter++;
         }
@@ -97,6 +111,32 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
             return false;
         }
+
+        float offsetCounter = 0;
+        public override bool PreDrawAmmo(Player player, SpriteBatch spriteBatch)
+        {
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Ranged + "GraniteLauncher/GraniteShard").Value;
+
+            float gapOffset = 6 * Utils.Clamp(gunPlayer.GraniteEnergyCount, 0, 6);
+            float total = texture.Width * gunPlayer.GraniteEnergyCount + gapOffset;
+
+            float startOffset = 12;
+            float startPosition = (-total / 2) + startOffset;
+
+            for (int i = 0; i < gunPlayer.GraniteEnergyCount; i++)
+            {
+                float heightOffset = 42;
+                // spriteBatch.Draw(activeBullets, position + positionOffset - Main.screenPosition, null, Color.White, rotation, activeBullets.Size() / 2f, scale, SpriteEffects.None, 1);
+                Vector2 positionOffset = new Vector2(startPosition + 20 * i, heightOffset + MathHelper.Lerp(3, -2, (float)Math.Sin((offsetCounter + i * 12) / 20f)) / 2 + 0.5f);
+                spriteBatch.Draw(texture, player.Center + positionOffset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+            }
+
+            offsetCounter++;
+
+            return false;
+        }
     }
 
     public class GraniteLauncher : ModGun<GraniteLauncher_Held>
@@ -110,7 +150,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
         public override void SafeSetDefaults()
         {
-            Item.damage = 23;
+            Item.damage = 15;
             Item.width = 32;
             Item.height = 74;
             Item.autoReuse = true;
