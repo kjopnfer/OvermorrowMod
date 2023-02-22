@@ -129,7 +129,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             {
                 float heightOffset = 42;
                 // spriteBatch.Draw(activeBullets, position + positionOffset - Main.screenPosition, null, Color.White, rotation, activeBullets.Size() / 2f, scale, SpriteEffects.None, 1);
-                Vector2 positionOffset = new Vector2(startPosition + 20 * i, heightOffset + MathHelper.Lerp(3, -2, (float)Math.Sin((offsetCounter + i * 12) / 20f)) / 2 + 0.5f);
+                Vector2 positionOffset = new Vector2(startPosition + 20 * i, heightOffset + (MathHelper.Lerp(3, -2, (float)Math.Sin((offsetCounter + i * 12) / 20f)) / 2 + 0.5f));
                 spriteBatch.Draw(texture, player.Center + positionOffset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 0f);
             }
 

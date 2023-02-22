@@ -82,11 +82,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         {
             Lighting.AddLight(Projectile.Center, new Vector3(0, 0.7f, 0.7f));
 
-            if (AICounter < 120 && CollideTile)
-            {
-                //float brightness = MathHelper.Lerp(1, 0, AICounter / 120f);
-                AICounter++;
-            }
+            if (AICounter < 120 && CollideTile) AICounter++;
 
             if (!CollideTile)
             {
@@ -94,7 +90,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
                 {
                     Vector2 positionOffset = new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 4;
                     float randomScale = Main.rand.NextFloat(0.15f, 0.25f);
-                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
                     Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity) * 7f;
 
                     Color color = Color.Cyan;
@@ -107,6 +102,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
         public void ActivateNextChain()
         {
+            for (int i = 0; i < 18; i++)
+            {
+                float randomScale = Main.rand.NextFloat(0.25f, 0.35f);
+                Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity).RotatedBy(MathHelper.ToRadians(20 * i)) * 6f;
+
+                Color color = Color.Cyan;
+                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale);
+            }
+
             Projectile.timeLeft = 600;
 
             foreach (Projectile projectile in Main.projectile)
@@ -142,8 +146,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
                 Texture2D trailTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
 
-                //Main.spriteBatch.Draw(trailTexture, Projectile.Center - Main.screenPosition, null, new Color(122, 232, 246) * 0.65f, Projectile.rotation, trailTexture.Size() / 2f, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-
                 var offset = new Vector2(Projectile.width / 2f, Projectile.height / 2f);
                 var trailLength = ProjectileID.Sets.TrailCacheLength[Projectile.type];
                 var fadeMult = 1f / trailLength;
@@ -151,10 +153,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
                 {
                     Main.spriteBatch.Draw(trailTexture, Projectile.oldPos[i] - Main.screenPosition + offset, null, new Color(122, 232, 246) * (1f - fadeMult * i) * 0.6f, Projectile.oldRot[i] + MathHelper.PiOver2, trailTexture.Size() / 2f, Projectile.scale * (trailLength - i) / trailLength * 0.75f, SpriteEffects.None, 0);
                     Main.spriteBatch.Draw(trailTexture, Projectile.oldPos[i] - Main.screenPosition + offset, null, new Color(0, 137, 255) * (1f - fadeMult * i) * 0.35f, Projectile.oldRot[i] + MathHelper.PiOver2, trailTexture.Size() / 2f, Projectile.scale * (trailLength - i) / trailLength * 1.5f, SpriteEffects.None, 0);
-
                 }
-
-                //Main.spriteBatch.Draw(trailTexture, Projectile.Center - Main.screenPosition, null, new Color(0, 137, 255), Projectile.rotation, trailTexture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
                 Main.spriteBatch.Reload(BlendState.AlphaBlend);
             }
@@ -190,7 +189,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
                 for (int i = 0; i < Main.rand.Next(2, 4); i++)
                 {
                     float randomScale = Main.rand.NextFloat(0.25f, 0.35f);
-                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
 
                     Color color = Color.Cyan;
                     Particle.CreateParticle(Particle.ParticleType<Pulse>(), Projectile.Center + embedOffset.RotatedBy(Projectile.rotation), Vector2.Zero, color, 1, randomScale);
@@ -199,8 +197,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
                 for (int i = 0; i < Main.rand.Next(12, 18); i++)
                 {
                     float randomScale = Main.rand.NextFloat(0.25f, 0.35f);
-                    float randomAngle = Main.rand.NextFloat(-MathHelper.ToRadians(80), MathHelper.ToRadians(80));
-                    Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity).RotatedBy(MathHelper.ToRadians(Main.rand.Next(0, 360))) * 12f;
+                    Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity).RotatedByRandom(MathHelper.TwoPi) * 12f;
 
                     Color color = Color.Cyan;
                     Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center + embedOffset.RotatedBy(Projectile.rotation), RandomVelocity, color, 1, randomScale);
@@ -210,6 +207,27 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             }
 
             return false;
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
+
+            for (int i = 0; i < 9; i++)
+            {
+                float randomScale = Main.rand.NextFloat(0.15f, 0.2f);
+                Vector2 RandomVelocity = -Vector2.Normalize(Projectile.velocity).RotatedBy(MathHelper.ToRadians(40 * i)) * 3f;
+
+                Color color = Color.Cyan;
+                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), Projectile.Center, RandomVelocity, color, 1, randomScale);
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                int textureNumber = i < 3 ? i : 0;
+                int gore = Gore.NewGore(null, Projectile.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi), Mod.Find<ModGore>("GraniteShard_" + textureNumber).Type);
+                Main.gore[gore].sticky = true;
+            }
         }
     }
 }
