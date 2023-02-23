@@ -36,7 +36,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override bool CanRightClick => true;
 
-        private bool WildEyeCrit = false;
         public override void RightClickEvent(Player player, ref int BonusDamage, int baseDamage)
         {
             if (ShotsFired == 0 && BulletDisplay.Count == MaxShots)
@@ -47,7 +46,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
                 }
 
                 ShotsFired += 5;
-                WildEyeCrit = true;
+                player.GetModPlayer<GunPlayer>().WildEyeCrit = true;
 
                 for (int i = 0; i < 5; i++)
                 {
@@ -72,7 +71,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
-            string context = WildEyeCrit ? "WildEyeCrit" : "HeldGun";
+            string context = player.GetModPlayer<GunPlayer>().WildEyeCrit ? "WildEyeCrit" : "HeldGun";
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, context), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
         }
 
@@ -119,18 +118,22 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void OnReloadEnd(Player player)
         {
-            int droppedBullets = WildEyeCrit ? 1 : 6;
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+            int droppedBullets = gunPlayer.WildEyeCrit ? 1 : 6;
             for (int i = 0; i < droppedBullets; i++)
             {
                 int gore = Gore.NewGore(null, Projectile.Center, new Vector2(player.direction * -0.01f, 0f), Mod.Find<ModGore>("BulletCasing").Type, 0.75f);
                 Main.gore[gore].sticky = true;
             }
 
-            if (WildEyeCrit) WildEyeCrit = false;
+            if (gunPlayer.WildEyeCrit) gunPlayer.WildEyeCrit = false;
+            
         }
 
         public override bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor)
         {
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
@@ -149,7 +152,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
                 reloadRotation = 0;
 
             Color color = lightColor;
-            if (WildEyeCrit && ShotsFired < MaxShots) color = Color.Lerp(Color.Red * 0.5f, lightColor, (float)(Math.Sin(PrimaryCounter++ / 20f) / 2 + 0.5f));
+            if (gunPlayer.WildEyeCrit && ShotsFired < MaxShots) color = Color.Lerp(Color.Red * 0.5f, lightColor, (float)(Math.Sin(PrimaryCounter++ / 20f) / 2 + 0.5f));
 
             spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, color, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
 

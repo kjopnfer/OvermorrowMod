@@ -28,6 +28,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public bool CowBoySet;
         public bool GraniteLauncher;
 
+        public bool WildEyeCrit = false;
+
+        public int MusketInaccuracy = 0;
         public int GraniteEnergyCount = 0;
 
         /// <summary>

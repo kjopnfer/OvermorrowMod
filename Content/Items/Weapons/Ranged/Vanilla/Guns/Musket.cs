@@ -30,8 +30,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             ShootSound = SoundID.Item40;
         }
 
-        private int reloadAccuracy = 45;
-
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
         {
             Vector2 directionOffset = Vector2.Zero;
@@ -76,15 +74,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
-            Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(reloadAccuracy));
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+
+            Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(gunPlayer.MusketInaccuracy));
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"), shootPosition, rotatedVelocity, LoadedBulletType, damage, knockBack, player.whoAmI);
 
-            reloadAccuracy = 45;
+            gunPlayer.MusketInaccuracy = 45;
         }
 
         public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)
         {
-            reloadAccuracy -= 15;
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+            gunPlayer.MusketInaccuracy -= 15;
         }
     }
 }
