@@ -14,13 +14,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 {
     public class Handgun_Held : HeldGun
     {
+        public override string Texture => AssetDirectory.Resprites + "Handgun";
         public override int ParentItem => Terraria.ID.ItemID.Handgun;
         public override GunType GunType => GunType.Pistol;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(10, 20), new Vector2(-10, -10));
-        public override (Vector2, Vector2) PositionOffset => (new Vector2(18, -6), new Vector2(16, -4));
-        public override float ProjectileScale => 0.75f;
+        public override (Vector2, Vector2) PositionOffset => (new Vector2(16, -8), new Vector2(14, -2));
+        public override float ProjectileScale => 0.9f;
 
         public override void SafeSetDefaults()
         {
@@ -51,7 +52,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
                 Texture2D muzzleFlash = ModContent.Request<Texture2D>(Core.AssetDirectory.Textures + "muzzle_05").Value;
 
-                Vector2 muzzleDirectionOffset = player.direction == -1 ? new Vector2(26, 5) : new Vector2(26, -5);
+                Vector2 muzzleDirectionOffset = player.direction == -1 ? new Vector2(22, 5) : new Vector2(24, -6);
                 Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
                 var rotationSpriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 

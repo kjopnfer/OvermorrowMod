@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
+using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -11,12 +12,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 {
     public class Revolver_Held : HeldGun
     {
+        public override string Texture => AssetDirectory.Resprites + "Revolver";
         public override GunType GunType => GunType.Revolver;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
         public override int ParentItem => ItemID.Revolver;
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(15, 16), new Vector2(15, -6));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(18, -5), new Vector2(18, -5));
-        public override float ProjectileScale => 0.75f;
+        public override float ProjectileScale => 0.85f;
 
         public override void SafeSetDefaults()
         {
@@ -73,7 +75,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
         {
-            BonusDamage = baseDamage;
+            BonusDamage = (int)(baseDamage * 0.2f);
         }
 
         public override void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft)

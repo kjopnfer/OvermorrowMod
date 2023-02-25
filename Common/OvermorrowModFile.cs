@@ -154,7 +154,7 @@ namespace OvermorrowMod.Common
                     PremultiplyTexture(ref glow);
                 });
 
-                TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Textures + "ChainKnife");
+                ReplaceVanillaTextures();
             }
 
             ModDetours.Load();
@@ -178,6 +178,14 @@ namespace OvermorrowMod.Common
             }
 
             base.Load();
+        }
+
+        private void ReplaceVanillaTextures()
+        {
+            TextureAssets.Item[ItemID.Handgun] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Handgun");
+            TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Revolver");
+            TextureAssets.Item[ItemID.Musket] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Musket");
+            TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Boomstick");
         }
 
         public override void Unload()

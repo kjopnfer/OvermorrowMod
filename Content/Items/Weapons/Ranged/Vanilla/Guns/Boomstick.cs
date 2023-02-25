@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
+using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -11,6 +12,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 {
     public class Boomstick_Held : HeldGun
     {
+        public override string Texture => AssetDirectory.Resprites + "Boomstick";
         public override int ParentItem => Terraria.ID.ItemID.Boomstick;
         public override GunType GunType => GunType.Shotgun;
 

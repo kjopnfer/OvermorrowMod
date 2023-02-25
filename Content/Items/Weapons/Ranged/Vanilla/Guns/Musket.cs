@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
+using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -12,6 +13,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 {
     public class Musket_Held : HeldGun
     {
+        public override string Texture => AssetDirectory.Resprites + "Musket";
         public override int ParentItem => ItemID.Musket;
 
         public override GunType GunType => GunType.Musket;
@@ -25,7 +27,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public override void SafeSetDefaults()
         {
             MaxReloadTime = 75;
-            MaxShots = 1;
+            MaxShots = 10;
             RecoilAmount = 25;
             ShootSound = SoundID.Item40;
         }
@@ -45,7 +47,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
                 Texture2D muzzleFlash = ModContent.Request<Texture2D>(Core.AssetDirectory.Textures + "muzzle_05").Value;
 
-                Vector2 muzzleDirectionOffset = player.direction == -1 ? new Vector2(36, 4) : new Vector2(36, -5);
+                Vector2 muzzleDirectionOffset = player.direction == -1 ? new Vector2(48, 4) : new Vector2(48, -5);
                 Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
                 var rotationSpriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 

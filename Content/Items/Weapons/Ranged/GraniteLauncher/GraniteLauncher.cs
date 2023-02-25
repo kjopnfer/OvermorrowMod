@@ -65,6 +65,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/ElectricActivate") { Volume = 0.5f });
 
+            // If for some apparent reason all of them didn't activate, clear the list
+            gunPlayer.ShardList.Clear();
+
             shardCounter = 0;
         }
 
