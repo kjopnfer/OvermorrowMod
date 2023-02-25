@@ -1,16 +1,10 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Content.NPCs.CaveFish;
-using OvermorrowMod.Content.NPCs.SalamanderHunter;
-using OvermorrowMod.Content.NPCs.SnapDragon;
 using OvermorrowMod.Content.Projectiles.Hexes;
-using OvermorrowMod.Core;
-using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -41,8 +35,6 @@ namespace OvermorrowMod.Common
             {
                 pool.Clear();
                 pool.Add(ModContent.NPCType<CaveFish>(), .10f);
-                pool.Add(ModContent.NPCType<SnapDragon>(), .15f);
-                pool.Add(ModContent.NPCType<SalamanderHunter>(), .25f);
             }
         }
 

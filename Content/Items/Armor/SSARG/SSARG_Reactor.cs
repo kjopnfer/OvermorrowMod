@@ -17,9 +17,9 @@ namespace OvermorrowMod.Content.Items.Armor.SSARG
         {
             Item.width = 26; //filler 
             Item.height = 34;
+            Item.vanity = true;
             Item.value = Item.sellPrice(0, 2, 50, 0);
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 3;
         }
     }
 }

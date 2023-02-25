@@ -126,7 +126,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     }
                 }
 
-                NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, ModContent.NPCType<SandstormBoss>(), 0, -1f, 0f, 0f, 0f, 255);
+                //NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, ModContent.NPCType<SandstormBoss>(), 0, -1f, 0f, 0f, 0f, 255);
 
                 Vector2 origin = new Vector2((int)Projectile.Center.X, (int)(Projectile.Center.Y));
                 float radius = 100;
@@ -178,10 +178,10 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc.active && npc.type == ModContent.NPCType<SandstormBoss>())
+                /*if (npc.active && npc.type == ModContent.NPCType<SandstormBoss>())
                 {
                     Projectile.timeLeft = 5;
-                }
+                }*/
             }
         }
 

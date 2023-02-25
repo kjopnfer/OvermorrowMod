@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Content.WorldGeneration;
@@ -174,115 +174,8 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                     // Choose a random point of the arena and move there, repeat thrice
                     // Align near the player before charging forward
                     // Release unstable orbs that drift towards the player before sucking in dust and exploding
-                    /*if (GlobalCounter <= 240)
-                    {
-                        if (GlobalCounter++ == 0)
-                        {
-                            MoveDirection = Main.rand.NextBool() ? -1 : 1;
-                            InitialPosition = npc.Center;
-                        }
+                    
 
-                        Main.NewText(GlobalCounter);
-
-                        if (GlobalCounter <= 120)
-                        {
-                            npc.spriteDirection = npc.direction;
-                            npc.Center = Vector2.Lerp(InitialPosition, player.Center + Vector2.UnitX * 75 * -MoveDirection, Utils.Clamp(GlobalCounter, 0, 120) / 120f);
-                        }
-                        else
-                        {
-                            if (GlobalCounter == 180)
-                            {
-                                npc.velocity = Vector2.UnitX * 10 * MoveDirection;
-                            }
-                        }
-
-                        if (GlobalCounter == 200)
-                        {
-                            npc.velocity = Vector2.Zero;
-                            GlobalCounter = 0;
-                        }
-                    }*/
-
-                    if (GlobalCounter <= 240)
-                    {
-                        if (GlobalCounter++ == 0)
-                        {
-                            MoveDirection = Main.rand.NextBool() ? -1 : 1;
-                            InitialPosition = NPC.Center;
-                            RandomOffset = new Vector2(Main.rand.Next(15, 20) * 10, Main.rand.Next(-5, 5) * 10);
-                        }
-
-                        Main.NewText(GlobalCounter);
-
-                        if (GlobalCounter <= 120)
-                        {
-                            NPC.spriteDirection = NPC.direction;
-                            NPC.Center = Vector2.Lerp(InitialPosition, player.Center + RandomOffset * -MoveDirection, Utils.Clamp(GlobalCounter, 0, 120) / 120f);
-                        }
-                        else
-                        {
-                            if (GlobalCounter == 180)
-                            {
-                                if (Main.rand.NextBool())
-                                {
-                                    NPC.velocity = Vector2.UnitX * 20 * MoveDirection;
-                                }
-                                else
-                                {
-                                    NPC.velocity = Vector2.UnitY * 20 * MoveDirection;
-                                }
-                            }
-                        }
-
-                        if (GlobalCounter == 200)
-                        {
-                            NPC.velocity = Vector2.Zero;
-                        }
-
-                        if (GlobalCounter == 220)
-                        {
-                            GlobalCounter = 0;
-                        }
-                    }
-
-                    if (AICounter++ % 15 == 0 && AICounter < 280)
-                    {
-                        for (int i = 0; i < Main.rand.Next(2, 4); i++)
-                        {
-                            WeightedRandom<int> RandomType = new WeightedRandom<int>(Main.rand);
-                            RandomType.Add(3, 5);
-                            RandomType.Add(1, 4);
-                            RandomType.Add(2, 1);
-                            int RuinID = RandomType.Get();
-
-                            Vector2 RandomPosition = Desert.DesertArenaCenter + new Vector2(Main.rand.Next(-18, 18) * 38, 0);
-                            int RuinType = Mod.Find<ModNPC>("Ruin" + RuinID).Type;
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)RandomPosition.X, (int)RandomPosition.Y, RuinType, 0, 0f, Main.rand.Next(3, 8) * 128);
-                        }
-                    }
-
-                    if (AICounter % 90 == 0)
-                    {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            float OffsetDirection = i == 0 ? 1 : -1;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitY, ModContent.ProjectileType<ExplodeOrb>(), 30, 6f, Main.myPlayer, NPC.whoAmI, OffsetDirection);
-                        }
-
-                        /*for (int i = 0; i < 6; i++)
-                        {
-                            Vector2 SpawnPosition = npc.Center + new Vector2(28, 0).RotatedBy(MathHelper.ToRadians(360 / 6 * i));
-
-
-                            Vector2 RandomVelocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(Main.rand.Next(60, 90))) * Main.rand.Next(3, 5);
-                            Projectile.NewProjectile(SpawnPosition, RandomVelocity, ModContent.ProjectileType<LightStar>(), 30, 6f, Main.myPlayer, 0, -1);
-
-                            RandomVelocity = Vector2.Normalize(npc.DirectionTo(player.Center)).RotatedBy(MathHelper.ToRadians(-Main.rand.Next(60, 90))) * Main.rand.Next(3, 5);
-                            Projectile.NewProjectile(SpawnPosition, RandomVelocity, ModContent.ProjectileType<LightStar>(), 30, 6f, Main.myPlayer, 0, 1);
-                            //NPC.NewNPC((int)SpawnPosition.X, (int)SpawnPosition.Y, ModContent.NPCType<LightBullet>(), 0, npc.whoAmI, 360 / 8 * i);
-
-                        }*/
                     }
 
                     if (AICounter == 860)
@@ -565,20 +458,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             return false;
         }
 
-        public override void FindFrame(int frameHeight)
-        {
-            /*npc.frameCounter++;
-
-            if (npc.frameCounter % 12f == 11f) // Ticks per frame
-            {
-                npc.frame.Y += frameHeight;
-            }
-
-            if (npc.frame.Y >= frameHeight * 4) // 6 is max # of frames
-            {
-                npc.frame.Y = 0; // Reset back to default
-            }*/
-        }
+  
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
@@ -672,4 +552,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
             potionType = ItemID.LesserHealingPotion;
         }
     }
-}
+}*/

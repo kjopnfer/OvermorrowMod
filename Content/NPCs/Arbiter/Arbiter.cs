@@ -1,4 +1,4 @@
-using OvermorrowMod.Common.NPCs;
+/*using OvermorrowMod.Common.NPCs;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -116,7 +116,7 @@ namespace OvermorrowMod.Content.NPCs.Arbiter
             bodyType = ModContent.NPCType<ArbiterBody>();
             headType = ModContent.NPCType<ArbiterHead>();
             speed = 10.5f;
-            turnSpeed = 0.045f/*0.045f*/;
+            turnSpeed = 0.045f;
         }
     }
-}
+}*/

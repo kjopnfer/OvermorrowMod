@@ -119,7 +119,7 @@ namespace OvermorrowMod.Common
 
         public static void UpdateWater(ILContext il)
         {
-            ILCursor c = new ILCursor(il);
+            /*ILCursor c = new ILCursor(il);
 
             for (int j = 0; j < 4; j++)
             {
@@ -175,7 +175,7 @@ namespace OvermorrowMod.Common
                     }
                 }
                 return value;
-            });
+            });*/
         }
 
         public static int Inverse(int value, int x, int y)
