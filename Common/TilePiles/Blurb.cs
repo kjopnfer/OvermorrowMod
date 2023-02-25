@@ -5,6 +5,11 @@ namespace OvermorrowMod.Common.TilePiles
 {
     internal class Blurb : ModItem
     {
+        public override void SetStaticDefaults()
+        {
+            Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
+        }
+
         public override void SetDefaults()
         {
             Item.height = 16; Item.width = 16;

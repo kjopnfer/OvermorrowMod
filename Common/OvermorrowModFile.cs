@@ -182,6 +182,7 @@ namespace OvermorrowMod.Common
 
         private void ReplaceVanillaTextures()
         {
+            TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "ChainKnife");
             TextureAssets.Item[ItemID.Handgun] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Handgun");
             TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Revolver");
             TextureAssets.Item[ItemID.Musket] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Musket");

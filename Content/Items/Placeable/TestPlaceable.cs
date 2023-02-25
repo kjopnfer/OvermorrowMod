@@ -8,10 +8,11 @@ namespace OvermorrowMod.Content.Items.Placeable
 {
     public class TestPlaceable : ModItem
     {
-        public override string Texture => AssetDirectory.Textures + "ChainKnife";
+        public override string Texture => AssetDirectory.Resprites + "ChainKnife";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Test Placeable");
+            Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
         }
 
         public override void SetDefaults()

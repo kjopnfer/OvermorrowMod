@@ -128,6 +128,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("The Gamer Gun");
+            Tooltip.SetDefault("'THIS IS A TESTING ITEM'");
         }
 
         public override void SafeSetDefaults()
