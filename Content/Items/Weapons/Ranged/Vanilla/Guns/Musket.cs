@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override GunType GunType => GunType.Musket;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(15, 30), new ReloadZone(45, 60), new ReloadZone(75, 90) };
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(15, 35), new ReloadZone(45, 65), new ReloadZone(75, 95) };
 
         public override bool TwoHanded => true;
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(20, -4));
@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public override void SafeSetDefaults()
         {
             MaxReloadTime = 75;
-            MaxShots = 10;
+            MaxShots = 1;
             RecoilAmount = 25;
             ShootSound = SoundID.Item40;
         }

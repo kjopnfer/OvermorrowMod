@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public override int ParentItem => Terraria.ID.ItemID.Boomstick;
         public override GunType GunType => GunType.Shotgun;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(30, 40), new ReloadZone(70, 80) };
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(25, 40), new ReloadZone(65, 80) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(15, 15), new Vector2(15, -5));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(14, -7), new Vector2(14, -2));

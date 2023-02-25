@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override GunType GunType => GunType.Shotgun;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 30), new ReloadZone(60, 70) };
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(24, 38), new ReloadZone(60, 74) };
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(15, 15), new Vector2(15, -5));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(14, -7), new Vector2(14, -4));
         public override float ProjectileScale => 1f;
