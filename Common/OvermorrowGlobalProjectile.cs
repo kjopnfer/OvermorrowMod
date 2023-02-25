@@ -25,6 +25,8 @@ namespace OvermorrowMod.Common
         private bool Undertaker = false;
         private int UndertakerCounter = 0;
 
+        public GunType SourceGunType = GunType.None;
+
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
             Player player = Main.player[projectile.owner];
@@ -42,10 +44,8 @@ namespace OvermorrowMod.Common
                 damage += (int)(damage * 0.10f);
             }
 
-            if (player.GetModPlayer<GunPlayer>().CowBoySet && crit)
+            if (player.GetModPlayer<GunPlayer>().CowBoySet && crit && SourceGunType == GunType.Revolver)
             {
-                
-
                 NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
                 if (closestNPC != null)
                 {
@@ -70,10 +70,12 @@ namespace OvermorrowMod.Common
 
             if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item gun)
             {
-                if (gun.GetWeaponType() == GunType.Revolver)
-                {
+                if (gun.GetWeaponType() != GunType.None) SourceGunType = gun.GetWeaponType();
 
-                }
+                /*if (gun.GetWeaponType() == GunType.Revolver)
+                {
+                    Main.NewText("from revolver");
+                }*/
             }
 
 
