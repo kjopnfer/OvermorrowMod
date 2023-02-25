@@ -33,6 +33,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public int MusketInaccuracy = 0;
         public int GraniteEnergyCount = 0;
 
+        public Dictionary<int, GraniteShard> ShardList = new Dictionary<int, GraniteShard>();
+
         /// <summary>
         /// Used to preserve data between guns whenever swapped to prevent reload skipping
         /// </summary>

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives.Trails;
+using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Interfaces;
 using System;
@@ -84,6 +85,22 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
             if (AICounter < 120 && CollideTile) AICounter++;
 
+            Player player = Main.player[Projectile.owner];
+            if (Projectile.Distance(player.Center) > 16 * 72)
+            {
+                GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+                gunPlayer.ShardList.Remove((int)ShardID);
+                Projectile.Kill();
+            }
+            /*if (CollideTile)
+            {
+                Vector2 embedOffset = CollideTile ? Vector2.UnitX * offsetAmount : Vector2.Zero;
+
+                Vector2 randomPosition = new Vector2(Main.rand.Next(-1, 1), Main.rand.Next(-1, 1)) * 12f;
+                if (Main.rand.NextBool(20) && !Main.gamePaused)
+                    Particle.CreateParticle(Particle.ParticleType<Electricity>(), Projectile.Center + randomPosition + embedOffset, Vector2.One.RotatedBy(Projectile.rotation) * 3f, Color.Cyan, 1, 1f);
+            }*/
+
             if (!CollideTile)
             {
                 if (Main.rand.NextBool(5))
@@ -100,8 +117,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             }
         }
 
-        public void ActivateNextChain()
+        public void ActivateNextChain(int projectileID)
         {
+            Main.NewText(ShardID + " attempting to arm to " + projectileID);
+
             for (int i = 0; i < 18; i++)
             {
                 float randomScale = Main.rand.NextFloat(0.25f, 0.35f);
@@ -113,7 +132,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
             Projectile.timeLeft = 600;
 
-            foreach (Projectile projectile in Main.projectile)
+            if (projectileID != -1)
+                Projectile.NewProjectile(null, Projectile.Center, Vector2.Zero, ModContent.ProjectileType<GraniteElectricity>(), Projectile.damage, 5f, Projectile.owner, Projectile.whoAmI, projectileID);
+
+            /*foreach (Projectile projectile in Main.projectile)
             {
                 if (!projectile.active) continue;
 
@@ -125,7 +147,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
                         Projectile.NewProjectile(null, Projectile.Center, Vector2.Zero, ModContent.ProjectileType<GraniteElectricity>(), Projectile.damage, 5f, Projectile.owner, Projectile.whoAmI, projectile.whoAmI);
                     }
                 }
-            }
+            }*/
 
             HasActivated = true;
         }
@@ -137,7 +159,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
         public override bool PreDraw(ref Color lightColor)
         {
-            //Main.NewText(Projectile.rotation);
             Vector2 embedOffset = CollideTile ? Vector2.UnitX * offsetAmount : Vector2.Zero;
 
             if (Projectile.extraUpdates != 0)

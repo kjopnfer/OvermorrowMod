@@ -52,14 +52,17 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         {
             if (shardCounter < 2) return;
 
-            foreach (Projectile projectile in Main.projectile)
-            {
-                if (!projectile.active || projectile.owner != Projectile.owner) continue;
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
-                if (projectile.ModProjectile is GraniteShard shard && !shard.HasActivated) shard.ActivateNextChain();
+            Main.NewText("arm granite shards", Color.Red);
+
+            foreach (KeyValuePair<int, GraniteShard> entry in gunPlayer.ShardList)
+            {
+                int id = gunPlayer.ShardList.ContainsKey(entry.Key + 1) ? gunPlayer.ShardList[entry.Key + 1].Entity.whoAmI : -1;
+                entry.Value.ActivateNextChain(id);
+                gunPlayer.ShardList.Remove(entry.Key);
             }
 
-            Main.NewText("arm granite shards");
             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/ElectricActivate") { Volume = 0.5f });
 
             shardCounter = 0;
@@ -75,7 +78,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
             string context = "GraniteLauncher";
-            Projectile.NewProjectile(player.GetSource_ItemUse(player.HeldItem, context), shootPosition, velocity, ModContent.ProjectileType<GraniteShard>(), damage, knockBack, player.whoAmI, shardCounter);
+            gunPlayer.ShardList.Add(shardCounter, Main.projectile[Projectile.NewProjectile(player.GetSource_ItemUse(player.HeldItem, context), shootPosition, velocity, ModContent.ProjectileType<GraniteShard>(), damage, knockBack, player.whoAmI, shardCounter)].ModProjectile as GraniteShard);
 
             if (gunPlayer.GraniteEnergyCount > 0) gunPlayer.GraniteEnergyCount--;
 
@@ -96,6 +99,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
         public override bool PreDrawGun(Player player, SpriteBatch spriteBatch, float shotsFired, float shootCounter, Color lightColor)
         {
+            //Vector2 randomPosition = new Vector2(Main.rand.Next(-5, 5), Main.rand.Next(-5, 5)) * 8f;
+            //if (Main.rand.NextBool(20) && !Main.gamePaused)
+            //    Particle.CreateParticle(Particle.ParticleType<Electricity>(), Projectile.Center + randomPosition, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 5f, Color.Cyan, 1, 1f);
+
             Lighting.AddLight(Projectile.Center, new Vector3(0, 0.7f, 0.7f));
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
