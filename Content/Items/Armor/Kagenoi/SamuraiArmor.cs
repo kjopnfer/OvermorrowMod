@@ -11,21 +11,19 @@ namespace OvermorrowMod.Content.Items.Armor.Kagenoi
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Kagenoi Armor");
-            Tooltip.SetDefault("5% increased melee damage");
+            //Tooltip.SetDefault("5% increased melee damage");
         }
 
         public override void SetDefaults()
         {
             Item.width = 26; //filler 
             Item.height = 20;
-            Item.value = Item.sellPrice(0, 2, 50, 0);
-            Item.rare = ItemRarityID.Blue;
-            Item.defense = 3;
+            Item.vanity = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage(DamageClass.Melee) += 0.05f;
+            //player.GetDamage(DamageClass.Melee) += 0.05f;
         }
     }
 }
