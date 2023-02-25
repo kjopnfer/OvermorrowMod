@@ -11,16 +11,13 @@ namespace OvermorrowMod.Content.Items.Armor.Kagenoi
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Kagenoi Hat");
-            Tooltip.SetDefault("5% increased melee speed\n5% increased melee critical strike chance");
         }
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = 10000;
-            Item.rare = ItemRarityID.Blue;
-            Item.defense = 2;
+            Item.vanity = true;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -30,8 +27,8 @@ namespace OvermorrowMod.Content.Items.Armor.Kagenoi
 
         public override void UpdateEquip(Player player)
         {
-            player.GetCritChance(DamageClass.Melee) += 0.05f;
-            player.GetAttackSpeed(DamageClass.Melee) += 0.05f;
+            //player.GetCritChance(DamageClass.Melee) += 0.05f;
+            //player.GetAttackSpeed(DamageClass.Melee) += 0.05f;
         }
     }
 }

@@ -19,7 +19,8 @@ namespace OvermorrowMod.Content.Items.Armor.SSARG
             Item.height = 26;
             Item.value = 10000;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 2;
+            Item.vanity = true;
+            //Item.defense = 2;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

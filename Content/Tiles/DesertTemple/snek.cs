@@ -33,10 +33,10 @@ namespace OvermorrowMod.Content.Tiles.DesertTemple
             int progress = (int)(20 / 120f * texture.Height);
             foreach (NPC npc in Main.npc)
             {
-                if (npc.active && npc.type == ModContent.NPCType<SandstormBoss>())
+                /*if (npc.active && npc.type == ModContent.NPCType<SandstormBoss>())
                 {
                     progress = (int)(npc.localAI[2] / 120f * texture.Height);
-                }
+                }*/
             }
 
             /*if (tile.frameX == 0 && tile.frameY == 0)

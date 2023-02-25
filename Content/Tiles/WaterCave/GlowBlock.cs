@@ -22,7 +22,6 @@ namespace OvermorrowMod.Content.Tiles.WaterCave
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
             MineResist = 2f;
-            ItemDrop = ModContent.ItemType<OvermorrowMod.Content.Items.Placeable.Tiles.GlowBlock>();
             AddMapEntry(new Color(0, 25, 25));
 
             /*TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);

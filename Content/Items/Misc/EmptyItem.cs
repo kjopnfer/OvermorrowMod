@@ -5,6 +5,9 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Misc
 {
+    /// <summary>
+    /// This thing is used for the Tile Piles to make it so hovering over things hides the item on your cursor
+    /// </summary>
     public class EmptyItem : ModItem
     {
         public override string Texture => AssetDirectory.Empty;

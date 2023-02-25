@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.Buffs
             player.GetModPlayer<OvermorrowModPlayer>().StoleArtifact = true;
 
             // This does stuff when Dharuud is active
-            for (int i = 0; i < Main.maxNPCs; i++)
+            /*for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
                 if (npc.active && npc.ModNPC is SandstormBoss)
@@ -35,7 +35,7 @@ namespace OvermorrowMod.Content.Buffs
                     // What is this? Needs migration.
                     // player.doubleJumpSandstorm = true;
                 }
-            }
+            }*/
         }
     }
 }
