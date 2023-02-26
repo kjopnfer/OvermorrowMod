@@ -50,7 +50,7 @@ namespace OvermorrowMod.Common
         {
             if (Main.mouseItem.type == ModContent.ItemType<ReforgeStone>())
             {
-                return false;
+                //return false;
             }
 
             return base.ConsumeItem(item, player);
