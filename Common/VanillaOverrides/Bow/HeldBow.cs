@@ -103,7 +103,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         public override void AI()
         {
             if (Main.myPlayer != player.whoAmI) return;
-            if (player.HeldItem.type != ParentItem) Projectile.Kill();
+            if (player.HeldItem.type != ParentItem)
+                Projectile.Kill();
+            else
+                Projectile.timeLeft = 5;
 
             player.heldProj = Projectile.whoAmI;
 

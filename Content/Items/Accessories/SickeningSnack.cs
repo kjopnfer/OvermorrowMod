@@ -11,8 +11,9 @@ namespace OvermorrowMod.Content.Items.Accessories
         {
             DisplayName.SetDefault("Sickening Snack");
             Tooltip.SetDefault("Ranged attacks have a 33% chance to inflict Fungal Infection for 3 seconds\n" +
-                "Whenever the target is struck by ranged attacks, increase debuff durations on the target by 2 seconds.\n" +
+                "Increase debuff durations on the target by 2 seconds on Ranged hits.\n" +
                 "If the target has less than 50% health, increase debuff durations by 4 seconds instead.\n" +
+                "Debuff durations can only be increased up to a maximum of 16 seconds." +
                 "Fungal Infection reduces armor by 2 for each debuff active.");
         }
 

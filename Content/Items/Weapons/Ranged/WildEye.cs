@@ -71,7 +71,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
-            string context = player.GetModPlayer<GunPlayer>().WildEyeCrit ? "WildEyeCrit" : "HeldGun";
+            string context = player.GetModPlayer<GunPlayer>().WildEyeCrit ? "HeldGun_WildEyeCrit" : "HeldGun";
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, context), shootPosition, velocity, LoadedBulletType, damage, knockBack, player.whoAmI);
         }
 

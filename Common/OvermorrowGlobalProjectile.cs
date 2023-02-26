@@ -34,6 +34,7 @@ namespace OvermorrowMod.Common
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
             Player player = Main.player[projectile.owner];
+            BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
 
             if (WildEyeCrit) crit = true;
 
@@ -70,12 +71,15 @@ namespace OvermorrowMod.Common
             if (player.GetModPlayer<OvermorrowModPlayer>().SnakeBite && IsArrow)
             {
                 target.AddBuff(BuffID.Poisoned, 180);
+                float armorPenetration = player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged);
+
+                Main.NewText(armorPenetration + "/" + bowPlayer.ArrowArmorPenetration + " vs " + target.defense);
 
                 // Shitty way of handling armor penetration for arrows where you add the defense ignored if there is any remaining defense
-                if (player.GetModPlayer<BowPlayer>().ArrowArmorPenetration + player.GetArmorPenetration(DamageClass.Ranged) - target.defense > 5)
+                if (bowPlayer.ArrowArmorPenetration + player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged) - target.defense > 5)
                     damage += 5;
 
-                if (player.GetModPlayer<BowPlayer>().ArrowArmorPenetration + player.GetArmorPenetration(DamageClass.Ranged) > target.defense)
+                if (bowPlayer.ArrowArmorPenetration + armorPenetration > target.defense)
                 {
                     for (int i = 0; i < target.buffType.Length; i++)
                     {
@@ -110,7 +114,6 @@ namespace OvermorrowMod.Common
                     {
                         IsBullet = true;
                         SetHeldGunVariables(sourceAction);
-                        Main.NewText("this is from a held gun");
                     }
 
                     if (sourceType == "HeldBow")
@@ -153,6 +156,13 @@ namespace OvermorrowMod.Common
             {
                 projectile.timeLeft = 100;
             }
+        }
+
+        public override void Kill(Projectile projectile, int timeLeft)
+        {
+            //Main.NewText("wtf");
+
+            base.Kill(projectile, timeLeft);
         }
 
         public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)

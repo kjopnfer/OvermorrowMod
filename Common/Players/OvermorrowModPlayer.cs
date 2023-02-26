@@ -1,24 +1,9 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Buffs.Debuffs;
-using OvermorrowMod.Content.Buffs.Hexes;
-using OvermorrowMod.Content.Items.Accessories;
-using OvermorrowMod.Content.NPCs;
-using System;
-using OvermorrowMod.Content.UI;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameInput;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
-using OvermorrowMod.Content.Items.Consumable;
 using System.Collections.Generic;
-using OvermorrowMod.Common.Cutscenes;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Core;
-using ReLogic.Content;
-using Terraria.GameContent;
+using Terraria.ID;
 
 namespace OvermorrowMod.Common.Players
 {
@@ -29,6 +14,7 @@ namespace OvermorrowMod.Common.Players
         public bool EruditeDamage;
         public bool SerpentTooth;
         public bool SickeningSnack;
+        public bool SnakeBite;
         public bool PredatorTalisman;
         #endregion
 
@@ -46,6 +32,8 @@ namespace OvermorrowMod.Common.Players
         {
             EruditeDamage = false;
             SerpentTooth = false;
+            SickeningSnack = false;
+            SnakeBite = false;
             PredatorTalisman = false;
 
             atomBuff = false;
@@ -88,35 +76,22 @@ namespace OvermorrowMod.Common.Players
             }*/
         }
 
-        public override void OnEnterWorld(Player player)
-        {
-            OvermorrowModSystem.Instance.ScreenColor.SetDarkness(0, 60, 60, true);
-
-            // Manually apply them because the random reroll doesn't seem to work half the time
-            /*int item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
-            Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
-
-            item = Item.NewItem(null, player.Center, ModContent.ItemType<RangedReforge>(), 1, false, -1);
-            Main.item[item].Prefix(ReforgeStone.rangedPrefixes[Main.rand.Next(0, ReforgeStone.rangedPrefixes.Length)]);
-
-            item = Item.NewItem(null, player.Center, ModContent.ItemType<MagicReforge>(), 1, false, -1);
-            Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);
-
-            item = Item.NewItem(null, player.Center, ModContent.ItemType<MeleeReforge>(), 1, false, -1);
-            Main.item[item].Prefix(ReforgeStone.meleePrefixes[Main.rand.Next(0, ReforgeStone.meleePrefixes.Length)]);
-
-            item = Item.NewItem(null, player.Center, ModContent.ItemType<RangedReforge>(), 1, false, -1);
-            Main.item[item].Prefix(ReforgeStone.rangedPrefixes[Main.rand.Next(0, ReforgeStone.rangedPrefixes.Length)]);
-
-            item = Item.NewItem(null, player.Center, ModContent.ItemType<MagicReforge>(), 1, false, -1);
-            Main.item[item].Prefix(ReforgeStone.magicPrefixes[Main.rand.Next(0, ReforgeStone.magicPrefixes.Length)]);*/
-
-            base.OnEnterWorld(player);
-        }
-
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
         {
+            if (SnakeBite)
+            {
+                target.AddBuff(BuffID.Poisoned, 120);
 
+                if (Player.GetArmorPenetration(DamageClass.Generic) + Player.GetArmorPenetration(DamageClass.Melee) > target.defense)
+                {
+                    for (int i = 0; i < target.buffType.Length; i++)
+                    {
+                        if (target.buffType[i] == BuffID.Poisoned) target.DelBuff(i);
+                    }
+
+                    target.AddBuff(BuffID.Venom, 120);
+                }
+            }
         }
 
         public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
