@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common.Players;
+using OvermorrowMod.Common.VanillaOverrides.Bow;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Core;
@@ -14,6 +16,8 @@ namespace OvermorrowMod.Common
     {
         // Life is pain
         public override bool InstancePerEntity => true;
+        public bool IsBullet { get; private set; } = false;
+        public bool IsArrow { get; private set; } = false;
 
         private bool spawnedBlood = false;
         public bool slowedTime = false;
@@ -39,6 +43,7 @@ namespace OvermorrowMod.Common
                 damage += (int)(damage * pointBlankBonus);
             }
 
+            #region Armor
             if (player.CheckArmorEquipped(ItemID.CowboyHat) && crit && projectile.DamageType == DamageClass.Ranged)
             {
                 damage += (int)(damage * 0.10f);
@@ -59,38 +64,74 @@ namespace OvermorrowMod.Common
                     }
                 }
             }
+            #endregion
+
+            #region Accessories
+            if (player.GetModPlayer<OvermorrowModPlayer>().SnakeBite && IsArrow)
+            {
+                target.AddBuff(BuffID.Poisoned, 180);
+
+                // Shitty way of handling armor penetration for arrows where you add the defense ignored if there is any remaining defense
+                if (player.GetModPlayer<BowPlayer>().ArrowArmorPenetration + player.GetArmorPenetration(DamageClass.Ranged) - target.defense > 5)
+                    damage += 5;
+
+                if (player.GetModPlayer<BowPlayer>().ArrowArmorPenetration + player.GetArmorPenetration(DamageClass.Ranged) > target.defense)
+                {
+                    for (int i = 0; i < target.buffType.Length; i++)
+                    {
+                        if (target.buffType[i] == BuffID.Poisoned) target.DelBuff(i);
+                    }
+
+                    target.AddBuff(BuffID.Venom, 120);
+                }
+            }
+            #endregion
         }
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
-            /*if (source is EntitySource_ItemUse_WithAmmo { Item:  })
-            {
-                Main.NewText("this is from a held gun");
-            }*/
-
             if (source is EntitySource_ItemUse_WithAmmo itemUse_WithAmmo && itemUse_WithAmmo.Item is Item gun)
             {
                 if (gun.GetWeaponType() != GunType.None) SourceGunType = gun.GetWeaponType();
-
-                /*if (gun.GetWeaponType() == GunType.Revolver)
-                {
-                    Main.NewText("from revolver");
-                }*/
             }
 
 
             if (source != null && source.Context != null)
             {
+                string[] sourceInfo = source.Context.ToString().Split('_');
+                string sourceType = sourceInfo[0];
+
+                string sourceAction = "none";
+                if (sourceInfo.Length > 1) sourceAction = sourceInfo[1];
+
                 if (source is EntitySource_ItemUse_WithAmmo)
                 {
-                    if (source.Context.ToString() == "HeldGun")
+                    if (sourceType == "HeldGun")
                     {
-                        //Main.NewText("this is from a held gun");
+                        IsBullet = true;
+                        SetHeldGunVariables(sourceAction);
+                        Main.NewText("this is from a held gun");
                     }
 
-                    if (source.Context.ToString() == "WildEyeCrit") WildEyeCrit = true;
-                    else if (source.Context.ToString() == "HeldGun_Undertaker") Undertaker = true;
+                    if (sourceType == "HeldBow")
+                    {
+                        IsArrow = true;
+                    }
                 }
+            }
+        }
+
+        private void SetHeldGunVariables(string sourceAction)
+        {
+            if (sourceAction == "none") return;
+            switch (sourceAction)
+            {
+                case "WildEyeCrit":
+                    WildEyeCrit = true;
+                    break;
+                case "Undertaker":
+                    Undertaker = true;
+                    break;
             }
         }
 
@@ -116,16 +157,7 @@ namespace OvermorrowMod.Common
 
         public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)
         {
-            if (projectile.type == 130 || projectile.type == 131)
-            {
-                target.AddBuff(ModContent.BuffType<FungalInfection>(), 500);
-            }
-
-
-            if (projectile.type == 30)
-            {
-                target.immune[projectile.owner] = 0;
-            }
+            
         }
 
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
