@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         public Color TrailColor(float progress) => Color.Lerp(new Color(0, 137, 255), new Color(122, 232, 246), progress) * progress;
         public float TrailSize(float progress) => 24;
         public Type TrailType() => typeof(TorchTrail);
-
+        public override bool? CanCutTiles() => false;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 24;
