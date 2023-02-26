@@ -36,7 +36,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
                 float progress = 1 - Utils.Clamp(AICounter, 0, 90f) / 90f;
 
                 Color color = Color.Cyan * progress;
-                //color *= (float)Math.Cos(AICounter);
                 spriteBatch.Draw(texture, Projectile.Center + embedOffset.RotatedBy(Projectile.rotation) - Main.screenPosition, null, color, randomCrackRotation, texture.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
 
                 spriteBatch.Reload(BlendState.AlphaBlend);
@@ -92,14 +91,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
                 gunPlayer.ShardList.Remove((int)ShardID);
                 Projectile.Kill();
             }
-            /*if (CollideTile)
-            {
-                Vector2 embedOffset = CollideTile ? Vector2.UnitX * offsetAmount : Vector2.Zero;
-
-                Vector2 randomPosition = new Vector2(Main.rand.Next(-1, 1), Main.rand.Next(-1, 1)) * 12f;
-                if (Main.rand.NextBool(20) && !Main.gamePaused)
-                    Particle.CreateParticle(Particle.ParticleType<Electricity>(), Projectile.Center + randomPosition + embedOffset, Vector2.One.RotatedBy(Projectile.rotation) * 3f, Color.Cyan, 1, 1f);
-            }*/
 
             if (!CollideTile)
             {
@@ -119,7 +110,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
         public void ActivateNextChain(int projectileID)
         {
-            Main.NewText(ShardID + " attempting to arm to " + projectileID);
+            //Main.NewText(ShardID + " attempting to arm to " + projectileID);
 
             for (int i = 0; i < 18; i++)
             {
@@ -134,20 +125,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
             if (projectileID != -1)
                 Projectile.NewProjectile(null, Projectile.Center, Vector2.Zero, ModContent.ProjectileType<GraniteElectricity>(), Projectile.damage, 5f, Projectile.owner, Projectile.whoAmI, projectileID);
-
-            /*foreach (Projectile projectile in Main.projectile)
-            {
-                if (!projectile.active) continue;
-
-                if (projectile.ModProjectile is GraniteShard shard && !shard.HasActivated)
-                {
-                    if (shard.ShardID == (ShardID + 1))
-                    {
-                        Main.NewText(ShardID + " activating " + shard.ShardID);
-                        Projectile.NewProjectile(null, Projectile.Center, Vector2.Zero, ModContent.ProjectileType<GraniteElectricity>(), Projectile.damage, 5f, Projectile.owner, Projectile.whoAmI, projectile.whoAmI);
-                    }
-                }
-            }*/
 
             HasActivated = true;
         }

@@ -1,16 +1,11 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives.Trails;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Core;
 using OvermorrowMod.Core.Interfaces;
 using System;
-using System.Collections.Generic;
 using Terraria;
-using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -87,7 +82,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         public override void Kill(int timeLeft)
         {
             Particle.CreateParticle(Particle.ParticleType<LightBurst>(), Projectile.Center, Vector2.Zero, Color.Cyan * 0.8f, 1, 0.75f, MathHelper.ToRadians(Main.rand.Next(0, 360)));
-            player.GetModPlayer<GunPlayer>().GraniteEnergyCount++;
+            if(player.GetModPlayer<GunPlayer>().GraniteEnergyCount < 8) player.GetModPlayer<GunPlayer>().GraniteEnergyCount++;
         }
 
         private void AdjustMagnitude(ref Vector2 vector)

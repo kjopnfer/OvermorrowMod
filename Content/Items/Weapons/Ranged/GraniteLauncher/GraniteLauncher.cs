@@ -54,8 +54,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
             GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
-            Main.NewText("arm granite shards", Color.Red);
-
             foreach (KeyValuePair<int, GraniteShard> entry in gunPlayer.ShardList)
             {
                 int id = gunPlayer.ShardList.ContainsKey(entry.Key + 1) ? gunPlayer.ShardList[entry.Key + 1].Entity.whoAmI : -1;
@@ -65,7 +63,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/ElectricActivate") { Volume = 0.5f });
 
-            // If for some apparent reason all of them didn't activate, clear the list
+            // If for no apparent reason all of them didn't activate, clear the list
             gunPlayer.ShardList.Clear();
 
             shardCounter = 0;

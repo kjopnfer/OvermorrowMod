@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Biomes;
+using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
@@ -18,14 +19,12 @@ namespace OvermorrowMod.Common
     {
         public override bool InstancePerEntity => true;
 
-        public bool FungiInfection;
         public bool LightningMarked;
 
         public int FungiTime;
 
         public override void ResetEffects(NPC npc)
         {
-            FungiInfection = false;
             LightningMarked = false;
         }
 
@@ -146,23 +145,23 @@ namespace OvermorrowMod.Common
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
+            if (npc.HasBuff<FungalInfection>())
+            {
+                npc.defense -= 2 * npc.buffType.Length;
+            }
+
             if (npc.HasHex(Hex.HexType<LesserIchor>()))
             {
                 npc.defense -= 8;
-            }
-
-            if (npc.HasHex(Hex.HexType<SoulFlame>()))
-            {
-                npc.defense -= 5;
             }
         }
 
         public override void AI(NPC npc)
         {
-            if (FungiInfection)
+            if (npc.HasBuff<FungalInfection>())
             {
                 FungiTime++;
-                if (FungiTime > 24)
+                if (FungiTime % 24 == 0)
                 {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = Main.player[npc.target].Center;
@@ -171,14 +170,13 @@ namespace OvermorrowMod.Common
                     float speed = 0f;
                     Vector2 perturbedSpeed = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + Main.rand.Next(-75, 76) - npc.width / 2, npc.Center.Y + Main.rand.Next(-75, 76) - npc.height / 2, perturbedSpeed.X * speed, perturbedSpeed.Y * speed, ProjectileID.TruffleSpore, npc.defense + 5, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
-                    FungiTime = 0;
                 }
             }
         }
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            if (FungiInfection)
+            if (npc.HasBuff<FungalInfection>())
             {
                 if (Main.rand.NextBool(10))
                 {

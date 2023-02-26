@@ -37,7 +37,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrel_Held>(), 20, GunType.Shotgun) },
             { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<Undertaker_Held>(), 13, GunType.Revolver) },
             { ItemID.Handgun, new GunStats(ModContent.ProjectileType<Handgun_Held>(), 22, GunType.Pistol) },
-            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 10, GunType.Minigun) },
+            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 15, GunType.Minigun) },
             { ItemID.Musket, new GunStats(ModContent.ProjectileType<Musket_Held>(), 136, GunType.Musket) },
         };
 
@@ -55,6 +55,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
 
             if (item.type == ItemID.Handgun) item.useTime = item.useAnimation = 18;
+            if (item.type == ItemID.Minishark) item.useTime = item.useAnimation = 5;
         }
 
         public override void HoldItem(Item item, Player player)
