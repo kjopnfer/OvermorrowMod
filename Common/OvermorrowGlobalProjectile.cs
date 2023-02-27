@@ -71,15 +71,45 @@ namespace OvermorrowMod.Common
             if (player.GetModPlayer<OvermorrowModPlayer>().SnakeBite && IsArrow)
             {
                 target.AddBuff(BuffID.Poisoned, 180);
-                float armorPenetration = player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged);
 
-                Main.NewText(armorPenetration + "/" + bowPlayer.ArrowArmorPenetration + " vs " + target.defense);
+                float armorPenetration = player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged);
+                bool applyVenom = bowPlayer.ArrowArmorPenetration + armorPenetration > target.defense;
+
+                if (!target.buffImmune[BuffID.Poisoned])
+                {
+                    float numSpawned = Main.rand.Next(4, 6);
+                    for (int i = 0; i < numSpawned; i++)
+                    {
+                        float scale = Main.rand.NextFloat(0.7f, 1.25f);
+                        float randomVelocity = Main.rand.Next(1, 2);
+                        float velocityRotation = MathHelper.ToRadians(i * (360 / numSpawned) + Main.rand.Next(0, 4) * 15);
+                        float randomTime = Main.rand.Next(3, 5) * 15;
+
+                        if (applyVenom && !target.buffImmune[BuffID.Venom])
+                            Particle.CreateParticle(Particle.ParticleType<VenomOrb>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, scale, 0f, randomTime);
+                        else if(!target.buffImmune[BuffID.Poisoned])
+                            Particle.CreateParticle(Particle.ParticleType<PoisonOrb>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, scale, 0f, randomTime);
+                    }
+
+                    numSpawned = Main.rand.Next(4, 8);
+                    for (int i = 0; i < numSpawned; i++)
+                    {
+                        float velocityRotation = MathHelper.ToRadians(i * (360 / numSpawned) + Main.rand.Next(0, 4) * 15);
+                        float randomVelocity = Main.rand.Next(2, 4);
+                        float randomTime = Main.rand.Next(3, 5) * 20;
+
+                        if (applyVenom && !target.buffImmune[BuffID.Venom])
+                            Particle.CreateParticle(Particle.ParticleType<VenomSpark>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1, 0.5f, 0f, 0f, 0f, randomTime);
+                        else if (!target.buffImmune[BuffID.Poisoned])
+                            Particle.CreateParticle(Particle.ParticleType<PoisonSpark>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1, 0.5f, 0f, 0f, 0f, randomTime);
+                    }
+                }
 
                 // Shitty way of handling armor penetration for arrows where you add the defense ignored if there is any remaining defense
                 if (bowPlayer.ArrowArmorPenetration + player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged) - target.defense > 5)
                     damage += 5;
 
-                if (bowPlayer.ArrowArmorPenetration + armorPenetration > target.defense)
+                if (applyVenom)
                 {
                     for (int i = 0; i < target.buffType.Length; i++)
                     {
@@ -167,7 +197,7 @@ namespace OvermorrowMod.Common
 
         public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)
         {
-            
+
         }
 
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)

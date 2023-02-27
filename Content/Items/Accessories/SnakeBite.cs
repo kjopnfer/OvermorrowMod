@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Snake's Bite");
+            DisplayName.SetDefault("Snakebite");
             Tooltip.SetDefault("Arrows and Melee gain 5 armor penetration and inflict Poison.\n" +
                 "If the target's defense is less than your armor penetration, inflict Acid Venom instead.");
         }

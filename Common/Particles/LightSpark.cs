@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.ModLoader;
@@ -52,6 +51,42 @@ namespace OvermorrowMod.Common.Particles
             float rotationOffset = particle.customData[1] == 1 ? MathHelper.PiOver2 : 0;
             spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha, particle.rotation + rotationOffset, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
             //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 0f);
+
+            spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+    }
+
+    public class PoisonSpark : LightSpark
+    {   
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+            float heightLerp = MathHelper.Lerp(particle.customData[0], 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+            float widthLerp = MathHelper.Lerp(0.25f, 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+            Color color = Color.Lerp(particle.color, Color.DarkGreen, particle.activeTime / maxTime);
+
+            float rotationOffset = particle.customData[1] == 1 ? MathHelper.PiOver2 : 0;
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha * 0.75f, particle.rotation + rotationOffset, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
+
+            spriteBatch.Reload(BlendState.AlphaBlend);
+        }
+    }
+
+    public class VenomSpark : LightSpark
+    {
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Reload(BlendState.Additive);
+
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
+            float heightLerp = MathHelper.Lerp(particle.customData[0], 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+            float widthLerp = MathHelper.Lerp(0.25f, 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
+            Color color = Color.Lerp(Color.Purple, Color.DarkMagenta, particle.activeTime / maxTime);
+
+            float rotationOffset = particle.customData[1] == 1 ? MathHelper.PiOver2 : 0;
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha * 0.75f, particle.rotation + rotationOffset, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
 
             spriteBatch.Reload(BlendState.AlphaBlend);
         }

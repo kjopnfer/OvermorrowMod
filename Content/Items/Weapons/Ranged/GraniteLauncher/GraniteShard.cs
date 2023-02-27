@@ -87,8 +87,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             Player player = Main.player[Projectile.owner];
             if (Projectile.Distance(player.Center) > 16 * 72)
             {
-                GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
-                gunPlayer.ShardList.Remove((int)ShardID);
+                
                 Projectile.Kill();
             }
 
@@ -209,6 +208,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 
         public override void Kill(int timeLeft)
         {
+            Player player = Main.player[Projectile.owner];
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+            gunPlayer.ShardList.Remove((int)ShardID);
+
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
 
             for (int i = 0; i < 9; i++)
