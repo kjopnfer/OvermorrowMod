@@ -72,6 +72,16 @@ namespace OvermorrowMod.Core
             return false;
         }
 
+        public static bool CheckAccessoryEquipped(this Player player, int type)
+        {
+            for (int i = 13; i < 18; i++)
+            {
+                if (player.armor[i].type == type) return true;       
+            }
+
+            return false;
+        }
+
         public static void SetWeaponType(this Item item, GunType gunType)
         {
             item.GetGlobalItem<GlobalGun>().WeaponType = gunType;

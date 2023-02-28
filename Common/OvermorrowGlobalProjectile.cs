@@ -85,23 +85,28 @@ namespace OvermorrowMod.Common
                         float velocityRotation = MathHelper.ToRadians(i * (360 / numSpawned) + Main.rand.Next(0, 4) * 15);
                         float randomTime = Main.rand.Next(3, 5) * 15;
 
+                        //float cloudScale = Main.rand.NextFloat(0.21f, 0.22f);
+                        //Particle.CreateParticle(Particle.ParticleType<Particles.VenomCloud>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, cloudScale, 0f, Main.rand.Next(7, 9) * 10);
+
                         if (applyVenom && !target.buffImmune[BuffID.Venom])
                             Particle.CreateParticle(Particle.ParticleType<VenomOrb>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, scale, 0f, randomTime);
                         else if(!target.buffImmune[BuffID.Poisoned])
                             Particle.CreateParticle(Particle.ParticleType<PoisonOrb>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, scale, 0f, randomTime);
                     }
 
-                    numSpawned = Main.rand.Next(4, 8);
+                    numSpawned = Main.rand.Next(2, 4);
                     for (int i = 0; i < numSpawned; i++)
                     {
                         float velocityRotation = MathHelper.ToRadians(i * (360 / numSpawned) + Main.rand.Next(0, 4) * 15);
-                        float randomVelocity = Main.rand.Next(2, 4);
-                        float randomTime = Main.rand.Next(3, 5) * 20;
+                        float randomVelocity = Main.rand.Next(0, 2);
+                        float randomTime = Main.rand.Next(7, 9) * 10;
+
+                        float cloudScale = Main.rand.NextFloat(0.21f, 0.22f);
 
                         if (applyVenom && !target.buffImmune[BuffID.Venom])
-                            Particle.CreateParticle(Particle.ParticleType<VenomSpark>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1, 0.5f, 0f, 0f, 0f, randomTime);
+                            Particle.CreateParticle(Particle.ParticleType<Particles.VenomCloud>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, cloudScale, 0f, randomTime);
                         else if (!target.buffImmune[BuffID.Poisoned])
-                            Particle.CreateParticle(Particle.ParticleType<PoisonSpark>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1, 0.5f, 0f, 0f, 0f, randomTime);
+                            Particle.CreateParticle(Particle.ParticleType<Particles.Cloud>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, cloudScale, 0f, randomTime);
                     }
                 }
 
