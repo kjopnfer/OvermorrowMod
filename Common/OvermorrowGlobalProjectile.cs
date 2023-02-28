@@ -68,14 +68,14 @@ namespace OvermorrowMod.Common
             #endregion
 
             #region Accessories
-            if (player.GetModPlayer<OvermorrowModPlayer>().SnakeBite && IsArrow)
+            if (player.GetModPlayer<OvermorrowModPlayer>().SnakeBite && IsArrow && Main.rand.NextBool(5))
             {
                 target.AddBuff(BuffID.Poisoned, 180);
 
                 float armorPenetration = player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged);
                 bool applyVenom = bowPlayer.ArrowArmorPenetration + armorPenetration > target.defense;
 
-                if (!target.buffImmune[BuffID.Poisoned])
+                if (!player.GetModPlayer<OvermorrowModPlayer>().SnakeBiteHide)
                 {
                     float numSpawned = Main.rand.Next(4, 6);
                     for (int i = 0; i < numSpawned; i++)
@@ -90,7 +90,7 @@ namespace OvermorrowMod.Common
 
                         if (applyVenom && !target.buffImmune[BuffID.Venom])
                             Particle.CreateParticle(Particle.ParticleType<VenomOrb>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, scale, 0f, randomTime);
-                        else if(!target.buffImmune[BuffID.Poisoned])
+                        else if (!target.buffImmune[BuffID.Poisoned])
                             Particle.CreateParticle(Particle.ParticleType<PoisonOrb>(), projectile.Center, Vector2.One.RotatedBy(velocityRotation) * randomVelocity, Color.LimeGreen, 1f, scale, 0f, randomTime);
                     }
 

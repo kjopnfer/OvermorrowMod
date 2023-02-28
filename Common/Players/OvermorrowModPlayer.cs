@@ -18,6 +18,10 @@ namespace OvermorrowMod.Common.Players
         public bool PredatorTalisman;
         #endregion
 
+        #region Accessory Visibility
+        public bool SnakeBiteHide;
+        #endregion
+
         // Buffs
         public bool atomBuff;
         public bool smolBoi;
