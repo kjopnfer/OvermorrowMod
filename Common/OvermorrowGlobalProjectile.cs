@@ -3,7 +3,6 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Players;
 using OvermorrowMod.Common.VanillaOverrides.Bow;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
-using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.DataStructures;
@@ -24,6 +23,8 @@ namespace OvermorrowMod.Common
 
         public bool RetractSlow = false;
         private bool HasRebounded = false;
+        private bool PracticeTargetHit = false;
+
 
         private bool WildEyeCrit = false;
         private bool Undertaker = false;
@@ -202,7 +203,31 @@ namespace OvermorrowMod.Common
 
         public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)
         {
+            Player player = Main.player[projectile.owner];
+            BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
+            {
+                if (bowPlayer.PracticeTargetCounter < 5)
+                {
+                    bowPlayer.PracticeTargetCounter++;
+                    Projectile.NewProjectile(null, player.Center + new Vector2(-4, -32), Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.PracticeTarget.PracticeTargetIcon>(), 0, 0f, player.whoAmI);
+                }
 
+                PracticeTargetHit = true;
+            }
+        }
+
+        public override bool OnTileCollide(Projectile projectile, Vector2 oldVelocity)
+        {
+            Player player = Main.player[projectile.owner];
+            BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+
+            if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
+            {
+                bowPlayer.PracticeTargetCounter = 0;
+            }
+
+            return base.OnTileCollide(projectile, oldVelocity);
         }
 
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)

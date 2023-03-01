@@ -15,11 +15,13 @@ namespace OvermorrowMod.Common.Players
         public bool SerpentTooth;
         public bool SickeningSnack;
         public bool SnakeBite;
+        public bool PracticeTarget;
         public bool PredatorTalisman;
         #endregion
 
         #region Accessory Visibility
         public bool SnakeBiteHide;
+        public bool PracticeTargetHide;
         #endregion
 
         // Buffs
@@ -38,6 +40,7 @@ namespace OvermorrowMod.Common.Players
             SerpentTooth = false;
             SickeningSnack = false;
             SnakeBite = false;
+            PracticeTarget = false;
             PredatorTalisman = false;
 
             atomBuff = false;
@@ -95,6 +98,11 @@ namespace OvermorrowMod.Common.Players
 
                     target.AddBuff(BuffID.Venom, 120);
                 }
+            }
+
+            if (PracticeTarget)
+            {
+
             }
         }
 

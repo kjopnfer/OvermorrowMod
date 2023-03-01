@@ -10,6 +10,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
     public class BowPlayer : ModPlayer
     {
         public int ArrowArmorPenetration;
+        public int PracticeTargetCounter = 0;
 
         public override void ResetEffects()
         {
