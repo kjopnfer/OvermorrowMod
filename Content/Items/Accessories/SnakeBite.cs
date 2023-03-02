@@ -11,9 +11,9 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Snakebite");
-            Tooltip.SetDefault("Arrows and Melee gain 5 armor penetration.\n" +
-                "Arrows and Melee have a 20% chance to inflict Poison.\n" +
-                "If the target's defense is less than your armor penetration, inflict Acid Venom instead.");
+            Tooltip.SetDefault("Arrows and Melee gain 5 armor penetration\n" +
+                "Arrows and Melee have a 20% chance to inflict Poison\n" +
+                "If the target's defense is less than your armor penetration, inflict Acid Venom instead");
         }
 
         public override void SetDefaults()

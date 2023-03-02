@@ -196,7 +196,13 @@ namespace OvermorrowMod.Common
 
         public override void Kill(Projectile projectile, int timeLeft)
         {
-            //Main.NewText("wtf");
+            Player player = Main.player[projectile.owner];
+            BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+
+            if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
+            {
+                SpawnPracticeTargetFail(player);
+            }
 
             base.Kill(projectile, timeLeft);
         }
@@ -205,15 +211,10 @@ namespace OvermorrowMod.Common
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+
             if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
             {
-                if (bowPlayer.PracticeTargetCounter < 5)
-                {
-                    bowPlayer.PracticeTargetCounter++;
-                    Projectile.NewProjectile(null, player.Center + new Vector2(-4, -32), Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.PracticeTarget.PracticeTargetIcon>(), 0, 0f, player.whoAmI);
-                }
-
-                PracticeTargetHit = true;
+                SpawnPracticeTargetHit(player);
             }
         }
 
@@ -224,10 +225,33 @@ namespace OvermorrowMod.Common
 
             if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
             {
-                bowPlayer.PracticeTargetCounter = 0;
+                SpawnPracticeTargetFail(player);
             }
 
             return base.OnTileCollide(projectile, oldVelocity);
+        }
+
+        private void SpawnPracticeTargetHit(Player player)
+        {
+            BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+
+            if (bowPlayer.PracticeTargetCounter < 5)
+            {
+                bowPlayer.PracticeTargetCounter++;
+                Projectile.NewProjectile(null, player.Center + new Vector2(-4, -32), Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.PracticeTarget.PracticeTargetIcon>(), 0, 0f, player.whoAmI);
+            }
+
+            PracticeTargetHit = true;
+        }
+
+        private void SpawnPracticeTargetFail(Player player)
+        {
+            BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+
+            int failCount = bowPlayer.PracticeTargetCounter == 0 ? -1 : bowPlayer.PracticeTargetCounter;
+
+            Projectile.NewProjectile(null, player.Center + new Vector2(-4, -32), Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.PracticeTarget.PracticeTargetIcon>(), 0, 0f, player.whoAmI, 0f, failCount);
+            bowPlayer.PracticeTargetCounter = 0;
         }
 
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)

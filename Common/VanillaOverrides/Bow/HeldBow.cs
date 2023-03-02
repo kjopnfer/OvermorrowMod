@@ -114,6 +114,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             HandleBowUse();
         }
 
+        private float PracticeTargetModifier => MaxChargeTime * (0.04f * player.GetModPlayer<BowPlayer>().PracticeTargetCounter);
+        private int ModifiedChargeTime => (int)Math.Ceiling(MaxChargeTime - PracticeTargetModifier < 6 ? 6 : MaxChargeTime - PracticeTargetModifier);
+
         /// <summary>
         /// Handles the drawing of the player's arm and the bow's rotation
         /// </summary>
@@ -129,8 +132,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
 
-            Player.CompositeArmStretchAmount stretchAmount = drawCounter < Math.Round(MaxChargeTime * 0.33) ? Player.CompositeArmStretchAmount.Full : Player.CompositeArmStretchAmount.Quarter;
-            if (drawCounter > Math.Round(MaxChargeTime * 0.66f)) stretchAmount = Player.CompositeArmStretchAmount.None;
+            Player.CompositeArmStretchAmount stretchAmount = drawCounter < Math.Round(ModifiedChargeTime * 0.33) ? Player.CompositeArmStretchAmount.Full : Player.CompositeArmStretchAmount.Quarter;
+            if (drawCounter > Math.Round(ModifiedChargeTime * 0.66f)) stretchAmount = Player.CompositeArmStretchAmount.None;
 
             player.SetCompositeArmFront(true, stretchAmount, Projectile.rotation - MathHelper.PiOver2);
 
@@ -157,7 +160,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
                 if (FindAmmo())
                 {
-                    if (drawCounter > MaxChargeTime) drawCounter = MaxChargeTime;
+                    if (drawCounter > ModifiedChargeTime) drawCounter = ModifiedChargeTime;
                     drawCounter += ChargeSpeed;
 
                     // Prevent the player from switching items if they are drawing the bow
@@ -246,7 +249,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         /// </summary>
         private void ShootArrow()
         {
-            float progress = Utils.Clamp(drawCounter, 0, MaxChargeTime) / MaxChargeTime;
+            float progress = Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime;
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, progress).RotatedBy(Projectile.rotation);
             Vector2 arrowPosition = player.Center + arrowOffset;
 
@@ -254,7 +257,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             float speed = MathHelper.Lerp(1, MaxSpeed, progress);
 
             SoundEngine.PlaySound(ShootSound);
-            float damage = MathHelper.Lerp(0.25f, 1, Utils.Clamp(drawCounter, 0, MaxChargeTime) / MaxChargeTime) * Projectile.damage;
+            float damage = MathHelper.Lerp(0.25f, 1, Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime) * Projectile.damage;
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType, "HeldBow"), arrowPosition, velocity * speed, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
 
             ConsumeAmmo();
@@ -296,7 +299,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 bottomPosition = Projectile.Center + StringPositions.Item2.RotatedBy(Projectile.rotation);
 
             Vector2 restingPosition = Vector2.UnitX * (drawCounter < 0 ? 12 : 10);
-            Vector2 armOffset = Vector2.Lerp(restingPosition, Vector2.UnitX * -1, Utils.Clamp(drawCounter, 0, MaxChargeTime) / MaxChargeTime).RotatedBy(Projectile.rotation);
+            Vector2 armOffset = Vector2.Lerp(restingPosition, Vector2.UnitX * -1, Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime).RotatedBy(Projectile.rotation);
             Vector2 armPosition = player.MountedCenter + armOffset;
 
             Color color = StringGlow ? StringColor : StringColor * Lighting.Brightness((int)player.Center.X / 16, (int)player.Center.Y / 16);
