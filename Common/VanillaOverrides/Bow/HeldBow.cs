@@ -110,6 +110,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             player.heldProj = Projectile.whoAmI;
 
+            Main.NewText(ModifiedChargeTime);
+
             HandlePlayerDrawing();
             HandleBowUse();
         }

@@ -99,11 +99,6 @@ namespace OvermorrowMod.Common.Players
                     target.AddBuff(BuffID.Venom, 120);
                 }
             }
-
-            if (PracticeTarget)
-            {
-
-            }
         }
 
         public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)

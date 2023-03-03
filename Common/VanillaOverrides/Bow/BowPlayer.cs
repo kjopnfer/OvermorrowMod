@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Common.Players;
 using OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher;
 using System.Collections.Generic;
 using Terraria;
@@ -14,7 +15,15 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
         public override void ResetEffects()
         {
+
             ArrowArmorPenetration = 0;
+        }
+
+        public override void PostUpdateEquips()
+        {
+            if (!Player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget) PracticeTargetCounter = 0;
+
+            base.PostUpdateEquips();
         }
     }
 }
