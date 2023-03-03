@@ -110,7 +110,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             player.heldProj = Projectile.whoAmI;
 
-            Main.NewText(ModifiedChargeTime);
+            Main.NewText(drawCounter + " / " + ModifiedChargeTime);
 
             HandlePlayerDrawing();
             HandleBowUse();
@@ -180,6 +180,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                     // Prevent the player from switching items if they have shot the bow
                     player.itemTime = 30;
                     player.itemAnimation = 30;
+
+                    flashCounter = 0;
                 }
 
                 if (drawCounter < 0) drawCounter++;
@@ -221,7 +223,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 {
                     Item item = player.inventory[54 + i];
                     if (item.type == ItemID.None || item.ammo != AmmoID.Arrow) continue;
- 
+
                     LoadedArrowType = item.shoot;
                     LoadedArrowItemType = item.type;
 
@@ -268,12 +270,20 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             LoadedArrowItemType = -1;
         }
 
+        private int flashCounter = 0;
+
         /// <summary>
         /// Handles the ingame drawing for the projectile on the held bow
         /// </summary>
         /// <param name="lightColor"></param>
         private void DrawArrow(Color lightColor)
         {
+            if (drawCounter >= ModifiedChargeTime)
+            {
+                if (flashCounter < 32 && !Main.gamePaused) flashCounter++;
+            }
+
+
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
             Vector2 arrowPosition = player.MountedCenter + arrowOffset;
 
@@ -286,9 +296,22 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             if (LoadedArrowType == ProjectileID.CursedArrow) Lighting.AddLight(arrowPosition, 0.647f, 1f, 0f);
 
             Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
+
+            Main.spriteBatch.Reload(SpriteSortMode.Immediate);
             
+            float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 8f), 0, 1);
+
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+            effect.Parameters["WhiteoutProgress"].SetValue(flashProgress);
+            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+            Color lerpColor = Color.Lerp(color, Color.White, flashProgress);
+
             texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;
-            Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, color, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+            Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, lerpColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
+
+            Main.spriteBatch.Reload(SpriteSortMode.Deferred);
         }
 
         /// <summary>
