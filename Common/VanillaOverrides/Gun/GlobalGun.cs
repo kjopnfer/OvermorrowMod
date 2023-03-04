@@ -55,7 +55,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
 
             if (item.type == ItemID.Handgun) item.useTime = item.useAnimation = 18;
-            if (item.type == ItemID.Minishark) item.useTime = item.useAnimation = 5;
+            if (item.type == ItemID.Minishark)
+            {
+                item.crit = 1;
+                item.useTime = item.useAnimation = 6;
+            }
         }
 
         public override void HoldItem(Item item, Player player)

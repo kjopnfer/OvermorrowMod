@@ -186,6 +186,7 @@ namespace OvermorrowMod.Common
             TextureAssets.Item[ItemID.Handgun] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Handgun");
             TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Revolver");
             TextureAssets.Item[ItemID.Musket] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Musket");
+            TextureAssets.Item[ItemID.Minishark] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Minishark");
             TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Boomstick");
         }
 

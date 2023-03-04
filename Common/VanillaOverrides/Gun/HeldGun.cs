@@ -362,8 +362,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public int ShotsFired = 0;
         private int shootCounter = 0;
-        private int shootTime => player.HeldItem.useTime;
-        private int shootAnimation => player.HeldItem.useAnimation;
+        public int shootTime => player.HeldItem.useTime;
+        public int shootAnimation => player.HeldItem.useAnimation;
 
         private int useTimeModifier = 0;
 

@@ -63,11 +63,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
-            Vector2 directionOffset = Vector2.Zero;
-            if (player.direction == -1)
-            {
-                directionOffset = new Vector2(0, -10);
-            }
+            Vector2 directionOffset = player.direction == -1 ? new Vector2(0, -10) : Vector2.Zero;
 
             if (reloadDelay > 0 && reloadSuccess)
             {
