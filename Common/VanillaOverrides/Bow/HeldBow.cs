@@ -110,13 +110,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             player.heldProj = Projectile.whoAmI;
 
-            Main.NewText(drawCounter + " / " + ModifiedChargeTime);
-
             HandlePlayerDrawing();
             HandleBowUse();
         }
 
-        private float PracticeTargetModifier => MaxChargeTime * (0.04f * player.GetModPlayer<BowPlayer>().PracticeTargetCounter);
+        private float PracticeTargetModifier => MaxChargeTime * (0.05f * player.GetModPlayer<BowPlayer>().PracticeTargetCounter);
         private int ModifiedChargeTime => (int)Math.Ceiling(MaxChargeTime - PracticeTargetModifier < 6 ? 6 : MaxChargeTime - PracticeTargetModifier);
 
         /// <summary>

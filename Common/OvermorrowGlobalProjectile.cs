@@ -158,6 +158,12 @@ namespace OvermorrowMod.Common
                     }
                 }
             }
+
+            // Vanilla arrows default to a rotation of 0 when initially spawned, I don't know why
+            if (IsArrow)
+            {
+                projectile.rotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            }
         }
 
         private void SetHeldGunVariables(string sourceAction)
