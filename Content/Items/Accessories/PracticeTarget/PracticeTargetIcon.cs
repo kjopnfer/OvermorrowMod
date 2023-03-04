@@ -13,7 +13,6 @@ namespace OvermorrowMod.Content.Items.Accessories.PracticeTarget
 {
     public class PracticeTargetIcon : ModProjectile
     {
-        public override string Texture => AssetDirectory.Empty;
         public override bool ShouldUpdatePosition() => false;
         public override void SetDefaults()
         {
@@ -55,13 +54,14 @@ namespace OvermorrowMod.Content.Items.Accessories.PracticeTarget
         {
             if (FailCount != 0 && FailCount != -1) return false;
 
-            Texture2D texture = TextureAssets.Item[ModContent.ItemType<PracticeTarget>()].Value;
+            //Texture2D texture = TextureAssets.Item[ModContent.ItemType<PracticeTarget>()].Value;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
 
             Vector2 scale = new Vector2(MathHelper.Lerp(0.5f, 1f, Utils.Clamp(AICounter, 0, 10) / 10f), 1f);
             float alpha = MathHelper.Lerp(0, 0.75f, (float)(Math.Sin(AICounter / 15f)) / 2 + 0.5f);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White * alpha, Projectile.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 1);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White * alpha, Projectile.rotation, texture.Size() / 2f, scale * 0.9f, SpriteEffects.None, 1);
 
-            return base.PreDraw(ref lightColor);
+            return false;
         }
     }
 
@@ -89,11 +89,11 @@ namespace OvermorrowMod.Content.Items.Accessories.PracticeTarget
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = TextureAssets.Item[ModContent.ItemType<PracticeTarget>()].Value;
+            Texture2D texture = TextureAssets.Projectile[ModContent.ProjectileType<PracticeTargetIcon>()].Value;
 
             Vector2 scale = new Vector2(MathHelper.Lerp(0.5f, 1f, Utils.Clamp(AICounter, 0, 10) / 10f), 1f);
             float alpha = MathHelper.Lerp(0, 0.55f, (float)(Math.Sin(AICounter / 15f)) / 2 + 0.5f);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White * alpha, Projectile.rotation, texture.Size() / 2f, scale * 0.75f, SpriteEffects.None, 1);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White * alpha, Projectile.rotation, texture.Size() / 2f, scale * 0.7f, SpriteEffects.None, 1);
 
             return base.PreDraw(ref lightColor);
         }
