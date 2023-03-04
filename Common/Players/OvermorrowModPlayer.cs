@@ -12,6 +12,7 @@ namespace OvermorrowMod.Common.Players
         // All accessory booleans are ordered alphabetically
         #region Accessories
         public bool EruditeDamage;
+        public bool ImbuementPouch;
         public bool SerpentTooth;
         public bool SickeningSnack;
         public bool SnakeBite;
@@ -37,6 +38,7 @@ namespace OvermorrowMod.Common.Players
         public override void ResetEffects()
         {
             EruditeDamage = false;
+            ImbuementPouch = false;
             SerpentTooth = false;
             SickeningSnack = false;
             SnakeBite = false;
@@ -83,6 +85,41 @@ namespace OvermorrowMod.Common.Players
             }*/
         }
 
+        private int FindFlaskBuff()
+        {
+            for (int i = 0; i < Player.buffType.Length; i++)
+            {
+                switch (Player.buffType[i])
+                {
+                    case BuffID.WeaponImbueCursedFlames:
+                        return BuffID.CursedInferno;
+                    case BuffID.WeaponImbueFire:
+                        return BuffID.OnFire;
+                    case BuffID.WeaponImbueGold:
+                        return BuffID.Midas;
+                    case BuffID.WeaponImbueIchor:
+                        return BuffID.Ichor;
+                    case BuffID.WeaponImbueNanites:
+                        return BuffID.Confused;
+                    case BuffID.WeaponImbuePoison:
+                        return BuffID.Poisoned;
+                    case BuffID.WeaponImbueVenom:
+                        return BuffID.Venom;
+                }
+            }
+
+            return -1;
+        }
+
+        private void ApplyFlaskBuffs(NPC target)
+        {
+            int buffID = FindFlaskBuff();
+            if (buffID != -1)
+            {
+                target.AddBuff(buffID, 360);
+            }
+        }
+
         public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
         {
             if (SnakeBite)
@@ -99,7 +136,10 @@ namespace OvermorrowMod.Common.Players
                     target.AddBuff(BuffID.Venom, 120);
                 }
             }
+
+            if (ImbuementPouch) ApplyFlaskBuffs(target);
         }
+
 
         public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
         {
@@ -116,6 +156,8 @@ namespace OvermorrowMod.Common.Players
                     if (Main.rand.NextBool(3)) target.AddBuff(ModContent.BuffType<FungalInfection>(), 180);
                 }
             }
+
+            if (ImbuementPouch) ApplyFlaskBuffs(target);
         }
 
         public override void OnHitByProjectile(Projectile proj, int damage, bool crit)
