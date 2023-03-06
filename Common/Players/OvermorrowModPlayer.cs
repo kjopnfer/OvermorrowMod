@@ -4,6 +4,8 @@ using Terraria;
 using Terraria.ModLoader;
 using System.Collections.Generic;
 using Terraria.ID;
+using Terraria.GameInput;
+using Terraria.DataStructures;
 
 namespace OvermorrowMod.Common.Players
 {
@@ -11,6 +13,7 @@ namespace OvermorrowMod.Common.Players
     {
         // All accessory booleans are ordered alphabetically
         #region Accessories
+        public bool BearTrap;
         public bool EruditeDamage;
         public bool ImbuementPouch;
         public bool SerpentTooth;
@@ -21,11 +24,15 @@ namespace OvermorrowMod.Common.Players
         #endregion
 
         #region Accessory Visibility
+        public bool BearTrapHide;
         public bool SnakeBiteHide;
         public bool PracticeTargetHide;
         #endregion
 
-        // Buffs
+        #region Accessory Counters
+        public int BearTrapCounter = 0;
+
+        #endregion
         public bool atomBuff;
         public bool smolBoi;
 
@@ -37,6 +44,7 @@ namespace OvermorrowMod.Common.Players
 
         public override void ResetEffects()
         {
+            BearTrap = false;
             EruditeDamage = false;
             ImbuementPouch = false;
             SerpentTooth = false;
@@ -155,6 +163,17 @@ namespace OvermorrowMod.Common.Players
 
                     if (Main.rand.NextBool(3)) target.AddBuff(ModContent.BuffType<FungalInfection>(), 180);
                 }
+
+                if (BearTrap && damage >= 70)
+                {
+                    if (BearTrapCounter < 3)
+                    {
+                        BearTrapCounter++;
+
+                        Vector2 offset = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * 72;
+                        Projectile.NewProjectile(null, Player.Center + offset, Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.BearTrap.BearTrapIcon>(), 0, 0f, Player.whoAmI, 0f);
+                    }
+                }
             }
 
             if (ImbuementPouch) ApplyFlaskBuffs(target);
@@ -173,6 +192,33 @@ namespace OvermorrowMod.Common.Players
         public override void PostUpdate()
         {
 
+        }
+
+        private bool CheckOnGround()
+        {
+            Tile leftTile = Framing.GetTileSafely(Player.Hitbox.BottomLeft());
+            Tile rightTile = Framing.GetTileSafely(Player.Hitbox.BottomRight());
+            if (leftTile.HasTile && Main.tileSolid[leftTile.TileType] && rightTile.HasTile && Main.tileSolid[rightTile.TileType])
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if (OvermorrowModFile.BearTrapKey.JustPressed && BearTrap && BearTrapCounter > 0 && CheckOnGround())
+            {
+                Main.NewText(CheckOnGround());
+                BearTrapCounter--;
+
+                Projectile.NewProjectile(new EntitySource_Misc("PlayerTrap"), Player.Center, Vector2.Zero, ModContent.ProjectileType<Content.Items.Accessories.BearTrap.PlacedBearTrap>(), 0, 0f, Player.whoAmI, 0f);
+
+                //Main.NewText("pressed bear trap");
+            }
+
+            base.ProcessTriggers(triggersSet);
         }
 
         private bool IsInRange(Vector2 coordinates)

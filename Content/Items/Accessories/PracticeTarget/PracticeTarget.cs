@@ -1,5 +1,4 @@
 using OvermorrowMod.Common.Players;
-using OvermorrowMod.Common.VanillaOverrides.Bow;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

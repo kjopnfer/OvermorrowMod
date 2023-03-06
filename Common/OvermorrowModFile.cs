@@ -36,6 +36,7 @@ namespace OvermorrowMod.Common
         public static ModKeybind ToggleUI;
         public static ModKeybind AmuletKey;
         public static ModKeybind AmmoSwapKey;
+        public static ModKeybind BearTrapKey;
 
         public static List<int[]> ModBowsToOverride = new List<int[]>();
         public static OvermorrowModFile Instance { get; set; }
@@ -90,6 +91,7 @@ namespace OvermorrowMod.Common
             AmuletKey = KeybindLoader.RegisterKeybind(this, "Artemis Amulet Attack", "C");
             ToggleUI = KeybindLoader.RegisterKeybind(this, "Toggle UI", "R"); // This is for debugging
             AmmoSwapKey = KeybindLoader.RegisterKeybind(this, "Activate Ammo Swap", "Q");
+            BearTrapKey = KeybindLoader.RegisterKeybind(this, "Place Bear Trap", "T");
 
             ShaderLoader.Load();
 
@@ -224,6 +226,7 @@ namespace OvermorrowMod.Common
             AmuletKey = null;
             ToggleUI = null;
             AmmoSwapKey = null;
+            BearTrapKey = null;
 
             ModBowsToOverride.Clear();
 
