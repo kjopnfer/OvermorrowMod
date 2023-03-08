@@ -42,25 +42,46 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
             while (!CheckOnGround()) Projectile.Center += Vector2.UnitY;
         }
 
-        public ref float AICounter => ref Projectile.ai[0];
+        private enum AIState
+        {
+            Setup = 0,
+            Active = 1,
+            Triggered = 2
+        }
+
+        public ref float AICase => ref Projectile.ai[0];
+        public ref float AICounter => ref Projectile.ai[1];
         public override void AI()
         {
             AICounter++;
 
-            if (AICounter > 38)
+            switch (AICase)
             {
-                foreach (NPC npc in Main.npc)
-                {
-                    if (npc.friendly || !npc.active || !npc.Hitbox.Intersects(Projectile.Hitbox)) continue;
+                case (int)AIState.Setup:
+                    if (AICounter >= 90)
+                    {
+                        AICase = (int)AIState.Active;
+                    }
+                    break;
+                case (int)AIState.Active:
+                    foreach (NPC npc in Main.npc)
+                    {
+                        if (npc.friendly || !npc.active || !npc.Hitbox.Intersects(Projectile.Hitbox)) continue;
 
-                    Main.NewText("trap");                    
-                }
+                        npc.StrikeNPC(50, 0f, 0);
+                        Main.NewText("trap");
+                        AICase = (int)AIState.Triggered;
+                        break;
+                    }
+                    break;
+                case (int)AIState.Triggered:
+                    break;
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (AICounter > 38)
+            if (AICase == (int)AIState.Active)
             {
                 Main.spriteBatch.Reload(BlendState.Additive);
                 Texture2D glowTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_05").Value;
@@ -70,14 +91,15 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
 
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
 
-            int frame = (int)MathHelper.Lerp(3, 0, Utils.Clamp(AICounter - 30, 0, 8) / 8f);
+            int frame = (int)MathHelper.Lerp(3, 0, Utils.Clamp(AICounter - 30, 0, 60) / 60f);
+            if (AICase == (int)AIState.Triggered) frame = 3;
 
             Rectangle drawRectangle = new Rectangle(0, texture.Height / 4 * frame, texture.Width, texture.Height / 4);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, drawRectangle, lightColor, Projectile.rotation, drawRectangle.Size() / 2f, 1f, SpriteEffects.None, 1);
 
             Main.spriteBatch.Reload(BlendState.Additive);
 
-            if (AICounter > 38)
+            if (AICase == (int)AIState.Active)
             {
                 texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "PulseCircle").Value;
 
@@ -90,12 +112,12 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
                     Color color = Color.Lerp(Color.Orange, Color.Transparent, progress);
                     float scale = MathHelper.Lerp(0, 0.25f, progress);
 
-                    // The original is kinda faded out this just makes it thicker
                     Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * 0.75f, 0f, texture.Size() / 2, scale, SpriteEffects.None, 1f);
                 }
 
-                Main.spriteBatch.Reload(BlendState.AlphaBlend);
             }
+
+            Main.spriteBatch.Reload(BlendState.AlphaBlend);
 
             return false;
         }
