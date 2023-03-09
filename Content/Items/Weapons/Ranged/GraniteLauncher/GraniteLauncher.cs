@@ -10,6 +10,7 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
 {
@@ -166,6 +167,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             Item.rare = ItemRarityID.Orange;
             Item.useTime = 22;
             Item.useAnimation = 22;
+            Item.useAmmo = AmmoID.None;
+        }
+
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            if (Main.playerInventory) return;
+
+            int shardCount = Main.LocalPlayer.GetModPlayer<GunPlayer>().GraniteEnergyCount;
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, shardCount.ToString(), position + new Vector2(0f, 10f) * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, Main.inventoryScale);
         }
 
         public bool InHotbar(Player player, int type)
