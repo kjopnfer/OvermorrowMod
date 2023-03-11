@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
@@ -12,6 +13,7 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
     public class PlacedBearTrap : ModProjectile
     {
         public override bool ShouldUpdatePosition() => false;
+        public override bool? CanCutTiles() => false;
         public override void SetDefaults()
         {
             Projectile.width = 32;
@@ -51,6 +53,8 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
 
         public ref float AICase => ref Projectile.ai[0];
         public ref float AICounter => ref Projectile.ai[1];
+
+        private NPC trappedNPC;
         public override void AI()
         {
             AICounter++;
@@ -68,15 +72,33 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
                     {
                         if (npc.friendly || !npc.active || !npc.Hitbox.Intersects(Projectile.Hitbox)) continue;
 
-                        npc.StrikeNPC(50, 0f, 0);
-                        Main.NewText("trap");
+                        trappedNPC = npc;
+                        trappedNPC.StrikeNPC(69, 0f, 0);
+
                         AICase = (int)AIState.Triggered;
+                        Projectile.timeLeft = 180;
+
                         break;
                     }
                     break;
                 case (int)AIState.Triggered:
+                    if (trappedNPC.active && trappedNPC.aiStyle == 3)
+                    {
+                        trappedNPC.GetGlobalNPC<OvermorrowGlobalNPC>().BearTrapped = true;
+                    }
+
                     break;
             }
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            if (trappedNPC.active)
+            {
+                trappedNPC.GetGlobalNPC<OvermorrowGlobalNPC>().BearTrapped = false;
+            }
+
+            base.Kill(timeLeft);
         }
 
         public override bool PreDraw(ref Color lightColor)

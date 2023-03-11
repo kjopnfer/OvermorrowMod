@@ -19,12 +19,14 @@ namespace OvermorrowMod.Common
     {
         public override bool InstancePerEntity => true;
 
+        public bool BearTrapped;
         public bool LightningMarked;
 
         public int FungiTime;
 
         public override void ResetEffects(NPC npc)
         {
+            //BearTrapped = false;
             LightningMarked = false;
         }
 
@@ -154,6 +156,19 @@ namespace OvermorrowMod.Common
             {
                 npc.defense -= 8;
             }
+        }
+
+        public override bool PreAI(NPC npc)
+        {
+            if (BearTrapped)
+            {
+                npc.position.X = npc.oldPosition.X;
+                npc.velocity.X = 0;
+                npc.frameCounter = 0;
+                return false;
+            }
+
+            return base.PreAI(npc);
         }
 
         public override void AI(NPC npc)

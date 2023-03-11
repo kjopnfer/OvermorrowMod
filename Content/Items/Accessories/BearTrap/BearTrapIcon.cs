@@ -13,6 +13,7 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
     {
         public override string Texture => AssetDirectory.Empty;
         public override bool ShouldUpdatePosition() => false;
+        public override bool? CanCutTiles() => false;
         public override void SetDefaults()
         {
             Projectile.width = 34;
