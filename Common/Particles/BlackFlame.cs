@@ -4,37 +4,37 @@ using Terraria;
 
 namespace OvermorrowMod.Common.Particles
 {
-    public class BlackFlame : CustomParticle
+    public class BlackFlame : Particle
     {
         float maxTime = 45;
         public override void OnSpawn()
         {
-            particle.color = Color.Lerp(Color.Purple, Color.Violet, particle.scale);
+            Color = Color.Lerp(Color.Purple, Color.Violet, Scale);
             if (Main.rand.NextBool(3))
             {
-                particle.customData[0] *= 2;
+                CustomData[0] *= 2;
             }
         }
 
         public override void Update()
         {
-            if (particle.activeTime > maxTime) particle.Kill();
-            if (particle.activeTime < 10)
+            if (ActiveTime > maxTime) Kill();
+            if (ActiveTime < 10)
             {
-                float progress = (float)particle.activeTime / 10f;
-                particle.scale = MathHelper.Lerp(0, particle.customData[0], progress);
-                particle.alpha = progress;
+                float progress = (float)ActiveTime / 10f;
+                Scale = MathHelper.Lerp(0, CustomData[0], progress);
+                Alpha = progress;
             }
 
-            if (particle.activeTime > 35)
+            if (ActiveTime > 35)
             {
-                float progress = (float)(particle.activeTime - 35) / 10f;
-                particle.scale = MathHelper.Lerp(particle.customData[0], 0f, progress);
-                particle.alpha = 1f - progress;
+                float progress = (float)(ActiveTime - 35) / 10f;
+                Scale = MathHelper.Lerp(CustomData[0], 0f, progress);
+                Alpha = 1f - progress;
             }
 
-            particle.rotation += 0.1f;
-            particle.velocity *= 0f;
+            Rotation += 0.1f;
+            Velocity *= 0f;
         }
     }
 }

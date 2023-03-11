@@ -104,13 +104,5 @@ namespace OvermorrowMod.Common
                     return true;
                 }, InterfaceScaleType.UI));
         }
-
-        public override void PreUpdateEntities()
-        {
-            if (!Main.dedServ && !Main.gamePaused && !Main.gameInactive && !Main.gameMenu)
-            {
-                Particle.UpdateParticles();
-            }
-        }
     }
 }

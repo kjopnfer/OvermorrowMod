@@ -165,7 +165,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
                 {
                     Vector2 RandomPosition = end + new Vector2(Main.rand.Next(-10, 10), 0);
                     Vector2 RandomVelocity = -Vector2.One.RotatedByRandom(MathHelper.Pi) * Main.rand.Next(1, 3);
-                    Particle.CreateParticle(Particle.ParticleType<Smoke2>(), RandomPosition, RandomVelocity, new Color(182, 128, 70), Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextFloat(0.6f, 1f), 0, 0, Main.rand.Next(30, 60));
+                    //ParticleSystem.CreateParticle<Smoke2>(), RandomPosition, RandomVelocity, new Color(182, 128, 70), Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextFloat(0.6f, 1f), 0, 0, Main.rand.Next(30, 60));
                 }
             }
 

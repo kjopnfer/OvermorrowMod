@@ -240,7 +240,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                     if (HealTimer % 15 == 0)
                     {
                         Vector2 randomOffset = new Vector2(Main.rand.Next(-16, 16) * 2, Main.rand.Next(-16, 0) * 2);
-                        Particle.CreateParticle(Particle.ParticleType<Ember>(), NPC.Bottom + randomOffset, -Vector2.UnitY, new Color(240, 221, 137));
+                        ParticleSystem.CreateParticle<Ember>(NPC.Bottom + randomOffset, -Vector2.UnitY, new Color(240, 221, 137));
                     }
 
                     if (HealTimer % 30 == 0 && HealTimer < 180) Heal();
@@ -576,7 +576,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                 Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(9, 15);
                                 Color color = Color.Orange;
 
-                                Particle.CreateParticle(Particle.ParticleType<LightSpark>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
+                                ParticleSystem.CreateParticle<LightSpark>(NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
                             }
 
                             ScreenShake.ScreenShakeEvent(NPC.Center, 15, 2, 250);
@@ -602,8 +602,8 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
                                 Vector2 RandomVelocity = -Vector2.UnitY.RotatedBy(randomAngle) * Main.rand.Next(4, 8);
                                 Color color = Color.Orange;
 
-                                Particle.CreateParticle(Particle.ParticleType<Flash>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
-                                Particle.CreateParticle(Particle.ParticleType<Bubble>(), NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
+                                ParticleSystem.CreateParticle<Flash>(NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
+                                ParticleSystem.CreateParticle<Bubble>(NPC.Center + new Vector2(32 * hammerDirection, 24), RandomVelocity, color, 1, randomScale);
                             }
                         }
                     }

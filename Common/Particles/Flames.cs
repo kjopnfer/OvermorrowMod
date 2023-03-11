@@ -6,24 +6,22 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Particles
 {
-    public class Flames : CustomParticle
+    public class Flames : Particle
     {
-        public override string Texture => AssetDirectory.Empty;
-
         private float scaleRate;
         private float initialScale;
         public override void OnSpawn()
         {
-            scaleRate = particle.customData[0];
-            initialScale = particle.scale;
+            scaleRate = CustomData[0];
+            initialScale = Scale;
         }
 
         public override void Update()
         {
-            particle.velocity *= 0.95f;
-            particle.scale -= scaleRate;
+            Velocity *= 0.95f;
+            Scale -= scaleRate;
 
-            if (particle.scale <= 0) particle.Kill();
+            if (Scale <= 0) Kill();
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -34,11 +32,11 @@ namespace OvermorrowMod.Common.Particles
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "fire_0" + variant).Value;
 
             Texture2D glowTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;
-            spriteBatch.Draw(glowTexture, particle.position - Main.screenPosition, null, Color.Red * particle.alpha * 0.75f, particle.rotation, glowTexture.Size() / 2f, particle.scale * 6f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(glowTexture, Position - Main.screenPosition, null, Color.Red * Alpha * 0.75f, Rotation, glowTexture.Size() / 2f, Scale * 6f, SpriteEffects.None, 0f);
 
-            Color fadeColor = particle.scale < initialScale * 0.65f ? particle.color : Color.White;
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, fadeColor * particle.alpha, particle.rotation, texture.Size() / 2f, particle.scale * 0.6f, SpriteEffects.None, 0f);
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, texture.Size() / 2f, particle.scale, SpriteEffects.None, 0f);
+            Color fadeColor = Scale < initialScale * 0.65f ? Color : Color.White;
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, fadeColor * Alpha, Rotation, texture.Size() / 2f, Scale * 0.6f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color * Alpha, Rotation, texture.Size() / 2f, Scale, SpriteEffects.None, 0f);
 
 
             spriteBatch.Reload(BlendState.AlphaBlend);

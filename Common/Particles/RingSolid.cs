@@ -6,32 +6,31 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Particles
 {
-    public class RingSolid : CustomParticle
+    public class RingSolid : Particle
     {
-        public override string Texture => AssetDirectory.Textures + "RingSolid";
         public float maxSize;
         public float maxTime;
         public override void OnSpawn()
         {
-            if (particle.customData[0] == 0) particle.customData[0] = 60;
+            if (CustomData[0] == 0) CustomData[0] = 60;
 
-            maxTime = particle.customData[1] == 0 ? 60 : particle.customData[1];
-            maxSize = particle.scale;
-            particle.scale = 0f;
+            maxTime = CustomData[1] == 0 ? 60 : CustomData[1];
+            maxSize = Scale;
+            Scale = 0f;
         }
 
         public override void Update()
         {
-            particle.velocity = Vector2.Zero;
+            Velocity = Vector2.Zero;
 
             float fadeTime = maxTime - 10;
 ;
-            float progress = ModUtils.EaseOutCirc(particle.activeTime / maxTime);
-            particle.scale = MathHelper.Lerp(particle.scale, maxSize, progress);
-            //particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, Utils.Clamp(particle.activeTime - 10, 0, fadeTime) / fadeTime);
-            particle.alpha = MathHelper.Lerp(particle.alpha, 0, particle.activeTime / maxTime);
+            float progress = ModUtils.EaseOutCirc(ActiveTime / maxTime);
+            Scale = MathHelper.Lerp(Scale, maxSize, progress);
+            //Alpha = MathHelper.SmoothStep(Alpha, 0, Utils.Clamp(ActiveTime - 10, 0, fadeTime) / fadeTime);
+            Alpha = MathHelper.Lerp(Alpha, 0, ActiveTime / maxTime);
 
-            if (particle.activeTime > maxTime) particle.Kill();
+            if (ActiveTime > maxTime) Kill();
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -40,7 +39,7 @@ namespace OvermorrowMod.Common.Particles
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "RingSolid").Value;
             Vector2 origin = new Vector2(texture.Width, texture.Height) / 2;
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, origin, particle.scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color * Alpha, Rotation, origin, Scale, SpriteEffects.None, 0f);
 
             spriteBatch.Reload(BlendState.AlphaBlend);
         }

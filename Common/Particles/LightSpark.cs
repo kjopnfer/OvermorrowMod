@@ -7,31 +7,30 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Common.Particles
 {
-    public class LightSpark : CustomParticle
+    public class LightSpark : Particle
     {
-        public override string Texture => AssetDirectory.Textures + "Spotlight";
         public float maxTime = Main.rand.Next(4, 8) * 10;
         public override void OnSpawn()
         {
-            particle.customData[0] = particle.scale;
-            //maxTime = particle.customData[1];
-            particle.rotation += MathHelper.Pi / 2;
-            particle.scale = 0f;
+            CustomData[0] = Scale;
+            //maxTime = CustomData[1];
+            Rotation += MathHelper.Pi / 2;
+            Scale = 0f;
         }
 
         public override void Update()
         {
             // 0.05 == 20
-            particle.velocity *= 0.95f;
-            particle.rotation = particle.velocity.ToRotation() + MathHelper.PiOver2;
+            Velocity *= 0.95f;
+            Rotation = Velocity.ToRotation() + MathHelper.PiOver2;
 
-            float progress = ModUtils.EaseOutQuad(particle.activeTime / maxTime);
-            //particle.scale = MathHelper.SmoothStep(particle.customData[0], 0, progress);
-            //particle.alpha = MathHelper.SmoothStep(particle.alpha, 0, particle.activeTime / maxTime);
-            particle.alpha = Utils.GetLerpValue(0f, 0.05f, particle.activeTime / maxTime, clamped: true) * Utils.GetLerpValue(1f, 0.9f, particle.activeTime / maxTime, clamped: true);
-            //particle.scale = Utils.GetLerpValue(0f, 20f, particle.activeTime, clamped: true) * Utils.GetLerpValue(45f, 30f, particle.activeTime, clamped: true);
+            float progress = ModUtils.EaseOutQuad(ActiveTime / maxTime);
+            //Scale = MathHelper.SmoothStep(CustomData[0], 0, progress);
+            //Alpha = MathHelper.SmoothStep(Alpha, 0, ActiveTime / maxTime);
+            Alpha = Utils.GetLerpValue(0f, 0.05f, ActiveTime / maxTime, clamped: true) * Utils.GetLerpValue(1f, 0.9f, ActiveTime / maxTime, clamped: true);
+            //Scale = Utils.GetLerpValue(0f, 20f, ActiveTime, clamped: true) * Utils.GetLerpValue(45f, 30f, ActiveTime, clamped: true);
 
-            if (particle.activeTime > maxTime) particle.Kill();
+            if (ActiveTime > maxTime) Kill();
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -39,13 +38,13 @@ namespace OvermorrowMod.Common.Particles
             spriteBatch.Reload(BlendState.Additive);
 
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "trace_01").Value;
-            //Vector2 scale = new Vector2(0.3f, 2f) * particle.scale * particle.customData[0];
-            float heightLerp = MathHelper.Lerp(particle.customData[0], 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
-            float widthLerp = MathHelper.Lerp(0.25f, 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
-            Color color = Color.Lerp(particle.color, Color.White, particle.activeTime / maxTime);
+            //Vector2 scale = new Vector2(0.3f, 2f) * Scale * CustomData[0];
+            float heightLerp = MathHelper.Lerp(CustomData[0], 0, ModUtils.EaseOutQuad(Utils.Clamp(ActiveTime, 0, maxTime) / maxTime));
+            float widthLerp = MathHelper.Lerp(0.25f, 0, ModUtils.EaseOutQuad(Utils.Clamp(ActiveTime, 0, maxTime) / maxTime));
+            Color color = Color.Lerp(Color, Color.White, ActiveTime / maxTime);
 
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha, particle.rotation, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
-            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, color * Alpha, Rotation, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
+            //spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color * Alpha, Rotation, texture.Size() / 2f, scale, SpriteEffects.None, 0f);
 
             spriteBatch.Reload(BlendState.AlphaBlend);
         }

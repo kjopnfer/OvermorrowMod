@@ -37,8 +37,10 @@ namespace OvermorrowMod.Content.Items
             }
             else
             {
+                ParticleSystem.CreateParticle<Orb>(Main.MouseWorld, Vector2.Zero, Color.White, 1f);
                 Particle.CreateParticle(currentType, Main.MouseWorld, Vector2.Zero, Color.White, 1, 1, 0, 1f);
             }
+
             return null;
         }
     }
