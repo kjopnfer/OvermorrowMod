@@ -86,20 +86,22 @@ namespace OvermorrowMod.Common.Particles
     {
         float maxTime = 60;
         int smokeVariant = 0;
+        float scaleRate = 0.005f;
+
+        // customData[0] = startScale
+        // customData[1] = maxTime
+        // customData[2] = alpha
+        // customData[3] = scaleRate
+
         public override void OnSpawn()
         {
-            //particle.color = Color.Lerp(Color.Purple, Color.Violet, particle.scale);
-            particle.customData[0] = Main.rand.Next(3, 6);
-            if (Main.rand.NextBool(3))
-            {
-                particle.customData[0] *= 2;
-            }
+            maxTime = 30;
+            if (particle.customData[1] != 0) maxTime = particle.customData[1];
+            if (particle.customData[3] != 0) scaleRate = particle.customData[3];
 
             particle.rotation = MathHelper.ToRadians(Main.rand.Next(0, 90));
-            particle.scale = 0;
-            maxTime = 30;
+            particle.scale = particle.customData[0];
             smokeVariant = Main.rand.Next(1, 8);
-
         }
         public override void Update()
         {
@@ -120,18 +122,23 @@ namespace OvermorrowMod.Common.Particles
 
             float progress = particle.activeTime / (float)maxTime;
             //particle.scale = MathHelper.Lerp(0f, particle.customData[0], progress);
-            particle.scale += 0.005f;
+            particle.scale += scaleRate;
             particle.alpha = 1f - progress;
 
-            particle.rotation += 0.05f;
+            particle.rotation += 0.04f;
             particle.velocity.Y -= 0.03f;
         }
 
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            float alpha = particle.customData[2] != 0 ? particle.customData[2] : 1;
+
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "smoke_0" + smokeVariant).Value;
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
+            //Color color = Color.Lerp(Color.Orange, Color.Black, particle.activeTime / maxTime);
+            //spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, color * particle.alpha * alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
+
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, particle.color * particle.alpha * alpha, particle.rotation, new Vector2(texture.Width, texture.Height) / 2, particle.scale, SpriteEffects.None, 0f);
         }
     }
     public class Smoke2 : CustomParticle

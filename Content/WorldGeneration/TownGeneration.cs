@@ -26,11 +26,11 @@ namespace OvermorrowMod.Content.WorldGeneration
                 tasks.Insert(BiomeIndex + 1, new PassLegacy("Ruined Town", GenerateTown));
             }
 
-            int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Guide"));
+            /*int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Guide"));
             if (GuideIndex != -1)
             {
                 tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
-            }
+            }*/
 
             base.ModifyWorldGenTasks(tasks, ref totalWeight);
         }
