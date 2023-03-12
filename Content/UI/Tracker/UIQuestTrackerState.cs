@@ -12,6 +12,7 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Content.UI.AmmoSwap;
 using Terraria.GameContent;
 using Terraria.UI.Chat;
+using System;
 
 namespace OvermorrowMod.Content.UI.Tracker
 {
@@ -24,7 +25,7 @@ namespace OvermorrowMod.Content.UI.Tracker
         public override void OnInitialize()
         {
             //ModUtils.AddElement(testPanel, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 240, 120, this);
-            ModUtils.AddElement(back, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 240, 120, this);
+            ModUtils.AddElement(back, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 272, 120, this);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -42,9 +43,9 @@ namespace OvermorrowMod.Content.UI.Tracker
             }*/
 
             questEntries.Clear();
-            questEntries.Add(new QuestEntry("Stryke's Stryfe", new List<QuestObjective>() { new QuestObjective(0, 1, "Defeat Stryfe of Aphantasia") }));
-            questEntries.Add(new QuestEntry("I am the Grass Man", new List<QuestObjective>() { new QuestObjective(2, 4, "Destroy 4 Lawnmowers") }));
-            questEntries.Add(new QuestEntry("Town of Sojourn", new List<QuestObjective>() { new QuestObjective(0, 1, "Travel to Sojourn") }));
+            questEntries.Add(new QuestEntry("Stryke's Stryfe", new List<QuestObjective>() { new QuestObjective(0, 1, "Defeat Stryfe of Phantasia") }));
+            questEntries.Add(new QuestEntry("I am the Grass Man", new List<QuestObjective>() { new QuestObjective(2, 4, "Destroy 4 Lawnmowers and Race Cars"), new QuestObjective(0, 1, "Water the Lawn Before it Dries Out and Everyone Gets Sad From Dry Grass") }));
+            questEntries.Add(new QuestEntry("Town of Sojourn", new List<QuestObjective>() { new QuestObjective(0, 1, "Escort Feyden to Sojourn"), new QuestObjective(0, 1, "Speak to the Guards within the Town Garrison") }));
 
             //this.RemoveAllChildren();
             //ModUtils.AddElement(testPanel, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 120, 120, this);
@@ -107,6 +108,19 @@ namespace OvermorrowMod.Content.UI.Tracker
             }
         }
 
+        /// <summary>
+        /// Uses ChatManager to get the string size based on the max width,
+        /// ChatManager returns a Vector2 where y is the height of the string that has been split.
+        /// The y value is then divided by 28 and then rounded up in order to get the number of lines
+        /// </summary>
+        private int GetNumberLines(string text, int maxWidth)
+        {
+            const int lineHeight = 28;
+            float lineCount = ChatManager.GetStringSize(FontAssets.MouseText.Value, text, Vector2.One * 0.9f, MAXIMUM_LENGTH).Y / lineHeight;
+
+            return (int)Math.Round(lineCount);
+        }
+
         public readonly float MAXIMUM_LENGTH = 250;
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
@@ -133,6 +147,7 @@ namespace OvermorrowMod.Content.UI.Tracker
                     ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, entry.Name, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + offset + entryOffset), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
 
                     int objectiveCount = 0;
+                    int objectivePadding = 0;
                     foreach (QuestObjective objective in entry.Objectives)
                     {
                         objectiveCount++;
@@ -141,9 +156,10 @@ namespace OvermorrowMod.Content.UI.Tracker
 
                         string objectiveText = "- " + objective.Progress + "/" + objective.Quantity + " " + objective.Description;
                         TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, Color.White).ToArray();
-                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + initialObjectiveOffset + offset + entryOffset), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, MAXIMUM_LENGTH);
+                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + initialObjectiveOffset + offset + entryOffset + objectivePadding), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
 
-                        entryOffset += objectiveSnippets.Length * 20;
+                        entryOffset += objectiveSnippets.Length * 20 + (GetNumberLines(objectiveText, (int)MAXIMUM_LENGTH) * 20);
+                        objectivePadding += 5;
                     }
 
                     //TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(entry., Color.White).ToArray();
@@ -152,8 +168,10 @@ namespace OvermorrowMod.Content.UI.Tracker
                     entryCount++;
                 }
 
+                int BOTTOM_PADDING = 20;
+
                 int totalOffset = 35 + state.questEntries.Count * 20;
-                calculatedHeight = entryOffset + totalOffset;
+                calculatedHeight = entryOffset + totalOffset + BOTTOM_PADDING;
                 drawHeight = calculatedHeight;
             }
         }
