@@ -20,6 +20,7 @@ namespace OvermorrowMod.Content.UI.Tracker
         private DragableUIPanel testPanel = new DragableUIPanel();
         private QuestTrackerPanel back = new QuestTrackerPanel();
 
+        public List<QuestEntry> questEntries = new List<QuestEntry>();
         public override void OnInitialize()
         {
             //ModUtils.AddElement(testPanel, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 240, 120, this);
@@ -40,10 +41,16 @@ namespace OvermorrowMod.Content.UI.Tracker
                 canDo = false;
             }*/
 
+            questEntries.Clear();
+            questEntries.Add(new QuestEntry("Stryke's Stryfe", new List<QuestObjective>() { new QuestObjective(0, 1, "Defeat Stryfe of Aphantasia") }));
+            questEntries.Add(new QuestEntry("I am the Grass Man", new List<QuestObjective>() { new QuestObjective(2, 4, "Destroy 4 Lawnmowers") }));
+            questEntries.Add(new QuestEntry("Town of Sojourn", new List<QuestObjective>() { new QuestObjective(0, 1, "Travel to Sojourn") }));
+
             //this.RemoveAllChildren();
             //ModUtils.AddElement(testPanel, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 120, 120, this);
-            back.RemoveAllChildren();
-            back.Append(new QuestTrackerEntry());
+
+            //back.RemoveAllChildren();
+            //back.Append(new QuestTrackerManager());
 
             base.Update(gameTime);
         }
@@ -85,50 +92,96 @@ namespace OvermorrowMod.Content.UI.Tracker
             spriteBatch.Draw(texture, centreRect, centreFrame, drawColor);
         }
 
+        private int drawHeight = 160;
+        public override void Update(GameTime gameTime)
+        {
+            // update height based on the parent's list of quests
+            base.Update(gameTime);
+
+            // Compute the height needed for the container here
+            if (Parent is UIQuestTrackerState state)
+            {
+                //if (state.questEntries.Count == 0) drawHeight = 160;
+                //else drawHeight = 160;
+                //Main.NewText(state.questEntries[0].Name);
+            }
+        }
+
+        public readonly float MAXIMUM_LENGTH = 250;
+
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
             //spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, new Vector2(0.25f, 0.25f), 0, 0);
             //spriteBatch.Draw(texture, new Vector2(GetDimensions().X, GetDimensions().Y), null, Color.White, 0, texture.Size() / 2f, new Vector2(0.7f, 0.25f), 0, 0);
-            DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)(GetDimensions().X), (int)(GetDimensions().Center().Y - 70), 256, 160), 35, Color.White * 0.6f);
+            DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)(GetDimensions().X), (int)(GetDimensions().Center().Y - 70), 272, drawHeight), 35, Color.White * 0.6f);
+
+            if (Parent is UIQuestTrackerState state)
+            {
+                if (state.questEntries.Count == 0) drawHeight = 160;
+                else drawHeight = 160;
+
+                int LEFT_PADDING = 15;
+
+                int entryCount = 0;
+                int entryOffset = 0;
+                int calculatedHeight = 0;
+                foreach (QuestEntry entry in state.questEntries)
+                {
+                    int offset = 35 + entryCount * 20;
+
+                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, entry.Name, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + offset + entryOffset), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
+
+                    int objectiveCount = 0;
+                    foreach (QuestObjective objective in entry.Objectives)
+                    {
+                        objectiveCount++;
+
+                        int initialObjectiveOffset = 20; // Offset by the height of the text so that it draws below the name
+
+                        string objectiveText = "- " + objective.Progress + "/" + objective.Quantity + " " + objective.Description;
+                        TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, Color.White).ToArray();
+                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + initialObjectiveOffset + offset + entryOffset), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, MAXIMUM_LENGTH);
+
+                        entryOffset += objectiveSnippets.Length * 20;
+                    }
+
+                    //TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(entry., Color.White).ToArray();
+                    //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, GetDimensions().Center() + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, MAXIMUM_LENGTH);
+                    entryOffset += 20; // Always increase by 20 because of the entry's name height is ~20
+                    entryCount++;
+                }
+
+                int totalOffset = 35 + state.questEntries.Count * 20;
+                calculatedHeight = entryOffset + totalOffset;
+                drawHeight = calculatedHeight;
+            }
         }
     }
 
-    public class QuestTrackerContainer : UIElement
+    public class QuestEntry
     {
-        public override void Draw(SpriteBatch spriteBatch)
-        {
+        public string Name;
+        public List<QuestObjective> Objectives;
 
-            base.Draw(spriteBatch);
+        public QuestEntry(string name, List<QuestObjective> objectives)
+        {
+            Name = name;
+            Objectives = objectives;
         }
     }
 
-    public class QuestTrackerEntry : UIElement
+    public class QuestObjective
     {
-        public readonly float MAXIMUM_LENGTH = 250;
+        public int Progress;
+        public int Quantity;
+        public string Description;
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public QuestObjective(int progress, int quantity, string description)
         {
-            string text = "Stryke's Stryfe";
-
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, "Quests", GetDimensions().Center() + new Vector2(80, -5), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
-
-            TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.Yellow).ToArray();
-            //ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, snippets, GetDimensions().Center(), 0f, Color.White, Color.Black, Vector2.Zero, Vector2.One, out var hoveredSnippet, MAXIMUM_LENGTH);
-            //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 2f) + new Vector2(-150, -200), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
-
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, GetDimensions().Center() + new Vector2(0, 20), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, MAXIMUM_LENGTH);
-
-            TextSnippet[] objectiveSnippets = ChatManager.ParseMessage("- 0/1 Defeat Stryfe of Phantasia", Color.White).ToArray();
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, GetDimensions().Center() + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, MAXIMUM_LENGTH);
-
-            objectiveSnippets = ChatManager.ParseMessage("I am the Grass Man", Color.Yellow).ToArray();
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, GetDimensions().Center() + new Vector2(0, 70), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, MAXIMUM_LENGTH);
-
-            objectiveSnippets = ChatManager.ParseMessage("- 2/4 Destroy Lawnmowers", Color.White).ToArray();
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, GetDimensions().Center() + new Vector2(0, 90), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, MAXIMUM_LENGTH);
-
-            //ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, snippets, GetDimensions().Center(), 0f, Vector2.Zero, Vector2.One, out var hoveredSnippet);
+            Progress = progress;
+            Quantity = quantity;
+            Description = description;
         }
     }
 }
