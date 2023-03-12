@@ -102,6 +102,7 @@ namespace OvermorrowMod.Content.UI.Tracker
             // Compute the height needed for the container here
             if (Parent is UIQuestTrackerState state)
             {
+                Height.Pixels = drawHeight;
                 //if (state.questEntries.Count == 0) drawHeight = 160;
                 //else drawHeight = 160;
                 //Main.NewText(state.questEntries[0].Name);
@@ -128,7 +129,7 @@ namespace OvermorrowMod.Content.UI.Tracker
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
             //spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, new Vector2(0.25f, 0.25f), 0, 0);
             //spriteBatch.Draw(texture, new Vector2(GetDimensions().X, GetDimensions().Y), null, Color.White, 0, texture.Size() / 2f, new Vector2(0.7f, 0.25f), 0, 0);
-            DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)(GetDimensions().X), (int)(GetDimensions().Center().Y - 70), 272, drawHeight), 35, Color.White * 0.6f);
+            DrawNineSegmentTexturePanel(spriteBatch, texture, new Rectangle((int)(GetDimensions().X), (int)(GetDimensions().Center().Y - (Height.Pixels / 2)), 272, drawHeight), 35, Color.White * 0.6f);
 
             if (Parent is UIQuestTrackerState state)
             {
@@ -139,7 +140,6 @@ namespace OvermorrowMod.Content.UI.Tracker
 
                 int entryCount = 0;
                 int entryOffset = 0;
-                int calculatedHeight = 0;
                 foreach (QuestEntry entry in state.questEntries)
                 {
                     int offset = 35 + entryCount * 20;
@@ -171,7 +171,7 @@ namespace OvermorrowMod.Content.UI.Tracker
                 int BOTTOM_PADDING = 20;
 
                 int totalOffset = 35 + state.questEntries.Count * 20;
-                calculatedHeight = entryOffset + totalOffset + BOTTOM_PADDING;
+                int calculatedHeight = entryOffset + totalOffset + BOTTOM_PADDING;
                 drawHeight = calculatedHeight;
             }
         }
