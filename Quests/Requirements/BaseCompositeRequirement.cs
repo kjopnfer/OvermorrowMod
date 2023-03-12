@@ -39,6 +39,11 @@ namespace OvermorrowMod.Quests.Requirements
             }
         }
 
+        public int GetClauseLength()
+        {
+            return Clauses.Length;
+        }
+
         public abstract bool CanHandInRequirement(QuestPlayer player, BaseQuestState state);
 
         public abstract bool IsCompleted(QuestPlayer player, BaseQuestState state);

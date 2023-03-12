@@ -8,16 +8,19 @@ namespace OvermorrowMod.Quests.Requirements
 {
     public class ItemRequirement : BaseQuestRequirement<CompletableRequirementState>
     {
-        private readonly int type;
-        private readonly int stack;
+        public readonly int type;
+        public readonly int stack;
+        public readonly string description;
+
         private readonly bool consumeItems;
 
-        public ItemRequirement(string id, int type, int stack, bool consumeItems) : base(id)
+        public ItemRequirement(string id, int type, int stack, string description, bool consumeItems) : base(id)
         {
             if (stack <= 0) throw new ArgumentException($"Invalid stack size: {stack}");
             if (type <= 0) throw new ArgumentException($"Invalid type: {type}");
             this.stack = stack;
             this.type = type;
+            this.description = description;
             this.consumeItems = consumeItems;
         }
 
@@ -32,6 +35,17 @@ namespace OvermorrowMod.Quests.Requirements
                 if (remaining <= 0) return true;
             }
             return false;
+        }
+
+        public int GetCurrentStack(QuestPlayer player)
+        {
+            int stack = 0;
+            foreach (var item in player.Player.inventory.Where(i => i.type == type && i.stack > 0))
+            {
+                stack += item.stack;
+            }
+
+            return stack;
         }
 
         protected override void CompleteRequirement(QuestPlayer player, BaseQuestState state, CompletableRequirementState reqState)

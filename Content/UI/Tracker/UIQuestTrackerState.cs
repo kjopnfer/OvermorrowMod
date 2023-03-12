@@ -13,6 +13,9 @@ using OvermorrowMod.Content.UI.AmmoSwap;
 using Terraria.GameContent;
 using Terraria.UI.Chat;
 using System;
+using OvermorrowMod.Quests;
+using OvermorrowMod.Quests.State;
+using OvermorrowMod.Quests.Requirements;
 
 namespace OvermorrowMod.Content.UI.Tracker
 {
@@ -36,22 +39,60 @@ namespace OvermorrowMod.Content.UI.Tracker
         bool canDo = true;
         public override void Update(GameTime gameTime)
         {
-            /*if (canDo)
-            {
-                ModUtils.AddElement(testPanel, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 240, 120, this);
-                canDo = false;
-            }*/
-
             questEntries.Clear();
-            questEntries.Add(new QuestEntry("Stryke's Stryfe", new List<QuestObjective>() { new QuestObjective(0, 1, "Defeat Stryfe of Phantasia") }));
-            questEntries.Add(new QuestEntry("I am the Grass Man", new List<QuestObjective>() { new QuestObjective(2, 4, "Destroy 4 Lawnmowers and Race Cars"), new QuestObjective(0, 1, "Water the Lawn Before it Dries Out and Everyone Gets Sad From Dry Grass") }));
-            questEntries.Add(new QuestEntry("Town of Sojourn", new List<QuestObjective>() { new QuestObjective(0, 1, "Escort Feyden to Sojourn"), new QuestObjective(0, 1, "Speak to the Guards within the Town Garrison") }));
 
-            //this.RemoveAllChildren();
-            //ModUtils.AddElement(testPanel, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 120, 120, this);
+            // get player's current active quests here and then create entries for them
+            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+            foreach (BaseQuestState questState in questPlayer.CurrentQuests)
+            {
+                BaseQuest quest = questState.Quest;
 
-            //back.RemoveAllChildren();
-            //back.Append(new QuestTrackerManager());
+                List<QuestObjective> objectives = new List<QuestObjective>();
+                foreach (var task in quest.Requirements)
+                {
+                    if (task is OrRequirement orRequirement)
+                    {
+                        int quantity = 0;
+                        int stack = 0;
+                        string description = "";
+
+                        int clauseCounter = 0;
+                        foreach (var orRequirementClause in orRequirement.AllClauses)
+                        {
+                            if (orRequirementClause is ItemRequirement orItemRequirement)
+                            {
+                                if (orItemRequirement.GetCurrentStack(questPlayer) > quantity)
+                                    quantity = orItemRequirement.GetCurrentStack(questPlayer);
+
+                                stack = orItemRequirement.stack;
+                                description += orItemRequirement.description;
+
+                                if (clauseCounter < orRequirement.GetClauseLength() - 1)
+                                    description += " or ";
+                                //objectives.Add(new QuestObjective(orItemRequirement.GetCurrentStack(questPlayer), orItemRequirement.stack, orItemRequirement.description));
+                            }
+
+                            clauseCounter++;
+                        }
+
+                        objectives.Add(new QuestObjective(quantity, stack, description));
+                    }
+
+                    if (task is ItemRequirement itemRequirement)
+                    {
+                        //Main.NewText(requirement.GetCurrentStack(questPlayer) + " / " + requirement.stack);
+                        objectives.Add(new QuestObjective(itemRequirement.GetCurrentStack(questPlayer), itemRequirement.stack, itemRequirement.description));
+                    }
+
+
+                }
+
+                questEntries.Add(new QuestEntry(quest.QuestName, objectives));
+            }
+
+            //questEntries.Add(new QuestEntry("Stryke's Stryfe", new List<QuestObjective>() { new QuestObjective(0, 1, "Defeat Stryfe of Phantasia") }));
+            //questEntries.Add(new QuestEntry("I am the Grass Man", new List<QuestObjective>() { new QuestObjective(2, 4, "Destroy 4 Lawnmowers and Race Cars"), new QuestObjective(0, 1, "Water the Lawn Before it Dries Out and Everyone Gets Sad From Dry Grass") }));
+            //questEntries.Add(new QuestEntry("Town of Sojourn", new List<QuestObjective>() { new QuestObjective(0, 1, "Escort Feyden to Sojourn"), new QuestObjective(0, 1, "Speak to the Guards within the Town Garrison") }));
 
             base.Update(gameTime);
         }
@@ -133,16 +174,22 @@ namespace OvermorrowMod.Content.UI.Tracker
 
             if (Parent is UIQuestTrackerState state)
             {
-                if (state.questEntries.Count == 0) drawHeight = 160;
-                else drawHeight = 160;
-
                 int LEFT_PADDING = 15;
+                int INITIAL_OBJECTIVE_OFFSET = 30; // Offset by the height of the text so that it draws below the name
+
+                if (state.questEntries.Count == 0)
+                {
+                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, "No Quests Available!", new Vector2(GetDimensions().X + LEFT_PADDING + 50, GetDimensions().Y + 30), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
+                    drawHeight = 80;
+                    return;
+                }
+
 
                 int entryCount = 0;
                 int entryOffset = 0;
                 foreach (QuestEntry entry in state.questEntries)
                 {
-                    int offset = 35 + entryCount * 20;
+                    int offset = 30 + entryCount * 10;
 
                     ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, entry.Name, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + offset + entryOffset), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
 
@@ -152,26 +199,21 @@ namespace OvermorrowMod.Content.UI.Tracker
                     {
                         objectiveCount++;
 
-                        int initialObjectiveOffset = 20; // Offset by the height of the text so that it draws below the name
-
                         string objectiveText = "- " + objective.Progress + "/" + objective.Quantity + " " + objective.Description;
-                        TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, Color.White).ToArray();
-                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + initialObjectiveOffset + offset + entryOffset + objectivePadding), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
+                        Color textColor = objective.Progress >= objective.Quantity ? new Color(127, 255, 212) : Color.White;
+                        TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, textColor).ToArray();
+                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + INITIAL_OBJECTIVE_OFFSET + offset + entryOffset + objectivePadding), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
 
-                        entryOffset += objectiveSnippets.Length * 20 + (GetNumberLines(objectiveText, (int)MAXIMUM_LENGTH) * 20);
-                        objectivePadding += 5;
+                        entryOffset += objectiveSnippets.Length * 15 + (GetNumberLines(objectiveText, (int)MAXIMUM_LENGTH) * 20);
+                        //objectivePadding += 5;
                     }
 
-                    //TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(entry., Color.White).ToArray();
-                    //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, GetDimensions().Center() + new Vector2(0, 40), Color.White, 0f, Vector2.Zero, Vector2.One * 0.9f, out _, MAXIMUM_LENGTH);
                     entryOffset += 20; // Always increase by 20 because of the entry's name height is ~20
                     entryCount++;
                 }
 
-                int BOTTOM_PADDING = 20;
-
-                int totalOffset = 35 + state.questEntries.Count * 20;
-                int calculatedHeight = entryOffset + totalOffset + BOTTOM_PADDING;
+                int totalOffset = INITIAL_OBJECTIVE_OFFSET + state.questEntries.Count * 20;
+                int calculatedHeight = entryOffset + totalOffset;
                 drawHeight = calculatedHeight;
             }
         }
