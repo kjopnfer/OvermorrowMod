@@ -66,11 +66,19 @@ namespace OvermorrowMod.Content.UI.Tracker
 
                                 stack = orItemRequirement.stack;
                                 description += orItemRequirement.description;
-
-                                if (clauseCounter < orRequirement.GetClauseLength() - 1)
-                                    description += " or ";
-                                //objectives.Add(new QuestObjective(orItemRequirement.GetCurrentStack(questPlayer), orItemRequirement.stack, orItemRequirement.description));
                             }
+
+                            if (orRequirementClause is KillRequirement orKillRequirement)
+                            {
+                                if (orKillRequirement.GetCurrentKilled(questPlayer, questState) > quantity)
+                                    quantity = orKillRequirement.GetCurrentKilled(questPlayer, questState);
+
+                                stack = orKillRequirement.amount;
+                                description += orKillRequirement.description;
+                            }
+
+                            if (clauseCounter < orRequirement.GetClauseLength() - 1)
+                                description += " or ";
 
                             clauseCounter++;
                         }
@@ -83,8 +91,10 @@ namespace OvermorrowMod.Content.UI.Tracker
                         //Main.NewText(requirement.GetCurrentStack(questPlayer) + " / " + requirement.stack);
                         objectives.Add(new QuestObjective(itemRequirement.GetCurrentStack(questPlayer), itemRequirement.stack, itemRequirement.description));
                     }
-
-
+                    else if (task is KillRequirement killRequirement)
+                    {
+                        objectives.Add(new QuestObjective(killRequirement.GetCurrentKilled(questPlayer, questState), killRequirement.amount, killRequirement.description));
+                    }
                 }
 
                 questEntries.Add(new QuestEntry(quest.QuestName, objectives));
