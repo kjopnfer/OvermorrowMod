@@ -16,6 +16,7 @@ using System;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Quests.State;
 using OvermorrowMod.Quests.Requirements;
+using System.Linq;
 
 namespace OvermorrowMod.Content.UI.Tracker
 {
@@ -84,6 +85,75 @@ namespace OvermorrowMod.Content.UI.Tracker
                         }
 
                         objectives.Add(new QuestObjective(quantity, stack, description));
+                    }
+
+                    if (task is ChainRequirement chainRequirement)
+                    {
+                        // TODO: Convert to a method that gets completed clauses and appends it
+                        foreach (var completedClause in chainRequirement.AllClauses)
+                        {
+                            if (!completedClause.IsCompleted(questPlayer, questState)) continue;
+
+                            int quantity = 0;
+                            int stack = 0;
+                            string description = "";
+
+                            if (completedClause is ItemRequirement chainItemRequirement)
+                            {
+                                quantity = chainItemRequirement.GetCurrentStack(questPlayer);
+                                stack = chainItemRequirement.stack;
+                                description = chainItemRequirement.description;
+                            }
+
+                            if (completedClause is KillRequirement chainKillRequirement)
+                            {
+                                quantity = chainKillRequirement.GetCurrentKilled(questPlayer, questState);
+                                stack = chainKillRequirement.amount;
+                                description = chainKillRequirement.description;
+                            }
+
+                            if (completedClause is TravelRequirement travelRequirement)
+                            {
+                                quantity = 1;
+                                stack = 1;
+                                description = travelRequirement.description;
+                            }
+
+                            objectives.Add(new QuestObjective(quantity, stack, description));
+                        }
+
+                        // TODO: Convert to a method that gets active clause and appends it at the end
+                        foreach (var chainRequirementClause in chainRequirement.GetActiveClauses(questPlayer, questState))
+                        {
+                            int quantity = 0;
+                            int stack = 0;
+                            string description = "";
+
+                            if (chainRequirementClause is ItemRequirement chainItemRequirement)
+                            {
+                                quantity = chainItemRequirement.GetCurrentStack(questPlayer);
+                                stack = chainItemRequirement.stack;
+                                description = chainItemRequirement.description;
+                            }
+
+                            if (chainRequirementClause is KillRequirement chainKillRequirement)
+                            {
+                                quantity = chainKillRequirement.GetCurrentKilled(questPlayer, questState);
+                                stack = chainKillRequirement.amount;
+                                description = chainKillRequirement.description;
+                            }
+
+                            if (chainRequirementClause is TravelRequirement travelRequirement)
+                            {
+                                quantity = travelRequirement.IsCompleted(questPlayer, questState) ? 1 : 0;
+                                stack = 1;
+                                description = travelRequirement.description;
+                            }
+
+                            objectives.Add(new QuestObjective(quantity, stack, description));
+
+                            //Main.NewText(chainRequirementClause.Description);
+                        }
                     }
 
                     if (task is ItemRequirement itemRequirement)

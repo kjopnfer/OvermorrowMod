@@ -1,4 +1,4 @@
-using OvermorrowMod.Quests.Requirements;
+/*using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
 using System.Collections.Generic;
 using Terraria;
@@ -49,4 +49,4 @@ namespace OvermorrowMod.Quests.ModQuests
             return Quests.HasCompletedQuest<GuideTravel>(player);
         }
     }
-}
+}*/

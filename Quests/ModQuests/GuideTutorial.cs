@@ -1,4 +1,4 @@
-﻿using OvermorrowMod.Quests.Requirements;
+﻿/*using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
 using Terraria;
 using Terraria.ID;
@@ -39,4 +39,4 @@ namespace OvermorrowMod.Quests.ModQuests
             return Quests.HasCompletedQuest<GuideSlime>(player);
         }
     }
-}
+}*/
