@@ -26,10 +26,10 @@ namespace OvermorrowMod.Quests.ModQuests
                 new ChainRequirement(
                     new IQuestRequirement[]
                     {
-                        new ItemRequirement("wood", ItemID.Wood, 20, true),
-                        new TravelRequirement(() => ProjectToGround(Main.spawnTileX + 20, Main.spawnTileY), "t1"),
-                        new TravelRequirement(() => ProjectToGround(Main.spawnTileX - 20, Main.spawnTileY), "t2"),
-                        new ItemRequirement("gold", ItemID.GoldCoin, 1, true)
+                        new ItemRequirement("wood", ItemID.Wood, 20, "Obtain 20 Wood", true),
+                        new TravelRequirement(() => ProjectToGround(Main.spawnTileX + 20, Main.spawnTileY), "Travel to Right of Main Spawn", "t1"),
+                        new TravelRequirement(() => ProjectToGround(Main.spawnTileX - 20, Main.spawnTileY), "Travel to Left of Main Spawn", "t2"),
+                        new ItemRequirement("gold", ItemID.GoldCoin, 1, "Obtain 1 Gold Coin", true)
                     }, "chain")
             };
             Rewards = new[]
