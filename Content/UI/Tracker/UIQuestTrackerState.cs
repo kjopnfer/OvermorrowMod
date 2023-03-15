@@ -24,7 +24,7 @@ namespace OvermorrowMod.Content.UI.Tracker
         public override void OnInitialize()
         {
             //ModUtils.AddElement(testPanel, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 240, 120, this);
-            ModUtils.AddElement(back, (int)(Main.screenWidth / 2f), (int)(Main.screenHeight / 2f), 272, 120, this);
+            ModUtils.AddElement(back, (int)(Main.screenWidth / 2f - 130), (int)(/*Main.screenHeight / 2f*/ 32), 272, 120, this);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
