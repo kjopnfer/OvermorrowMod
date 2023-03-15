@@ -5,18 +5,12 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
-using Terraria.ID;
-using Terraria.GameContent.UI.Elements;
-using OvermorrowMod.Common.Configs;
-using OvermorrowMod.Common;
-using OvermorrowMod.Content.UI.AmmoSwap;
 using Terraria.GameContent;
 using Terraria.UI.Chat;
 using System;
 using OvermorrowMod.Quests;
 using OvermorrowMod.Quests.State;
 using OvermorrowMod.Quests.Requirements;
-using System.Linq;
 using OvermorrowMod.Core.Interfaces;
 
 namespace OvermorrowMod.Content.UI.Tracker
@@ -38,7 +32,6 @@ namespace OvermorrowMod.Content.UI.Tracker
             base.Draw(spriteBatch);
         }
 
-        bool canDo = true;
         public override void Update(GameTime gameTime)
         {
             questEntries.Clear();
@@ -54,120 +47,27 @@ namespace OvermorrowMod.Content.UI.Tracker
                 {
                     if (task is OrRequirement orRequirement)
                     {
-                        int quantity = 0;
-                        int stack = 0;
-                        string description = "";
-
-                        int clauseCounter = 0;
-                        foreach (var orRequirementClause in orRequirement.AllClauses)
-                        {
-                            if (orRequirementClause is ItemRequirement orItemRequirement)
-                            {
-                                if (orItemRequirement.GetCurrentStack(questPlayer) > quantity)
-                                    quantity = orItemRequirement.GetCurrentStack(questPlayer);
-
-                                stack = orItemRequirement.stack;
-                                description += orItemRequirement.description;
-                            }
-
-                            if (orRequirementClause is KillRequirement orKillRequirement)
-                            {
-                                if (orKillRequirement.GetCurrentKilled(questPlayer, questState) > quantity)
-                                    quantity = orKillRequirement.GetCurrentKilled(questPlayer, questState);
-
-                                stack = orKillRequirement.amount;
-                                description += orKillRequirement.description;
-                            }
-
-                            if (clauseCounter < orRequirement.GetClauseLength() - 1)
-                                description += " or ";
-
-                            clauseCounter++;
-                        }
-
-                        objectives.Add(new QuestObjective(quantity, stack, description));
+                        objectives.Add(AddOrQuestObjective(orRequirement, questPlayer, questState));
                     }
 
                     if (task is ChainRequirement chainRequirement)
                     {
-                        // TODO: Convert to a method that gets completed clauses and appends it
                         foreach (var completedClause in chainRequirement.AllClauses)
                         {
                             if (!completedClause.IsCompleted(questPlayer, questState)) continue;
-
-                            /*int quantity = 0;
-                            int stack = 0;
-                            string description = "";
-
-                            if (completedClause is ItemRequirement chainItemRequirement)
-                            {
-                                quantity = chainItemRequirement.GetCurrentStack(questPlayer);
-                                stack = chainItemRequirement.stack;
-                                description = chainItemRequirement.description;
-                            }
-
-                            if (completedClause is KillRequirement chainKillRequirement)
-                            {
-                                quantity = chainKillRequirement.GetCurrentKilled(questPlayer, questState);
-                                stack = chainKillRequirement.amount;
-                                description = chainKillRequirement.description;
-                            }
-
-                            if (completedClause is TravelRequirement travelRequirement)
-                            {
-                                quantity = 1;
-                                stack = 1;
-                                description = travelRequirement.description;
-                            }
-
-                            objectives.Add(new QuestObjective(quantity, stack, description));*/
                             objectives.Add(AddQuestObjective(completedClause, questPlayer, questState));
                         }
 
-                        // TODO: Convert to a method that gets active clause and appends it at the end
                         foreach (var chainRequirementClause in chainRequirement.GetActiveClauses(questPlayer, questState))
                         {
-                            /*int quantity = 0;
-                            int stack = 0;
-                            string description = "";
-
-                            AddQuestObjective(chainRequirementClause, questPlayer, questState);
-
-                            if (chainRequirementClause is ItemRequirement chainItemRequirement)
-                            {
-                                quantity = chainItemRequirement.GetCurrentStack(questPlayer);
-                                stack = chainItemRequirement.stack;
-                                description = chainItemRequirement.description;
-                            }
-
-                            if (chainRequirementClause is KillRequirement chainKillRequirement)
-                            {
-                                quantity = chainKillRequirement.GetCurrentKilled(questPlayer, questState);
-                                stack = chainKillRequirement.amount;
-                                description = chainKillRequirement.description;
-                            }
-
-                            if (chainRequirementClause is TravelRequirement travelRequirement)
-                            {
-                                quantity = travelRequirement.IsCompleted(questPlayer, questState) ? 1 : 0;
-                                stack = 1;
-                                description = travelRequirement.description;
-                            }*/
-
                             objectives.Add(AddQuestObjective(chainRequirementClause, questPlayer, questState));
-
-                            //objectives.Add(new QuestObjective(quantity, stack, description));
                         }
                     }
+                    else
+                    {
+                        objectives.Add(AddQuestObjective(task, questPlayer, questState));
+                    }
 
-                    if (task is ItemRequirement itemRequirement)
-                    {
-                        objectives.Add(new QuestObjective(itemRequirement.GetCurrentStack(questPlayer), itemRequirement.stack, itemRequirement.description));
-                    }
-                    else if (task is KillRequirement killRequirement)
-                    {
-                        objectives.Add(new QuestObjective(killRequirement.GetCurrentKilled(questPlayer, questState), killRequirement.amount, killRequirement.description));
-                    }
                 }
 
                 questEntries.Add(new QuestEntry(quest.QuestName, objectives));
@@ -180,6 +80,42 @@ namespace OvermorrowMod.Content.UI.Tracker
             base.Update(gameTime);
         }
 
+        private QuestObjective AddOrQuestObjective(OrRequirement orRequirement, QuestPlayer questPlayer, BaseQuestState questState)
+        {
+            int progress = 0;
+            int amount = 0;
+            string description = "";
+
+            int clauseCounter = 0;
+            foreach (var orRequirementClause in orRequirement.AllClauses)
+            {
+                if (orRequirementClause is ItemRequirement orItemRequirement)
+                {
+                    if (orItemRequirement.GetCurrentStack(questPlayer) > progress)
+                        progress = orItemRequirement.GetCurrentStack(questPlayer);
+
+                    amount = orItemRequirement.stack;
+                    description += orItemRequirement.description;
+                }
+
+                if (orRequirementClause is KillRequirement orKillRequirement)
+                {
+                    if (orKillRequirement.GetCurrentKilled(questPlayer, questState) > progress)
+                        progress = orKillRequirement.GetCurrentKilled(questPlayer, questState);
+
+                    amount = orKillRequirement.amount;
+                    description += orKillRequirement.description;
+                }
+
+                if (clauseCounter < orRequirement.GetClauseLength() - 1)
+                    description += " or ";
+
+                clauseCounter++;
+            }
+
+            return new QuestObjective(progress, amount, description);
+        }
+
         private QuestObjective AddQuestObjective(IQuestRequirement requirementClause, QuestPlayer questPlayer, BaseQuestState questState)
         {
             int progress = 0;
@@ -188,26 +124,22 @@ namespace OvermorrowMod.Content.UI.Tracker
 
             if (requirementClause is ItemRequirement itemRequirement)
             {
-                Main.NewText("item requirement");
                 progress = itemRequirement.GetCurrentStack(questPlayer);
                 amount = itemRequirement.stack;
                 description = itemRequirement.description;
             }
             else if (requirementClause is KillRequirement killRequirement)
             {
-                Main.NewText("kill requirement");
                 progress = killRequirement.GetCurrentKilled(questPlayer, questState);
                 amount = killRequirement.amount;
                 description = killRequirement.description;
             }
             else if (requirementClause is TravelRequirement travelRequirement)
             {
-                Main.NewText("travel requirement");
                 progress = travelRequirement.IsCompleted(questPlayer, questState) ? 1 : 0;
                 amount = 1;
                 description = travelRequirement.description;
             }
-
 
             return new QuestObjective(progress, amount, description);
         }
