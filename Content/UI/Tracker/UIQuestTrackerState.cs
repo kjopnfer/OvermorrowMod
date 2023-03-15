@@ -17,6 +17,7 @@ using OvermorrowMod.Quests;
 using OvermorrowMod.Quests.State;
 using OvermorrowMod.Quests.Requirements;
 using System.Linq;
+using OvermorrowMod.Core.Interfaces;
 
 namespace OvermorrowMod.Content.UI.Tracker
 {
@@ -94,7 +95,7 @@ namespace OvermorrowMod.Content.UI.Tracker
                         {
                             if (!completedClause.IsCompleted(questPlayer, questState)) continue;
 
-                            int quantity = 0;
+                            /*int quantity = 0;
                             int stack = 0;
                             string description = "";
 
@@ -119,15 +120,18 @@ namespace OvermorrowMod.Content.UI.Tracker
                                 description = travelRequirement.description;
                             }
 
-                            objectives.Add(new QuestObjective(quantity, stack, description));
+                            objectives.Add(new QuestObjective(quantity, stack, description));*/
+                            objectives.Add(AddQuestObjective(completedClause, questPlayer, questState));
                         }
 
                         // TODO: Convert to a method that gets active clause and appends it at the end
                         foreach (var chainRequirementClause in chainRequirement.GetActiveClauses(questPlayer, questState))
                         {
-                            int quantity = 0;
+                            /*int quantity = 0;
                             int stack = 0;
                             string description = "";
+
+                            AddQuestObjective(chainRequirementClause, questPlayer, questState);
 
                             if (chainRequirementClause is ItemRequirement chainItemRequirement)
                             {
@@ -148,17 +152,16 @@ namespace OvermorrowMod.Content.UI.Tracker
                                 quantity = travelRequirement.IsCompleted(questPlayer, questState) ? 1 : 0;
                                 stack = 1;
                                 description = travelRequirement.description;
-                            }
+                            }*/
 
-                            objectives.Add(new QuestObjective(quantity, stack, description));
+                            objectives.Add(AddQuestObjective(chainRequirementClause, questPlayer, questState));
 
-                            //Main.NewText(chainRequirementClause.Description);
+                            //objectives.Add(new QuestObjective(quantity, stack, description));
                         }
                     }
 
                     if (task is ItemRequirement itemRequirement)
                     {
-                        //Main.NewText(requirement.GetCurrentStack(questPlayer) + " / " + requirement.stack);
                         objectives.Add(new QuestObjective(itemRequirement.GetCurrentStack(questPlayer), itemRequirement.stack, itemRequirement.description));
                     }
                     else if (task is KillRequirement killRequirement)
@@ -175,6 +178,38 @@ namespace OvermorrowMod.Content.UI.Tracker
             //questEntries.Add(new QuestEntry("Town of Sojourn", new List<QuestObjective>() { new QuestObjective(0, 1, "Escort Feyden to Sojourn"), new QuestObjective(0, 1, "Speak to the Guards within the Town Garrison") }));
 
             base.Update(gameTime);
+        }
+
+        private QuestObjective AddQuestObjective(IQuestRequirement requirementClause, QuestPlayer questPlayer, BaseQuestState questState)
+        {
+            int progress = 0;
+            int amount = 0;
+            string description = "";
+
+            if (requirementClause is ItemRequirement itemRequirement)
+            {
+                Main.NewText("item requirement");
+                progress = itemRequirement.GetCurrentStack(questPlayer);
+                amount = itemRequirement.stack;
+                description = itemRequirement.description;
+            }
+            else if (requirementClause is KillRequirement killRequirement)
+            {
+                Main.NewText("kill requirement");
+                progress = killRequirement.GetCurrentKilled(questPlayer, questState);
+                amount = killRequirement.amount;
+                description = killRequirement.description;
+            }
+            else if (requirementClause is TravelRequirement travelRequirement)
+            {
+                Main.NewText("travel requirement");
+                progress = travelRequirement.IsCompleted(questPlayer, questState) ? 1 : 0;
+                amount = 1;
+                description = travelRequirement.description;
+            }
+
+
+            return new QuestObjective(progress, amount, description);
         }
     }
 
