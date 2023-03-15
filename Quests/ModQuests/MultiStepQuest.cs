@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
@@ -73,6 +74,11 @@ namespace OvermorrowMod.Quests.ModQuests
                 }
             }
             return new Vector2(startX, y);
+        }
+
+        protected override bool IsValidFor(Player player)
+        {
+            return player.GetModPlayer<DialoguePlayer>().unlockedGuideCampfire;
         }
     }
 }

@@ -13,17 +13,27 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool pickupWood = false;
         public bool outDistanceDialogue = false;
         public bool guideGreeting = false;
+        public bool unlockedGuideCampfire = false;
 
         private int greetCounter = 0;
         public override void PostUpdateBuffs()
         {
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            if (!dialoguePlayer.guideGreeting && greetCounter++ == 180)
+            greetCounter++;
+
+            if (!dialoguePlayer.guideGreeting && greetCounter == 180)
             {
                 XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
                 dialoguePlayer.AddPopup(doc);
                 dialoguePlayer.guideGreeting = true;
+            }
+            else
+            {
+                if (greetCounter >= 300)
+                {
+                    unlockedGuideCampfire = true;
+                }
             }
 
             base.PostUpdateBuffs();
