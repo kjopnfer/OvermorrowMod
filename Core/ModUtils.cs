@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.TilePiles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Tiles.TilePiles;
@@ -12,9 +13,11 @@ using System.Xml;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
+using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using Microsoft.Xna.Framework.Input;
 
 namespace OvermorrowMod.Core
 {
@@ -34,6 +37,114 @@ namespace OvermorrowMod.Core
                 startRain = typeof(Main).GetMethod("StartRain", BindingFlags.Static | BindingFlags.NonPublic);
                 stopRain = typeof(Main).GetMethod("StopRain", BindingFlags.Static | BindingFlags.NonPublic);
             }
+        }
+        public static void Move(this NPC npc, Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
+        {
+            if (npc.Center.X < targetPosition.X)
+            {
+                npc.velocity.X += moveSpeed;
+
+                if (npc.velocity.X > maxSpeed) npc.velocity.X = maxSpeed;
+            }
+            else if (npc.Center.X > targetPosition.X)
+            {
+                npc.velocity.X -= moveSpeed;
+
+                if (npc.velocity.X < -maxSpeed) npc.velocity.X = -maxSpeed;
+            }
+
+            /*if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].HasTile)
+            {
+                if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].LeftSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].BottomSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+            }*/
+
+            if (npc.collideY && npc.velocity.Y == 0)
+            {
+
+                if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].LeftSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].BottomSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY, 1, false, 0);
+
+                #region Jump Handling
+                if (npc.collideX || CheckGap(npc))
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                #endregion
+            }
+        }
+
+        public static bool CheckKeyPress()
+        {
+            if (Main.keyState.IsKeyDown(Keys.Q) || Main.keyState.IsKeyDown(Keys.W) || Main.keyState.IsKeyDown(Keys.E) || Main.keyState.IsKeyDown(Keys.R) ||
+                Main.keyState.IsKeyDown(Keys.T) || Main.keyState.IsKeyDown(Keys.Y) || Main.keyState.IsKeyDown(Keys.U) || Main.keyState.IsKeyDown(Keys.I) ||
+                Main.keyState.IsKeyDown(Keys.O) || Main.keyState.IsKeyDown(Keys.P) || Main.keyState.IsKeyDown(Keys.OemCloseBrackets) || Main.keyState.IsKeyDown(Keys.OemOpenBrackets) ||
+                Main.keyState.IsKeyDown(Keys.A) || Main.keyState.IsKeyDown(Keys.S) || Main.keyState.IsKeyDown(Keys.D) || Main.keyState.IsKeyDown(Keys.F) ||
+                Main.keyState.IsKeyDown(Keys.G) || Main.keyState.IsKeyDown(Keys.H) || Main.keyState.IsKeyDown(Keys.J) || Main.keyState.IsKeyDown(Keys.K) ||
+                Main.keyState.IsKeyDown(Keys.L) || Main.keyState.IsKeyDown(Keys.OemSemicolon) || Main.keyState.IsKeyDown(Keys.OemQuotes) || Main.keyState.IsKeyDown(Keys.Z) ||
+                Main.keyState.IsKeyDown(Keys.Z) || Main.keyState.IsKeyDown(Keys.X) || Main.keyState.IsKeyDown(Keys.C) || Main.keyState.IsKeyDown(Keys.V) ||
+                Main.keyState.IsKeyDown(Keys.B) || Main.keyState.IsKeyDown(Keys.N) || Main.keyState.IsKeyDown(Keys.M) || Main.keyState.IsKeyDown(Keys.OemQuestion) ||
+                Main.keyState.IsKeyDown(Keys.OemComma) || Main.keyState.IsKeyDown(Keys.OemPeriod) || Main.keyState.IsKeyDown(Keys.Enter) || Main.keyState.IsKeyDown(Keys.Space) || 
+                Main.keyState.IsKeyDown(Keys.LeftShift) || Main.keyState.IsKeyDown(Keys.RightShift) || Main.keyState.IsKeyDown(Keys.Tab) || Main.keyState.IsKeyDown(Keys.OemTilde) || 
+                Main.keyState.IsKeyDown(Keys.OemBackslash) || Main.keyState.IsKeyDown(Keys.B) || Main.keyState.IsKeyDown(Keys.D0) || Main.keyState.IsKeyDown(Keys.D1) || 
+                Main.keyState.IsKeyDown(Keys.D2) || Main.keyState.IsKeyDown(Keys.D3) || Main.keyState.IsKeyDown(Keys.D4) || Main.keyState.IsKeyDown(Keys.D5) || 
+                Main.keyState.IsKeyDown(Keys.D6) || Main.keyState.IsKeyDown(Keys.D7) || Main.keyState.IsKeyDown(Keys.D8) || Main.keyState.IsKeyDown(Keys.D9) || 
+                Main.keyState.IsKeyDown(Keys.OemMinus) || Main.keyState.IsKeyDown(Keys.OemPlus))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool CheckGap(NPC npc)
+        {
+            Rectangle npcHitbox = npc.getRect();
+
+            Vector2 checkLeft = new Vector2(npcHitbox.BottomLeft().X, npcHitbox.BottomLeft().Y);
+            Vector2 checkRight = new Vector2(npcHitbox.BottomRight().X, npcHitbox.BottomRight().Y);
+            Vector2 hitboxDetection = (npc.velocity.X < 0 ? checkLeft : checkRight) / 16;
+
+            int directionOffset = npc.direction;
+
+            Tile tile = Framing.GetTileSafely((int)hitboxDetection.X + directionOffset, (int)hitboxDetection.Y);
+
+            return !tile.HasTile;
         }
 
         public static void SandstormStuff()

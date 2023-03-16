@@ -24,7 +24,6 @@ namespace OvermorrowMod.Quests
             if (availableQuest != null) return availableQuest;
             if (questCheckTick > 0)
             {
-                Main.NewText(questCheckTick);
                 questCheckTick--;
                 return null;
             }

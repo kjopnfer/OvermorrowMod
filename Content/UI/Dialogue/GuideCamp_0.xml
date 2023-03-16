@@ -1,0 +1,11 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text time="60">Came across you unconscious so I took care of you for a bit, no big deal.</Text>
+			<Text time="60">RIP, looks like my fire got put out, wanna help me start it again?</Text>
+		</Dialogue>
+		<Options>
+			<Option link="exit" action="quest">Fine.</Option>
+		</Options>
+	</DialogueNode>
+</Dialogue>

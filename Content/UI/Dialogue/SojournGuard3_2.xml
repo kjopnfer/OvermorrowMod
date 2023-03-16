@@ -1,0 +1,84 @@
+<Dialogue>
+	<DialogueNode id="start">
+		<Dialogue>
+			<Text time="60">Hey. I hope you've got something to report. And I don't mean the kid, his parents will have my head if I rough him up again.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="1">Beat up a kid?</Option>
+			<Option link="2">You look bored…</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="1">
+		<Dialogue>
+			<Text time="90">The kid's asking for it! He's a pain in the rear of the entire town, and frankly I'm a bit sick of him causing all this trouble.</Text>
+			<Text time="90">I give him all these warnings, but as soon as I take matters into my hands I'm the asshole.</Text>
+			<Text time="90">So I've decided: I don't care about him anymore. He's their problem now.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="3">Seems a bit aggressive.</Option>
+			<Option link="2">You look bored…</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="2">
+		<Dialogue>
+			<Text time="120">Can you blame me? Sojourn is on the edge of the world, on the brink of the unknown. Prime adventure terrain, right?</Text>
+			<Text time="60">Nope, nothing out here but trees and slimes! And to top it off, nobody new ever shows up!</Text>
+			<Text time="30">I haven't had a proper fight in years!</Text>
+		</Dialogue>
+		<Options>
+			<Option link="4">Visitors?</Option>
+			<Option link="6">The Watchman says...</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="3">
+		<Dialogue>
+			<Text time="60">Look here, I joined this guard to see some action, but god damn it this place is boring.</Text>
+			<Text time="75">Nothing ever fights back except some weak monsters, but lately, even those have stopped showing.</Text>
+			<Text time="60"> I don't even know why they bother with us...</Text>
+		</Dialogue>
+		<Options>
+			<Option link="5">Anything to do?</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="4" flag="SojournGuard3_4">
+		<Dialogue>
+			<Text time="90">Yeah, we get a couple adventurers 'round here each year. Sojourn's too far out for us to get much though. Don't even know why I stick around here anymore.</Text>
+			<Text time="90">One of these days, lemme tell ya, I'm ditching this rickety dirt pit and striking out on my own. Eh, that'll be the day!</Text>
+		</Dialogue>
+	</DialogueNode>
+
+	<DialogueNode id="5" flag="SojournGuard3_5">
+		<Dialogue>
+			<Text time="90">What're you doing askin' me?! All I ever do is stand around here watching paint dry! If you're looking for company, there're a few others that live here.</Text>
+			<Text time="90">The Guard over by the well is fine, I guess. Or you could talk to the Merchant in the house over there.</Text>
+			<Text time="60">If you don't wanna chat with someone, you're outta luck as far as I'm concerned.</Text>
+		</Dialogue>
+	</DialogueNode>
+
+	<DialogueNode id="6">
+		<Dialogue>
+			<Text time="75">What, you believe that? The Watchman never shuts up about Cthulhu and the Aberrants, but nothing ever comes of it.</Text>
+			<Text time="90">Can’t believe I used to take his stories seriously. As for the monsters, I don’t buy his crackpot conspiracies about their disappearances.</Text>
+			<Text time="60">My bet is they just got bored and looked for a more interesting place to take over.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="7">Abberants?</Option>
+		</Options>
+	</DialogueNode>
+
+	<DialogueNode id="7">
+		<Dialogue>
+			<Text time="60">Eh, it’s not as interesting as you’d think.</Text>
+			<Text time="75">A few visitors came by in a spook a couple weeks back, saying they’d seen the Eye of Cthulhu.</Text>
+			<Text time="75">I made certain that wasn’t true. Was probably just a cloud or overgrown demon eye, something like that.</Text>
+			<Text time="60">Gets dark this time of year, probably just seeing some things.</Text>
+		</Dialogue>
+		<Options>
+			<Option link="4">Visitors?</Option>
+		</Options>
+	</DialogueNode>
+</Dialogue>

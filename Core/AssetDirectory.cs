@@ -43,6 +43,10 @@ namespace OvermorrowMod.Core
 
         #endregion
 
+        #region Other
+        public const string Dialogue = "OvermorowMod/Common/Cutscenes/Dialogue/";
+        #endregion
+
         public const string Popup = "Content/UI/Popups/";
     }
 }
