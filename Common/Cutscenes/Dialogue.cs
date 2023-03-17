@@ -31,10 +31,19 @@ namespace OvermorrowMod.Common.Cutscenes
             UpdateList("start");
         }
 
+        /// <summary>
+        /// Gets the number of Text nodes within the current DialogueNode
+        /// </summary>
         public int GetTextListLength() => textList.Count;
 
+        /// <summary>
+        /// Gets the current Text node index within the current DialogueNode
+        /// </summary>
         public int GetTextIteration() => textIterator;
 
+        /// <summary>
+        /// Gets the next Text node within the current DialogueNode
+        /// </summary>
         public void IncrementText() => textIterator++;
 
         /*public string GetText(string id)
@@ -69,15 +78,16 @@ namespace OvermorrowMod.Common.Cutscenes
             }
         }
 
-        public string GetText(string id)
+        /// <summary>
+        /// Gets the current Text node's actual text.
+        /// </summary>
+        public string GetText()
         {
             XmlNode node = textList[textIterator];
             if (node.Attributes["time"] != null)
             {
                 string value = node.Attributes["time"].Value;
                 drawTime = int.Parse(value);
-
-                //Main.NewText("drawTime: " + drawTime);
             }
 
             if (node.Attributes["color"] != null)

@@ -12,7 +12,6 @@ using Terraria.GameContent.UI.Elements;
 using OvermorrowMod.Quests;
 using Terraria.Audio;
 using OvermorrowMod.Common.NPCs;
-using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace OvermorrowMod.Common.Cutscenes
@@ -103,6 +102,9 @@ namespace OvermorrowMod.Common.Cutscenes
             base.Draw(spriteBatch);
         }
 
+        /// <summary>
+        /// Initializes the UI with the Quest dialogue if the player is doing a quest assigned by the NPC they are talking to.
+        /// </summary>
         private void SetQuestDialogue()
         {
             var npc = Main.npc[Main.LocalPlayer.talkNPC];
@@ -177,6 +179,9 @@ namespace OvermorrowMod.Common.Cutscenes
             base.Update(gameTime);
         }
 
+        /// <summary>
+        /// Handles player input for the UI and when the UI can receive player input
+        /// </summary>
         private void HandlePlayerInteraction()
         {
             if (!canInteract) return;
@@ -208,6 +213,9 @@ namespace OvermorrowMod.Common.Cutscenes
             if (interactDelay > 0) interactDelay--;
         }
 
+        /// <summary>
+        /// Gets the next Text node by increment the reader index
+        /// </summary>
         private void AdvanceText()
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -218,6 +226,9 @@ namespace OvermorrowMod.Common.Cutscenes
             shouldRedraw = true;
         }
 
+        /// <summary>
+        /// Exits the conversation with the NPC and resets UI counters
+        /// </summary>
         public void ExitText()
         {
             ResetTimers();
@@ -239,6 +250,9 @@ namespace OvermorrowMod.Common.Cutscenes
             player.GetModPlayer<DialoguePlayer>().LockPlayer = true;
         }
 
+        /// <summary>
+        /// Determines the position that the Option button will be drawn at based on the id.
+        /// </summary>
         private Vector2 OptionPosition(int optionNumber)
         {
             Vector2 screenPosition = new Vector2(Main.screenWidth, Main.screenHeight) / 2f;
@@ -258,13 +272,16 @@ namespace OvermorrowMod.Common.Cutscenes
             return new Vector2(0, 0);
         }
 
+        /// <summary>
+        /// Handles drawing the text for the UI
+        /// </summary>
         private void DrawText(DialoguePlayer player, SpriteBatch spriteBatch, Vector2 textPosition)
         {
             var npc = Main.npc[Main.LocalPlayer.talkNPC];
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
-            string text = player.GetDialogue().GetText(dialogueID);
-            int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText(dialogueID).Length, DrawTimer / (float)player.GetDialogue().drawTime);
+            string text = player.GetDialogue().GetText();
+            int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText().Length, DrawTimer / (float)player.GetDialogue().drawTime);
 
             var displayText = text.Substring(0, progress);
 
@@ -378,7 +395,6 @@ namespace OvermorrowMod.Common.Cutscenes
             SoundEngine.PlaySound(SoundID.MenuTick);
 
             // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            //if (Parent.Parent is DialogueState parent)
             if (Parent is DialogueState parent)
             {
                 DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
