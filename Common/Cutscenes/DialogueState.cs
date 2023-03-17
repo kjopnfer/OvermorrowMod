@@ -444,39 +444,6 @@ namespace OvermorrowMod.Common.Cutscenes
         }
     }
 
-    public class ExitButton : UIElement
-    {
-        public ExitButton() { }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
-            bool isHovering = ContainsPoint(Main.MouseScreen);
-
-            if (isHovering)
-            {
-                Main.LocalPlayer.mouseInterface = true;
-                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
-            }
-
-            Utils.DrawBorderString(spriteBatch, "Close", pos /*+ new Vector2(0, 25)*/, Color.White);
-        }
-
-        public override void MouseDown(UIMouseEvent evt)
-        {
-            SoundEngine.PlaySound(SoundID.MenuTick);
-
-            // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            if (Parent is DialogueState parent)
-            {
-                parent.ResetTimers();
-                parent.SetID("start");
-
-                Main.LocalPlayer.SetTalkNPC(-1);
-            }
-        }
-    }
-
     public class OptionButton : UIElement
     {
         private string displayText;
@@ -651,7 +618,6 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (!parent.drawQuest)
                 {
                     parent.SetID(linkID);
-                    //Main.NewText("changing id to " + linkID);
                     return;
                 }
 
