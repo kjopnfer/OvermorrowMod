@@ -30,8 +30,6 @@ namespace OvermorrowMod.Common.Cutscenes
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialoguePanel").Value;
-            //spriteBatch.Draw(texture, GetDimensions().ToRectangle(), Color.White);
-            //spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, 1, 0, 0);
         }
     }
 
@@ -49,9 +47,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public int textIterator = 0;
 
         private DummyPanel DrawSpace = new DummyPanel();
-        private UIPanel BackPanel = new UIPanel();
         private UIText Text = new UIText("");
-        private UIImage Portrait = new UIImage(ModContent.Request<Texture2D>(AssetDirectory.Empty));
 
         public string dialogueID = "start";
         public bool drawQuest = false;
@@ -67,12 +63,123 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public bool canInteract = true;
         public int interactDelay = 0;
+
+        public bool hasInitialized = false;
+        
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+
+            if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogue() == null)
+            {
+                player.ClearDialogue();
+                player.LockPlayer = false;
+
+                ResetTimers();
+                SetID("start");
+                hasInitialized = false;
+
+                return;
+            }
+
+            if (!hasInitialized)
+            {
+                SetQuestDialogue();
+                hasInitialized = true;
+            }
+
+            LockPlayer();
+            HandlePlayerInteraction();
+
+            DrawBackdrop(player, spriteBatch);
+
+            if (DelayTimer++ >= DIALOGUE_DELAY)
+            {
+                if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
+
+                DrawText(player, spriteBatch, new Vector2(0, 0));
+            }
+
+            base.Draw(spriteBatch);
+        }
+
+        private void SetQuestDialogue()
+        {
+            var npc = Main.npc[Main.LocalPlayer.talkNPC];
+            var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
+            if (!isDoing) return;
+
+            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+            var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
+
+            if (quest.CanHandInQuest(questPlayer, questState)) SetID("quest_complete");
+            else SetID("quest_hint");
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+            Dialogue dialogue = player.GetDialogue();
+
+            if (dialogue == null) return;
+
+            if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
+            {
+                this.RemoveAllChildren(); // Removes the options and then readds the elements back
+                canInteract = true;
+
+                // Handles the drawing of the UI after the dialogue has finished drawing
+                if (DrawTimer >= player.GetDialogue().drawTime)
+                {
+                    var npc = Main.npc[Main.LocalPlayer.talkNPC];
+                    var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
+                    if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
+                    {
+                        canInteract = true;
+                        ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
+                    }
+                }
+
+                //Main.NewText(dialogue.GetTextIteration() + " / " + (dialogue.GetTextListLength() - 1));
+                
+                // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
+                int optionNumber = 1;
+                if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
+
+                canInteract = false;
+
+                if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
+                {
+                    canInteract = true;
+                }
+                else
+                {
+                    //Main.NewText("yes");
+                    canInteract = false;
+                }
+
+                if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null && !drawQuest)
+                {
+                    foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
+                    {
+                        Vector2 position = OptionPosition(optionNumber);
+                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, this);
+
+                        optionNumber++;
+                    }
+                }
+
+                shouldRedraw = false;
+            }
+
+            base.Update(gameTime);
+        }
+
         private void HandlePlayerInteraction()
         {
             if (!canInteract) return;
-
-            //Main.NewText("awaiting actions");
-            //Main.NewText(DrawTimer + " / " + Main.LocalPlayer.GetModPlayer<DialoguePlayer>().GetDialogue().drawTime);
 
             if ((Main.mouseLeft || ModUtils.CheckKeyPress()) && interactDelay == 0 && DelayTimer >= DIALOGUE_DELAY)
             {
@@ -116,6 +223,7 @@ namespace OvermorrowMod.Common.Cutscenes
             ResetTimers();
             SetID("start");
 
+            hasInitialized = false;
             Main.LocalPlayer.SetTalkNPC(-1);
         }
 
@@ -129,118 +237,6 @@ namespace OvermorrowMod.Common.Cutscenes
             player.immuneNoBlink = true;
 
             player.GetModPlayer<DialoguePlayer>().LockPlayer = true;
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-
-            if (Main.LocalPlayer.talkNPC <= -1 || Main.playerInventory || player.GetDialogue() == null)
-            {
-                player.ClearDialogue();
-                player.LockPlayer = false;
-
-                ResetTimers();
-                SetID("start");
-                if (drawQuest)
-                {
-                    drawQuest = false;
-                    questCounter = 0;
-                }
-
-                return;
-            }
-
-            LockPlayer();
-            HandlePlayerInteraction();
-
-            DrawBackdrop(player, spriteBatch);
-
-            if (DelayTimer++ >= DIALOGUE_DELAY)
-            {
-                if (DrawTimer < player.GetDialogue().drawTime) DrawTimer++;
-
-                DrawText(player, spriteBatch, new Vector2(0, 0));
-            }
-
-            base.Draw(spriteBatch);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
-            Dialogue dialogue = player.GetDialogue();
-
-            if (dialogue == null) return;
-
-            if (shouldRedraw && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)
-            {
-                // Removes the options and then readds the elements back
-                this.RemoveAllChildren();
-
-                canInteract = true;
-
-                // Handles the drawing of the UI after the dialogue has finished drawing
-                if (DrawTimer >= player.GetDialogue().drawTime)
-                {
-                    var npc = Main.npc[Main.LocalPlayer.talkNPC];
-                    var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
-
-                    if (!drawQuest)
-                    {
-                        if (quest != null && dialogueID == "start" && dialogue.GetTextIteration() == 0)
-                        {
-                            ModUtils.AddElement(new QuestButton(), 575, 50, 50, 25, DrawSpace);
-                        }
-
-                        // Determines which button type is shown in the bottom right corner
-                        //if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
-                        //    ModUtils.AddElement(new ExitButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
-                        if (dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1)
-                        {
-                            //Main.NewText("add next button");
-                            canInteract = true;
-
-                            ModUtils.AddElement(new NextButton(), (int)(Main.screenWidth / 2f) + 225, (int)(Main.screenHeight / 2f) - 75, 50, 25, this);
-                        }
-                    }
-                }
-
-                // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
-                int optionNumber = 1;
-
-                //Main.NewText(dialogue.GetTextIteration() + " /  " + (dialogue.GetTextListLength() - 1));
-                //Main.NewText(dialogue.GetOptions(dialogueID) == null);
-
-                if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
-
-                canInteract = false;
-
-                if (dialogue.GetTextIteration() >= dialogue.GetTextListLength() - 1 && dialogue.GetOptions(dialogueID) == null)
-                {
-                    canInteract = true;
-                }
-                else
-                {
-                    Main.NewText("yes");
-                    canInteract = false;
-                }
-
-                if (player.GetDialogue() != null && player.GetDialogue().GetOptions(dialogueID) != null && !drawQuest)
-                {
-                    foreach (OptionButton button in player.GetDialogue().GetOptions(dialogueID))
-                    {
-                        Vector2 position = OptionPosition(optionNumber);
-                        ModUtils.AddElement(button, (int)position.X, (int)position.Y, 285, 75, this);
-
-                        optionNumber++;
-                    }
-                }
-
-                shouldRedraw = false;
-            }
-
-            base.Update(gameTime);
         }
 
         private Vector2 OptionPosition(int optionNumber)
@@ -268,9 +264,7 @@ namespace OvermorrowMod.Common.Cutscenes
             var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
 
             string text = player.GetDialogue().GetText(dialogueID);
-
             int progress = (int)MathHelper.Lerp(0, player.GetDialogue().GetText(dialogueID).Length, DrawTimer / (float)player.GetDialogue().drawTime);
-            if (drawQuest) progress = (int)MathHelper.Lerp(0, text.Length, DrawTimer / (float)player.GetDialogue().drawTime); // TODO: This needs to be changed
 
             var displayText = text.Substring(0, progress);
 
@@ -332,7 +326,6 @@ namespace OvermorrowMod.Common.Cutscenes
             Texture2D speaker = player.GetDialogue().speakerBody;
             Vector2 offset = new Vector2(-200, -20);
             spriteBatch.Draw(speaker, new Vector2(Main.screenWidth / 2f, Main.screenHeight / 3f) + offset, null, Color.White, 0, speaker.Size() / 2f, 1f, 0, 0);
-            //Portrait.SetImage(player.GetDialogue().speakerBody);
         }
 
         public void ResetTimers()
@@ -351,42 +344,7 @@ namespace OvermorrowMod.Common.Cutscenes
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
             Dialogue dialogue = player.GetDialogue();
 
-            if (dialogue == null) return;
-            dialogue.UpdateList(id);
-        }
-    }
-
-    public class QuestButton : UIElement
-    {
-        public QuestButton() { }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
-            bool isHovering = ContainsPoint(Main.MouseScreen);
-
-            if (isHovering)
-            {
-                Main.LocalPlayer.mouseInterface = true;
-                spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
-            }
-
-            Utils.DrawBorderString(spriteBatch, "Quest", pos /*+ new Vector2(0, 25)*/, Color.White);
-        }
-
-        public override void MouseDown(UIMouseEvent evt)
-        {
-            Terraria.Audio.SoundEngine.PlaySound(SoundID.MenuTick);
-
-            // On the click action, go back into the parent and set the dialogue node to the one stored in here
-            //if (Parent.Parent is DialogueState parent)
-            if (Parent is DialogueState parent)
-            {
-                Main.NewText("quest BUTTON");
-                parent.ResetTimers();
-                parent.shouldRedraw = true;
-                parent.drawQuest = true;
-            }
+            if (dialogue != null) dialogue.UpdateList(id);
         }
     }
 
@@ -395,7 +353,6 @@ namespace OvermorrowMod.Common.Cutscenes
     /// </summary>
     public class NextButton : UIElement
     {
-        private int buttonCounter;
         public NextButton() { }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -404,21 +361,16 @@ namespace OvermorrowMod.Common.Cutscenes
             bool isHovering = ContainsPoint(Main.MouseScreen);
 
             if (isHovering)
-            {
                 Main.LocalPlayer.mouseInterface = true;
-                //spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), TextureAssets.MagicPixel.Value.Frame(), Color.White * 0.25f);
-            }
+
 
             if (Parent is DialogueState parent)
             {
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "ContinueIcon").Value;
-                //spriteBatch.Draw(texture, GetDimensions().ToRectangle(), null, Color.White * 0.25f);
-                //Main.NewText("buttoncounter: " + buttonCounter);
+
                 float xOffset = MathHelper.Lerp(10, 0, (float)(Math.Sin(parent.continueButtonCounter++ / 20f) / 2 + 0.5f));
                 spriteBatch.Draw(texture, pos + new Vector2(20, 10 + xOffset), null, Color.White * 0.75f, MathHelper.ToRadians(90), texture.Size() / 2f, 1f, 0, 0);
-
             }
-            //Utils.DrawBorderString(spriteBatch, "Next", pos /*+ new Vector2(0, 25)*/, Color.White);
         }
 
         public override void MouseDown(UIMouseEvent evt)
@@ -431,15 +383,9 @@ namespace OvermorrowMod.Common.Cutscenes
             {
                 DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-                if (parent.drawQuest)
-                    parent.questCounter++;
-                else
-                    player.GetDialogue().IncrementText();
-
+                player.GetDialogue().IncrementText();
                 parent.ResetTimers();
                 parent.shouldRedraw = true;
-
-                //Main.NewText("incrementing counter " + player.GetDialogue().GetTextIteration() + " / " + player.GetDialogue().GetTextListLength());
             }
         }
     }

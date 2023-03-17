@@ -26,7 +26,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     DialoguePlayer dialoguePlayer = player.GetModPlayer<DialoguePlayer>();
 
                     // Don't run the dialogue if the player has already had the interaction
-                    if (dialoguePlayer.outDistanceDialogue) return base.PreAI(npc);
+                    /*if (dialoguePlayer.outDistanceDialogue) return base.PreAI(npc);
 
                     float xDistance = Math.Abs(npc.Center.X - player.Center.X);
                     if (xDistance > 25 * 16 && playerInRange && player.velocity.X != 0)
@@ -39,7 +39,7 @@ namespace OvermorrowMod.Common.Cutscenes
                     else if (xDistance < 25 * 16) // The dialogue should run if the player has FIRST been within 25 blocks and THEN they leave
                     {
                         playerInRange = true;
-                    }
+                    }*/
                 }
             }
 
