@@ -16,6 +16,9 @@ namespace OvermorrowMod.Common.Cutscenes
     public class Popup
     {
         public int DrawTimer;
+        public int DisplayTimer;
+        public int DelayTimer;
+
         public SlotId drawSound;
 
         private XmlNodeList nodeList;
@@ -43,6 +46,8 @@ namespace OvermorrowMod.Common.Cutscenes
         public void ResetTimers()
         {
             DrawTimer = 0;
+            DisplayTimer = 0;
+            DelayTimer = 0;
  
             if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
         }
@@ -59,6 +64,8 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             nodeIterator++;
             ResetTimers();
+
+            if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
         }
 
         /// <summary>

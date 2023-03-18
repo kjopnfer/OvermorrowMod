@@ -11,6 +11,7 @@ using OvermorrowMod.Core;
 using OvermorrowMod.Quests;
 using System.Text;
 using Terraria.ID;
+using Terraria.Audio;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -48,7 +49,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public void AddNPCPopup(int id, XmlDocument xmlDoc)
         {
             if (PopupStates.ContainsKey(id))
-                PopupStates[id] = new PopupState(new Popup(xmlDoc));
+                PopupStates[id].ReplacePopup(new Popup(xmlDoc));
             else
                 PopupStates.Add(id, new PopupState(new Popup(xmlDoc)));
             //PopupStates[id] = new PopupState(new Popup(xmlDoc));
@@ -155,7 +156,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
             greetCounter++;
 
-            if (!dialoguePlayer.guideGreeting && greetCounter == 180)
+            if (/*!dialoguePlayer.guideGreeting*/ greetCounter % 480 == 0)
             {
                 //XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
                 XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
@@ -199,9 +200,14 @@ namespace OvermorrowMod.Common.Cutscenes
         public int OpenCounter { get; private set; }
         public int CloseCounter { get; private set; }
 
-        private Popup Popup;
+        public Popup Popup { get; private set; }
 
         public PopupState(Popup popup)
+        {
+            Popup = popup;
+        }
+
+        public void ReplacePopup(Popup popup)
         {
             Popup = popup;
         }
@@ -210,32 +216,66 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             if (CanOpen)
             {
+                if (OpenCounter == 0)
+                {
+                    SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PopupShow")
+                    {
+                        Volume = 1.25f,
+                        PitchVariance = 1.1f,
+                        MaxInstances = 2,
+                    }, Main.LocalPlayer.Center);
+                }
+
                 if (OpenCounter < OPEN_TIME) OpenCounter++;
                 if (OpenCounter == OPEN_TIME)
                 {
                     Main.NewText("open done");
-                    CanOpen = false;
+
+                    if (Popup.DelayTimer < DIALOGUE_DELAY) Popup.DelayTimer++;
+                    if (Popup.DelayTimer == DIALOGUE_DELAY) CanOpen = false;
                 }
             }
             else
             {
-                if (Popup.DrawTimer < Popup.GetDrawTime())
+                if (Popup.DrawTimer < Popup.GetDrawTime()) // Draws the text for the specified time
                 {
+                    if (Popup.DrawTimer == 0)
+                    {
+                        if (!SoundEngine.TryGetActiveSound(Popup.drawSound, out var result))
+                        {
+                            Popup.drawSound = SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw")
+                            {
+                                Volume = 1.25f,
+                                PitchVariance = 1.1f,
+                                MaxInstances = 1,
+                                //SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest
+                            }, Main.LocalPlayer.Center);
+                        }
+                    }
+
                     Popup.DrawTimer++;
                 }
-                else if (Popup.GetNodeIteration() < Popup.GetListLength() - 1)
+                else if (Popup.DisplayTimer < Popup.GetDisplayTime()) // Holds the text for the specified time
+                {
+                    if (SoundEngine.TryGetActiveSound(Popup.drawSound, out var result)) result.Stop();
+                    Popup.DisplayTimer++;
+                }
+                else if (Popup.GetNodeIteration() < Popup.GetListLength() - 1) // If there are any nodes left, reset timers and go to next
                 {
                     Popup.GetNextNode();
                 }
 
-                if (Popup.ShouldClose() && Popup.DrawTimer >= Popup.GetDrawTime())
+                Main.NewText(Popup.DisplayTimer + " / " + Popup.GetDisplayTime());
+                if (Popup.ShouldClose() && Popup.DisplayTimer >= Popup.GetDisplayTime())
                 {
+                    Main.NewText("can close");
                     CanClose = true;
                 }
             }
 
             if (CanClose)
             {
+
                 if (CloseCounter < CLOSE_TIME) CloseCounter++;
                 if (CloseCounter == CLOSE_TIME)
                 {
