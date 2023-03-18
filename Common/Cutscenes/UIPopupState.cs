@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
-    public class PopupState : UIState
+    public class UIPopupState : UIState
     {
         const float OFFSET_DISTANCE = 125;
 
