@@ -17,7 +17,6 @@ namespace OvermorrowMod.Common.Cutscenes
 {
     public partial class DialoguePlayer : ModPlayer
     {
-        private Queue<Popup> PopupQueue = new Queue<Popup>();
         private Dialogue CurrentDialogue;
 
         //public Dictionary<int, Popup> NPCPopups = new Dictionary<int, Popup>();
@@ -51,7 +50,6 @@ namespace OvermorrowMod.Common.Cutscenes
             //kittFirst = tag.Get<bool>("kittFirst");
         }
 
-
         public void AddNPCPopup(int id, XmlDocument xmlDoc)
         {
             if (PopupStates.ContainsKey(id))
@@ -80,17 +78,6 @@ namespace OvermorrowMod.Common.Cutscenes
         public void ClearDialogue() => CurrentDialogue = null;
 
         public Dialogue GetDialogue() => CurrentDialogue;
-
-        public void AddPopup(XmlDocument xmlDoc)
-        {
-            PopupQueue.Enqueue(new Popup(xmlDoc));
-        }
-
-        public void ClearPopup() => PopupQueue.Clear();
-
-        public Popup RemovePopup() => PopupQueue.Dequeue();
-
-        public int GetQueueLength() => PopupQueue.Count;
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
@@ -276,7 +263,7 @@ namespace OvermorrowMod.Common.Cutscenes
                             {
                                 Volume = 1.25f,
                                 PitchVariance = 1.1f,
-                                MaxInstances = 2,
+                                MaxInstances = 3,
                             }, Main.LocalPlayer.Center);
                         }
                     }

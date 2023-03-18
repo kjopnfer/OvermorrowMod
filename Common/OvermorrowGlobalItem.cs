@@ -39,8 +39,8 @@ namespace OvermorrowMod.Common
             {
                 dialoguePlayer.pickupWood = true;
 
-                XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideWood.xml");
-                dialoguePlayer.AddPopup(doc);
+                //XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideWood.xml");
+                //dialoguePlayer.AddPopup(doc);
             }
 
             return base.OnPickup(item, player);
