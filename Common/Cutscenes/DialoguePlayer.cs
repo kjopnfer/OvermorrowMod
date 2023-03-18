@@ -155,7 +155,7 @@ namespace OvermorrowMod.Common.Cutscenes
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
 
-            if (/*!dialoguePlayer.guideGreeting*/ greetCounter % 480 == 0)
+            if (/*!dialoguePlayer.guideGreeting*/ greetCounter % 300 == 0)
             {
                 //XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
                 XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
@@ -210,6 +210,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public void ReplacePopup(Popup popup)
         {
+            if (SoundEngine.TryGetActiveSound(Popup.drawSound, out var result)) result.Stop();
+
             Popup = popup;
         }
 
