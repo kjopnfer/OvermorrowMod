@@ -1,13 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using Terraria.ID;
 
@@ -30,7 +25,8 @@ namespace OvermorrowMod.Quests.ModQuests
                         new ItemRequirement("wood", ItemID.Wood, 20, "Obtain 20 Wood", true),
                         new TravelRequirement(() => ProjectToGround(Main.spawnTileX + 20, Main.spawnTileY), "Travel to Right of Main Spawn", "t1"),
                         new TravelRequirement(() => ProjectToGround(Main.spawnTileX - 20, Main.spawnTileY), "Travel to Left of Main Spawn", "t2"),
-                        new ItemRequirement("gold", ItemID.GoldCoin, 1, "Obtain 1 Gold Coin", true)
+                        new ItemRequirement("gold", ItemID.GoldCoin, 1, "Obtain 1 Gold Coin", true),
+                        new MiscRequirement("campfire", "Relight the Campfire"),
                     }, "chain")
             };
             Rewards = new[]
@@ -82,3 +78,4 @@ namespace OvermorrowMod.Quests.ModQuests
         }
     }
 }
+*/
