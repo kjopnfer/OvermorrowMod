@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using System.Xml;
 using OvermorrowMod.Core;
+using OvermorrowMod.Quests;
+using System.Linq;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
@@ -13,31 +15,14 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool pickupWood = false;
         public bool outDistanceDialogue = false;
         public bool guideGreeting = false;
-        public bool unlockedGuideCampfire = false;
         public bool kittFirst = true;
+
+        public bool unlockedGuideCampfire = false;
+
         private int greetCounter = 0;
+        private int guideCampfireCounter = 0;
+        
 
-        public override void PostUpdateBuffs()
-        {
-            DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            greetCounter++;
-
-            if (!dialoguePlayer.guideGreeting && greetCounter == 180)
-            {
-                XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
-                dialoguePlayer.AddPopup(doc);
-                dialoguePlayer.guideGreeting = true;
-            }
-            else
-            {
-                if (greetCounter >= 420)
-                {
-                    unlockedGuideCampfire = true;
-                }
-            }
-
-            base.PostUpdateBuffs();
-        }
     }
 }

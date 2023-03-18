@@ -9,7 +9,7 @@ namespace OvermorrowMod.Common.Cutscenes
     public class DialogueSystem : ModSystem
     {
         UserInterface PopupUI;
-        internal PopupState PopupState;
+        internal UIPopupState PopupState;
 
         UserInterface DialogueUI;
         internal DialogueState DialogueState;
@@ -17,7 +17,7 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             if (!Main.dedServ)
             {
-                PopupState = new PopupState();
+                PopupState = new UIPopupState();
                 PopupUI = new UserInterface();
                 PopupUI.SetState(PopupState);
 
