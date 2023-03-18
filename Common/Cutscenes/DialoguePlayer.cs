@@ -154,7 +154,6 @@ namespace OvermorrowMod.Common.Cutscenes
             QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            greetCounter++;
 
             if (/*!dialoguePlayer.guideGreeting*/ greetCounter % 480 == 0)
             {
@@ -172,6 +171,8 @@ namespace OvermorrowMod.Common.Cutscenes
                     unlockedGuideCampfire = true;
                 }
             }
+
+            greetCounter++;
 
             /*if (questPlayer.FindActiveQuest("GuideCampfire"))
             {
@@ -250,7 +251,7 @@ namespace OvermorrowMod.Common.Cutscenes
                             {
                                 Volume = 1.25f,
                                 PitchVariance = 1.1f,
-                                MaxInstances = 1,
+                                MaxInstances = 2,
                             }, Main.LocalPlayer.Center);
                         }
                     }
