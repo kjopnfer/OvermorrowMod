@@ -7,13 +7,24 @@ using System.Xml;
 using Terraria.ModLoader.IO;
 using System.Linq;
 using Terraria.GameInput;
+using OvermorrowMod.Core;
+using OvermorrowMod.Quests;
+using System.Text;
+using Terraria.ID;
 
 namespace OvermorrowMod.Common.Cutscenes
 {
     public partial class DialoguePlayer : ModPlayer
     {
+        /// <summary>
+        /// The Popup Queue represents global instances and are not tied to NPCs.
+        /// <para>This is used for Popup based conversations and events, where multiple characters are chained together.</para>
+        /// </summary>
         private Queue<Popup> PopupQueue = new Queue<Popup>();
         private Dialogue CurrentDialogue;
+
+        //public Dictionary<int, Popup> NPCPopups = new Dictionary<int, Popup>();
+        public Dictionary<int, PopupState> PopupStates = new Dictionary<int, PopupState>();
 
         // Used to store any flags triggered by the player when speaking to NPCs
         public HashSet<string> DialogueFlags = new HashSet<string>();
@@ -31,6 +42,16 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             DialogueFlags = tag.Get<List<string>>("DialogueFlags").ToHashSet();
             //kittFirst = tag.Get<bool>("kittFirst");
+        }
+
+
+        public void AddNPCPopup(int id, XmlDocument xmlDoc)
+        {
+            if (PopupStates.ContainsKey(id))
+                PopupStates[id] = new PopupState(new Popup(xmlDoc));
+            else
+                PopupStates.Add(id, new PopupState(new Popup(xmlDoc)));
+            //PopupStates[id] = new PopupState(new Popup(xmlDoc));
         }
 
         public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
@@ -99,6 +120,186 @@ namespace OvermorrowMod.Common.Cutscenes
                     player.controlJump = false;
                 }
             }
+        }
+
+        private void UpdatePopupStates()
+        {
+            foreach (var popupState in PopupStates.Values)
+            {
+                popupState.Update();
+            }
+        }
+
+        private void RemovePopupStates()
+        {
+            List<int> removedIndices = new List<int>();
+
+            foreach (KeyValuePair<int, PopupState> popupState in PopupStates)
+            {
+                if (popupState.Value.CanBeRemoved) removedIndices.Add(popupState.Key);
+            }
+
+            foreach (int index in removedIndices)
+            {
+                PopupStates.Remove(index);
+            }
+        }
+
+        public override void PreUpdate()
+        {
+            UpdatePopupStates();
+            RemovePopupStates();
+
+            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+            DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+
+            greetCounter++;
+
+            if (!dialoguePlayer.guideGreeting && greetCounter == 180)
+            {
+                //XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
+                XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
+
+                dialoguePlayer.AddNPCPopup(NPCID.Guide, doc);
+                //dialoguePlayer.AddPopup(doc);
+                dialoguePlayer.guideGreeting = true;
+            }
+            else
+            {
+                if (greetCounter >= 420)
+                {
+                    unlockedGuideCampfire = true;
+                }
+            }
+
+            /*if (questPlayer.FindActiveQuest("GuideCampfire"))
+            {
+                if (guideCampfireCounter++ == 30)
+                {
+                    XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
+                    dialoguePlayer.AddPopup(doc);
+                }
+            }*/
+
+            base.PreUpdate();
+        }
+    }
+
+    public class PopupState
+    {
+        // if these are const then the fucking uistate cant read them
+        public readonly float DIALOGUE_DELAY = 30;
+        public readonly float OPEN_TIME = 15;
+        public readonly float CLOSE_TIME = 10;
+
+        public bool CanOpen { get; private set; } = true;
+        public bool CanClose { get; private set; } = false;
+        public bool CanBeRemoved { get; private set; } = false;
+
+        public int OpenCounter { get; private set; }
+        public int CloseCounter { get; private set; }
+
+        private Popup Popup;
+
+        public PopupState(Popup popup)
+        {
+            Popup = popup;
+        }
+
+        public void Update()
+        {
+            if (CanOpen)
+            {
+                if (OpenCounter < OPEN_TIME) OpenCounter++;
+                if (OpenCounter == OPEN_TIME)
+                {
+                    Main.NewText("open done");
+                    CanOpen = false;
+                }
+            }
+            else
+            {
+                if (Popup.DrawTimer < Popup.GetDrawTime())
+                {
+                    Popup.DrawTimer++;
+                }
+                else if (Popup.GetNodeIteration() < Popup.GetListLength() - 1)
+                {
+                    Popup.GetNextNode();
+                }
+
+                if (Popup.ShouldClose() && Popup.DrawTimer >= Popup.GetDrawTime())
+                {
+                    CanClose = true;
+                }
+            }
+
+            if (CanClose)
+            {
+                if (CloseCounter < CLOSE_TIME) CloseCounter++;
+                if (CloseCounter == CLOSE_TIME)
+                {
+                    Main.NewText("flag removal");
+                    CanBeRemoved = true;
+                }
+            }
+        }
+
+        public string GetPopupText()
+        {
+            int progress = (int)MathHelper.Lerp(0, Popup.GetText().Length, Popup.DrawTimer / (float)Popup.GetDrawTime());
+            var text = Popup.GetText().Substring(0, progress);
+
+            // If for some reason there are no colors specified don't parse the brackets
+            if (Popup.GetColorHex() != null)
+            {
+                // The number of opening brackets MUST be the same as the number of closing brackets
+                int numOpen = 0;
+                int numClose = 0;
+
+                // Create a new string, adding in hex tags whenever an opening bracket is found
+                var builder = new StringBuilder();
+                builder.Append("    "); // Appends to the beginning of the string
+
+                foreach (var character in text)
+                {
+                    if (character == '[') // Insert the hex tag if an opening bracket is found
+                    {
+                        builder.Append("[c/" + Popup.GetColorHex() + ":");
+                        numOpen++;
+                    }
+                    else
+                    {
+                        if (character == ']')
+                        {
+                            numClose++;
+                        }
+
+                        builder.Append(character);
+                    }
+                }
+
+                if (numOpen != numClose)
+                {
+                    builder.Append(']');
+                }
+
+                // Final check for if the tag has two brackets but no characters inbetween
+                var hexTag = "[c/" + Popup.GetColorHex() + ":]";
+                if (builder.ToString().Contains(hexTag))
+                {
+                    builder.Replace(hexTag, "[c/" + Popup.GetColorHex() + ": ]");
+                }
+
+                text = builder.ToString();
+            }
+
+            return text;
+        }
+
+        public Texture2D GetPopupFace()
+        {
+            return Popup.GetPortrait();
         }
     }
 }

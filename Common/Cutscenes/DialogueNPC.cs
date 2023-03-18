@@ -34,7 +34,8 @@ namespace OvermorrowMod.Common.Cutscenes
                         dialoguePlayer.outDistanceDialogue = true;
 
                         XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideHurry.xml");
-                        dialoguePlayer.AddPopup(doc);
+                        dialoguePlayer.AddNPCPopup(npc.type, doc);
+                       // dialoguePlayer.AddPopup(doc);
                     }
                     else if (xDistance < 25 * 16) // The dialogue should run if the player has FIRST been within 25 blocks and THEN they leave
                     {

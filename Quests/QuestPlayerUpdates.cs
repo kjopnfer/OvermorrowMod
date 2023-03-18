@@ -19,7 +19,7 @@ namespace OvermorrowMod.Quests
                     {
                         foreach (var clause in chainRequirement.AllClauses)
                         {
-                            Main.NewText(clause.ID + " " + clause.IsCompleted(this, quest));
+                            //Main.NewText(clause.ID + " " + clause.IsCompleted(this, quest));
                         }
                     }
                 }
