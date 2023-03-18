@@ -43,15 +43,6 @@ namespace OvermorrowMod.Common.Cutscenes
             return text;
         }
 
-        public void ResetTimers()
-        {
-            DrawTimer = 0;
-            DisplayTimer = 0;
-            DelayTimer = 0;
- 
-            if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
-        }
-
         public Texture2D GetPortrait() => ModContent.Request<Texture2D>(AssetDirectory.UI + "Portraits/" + nodeList[nodeIterator].Attributes["npcPortrait"].Value, ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
         public int GetDrawTime() => Convert.ToInt32(nodeList[nodeIterator].Attributes["drawTime"].Value);
@@ -64,6 +55,15 @@ namespace OvermorrowMod.Common.Cutscenes
         {
             nodeIterator++;
             ResetTimers();
+
+            if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
+        }
+
+        public void ResetTimers()
+        {
+            DrawTimer = 0;
+            DisplayTimer = 0;
+            DelayTimer = 0;
 
             if (SoundEngine.TryGetActiveSound(drawSound, out var result)) result.Stop();
         }

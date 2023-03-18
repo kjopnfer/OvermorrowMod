@@ -68,80 +68,8 @@ namespace OvermorrowMod.Common.Cutscenes
             spriteBatch.Reload(SpriteSortMode.Deferred);
         }
 
-        public void DrawText(SpriteBatch spriteBatch, Vector2 textPosition)
-        {
-            if (!SoundEngine.TryGetActiveSound(drawSound, out var result))
-            {
-                drawSound = SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/DialogueDraw")
-                {
-                    Volume = 1.25f,
-                    PitchVariance = 1.1f,
-                    MaxInstances = 1,
-                    //SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest
-                }, Main.LocalPlayer.Center);
-            }
-
-            int progress = (int)MathHelper.Lerp(0, GetText().Length, DrawTimer / (float)GetDrawTime());
-            var text = GetText().Substring(0, progress);
-
-            // If for some reason there are no colors specified don't parse the brackets
-            if (GetColorHex() != null)
-            {
-                // The number of opening brackets MUST be the same as the number of closing brackets
-                int numOpen = 0;
-                int numClose = 0;
-
-                // Create a new string, adding in hex tags whenever an opening bracket is found
-                var builder = new StringBuilder();
-                builder.Append("    "); // Appends to the beginning of the string
-
-                foreach (var character in text)
-                {
-                    if (character == '[') // Insert the hex tag if an opening bracket is found
-                    {
-                        builder.Append("[c/" + GetColorHex() + ":");
-                        numOpen++;
-                    }
-                    else
-                    {
-                        if (character == ']')
-                        {
-                            numClose++;
-                        }
-
-                        builder.Append(character);
-                    }
-                }
-
-                if (numOpen != numClose)
-                {
-                    builder.Append(']');
-                }
-
-                // Final check for if the tag has two brackets but no characters inbetween
-                var hexTag = "[c/" + GetColorHex() + ":]";
-                if (builder.ToString().Contains(hexTag))
-                {
-                    builder.Replace(hexTag, "[c/" + GetColorHex() + ": ]");
-                }
-
-                text = builder.ToString();
-            }
-
-            TextSnippet[] snippets = ChatManager.ParseMessage(text, Color.White).ToArray();
-
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, snippets, textPosition, Color.White, 0f, Vector2.Zero, Vector2.One * 0.8f, out var hoveredSnippet, MAXIMUM_LENGTH);
-        }*/
-
         /*private void DrawPopup(SpriteBatch spriteBatch, PopupState popupState, Vector2 textPosition)
         {
-            if (popupState.OpenCounter == 0 && popupState.CanOpen) SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PopupShow")
-            {
-                Volume = 1.25f,
-                PitchVariance = 1.1f,
-                MaxInstances = 2,
-            }, Main.LocalPlayer.Center);
-
             Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack").Value;
 
             spriteBatch.Reload(SpriteSortMode.Immediate);
@@ -179,6 +107,21 @@ namespace OvermorrowMod.Common.Cutscenes
             spriteBatch.Reload(SpriteSortMode.Deferred);
         }*/
 
+        private void DrawPopup(SpriteBatch spriteBatch, PopupState popupState, Vector2 textPosition)
+        {
+            float drawProgress = ModUtils.EaseOutQuint(Utils.Clamp(popupState.OpenTimer, 0, popupState.OPEN_TIME) / popupState.OPEN_TIME);
+
+            float scale = MathHelper.Lerp(0.5f, 1f, drawProgress);
+            float xOffset = MathHelper.Lerp(-155, 0, drawProgress);
+
+            Texture2D backDrop = ModContent.Request<Texture2D>(AssetDirectory.UI + "DialogueBack").Value;
+            spriteBatch.Reload(SpriteSortMode.Immediate);
+
+            spriteBatch.Draw(popupState.GetPopupFace(), new Vector2(textPosition.X + 62 + xOffset, textPosition.Y + 14), null, Color.White, 0f, backDrop.Size() / 2, scale, SpriteEffects.None, 1f);
+
+            spriteBatch.Reload(SpriteSortMode.Deferred);
+        }
+
         public void DrawText(SpriteBatch spriteBatch, PopupState popupState, Vector2 textPosition)
         {
             TextSnippet[] snippets = ChatManager.ParseMessage(popupState.GetPopupText(), Color.White).ToArray();
@@ -196,6 +139,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 //Main.NewText(popupState.GetPopupText());
                 DrawText(spriteBatch, popupState, textPosition);
+                DrawPopup(spriteBatch, popupState, textPosition);
+
                 offset++;
             }
 

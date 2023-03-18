@@ -197,8 +197,8 @@ namespace OvermorrowMod.Common.Cutscenes
         public bool CanClose { get; private set; } = false;
         public bool CanBeRemoved { get; private set; } = false;
 
-        public int OpenCounter { get; private set; }
-        public int CloseCounter { get; private set; }
+        public int OpenTimer { get; private set; }
+        public int CloseTimer { get; private set; }
 
         public Popup Popup { get; private set; }
 
@@ -213,10 +213,13 @@ namespace OvermorrowMod.Common.Cutscenes
         }
 
         public void Update()
-        {
+        {        
             if (CanOpen)
             {
-                if (OpenCounter == 0)
+                // This should only run once per state instance.
+                // Allows Popups of a state to override each other but not repeat the same opening animation if they do.
+
+                if (OpenTimer == 0)
                 {
                     SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/PopupShow")
                     {
@@ -226,17 +229,17 @@ namespace OvermorrowMod.Common.Cutscenes
                     }, Main.LocalPlayer.Center);
                 }
 
-                if (OpenCounter < OPEN_TIME) OpenCounter++;
-                if (OpenCounter == OPEN_TIME)
+                if (OpenTimer < OPEN_TIME) OpenTimer++;
+                if (OpenTimer == OPEN_TIME)
                 {
-                    Main.NewText("open done");
-
                     if (Popup.DelayTimer < DIALOGUE_DELAY) Popup.DelayTimer++;
                     if (Popup.DelayTimer == DIALOGUE_DELAY) CanOpen = false;
                 }
             }
             else
             {
+                //Main.NewText(Popup.DrawTimer + " / " + Popup.GetDrawTime());
+
                 if (Popup.DrawTimer < Popup.GetDrawTime()) // Draws the text for the specified time
                 {
                     if (Popup.DrawTimer == 0)
@@ -248,7 +251,6 @@ namespace OvermorrowMod.Common.Cutscenes
                                 Volume = 1.25f,
                                 PitchVariance = 1.1f,
                                 MaxInstances = 1,
-                                //SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest
                             }, Main.LocalPlayer.Center);
                         }
                     }
@@ -265,8 +267,8 @@ namespace OvermorrowMod.Common.Cutscenes
                     Popup.GetNextNode();
                 }
 
-                Main.NewText(Popup.DisplayTimer + " / " + Popup.GetDisplayTime());
-                if (Popup.ShouldClose() && Popup.DisplayTimer >= Popup.GetDisplayTime())
+                //Main.NewText(Popup.DisplayTimer + " / " + Popup.GetDisplayTime());
+                if (Popup.ShouldClose() && Popup.DisplayTimer >= Popup.GetDisplayTime()) // If there are no nodes left and it has finished displaying
                 {
                     Main.NewText("can close");
                     CanClose = true;
@@ -276,8 +278,8 @@ namespace OvermorrowMod.Common.Cutscenes
             if (CanClose)
             {
 
-                if (CloseCounter < CLOSE_TIME) CloseCounter++;
-                if (CloseCounter == CLOSE_TIME)
+                if (CloseTimer < CLOSE_TIME) CloseTimer++;
+                if (CloseTimer == CLOSE_TIME)
                 {
                     Main.NewText("flag removal");
                     CanBeRemoved = true;
