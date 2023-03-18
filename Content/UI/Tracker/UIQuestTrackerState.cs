@@ -140,6 +140,12 @@ namespace OvermorrowMod.Content.UI.Tracker
                 amount = 1;
                 description = travelRequirement.description;
             }
+            else if (requirementClause is MiscRequirement miscRequirement)
+            {
+                progress = miscRequirement.IsCompleted(questPlayer, questState) ? 1 : 0;
+                amount = 1;
+                description = miscRequirement.description;
+            }
 
             return new QuestObjective(progress, amount, description);
         }

@@ -9,22 +9,46 @@ namespace OvermorrowMod.Quests
 {
     public partial class QuestPlayer : ModPlayer
     {
+        private void RequirementCompleteAction(string id)
+        {
+            switch (id)
+            {
+                case "axe":
+                    // make it put the popup for the axe
+                    break;
+                case "slime":
+                    // make it put the popup for the slime
+                    break;
+            }
+        }
+
         private void AutoCompleteRequirements()
         {
-            foreach (var quest in CurrentQuests)
+            foreach (var questState in CurrentQuests)
             {
-                foreach (var requirement in quest.Quest.Requirements)
+                foreach (var requirement in questState.Quest.Requirements)
                 {
-                    if (requirement is ChainRequirement chainRequirement)
+                    if (!(requirement is ChainRequirement chainRequirement)) continue;
+
+                    foreach (var clause in chainRequirement.AllClauses)
                     {
-                        foreach (var clause in chainRequirement.AllClauses)
+                        if (clause is ItemRequirement)
                         {
-                            //Main.NewText(clause.ID + " " + clause.IsCompleted(this, quest));
+                            if (clause.CanHandInRequirement(this, questState) && !clause.IsCompleted(this, questState))
+                            {
+                                clause.TryCompleteRequirement(this, questState);
+                                RequirementCompleteAction(clause.ID);
+
+                                Main.NewText(clause.ID + " can be completed");
+                            }
                         }
+                        //Main.NewText(clause.ID + " " + clause.IsCompleted(this, quest));
                     }
+
                 }
-                
+
             }
+
             if (FindActiveQuest("GuideCampfire"))
             {
                 /*var npc = Main.npc[Main.LocalPlayer.talkNPC];
