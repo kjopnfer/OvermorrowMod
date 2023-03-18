@@ -17,15 +17,21 @@ namespace OvermorrowMod.Common.Cutscenes
 {
     public partial class DialoguePlayer : ModPlayer
     {
-        /// <summary>
-        /// The Popup Queue represents global instances and are not tied to NPCs.
-        /// <para>This is used for Popup based conversations and events, where multiple characters are chained together.</para>
-        /// </summary>
         private Queue<Popup> PopupQueue = new Queue<Popup>();
         private Dialogue CurrentDialogue;
 
         //public Dictionary<int, Popup> NPCPopups = new Dictionary<int, Popup>();
+
+        /// <summary>
+        /// This contains Popup states based on an ID, usually the NPC's ID.
+        /// </summary>
         public Dictionary<int, PopupState> PopupStates = new Dictionary<int, PopupState>();
+
+        /// <summary>
+        /// This contains Popup states that are being sent to the PopupStates dictionary but is not ready for the Popup yet.
+        /// <para>This occurs when a Popup is closing and we don't want a Popup to be added at that time.</para>
+        /// </summary>
+        private Dictionary<int, Popup> QueuedPopups = new Dictionary<int, Popup>();
 
         // Used to store any flags triggered by the player when speaking to NPCs
         public HashSet<string> DialogueFlags = new HashSet<string>();
@@ -49,10 +55,19 @@ namespace OvermorrowMod.Common.Cutscenes
         public void AddNPCPopup(int id, XmlDocument xmlDoc)
         {
             if (PopupStates.ContainsKey(id))
-                PopupStates[id].ReplacePopup(new Popup(xmlDoc));
+            {
+                if (!PopupStates[id].CanClose) // Replace the current Popup if it is not in a closed state
+                {
+                    PopupStates[id].ReplacePopup(new Popup(xmlDoc));
+                }
+                else // Otherwise, if it is in a closing state then add it into a Queue that will be given to a new state when ready
+                {
+                    if (!QueuedPopups.ContainsKey(id)) QueuedPopups.Add(id, new Popup(xmlDoc));
+                    else QueuedPopups[id] = new Popup(xmlDoc);
+                }
+            }
             else
                 PopupStates.Add(id, new PopupState(new Popup(xmlDoc)));
-            //PopupStates[id] = new PopupState(new Popup(xmlDoc));
         }
 
         public void SetDialogue(Texture2D speakerBody, string displayText, int drawTime, XmlDocument xmlDoc)
@@ -123,6 +138,14 @@ namespace OvermorrowMod.Common.Cutscenes
             }
         }
 
+        private void UpdatePopupQueue()
+        {
+            foreach (KeyValuePair<int, Popup> popup in QueuedPopups)
+            {
+                if (!PopupStates.ContainsKey(popup.Key)) PopupStates.Add(popup.Key, new PopupState(popup.Value));
+            }
+        }
+
         private void UpdatePopupStates()
         {
             foreach (var popupState in PopupStates.Values)
@@ -148,14 +171,14 @@ namespace OvermorrowMod.Common.Cutscenes
 
         public override void PreUpdate()
         {
+            UpdatePopupQueue();
             UpdatePopupStates();
             RemovePopupStates();
 
             QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-
-            if (/*!dialoguePlayer.guideGreeting*/ greetCounter % 300 == 0)
+            if (/*!dialoguePlayer.guideGreeting*/ greetCounter % 480 == 0)
             {
                 //XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
                 XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
@@ -216,7 +239,7 @@ namespace OvermorrowMod.Common.Cutscenes
         }
 
         public void Update()
-        {        
+        {
             if (CanOpen)
             {
                 // This should only run once per state instance.
@@ -273,7 +296,6 @@ namespace OvermorrowMod.Common.Cutscenes
                 //Main.NewText(Popup.DisplayTimer + " / " + Popup.GetDisplayTime());
                 if (Popup.ShouldClose() && Popup.DisplayTimer >= Popup.GetDisplayTime()) // If there are no nodes left and it has finished displaying
                 {
-                    Main.NewText("can close");
                     CanClose = true;
                 }
             }
@@ -284,7 +306,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 if (CloseTimer < CLOSE_TIME) CloseTimer++;
                 if (CloseTimer == CLOSE_TIME)
                 {
-                    Main.NewText("flag removal");
+                    //Main.NewText("flag removal");
                     CanBeRemoved = true;
                 }
             }
