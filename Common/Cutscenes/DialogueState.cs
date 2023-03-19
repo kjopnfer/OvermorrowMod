@@ -64,7 +64,7 @@ namespace OvermorrowMod.Common.Cutscenes
         public int interactDelay = 0;
 
         public bool hasInitialized = false;
-        
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
@@ -145,7 +145,7 @@ namespace OvermorrowMod.Common.Cutscenes
                 }
 
                 //Main.NewText(dialogue.GetTextIteration() + " / " + (dialogue.GetTextListLength() - 1));
-                
+
                 // This shit keeps breaking everything if I move it so I don't care anymore, it's staying here
                 int optionNumber = 1;
                 if (DrawTimer < player.GetDialogue().drawTime || dialogue.GetTextIteration() < dialogue.GetTextListLength() - 1) return;
@@ -517,6 +517,7 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 if (action != "none")
                 {
+                    DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
                     QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
                     NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
                     QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
@@ -557,6 +558,11 @@ namespace OvermorrowMod.Common.Cutscenes
                         case "quest":
                             questPlayer.AddQuest(quest);
                             questNPC.TakeQuest();
+
+                            if (quest.QuestName == "Rekindle the Flame")
+                            {
+                                dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml"));
+                            }
 
                             SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestAccept")
                             {

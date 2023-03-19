@@ -168,9 +168,9 @@ namespace OvermorrowMod.Common.Cutscenes
             if (!dialoguePlayer.guideGreeting && greetCounter == 480)
             {
                 //XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
-                XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
+                /*XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");
 
-                dialoguePlayer.AddNPCPopup(NPCID.Guide, doc);
+                dialoguePlayer.AddNPCPopup(NPCID.Guide, doc);*/
                 //dialoguePlayer.AddPopup(doc);
                 dialoguePlayer.guideGreeting = true;
             }

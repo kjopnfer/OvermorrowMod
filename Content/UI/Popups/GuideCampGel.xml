@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Popup>
+	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Now that you have some wood you'll need something flammable.</Text>
+	<Text npcPortrait="Guide" drawTime="90" displayTime="120" color="34C9EB">Gel should do, kill a few slimes for their gel.</Text>
+</Popup>

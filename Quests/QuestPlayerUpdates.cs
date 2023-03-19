@@ -1,8 +1,11 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Core;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.State;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Quests
@@ -11,13 +14,15 @@ namespace OvermorrowMod.Quests
     {
         private void RequirementCompleteAction(string id)
         {
+            DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
+
             switch (id)
             {
-                case "axe":
-                    // make it put the popup for the axe
+                case "wood":
+                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampGel.xml"));
                     break;
-                case "slime":
-                    // make it put the popup for the slime
+                case "gel":
+                    dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampTorch.xml"));
                     break;
             }
         }
@@ -31,7 +36,6 @@ namespace OvermorrowMod.Quests
                     if (req.Requirement.ID == id)
                     {
                         req.IsCompleted = true;
-                        Main.NewText("hi");
                     }
                 }
             }
@@ -53,8 +57,6 @@ namespace OvermorrowMod.Quests
                             {
                                 clause.TryCompleteRequirement(this, questState);
                                 RequirementCompleteAction(clause.ID);
-
-                                Main.NewText(clause.ID + " can be completed");
                             }
                         }
                         //Main.NewText(clause.ID + " " + clause.IsCompleted(this, quest));
