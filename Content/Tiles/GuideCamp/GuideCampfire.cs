@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
+using OvermorrowMod.Quests;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -57,8 +59,15 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
 
                 player.HeldItem.stack--;
 
-
                 campfire.Interact();
+                if (campfire.FireOn)
+                { //player.GetModPlayer<DialoguePlayer>().AddNPCPopup(NPCID.Guide, )
+                    QuestPlayer questPlayer = player.GetModPlayer<QuestPlayer>();
+                    if (questPlayer.FindActiveQuest("GuideCampfire"))
+                    {
+                        questPlayer.CompleteMiscRequirement("campfire");
+                    }
+                }
             }
             //else Main.NewText("Campfire Tile Entity not found");
 

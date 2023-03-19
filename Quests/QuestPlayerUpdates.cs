@@ -22,6 +22,21 @@ namespace OvermorrowMod.Quests
             }
         }
 
+        public void CompleteMiscRequirement(string id)
+        {
+            foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<MiscRequirementState>(this))
+            {
+                if (!req.IsCompleted)
+                {
+                    if (req.Requirement.ID == id)
+                    {
+                        req.IsCompleted = true;
+                        Main.NewText("hi");
+                    }
+                }
+            }
+        }
+
         private void AutoCompleteRequirements()
         {
             foreach (var questState in CurrentQuests)

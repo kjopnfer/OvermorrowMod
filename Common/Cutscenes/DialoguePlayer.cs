@@ -165,7 +165,7 @@ namespace OvermorrowMod.Common.Cutscenes
             QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
-            if (/*!dialoguePlayer.guideGreeting*/ greetCounter % 480 == 0)
+            if (!dialoguePlayer.guideGreeting && greetCounter == 480)
             {
                 //XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideGreeting.xml");
                 XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideCampAxe.xml");

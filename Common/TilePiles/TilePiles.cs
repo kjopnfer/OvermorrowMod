@@ -54,7 +54,7 @@ namespace OvermorrowMod.Common.TilePiles
                         if (tileObject.active)
                         {
                             tileObject.active = false;
-                            Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                            Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.itemID, tileObject.GetRandomStack());
 
                             SoundEngine.PlaySound(tileObject.deathSound);
                         }
@@ -66,7 +66,7 @@ namespace OvermorrowMod.Common.TilePiles
                     if (tileObject.active)
                     {
                         tileObject.active = false;
-                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.itemID, tileObject.GetRandomStack());
 
                         SoundEngine.PlaySound(tileObject.deathSound);
                     }
@@ -202,7 +202,8 @@ namespace OvermorrowMod.Common.TilePiles
                     if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()) && tileObject.active)
                     {
                         tileObject.active = false;
-                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.itemID, tileObject.GetRandomStack());
+                        //TilePileActions.PickupInteraction(tileObject);
 
                         SoundEngine.PlaySound(tileObject.grabSound);
                         break;

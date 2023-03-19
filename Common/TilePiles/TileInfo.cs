@@ -10,7 +10,7 @@ namespace OvermorrowMod.Common.TilePiles
         internal string name;
         internal Rectangle rectangle;
         internal Texture2D texture;
-        internal int ID;
+        internal int itemID;
         private int minStack;
         private int maxStack;
         internal bool active;
@@ -55,7 +55,7 @@ namespace OvermorrowMod.Common.TilePiles
             rectangle.Width = tileObject.Width;
             rectangle.Height = tileObject.Height;
             texture = TileObjects.TileObjectTextures[identifier];
-            ID = tileObject.ItemID;
+            itemID = tileObject.ItemID;
             name = tileObject.Name;
             minStack = tileObject.MinStack;
             maxStack = tileObject.MaxStack;
