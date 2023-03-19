@@ -22,5 +22,8 @@
 			<Text time="60">There's things I gotta attend to so I'll be sticking around for a bit.</Text>
 			<Text time="45">Feel free to grab some stuff from my camp for your journey.</Text>
 		</Dialogue>
+		<Options>
+			<Option link="exit" action="quest_complete">Turn In</Option>
+		</Options>
 	</DialogueNode>
 </Dialogue>

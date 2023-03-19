@@ -457,12 +457,10 @@ namespace OvermorrowMod.Common.Cutscenes
             this.action = "item";
         }
 
-
         public string GetText() => displayText;
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-
             Vector2 pos = GetDimensions().ToRectangle().TopLeft();
             bool isHovering = ContainsPoint(Main.MouseScreen);
 
@@ -519,6 +517,12 @@ namespace OvermorrowMod.Common.Cutscenes
 
                 if (action != "none")
                 {
+                    QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+                    NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+                    QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
+
+                    var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
+
                     switch (action)
                     {
                         case "item":
@@ -551,11 +555,6 @@ namespace OvermorrowMod.Common.Cutscenes
 
                             return;
                         case "quest":
-                            NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
-                            QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-                            QuestNPC questNPC = npc.GetGlobalNPC<QuestNPC>();
-
-                            var quest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out var isDoing);
                             questPlayer.AddQuest(quest);
                             questNPC.TakeQuest();
 
@@ -568,6 +567,22 @@ namespace OvermorrowMod.Common.Cutscenes
 
                             // Run the Quest Accepted UI
                             Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
+
+                            parent.ExitText();
+                            return;
+                        case "quest_complete":
+                            var baseQuest = npc.GetGlobalNPC<QuestNPC>().GetCurrentQuest(npc, out _);
+                            questPlayer.CompleteQuest(quest.QuestID);
+
+                            SoundEngine.PlaySound(new SoundStyle($"{nameof(OvermorrowMod)}/Sounds/QuestTurnIn")
+                            {
+                                Volume = 0.9f,
+                                PitchVariance = 0.2f,
+                                MaxInstances = 3,
+                            }, npc.Center);
+
+                            // Run the Quest Complete UI
+                            Main.NewText("COMPLETED QUEST: " + quest.QuestName, Color.Yellow);
 
                             parent.ExitText();
                             return;

@@ -151,14 +151,8 @@ namespace OvermorrowMod.Common.Cutscenes
 
                                     }
                                     break;
-                                case "shop":
-                                    optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, "shop"));
-                                    break;
-                                case "quest":
-                                    optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, "quest"));
-                                    break;
-                                case "exit":
-                                    optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, "exit"));
+                                default:
+                                    optionButtons.Add(new OptionButton(option.InnerText, option.Attributes["link"].Value, option.Attributes["action"].Value));
                                     break;
                             }
                         }
