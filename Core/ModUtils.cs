@@ -243,7 +243,23 @@ namespace OvermorrowMod.Core
         public static void PlaceTilePile<T, TE>(int x, int y) where T : ModTilePile<TE> where TE : BaseTilePile
         {
             PlaceObject(x, y, ModContent.TileType<T>());
-            int id = ModContent.GetInstance<TE>().Place(x - 1, y - 2); // this represents the top left corner
+
+            int xOffset = 0;
+            int yOffset = 0;
+            switch (ModContent.GetInstance<TE>().Style)
+            {
+                case BaseTilePile.TileStyle.Style2x2:
+                    yOffset = -1;
+                    break;
+                case BaseTilePile.TileStyle.Style3x2:
+                    break;
+                case BaseTilePile.TileStyle.Style3x3:
+                    xOffset = -1;
+                    yOffset = -2;
+                    break;
+            }
+
+            int id = ModContent.GetInstance<TE>().Place(x + xOffset, y + yOffset); // this represents the top left corner
             TE te = TileEntity.ByID[id] as TE;
             te.SetPosition(new Vector2(x, y));
             te.CreateTilePile();

@@ -105,7 +105,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     WorldGen.KillTile(x + 2, y - 1);
                     WorldGen.KillTile(x + 3, y - 1);
 
-                    ModUtils.PlaceTilePile<AxeStump, AxeLoot>(x, y - 1);
+                    ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>(x, y - 1);
                 }
                 else
                 {
@@ -141,7 +141,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     WorldGen.KillTile(x + 2, y - 1);
                     WorldGen.KillTile(x + 3, y - 1);
 
-                    ModUtils.PlaceTilePile<LootPile, BasicLoot>(x, y - 1);
+                    ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>(x, y - 1);
                 }
                 else
                 {

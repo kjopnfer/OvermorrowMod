@@ -6,8 +6,7 @@ using Terraria.ModLoader;
 using OvermorrowMod.Common.TilePiles;
 using OvermorrowMod.Content.Tiles.TilePiles.TileObjects;
 
-using static OvermorrowMod.Common.TilePiles.TileObjects;
-using OvermorrowMod.Common;
+using static OvermorrowMod.Common.TilePiles.TileObjects;    
 
 namespace OvermorrowMod.Content.Tiles.TilePiles
 {

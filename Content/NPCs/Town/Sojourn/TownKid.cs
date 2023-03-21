@@ -85,7 +85,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
 
                         if (checkDistance > 96 * 16) // Go the opposite direction otherwise
                         {
-                            Main.NewText("out of bounds");
+                            //Main.NewText("out of bounds");
                             movePosition = new Vector2(NPC.Center.X + (xPosition * -direction), anchorPoint.Y);
                         }
                     }

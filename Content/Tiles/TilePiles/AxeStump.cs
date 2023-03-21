@@ -1,7 +1,5 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ObjectData;
 using Terraria.ModLoader;
 using OvermorrowMod.Common.TilePiles;
 using OvermorrowMod.Content.Tiles.TilePiles.TileObjects;

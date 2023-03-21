@@ -31,6 +31,8 @@ namespace OvermorrowMod.Common.TilePiles
             {
                 case TileStyle.Style2x2:
                     return AssetDirectory.TilePiles + "Grid_2x2";
+                case TileStyle.Style3x2:
+                    return AssetDirectory.TilePiles + "Grid_3x2";
                 case TileStyle.Style3x3:
                     return AssetDirectory.TilePiles + "Grid_3x3";
                 default:
@@ -48,8 +50,14 @@ namespace OvermorrowMod.Common.TilePiles
                 case TileStyle.Style2x2:
                     TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
                     break;
+                case TileStyle.Style3x2:
+                    TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+                    break;
                 case TileStyle.Style3x3:
                     TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+                    break;
+                case TileStyle.Style6x3:
+                    TileObjectData.newTile.CopyFrom(TileObjectData.Style6x3);
                     break;
             }
 

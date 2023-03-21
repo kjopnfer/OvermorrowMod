@@ -16,9 +16,12 @@ namespace OvermorrowMod.Common.TilePiles
 
         public enum TileStyle
         {
+            Style2x2,
+            Style3x2,
             Style3x3,
             Style4x4,
             Style5x4,
+            Style6x3,
         }
 
         public virtual TileStyle Style => TileStyle.Style3x3;
