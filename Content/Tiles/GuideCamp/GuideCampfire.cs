@@ -21,6 +21,7 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.Origin = new Point16(1, 1);
+            TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
 
             ModTranslation name = CreateMapEntryName();

@@ -16,7 +16,9 @@ namespace OvermorrowMod.Common.TilePiles
             Item.useStyle = ItemUseStyleID.Swing; 
             Item.useTime = 15; 
             Item.useAnimation = 15;
-            Item.createTile = Mod.Find<ModTile>("GuideStool").Type;
+
+            // Need to change the PostPlace hook in TilePiles.cs too
+            Item.createTile = Mod.Find<ModTile>("BowRock").Type;
         }
     }
 }

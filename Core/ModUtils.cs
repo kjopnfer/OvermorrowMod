@@ -252,6 +252,8 @@ namespace OvermorrowMod.Core
                     yOffset = -1;
                     break;
                 case BaseTilePile.TileStyle.Style3x2:
+                    xOffset = -1;
+                    yOffset = -1;
                     break;
                 case BaseTilePile.TileStyle.Style3x3:
                     xOffset = -1;

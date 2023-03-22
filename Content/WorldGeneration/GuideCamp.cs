@@ -1,4 +1,7 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
+using OvermorrowMod.Common.Base;
 using OvermorrowMod.Content.Tiles.GuideCamp;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
@@ -41,14 +44,41 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         private void GenerateCamp(GenerationProgress progress, GameConfiguration config)
         {
-            var logger = OvermorrowModFile.Instance.Logger;
-
-            progress.Message = "Setting Up Camp";
+            progress.Message = "Setting up camp";
 
             int startX = Main.spawnTileX;
             int startY = Main.spawnTileY;
 
-            #region Campfire
+            bool validArea = false;
+
+            int x = startX;
+            int y = startY - 15;
+
+            while (!validArea)
+            {
+                // Loop downwards until we reach a solid tile
+                Tile tile = Framing.GetTileSafely(x, y);
+                while (!tile.HasTile)
+                {
+                    y++;
+                    tile = Framing.GetTileSafely(x, y);
+                }
+
+                Tile aboveTile = Framing.GetTileSafely(x, y - 1);
+
+                // We have the tile but we want to check if its a grass block, if it isn't restart the process
+                if ((tile.TileType == TileID.Grass || tile.TileType == TileID.Dirt) && tile.WallType == WallID.None && !aboveTile.HasTile && Main.tileSolid[tile.TileType])
+                {
+                    validArea = true;
+                }
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                PlaceCamp(x + 3, y + 8);
+            }
+
+            /*#region Campfire
             int x = startX;
             int y = startY - 15;
             Tile tile = Framing.GetTileSafely(x, y);
@@ -149,7 +179,39 @@ namespace OvermorrowMod.Content.WorldGeneration
                     tile = Framing.GetTileSafely(x, y);
                 }
             }
-            #endregion
+            #endregion*/
+        }
+
+        public static void PlaceCamp(int x, int y)
+        {
+            Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
+            {
+                [new Color(42, 100, 46)] = TileID.Grass,
+                [new Color(71, 38, 28)] = TileID.Dirt,
+            };
+
+            Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
+            {
+                [new Color(0, 0, 0)] = -2
+            };
+
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/GuideCamp_Clear").Value;
+            TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
+            TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
+
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/GuideCamp").Value;
+            TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap);
+            TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
+
+            WorldGen.PlaceTile(x - (TileGen.width / 2), y - TileGen.height, TileID.Adamantite, false, true);
+
+            Vector2 origin = new Vector2(x - (TileGen.width / 2), y - TileGen.height);
+
+            ModUtils.PlaceObject((int)(origin.X + 10), (int)(origin.Y + 5), ModContent.TileType<GuideCampfire>());
+            ModContent.GetInstance<GuideCampfire_TE>().Place(x + 9, y + 4);
+
+            ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>((int)(origin.X + 6), (int)(origin.Y + 5));
+            ModUtils.PlaceTilePile<BowRock, BowRockObjects>((int)(origin.X + 2), (int)(origin.Y + 4));
         }
     }
 }
