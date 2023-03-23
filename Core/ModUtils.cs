@@ -259,6 +259,10 @@ namespace OvermorrowMod.Core
                     xOffset = -1;
                     yOffset = -2;
                     break;
+                case BaseTilePile.TileStyle.Style6x3:
+                    xOffset = -3;
+                    yOffset = -2;
+                    break;
             }
 
             int id = ModContent.GetInstance<TE>().Place(x + xOffset, y + yOffset); // this represents the top left corner

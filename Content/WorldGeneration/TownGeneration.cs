@@ -36,7 +36,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Planting Trees"));
             if (BiomeIndex != -1)
             {
-                tasks.Insert(BiomeIndex + 1, new PassLegacy("Ruined Town", GenerateTown));
+                //tasks.Insert(BiomeIndex + 1, new PassLegacy("Ruined Town", GenerateTown));
             }
 
             base.ModifyWorldGenTasks(tasks, ref totalWeight);

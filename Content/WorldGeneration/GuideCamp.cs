@@ -56,7 +56,6 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             while (!validArea)
             {
-                // Loop downwards until we reach a solid tile
                 Tile tile = Framing.GetTileSafely(x, y);
                 while (!tile.HasTile)
                 {
@@ -77,109 +76,6 @@ namespace OvermorrowMod.Content.WorldGeneration
             {
                 PlaceCamp(x + 3, y + 8);
             }
-
-            /*#region Campfire
-            int x = startX;
-            int y = startY - 15;
-            Tile tile = Framing.GetTileSafely(x, y);
-
-            bool validArea = false;
-            while (!validArea)
-            {
-                if (tile.HasTile && Main.tileSolid[tile.TileType])
-                {
-                    validArea = true;
-
-                    //WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
-
-                    WorldGen.KillTile(x - 1, y - 1);
-                    WorldGen.KillTile(x, y - 1);
-                    WorldGen.KillTile(x + 1, y - 1);
-
-                    ModUtils.PlaceObject(x, y - 1, ModContent.TileType<GuideCampfire>());
-                    ModContent.GetInstance<GuideCampfire_TE>().Place(x - 1, y - 2);
-                }
-                else
-                {
-                    y += 1;
-                    tile = Framing.GetTileSafely(x, y);
-                }
-            }
-            #endregion
-
-            #region Right Tent
-            x = startX + 6;
-            y = startY - 15;
-            tile = Framing.GetTileSafely(x, y);
-
-            validArea = false;
-            while (!validArea)
-            {
-                if (tile.HasTile && Main.tileSolid[tile.TileType])
-                {
-                    validArea = true;
-
-                    //WorldGen.PlaceTile(x - 2, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x + 2, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x + 3, y, TileID.Adamantite, true, true);
-
-                    WorldGen.KillTile(x - 2, y - 1);
-                    WorldGen.KillTile(x - 1, y - 1);
-                    WorldGen.KillTile(x, y - 1);
-                    WorldGen.KillTile(x + 1, y - 1);
-                    WorldGen.KillTile(x + 2, y - 1);
-                    WorldGen.KillTile(x + 3, y - 1);
-
-                    ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>(x, y - 1);
-                }
-                else
-                {
-                    y += 1;
-                    tile = Framing.GetTileSafely(x, y);
-                }
-            }
-            #endregion
-
-            #region Left Tent
-            x = startX - 6;
-            y = startY - 15;
-            tile = Framing.GetTileSafely(x, y);
-
-            validArea = false;
-            while (!validArea)
-            {
-                if (tile.HasTile && Main.tileSolid[tile.TileType])
-                {
-                    validArea = true;
-
-                    //WorldGen.PlaceTile(x - 2, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x - 1, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x + 1, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x + 2, y, TileID.Adamantite, true, true);
-                    //WorldGen.PlaceTile(x + 3, y, TileID.Adamantite, true, true);
-
-                    WorldGen.KillTile(x - 2, y - 1);
-                    WorldGen.KillTile(x - 1, y - 1);
-                    WorldGen.KillTile(x, y - 1);
-                    WorldGen.KillTile(x + 1, y - 1);
-                    WorldGen.KillTile(x + 2, y - 1);
-                    WorldGen.KillTile(x + 3, y - 1);
-
-                    ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>(x, y - 1);
-                }
-                else
-                {
-                    y += 1;
-                    tile = Framing.GetTileSafely(x, y);
-                }
-            }
-            #endregion*/
         }
 
         public static void PlaceCamp(int x, int y)
@@ -208,10 +104,11 @@ namespace OvermorrowMod.Content.WorldGeneration
             Vector2 origin = new Vector2(x - (TileGen.width / 2), y - TileGen.height);
 
             ModUtils.PlaceObject((int)(origin.X + 10), (int)(origin.Y + 5), ModContent.TileType<GuideCampfire>());
-            ModContent.GetInstance<GuideCampfire_TE>().Place(x + 9, y + 4);
+            ModContent.GetInstance<GuideCampfire_TE>().Place((int)(origin.X + 9), (int)(origin.Y + 4));
 
             ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>((int)(origin.X + 6), (int)(origin.Y + 5));
             ModUtils.PlaceTilePile<BowRock, BowRockObjects>((int)(origin.X + 2), (int)(origin.Y + 4));
+            ModUtils.PlaceTilePile<GuideTent, GuideTentObjects>((int)(origin.X + 24), (int)(origin.Y + 3));
         }
     }
 }

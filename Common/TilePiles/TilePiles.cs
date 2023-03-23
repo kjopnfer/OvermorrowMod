@@ -35,6 +35,8 @@ namespace OvermorrowMod.Common.TilePiles
                     return AssetDirectory.TilePiles + "Grid_3x2";
                 case TileStyle.Style3x3:
                     return AssetDirectory.TilePiles + "Grid_3x3";
+                case TileStyle.Style6x3:
+                    return AssetDirectory.TilePiles + "Grid_6x3";
                 default:
                     return AssetDirectory.TilePiles + "Grid_3x3";
             }
@@ -64,7 +66,7 @@ namespace OvermorrowMod.Common.TilePiles
             // FOR TESTING ONLY
             // TILEPILES ARE NOT NATURALLY PLACED, THEREFORE BLURB TILES WILL ONLY USE THIS GIVEN PLACEMENT HOOK
             // MUST BE UPDATED FOR ANY TILE PILE THAT NEEDS TO BE TESTED MANUALLY
-            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<BowRockObjects>().Hook_AfterPlacement, -1, 0, true);
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<GuideTentObjects>().Hook_AfterPlacement, -1, 0, true);
 
             MinPick = 55; // debugging
             TileObjectData.addTile(Type);
