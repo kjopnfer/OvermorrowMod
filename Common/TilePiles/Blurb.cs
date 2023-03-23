@@ -18,7 +18,7 @@ namespace OvermorrowMod.Common.TilePiles
             Item.useAnimation = 15;
 
             // Need to change the PostPlace hook in TilePiles.cs too
-            Item.createTile = Mod.Find<ModTile>("GuideTent").Type;
+            Item.createTile = Mod.Find<ModTile>("BookRock").Type;
         }
     }
 }

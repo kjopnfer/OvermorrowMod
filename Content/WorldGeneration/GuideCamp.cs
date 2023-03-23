@@ -106,9 +106,11 @@ namespace OvermorrowMod.Content.WorldGeneration
             ModUtils.PlaceObject((int)(origin.X + 10), (int)(origin.Y + 5), ModContent.TileType<GuideCampfire>());
             ModContent.GetInstance<GuideCampfire_TE>().Place((int)(origin.X + 9), (int)(origin.Y + 4));
 
-            ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>((int)(origin.X + 6), (int)(origin.Y + 5));
             ModUtils.PlaceTilePile<BowRock, BowRockObjects>((int)(origin.X + 2), (int)(origin.Y + 4));
+            ModUtils.PlaceTilePile<GuideStool, GuideStoolObjects>((int)(origin.X + 6), (int)(origin.Y + 5));
             ModUtils.PlaceTilePile<GuideTent, GuideTentObjects>((int)(origin.X + 24), (int)(origin.Y + 3));
+            ModUtils.PlaceTilePile<BookRock, BookRockObjects>((int)(origin.X + 29), (int)(origin.Y + 3));
+            ModUtils.PlaceTilePile<AxeStump, AxeStumpObjects>((int)(origin.X + 32), (int)(origin.Y + 3));
         }
     }
 }

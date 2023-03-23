@@ -1,7 +1,7 @@
 using OvermorrowMod.Common.TilePiles;
 using Terraria.ID;
 
-namespace OvermorrowMod.Content.Tiles.TilePiles.TileObjects
+namespace OvermorrowMod.Content.Tiles.GuideCamp.TileObjects
 {
     public class Axe : TileObject
     {
