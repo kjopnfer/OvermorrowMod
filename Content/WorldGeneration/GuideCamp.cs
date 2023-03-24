@@ -20,39 +20,26 @@ namespace OvermorrowMod.Content.WorldGeneration
     {
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
         {
-            int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Guide"));
+            int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
             if (GuideIndex != -1)
             {
                 tasks.Insert(GuideIndex + 1, new PassLegacy("Spawn Camp", GenerateCamp));
             }
         }
 
-        private int GetRandomTent()
-        {
-            switch (Main.rand.Next(1, 4))
-            {
-                case 1:
-                    return ModContent.TileType<GreenTent>();
-                case 2:
-                    return ModContent.TileType<BlueTent>();
-                case 3:
-                    return ModContent.TileType<BlueTent>();
-            }
-
-            return 0;
-        }
-
         private void GenerateCamp(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Setting up camp";
 
-            int startX = Main.spawnTileX;
-            int startY = Main.spawnTileY;
+            //int startX = Main.spawnTileX;
+            //int startY = Main.spawnTileY;
+            int startX = Main.maxTilesX / 2;
+            int startY = 0;
 
             bool validArea = false;
 
             int x = startX;
-            int y = startY - 15;
+            int y = startY/* - 15*/;
 
             while (!validArea)
             {
@@ -66,11 +53,13 @@ namespace OvermorrowMod.Content.WorldGeneration
                 Tile aboveTile = Framing.GetTileSafely(x, y - 1);
 
                 // We have the tile but we want to check if its a grass block, if it isn't restart the process
-                if ((tile.TileType == TileID.Grass || tile.TileType == TileID.Dirt) && tile.WallType == WallID.None && !aboveTile.HasTile && Main.tileSolid[tile.TileType])
+                if (/*!aboveTile.HasTile*/Main.tileSolid[tile.TileType])
                 {
                     validArea = true;
                 }
             }
+
+            WorldGen.PlaceTile(x, y, TileID.Adamantite, false, true);
 
             for (int i = 0; i < 2; i++)
             {
@@ -99,7 +88,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            WorldGen.PlaceTile(x - (TileGen.width / 2), y - TileGen.height, TileID.Adamantite, false, true);
+            //WorldGen.PlaceTile(x - (TileGen.width / 2), y - TileGen.height, TileID.Adamantite, false, true);
 
             Vector2 origin = new Vector2(x - (TileGen.width / 2), y - TileGen.height);
 
