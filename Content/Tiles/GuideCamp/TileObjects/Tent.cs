@@ -19,6 +19,8 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp.TileObjects
             Durability = 160;
             MinStack = 1;
             MaxStack = 1;
+            CanWiggle = false;
+            CanHighlight = false;
         }
     }
 }

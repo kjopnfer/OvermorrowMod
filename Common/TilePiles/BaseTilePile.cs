@@ -19,7 +19,7 @@ namespace OvermorrowMod.Common.TilePiles
             Style2x2,
             Style3x2,
             Style3x3,
-            Style4x4,
+            Style4x3,
             Style5x4,
             Style6x3,
         }

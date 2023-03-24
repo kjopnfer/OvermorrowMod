@@ -18,6 +18,7 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp.TileObjects
             MinStack = 1;
             MaxStack = 1;
             CanWiggle = false;
+            CanHighlight = false;
         }
     }
 }

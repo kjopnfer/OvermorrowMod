@@ -35,6 +35,8 @@ namespace OvermorrowMod.Common.TilePiles
                     return AssetDirectory.TilePiles + "Grid_3x2";
                 case TileStyle.Style3x3:
                     return AssetDirectory.TilePiles + "Grid_3x3";
+                case TileStyle.Style4x3:
+                    return AssetDirectory.TilePiles + "Grid_4x3";
                 case TileStyle.Style6x3:
                     return AssetDirectory.TilePiles + "Grid_6x3";
                 default:
@@ -66,7 +68,7 @@ namespace OvermorrowMod.Common.TilePiles
             // FOR TESTING ONLY
             // TILEPILES ARE NOT NATURALLY PLACED, THEREFORE BLURB TILES WILL ONLY USE THIS GIVEN PLACEMENT HOOK
             // MUST BE UPDATED FOR ANY TILE PILE THAT NEEDS TO BE TESTED MANUALLY
-            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<BookRockObjects>().Hook_AfterPlacement, -1, 0, true);
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<GuideLogObjects>().Hook_AfterPlacement, -1, 0, true);
 
             MinPick = 55; // debugging
             TileObjectData.addTile(Type);
@@ -182,7 +184,7 @@ namespace OvermorrowMod.Common.TilePiles
 
                 Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                 Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-                Color hoverColor = tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j);
+                Color hoverColor = tileObject.selected && tileObject.canHighlight ? Color.Yellow : Lighting.GetColor(i, j);
 
                 spriteBatch.Draw(tileObject.texture, pos + offScreenRange, null, hoverColor, wiggleRotation, Vector2.Zero, 1f, SpriteEffects.None, 0);
 

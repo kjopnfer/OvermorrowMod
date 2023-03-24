@@ -1,23 +1,26 @@
 using OvermorrowMod.Common.TilePiles;
+using OvermorrowMod.Content.Items.Accessories;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Tiles.GuideCamp.TileObjects
 {
-    public class Stool : TileObject
+    public class Log : TileObject
     {
         public override void SetDefaults()
         {
-            Name = "Stool";
-            Width = 28;
-            Height = 14;
+            Name = "Log";
+            Width = 46;
+            Height = 12;
             HitSound = SoundID.Dig;
             DeathSound = SoundID.Dig;
             GrabSound = SoundID.Dig;
-            ItemID = Terraria.ID.ItemID.PortableStool;
+            ItemID = Terraria.ID.ItemID.Wood;
             Durability = 160;
-            MinStack = 1;
-            MaxStack = 1;
+            MinStack = 4;
+            MaxStack = 8;
             CanWiggle = false;
+            CanHighlight = false;
         }
     }
 }

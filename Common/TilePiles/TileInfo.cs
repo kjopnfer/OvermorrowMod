@@ -31,6 +31,7 @@ namespace OvermorrowMod.Common.TilePiles
         public SoundStyle deathSound;
         public SoundStyle grabSound;
         public bool canWiggle;
+        public bool canHighlight;
 
         public enum InteractionType
         {
@@ -65,6 +66,7 @@ namespace OvermorrowMod.Common.TilePiles
             deathSound = tileObject.DeathSound;
             grabSound = tileObject.GrabSound;
             canWiggle = tileObject.CanWiggle;
+            canHighlight = tileObject.CanHighlight;
 
             rectangle.X = ((int)coordinates.X - 1) * 16 + x;
             rectangle.Y = ((int)coordinates.Y - 2) * 16 + y;
