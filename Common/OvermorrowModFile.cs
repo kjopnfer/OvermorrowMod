@@ -67,9 +67,45 @@ namespace OvermorrowMod.Common
         public static List<Asset<Texture2D>> TrailTextures;
         //Mercenaries
         internal List<MercenaryDrawHelper> drawHelpers = new List<MercenaryDrawHelper>();
+
+        private void ReplaceVanillaTextures()
+        {
+            TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "ChainKnife");
+            TextureAssets.Item[ItemID.Handgun] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Handgun");
+            TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Revolver");
+            TextureAssets.Item[ItemID.Musket] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Musket");
+            TextureAssets.Item[ItemID.Minishark] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Minishark");
+            TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Boomstick");
+
+            TextureAssets.Tile[TileID.Trees] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Trees");
+            TextureAssets.TreeBranch[9] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Tree_Branches_9");
+            TextureAssets.TreeTop[9] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Tree_Tops_9");
+        }
+
+        private void UnloadVanillaTextures()
+        {
+            TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.ChainKnife);
+            TextureAssets.Item[ItemID.Handgun] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.Handgun);
+            TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.Revolver);
+            TextureAssets.Item[ItemID.Musket] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.Musket);
+            TextureAssets.Item[ItemID.Minishark] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.Minishark);
+            TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.Boomstick);
+
+            //TextureAssets.Tile[TileID.Trees] = ModContent.Request<Texture2D>("Terraria/Images/Tiles_" + TileID.Trees);
+            //TextureAssets.TreeBranch[9] = ModContent.Request<Texture2D>("Terraria/Images/Tree_Branches_9");
+            //TextureAssets.TreeTop[9] = ModContent.Request<Texture2D>("Terraria/Images/Tree_Tops_9");
+        }
+
         public override void PostSetupContent()
         {
             drawHelpers.Add(new PaladinDrawHelper());
+
+            ReplaceVanillaTextures();
+            //TextureAssets.TreeBranch[9]
+            //TextureAssets.TreeTop[9]
+            //TextureAssets.Tile[5]
+
+            //ModContent.Request<Texture2D>("Terraria/Images/Tile_5").Value;
         }
 
         public static void PremultiplyTexture(ref Texture2D texture)
@@ -156,7 +192,7 @@ namespace OvermorrowMod.Common
                     PremultiplyTexture(ref glow);
                 });
 
-                ReplaceVanillaTextures();
+                //ReplaceVanillaTextures();
             }
 
             ModDetours.Load();
@@ -180,16 +216,6 @@ namespace OvermorrowMod.Common
             }
 
             base.Load();
-        }
-
-        private void ReplaceVanillaTextures()
-        {
-            TextureAssets.Item[ItemID.ChainKnife] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "ChainKnife");
-            TextureAssets.Item[ItemID.Handgun] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Handgun");
-            TextureAssets.Item[ItemID.Revolver] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Revolver");
-            TextureAssets.Item[ItemID.Musket] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Musket");
-            TextureAssets.Item[ItemID.Minishark] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Minishark");
-            TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Boomstick");
         }
 
         public override void Unload()
@@ -229,7 +255,7 @@ namespace OvermorrowMod.Common
             BearTrapKey = null;
 
             ModBowsToOverride.Clear();
-
+            UnloadVanillaTextures();
         }
 
         public override void AddRecipes()
