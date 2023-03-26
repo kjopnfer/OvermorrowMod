@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             int BiomeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Quick Cleanup"));
             if (BiomeIndex != -1)
             {
-                tasks.Insert(BiomeIndex + 1, new PassLegacy("Ruined Town", GenerateTown));
+                //tasks.Insert(BiomeIndex + 1, new PassLegacy("Ruined Town", GenerateTown));
             }
 
             int GuideIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Guide"));

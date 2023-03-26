@@ -37,23 +37,32 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (TerrainIndex != -1)
             {
                 tasks.Insert(TerrainIndex + 1, new PassLegacy("Test Terrain Base", TestGenerateTerrainBase));
+                tasks.Insert(TerrainIndex + 2, new PassLegacy("Test Terrain Base 2", TestGenerateTerrainLayer));
+                //tasks.Insert(TerrainIndex + 3, new PassLegacy("Test Terrain Tunnels", TestGenerateTerrainTunnels));
                 //tasks.Insert(TerrainIndex + 2, new PassLegacy("Test Terrain", TestGenerateTerrain));
             }
 
             //RemovePass(tasks, "Terrain");
 
-            RemovePass(tasks, "Tunnels");
-            RemovePass(tasks, "Mount Caves");
+            //RemovePass(tasks, "Tunnels");
+            //RemovePass(tasks, "Mount Caves");
             RemovePass(tasks, "Small Holes");
-            RemovePass(tasks, "Surface Caves");
-            RemovePass(tasks, "Dirt Layer Caves");
+            //RemovePass(tasks, "Surface Caves");
+            //RemovePass(tasks, "Dirt Layer Caves");
             RemovePass(tasks, "Rock Layer Caves");
             RemovePass(tasks, "Wavy Caves");
 
             RemovePass(tasks, "Ocean Sand");
             RemovePass(tasks, "Dunes");
 
+            // This slows down the generation
+            RemovePass(tasks, "Jungle Temple");
+            RemovePass(tasks, "Hives");
+
+            // Re-add these back later
             RemovePass(tasks, "Living Trees");
+            RemovePass(tasks, "Moss");
+            RemovePass(tasks, "Traps");
 
             // This crashes cause of no tunnels or something
             RemovePass(tasks, "Granite");
@@ -86,7 +95,6 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Buried Chests"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
-
         }
 
         private void RemovePass(List<GenPass> tasks, string passName)
@@ -163,15 +171,79 @@ namespace OvermorrowMod.Content.WorldGeneration
             }*/
         }
 
+        private void TestGenerateTerrainTunnels(GenerationProgress progress, GameConfiguration config)
+        {
+            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+            noise.SetFractalType(FastNoiseLite.FractalType.PingPong);
+            noise.SetFrequency(0.005f);
+            noise.SetFractalOctaves(5);
+            noise.SetFractalLacunarity(2f);
+            noise.SetFractalGain(0f);
+            noise.SetFractalWeightedStrength(1f);
+            noise.SetFractalPingPongStrength(2f);
+            noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.BasicGrid);
+            noise.SetDomainWarpAmp(100f);
+
+            for (int i = 0; i < Main.maxTilesX; i++)
+            {
+                for (int j = 0; j < Main.rockLayer - 20; j++)
+                {
+                    if (noise.GetNoise(i, j) < -0.9f) WorldGen.digTunnel(i, j, 0, 0, 1, Main.rand.Next(1, 7));
+                }
+            }
+        }
+
+        private void TestGenerateTerrainLayer(GenerationProgress progress, GameConfiguration config)
+        {
+            FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+            noise.SetFrequency(0.01f);
+            noise.SetFractalOctaves(1);
+            noise.SetFractalLacunarity(2f);
+            noise.SetFractalGain(0.5f);
+            noise.SetFractalWeightedStrength(1f);
+
+            float maxHeightOffset = -10;
+            float maxDepthOffset = 30;
+
+            FastNoiseLite noise2 = new FastNoiseLite(WorldGen._genRandSeed + 4);
+            noise2.SetFrequency(0.005f);
+
+            for (int i = 0; i < Main.maxTilesX; i++)
+            {
+                //WorldGen.PlaceTile(i, (int)(200 + MathHelper.Lerp(-100, 100, noise.GetNoise(i, 0))), TileID.ObsidianBrick);
+                int yOffset = (int)MathHelper.Lerp(maxHeightOffset, maxDepthOffset, noise.GetNoise(i, 0)) - 15;
+                int yPosition = Main.maxTilesY / 4 + yOffset;
+                //WorldGen.PlaceTile(i, yPosition, TileID.Dirt, true, true);
+
+                if (noise2.GetNoise(i, 0) < 0)
+                    WorldGen.TileRunner(i, yPosition, Main.rand.Next(25, 40), 1, TileID.Dirt, true);
+            }      
+
+            noise.SetFrequency(0.01f);
+            noise.SetSeed(WorldGen._genRandSeed + 1);
+            for (int i = 0; i < Main.maxTilesX; i++)
+            {
+                //WorldGen.PlaceTile(i, (int)(200 + MathHelper.Lerp(-100, 100, noise.GetNoise(i, 0))), TileID.ObsidianBrick);
+                int yOffset = (int)MathHelper.Lerp(maxHeightOffset, maxDepthOffset, noise.GetNoise(i, 0)) - 50;
+                int yPosition = Main.maxTilesY / 4 + yOffset;
+
+                if (noise2.GetNoise(i, 0) < 0)
+                    WorldGen.TileRunner(i, yPosition, MathHelper.Lerp(9, 20, noise2.GetNoise(i, 0) / -1f), 1, TileID.Dirt, true);
+            }  
+        }
 
         private void TestGenerateTerrainBase(GenerationProgress progress, GameConfiguration config)
         {
             RemoveDirt();
 
+            // TODO: MAKE AREAS FLATTER
+
             var logger = OvermorrowModFile.Instance.Logger;
 
             float maxHeightOffset = -5;
-            float maxDepthOffset = 10;
+            float maxDepthOffset = 20;
 
             // Base Terrain
             FastNoiseLite noise = new FastNoiseLite(WorldGen._genRandSeed);
@@ -184,17 +256,11 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             for (int i = 0; i < Main.maxTilesX; i++)
             {
-                logger.Debug(noise.GetNoise(i, 0));
                 //WorldGen.PlaceTile(i, (int)(200 + MathHelper.Lerp(-100, 100, noise.GetNoise(i, 0))), TileID.ObsidianBrick);
                 int yOffset = (int)MathHelper.Lerp(maxHeightOffset, maxDepthOffset, noise.GetNoise(i, 0));
                 int yPosition = Main.maxTilesY / 4 + yOffset;
-                WorldGen.PlaceTile(i, yPosition, TileID.Dirt, true, true);
-
-                /*while (yPosition > 0)
-                {
-                    yPosition--;
-                    WorldGen.KillTile(i, yPosition);
-                }*/
+                //WorldGen.PlaceTile(i, yPosition, TileID.Dirt, true, true);
+                WorldGen.TileRunner(i, yPosition, Main.rand.Next(4, 18), 1, TileID.Dirt, true);
 
                 yPosition = Main.maxTilesY / 4 + yOffset;
                 while (yPosition < Main.maxTilesY)
@@ -205,17 +271,17 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
 
             // Smaller Bumps
-            /*noise = new FastNoiseLite(WorldGen._genRandSeed + 1);
+            noise = new FastNoiseLite(WorldGen._genRandSeed + 1);
             noise.SetFrequency(0.02f);
 
             maxHeightOffset = -5;
             maxDepthOffset = 5;
             for (int i = 0; i < Main.maxTilesX; i++)
             {
-                logger.Debug(noise.GetNoise(i, 0));
                 int yOffset = (int)MathHelper.Lerp(maxHeightOffset, maxDepthOffset, noise.GetNoise(i, 0));
                 int yPosition = Main.maxTilesY / 4 + yOffset;
-                WorldGen.PlaceTile(i, yPosition, TileID.Dirt, true, true);
+                //WorldGen.PlaceTile(i, yPosition, TileID.Dirt, true, true);
+                WorldGen.TileRunner(i, yPosition, Main.rand.Next(1, 3), 1, TileID.Dirt, true);
 
                 while (yPosition < Main.maxTilesY)
                 {
@@ -224,22 +290,41 @@ namespace OvermorrowMod.Content.WorldGeneration
                 }
             }
 
-            noise = new FastNoiseLite(WorldGen._genRandSeed + 1);
-            noise.SetFrequency(0.005f);
+            // Large Hills
+            noise = new FastNoiseLite(WorldGen._genRandSeed + 2);
+            noise.SetFrequency(0.01f);
+            noise.SetFractalGain(0.5f);
 
-            maxHeightOffset = -4;
-            maxDepthOffset = 3;
+            maxHeightOffset = -15;
+            maxDepthOffset = 5;
             for (int i = 0; i < Main.maxTilesX; i++)
             {
-                logger.Debug(noise.GetNoise(i, 0));
                 int yOffset = (int)MathHelper.Lerp(maxHeightOffset, maxDepthOffset, noise.GetNoise(i, 0));
                 int yPosition = Main.maxTilesY / 4 + yOffset;
-                WorldGen.PlaceTile(i, yPosition, TileID.Dirt, true, true);
+                //WorldGen.PlaceTile(i, yPosition, TileID.Dirt, true, true);
+                WorldGen.TileRunner(i, yPosition, Main.rand.Next(9, 15), 1, TileID.Dirt, true);
 
                 while (yPosition < Main.maxTilesY)
                 {
                     yPosition++;
                     if (!Framing.GetTileSafely(i, yPosition).HasTile) WorldGen.PlaceTile(i, yPosition, TileID.Dirt);
+                    //if (!Framing.GetTileSafely(i, yPosition).HasTile) WorldGen.TileRunner(i, yPosition, Main.rand.Next(1, 10), 1, TileID.Dirt);
+                }
+            }
+
+            // Terrain Holes
+            /*noise = new FastNoiseLite(WorldGen._genRandSeed + 3);
+            noise.SetFrequency(0.015f);
+            noise.SetFractalLacunarity(2f);
+            noise.SetFractalGain(1f);
+            noise.SetFractalWeightedStrength(1.2f);
+
+            for (int i = 0; i < Main.maxTilesX; i++)
+            {
+                for (int j = Main.maxTilesY / 4 - 20; j < Main.maxTilesY / 4 + 70; j++)
+                {
+                    if (noise.GetNoise(i, j) < -0.1f && Framing.GetTileSafely(i, j).TileType == TileID.Dirt) WorldGen.digTunnel(i, j, 0, 0, 1, Main.rand.Next(1, 10));
+                    //if (noise.GetNoise(i, j) < -0.1f && Framing.GetTileSafely(i, j).TileType == TileID.Dirt) WorldGen.KillTile(i, j);
                 }
             }*/
         }
