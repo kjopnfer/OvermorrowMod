@@ -15,6 +15,7 @@ namespace OvermorrowMod.Common.Players
         #region Accessories
         public bool BearTrap;
         public bool EruditeDamage;
+        public bool GuideLantern;
         public bool ImbuementPouch;
         public bool SerpentTooth;
         public bool SickeningSnack;
@@ -46,6 +47,7 @@ namespace OvermorrowMod.Common.Players
         {
             BearTrap = false;
             EruditeDamage = false;
+            GuideLantern = false;
             ImbuementPouch = false;
             SerpentTooth = false;
             SickeningSnack = false;

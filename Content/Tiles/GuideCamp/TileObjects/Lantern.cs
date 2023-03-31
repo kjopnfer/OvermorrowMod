@@ -15,6 +15,7 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp.TileObjects
             HitSound = SoundID.Dig;
             DeathSound = SoundID.Dig;
             GrabSound = SoundID.Dig;
+            ItemID = ModContent.ItemType<Items.Accessories.GuideLantern.GuideLantern>();
             Durability = 160;
             MinStack = 1;
             MaxStack = 1;
