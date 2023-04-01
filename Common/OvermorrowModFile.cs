@@ -77,6 +77,7 @@ namespace OvermorrowMod.Common
             TextureAssets.Item[ItemID.Minishark] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Minishark");
             TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Boomstick");
 
+            TextureAssets.Tile[TileID.Stone] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Tiles_1");
             TextureAssets.Tile[TileID.Trees] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Trees");
             TextureAssets.TreeBranch[9] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Tree_Branches_9");
             TextureAssets.TreeTop[9] = ModContent.Request<Texture2D>(AssetDirectory.Resprites + "Tiles/Tree_Tops_9");
@@ -91,9 +92,10 @@ namespace OvermorrowMod.Common
             TextureAssets.Item[ItemID.Minishark] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.Minishark);
             TextureAssets.Item[ItemID.Boomstick] = ModContent.Request<Texture2D>("Terraria/Images/Item_" + ItemID.Boomstick);
 
-            //TextureAssets.Tile[TileID.Trees] = ModContent.Request<Texture2D>("Terraria/Images/Tiles_" + TileID.Trees);
-            //TextureAssets.TreeBranch[9] = ModContent.Request<Texture2D>("Terraria/Images/Tree_Branches_9");
-            //TextureAssets.TreeTop[9] = ModContent.Request<Texture2D>("Terraria/Images/Tree_Tops_9");
+            TextureAssets.Tile[TileID.Stone] = ModContent.Request<Texture2D>("Terraria/Images/Tiles_" + TileID.Stone);
+            TextureAssets.Tile[TileID.Trees] = ModContent.Request<Texture2D>("Terraria/Images/Tiles_" + TileID.Trees);
+            TextureAssets.TreeBranch[9] = ModContent.Request<Texture2D>("Terraria/Images/Tree_Branches_9");
+            TextureAssets.TreeTop[9] = ModContent.Request<Texture2D>("Terraria/Images/Tree_Tops_9");
         }
 
         public override void PostSetupContent()
