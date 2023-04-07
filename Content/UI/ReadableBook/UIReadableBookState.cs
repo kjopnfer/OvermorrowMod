@@ -45,6 +45,8 @@ namespace OvermorrowMod.Content.UI.ReadableBook
         public virtual Color TextColor => new Color(50, 50, 50);
 
         internal UIBookCloseButton closeButton = new UIBookCloseButton();
+        internal UIBookPreviousButton prevButton = new UIBookPreviousButton();
+        internal UIBookNextButton nextButton = new UIBookNextButton();
 
         internal int pageIndex = 0;
 
@@ -69,17 +71,89 @@ namespace OvermorrowMod.Content.UI.ReadableBook
             //if (!AnyShowing) Showing = false;
             //ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - WIDTH, Main.screenHeight / 2 - HEIGHT, WIDTH * 2, HEIGHT * 2, this);
             this.RemoveAllChildren();
-            ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
 
+            ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
             drawSpace.RemoveAllChildren();
+
+            if (pageIndex > 0)
+                ModUtils.AddElement(prevButton, 225, 250, 22, 22, drawSpace);
+
             ModUtils.AddElement(closeButton, 250, 250, 22, 22, drawSpace);
 
+            Main.NewText(pageIndex + " / " + currentBook.bookPages.Count);
+
+            if (pageIndex + 3 <= currentBook.bookPages.Count)
+                ModUtils.AddElement(nextButton, 275, 250, 22, 22, drawSpace);
+
+            // Draw left side page of the book
             foreach (var pageElement in currentBook.bookPages[pageIndex].pageElements)
             {
                 ModUtils.AddElement(pageElement, pageElement.drawRectangle.X, pageElement.drawRectangle.Y, pageElement.drawRectangle.Width, pageElement.drawRectangle.Height, drawSpace);
             }
 
+            // Draw right side page of the book
+            if (pageIndex + 1 < currentBook.bookPages.Count)
+            {
+                int xOriginOffset = 380;
+                foreach (var pageElement in currentBook.bookPages[pageIndex + 1].pageElements)
+                {
+                    ModUtils.AddElement(pageElement, pageElement.drawRectangle.X + xOriginOffset, pageElement.drawRectangle.Y, pageElement.drawRectangle.Width, pageElement.drawRectangle.Height, drawSpace);
+                }
+            }
+
             Main.LocalPlayer.mouseInterface = true;
+        }
+    }
+
+    public class UIBookNextButton : UIElement
+    {
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+            bool isHovering = ContainsPoint(Main.MouseScreen);
+
+            if (Parent.Parent is UIReadableBookState parent)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "BookNext").Value;
+                Color color = isHovering ? Color.White * 0.5f : Color.White;
+                spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
+            }
+        }
+
+        public override void MouseDown(UIMouseEvent evt)
+        {
+            SoundEngine.PlaySound(SoundID.MenuTick);
+
+            if (Parent.Parent is UIReadableBookState parent)
+            {
+                parent.pageIndex += 2;
+            }
+        }
+    }
+
+    public class UIBookPreviousButton : UIElement
+    {
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+            bool isHovering = ContainsPoint(Main.MouseScreen);
+
+            if (Parent.Parent is UIReadableBookState parent)
+            {
+                Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "BookPrevious").Value;
+                Color color = isHovering ? Color.White * 0.5f : Color.White;
+                spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
+            }
+        }
+
+        public override void MouseDown(UIMouseEvent evt)
+        {
+            SoundEngine.PlaySound(SoundID.MenuTick);
+
+            if (Parent.Parent is UIReadableBookState parent)
+            {
+                parent.pageIndex -= 2;
+            }
         }
     }
 
@@ -93,7 +167,7 @@ namespace OvermorrowMod.Content.UI.ReadableBook
             if (Parent.Parent is UIReadableBookState parent)
             {
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "BookClose").Value;
-                Color color = isHovering ? Color.White * 0.75f : Color.White;
+                Color color = isHovering ? Color.White * 0.5f : Color.White;
                 spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
             }
         }
@@ -104,32 +178,13 @@ namespace OvermorrowMod.Content.UI.ReadableBook
 
             if (Parent.Parent is UIReadableBookState parent)
             {
+                Main.NewText("close " + parent.showBook);
+                parent.RemoveAllChildren();
                 parent.showBook = false;
             }
         }
     }
 
-    public abstract class UIBook
-    {
-        public abstract List<UIBookPage> bookPages { get; }
-    }
-
-    public abstract class UIBookPage
-    {
-        public List<UIBookElement> pageElements = new List<UIBookElement>();
-
-        public abstract void SetPageContents();
-
-        public UIBookPage()
-        {
-            SetPageContents();
-        }
-
-        public void AddElement(UIBookElement bookElement)
-        {
-            pageElements.Add(bookElement);
-        }
-    }
 
     public class UIBookElement : UIElement
     {
@@ -174,7 +229,7 @@ namespace OvermorrowMod.Content.UI.ReadableBook
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, 1f, 0, 0);
+            spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, scale, 0, 0);
         }
     }
 }
