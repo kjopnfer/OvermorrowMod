@@ -23,6 +23,12 @@ namespace OvermorrowMod.Content.UI.ReadableBook
 {
     public class UIBookPanel : UIPanel
     {
+        private Texture2D texture;
+        public UIBookPanel(Texture2D texture)
+        {
+            this.texture = texture;
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -30,19 +36,18 @@ namespace OvermorrowMod.Content.UI.ReadableBook
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "BookBack").Value;
+            //Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "BookBack").Value;
             spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, 1f, 0, 0);
         }
     }
 
     public class UIReadableBookState : UIState
     {
-        private UIBookPanel drawSpace = new UIBookPanel();
 
         public virtual int PageNum => 1;
-        public virtual Asset<Texture2D> PageTexture => ModContent.Request<Texture2D>(AssetDirectory.UI + "BookBack");
-
         public virtual Color TextColor => new Color(50, 50, 50);
+
+        private UIBookPanel drawSpace;
 
         internal UIBookCloseButton closeButton = new UIBookCloseButton();
         internal UIBookPreviousButton prevButton = new UIBookPreviousButton();
@@ -60,6 +65,7 @@ namespace OvermorrowMod.Content.UI.ReadableBook
         {
             this.currentBook = currentBook;
 
+            drawSpace = new UIBookPanel(currentBook.BookTexture);
             showBook = true;
             pageIndex = 0;
         }
@@ -76,14 +82,12 @@ namespace OvermorrowMod.Content.UI.ReadableBook
             drawSpace.RemoveAllChildren();
 
             if (pageIndex > 0)
-                ModUtils.AddElement(prevButton, 225, 250, 22, 22, drawSpace);
+                ModUtils.AddElement(prevButton, 0, 450, 22, 22, drawSpace);
 
-            ModUtils.AddElement(closeButton, 250, 250, 22, 22, drawSpace);
-
-            Main.NewText(pageIndex + " / " + currentBook.bookPages.Count);
+            ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
 
             if (pageIndex + 3 <= currentBook.bookPages.Count)
-                ModUtils.AddElement(nextButton, 275, 250, 22, 22, drawSpace);
+                ModUtils.AddElement(nextButton, 700, 450, 22, 22, drawSpace);
 
             // Draw left side page of the book
             foreach (var pageElement in currentBook.bookPages[pageIndex].pageElements)
@@ -178,7 +182,6 @@ namespace OvermorrowMod.Content.UI.ReadableBook
 
             if (Parent.Parent is UIReadableBookState parent)
             {
-                Main.NewText("close " + parent.showBook);
                 parent.RemoveAllChildren();
                 parent.showBook = false;
             }
@@ -218,18 +221,19 @@ namespace OvermorrowMod.Content.UI.ReadableBook
     public class UIBookImage : UIBookElement
     {
         public Texture2D texture;
-
-        public UIBookImage(Rectangle drawRectangle, Texture2D texture, float scale = 1f, bool drawBorder = false)
+        public Color color { get; protected set; }
+        public UIBookImage(Rectangle drawRectangle, Texture2D texture, Color color, float scale = 1f, bool drawBorder = false)
         {
             this.drawRectangle = drawRectangle;
             this.texture = texture;
             this.scale = scale;
             this.drawBorder = drawBorder;
+            this.color = color;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, scale, 0, 0);
+            spriteBatch.Draw(texture, GetDimensions().Center(), null, color, 0, texture.Size() / 2f, scale, 0, 0);
         }
     }
 }
