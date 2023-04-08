@@ -4,21 +4,32 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using Terraria.UI;
 
-namespace OvermorrowMod.Content.UI.Tracker
+namespace OvermorrowMod.Content.UI.ReadableBook
 {
-    public class UIQuestTrackerSystem : ModSystem
+    public class UIReadableBookSystem : ModSystem
     {
-        UserInterface TrackerUI;
-        internal UIQuestTrackerState TrackerState;
+        internal UIReadableBookState BookState;
+        public UserInterface BookUI;
+
+        public static UIReadableBookSystem Instance { get; set; }
+        public UIReadableBookSystem()
+        {
+            Instance = this;
+        }
 
         public override void Load()
         {
             if (!Main.dedServ)
             {
-                TrackerState = new UIQuestTrackerState();
-                TrackerUI = new UserInterface();
-                TrackerUI.SetState(TrackerState);
+                BookState = new UIReadableBookState();
+                BookUI = new UserInterface();
+                BookUI.SetState(BookState);
             }
+        }
+
+        public override void Unload()
+        {
+            Instance = null;
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -27,10 +38,10 @@ namespace OvermorrowMod.Content.UI.Tracker
             if (ResourceBars != -1)
             {
                 layers.Insert(ResourceBars, new LegacyGameInterfaceLayer(
-                    "OvermorrowMod: Quest Tracker",
+                    "OvermorrowMod: Readable Book",
                     delegate
                     {
-                        TrackerUI.Draw(Main.spriteBatch, new GameTime());
+                        BookUI.Draw(Main.spriteBatch, new GameTime());
                         return true;
                     },
                     InterfaceScaleType.UI)
@@ -40,7 +51,7 @@ namespace OvermorrowMod.Content.UI.Tracker
 
         public override void UpdateUI(GameTime gameTime)
         {
-            TrackerUI?.Update(gameTime);
+            BookUI?.Update(gameTime);
         }
     }
 }
