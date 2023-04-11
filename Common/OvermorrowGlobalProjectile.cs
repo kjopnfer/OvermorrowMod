@@ -17,6 +17,7 @@ namespace OvermorrowMod.Common
         public override bool InstancePerEntity => true;
         public bool IsBullet { get; private set; } = false;
         public bool IsArrow { get; private set; } = false;
+        public bool IsPowerShot = false;
 
         private bool spawnedBlood = false;
         public bool slowedTime = false;
@@ -43,6 +44,12 @@ namespace OvermorrowMod.Common
             {
                 float pointBlankBonus = MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
                 damage += (int)(damage * pointBlankBonus);
+            }
+
+            if (IsPowerShot)
+            {
+                Main.NewText("power shot hit");
+                damage += (int)(damage * 0.2f);
             }
 
             #region Armor

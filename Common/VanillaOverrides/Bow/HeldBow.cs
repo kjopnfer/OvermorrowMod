@@ -7,6 +7,7 @@ using Terraria.GameContent;
 using System;
 using Terraria.Audio;
 using OvermorrowMod.Core;
+using OvermorrowMod.Common.Particles;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Bow
 {
@@ -247,6 +248,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         }
 
         /// <summary>
+        /// Allows for any additional bonuses and effects to happen when a power shot is executed
+        /// </summary>
+        public virtual void OnPowerShot() { }
+
+        /// <summary>
         /// Handles the code for projectile firing
         /// </summary>
         private void ShootArrow()
@@ -259,8 +265,23 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             float speed = MathHelper.Lerp(1, MaxSpeed, progress);
 
             SoundEngine.PlaySound(ShootSound);
+
             float damage = MathHelper.Lerp(0.25f, 1, Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime) * Projectile.damage;
-            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType, "HeldBow"), arrowPosition, velocity * speed, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
+            int arrow = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType, "HeldBow"), arrowPosition, velocity * speed, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
+            if (flashCounter >= 6 && flashCounter <= 36)
+            {
+                OnPowerShot();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    float randomScale = Main.rand.NextFloat(0.05f, 0.15f);
+                    float angleOffset = Main.rand.Next(-3, 3) * 5;
+                    Vector2 particleVelocity = -(velocity * Main.rand.Next(4, 8)).RotatedBy(MathHelper.ToRadians(-90 / 4 * i + 30 + angleOffset));
+                    Particle.CreateParticle(Particle.ParticleType<WhiteSpark>(), arrowPosition, particleVelocity, Color.White, randomScale, 0.5f, 0f, randomScale, 0f, 20f);
+                }
+
+                Main.projectile[arrow].GetGlobalProjectile<OvermorrowGlobalProjectile>().IsPowerShot = true;
+            }
 
             ConsumeAmmo();
 
@@ -278,9 +299,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         {
             if (drawCounter >= ModifiedChargeTime)
             {
-                if (flashCounter < 32 && !Main.gamePaused) flashCounter++;
+                if (flashCounter < 48 && !Main.gamePaused) flashCounter++;
             }
-
 
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
             Vector2 arrowPosition = player.MountedCenter + arrowOffset;
@@ -296,8 +316,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Color color = LoadedArrowType == ProjectileID.JestersArrow ? Color.White : lightColor;
 
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
-            
-            float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 8f), 0, 1);
+
+            float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 12f), 0, 1);
 
             Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
             effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
