@@ -103,7 +103,7 @@ namespace OvermorrowMod.Common.Particles
             float widthLerp = MathHelper.Lerp(0.25f, 0, ModUtils.EaseOutQuad(Utils.Clamp(particle.activeTime, 0, maxTime) / maxTime));
 
             float rotationOffset = particle.customData[1] == 1 ? MathHelper.PiOver2 : 0;
-            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha * 0.75f, particle.rotation + rotationOffset, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, particle.position - Main.screenPosition, null, Color.White * particle.alpha * 0.5f, particle.rotation + rotationOffset, texture.Size() / 2f, new Vector2(heightLerp, widthLerp), SpriteEffects.None, 0f);
 
             spriteBatch.Reload(BlendState.AlphaBlend);
         }

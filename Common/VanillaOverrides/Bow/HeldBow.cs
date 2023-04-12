@@ -252,6 +252,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         /// </summary>
         public virtual void OnPowerShot() { }
 
+        private bool IsPowerShot() => flashCounter >= 6 && flashCounter <= 36;
+
         /// <summary>
         /// Handles the code for projectile firing
         /// </summary>
@@ -267,8 +269,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             SoundEngine.PlaySound(ShootSound);
 
             float damage = MathHelper.Lerp(0.25f, 1, Utils.Clamp(drawCounter, 0, ModifiedChargeTime) / (float)ModifiedChargeTime) * Projectile.damage;
-            int arrow = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType, "HeldBow"), arrowPosition, velocity * speed, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
-            if (flashCounter >= 6 && flashCounter <= 36)
+
+            float speedBonus = IsPowerShot() ? 1.5f : 1f;
+            int arrow = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType, "HeldBow"), arrowPosition, velocity * speed * speedBonus, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
+            
+            if (IsPowerShot())
             {
                 OnPowerShot();
 

@@ -48,8 +48,7 @@ namespace OvermorrowMod.Common
 
             if (IsPowerShot)
             {
-                Main.NewText("power shot hit");
-                damage += (int)(damage * 0.2f);
+                damage += (int)(damage * 0.25f);
             }
 
             #region Armor
