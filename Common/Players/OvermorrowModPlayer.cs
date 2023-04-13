@@ -14,6 +14,7 @@ namespace OvermorrowMod.Common.Players
         // All accessory booleans are ordered alphabetically
         #region Accessories
         public bool BearTrap;
+        public bool CapturedMirage;
         public bool EruditeDamage;
         public bool GuideLantern;
         public bool ImbuementPouch;
@@ -46,6 +47,7 @@ namespace OvermorrowMod.Common.Players
         public override void ResetEffects()
         {
             BearTrap = false;
+            CapturedMirage = false;
             EruditeDamage = false;
             GuideLantern = false;
             ImbuementPouch = false;
