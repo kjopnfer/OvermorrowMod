@@ -39,14 +39,16 @@ namespace OvermorrowMod.Common
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
+            //Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + projectile.type, ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
+
             if (IsMirageArrow)
             {
-                if (ProjectileID.Sets.TrailingMode[projectile.type] == -1 || ProjectileID.Sets.TrailingMode[projectile.type] == 0)
+                /*if (ProjectileID.Sets.TrailingMode[projectile.type] == -1 || ProjectileID.Sets.TrailingMode[projectile.type] == 0)
                 {
                     ProjectileID.Sets.TrailingMode[projectile.type] = 2;
                     ProjectileID.Sets.TrailCacheLength[projectile.type] = 15;
-                }
+                }*/
 
                 Main.spriteBatch.Reload(BlendState.Additive, SpriteSortMode.Immediate);
                 //Main.spriteBatch.Reload(SpriteSortMode.Immediate);
@@ -80,25 +82,25 @@ namespace OvermorrowMod.Common
 
                     effect.Parameters["WhiteoutColor"].SetValue(color.ToVector3());
                     effect.Parameters["WhiteoutProgress"].SetValue(1f);
-                    effect.CurrentTechnique.Passes["Whiteout"].Apply();
+                    //effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
                     //DrawData data = new DrawData(texture, projectile.oldPos[i] + offset - Main.screenPosition, null, Color.Black, projectile.oldRot[i], texture.Size() / 2f, projectile.scale * trailSize, 0, 0);
                     //GameShaders.Armor.Apply(shaderID, projectile, data);
                     //data.Draw(Main.spriteBatch);
 
                     //float trailSize = (trailLength - i) / (float)trailLength;
-                    Main.spriteBatch.Draw(texture, projectile.oldPos[i] + offset - Main.screenPosition, null, Color.White * 0.85f, projectile.oldRot[i], texture.Size() / 2, projectile.scale * trailSize, SpriteEffects.None, 0f);
+                    //Main.spriteBatch.Draw(texture, projectile.oldPos[i] + offset - Main.screenPosition, null, Color.White * 0.85f, projectile.oldRot[i], texture.Size() / 2, projectile.scale * trailSize, SpriteEffects.None, 0f);
                 }
 
                 //effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
                 //effect.Parameters["WhiteoutProgress"].SetValue(0.75f);
                 //effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
-                //DrawData newData = new DrawData(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, texture.Size() / 2f, projectile.scale, 0, 0);
-                //GameShaders.Armor.Apply(shaderID, projectile, newData);
-                //newData.Draw(Main.spriteBatch);
+                DrawData newData = new DrawData(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, texture.Size() / 2f, projectile.scale, 0, 0);
+                GameShaders.Armor.Apply(shaderID, projectile, newData);
+                newData.Draw(Main.spriteBatch);
 
-                //Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, texture.Size() / 2, projectile.scale, SpriteEffects.None, 0);
+                //Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition, null, lightColor projectile.rotation, texture.Size() / 2, projectile.scale, SpriteEffects.None, 0);
 
 
                 Main.spriteBatch.Reload(BlendState.AlphaBlend, SpriteSortMode.Deferred);
