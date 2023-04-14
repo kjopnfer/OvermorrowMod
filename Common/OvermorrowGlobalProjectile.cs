@@ -39,72 +39,19 @@ namespace OvermorrowMod.Common
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
-            //Texture2D texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + projectile.type, ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
 
             if (IsMirageArrow)
             {
-                /*if (ProjectileID.Sets.TrailingMode[projectile.type] == -1 || ProjectileID.Sets.TrailingMode[projectile.type] == 0)
-                {
-                    ProjectileID.Sets.TrailingMode[projectile.type] = 2;
-                    ProjectileID.Sets.TrailCacheLength[projectile.type] = 15;
-                }*/
-
                 Main.spriteBatch.Reload(BlendState.Additive, SpriteSortMode.Immediate);
-                //Main.spriteBatch.Reload(SpriteSortMode.Immediate);
-
-                Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
-
-                //effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
-                //effect.Parameters["WhiteoutProgress"].SetValue(0.75f);
-                //effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
                 int shaderID = GameShaders.Armor.GetShaderIdFromItemId(ItemID.MirageDye);
-
-                //Color[] colors = { Color.Red, Color.Green, Color.Blue };
-                Color[] colors = { Color.Pink, Color.Purple, Color.Cyan };
-
-                Vector2 offset = new Vector2(0, 6);
-                var trailLength = ProjectileID.Sets.TrailCacheLength[projectile.type];
-                var fadeMult = Utils.Clamp(1f / trailLength, 0.1f, 1f);
-                for (int i = 1; i < trailLength; i++)
-                {
-                    float trailSize = Utils.Clamp((trailLength - i) / (float)trailLength, 0f, 1f);
-
-                    float scaledTime = trailSize * (float)(colors.Length - 1);
-                    Color oldColor = colors[(int)scaledTime];
-                    Color newColor = colors[(int)(scaledTime + 1f)];
-                    float newT = (float)(scaledTime - Math.Round(scaledTime));
-
-                    Color color = Color.Lerp(oldColor, newColor, newT);
-                    //Color color = Color.Lerp(Color.Green, Color.Red, trailSize);
-                    //if (trailSize < 0.5f) color = Color.Blue;
-
-                    effect.Parameters["WhiteoutColor"].SetValue(color.ToVector3());
-                    effect.Parameters["WhiteoutProgress"].SetValue(1f);
-                    //effect.CurrentTechnique.Passes["Whiteout"].Apply();
-
-                    //DrawData data = new DrawData(texture, projectile.oldPos[i] + offset - Main.screenPosition, null, Color.Black, projectile.oldRot[i], texture.Size() / 2f, projectile.scale * trailSize, 0, 0);
-                    //GameShaders.Armor.Apply(shaderID, projectile, data);
-                    //data.Draw(Main.spriteBatch);
-
-                    //float trailSize = (trailLength - i) / (float)trailLength;
-                    //Main.spriteBatch.Draw(texture, projectile.oldPos[i] + offset - Main.screenPosition, null, Color.White * 0.85f, projectile.oldRot[i], texture.Size() / 2, projectile.scale * trailSize, SpriteEffects.None, 0f);
-                }
-
-                //effect.Parameters["WhiteoutColor"].SetValue(Color.Black.ToVector3());
-                //effect.Parameters["WhiteoutProgress"].SetValue(0.75f);
-                //effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
                 DrawData newData = new DrawData(texture, projectile.Center - Main.screenPosition, null, Color.White, projectile.rotation, texture.Size() / 2f, projectile.scale, 0, 0);
                 GameShaders.Armor.Apply(shaderID, projectile, newData);
                 newData.Draw(Main.spriteBatch);
 
-                //Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition, null, lightColor projectile.rotation, texture.Size() / 2, projectile.scale, SpriteEffects.None, 0);
-
-
                 Main.spriteBatch.Reload(BlendState.AlphaBlend, SpriteSortMode.Deferred);
-                //Main.spriteBatch.Reload(SpriteSortMode.Deferred);
 
                 return false;
             }
