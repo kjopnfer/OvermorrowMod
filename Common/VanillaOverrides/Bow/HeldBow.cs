@@ -212,12 +212,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             float speedBonus = IsPowerShot() ? 1.5f : 1f;
             int arrow = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, LoadedArrowType, "HeldBow"), arrowPosition, velocity * speed * speedBonus, LoadedArrowType, (int)damage, Projectile.knockBack, player.whoAmI);
-            if (player.GetModPlayer<OvermorrowModPlayer>().CapturedMirage)
-            {
-                MirageDummyProjectile mirage = Projectile.NewProjectileDirect(null, arrowPosition, velocity * speed * speedBonus, ModContent.ProjectileType<MirageDummyProjectile>(), (int)damage, Projectile.knockBack, player.whoAmI).ModProjectile as MirageDummyProjectile;
-                mirage.mirageArrow = GetRandomArrow();
-            }
-
+            
             if (IsPowerShot())
             {
                 OnPowerShot();
@@ -231,6 +226,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
                 }
 
                 Main.projectile[arrow].GetGlobalProjectile<OvermorrowGlobalProjectile>().IsPowerShot = true;
+
+                if (player.GetModPlayer<OvermorrowModPlayer>().CapturedMirage)
+                {
+                    MirageDummyProjectile mirage = Projectile.NewProjectileDirect(null, arrowPosition, velocity * speed * speedBonus, ModContent.ProjectileType<MirageDummyProjectile>(), (int)damage, Projectile.knockBack, player.whoAmI).ModProjectile as MirageDummyProjectile;
+                    mirage.mirageArrow = GetRandomArrow();
+                }
             }
 
             ConsumeAmmo();

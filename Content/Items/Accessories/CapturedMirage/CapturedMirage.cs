@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Items.Accessories.CapturedMirage
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Captured Mirage");
-            Tooltip.SetDefault("On arrow critical strike, your next bow shot fires a Mirage Arrow\n" +
+            Tooltip.SetDefault("On Power Shot, your next bow shot fires a Mirage Arrow\n" +
                 "Mirage Arrows copy the effect of another arrow in your inventory");
         }
 
@@ -38,9 +38,6 @@ namespace OvermorrowMod.Content.Items.Accessories.CapturedMirage
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            //spriteBatch.End();
-            //spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
-
             spriteBatch.Reload(SpriteSortMode.Immediate);
 
             Texture2D texture = TextureAssets.Item[Item.type].Value;
@@ -48,15 +45,9 @@ namespace OvermorrowMod.Content.Items.Accessories.CapturedMirage
             DrawData data = new DrawData(texture, position, frame, drawColor, 0f, origin, scale, 0, 0);
             int shaderID = GameShaders.Armor.GetShaderIdFromItemId(ItemID.MirageDye);
             GameShaders.Armor.Apply(shaderID, Item, data);
-            //GameShaders.Armor.ApplySecondary(shaderID, Item);
-
             data.Draw(spriteBatch);
-            //spriteBatch.Draw(texture, position, null, drawColor, 0f, origin, scale, SpriteEffects.None, 1);
 
             spriteBatch.Reload(SpriteSortMode.Deferred);
-
-            //spriteBatch.End();
-            //spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
             return false;
         }
