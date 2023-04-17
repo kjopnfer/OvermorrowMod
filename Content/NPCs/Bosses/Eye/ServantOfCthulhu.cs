@@ -467,4 +467,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             base.PostDraw(npc, spriteBatch, screenPos, drawColor);
         }
     }
-}
+}*/
