@@ -25,7 +25,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         Launcher
     }
 
-    public abstract class HeldGun : ModProjectile
+    public abstract partial class HeldGun : ModProjectile
     {
         public override bool? CanDamage() => false;
         public override bool ShouldUpdatePosition() => false;
@@ -78,6 +78,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// Determines what bullet type is needed in order to convert the bullet to if BulletType is given. Uses Item ID.
         /// </summary>
         public virtual int ConvertBullet => ItemID.None;
+
+        /// <summary>
+        /// Determines whether the gun consumes ammo per bullet fired.
+        /// <para>Used for when the gun fires multiple bullets in a single click.</para>
+        /// </summary>
+        public virtual bool ConsumePerShot => false;
 
         public abstract GunType GunType { get; }
 
@@ -170,7 +176,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     reloadSuccess = false;
 
                     ModUtils.AutofillAmmoSlots(player, AmmoID.Bullet);
-
                     if (FindAmmo() && rightClickDelay == 0) HandleGunUse();
                 }
             }
@@ -208,97 +213,12 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             SaveGunInfo();
         }
-
-        private void LoadGunInfo()
-        {
-            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
-
-            if (gunPlayer.playerGunInfo.ContainsKey(ParentItem))
-            {
-                ShotsFired = gunPlayer.playerGunInfo[ParentItem].shotsFired;
-                BonusBullets = gunPlayer.playerGunInfo[ParentItem].bonusBullets;
-                BonusDamage = gunPlayer.playerGunInfo[ParentItem].bonusDamage;
-                BonusAmmo = gunPlayer.playerGunInfo[ParentItem].bonusAmmo;
-            }
-        }
-
-        private void SaveGunInfo()
-        {
-            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
-
-            if (!gunPlayer.playerGunInfo.ContainsKey(ParentItem))
-            {
-                gunPlayer.playerGunInfo.Add(ParentItem, new HeldGunInfo(ShotsFired, BonusBullets, BonusDamage, BonusAmmo));
-            }
-            else
-            {
-                gunPlayer.playerGunInfo[ParentItem] = new HeldGunInfo(ShotsFired, BonusBullets, BonusDamage, BonusAmmo);
-            }
-        }
-
+     
         public Projectile LoadedBullet { private set; get; }
         public int LoadedBulletType { private set; get; }
         public int LoadedBulletItemType { private set; get; }
 
         private int AmmoSlotID;
-
-        /// <summary>
-        /// Loops through the ammo slots, loads in the first bullet found into the bow.
-        /// </summary>
-        private bool FindAmmo()
-        {
-            LoadedBulletItemType = -1;
-            if (ConvertBullet != ItemID.None) // There is a bullet given for conversion, try to find that bullet.
-            {
-                for (int i = 0; i <= 3; i++)
-                {
-                    Item item = player.inventory[54 + i];
-                    if (item.type == ItemID.None || item.ammo != AmmoID.Bullet) continue;
-
-                    // The bullet needed to convert is found, so convert the bullet and exit the loop.
-                    if (item.type == ConvertBullet)
-                    {
-                        LoadedBulletType = BulletType;
-                        LoadedBulletItemType = item.type;
-
-                        AmmoSlotID = 54 + i;
-
-                        return true;
-                    }
-                }
-            }
-
-            // If here, then there is no conversion bullet OR no conversion bullet was found.
-            // Thus, run the default behavior to find any bullets to fire.
-            if (LoadedBulletItemType == -1)
-            {
-                for (int i = 0; i <= 3; i++)
-                {
-                    Item item = player.inventory[54 + i];
-                    if (item.type == ItemID.None || item.ammo != AmmoID.Bullet) continue;
-
-                    LoadedBulletType = item.shoot;
-                    LoadedBulletItemType = item.type;
-
-                    AmmoSlotID = 54 + i;
-
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Consumes the given ammo if allowed and handles any exception cases
-        /// </summary>
-        private void ConsumeAmmo()
-        {
-            if (!CanConsumeAmmo(player)) return;
-
-            if (player.inventory[AmmoSlotID].type != ItemID.EndlessMusketPouch)
-                player.inventory[AmmoSlotID].stack--;
-        }
 
         public int RecoilAmount { get; set; } = 10;
         private void HandleGunDrawing()
@@ -322,48 +242,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2 + recoilRotation);
         }
 
-        private void ReloadBulletDisplay()
-        {
-            for (int _ = 0; _ < MaxShots + BonusAmmo; _++)
-            {
-                BulletDisplay.Add(new BulletObject(BulletTexture(), Main.rand.Next(0, 9) * 7));
-            }
-        }
-
-        /// <summary>
-        /// Removes a BulletObject from the player's list of bullets.
-        /// </summary>
-        public void UpdateBulletDisplay()
-        {
-            List<BulletObject> removedList = BulletDisplay;
-
-            for (int i = BulletDisplay.Count - 1; i >= 0; i--)
-            {
-                if (!BulletDisplay[i].isActive) removedList.RemoveAt(i);
-            }
-
-            BulletDisplay = removedList;
-        }
-
-        /// <summary>
-        /// Deactivates a single bullet from the player's ammo. Does not remove from the player's bullet list.
-        /// </summary>
-        public void PopBulletDisplay()
-        {
-            for (int i = BulletDisplay.Count - 1; i >= 0; i--)
-            {
-                if (BulletDisplay[i].isActive && !BulletDisplay[i].startDeath)
-                {
-                    BulletDisplay[i].Deactivate();
-                    return;
-                }
-            }
-        }
-
         public int ShotsFired = 0;
         private int shootCounter = 0;
-        public int shootTime => player.HeldItem.useTime;
-        public int shootAnimation => player.HeldItem.useAnimation;
+        public virtual int shootTime => player.HeldItem.useTime;
+        public virtual int shootAnimation => player.HeldItem.useAnimation;
 
         private int useTimeModifier = 0;
 
@@ -394,7 +276,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 {
                     OnChargeShootEffects(player);
 
-                    if (player.controlUseItem && shootCounter == 0)
+                    // If the gun consumes ammo for every bullet fired, then this is handled in HandleShootAction() instead
+                    if (player.controlUseItem && shootCounter == 0 && !ConsumePerShot)
                     {
                         shootCounter = shootTime + useTimeModifier;
 
@@ -443,9 +326,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
 
         private void HandleAmmoAction()
-        {
-            if (player.controlUseItem && shootCounter == 0 && CanUseGun(player))
+        {   
+            if (player.controlUseItem && shootCounter == 0 && CanUseGun(player) && !ConsumePerShot)
             {
+                Main.NewText("click shoot");
+
                 shootCounter = shootTime + useTimeModifier;
 
                 PopBulletDisplay();
@@ -473,7 +358,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (shootCounter > 0)
             {
-                if (shootCounter % (shootAnimation + useTimeModifier) == 0)
+                if (shootCounter % (shootAnimation + useTimeModifier) == 0 && ShotsFired != MaxShots + BonusAmmo)
                 {
                     recoilTimer = RECOIL_TIME;
 
@@ -488,6 +373,26 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                     float damage = Projectile.damage + BonusDamage;
                     OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, BonusBullets);
+
+                    if (ConsumePerShot)
+                    {
+                        PopBulletDisplay();
+
+                        if (ShotsFired == MaxShots + BonusAmmo)
+                        {
+                            shootCounter = 0;
+                            inReloadState = true;
+                            reloadTime = MaxReloadTime;
+                            reloadBuffer = 10;
+
+                            return;
+                        }
+                        else // Don't want the gun to consume a bullet if it is going into the reload state
+                        {
+                            if (CanReload()) ShotsFired++;
+                            ConsumeAmmo();
+                        }
+                    }      
                 }
 
                 if (shootCounter > 0) shootCounter--;
@@ -600,30 +505,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
-        private bool CheckEventSuccess()
-        {
-            foreach (ReloadZone clickZone in _clickZones)
-            {
-                if (!clickZone.HasClicked) return false;
-            }
-
-            return true;
-        }
-
         private int BonusBullets = 0;
         private int BonusDamage = 0;
         private int BonusAmmo = 0;
-
-        private int GetClicksLeft()
-        {
-            var numLeft = ClickZones.Count;
-            foreach (ReloadZone clickZone in _clickZones)
-            {
-                if (clickZone.HasClicked) numLeft--;
-            }
-
-            return numLeft;
-        }
 
         /// <summary>
         /// Called whenever the gun exits the reloading state
@@ -640,59 +524,27 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         public virtual void ReloadEventTrigger(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, int clicksLeft) { }
 
+
         /// <summary>
         /// Called whenever the player has successfully completed the event during the reloading state. Used to modify reload time or damage.
+        /// <para>BonusBullets is additional bullets per shot, BonusAmmo is additional shots you can fire.</para>
         /// </summary>
+        /// <param name="player"></param>
+        /// <param name="reloadTime"></param>
+        /// <param name="BonusBullets">The amount of additional bullets fired from the gun</param>
+        /// <param name="BonusAmmo">The amount of additional shots that the gun will fire</param>
+        /// <param name="BonusDamage"></param>
+        /// <param name="baseDamage"></param>
+        /// <param name="useTimeModifier"></param>
         public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier) { }
-
-        private void ResetReloadZones()
-        {
-            foreach (ReloadZone clickZone in _clickZones)
-            {
-                clickZone.HasClicked = false;
-            }
-        }
 
         /// <summary>
         /// Used to apply effects whenever the player fails the skill check.
-        /// <para>Decreasing the player's next clip can be doine by passing in a negative value. </para> 
+        /// <para>Decreasing the player's next clip can be done by passing in a negative value. </para> 
         /// </summary>
         /// <param name="player"></param>
         /// <param name="BonusAmmo"></param>
         public virtual void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier) { }
-
-        private bool CheckInZone(float clickPercentage, out int zoneIndex)
-        {
-            clickPercentage = clickPercentage * 100;
-
-            int zoneCounter = 0;
-            foreach (ReloadZone clickZone in _clickZones)
-            {
-                if (clickPercentage >= clickZone.StartPercentage && clickPercentage <= clickZone.EndPercentage)
-                {
-                    zoneIndex = zoneCounter;
-                    return true;
-                }
-
-                zoneCounter++;
-            }
-
-            zoneIndex = -1;
-
-            return false;
-        }
-
-
-        private string BulletTexture()
-        {
-            switch (GunType)
-            {
-                case GunType.Shotgun:
-                    return "GunBullet_Shotgun";
-                default:
-                    return "GunBullet";
-            }
-        }
 
         public List<BulletObject> BulletDisplay = new List<BulletObject>();
         private void DrawAmmo()
@@ -755,12 +607,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 Main.spriteBatch.Draw(counterTexture, player.Center + counterOffset - Main.screenPosition, drawRectangle, Color.White, 0f, xTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
             }
         }
-
-        public int GetPlace(int value, int place)
-        {
-            return ((value % (place * 10)) - (value % place)) / place;
-        }
-
         private int recoilTimer = 0;
         private int RECOIL_TIME = 15;
         public float reloadRotation = 0;
