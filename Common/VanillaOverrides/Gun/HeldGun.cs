@@ -194,6 +194,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual bool PreDrawAmmo(Player player, SpriteBatch spriteBatch) { return true; }
         public override bool PreDraw(ref Color lightColor)
         {
+            Main.NewText(ShotsFired + " / " + MaxShots);
+
             if (PreDrawGun(player, Main.spriteBatch, ShotsFired, shootCounter, lightColor))
                 DrawGun(lightColor);
 
@@ -327,27 +329,31 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         private void HandleAmmoAction()
         {   
-            if (player.controlUseItem && shootCounter == 0 && CanUseGun(player) && !ConsumePerShot)
+            if (player.controlUseItem && shootCounter == 0 && CanUseGun(player))
             {
                 Main.NewText("click shoot");
 
                 shootCounter = shootTime + useTimeModifier;
 
-                PopBulletDisplay();
-
-                if (ShotsFired == MaxShots + BonusAmmo)
+                // If the gun consumes ammo for every bullet fired, then this is handled in HandleShootAction() instead
+                if (!ConsumePerShot)
                 {
-                    shootCounter = 0;
-                    inReloadState = true;
-                    reloadTime = MaxReloadTime;
-                    reloadBuffer = 10;
+                    PopBulletDisplay();
 
-                    return;
-                }
-                else // Don't want the gun to consume a bullet if it is going into the reload state
-                {
-                    if (CanReload()) ShotsFired++;
-                    ConsumeAmmo();
+                    if (ShotsFired == MaxShots + BonusAmmo)
+                    {
+                        shootCounter = 0;
+                        inReloadState = true;
+                        reloadTime = MaxReloadTime;
+                        reloadBuffer = 10;
+
+                        return;
+                    }
+                    else // Don't want the gun to consume a bullet if it is going into the reload state
+                    {
+                        if (CanReload()) ShotsFired++;
+                        ConsumeAmmo();
+                    }
                 }
 
                 Projectile.netUpdate = true;
@@ -358,22 +364,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             if (shootCounter > 0)
             {
-                if (shootCounter % (shootAnimation + useTimeModifier) == 0 && ShotsFired != MaxShots + BonusAmmo)
+                if (shootCounter % (shootAnimation + useTimeModifier) == 0)
                 {
-                    recoilTimer = RECOIL_TIME;
-
-                    Vector2 velocity = Vector2.Normalize(player.Center.DirectionTo(Main.MouseWorld)) * 16;
-
-                    Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
-                    Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
-
-                    SoundEngine.PlaySound(ShootSound);
-
-                    OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, BonusBullets);
-
-                    float damage = Projectile.damage + BonusDamage;
-                    OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, BonusBullets);
-
                     if (ConsumePerShot)
                     {
                         PopBulletDisplay();
@@ -392,7 +384,21 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                             if (CanReload()) ShotsFired++;
                             ConsumeAmmo();
                         }
-                    }      
+                    }
+
+                    recoilTimer = RECOIL_TIME;
+
+                    Vector2 velocity = Vector2.Normalize(player.Center.DirectionTo(Main.MouseWorld)) * 16;
+
+                    Vector2 shootOffset = player.direction == 1 ? BulletShootPosition.Item2 : BulletShootPosition.Item1;
+                    Vector2 shootPosition = Projectile.Center + shootOffset.RotatedBy(Projectile.rotation);
+
+                    SoundEngine.PlaySound(ShootSound);
+
+                    OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, BonusBullets);
+
+                    float damage = Projectile.damage + BonusDamage;
+                    OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, BonusBullets);             
                 }
 
                 if (shootCounter > 0) shootCounter--;

@@ -171,8 +171,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override void SafeSetDefaults()
         {
             Item.damage = 23;
-            Item.width = 32;
-            Item.height = 74;
+            Item.width = 60;
+            Item.height = 24;
             Item.autoReuse = true;
             Item.shootSpeed = 10f;
             Item.rare = ItemRarityID.Orange;
