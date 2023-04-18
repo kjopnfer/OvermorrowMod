@@ -256,7 +256,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
             Vector2 arrowOffset = Vector2.Lerp(Vector2.UnitX * 20, Vector2.UnitX * 16, Utils.Clamp(drawCounter, 0, 40f) / 40f).RotatedBy(Projectile.rotation);
             Vector2 arrowPosition = player.MountedCenter + arrowOffset;
 
-            Texture2D texture;
+            
 
             if (LoadedArrowItemType == -1) return;
 
@@ -277,7 +277,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
 
             Color lerpColor = Color.Lerp(color, Color.White, flashProgress);
 
-            texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + LoadedArrowType).Value;
+            Texture2D texture = TextureAssets.Projectile[LoadedArrowType].Value;
             Main.spriteBatch.Draw(texture, arrowPosition + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, lerpColor, Projectile.rotation + MathHelper.PiOver2, texture.Size() / 2f, 0.75f, SpriteEffects.None, 1);
 
             Main.spriteBatch.Reload(SpriteSortMode.Deferred);

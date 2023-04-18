@@ -9,6 +9,7 @@ using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
 using OvermorrowMod.Common.Configs;
 using OvermorrowMod.Common;
+using Terraria.GameContent;
 
 namespace OvermorrowMod.Content.UI.AmmoSwap
 {
@@ -297,7 +298,8 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
                 if (isHovering) texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "AmmoSlot_Hover").Value;
                 spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, containerScale, 0, 0);
 
-                Texture2D arrow = ModContent.Request<Texture2D>("Terraria/Images/Item_" + itemID).Value;
+                //Texture2D arrow = ModContent.Request<Texture2D>("Terraria/Images/Item_" + itemID).Value;
+                Texture2D arrow = TextureAssets.Item[itemID].Value;
                 spriteBatch.Draw(arrow, GetDimensions().Center(), null, Color.White, -MathHelper.PiOver4 * 3, arrow.Size() / 2f, itemScale, 0, 0);
             }
         }
