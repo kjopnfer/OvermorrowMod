@@ -156,6 +156,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
             HandleGunDrawing();
             UpdateBulletDisplay();
+            ForceCorrectBulletDisplay();
 
             if (rightClickDelay > 0) rightClickDelay--;
 
@@ -194,8 +195,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual bool PreDrawAmmo(Player player, SpriteBatch spriteBatch) { return true; }
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.NewText(ShotsFired + " / " + MaxShots);
-
             if (PreDrawGun(player, Main.spriteBatch, ShotsFired, shootCounter, lightColor))
                 DrawGun(lightColor);
 
@@ -244,6 +243,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2 + recoilRotation);
         }
 
+        #region Gun Use
         public int ShotsFired = 0;
         private int shootCounter = 0;
         public virtual int shootTime => player.HeldItem.useTime;
@@ -331,8 +331,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {   
             if (player.controlUseItem && shootCounter == 0 && CanUseGun(player))
             {
-                Main.NewText("click shoot");
-
                 shootCounter = shootTime + useTimeModifier;
 
                 // If the gun consumes ammo for every bullet fired, then this is handled in HandleShootAction() instead
@@ -543,7 +541,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <param name="baseDamage"></param>
         /// <param name="useTimeModifier"></param>
         public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier) { }
-
+        #endregion
+        
         /// <summary>
         /// Used to apply effects whenever the player fails the skill check.
         /// <para>Decreasing the player's next clip can be done by passing in a negative value. </para> 
@@ -553,6 +552,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual void OnReloadEventFail(Player player, ref int BonusAmmo, ref int useTimeModifier) { }
 
         public List<BulletObject> BulletDisplay = new List<BulletObject>();
+
+        #region Ammo Drawing
         private void DrawAmmo()
         {
             if (Main.gamePaused || Main.LocalPlayer != Main.player[Projectile.owner]) return;
@@ -613,6 +614,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 Main.spriteBatch.Draw(counterTexture, player.Center + counterOffset - Main.screenPosition, drawRectangle, Color.White, 0f, xTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
             }
         }
+        #endregion
+
         private int recoilTimer = 0;
         private int RECOIL_TIME = 15;
         public float reloadRotation = 0;
@@ -650,7 +653,6 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             Main.spriteBatch.Draw(texture, Projectile.Center + directionOffset - Main.screenPosition, null, lightColor, Projectile.rotation + reloadRotation, texture.Size() / 2f, ProjectileScale, spriteEffects, 1);
 
         }
-
 
         /// <summary>
         /// Called whenever the gun is fired within the PreDraw hook, used to add effects such as muzzle flashes. Always gets called regardless of PreDraw.

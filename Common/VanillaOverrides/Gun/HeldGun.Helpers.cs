@@ -123,6 +123,16 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             }
         }
 
+        /// <summary>
+        /// Sometimes the thing arbitrarily decides to just have an additional bullet despite literally nothing adding to it.
+        /// </summary>
+        private void ForceCorrectBulletDisplay()
+        {
+            if (BulletDisplay.Count > MaxShots + BonusAmmo)
+            {
+                BulletDisplay.RemoveAt(BulletDisplay.Count - 1);
+            }
+        }
 
         /// <summary>
         /// Removes a BulletObject from the player's list of bullets.
