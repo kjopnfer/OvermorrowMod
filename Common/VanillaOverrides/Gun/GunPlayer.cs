@@ -30,6 +30,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public bool CowBoySet;
         public bool GraniteLauncher;
 
+        public bool ChicagoBonusShots = false;
         public bool WildEyeCrit = false;
 
         public int MusketInaccuracy = 0;

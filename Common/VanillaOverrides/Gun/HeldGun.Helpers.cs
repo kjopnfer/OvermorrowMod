@@ -128,7 +128,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         private void ForceCorrectBulletDisplay()
         {
-            if (BulletDisplay.Count > MaxShots + BonusAmmo)
+            while (BulletDisplay.Count > MaxShots + BonusAmmo)
             {
                 BulletDisplay.RemoveAt(BulletDisplay.Count - 1);
             }

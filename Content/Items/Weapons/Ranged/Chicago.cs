@@ -20,7 +20,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override GunType GunType => GunType.Rifle;
 
-        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 30), new ReloadZone(60, 70) };
+        public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 35), new ReloadZone(60, 75) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(26, -12));
         public override (Vector2, Vector2) PositionOffset => (new Vector2(14, -8), new Vector2(14, -2));
@@ -35,13 +35,23 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         }
 
         public override int shootTime => 14;
-        public override int shootAnimation => 7;
+        public override int shootAnimation => Main.player[Projectile.owner].GetModPlayer<GunPlayer>().ChicagoBonusShots ? 7 : 14;
         public override bool ConsumePerShot => true;
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
         {
-            BonusAmmo = 0;
-            BonusDamage = 3;
+            player.GetModPlayer<GunPlayer>().ChicagoBonusShots = true;
+        }
+
+        public override void OnReloadStart(Player player)
+        {
+            player.GetModPlayer<GunPlayer>().ChicagoBonusShots = false;
+        }
+
+        public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
+        {
+            Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(6));
+            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"), shootPosition, rotatedVelocity, LoadedBulletType, damage, knockBack, player.whoAmI);
         }
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
@@ -95,7 +105,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void SafeSetDefaults()
         {
-            Item.damage = 12;
+            Item.damage = 8;
             Item.width = 46;
             Item.height = 18;
             Item.autoReuse = true;
