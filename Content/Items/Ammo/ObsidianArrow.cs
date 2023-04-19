@@ -46,6 +46,7 @@ namespace OvermorrowMod.Content.Items.Ammo
         {
 			Projectile.CloneDefaults(ProjectileID.WoodenArrowFriendly);
 			AIType = ProjectileID.WoodenArrowFriendly;
+			Projectile.ArmorPenetration = 10;
 		}
     }
 }

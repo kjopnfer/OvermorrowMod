@@ -4,6 +4,7 @@ using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Players;
 using OvermorrowMod.Common.VanillaOverrides.Bow;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
+using OvermorrowMod.Content.Items.Ammo;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
@@ -59,6 +60,11 @@ namespace OvermorrowMod.Common
             return base.PreDraw(projectile, ref lightColor);
         }
 
+        private void GetRangedArmorPenetration(Projectile projectile, NPC target)
+        {
+
+        }
+
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
             Player player = Main.player[projectile.owner];
@@ -73,6 +79,11 @@ namespace OvermorrowMod.Common
             }
 
             if (IsPowerShot)
+            {
+                damage += (int)(damage * 0.25f);
+            }
+
+            if (projectile.type == ModContent.ProjectileType<ObsidianArrowProjectile>() && crit)
             {
                 damage += (int)(damage * 0.25f);
             }
@@ -105,8 +116,7 @@ namespace OvermorrowMod.Common
             {
                 target.AddBuff(BuffID.Poisoned, 180);
 
-                float armorPenetration = player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged);
-                bool applyVenom = bowPlayer.ArrowArmorPenetration + armorPenetration > target.defense;
+                bool applyVenom = bowPlayer.ArrowArmorPenetration + projectile.ArmorPenetration > target.defense;
 
                 if (!player.GetModPlayer<OvermorrowModPlayer>().SnakeBiteHide)
                 {
@@ -143,9 +153,8 @@ namespace OvermorrowMod.Common
                     }
                 }
 
-                // Shitty way of handling armor penetration for arrows where you add the defense ignored if there is any remaining defense
-                if (bowPlayer.ArrowArmorPenetration + player.GetArmorPenetration(DamageClass.Generic) + player.GetArmorPenetration(DamageClass.Ranged) - target.defense > 5)
-                    damage += 5;
+                // Shitty way of handling armor penetration for this accessory, not sure if this even works
+                projectile.ArmorPenetration += bowPlayer.ArrowArmorPenetration;
 
                 if (applyVenom)
                 {
