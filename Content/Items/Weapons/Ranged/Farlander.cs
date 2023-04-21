@@ -26,22 +26,24 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             Projectile.penetrate = -1;
         }
 
+        float maxChargeTime = 120;
         public ref float AICounter => ref Projectile.ai[0];
         public override void AI()
         {
             if (Main.mouseRight && Main.player[Projectile.owner].active) Projectile.timeLeft = 2;
 
             Projectile.Center = Main.MouseWorld;
-            if (AICounter < 90) AICounter++;
+            if (AICounter < maxChargeTime + 30) AICounter++;
             Projectile.rotation += 0.052f;
-            base.AI();
+
+            if (Main.mouseLeft) Projectile.Kill();
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-            float flashCounter = Utils.Clamp(AICounter - 60f, 0, 60);
+            float flashCounter = Utils.Clamp(AICounter - maxChargeTime, 0, 60);
             float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 8f), 0, 1);
 
             Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
@@ -50,21 +52,23 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             effect.CurrentTechnique.Passes["Whiteout"].Apply();
 
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 yOffset = Vector2.UnitY * -12;
 
-            if (AICounter < 60)
+            if (AICounter < maxChargeTime)
             {
-                float scale = MathHelper.Lerp(2.5f, 1f, Utils.Clamp(AICounter, 0, 60) / 60f);
-                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, texture.Size() / 2f, scale, SpriteEffects.None, 1);
+                float scale = MathHelper.Lerp(2f, 0.5f, Utils.Clamp(AICounter, 0, maxChargeTime) / maxChargeTime);
+                Main.spriteBatch.Draw(texture, Projectile.Center + yOffset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 1);
+
+                Texture2D outerScope = ModContent.Request<Texture2D>(AssetDirectory.Ranged + "Farlander_OuterScope").Value;
+                Main.spriteBatch.Draw(outerScope, Projectile.Center + yOffset - Main.screenPosition, null, Color.White * 0.75f, 0f, outerScope.Size() / 2f, scale, SpriteEffects.None, 1);
             }
             else
             {
-                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 1);
+                Main.spriteBatch.Draw(texture, Projectile.Center + yOffset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 1);
             }
 
             Main.spriteBatch.Reload(SpriteSortMode.Deferred);
 
-
-            //return Projectile.ai[0]++ > 10;
             return false;
         }
     }
@@ -97,7 +101,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override bool CanRightClick => true;
         public override void RightClickEvent(Player player, ref int BonusDamage, int baseDamage)
         {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<Farlander_Scope>()] < 1)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<Farlander_Scope>()] < 1 && ShotsFired < MaxShots)
             {
                 Projectile.NewProjectile(null, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<Farlander_Scope>(), 0, 0f, Projectile.owner);
             }
@@ -106,7 +110,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void Update(Player player)
         {
-            player.scope = true;
+            if (ShotsFired < MaxShots)
+                player.scope = true;
         }
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
@@ -134,7 +139,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
                 Texture2D muzzleFlash = ModContent.Request<Texture2D>(Core.AssetDirectory.Textures + "muzzle_05").Value;
 
-                Vector2 muzzleDirectionOffset = player.direction == 1 ? new Vector2(36, 0) : new Vector2(36, 0);
+                Vector2 muzzleDirectionOffset = player.direction == -1 ? new Vector2(54, 4) : new Vector2(54, -4);
                 Vector2 muzzleOffset = Projectile.Center + directionOffset + muzzleDirectionOffset.RotatedBy(Projectile.rotation);
                 var rotationSpriteEffects = player.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 

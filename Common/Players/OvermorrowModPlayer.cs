@@ -11,6 +11,7 @@ using Terraria.GameContent;
 using OvermorrowMod.Core;
 using ReLogic.Content;
 using OvermorrowMod.Content.Items.Weapons.Ranged;
+using OvermorrowMod.Common.VanillaOverrides.Gun;
 
 namespace OvermorrowMod.Common.Players
 {
@@ -85,7 +86,8 @@ namespace OvermorrowMod.Common.Players
                 Asset<Texture2D> cursor11 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_11");
                 Asset<Texture2D> cursor12 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_12");
 
-                if (Player.HeldItem.type == ModContent.ItemType<Farlander>() && Main.mouseRight)
+
+                if (Player.HeldItem.type == ModContent.ItemType<Farlander>() && Main.mouseRight && Player.scope)
                 {
                     TextureAssets.Cursors[0] = emptyTexture;
                     TextureAssets.Cursors[1] = emptyTexture;
