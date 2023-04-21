@@ -6,6 +6,11 @@ using System.Collections.Generic;
 using Terraria.ID;
 using Terraria.GameInput;
 using Terraria.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent;
+using OvermorrowMod.Core;
+using ReLogic.Content;
+using OvermorrowMod.Content.Items.Weapons.Ranged;
 
 namespace OvermorrowMod.Common.Players
 {
@@ -72,20 +77,20 @@ namespace OvermorrowMod.Common.Players
         // Example of how to replace cursor texture to remember for later
         public override void PostUpdateMiscEffects()
         {
-            /*if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
+            if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
             {
-                Asset<Texture2D> emptyTex = ModContent.Request<Texture2D>(AssetDirectory.Empty);
+                Asset<Texture2D> emptyTexture = ModContent.Request<Texture2D>(AssetDirectory.Empty);
                 Asset<Texture2D> cursor0 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_0");
                 Asset<Texture2D> cursor1 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_1");
                 Asset<Texture2D> cursor11 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_11");
                 Asset<Texture2D> cursor12 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_12");
 
-                if (OvermorrowModSystem.Instance.ScreenColor.IsVisible())
+                if (Player.HeldItem.type == ModContent.ItemType<Farlander>() && Main.mouseRight)
                 {
-                    TextureAssets.Cursors[0] = emptyTex;
-                    TextureAssets.Cursors[1] = emptyTex;
-                    TextureAssets.Cursors[11] = emptyTex;
-                    TextureAssets.Cursors[12] = emptyTex;
+                    TextureAssets.Cursors[0] = emptyTexture;
+                    TextureAssets.Cursors[1] = emptyTexture;
+                    TextureAssets.Cursors[11] = emptyTexture;
+                    TextureAssets.Cursors[12] = emptyTexture;
                 }
                 else
                 {
@@ -94,7 +99,7 @@ namespace OvermorrowMod.Common.Players
                     TextureAssets.Cursors[11] = cursor11;
                     TextureAssets.Cursors[12] = cursor12;
                 }
-            }*/
+            }
         }
 
         private int FindFlaskBuff()

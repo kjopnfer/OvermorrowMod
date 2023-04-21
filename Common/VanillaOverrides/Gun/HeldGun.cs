@@ -22,7 +22,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         Musket,
         Rifle,
         Minigun,
-        Launcher
+        Launcher,
+        Sniper
     }
 
     public abstract partial class HeldGun : ModProjectile
@@ -45,6 +46,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// </summary>
         /// <returns></returns>
         public virtual bool CanReload() => GunType == GunType.Minigun ? false : true;
+
+        /// <summary>
+        /// Used for any general update tasks such as unsetting a conditional boolean.
+        /// </summary>
+        public virtual void Update(Player player) { }
 
         /// <summary>
         /// Used to determine where the gun is held for the left and right directions, respectively.
@@ -157,6 +163,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             HandleGunDrawing();
             UpdateBulletDisplay();
             ForceCorrectBulletDisplay();
+            Update(player);
 
             if (rightClickDelay > 0) rightClickDelay--;
 
@@ -166,7 +173,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
                 if (CanRightClick && rightClickDelay == 0 && shootCounter == 0 && Main.mouseRight)
                 {
-                    rightClickDelay = 10;
+                    if (UsesRightClickDelay) rightClickDelay = 10;
+
                     RightClickEvent(player, ref BonusDamage, Projectile.damage);
 
                     Projectile.netUpdate = true;
@@ -214,7 +222,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             SaveGunInfo();
         }
-     
+
         public Projectile LoadedBullet { private set; get; }
         public int LoadedBulletType { private set; get; }
         public int LoadedBulletItemType { private set; get; }
@@ -328,7 +336,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         }
 
         private void HandleAmmoAction()
-        {   
+        {
             if (player.controlUseItem && shootCounter == 0 && CanUseGun(player))
             {
                 shootCounter = shootTime + useTimeModifier;
@@ -396,7 +404,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                     OnShootEffects(player, Main.spriteBatch, velocity, shootPosition, BonusBullets);
 
                     float damage = Projectile.damage + BonusDamage;
-                    OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, BonusBullets);             
+                    OnGunShoot(player, velocity, shootPosition, (int)damage, LoadedBulletType, Projectile.knockBack, BonusBullets);
                 }
 
                 if (shootCounter > 0) shootCounter--;
@@ -432,6 +440,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
 
         public int reloadTime = 0;
         public int MaxReloadTime { get; set; } = 60;
+        public bool UsesRightClickDelay = true;
 
         private int clickDelay = 0;
         public int reloadDelay { get; private set; } = 0;
@@ -542,7 +551,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <param name="useTimeModifier"></param>
         public virtual void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier) { }
         #endregion
-        
+
         /// <summary>
         /// Used to apply effects whenever the player fails the skill check.
         /// <para>Decreasing the player's next clip can be done by passing in a negative value. </para> 

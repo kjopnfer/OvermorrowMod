@@ -20,6 +20,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override GunType GunType => GunType.Rifle;
 
+        public override bool TwoHanded => true;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 35), new ReloadZone(60, 75) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(20, 18), new Vector2(26, -12));
