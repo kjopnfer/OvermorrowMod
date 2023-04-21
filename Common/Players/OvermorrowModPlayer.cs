@@ -87,7 +87,8 @@ namespace OvermorrowMod.Common.Players
                 Asset<Texture2D> cursor12 = ModContent.Request<Texture2D>("Terraria/Images/UI/Cursor_12");
 
 
-                if (Player.HeldItem.type == ModContent.ItemType<Farlander>() && Main.mouseRight && Player.scope)
+                if (Player.HeldItem.type == ModContent.ItemType<Farlander>() && Main.mouseRight &&
+                    Player.ownedProjectileCounts[ModContent.ProjectileType<Farlander_Scope>()] > 0)
                 {
                     TextureAssets.Cursors[0] = emptyTexture;
                     TextureAssets.Cursors[1] = emptyTexture;

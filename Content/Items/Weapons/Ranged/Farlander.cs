@@ -32,9 +32,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         {
             if (Main.mouseRight && Main.player[Projectile.owner].active) Projectile.timeLeft = 2;
 
+            // Apply rate penalty if the player is moving the mouse around very quickly
+            float mouseSpeed = Math.Abs(Main.lastMouseX - Main.mouseX);
+            float countRate  = MathHelper.Lerp(1f, 0.1f, Utils.Clamp(mouseSpeed, 0, 100) / 100f);
+
             Projectile.Center = Main.MouseWorld;
-            if (AICounter < maxChargeTime + 30) AICounter++;
-            Projectile.rotation += 0.052f;
+
+            //Main.NewText(mouseSpeed);
+
+            if (AICounter < maxChargeTime + 30) AICounter += countRate;
 
             if (Main.mouseLeft) Projectile.Kill();
         }
@@ -105,13 +111,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             {
                 Projectile.NewProjectile(null, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<Farlander_Scope>(), 0, 0f, Projectile.owner);
             }
-            //player.scope = true;
         }
 
         public override void Update(Player player)
         {
-            if (ShotsFired < MaxShots)
-                player.scope = true;
+            if (ShotsFired < MaxShots) player.scope = true;
         }
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
