@@ -26,7 +26,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public override float ProjectileScale => 1f;
         public override void SafeSetDefaults()
         {
-            MaxReloadTime = 75;
+            MaxReloadTime = 100;
             MaxShots = 1;
             RecoilAmount = 25;
             ShootSound = SoundID.Item40;

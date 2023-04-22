@@ -44,6 +44,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             Projectile.Center = Main.MouseWorld;
 
             if (AICounter < maxChargeTime + 30) AICounter += countRate;
+            else AICounter++;
 
             if (Main.mouseLeft)
             {
@@ -68,7 +69,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         {
             Main.spriteBatch.Reload(SpriteSortMode.Immediate);
 
-            float flashCounter = Utils.Clamp(AICounter - maxChargeTime, 0, 60);
+            float flashCounter = Utils.Clamp(AICounter - maxChargeTime, 0, 999999);
             float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 8f), 0, 1);
             if (DeathFlag == 1) flashProgress = 0;
 
@@ -118,7 +119,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override void SafeSetDefaults()
         {
             MaxReloadTime = 200;
-            MaxShots = 10;
+            MaxShots = 2;
             RecoilAmount = 10;
             ShootSound = SoundID.Item41;
             UsesRightClickDelay = false;
@@ -143,7 +144,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             //Main.NewText("accuracy: " + accuracy + " from " + chargeProgress + " -> " + gunPlayer.FarlanderCharge);
 
             Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(accuracy));
-            int chargeDamage = (int)(chargeProgress == 1 ? damage * 1.25f : damage);
+            int chargeDamage = (int)(chargeProgress == 1 ? damage * 1.5f : damage);
 
             Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"), shootPosition, rotatedVelocity, LoadedBulletType, chargeDamage, knockBack, player.whoAmI);
         }

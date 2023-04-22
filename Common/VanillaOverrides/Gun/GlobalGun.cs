@@ -38,7 +38,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<Undertaker_Held>(), 13, GunType.Revolver) },
             { ItemID.Handgun, new GunStats(ModContent.ProjectileType<Handgun_Held>(), 22, GunType.Pistol) },
             { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 15, GunType.Minigun) },
-            { ItemID.Musket, new GunStats(ModContent.ProjectileType<Musket_Held>(), 136, GunType.Musket) },
+            { ItemID.Musket, new GunStats(ModContent.ProjectileType<Musket_Held>(), 56, GunType.Musket) },
         };
 
         public override void SetDefaults(Item item)
