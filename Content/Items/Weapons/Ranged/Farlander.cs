@@ -27,22 +27,41 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         }
 
         float maxChargeTime = 120;
-        public ref float AICounter => ref Projectile.ai[0];
+        public ref float AICounter => ref Main.player[Projectile.owner].GetModPlayer<GunPlayer>().FarlanderCharge;
+        public ref float DeathFlag => ref Projectile.ai[0];
         public override void AI()
         {
+            if (DeathFlag == 1) return;
+
             if (Main.mouseRight && Main.player[Projectile.owner].active) Projectile.timeLeft = 2;
+
+            float countRate = 1;
 
             // Apply rate penalty if the player is moving the mouse around very quickly
             float mouseSpeed = Math.Abs(Main.lastMouseX - Main.mouseX);
-            float countRate  = MathHelper.Lerp(1f, 0.1f, Utils.Clamp(mouseSpeed, 0, 100) / 100f);
+            if (AICounter < maxChargeTime) countRate = MathHelper.Lerp(1f, 0.05f, Utils.Clamp(mouseSpeed, 0, 35) / 35f);
 
             Projectile.Center = Main.MouseWorld;
 
-            //Main.NewText(mouseSpeed);
-
             if (AICounter < maxChargeTime + 30) AICounter += countRate;
 
-            if (Main.mouseLeft) Projectile.Kill();
+            if (Main.mouseLeft)
+            {
+                // Initially, the projectile would sometimes die before the gun was fired, resetting the counter
+                // Thus, the gun would have a max inaccuracy shot even though it was fully charged
+                // This fixes the issue by giving a brief window to always allow the gun to fire before resetting the counter
+                DeathFlag = 1;
+                Projectile.timeLeft = 10;
+
+                //Projectile.Kill();
+            }
+            
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            //Main.NewText("death");
+            AICounter = 0;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -51,6 +70,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
             float flashCounter = Utils.Clamp(AICounter - maxChargeTime, 0, 60);
             float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 8f), 0, 1);
+            if (DeathFlag == 1) flashProgress = 0;
 
             Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
             effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
@@ -98,7 +118,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override void SafeSetDefaults()
         {
             MaxReloadTime = 200;
-            MaxShots = 2;
+            MaxShots = 10;
             RecoilAmount = 10;
             ShootSound = SoundID.Item41;
             UsesRightClickDelay = false;
@@ -113,8 +133,27 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             }
         }
 
+        public override void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
+        {
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+
+            float chargeProgress = Utils.Clamp(gunPlayer.FarlanderCharge / 120f, 0, 1);
+            float accuracy = MathHelper.Lerp(12, 0, chargeProgress);
+
+            //Main.NewText("accuracy: " + accuracy + " from " + chargeProgress + " -> " + gunPlayer.FarlanderCharge);
+
+            Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(accuracy));
+            int chargeDamage = (int)(chargeProgress == 1 ? damage * 1.25f : damage);
+
+            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"), shootPosition, rotatedVelocity, LoadedBulletType, chargeDamage, knockBack, player.whoAmI);
+        }
+
         public override void Update(Player player)
         {
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
+            float chargeProgress = Utils.Clamp(gunPlayer.FarlanderCharge / 120f, 0, 1);
+            //Main.NewText(chargeProgress);
+
             if (ShotsFired < MaxShots) player.scope = true;
         }
 
@@ -168,7 +207,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
                 Particle.CreateParticle(Particle.ParticleType<Smoke>(), shootPosition, particleVelocity, Color.DarkGray);
             }
         }
-
     }
 
     public class Farlander : ModGun<Farlander_Held>
@@ -181,7 +219,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void SafeSetDefaults()
         {
-            Item.damage = 56;
+            Item.damage = 98;
             Item.width = 82;
             Item.height = 22;
             Item.autoReuse = true;

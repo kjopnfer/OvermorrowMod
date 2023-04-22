@@ -418,8 +418,9 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public virtual void OnShootEffects(Player player, SpriteBatch spriteBatch, Vector2 velocity, Vector2 shootPosition, int bonusBullets) { }
 
         /// <summary>
-        /// Allows for the implementation of any actions whenever the gun has fired a bullet.
+        /// Allows for the implementation of any actions whenever the gun has fired a bullet or manually firing bullets.
         /// Useful for spawning dropped bullet casings or spawning additional projectiles.
+        /// <para>Overriding this will block the original projectile spawning from running.</para>
         /// </summary>
         public virtual void OnGunShoot(Player player, Vector2 velocity, Vector2 shootPosition, int damage, int bulletType, float knockBack, int BonusBullets)
         {
