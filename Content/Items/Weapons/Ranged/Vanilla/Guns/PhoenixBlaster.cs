@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
     public class PhoenixBlaster_Held : HeldGun
     {
         public override int ParentItem => Terraria.ID.ItemID.PhoenixBlaster;
-        public override GunType GunType => GunType.Pistol;
+        public override GunType GunType => GunType.Handgun;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(35, 65) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(10, 20), new Vector2(-10, -10));

@@ -17,13 +17,14 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
     {
         None,
         Revolver,
-        Pistol,
+        Handgun,
         Shotgun,
         Musket,
         Rifle,
-        Minigun,
+        SubMachineGun,
+        MachineGun,
         Launcher,
-        Sniper
+        Sniper,
     }
 
     public abstract partial class HeldGun : ModProjectile
@@ -45,7 +46,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         /// <para>If false, the gun has no ammo clip and the ammo clip is not drawn. Miniguns default to false.</para>
         /// </summary>
         /// <returns></returns>
-        public virtual bool CanReload() => GunType == GunType.Minigun ? false : true;
+        public virtual bool CanReload() => GunType == GunType.MachineGun ? false : true;
 
         /// <summary>
         /// Used for any general update tasks such as unsetting a conditional boolean.
@@ -264,7 +265,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public bool hasReleased = false;
         private void HandleGunUse()
         {
-            if (GunType == GunType.Minigun)
+            if (GunType == GunType.MachineGun)
             {
                 HandleMinigunUse();
                 return;

@@ -6,6 +6,7 @@ using Terraria.ModLoader;
 using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
 using Terraria.DataStructures;
 using Terraria.Audio;
+using System.Collections.ObjectModel;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
@@ -33,13 +34,35 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         {
             { ItemID.Revolver, new GunStats(ModContent.ProjectileType<Revolver_Held>(), 30, GunType.Revolver) },
             { ItemID.Boomstick, new GunStats(ModContent.ProjectileType<Boomstick_Held>(), 20, GunType.Shotgun) },
-            { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32, GunType.Pistol) },
+            { ItemID.PhoenixBlaster, new GunStats(ModContent.ProjectileType<PhoenixBlaster_Held>(), 32, GunType.Handgun) },
             { ItemID.QuadBarrelShotgun, new GunStats(ModContent.ProjectileType<QuadBarrel_Held>(), 20, GunType.Shotgun) },
             { ItemID.TheUndertaker, new GunStats(ModContent.ProjectileType<Undertaker_Held>(), 13, GunType.Revolver) },
-            { ItemID.Handgun, new GunStats(ModContent.ProjectileType<Handgun_Held>(), 22, GunType.Pistol) },
-            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 15, GunType.Minigun) },
+            { ItemID.Handgun, new GunStats(ModContent.ProjectileType<Handgun_Held>(), 22, GunType.Handgun) },
+            { ItemID.Minishark, new GunStats(ModContent.ProjectileType<Minishark_Held>(), 15, GunType.MachineGun) },
             { ItemID.Musket, new GunStats(ModContent.ProjectileType<Musket_Held>(), 56, GunType.Musket) },
         };
+
+        private string ConvertWeaponTypeString(GunType weaponType)
+        {
+            switch (weaponType)
+            {
+                case GunType.MachineGun:
+                    return "Machine Gun";
+                case GunType.SubMachineGun:
+                    return "Sub-machine Gun";
+                default:
+                    return weaponType.ToString();
+            }
+        }
+
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
+            if (WeaponType.ToString() != "None")
+                tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(WeaponType) + " Type]"));
+
+            base.ModifyTooltips(item, tooltips);
+        }
 
         public override void SetDefaults(Item item)
         {

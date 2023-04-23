@@ -16,7 +16,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
     {
         public override string Texture => AssetDirectory.Resprites + "Handgun";
         public override int ParentItem => Terraria.ID.ItemID.Handgun;
-        public override GunType GunType => GunType.Pistol;
+        public override GunType GunType => GunType.Handgun;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(45, 60) };
 
         public override (Vector2, Vector2) BulletShootPosition => (new Vector2(10, 20), new Vector2(-10, -10));

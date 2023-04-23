@@ -23,6 +23,7 @@ namespace OvermorrowMod.Common
         public bool IsBullet { get; private set; } = false;
         public bool IsArrow { get; private set; } = false;
         public bool IsPowerShot = false;
+        public bool IsPowerShotSniper = false;
         public bool IsMirageArrow = false;
 
         public bool slowedTime = false;
@@ -60,10 +61,6 @@ namespace OvermorrowMod.Common
             return base.PreDraw(projectile, ref lightColor);
         }
 
-        private void GetRangedArmorPenetration(Projectile projectile, NPC target)
-        {
-
-        }
 
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {

@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override string Texture => AssetDirectory.Ranged + "Chicago";
         public override int ParentItem => ModContent.GetInstance<Chicago>().Type;
 
-        public override GunType GunType => GunType.Rifle;
+        public override GunType GunType => GunType.SubMachineGun;
 
         public override bool TwoHanded => true;
         public override List<ReloadZone> ClickZones => new List<ReloadZone>() { new ReloadZone(20, 35), new ReloadZone(60, 75) };
@@ -98,7 +98,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
     public class Chicago : ModGun<Chicago_Held>
     {
-        public override GunType GunType => GunType.Revolver;
+        public override GunType GunType => GunType.SubMachineGun;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Chicago");
