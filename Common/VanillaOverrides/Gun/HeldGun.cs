@@ -13,20 +13,6 @@ using System;
 
 namespace OvermorrowMod.Common.VanillaOverrides.Gun
 {
-    public enum GunType
-    {
-        None,
-        Revolver,
-        Handgun,
-        Shotgun,
-        Musket,
-        Rifle,
-        SubMachineGun,
-        MachineGun,
-        Launcher,
-        Sniper,
-    }
-
     public abstract partial class HeldGun : ModProjectile
     {
         public override bool? CanDamage() => false;
