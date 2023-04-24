@@ -32,10 +32,13 @@ namespace OvermorrowMod.Common
         private bool HasRebounded = false;
         private bool PracticeTargetHit = false;
 
+        private bool Farlander = false;
+        private bool FarlanderPowerShot = false;
+        private bool FarlanderHit = false;
 
-        private bool WildEyeCrit = false;
         private bool Undertaker = false;
         private int UndertakerCounter = 0;
+        private bool WildEyeCrit = false;
 
         public GunType SourceGunType = GunType.None;
 
@@ -215,6 +218,13 @@ namespace OvermorrowMod.Common
                 case "Undertaker":
                     Undertaker = true;
                     break;
+                case "Farlander":
+                    Farlander = true;
+                    break;
+                case "FarlanderPowerShot":
+                    Farlander = true;
+                    FarlanderPowerShot = true;
+                    break;
             }
         }
 
@@ -242,10 +252,16 @@ namespace OvermorrowMod.Common
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
             if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
             {
                 SpawnPracticeTargetFail(player);
+            }
+
+            if (Farlander && !FarlanderHit)
+            {
+                gunPlayer.FarlanderSpeedBoost = 0;
             }
 
             base.Kill(projectile, timeLeft);
@@ -255,10 +271,21 @@ namespace OvermorrowMod.Common
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
             if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
             {
                 SpawnPracticeTargetHit(player);
+            }
+
+            if (Farlander)
+            {
+                FarlanderHit = true;
+
+                if (FarlanderPowerShot)
+                {
+                    if (gunPlayer.FarlanderSpeedBoost < 4) gunPlayer.FarlanderSpeedBoost++;
+                }
             }
         }
 
@@ -266,10 +293,16 @@ namespace OvermorrowMod.Common
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
+            GunPlayer gunPlayer = player.GetModPlayer<GunPlayer>();
 
             if (player.GetModPlayer<OvermorrowModPlayer>().PracticeTarget && IsArrow && !PracticeTargetHit)
             {
                 SpawnPracticeTargetFail(player);
+            }
+
+            if (Farlander && !FarlanderHit)
+            {
+                gunPlayer.FarlanderSpeedBoost = 0;
             }
 
             return base.OnTileCollide(projectile, oldVelocity);

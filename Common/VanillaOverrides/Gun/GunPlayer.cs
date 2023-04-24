@@ -31,11 +31,13 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
         public bool GraniteLauncher;
 
         public bool ChicagoBonusShots = false;
+        public bool FarlanderPierce = false;
         public bool WildEyeCrit = false;
 
         public int MusketInaccuracy = 0;
         public int GraniteEnergyCount = 0;
         public float FarlanderCharge = 0;
+        public int FarlanderSpeedBoost = 0;
 
         public Dictionary<int, GraniteShard> ShardList = new Dictionary<int, GraniteShard>();
 

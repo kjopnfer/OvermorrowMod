@@ -29,12 +29,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         float maxChargeTime = 120;
         public ref float AICounter => ref Main.player[Projectile.owner].GetModPlayer<GunPlayer>().FarlanderCharge;
         public ref float DeathFlag => ref Projectile.ai[0];
+
         public override void AI()
         {
             if (DeathFlag == 1) return;
 
             if (Main.mouseRight && Main.player[Projectile.owner].active) Projectile.timeLeft = 2;
 
+            float playerChargeBonus = 0.25f * Main.player[Projectile.owner].GetModPlayer<GunPlayer>().FarlanderSpeedBoost;
             float countRate = 1;
 
             // Apply rate penalty if the player is moving the mouse around very quickly
@@ -43,7 +45,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
             Projectile.Center = Main.MouseWorld;
 
-            if (AICounter < maxChargeTime + 30) AICounter += countRate;
+            if (AICounter < maxChargeTime + 30) AICounter += countRate + playerChargeBonus;
             else AICounter++;
 
             if (Main.mouseLeft)
@@ -53,10 +55,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
                 // This fixes the issue by giving a brief window to always allow the gun to fire before resetting the counter
                 DeathFlag = 1;
                 Projectile.timeLeft = 10;
-
-                //Projectile.Kill();
             }
-            
         }
 
         public override void Kill(int timeLeft)
@@ -90,9 +89,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
                 Main.spriteBatch.Draw(outerScope, Projectile.Center + yOffset - Main.screenPosition, null, Color.White * 0.75f, 0f, outerScope.Size() / 2f, scale, SpriteEffects.None, 1);
             }
             else
-            {
                 Main.spriteBatch.Draw(texture, Projectile.Center + yOffset - Main.screenPosition, null, Color.White, 0f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 1);
-            }
+
 
             Main.spriteBatch.Reload(SpriteSortMode.Deferred);
 
@@ -146,7 +144,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             Vector2 rotatedVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(accuracy));
             int chargeDamage = (int)(chargeProgress == 1 ? damage * 1.5f : damage);
 
-            Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun"), shootPosition, rotatedVelocity, LoadedBulletType, chargeDamage, knockBack, player.whoAmI);
+            string action = gunPlayer.FarlanderCharge < 120 ? "_Farlander" : "_FarlanderPowerShot";
+            int projectile = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, bulletType, "HeldGun" + action), shootPosition, rotatedVelocity, LoadedBulletType, chargeDamage, knockBack, player.whoAmI);
+            if (gunPlayer.FarlanderPierce)
+            {
+                Main.projectile[projectile].penetrate++;
+                Main.projectile[projectile].usesLocalNPCImmunity = true;
+                Main.projectile[projectile].localNPCHitCooldown = -1;
+            }
         }
 
         public override void Update(Player player)
@@ -160,12 +165,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
         public override void OnReloadEventSuccess(Player player, ref int reloadTime, ref int BonusBullets, ref int BonusAmmo, ref int BonusDamage, int baseDamage, ref int useTimeModifier)
         {
-            //player.GetModPlayer<GunPlayer>().ChicagoBonusShots = true;
+            player.GetModPlayer<GunPlayer>().FarlanderPierce = true;
         }
 
         public override void OnReloadStart(Player player)
         {
-            //player.GetModPlayer<GunPlayer>().ChicagoBonusShots = false;
+            player.GetModPlayer<GunPlayer>().FarlanderPierce = false;
         }
 
         public override void DrawGunOnShoot(Player player, SpriteBatch spriteBatch, Color lightColor, float shootCounter, float maxShootTime)
