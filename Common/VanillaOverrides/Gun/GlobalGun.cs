@@ -49,7 +49,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 case GunType.MachineGun:
                     return "Machine Gun";
                 case GunType.SubMachineGun:
-                    return "Sub-machine Gun";
+                    return "Submachine Gun";
                 default:
                     return weaponType.ToString();
             }
