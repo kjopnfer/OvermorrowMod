@@ -92,7 +92,7 @@ namespace OvermorrowMod.Common
         {
             // Main.keyState.IsKeyDown(Keys.LeftShift)
 
-            if (TooltipObjects.Count > 0)
+            if (TooltipObjects.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
             {
                 float height = 14;
                 string widest = lines.OrderBy(n => ChatManager.GetStringSize(FontAssets.MouseText.Value, n.Text, Vector2.One).X).Last().Text;
@@ -116,7 +116,7 @@ namespace OvermorrowMod.Common
                         Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetTitle, new Vector2(1.25f));
 
                         // Offset the title and subtitles for the icon
-                        Vector2 titleOffset = new Vector2(90, 14); 
+                        Vector2 titleOffset = new Vector2(90, 14);
                         Vector2 subtitleOffset = new Vector2(24, 18);
                         Vector2 setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetName, baseTextSize) + new Vector2(8, 0);
 
@@ -128,7 +128,7 @@ namespace OvermorrowMod.Common
                         int maxSnippetLength = (int)ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets[0].Text, Vector2.One * 0.95f, MAXIMUM_LENGTH).X;
                         if (maxSnippetLength > width) // update the width if the description is longer than the height                   
                             width = maxSnippetLength + 40;
-                        
+
 
                         height += titleSize.Y * 2 + bottomOffset; // this is the title/subtitle
                         float titleHeight = height;
@@ -145,6 +145,17 @@ namespace OvermorrowMod.Common
 
                         height += setBonusTitleLength.Y * 3;
                         height += 50; // final bottom padding
+
+                        float yOverflow = 0;
+                        if (y + height > Main.screenHeight) // y-Overflow check
+                            yOverflow = y + height - Main.screenHeight;
+
+                        if (Main.MouseScreen.X > Main.screenWidth / 2)
+                        {
+                            containerPosition = new Vector2(x, y) - new Vector2(width + 10, 0);
+                        }
+
+                        containerPosition -= new Vector2(0, yOverflow);
 
                         Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)width, (int)height), color * 0.925f);
 
@@ -200,6 +211,16 @@ namespace OvermorrowMod.Common
                 }
             }
             return base.PreDrawTooltip(item, lines, ref x, ref y);
+        }
+
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            if (TooltipObjects.Count > 0)
+            {
+                tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "[c/808080:Hold {SHIFT} for info]"));
+            }
+
+            base.ModifyTooltips(item, tooltips);
         }
     }
 }
