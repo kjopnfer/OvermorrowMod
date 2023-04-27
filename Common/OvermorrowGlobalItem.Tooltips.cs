@@ -69,7 +69,23 @@ namespace OvermorrowMod.Common
                     new ArmorSet(ItemID.WoodHelmet, ItemID.WoodBreastplate, ItemID.WoodGreaves)));
             }
 
+            if (item.type == ItemID.CowboyHat || item.type == ItemID.CowboyJacket || item.type == ItemID.CowboyPants)
+            {
+                TooltipObjects.Add(new SetBonusTooltip(ModContent.Request<Texture2D>("OvermorrowMod/Assets/Unused/Buffs/Test").Value,
+                    "Wild West Deadeye",
+                    "Cowboy Armor",
+                    " + Critical hits with [c/BF40BF:Revolvers] rebound to the nearest enemy",
+                    new ArmorSet(ItemID.CowboyHat, ItemID.CowboyJacket, ItemID.CowboyPants)));
+            }
+
             base.SetDefaults(item);
+        }
+
+        private int GetColoredTextCount(string description)
+        {
+            string[] splitText = description.Split('[');
+
+            return splitText.Length - 1;
         }
 
         public override bool PreDrawTooltip(Item item, ReadOnlyCollection<TooltipLine> lines, ref int x, ref int y)
@@ -104,11 +120,11 @@ namespace OvermorrowMod.Common
                         Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetTitle, new Vector2(1.25f));
 
                         // Offset the title and subtitles for the icon
-                        Vector2 titleOffset = new Vector2(90, 12); 
+                        Vector2 titleOffset = new Vector2(90, 14); 
                         Vector2 subtitleOffset = new Vector2(24, 18);
                         Vector2 setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetName, baseTextSize) + new Vector2(8, 0);
 
-                        width = titleSize.X + titleOffset.X + 22; // set the width equal the height plus the offset
+                        width = titleSize.X + titleOffset.X + 40; // set the width equal the height plus the offset
 
                         float MAXIMUM_LENGTH = 300;
                         TextSnippet[] snippets = ChatManager.ParseMessage(setBonus.SetDescription, Color.White).ToArray();
@@ -116,7 +132,7 @@ namespace OvermorrowMod.Common
                         int maxSnippetLength = (int)ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets[0].Text, Vector2.One * 0.95f, MAXIMUM_LENGTH).X;
                         if (maxSnippetLength > width) // update the width if the description is longer than the height
                         {
-                            width = maxSnippetLength + 22;
+                            width = maxSnippetLength + 40;
                         }
 
                         //Main.NewText(maxSnippetLength + " / " + width);
@@ -125,12 +141,17 @@ namespace OvermorrowMod.Common
                         //height += snippets.Length * 24 + dividerOffset + 16; // this is the description area
                         float titleHeight = height;
 
+                        float unoffsetColoredText = 16 * GetColoredTextCount(setBonus.SetDescription);
                         foreach (TextSnippet snippet in snippets)
                         {
                             //height += snippets.Length * 24 + dividerOffset + 16; // this is the description area
+                            string text = snippet.Text;
+                            //Main.NewText(text);
                             height += ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text, Vector2.One * 0.95f).Y;
+                            height -= unoffsetColoredText;
                         }
 
+                        // TODO: the text gets offset because of the parsing putting colored text on separate lines
 
                         height += 30; // this is the set bonus name/counter
                         float descriptionHeight = height;
