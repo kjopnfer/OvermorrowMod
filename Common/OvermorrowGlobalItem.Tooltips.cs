@@ -65,7 +65,7 @@ namespace OvermorrowMod.Common
                 TooltipObjects.Add(new SetBonusTooltip(ModContent.Request<Texture2D>("OvermorrowMod/Assets/Unused/Buffs/Test").Value,
                     "Wooden Warrior",
                     "Wood Armor",
-                    " + Increased defense by 1\n + Increased damage by 5\n + 5% chance to instantly kill all enemies",
+                    " + Increased defense by [c/58D68D:1]\n + Increased damage by [c/58D68D:5]\n + [c/58D68D:5%] chance to instantly kill all enemies",
                     new ArmorSet(ItemID.WoodHelmet, ItemID.WoodBreastplate, ItemID.WoodGreaves)));
             }
 
@@ -74,7 +74,7 @@ namespace OvermorrowMod.Common
                 TooltipObjects.Add(new SetBonusTooltip(ModContent.Request<Texture2D>("OvermorrowMod/Assets/Unused/Buffs/Test").Value,
                     "Wild West Deadeye",
                     "Cowboy Armor",
-                    " + Critical hits with [c/BF40BF:Revolvers] rebound to the nearest enemy",
+                    " + Critical hits with [c/FAD5A5:Revolvers] rebound to the nearest enemy",
                     new ArmorSet(ItemID.CowboyHat, ItemID.CowboyJacket, ItemID.CowboyPants)));
             }
 
@@ -84,6 +84,13 @@ namespace OvermorrowMod.Common
         private int GetColoredTextCount(string description)
         {
             string[] splitText = description.Split('[');
+
+            return splitText.Length - 1;
+        }
+
+        private int GetLineBreakCount(string description)
+        {
+            string[] splitText = description.Split('\n');
 
             return splitText.Length - 1;
         }
@@ -133,14 +140,30 @@ namespace OvermorrowMod.Common
                         height += titleSize.Y * 2 + bottomOffset; // this is the title/subtitle
                         float titleHeight = height;
 
-                        float unoffsetColoredText = 16 * GetColoredTextCount(setBonus.SetDescription);
+                        //float unoffsetColoredText = 16 * GetColoredTextCount(setBonus.SetDescription);
+                        float unoffsetColoredText = 28 * GetColoredTextCount(setBonus.SetDescription) + (26.6f * GetLineBreakCount(setBonus.SetDescription)); // for wood
+                        //float unoffsetColoredText = 16 * 10;
+                        //Main.NewText("offset size: " + (unoffsetColoredText / 16) + ", total lines: " + snippets.Length + ", colored lines: " + GetColoredTextCount(setBonus.SetDescription));
+
+                        float heightBefore = height;
+                        int snippetCount = 0;
+                        float totalTemp = 0;
                         foreach (TextSnippet snippet in snippets)
                         {
+                            float temp = ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text, Vector2.One * 0.95f).Y;
                             height += ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text, Vector2.One * 0.95f).Y;
-                            height -= unoffsetColoredText;
+                            //Main.NewText(temp + " - " + snippetCount + ": " + snippet.Text);
+                            //height -= 16;
+
+                            snippetCount++;
+                            totalTemp += temp;
                         }
 
-                        height += 30; // this is the set bonus name/counter
+                        //Main.NewText("before: " + heightBefore +  ", adding: " + totalTemp + ", after: " + height + ", subtracting: " + unoffsetColoredText + " final: " + (height - unoffsetColoredText));
+
+                        height -= unoffsetColoredText;
+
+                        height += 8; // this is the set bonus name/counter
                         float descriptionHeight = height;
 
                         height += setBonusTitleLength.Y * 3;
@@ -151,9 +174,8 @@ namespace OvermorrowMod.Common
                             yOverflow = y + height - Main.screenHeight;
 
                         if (Main.MouseScreen.X > Main.screenWidth / 2)
-                        {
                             containerPosition = new Vector2(x, y) - new Vector2(width + 10, 0);
-                        }
+                        
 
                         containerPosition -= new Vector2(0, yOverflow);
 
