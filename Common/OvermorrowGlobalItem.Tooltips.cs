@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Terraria;
 using Terraria.GameContent;
@@ -95,15 +96,33 @@ namespace OvermorrowMod.Common
             return splitText.Length - 1;
         }
 
+        // From https://stackoverflow.com/a/12108823
+        private string[] GetKeywords(string text)
+        {
+            string filtered = string.Join(";", Regex.Matches(text, @"\<(.+?)\>")
+                                    .Cast<Match>()
+                                    .Select(m => m.Groups[1].Value));
+            return filtered.Split(';');
+        }
+
+        HashSet<string> KeyWords = new HashSet<string>();
         public override bool PreDrawTooltip(Item item, ReadOnlyCollection<TooltipLine> lines, ref int x, ref int y)
         {
-            // Main.keyState.IsKeyDown(Keys.LeftShift)
+            foreach (TooltipLine line in lines)
+            {
+                string[] lineKeywords = GetKeywords(line.Text);
+                if (lineKeywords.Length > 0)
+                {
+                    foreach (string lineKeyword in lineKeywords)
+                        if (lineKeyword.Length > 0) KeyWords.Add(lineKeyword);
+                }
+            }
 
+            string widest = lines.OrderBy(n => ChatManager.GetStringSize(FontAssets.MouseText.Value, n.Text, Vector2.One).X).Last().Text;
+            float width = ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X;
             if (TooltipObjects.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
             {
                 float height = 14;
-                string widest = lines.OrderBy(n => ChatManager.GetStringSize(FontAssets.MouseText.Value, n.Text, Vector2.One).X).Last().Text;
-                float width = ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X;
 
                 Vector2 containerPosition = new Vector2(x, y) + new Vector2(width + 30, 0);
 
@@ -175,7 +194,7 @@ namespace OvermorrowMod.Common
 
                         if (Main.MouseScreen.X > Main.screenWidth / 2)
                             containerPosition = new Vector2(x, y) - new Vector2(width + 10, 0);
-                        
+
 
                         containerPosition -= new Vector2(0, yOverflow);
 
@@ -232,14 +251,69 @@ namespace OvermorrowMod.Common
                     }
                 }
             }
+
+            if (KeyWords.Count > 0)
+            {
+                float offset = 0;
+                int bottomPadding = 14;
+
+                foreach (string keyWord in KeyWords)
+                {
+                    Vector2 containerPosition = new Vector2(x, y + offset) + new Vector2(width + 30, 0);
+
+                    Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyWord, new Vector2(1f));
+                    float height = titleSize.Y + 4;
+
+                    float titleHeight = height;
+
+                    TextSnippet[] snippets = ChatManager.ParseMessage("test description for this key word", Color.White).ToArray();
+                    float MAXIMUM_LENGTH = 150;
+
+                    float keywordWidth = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyWord, Vector2.One).X;
+
+                    foreach (TextSnippet snippet in snippets)
+                    {
+                        Vector2 textSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text, new Vector2(0.95f), MAXIMUM_LENGTH);
+                        height += textSize.Y;
+                        if (textSize.X > keywordWidth) keywordWidth = textSize.X;
+                    }
+
+                    Color color = new Color(28, 31, 77);
+                    Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)keywordWidth + 40, (int)height + bottomPadding), color * 0.925f);
+
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, keyWord, containerPosition + new Vector2(titleSize.X, 24), new Color(255, 121, 198), 0f, titleSize, new Vector2(1f));
+
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
+
+                    offset += height + 5 + bottomPadding;
+                }
+
+                //Main.NewText(string.Join(",", KeyWords));
+            }
+
             return base.PreDrawTooltip(item, lines, ref x, ref y);
         }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            if (TooltipObjects.Count > 0)
+            if (TooltipObjects.Count > 0 || KeyWords.Count > 0)
             {
-                tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "[c/808080:Hold {SHIFT} for info]"));
+                tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "[c/808080:Hold {SHIFT} for more info]"));
+            }
+
+            foreach (TooltipLine tooltip in tooltips)
+            {
+                string newText = tooltip.Text;
+
+                foreach (string keyword in KeyWords)
+                {
+                    if (newText.Contains($"<{keyword}>"))
+                    {
+                        newText = newText.Replace($"<{keyword}>", $"[c/ff79c6:{keyword}]");
+                    }
+                }
+
+                tooltip.Text = newText;
             }
 
             base.ModifyTooltips(item, tooltips);
