@@ -72,7 +72,7 @@ namespace OvermorrowMod.Common
 
             if (item.type == ItemID.CowboyHat || item.type == ItemID.CowboyJacket || item.type == ItemID.CowboyPants)
             {
-                TooltipObjects.Add(new SetBonusTooltip(ModContent.Request<Texture2D>("OvermorrowMod/Assets/Unused/Buffs/Test").Value,
+                TooltipObjects.Add(new SetBonusTooltip(ModContent.Request<Texture2D>(AssetDirectory.UI + "Tooltips/WhiteHat").Value,
                     "Wild West Deadeye",
                     "Cowboy Armor",
                     " + Critical hits with [c/FAD5A5:Revolvers] rebound to the nearest enemy",
@@ -273,7 +273,7 @@ namespace OvermorrowMod.Common
                 }
             }
 
-            if (KeyWords.Count > 0)
+            if (KeyWords.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
             {
                 float offset = 0;
                 int bottomPadding = 14;
@@ -317,6 +317,47 @@ namespace OvermorrowMod.Common
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
+            // Probably a better way to do this?
+            #region Gun Replacements
+            if (item.type == ItemID.PhoenixBlaster)
+            {
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Release a burst of flame, inflicting [Phoenix Mark]"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "<Fail>: Damage yourself, inflicting [On Fire!]"));
+            }
+
+            if (item.type == ItemID.Musket)
+            {
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Increase accuracy for each block clicked"));
+            }
+
+            if (item.type == ItemID.Boomstick)
+            {
+                tooltips.Add(new TooltipLine(Mod, "Boomstick0", "<Reload>: Increase recoil and bullets fired for each block clicked"));
+            }
+
+            if (item.type == ItemID.Revolver)
+            {
+                tooltips.Add(new TooltipLine(Mod, "Revolver0", "<Reload>: Reload instantly. Your next clip has increased damage"));
+            }
+
+            if (item.type == ItemID.Handgun)
+            {
+                tooltips.Add(new TooltipLine(Mod, "Handgun0", "<Reload>: Your next clip has increased firing speed"));
+            }
+
+            if (item.type == ItemID.TheUndertaker)
+            {
+                tooltips.Add(new TooltipLine(Mod, "Undertaker0", "<Reload>: Your next clip has 6 bullets and increased firing speed"));
+                tooltips.Add(new TooltipLine(Mod, "Undertaker1", "<Fail>: Your next clip has 2 bullets"));
+                tooltips.Add(new TooltipLine(Mod, "Undertaker2", "Bullets deal more damage at point blank range"));
+            }
+
+            if (item.type == ItemID.QuadBarrelShotgun)
+            {
+                tooltips.Add(new TooltipLine(Mod, "Quadbarrel0", "<Reload>: Increase number of bullets and recoil for each block clicked"));
+            }
+            #endregion
+
             if (TooltipObjects.Count > 0 || KeyWords.Count > 0)
             {
                 if (!Main.keyState.IsKeyDown(Keys.LeftShift))

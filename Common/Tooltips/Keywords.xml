@@ -16,4 +16,16 @@
 		<Hex>BF40BF</Hex>
 		<Description>Triggers when right clicking and holding this item</Description>
 	</Keyword>
+	
+	<Keyword id="Reload">
+		<Name>Reload</Name>
+		<Hex>BF40BF</Hex>
+		<Description>Triggers on successful Reload Skill Check</Description>
+	</Keyword>
+
+	<Keyword id="Fail">
+		<Name>Fail</Name>
+		<Hex>BF40BF</Hex>
+		<Description>Triggers after failing the Reload Skill Check</Description>
+	</Keyword>
 </Keywords>

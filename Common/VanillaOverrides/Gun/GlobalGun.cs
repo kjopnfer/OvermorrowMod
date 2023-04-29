@@ -61,6 +61,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             if (WeaponType.ToString() != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(WeaponType) + " Type]"));
 
+            
+
             base.ModifyTooltips(item, tooltips);
         }
 

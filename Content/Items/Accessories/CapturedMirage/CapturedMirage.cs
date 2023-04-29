@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Items.Accessories.CapturedMirage
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Captured Mirage");
-            Tooltip.SetDefault("On Power Shot, your next bow shot fires a Mirage Arrow\n" +
+            Tooltip.SetDefault("<Power Shot>: Fire an additional [Mirage Arrow]\n" +
                 "Mirage Arrows copy the effect of another arrow in your inventory");
         }
 
