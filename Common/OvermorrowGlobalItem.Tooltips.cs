@@ -96,6 +96,27 @@ namespace OvermorrowMod.Common
             return splitText.Length - 1;
         }
 
+        private string GetKeyword(string id)
+        {
+            XmlDocument xmlDoc = ModUtils.GetXML("Common/Tooltips/Keywords.xml");
+            var keywordList = xmlDoc.GetElementsByTagName("Keyword");
+
+            foreach (XmlNode node in keywordList)
+            {
+                string nodeID = node.Attributes["id"].Value;
+                if (nodeID == id)
+                {
+                    foreach (XmlNode info in node.ChildNodes)
+                    {
+                        if (info.Name == "Description") return info.InnerText;
+                    }
+                }
+            }
+
+            return "";
+        }
+
+
         // From https://stackoverflow.com/a/12108823
         private string[] GetKeywords(string text)
         {
@@ -266,8 +287,8 @@ namespace OvermorrowMod.Common
 
                     float titleHeight = height;
 
-                    TextSnippet[] snippets = ChatManager.ParseMessage("test description for this key word", Color.White).ToArray();
-                    float MAXIMUM_LENGTH = 150;
+                    TextSnippet[] snippets = ChatManager.ParseMessage(GetKeyword(keyWord), Color.White).ToArray();
+                    float MAXIMUM_LENGTH = 175;
 
                     float keywordWidth = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyWord, Vector2.One).X;
 
@@ -283,7 +304,7 @@ namespace OvermorrowMod.Common
 
                     ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, keyWord, containerPosition + new Vector2(titleSize.X, 24), new Color(255, 121, 198), 0f, titleSize, new Vector2(1f));
 
-                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight - 8), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
 
                     offset += height + 5 + bottomPadding;
                 }
@@ -298,7 +319,8 @@ namespace OvermorrowMod.Common
         {
             if (TooltipObjects.Count > 0 || KeyWords.Count > 0)
             {
-                tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "[c/808080:Hold {SHIFT} for more info]"));
+                if (!Main.keyState.IsKeyDown(Keys.LeftShift))
+                    tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "[c/808080:Hold {SHIFT} for more info]"));
             }
 
             foreach (TooltipLine tooltip in tooltips)

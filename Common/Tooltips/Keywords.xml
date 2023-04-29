@@ -2,18 +2,18 @@
 	<Keyword id="Power Shot">
 		<Name>Power Shot</Name>
 		<Hex>BF40BF</Hex>
-		<Description>Triggers whenever your weapon is used while flashing white.</Description>
+		<Description>Triggers when your weapon is used while flashing white</Description>
 	</Keyword>
 	
 	<Keyword id="Passive">
 		<Name>Passive</Name>
 		<Hex>BF40BF</Hex>
-		<Description>Triggers while kept in your hotbar.</Description>
+		<Description>Triggers while in your hotbar</Description>
 	</Keyword>
 
 	<Keyword id="Alt">
 		<Name>Alt</Name>
 		<Hex>BF40BF</Hex>
-		<Description>Triggers after right clicking while holding this item.</Description>
+		<Description>Triggers when right clicking and holding this item</Description>
 	</Keyword>
 </Keywords>
