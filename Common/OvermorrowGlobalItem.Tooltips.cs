@@ -56,6 +56,29 @@ namespace OvermorrowMod.Common
         }
     }
 
+    public enum ProjectileTooltipType
+    {
+        Projectile,
+        Minion
+    }
+
+    public class ProjectileTooltip : TooltipObject
+    {
+        public readonly string ProjectileTitle;
+        public readonly string ProjectileDescription;
+        public readonly float ProjectileDamage;
+        public readonly ProjectileTooltipType Type;
+
+        public ProjectileTooltip(Texture2D ProjectileIcon, string ProjectileTitle, string ProjectileDescription, float ProjectileDamage, ProjectileTooltipType Type)
+        {
+            this.ObjectIcon = ProjectileIcon;
+            this.ProjectileTitle = ProjectileTitle;
+            this.ProjectileDescription = ProjectileDescription;
+            this.ProjectileDamage = ProjectileDamage;
+            this.Type = Type;
+        }
+    }
+
     public partial class OvermorrowGlobalItem : GlobalItem
     {
         public List<TooltipObject> TooltipObjects = new List<TooltipObject>();
@@ -216,7 +239,6 @@ namespace OvermorrowMod.Common
                         if (Main.MouseScreen.X > Main.screenWidth / 2)
                             containerPosition = new Vector2(x, y) - new Vector2(width + 10, 0);
 
-
                         containerPosition -= new Vector2(0, yOverflow);
 
                         Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)width, (int)height), color * 0.925f);
@@ -270,6 +292,8 @@ namespace OvermorrowMod.Common
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "(" + setCount + "/3)", new Vector2(containerPosition.X + titleSize.X + setBonusTitleLength.X, containerPosition.Y + descriptionHeight + 36), setCountColor, 0f, titleSize, baseTextSize);
                         #endregion
                     }
+                    
+
                 }
             }
 
@@ -298,6 +322,16 @@ namespace OvermorrowMod.Common
                         height += textSize.Y;
                         if (textSize.X > keywordWidth) keywordWidth = textSize.X;
                     }
+
+                    float yOverflow = 0;
+                    if (y + height > Main.screenHeight) // y-Overflow check
+                        yOverflow = y + height - Main.screenHeight;
+
+                    if (Main.MouseScreen.X > Main.screenWidth / 2)
+                        containerPosition = new Vector2(x, y + offset) - new Vector2(keywordWidth + 50, 0);
+
+
+                    containerPosition -= new Vector2(0, yOverflow);
 
                     Color color = new Color(28, 31, 77);
                     Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)keywordWidth + 40, (int)height + bottomPadding), color * 0.925f);

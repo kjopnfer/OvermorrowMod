@@ -224,7 +224,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             Tooltip.SetDefault("<Reload>: Your next clip gains 1 piercing\n" +
                 "<Alt>: Increase view range and charge\n" +
                 "<Power Shot>: Gain increased damage and accuracy\n" +
-                "Increase charge time for each enemy hit by a <Power Shot>\n" +
+                "Improves charge time for each enemy hit by a <Power Shot>\n" +
                 "Charge bonus resets on miss");
         }
 
