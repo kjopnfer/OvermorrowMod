@@ -79,6 +79,28 @@ namespace OvermorrowMod.Common
         }
     }
 
+
+    public enum BuffTooltipType
+    {
+        Buff,
+        Debuff
+    }
+
+    public class BuffTooltip : TooltipObject
+    {
+        public readonly string BuffTitle;
+        public readonly string BuffDescription;
+        public readonly BuffTooltipType Type;
+
+        public BuffTooltip(Texture2D BuffIcon, string BuffTitle, string BuffDescription, BuffTooltipType Type)
+        {
+            this.ObjectIcon = BuffIcon;
+            this.BuffTitle = BuffTitle;
+            this.BuffDescription = BuffDescription;
+            this.Type = Type;
+        }
+    }
+
     public partial class OvermorrowGlobalItem : GlobalItem
     {
         public List<TooltipObject> TooltipObjects = new List<TooltipObject>();
