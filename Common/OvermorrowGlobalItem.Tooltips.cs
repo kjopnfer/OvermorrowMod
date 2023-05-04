@@ -194,6 +194,7 @@ namespace OvermorrowMod.Common
         {
             // Draw set bonuses, projectiles, and buffs first
             // Afterwards draw any keywords on the left or right side of those tooltips
+            float keywordOffset = 0;
 
             // Sort the tooltips based on priority
             var orderedTooltips = TooltipObjects.OrderBy(x => x.Priority).ToList();
@@ -323,6 +324,8 @@ namespace OvermorrowMod.Common
                         Color setCountColor = setCount == 3 ? Color.Orange : Color.Gray;
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "(" + setCount + "/3)", new Vector2(containerPosition.X + titleSize.X + setBonusTitleLength.X, containerPosition.Y + descriptionHeight + 36), setCountColor, 0f, titleSize, baseTextSize);
                         #endregion
+
+                        if (width > keywordOffset) keywordOffset = width;
                     }
                     
                     if (tooltipObject is ProjectileTooltip projectileTooltip)
@@ -386,18 +389,19 @@ namespace OvermorrowMod.Common
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "50%", new Vector2(containerPosition.X + width - damageSize.X / 2, containerPosition.Y + descriptionHeight + 46), Color.Orange, 0f, damageSize, baseTextSize * 1.25f);
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Damage", new Vector2(containerPosition.X + width - (damageSize.X * 1.5f) - setBonusTitleLength.X + 6, containerPosition.Y + descriptionHeight + 40), Color.Gray, 0f, damageSize, baseTextSize * 0.8f);
 
+                        if (width > keywordOffset) keywordOffset = width;
                     }
                 }
             }
 
-            /*if (KeyWords.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
+            if (KeyWords.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
             {
                 float offset = 0;
                 int bottomPadding = 14;
 
                 foreach (string keyWord in KeyWords)
                 {
-                    Vector2 containerPosition = new Vector2(x, y + offset) + new Vector2(width + 30, 0);
+                    Vector2 containerPosition = new Vector2(x, y + offset) + new Vector2(ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X + 30 + keywordOffset, 0);
 
                     Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyWord, new Vector2(1f));
                     float height = titleSize.Y + 4;
@@ -437,7 +441,7 @@ namespace OvermorrowMod.Common
                 }
 
                 //Main.NewText(string.Join(",", KeyWords));
-            }*/
+            }
 
             return base.PreDrawTooltip(item, lines, ref x, ref y);
         }
