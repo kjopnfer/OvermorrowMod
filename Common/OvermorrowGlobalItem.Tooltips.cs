@@ -135,9 +135,9 @@ namespace OvermorrowMod.Common
 
             if (item.type == ModContent.ItemType<CapturedMirage>())
             {
-                TooltipObjects.Add(new ProjectileTooltip(ModContent.Request<Texture2D>("OvermorrowMod/Assets/Unused/Buffs/Test").Value,
+                TooltipObjects.Add(new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.UI + "Tooltips/WhiteHat").Value,
                     "Mirage Arrow",
-                    "Copies the effect of another random arrow from your ammo slots",
+                    "Copies the effect of another random [c/FAD5A5:Arrow] from your ammo slots",
                     0.5f,
                     ProjectileTooltipType.Projectile));
             }
@@ -288,7 +288,6 @@ namespace OvermorrowMod.Common
                         #region Set Bonus
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Set Bonus", new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight), subtitleColor, 0f, titleSize, baseTextSize);
 
-                        Vector2 descriptionOffset = new Vector2(0, titleOffset.Y + subtitleOffset.Y + dividerOffset);
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
                         #endregion
 
@@ -338,16 +337,16 @@ namespace OvermorrowMod.Common
                         Vector2 damageSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "50%", new Vector2(1.25f));
 
                         // Offset the title and subtitles for the icon
-                        Vector2 titleOffset = new Vector2(100, 14);
+                        Vector2 titleOffset = new Vector2(90, 14);
                         Vector2 subtitleOffset = new Vector2(24, 18);
                         Vector2 setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, "50%", baseTextSize);
 
-                        width = titleSize.X + titleOffset.X + 60; // set the width equal the height plus the offset
+                        width = titleSize.X + titleOffset.X + 70; // set the width equal the height plus the offset
 
                         TextSnippet[] snippets = ChatManager.ParseMessage(projectileTooltip.ProjectileDescription, Color.White).ToArray();
                         int maxSnippetLength = (int)ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets[0].Text, Vector2.One * 0.95f, MAXIMUM_LENGTH).X;
                         if (maxSnippetLength > width) // update the width if the description is longer than the height                   
-                            width = maxSnippetLength + 60;
+                            width = maxSnippetLength + 70;
 
                         height += titleSize.Y * 2 + bottomOffset; // this is the title/subtitle
                         float titleHeight = height;
@@ -362,9 +361,19 @@ namespace OvermorrowMod.Common
                         height -= unoffsetColoredText;
 
                         height += 8; // this is the set bonus name/counter
-                        float descriptionHeight = height + 20;
+                        float descriptionHeight = height + 10;
 
                         height += setBonusTitleLength.Y * 3;
+                        height -= 15; // removes extra padding at the bottom, this might be unnecessary?
+
+                        float yOverflow = 0;
+                        if (y + height > Main.screenHeight) // y-Overflow check
+                            yOverflow = y + height - Main.screenHeight;
+
+                        if (Main.MouseScreen.X > Main.screenWidth / 2)
+                            containerPosition = new Vector2(x, y) - new Vector2(width + 10, 0);
+
+                        containerPosition -= new Vector2(0, yOverflow);
 
                         Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)width, (int)height), color * 0.925f);
 
@@ -380,19 +389,21 @@ namespace OvermorrowMod.Common
                         #region Description
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, projectileTooltip.Type.ToString(), new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight), subtitleColor, 0f, titleSize, baseTextSize);
                         
-                        Vector2 descriptionOffset = new Vector2(0, titleOffset.Y + subtitleOffset.Y + dividerOffset);
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
                         #endregion
 
                         Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight), (int)width - 18, 2), Color.Black * 0.25f);
-                        
+
+                        #region Values
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "50%", new Vector2(containerPosition.X + width - damageSize.X / 2, containerPosition.Y + descriptionHeight + 46), Color.Orange, 0f, damageSize, baseTextSize * 1.25f);
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Damage", new Vector2(containerPosition.X + width - (damageSize.X * 1.5f) - setBonusTitleLength.X + 6, containerPosition.Y + descriptionHeight + 40), Color.Gray, 0f, damageSize, baseTextSize * 0.8f);
+                        #endregion
 
                         if (width > keywordOffset) keywordOffset = width;
                     }
                 }
             }
+
 
             if (KeyWords.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
             {
@@ -425,7 +436,7 @@ namespace OvermorrowMod.Common
                         yOverflow = y + height - Main.screenHeight;
 
                     if (Main.MouseScreen.X > Main.screenWidth / 2)
-                        containerPosition = new Vector2(x, y + offset) - new Vector2(keywordWidth + 50, 0);
+                        containerPosition = new Vector2(x, y + offset) - new Vector2(keywordWidth + 60 + keywordOffset, 0);
 
 
                     containerPosition -= new Vector2(0, yOverflow);
