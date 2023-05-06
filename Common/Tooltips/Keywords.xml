@@ -1,6 +1,6 @@
 <Keywords>
-	<Keyword id="Power Shot">
-		<Name>Power Shot</Name>
+	<Keyword id="Focus">
+		<Name>Focus</Name>
 		<Hex>BF40BF</Hex>
 		<Description>Triggers when your weapon is used while flashing white</Description>
 	</Keyword>
