@@ -137,9 +137,22 @@ namespace OvermorrowMod.Common
             {
                 TooltipObjects.Add(new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.UI + "Tooltips/WhiteHat").Value,
                     "Mirage Arrow",
-                    "Copies the effect of another random [c/FAD5A5:Arrow] from your ammo slots",
+                    " + Copies the effect of another random [c/FAD5A5:Arrow] from your ammo slots",
                     0.5f,
                     ProjectileTooltipType.Projectile));
+            }
+
+            if (item.type == ItemID.PhoenixBlaster)
+            {
+                TooltipObjects.Add(new BuffTooltip(ModContent.Request<Texture2D>(AssetDirectory.UI + "Tooltips/WhiteHat").Value,
+                    "Phoenix Mark",
+                    " + Increases all incoming damage by [c/58D68D:15%]",
+                    BuffTooltipType.Debuff));
+                TooltipObjects.Add(new BuffTooltip(ModContent.Request<Texture2D>(AssetDirectory.UI + "Tooltips/WhiteHat").Value,
+                    "On Fire!",
+                    " - Prevents health regeneration\n" +
+                    " - Loses [c/ff5555:4] health per second",
+                    BuffTooltipType.Debuff));
             }
 
             base.SetDefaults(item);
@@ -210,22 +223,26 @@ namespace OvermorrowMod.Common
             }
 
             string widest = lines.OrderBy(n => ChatManager.GetStringSize(FontAssets.MouseText.Value, n.Text, Vector2.One).X).Last().Text;
-            float width = ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X;
             if (orderedTooltips.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
             {
-                float MAXIMUM_LENGTH = 300;
-
-                float height = 14;
-
-                Vector2 containerPosition = new Vector2(x, y) + new Vector2(width + 30, 0);
-
-                Color color = true ? new Color(28, 31, 77) : new Color(25, 27, 27);
-                Color titleColor = true ? new Color(139, 233, 253) : Color.Gray;
-                Color subtitleColor = /*new Color(178, 190, 181)*/new Color(241, 250, 140);
-                Color primaryColor = true ? Color.White : Color.Gray;
+                float offset = 0;
 
                 foreach (TooltipObject tooltipObject in TooltipObjects)
                 {
+                    float MAXIMUM_LENGTH = 330;
+                    float containerOffset = ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X;
+                    float containerWidth = 350;
+                    float dividerWidth = containerWidth - 20;
+                    //float width = 400;
+                    float height = 14;
+
+                    Vector2 containerPosition = new Vector2(x, y + offset) + new Vector2(containerOffset + 30, 0);
+
+                    Color color = true ? new Color(28, 31, 77) : new Color(25, 27, 27);
+                    Color titleColor = true ? new Color(139, 233, 253) : Color.Gray;
+                    Color subtitleColor = /*new Color(178, 190, 181)*/new Color(241, 250, 140);
+                    Color primaryColor = true ? Color.White : Color.Gray;
+
                     if (tooltipObject is SetBonusTooltip setBonus)
                     {
                         int dividerOffset = 48;
@@ -239,13 +256,13 @@ namespace OvermorrowMod.Common
                         Vector2 subtitleOffset = new Vector2(24, 18);
                         Vector2 setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, setBonus.SetName, baseTextSize) + new Vector2(8, 0);
 
-                        width = titleSize.X + titleOffset.X + 40; // set the width equal the height plus the offset
+                        //width = titleSize.X + titleOffset.X + 40; // set the width equal the height plus the offset
 
                         TextSnippet[] snippets = ChatManager.ParseMessage(setBonus.SetDescription, Color.White).ToArray();
 
                         int maxSnippetLength = (int)ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets[0].Text, Vector2.One * 0.95f, MAXIMUM_LENGTH).X;
-                        if (maxSnippetLength > width) // update the width if the description is longer than the height                   
-                            width = maxSnippetLength + 40;
+                        /*if (maxSnippetLength > width) // update the width if the description is longer than the height                   
+                            width = maxSnippetLength + 40;*/
 
                         height += titleSize.Y * 2 + bottomOffset; // this is the title/subtitle
                         float titleHeight = height;
@@ -270,11 +287,11 @@ namespace OvermorrowMod.Common
                             yOverflow = y + height - Main.screenHeight;
 
                         if (Main.MouseScreen.X > Main.screenWidth / 2)
-                            containerPosition = new Vector2(x, y) - new Vector2(width + 10, 0);
+                            containerPosition = new Vector2(x, y) - new Vector2(containerOffset + 10, 0);
 
                         containerPosition -= new Vector2(0, yOverflow);
 
-                        Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)width, (int)height), color * 0.925f);
+                        Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)containerWidth, (int)height), color * 0.925f);
 
                         #region Title
                         Texture2D texture = setBonus.ObjectIcon;
@@ -283,7 +300,7 @@ namespace OvermorrowMod.Common
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, setBonus.SetTitle, containerPosition + titleSize + titleOffset, titleColor, 0f, titleSize, new Vector2(1.25f));
                         #endregion
 
-                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)containerPosition.Y + dividerOffset, (int)width - 18, 2), Color.Black * 0.25f);
+                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)containerPosition.Y + dividerOffset, (int)dividerWidth, 2), Color.Black * 0.25f);
 
                         #region Set Bonus
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Set Bonus", new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight), subtitleColor, 0f, titleSize, baseTextSize);
@@ -291,7 +308,7 @@ namespace OvermorrowMod.Common
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
                         #endregion
 
-                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight), (int)width - 18, 2), Color.Black * 0.25f);
+                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight), (int)dividerWidth, 2), Color.Black * 0.25f);
 
                         #region Set
                         int setCount = 0;
@@ -324,7 +341,7 @@ namespace OvermorrowMod.Common
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "(" + setCount + "/3)", new Vector2(containerPosition.X + titleSize.X + setBonusTitleLength.X, containerPosition.Y + descriptionHeight + 36), setCountColor, 0f, titleSize, baseTextSize);
                         #endregion
 
-                        if (width > keywordOffset) keywordOffset = width;
+                        if (containerOffset > keywordOffset) keywordOffset = containerOffset;
                     }
                     
                     if (tooltipObject is ProjectileTooltip projectileTooltip)
@@ -341,12 +358,12 @@ namespace OvermorrowMod.Common
                         Vector2 subtitleOffset = new Vector2(24, 18);
                         Vector2 setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, "50%", baseTextSize);
 
-                        width = titleSize.X + titleOffset.X + 70; // set the width equal the height plus the offset
+                        //width = titleSize.X + titleOffset.X + 70; // set the width equal the height plus the offset
 
                         TextSnippet[] snippets = ChatManager.ParseMessage(projectileTooltip.ProjectileDescription, Color.White).ToArray();
                         int maxSnippetLength = (int)ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets[0].Text, Vector2.One * 0.95f, MAXIMUM_LENGTH).X;
-                        if (maxSnippetLength > width) // update the width if the description is longer than the height                   
-                            width = maxSnippetLength + 70;
+                        /*if (maxSnippetLength > width) // update the width if the description is longer than the height                   
+                            width = maxSnippetLength + 70;*/
 
                         height += titleSize.Y * 2 + bottomOffset; // this is the title/subtitle
                         float titleHeight = height;
@@ -371,11 +388,11 @@ namespace OvermorrowMod.Common
                             yOverflow = y + height - Main.screenHeight;
 
                         if (Main.MouseScreen.X > Main.screenWidth / 2)
-                            containerPosition = new Vector2(x, y) - new Vector2(width + 10, 0);
+                            containerPosition = new Vector2(x, y) - new Vector2(containerOffset + 10, 0);
 
                         containerPosition -= new Vector2(0, yOverflow);
 
-                        Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)width, (int)height), color * 0.925f);
+                        Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)containerWidth, (int)height), color * 0.925f);
 
                         #region Title
                         Texture2D texture = projectileTooltip.ObjectIcon;
@@ -384,7 +401,7 @@ namespace OvermorrowMod.Common
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, projectileTooltip.ProjectileTitle, containerPosition + titleSize + titleOffset, titleColor, 0f, titleSize, new Vector2(1.25f));
                         #endregion
 
-                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)containerPosition.Y + dividerOffset, (int)width - 18, 2), Color.Black * 0.25f);
+                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)containerPosition.Y + dividerOffset, (int)dividerWidth, 2), Color.Black * 0.25f);
 
                         #region Description
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, projectileTooltip.Type.ToString(), new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight), subtitleColor, 0f, titleSize, baseTextSize);
@@ -392,15 +409,92 @@ namespace OvermorrowMod.Common
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
                         #endregion
 
-                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight), (int)width - 18, 2), Color.Black * 0.25f);
+                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight), (int)dividerWidth, 2), Color.Black * 0.25f);
 
                         #region Values
-                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "50%", new Vector2(containerPosition.X + width - damageSize.X / 2, containerPosition.Y + descriptionHeight + 46), Color.Orange, 0f, damageSize, baseTextSize * 1.25f);
-                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Damage", new Vector2(containerPosition.X + width - (damageSize.X * 1.5f) - setBonusTitleLength.X + 6, containerPosition.Y + descriptionHeight + 40), Color.Gray, 0f, damageSize, baseTextSize * 0.8f);
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "50%", new Vector2(containerPosition.X + containerOffset - damageSize.X / 2, containerPosition.Y + descriptionHeight + 46), Color.Orange, 0f, damageSize, baseTextSize * 1.25f);
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Damage", new Vector2(containerPosition.X + containerOffset - (damageSize.X * 1.5f) - setBonusTitleLength.X + 6, containerPosition.Y + descriptionHeight + 40), Color.Gray, 0f, damageSize, baseTextSize * 0.8f);
                         #endregion
 
-                        if (width > keywordOffset) keywordOffset = width;
+                        if (containerOffset > keywordOffset) keywordOffset = containerOffset;
                     }
+                
+                    if (tooltipObject is BuffTooltip buffTooltip)
+                    {
+                        int dividerOffset = 48;
+                        int bottomOffset = 20;
+
+                        Vector2 baseTextSize = new Vector2(1f);
+                        Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, buffTooltip.BuffTitle, new Vector2(1.25f));
+                        Vector2 damageSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, "50%", new Vector2(1.25f));
+
+                        // Offset the title and subtitles for the icon
+                        Vector2 titleOffset = new Vector2(90, 14);
+                        Vector2 subtitleOffset = new Vector2(24, 18);
+                        Vector2 setBonusTitleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, "50%", baseTextSize);
+
+                        //width = titleSize.X + titleOffset.X + 70; // set the width equal the height plus the offset
+
+                        TextSnippet[] snippets = ChatManager.ParseMessage(buffTooltip.BuffDescription, Color.White).ToArray();
+                        int maxSnippetLength = (int)ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets[0].Text, Vector2.One * 0.95f, MAXIMUM_LENGTH).X;
+                        /*if (maxSnippetLength > width) // update the width if the description is longer than the height                   
+                            width = maxSnippetLength + 70;*/
+
+                        height += titleSize.Y * 2 + bottomOffset; // this is the title/subtitle
+                        float titleHeight = height;
+                        float unoffsetColoredText = 28 * GetColoredTextCount(buffTooltip.BuffDescription) + (26.6f * GetLineBreakCount(buffTooltip.BuffDescription));
+
+                        float heightBefore = height;
+                        foreach (TextSnippet snippet in snippets)
+                        {
+                            height += ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text, Vector2.One * 0.95f).Y;
+                        }
+
+                        height -= unoffsetColoredText;
+
+                        height += 8; // this is the set bonus name/counter
+                        float descriptionHeight = height + 10;
+
+                        height += setBonusTitleLength.Y * 3;
+                        height -= 15; // removes extra padding at the bottom, this might be unnecessary?
+
+                        float yOverflow = 0;
+                        if (y + height > Main.screenHeight) // y-Overflow check
+                            yOverflow = y + height - Main.screenHeight;
+
+                        if (Main.MouseScreen.X > Main.screenWidth / 2)
+                            containerPosition = new Vector2(x, y + offset) - new Vector2(containerOffset + 10, 0);
+
+                        containerPosition -= new Vector2(0, yOverflow);
+
+                        Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)containerWidth, (int)height), color * 0.925f);
+
+                        #region Title
+                        Texture2D texture = buffTooltip.ObjectIcon;
+                        Main.spriteBatch.Draw(texture, containerPosition + texture.Size() / 2f, null, primaryColor, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, buffTooltip.BuffTitle, containerPosition + titleSize + titleOffset, new Color(255, 85, 85), 0f, titleSize, new Vector2(1.25f));
+                        #endregion
+
+                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)containerPosition.Y + dividerOffset, (int)dividerWidth, 2), Color.Black * 0.25f);
+
+                        #region Description
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, buffTooltip.Type.ToString(), new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight), subtitleColor, 0f, titleSize, baseTextSize);
+
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
+                        #endregion
+
+                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight), (int)dividerWidth, 2), Color.Black * 0.25f);
+
+                        #region Values
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "5 seconds", new Vector2(containerPosition.X + containerWidth - damageSize.X - 30, containerPosition.Y + descriptionHeight + 46), Color.Orange, 0f, damageSize, baseTextSize * 1.25f);
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Time", new Vector2(containerPosition.X + containerWidth - damageSize.X - 85, containerPosition.Y + descriptionHeight + 40), Color.Gray, 0f, damageSize, baseTextSize * 0.8f);
+                        #endregion
+
+                        if (containerOffset > keywordOffset) keywordOffset = containerOffset;
+                    }
+
+                    offset += height + 5;
                 }
             }
 
@@ -436,8 +530,7 @@ namespace OvermorrowMod.Common
                         yOverflow = y + height - Main.screenHeight;
 
                     if (Main.MouseScreen.X > Main.screenWidth / 2)
-                        containerPosition = new Vector2(x, y + offset) - new Vector2(keywordWidth + 60 + keywordOffset, 0);
-
+                        containerPosition = new Vector2(x, y + offset) - new Vector2(keywordWidth + 58 + keywordOffset, 0);
 
                     containerPosition -= new Vector2(0, yOverflow);
 
@@ -463,8 +556,8 @@ namespace OvermorrowMod.Common
             #region Gun Replacements
             if (item.type == ItemID.PhoenixBlaster)
             {
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Release a burst of flame, inflicting [Phoenix Mark]"));
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "<Fail>: Damage yourself, inflicting [On Fire!]"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Release a burst of flame, inflicting [c/ff5555:[Phoenix Mark][c/ff5555:]]"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "<Fail>: Damage yourself, inflicting [c/ff5555:[On Fire!][c/ff5555:]]"));
             }
 
             if (item.type == ItemID.Musket)
