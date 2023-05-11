@@ -221,6 +221,8 @@ namespace OvermorrowMod.Common
                 }
             }
 
+                                float CONTAINER_WIDTH = 350;
+
             string widest = lines.OrderBy(n => ChatManager.GetStringSize(FontAssets.MouseText.Value, n.Text, Vector2.One).X).Last().Text;
             if (orderedTooltips.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
             {
@@ -229,7 +231,6 @@ namespace OvermorrowMod.Common
                 foreach (TooltipObject tooltipObject in TooltipObjects)
                 {
                     float MAXIMUM_LENGTH = 330;
-                    float CONTAINER_WIDTH = 350;
                     int BOTTOM_OFFSET = 20;
                     int DIVIDER_OFFSET = 48;
 
@@ -406,20 +407,21 @@ namespace OvermorrowMod.Common
                         Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight - yOverflow), (int)dividerWidth, 2), Color.Black * 0.25f);    
                     }
 
-                    if (containerOffset > keywordOffset) keywordOffset = containerOffset;
+                    //if (containerOffset > keywordOffset) keywordOffset = containerOffset;
                     yOffset += height + 5;
                 }
             }
 
-
             if (KeyWords.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
             {
                 float offset = 0;
-                int bottomPadding = 14;
+                int BOTTOM_PADDING = 14;
+                int CONTAINER_OFFSET = 35;
 
                 foreach (string keyWord in KeyWords)
                 {
-                    Vector2 containerPosition = new Vector2(x, y + offset) + new Vector2(ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X + 38 + keywordOffset, 0);
+                    //Vector2 containerPosition = new Vector2(x, y + offset) + new Vector2(ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X, 0);
+                    Vector2 containerPosition = new Vector2(x + CONTAINER_WIDTH + CONTAINER_OFFSET + ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X, y + offset);
 
                     Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyWord, new Vector2(1f));
                     float height = titleSize.Y + 4;
@@ -443,16 +445,17 @@ namespace OvermorrowMod.Common
                         containerPosition -= new Vector2(0, yOverflow);
                     }
 
+                    int RIGHT_OFFSET = 75;
                     if (Main.MouseScreen.X > Main.screenWidth / 2)
-                        containerPosition = new Vector2(x, y + offset) - new Vector2(KEYWORD_WIDTH + 58 + keywordOffset, 0);
+                        containerPosition = new Vector2(x + RIGHT_OFFSET - CONTAINER_WIDTH - ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X, y + offset);
 
                     Color color = new Color(28, 31, 77);
-                    Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)KEYWORD_WIDTH + 40, (int)height + bottomPadding), color * 0.925f);
+                    Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)KEYWORD_WIDTH + 40, (int)height + BOTTOM_PADDING), color * 0.925f);
 
                     ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, keyWord, containerPosition + new Vector2(titleSize.X, 24), new Color(255, 121, 198), 0f, titleSize, new Vector2(1f));
                     ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight - 8), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
 
-                    offset += height + 5 + bottomPadding;
+                    offset += height + 5 + BOTTOM_PADDING;
                 }
 
                 //Main.NewText(string.Join(",", KeyWords));
