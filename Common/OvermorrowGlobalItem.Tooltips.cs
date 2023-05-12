@@ -21,20 +21,6 @@ using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Common
 {
-    public struct ArmorSet
-    {
-        public readonly int Head;
-        public readonly int Body;
-        public readonly int Legs;
-
-        public ArmorSet(int Head, int Body, int Legs)
-        {
-            this.Head = Head;
-            this.Body = Body;
-            this.Legs = Legs;
-        }
-    }
-
     public class TooltipObject
     {
         public int Priority { get; protected set; }
@@ -46,9 +32,9 @@ namespace OvermorrowMod.Common
     public class SetBonusTooltip : TooltipObject
     {
         public readonly string SetName;
-        public readonly ArmorSet Set;
+        public readonly List<int> SetItems;
 
-        public SetBonusTooltip(Texture2D SetIcon, string SetTitle, string SetName, string SetDescription, ArmorSet Set)
+        public SetBonusTooltip(Texture2D SetIcon, string SetTitle, string SetName, string SetDescription, List<int> SetItems)
         {
             this.Priority = 1;
 
@@ -56,7 +42,7 @@ namespace OvermorrowMod.Common
             this.Title = SetTitle;
             this.Description = SetDescription;
             this.SetName = SetName;
-            this.Set = Set;
+            this.SetItems = SetItems;
         }
     }
 
@@ -118,7 +104,13 @@ namespace OvermorrowMod.Common
                     "Wooden Warrior",
                     "Wood Armor",
                     " + Increased defense by [c/58D68D:1]\n + Increased damage by [c/58D68D:5]\n + [c/58D68D:5%] chance to instantly kill all enemies",
-                    new ArmorSet(ItemID.WoodHelmet, ItemID.WoodBreastplate, ItemID.WoodGreaves)));
+                    new List<int>()
+                    {
+                        ItemID.WoodHelmet,
+                        ItemID.WoodBreastplate,
+                        ItemID.WoodGreaves
+                    }));
+                //new ArmorSet(ItemID.WoodHelmet, ItemID.WoodBreastplate, ItemID.WoodGreaves)));
             }
 
             if (item.type == ItemID.CowboyHat || item.type == ItemID.CowboyJacket || item.type == ItemID.CowboyPants)
@@ -127,7 +119,13 @@ namespace OvermorrowMod.Common
                     "Wild West Deadeye",
                     "Cowboy Armor",
                     " + Critical hits with [c/FAD5A5:Revolvers] rebound to the nearest enemy",
-                    new ArmorSet(ItemID.CowboyHat, ItemID.CowboyJacket, ItemID.CowboyPants)));
+                    new List<int>()
+                    {
+                        ItemID.CowboyHat,
+                        ItemID.CowboyJacket,
+                        ItemID.CowboyPants
+                    }));
+                //new ArmorSet(ItemID.CowboyHat, ItemID.CowboyJacket, ItemID.CowboyPants)));
             }
 
             if (item.type == ModContent.ItemType<CapturedMirage>())
@@ -191,6 +189,16 @@ namespace OvermorrowMod.Common
             return "";
         }
 
+        private bool CheckEquippedItem(int id)
+        {
+            // Check armor slots (0 - 2) and accessory slots (3 - 7)
+            for (int i = 0; i < 8; i++)
+            {
+                if (Main.LocalPlayer.armor[i].type == id) return true;
+            }
+
+            return false;
+        }
 
         // From https://stackoverflow.com/a/12108823
         private string[] GetKeywords(string text)
@@ -221,7 +229,7 @@ namespace OvermorrowMod.Common
                 }
             }
 
-                                float CONTAINER_WIDTH = 350;
+            float CONTAINER_WIDTH = 350;
 
             string widest = lines.OrderBy(n => ChatManager.GetStringSize(FontAssets.MouseText.Value, n.Text, Vector2.One).X).Last().Text;
             if (orderedTooltips.Count > 0 && Main.keyState.IsKeyDown(Keys.LeftShift))
@@ -269,7 +277,7 @@ namespace OvermorrowMod.Common
                         float descriptionHeight = height;
 
                         height += setBonusTitleLength.Y * 3;
-                        height += 50; // final bottom padding
+                        height += setBonus.SetItems.Count * 20;
 
                         if (y + height > Main.screenHeight) // y-Overflow check
                         {
@@ -279,6 +287,8 @@ namespace OvermorrowMod.Common
 
                         if (Main.MouseScreen.X > Main.screenWidth / 2)
                             containerPosition = new Vector2(x, y) - new Vector2(containerOffset + 10, 0);
+
+                        
 
                         Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)CONTAINER_WIDTH, (int)height), color * 0.925f);
 
@@ -300,33 +310,28 @@ namespace OvermorrowMod.Common
 
                         #region Set
                         int setCount = 0;
+                        int maxSetCount = setBonus.SetItems.Count;
 
-                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, setBonus.SetName, new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + descriptionHeight + 36), Color.Orange, 0f, titleSize, baseTextSize);
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, setBonus.SetName, new Vector2(containerPosition.X, containerPosition.Y + descriptionHeight + 8), Color.Orange, 0f, Vector2.Zero, baseTextSize);
 
-                        Item headItem = new Item();
-                        headItem.SetDefaults(setBonus.Set.Head);
-                        Color headColor = Main.LocalPlayer.armor[0].type == headItem.type ? new Color(255, 255, 143) : Color.Gray;
-                        if (Main.LocalPlayer.armor[0].type == headItem.type) setCount++;
+                        int itemOffsetCount = 1;
+                        foreach (int itemID in setBonus.SetItems)
+                        {
+                            Item setItem = new Item();
+                            setItem.SetDefaults(itemID);
+                            Color drawColor = Color.Gray;
+                            if (CheckEquippedItem(itemID))
+                            {
+                                drawColor = new Color(255, 255, 143);
+                                setCount++;
+                            }
 
-                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, " > " + headItem.Name, new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + descriptionHeight + setBonusTitleLength.Y + 36), headColor, 0f, titleSize, baseTextSize);
+                            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, " > " + setItem.Name, new Vector2(containerPosition.X, containerPosition.Y + descriptionHeight + (setBonusTitleLength.Y * itemOffsetCount) + 8), drawColor, 0f, Vector2.Zero, baseTextSize);
+                            itemOffsetCount++;
+                        }
 
-                        Item bodyItem = new Item();
-                        bodyItem.SetDefaults(setBonus.Set.Body);
-                        Color bodyColor = Main.LocalPlayer.armor[1].type == bodyItem.type ? new Color(255, 255, 143) : Color.Gray;
-                        if (Main.LocalPlayer.armor[1].type == bodyItem.type) setCount++;
-
-                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, " > " + bodyItem.Name, new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + descriptionHeight + (setBonusTitleLength.Y * 2) + 36), bodyColor, 0f, titleSize, baseTextSize);
-
-                        Item legItem = new Item();
-                        legItem.SetDefaults(setBonus.Set.Legs);
-                        Color legColor = Main.LocalPlayer.armor[2].type == legItem.type ? new Color(255, 255, 143) : Color.Gray;
-                        if (Main.LocalPlayer.armor[2].type == legItem.type) setCount++;
-
-                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, " > " + legItem.Name, new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + descriptionHeight + (setBonusTitleLength.Y * 3) + 36), legColor, 0f, titleSize, baseTextSize);
-
-                        // The set counter
-                        Color setCountColor = setCount == 3 ? Color.Orange : Color.Gray;
-                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "(" + setCount + "/3)", new Vector2(containerPosition.X + titleSize.X + setBonusTitleLength.X, containerPosition.Y + descriptionHeight + 36), setCountColor, 0f, titleSize, baseTextSize);
+                        Color setCountColor = setCount == maxSetCount ? Color.Orange : Color.Gray;
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "(" + setCount + "/" + maxSetCount + ")", new Vector2(containerPosition.X + setBonusTitleLength.X, containerPosition.Y + descriptionHeight + 8), setCountColor, 0f, Vector2.Zero, baseTextSize);
                         #endregion
                     }
 
@@ -360,7 +365,7 @@ namespace OvermorrowMod.Common
 
                             Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)(containerPosition.Y - yOverflow - 10), (int)CONTAINER_WIDTH, (int)height), color * 0.925f);
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, projectileTooltip.Type.ToString(), new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight - yOverflow), subtitleColor, 0f, titleSize, baseTextSize);
-                            
+
                             #region Values
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, damageText, new Vector2(containerPosition.X + CONTAINER_WIDTH - damageSize.X - 30, containerPosition.Y + descriptionHeight - yOverflow + 12), Color.Orange, 0f, Vector2.Zero, baseTextSize * 1.25f);
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Damage", new Vector2(containerPosition.X + CONTAINER_WIDTH - damageType.X - damageSize.X - 35, containerPosition.Y + descriptionHeight - yOverflow + 18), Color.Gray, 0f, Vector2.Zero, baseTextSize * 0.8f);
@@ -384,7 +389,7 @@ namespace OvermorrowMod.Common
 
                             Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)(containerPosition.Y - yOverflow - 10), (int)CONTAINER_WIDTH, (int)height), color * 0.925f);
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, buffTooltip.Type.ToString(), new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight - yOverflow), subtitleColor, 0f, titleSize, baseTextSize);
-                            
+
                             #region Values
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, damageText, new Vector2(containerPosition.X + CONTAINER_WIDTH - damageSize.X - 30, containerPosition.Y + descriptionHeight - yOverflow + 12), Color.Orange, 0f, Vector2.Zero, baseTextSize * 1.25f);
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, "Time", new Vector2(containerPosition.X + CONTAINER_WIDTH - damageType.X - damageSize.X - 35, containerPosition.Y + descriptionHeight - yOverflow + 18), Color.Gray, 0f, Vector2.Zero, baseTextSize * 0.8f);
@@ -404,7 +409,7 @@ namespace OvermorrowMod.Common
                         ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, snippets, new Vector2(containerPosition.X, containerPosition.Y + titleHeight - yOverflow), 0f, Color.White, Vector2.Zero, Vector2.One * 0.95f, out _, MAXIMUM_LENGTH);
                         #endregion
 
-                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight - yOverflow), (int)dividerWidth, 2), Color.Black * 0.25f);    
+                        Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight - yOverflow), (int)dividerWidth, 2), Color.Black * 0.25f);
                     }
 
                     //if (containerOffset > keywordOffset) keywordOffset = containerOffset;
