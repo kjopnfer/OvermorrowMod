@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using OvermorrowMod.Common.Cutscenes;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Core;
+using Terraria.Graphics.Effects;
 using ReLogic.Content;
 using Terraria.GameContent;
 
@@ -85,6 +86,19 @@ namespace OvermorrowMod.Common.Players
         public bool smolBoi;
         public bool iorichGuardianShield;
 
+        //UV Biome
+        public List<UVBubble> UVBubbles = new List<UVBubble>();
+        public class UVBubble
+        {
+            public Vector2 Position;
+            public float Radius;
+            public UVBubble(Vector2 position, float radius)
+            {
+                Position = position;
+                Radius = radius;
+            }
+        }
+
         // Misc
         public int IorichGuardianEnergy = 0;
         public int PlatformTimer = 0;
@@ -120,6 +134,8 @@ namespace OvermorrowMod.Common.Players
             MouseLampPlay = false;
 
             minionCounts = 0;
+
+            UVBubbles.Clear();
         }
 
         public override void ModifyStartingInventory(IReadOnlyDictionary<string, List<Item>> itemsByMod, bool mediumCoreDeath)
@@ -133,6 +149,18 @@ namespace OvermorrowMod.Common.Players
         // Example of how to replace cursor texture to remember for later
         public override void PostUpdateMiscEffects()
         {
+            for (int i = 0; i < 6; i++)
+            {
+                if (MathHelper.Clamp(UVBubbles.Count- 1, 0, 5) < i || UVBubbles.Count == 0)
+                {
+                    if (Main.netMode != NetmodeID.Server && Filters.Scene[$"UVShader{i}"].IsActive())
+                    {
+                        Filters.Scene[$"UVShader{i}"].GetShader().UseColor(0f, 0f, 0f).UseTargetPosition(Vector2.Zero);
+                        Filters.Scene[$"UVShader{i}"].Deactivate();
+                    }
+                }
+            }
+
             /*if (Main.netMode != NetmodeID.Server && Player.whoAmI == Main.myPlayer)
             {
                 Asset<Texture2D> emptyTex = ModContent.Request<Texture2D>(AssetDirectory.Empty);
