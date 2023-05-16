@@ -151,6 +151,8 @@ namespace OvermorrowMod.Common.Players
         {
             for (int i = 0; i < 6; i++)
             {
+
+                // activate shadre
                 if (MathHelper.Clamp(UVBubbles.Count- 1, 0, 5) < i || UVBubbles.Count == 0)
                 {
                     if (Main.netMode != NetmodeID.Server && Filters.Scene[$"UVShader{i}"].IsActive())

@@ -159,7 +159,7 @@ namespace OvermorrowMod.Common
 
                 // RadianShadoo shadres :dread:
                 Ref<Effect> specialRef = new Ref<Effect>(Assets.Request<Effect>("Effects/UVBG").Value);
-                GameShaders.Misc["UVBG"] = new MiscShaderData(specialRef, "UVBG").UseImage0("Effects/Test");
+                GameShaders.Misc["UVBG"] = new MiscShaderData(specialRef, "UVBG");//.UseImage0("OvermorrowMod/Effects/IMAGE");
 
                 Ref<Effect> screenRef = new Ref<Effect>(Assets.Request<Effect>("Effects/UVShader").Value); // The path to the compiled shader file.
                 Filters.Scene["UVShader0"] = new Filter(new ScreenShaderData(screenRef, "UVShader"), EffectPriority.VeryHigh);

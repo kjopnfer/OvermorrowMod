@@ -25,7 +25,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Item.height = 34;
             Item.damage = 35; //35
             Item.knockBack = 0.5f;
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 12;
             Item.useAnimation = 12;
