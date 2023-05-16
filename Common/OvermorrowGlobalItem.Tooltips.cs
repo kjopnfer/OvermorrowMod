@@ -209,6 +209,7 @@ namespace OvermorrowMod.Common
             return filtered.Split(';');
         }
 
+
         HashSet<string> KeyWords = new HashSet<string>();
         public override bool PreDrawTooltip(Item item, ReadOnlyCollection<TooltipLine> lines, ref int x, ref int y)
         {
@@ -286,9 +287,7 @@ namespace OvermorrowMod.Common
                         }
 
                         if (Main.MouseScreen.X > Main.screenWidth / 2)
-                            containerPosition = new Vector2(x, y) - new Vector2(containerOffset + 10, 0);
-
-                        
+                            containerPosition = new Vector2(x, y) - new Vector2(containerOffset, 0);
 
                         Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)CONTAINER_WIDTH, (int)height), color * 0.925f);
 
@@ -469,19 +468,53 @@ namespace OvermorrowMod.Common
             return base.PreDrawTooltip(item, lines, ref x, ref y);
         }
 
+        /// <summary>
+        /// Searches for all buffs. If isBuff is set to false, searches for debuffs instead.
+        /// </summary>
+        /// <returns>An array of all buffs/debuffs found within the string.</returns>
+        private string[] GetBuff(string text, bool isBuff = true)
+        {
+            string pattern = isBuff ? @"\<Buff:(.+?)\>" : @"\<Debuff:(.+?)\>";
+            string filtered = string.Join(";", Regex.Matches(text, pattern)
+                                    .Cast<Match>()
+                                    .Select(m => m.Groups[1].Value));
+            return filtered.Split(';');
+        }
+
+        private string ConvertBuffWords(string text)
+        {
+            string convertedText = text;
+
+            string pattern = @"(<Debuff:.*>)";
+            string filtered = string.Join(";", Regex.Matches(text, pattern)
+                                               .Cast<Match>()
+                                               .Select(m => m.Groups[1].Value));
+
+            MatchCollection matches = Regex.Matches(text, pattern);
+            foreach (Match match in matches)
+            {
+                string newValue = match.Value.Replace("<Debuff:", "[c/ff5555:[");
+                newValue = newValue.Replace(">", "][c/ff5555:]]");
+
+                convertedText = convertedText.Replace(match.Value, newValue);
+            }
+
+            return convertedText;
+        }
+
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
             // Probably a better way to do this?
             #region Gun Replacements
             if (item.type == ItemID.PhoenixBlaster)
             {
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Release a burst of flame, inflicting [c/ff5555:[Phoenix Mark][c/ff5555:]]"));
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "<Fail>: Damage yourself, inflicting [c/ff5555:[On Fire!][c/ff5555:]]"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Release a burst of flame, inflicting <Debuff:Phoenix Mark>"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "<Fail>: Damage yourself, inflicting <Debuff:On Fire!>"));
             }
 
             if (item.type == ItemID.Musket)
             {
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Increase accuracy for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Musket0", "<Reload>: Increase accuracy for each block clicked"));
             }
 
             if (item.type == ItemID.Boomstick)
@@ -521,14 +554,19 @@ namespace OvermorrowMod.Common
             foreach (TooltipLine tooltip in tooltips)
             {
                 string newText = tooltip.Text;
+                //Main.NewText(tooltip.Text);
+                newText = ConvertBuffWords(newText);
+
 
                 foreach (string keyword in KeyWords)
                 {
+                    //Main.NewText(newText, Color.Orange);
                     if (newText.Contains($"<{keyword}>"))
                     {
                         newText = newText.Replace($"<{keyword}>", $"[c/ff79c6:{keyword}]");
                     }
                 }
+
 
                 tooltip.Text = newText;
             }
