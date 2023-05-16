@@ -274,14 +274,14 @@ namespace OvermorrowMod.Common
                         height += setBonusTitleLength.Y * 3;
                         height += setBonus.SetItems.Count * 20;
 
+                        if (Main.MouseScreen.X > Main.screenWidth / 2)
+                            containerPosition = new Vector2(x, y) - new Vector2(360, 0);
+
                         if (y + height > Main.screenHeight) // y-Overflow check
                         {
                             float yOverflow = y + height - Main.screenHeight;
                             containerPosition -= new Vector2(0, yOverflow);
                         }
-
-                        if (Main.MouseScreen.X > Main.screenWidth / 2)
-                            containerPosition = new Vector2(x, y) - new Vector2(containerOffset, 0);
 
                         Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)containerPosition.Y - 10, (int)CONTAINER_WIDTH, (int)height), color * 0.925f);
 
@@ -393,7 +393,7 @@ namespace OvermorrowMod.Common
                         Texture2D texture = tooltipObject.ObjectIcon;
                         Main.spriteBatch.Draw(texture, containerPosition + texture.Size() / 2f - new Vector2(0, yOverflow), null, primaryColor, 0f, texture.Size() / 2f, 1f, SpriteEffects.None, 0f);
 
-                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, tooltipObject.Title, containerPosition + titleSize + titleOffset - new Vector2(0, yOverflow), titleColor, 0f, titleSize, new Vector2(1.25f));
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, tooltipObject.Title, containerPosition + new Vector2(texture.Width + 12, 8) - new Vector2(0, yOverflow), titleColor, 0f, Vector2.Zero, new Vector2(1.25f));
                         #endregion
 
                         Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + DIVIDER_OFFSET - yOverflow), (int)dividerWidth, 2), Color.Black * 0.25f);
