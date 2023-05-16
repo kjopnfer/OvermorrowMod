@@ -110,7 +110,6 @@ namespace OvermorrowMod.Common
                         ItemID.WoodBreastplate,
                         ItemID.WoodGreaves
                     }));
-                //new ArmorSet(ItemID.WoodHelmet, ItemID.WoodBreastplate, ItemID.WoodGreaves)));
             }
 
             if (item.type == ItemID.CowboyHat || item.type == ItemID.CowboyJacket || item.type == ItemID.CowboyPants)
@@ -125,7 +124,6 @@ namespace OvermorrowMod.Common
                         ItemID.CowboyJacket,
                         ItemID.CowboyPants
                     }));
-                //new ArmorSet(ItemID.CowboyHat, ItemID.CowboyJacket, ItemID.CowboyPants)));
             }
 
             if (item.type == ModContent.ItemType<CapturedMirage>())
@@ -213,10 +211,6 @@ namespace OvermorrowMod.Common
         HashSet<string> KeyWords = new HashSet<string>();
         public override bool PreDrawTooltip(Item item, ReadOnlyCollection<TooltipLine> lines, ref int x, ref int y)
         {
-            // Draw set bonuses, projectiles, and buffs first
-            // Afterwards draw any keywords on the left or right side of those tooltips
-            float keywordOffset = 0;
-
             // Sort the tooltips based on priority
             var orderedTooltips = TooltipObjects.OrderBy(x => x.Priority).ToList();
 
@@ -481,6 +475,7 @@ namespace OvermorrowMod.Common
             return filtered.Split(';');
         }
 
+        // TODO: Add a thing for buffs later
         private string ConvertBuffWords(string text)
         {
             string convertedText = text;
@@ -554,19 +549,15 @@ namespace OvermorrowMod.Common
             foreach (TooltipLine tooltip in tooltips)
             {
                 string newText = tooltip.Text;
-                //Main.NewText(tooltip.Text);
                 newText = ConvertBuffWords(newText);
-
 
                 foreach (string keyword in KeyWords)
                 {
-                    //Main.NewText(newText, Color.Orange);
                     if (newText.Contains($"<{keyword}>"))
                     {
                         newText = newText.Replace($"<{keyword}>", $"[c/ff79c6:{keyword}]");
                     }
                 }
-
 
                 tooltip.Text = newText;
             }
