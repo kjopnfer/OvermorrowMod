@@ -416,6 +416,8 @@ namespace OvermorrowMod.Common
                 int BOTTOM_PADDING = 14;
                 int CONTAINER_OFFSET = 35;
 
+                if (orderedTooltips.Count == 0) CONTAINER_WIDTH = 0;
+
                 foreach (string keyWord in KeyWords)
                 {
                     //Vector2 containerPosition = new Vector2(x, y + offset) + new Vector2(ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X, 0);
