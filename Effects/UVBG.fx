@@ -1,3 +1,5 @@
+float4 uShaderSpecificData;
+
 sampler uImage0 : register(s0);
 sampler uImage1 : register(s1);
 float3 uColor;

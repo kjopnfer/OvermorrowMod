@@ -28,13 +28,18 @@ namespace OvermorrowMod.Content.Tiles.UVBiome
             NPC.dontTakeDamageFromHostiles = true;
             NPC.npcSlots = 0f;
         }
+        public override void SetStaticDefaults()
+        {
+            base.SetStaticDefaults();
+        }
         public override Color? GetAlpha(Color drawColor)
         {
             return Color.Transparent;
         }
         float ShaderAlpha = 0.5f;
         float ShaderRadius = 60f;
-        float PerlinTimer = 150f;
+        public static float PerlinTimer = 150;
+        float PerlinDir = 0.1f;
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Main.spriteBatch.End();
@@ -73,6 +78,16 @@ namespace OvermorrowMod.Content.Tiles.UVBiome
             NPC.Center = Main.MouseWorld;
             NPC.hide = true;
             NPC.behindTiles = false;
+
+            if (Main.LocalPlayer.GetModPlayer<OvermorrowModPlayer>().UVBubbles.Count <= 0)
+                PerlinTimer = 150;
+            else
+                PerlinTimer += PerlinDir;
+
+            if (Math.Abs((int)PerlinTimer) == 200 || Math.Abs((int)PerlinTimer) == 100)
+                PerlinDir *= -1;
+            if (PerlinTimer == 0)
+                PerlinTimer += PerlinDir;
         }
 
         public override void DrawBehind(int index)
