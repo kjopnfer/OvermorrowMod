@@ -93,7 +93,7 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
 
         public override void Kill(int timeLeft)
         {
-            if (trappedNPC.active)
+            if (trappedNPC != null && trappedNPC.active)
             {
                 trappedNPC.GetGlobalNPC<OvermorrowGlobalNPC>().BearTrapped = false;
             }

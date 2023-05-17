@@ -166,6 +166,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Wild Eye");
+            Tooltip.SetDefault("<Fail>: Your next clip has 1 less bullet\n" +
+                "<Alt>: Consume 5 bullets to gain 100% critical strike chance for this gun\n" +
+                "Your <Alt> can only be activated with 6 or more bullets\n" +
+                "'It only takes one bullet'");
         }
 
         public override void SafeSetDefaults()

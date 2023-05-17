@@ -31,7 +31,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            target.AddBuff(BuffID.OnFire, 180);
+            target.AddBuff(BuffID.OnFire, 240);
         }
 
         public override void OnHitPlayer(Player target, int damage, bool crit)
@@ -71,7 +71,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public ref float AICounter => ref Projectile.ai[0];
         public override void AI()
         {
-            if(AICounter < 20f) AICounter++;
+            if (AICounter < 20f) AICounter++;
         }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)

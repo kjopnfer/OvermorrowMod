@@ -190,7 +190,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Bow
         }
 
         /// <summary>
-        /// Allows for any additional bonuses and effects to happen when a power shot is executed
+        /// Allows for any additional bonuses and effects to happen when a focus shot is executed
         /// </summary>
         public virtual void OnPowerShot() { }
 

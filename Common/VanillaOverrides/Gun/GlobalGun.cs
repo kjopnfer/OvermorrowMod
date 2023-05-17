@@ -49,7 +49,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
                 case GunType.MachineGun:
                     return "Machine Gun";
                 case GunType.SubMachineGun:
-                    return "Sub-machine Gun";
+                    return "Submachine Gun";
                 default:
                     return weaponType.ToString();
             }
@@ -60,6 +60,8 @@ namespace OvermorrowMod.Common.VanillaOverrides.Gun
             int index = tooltips.FindIndex(tip => tip.Name.StartsWith("ItemName"));
             if (WeaponType.ToString() != "None")
                 tooltips.Insert(index + 1, new TooltipLine(Mod, "ItemType", "[c/FAD5A5:" + ConvertWeaponTypeString(WeaponType) + " Type]"));
+
+            
 
             base.ModifyTooltips(item, tooltips);
         }
