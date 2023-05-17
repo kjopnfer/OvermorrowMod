@@ -96,6 +96,8 @@ namespace OvermorrowMod.Common
     public partial class OvermorrowGlobalItem : GlobalItem
     {
         public List<TooltipObject> TooltipObjects = new List<TooltipObject>();
+
+        // TODO: Generalize these somehow. Interface for modded and XML for buffs/debuffs?
         public override void SetDefaults(Item item)
         {
             if (item.type == ItemID.WoodHelmet || item.type == ItemID.WoodBreastplate || item.type == ItemID.WoodGreaves)
@@ -405,7 +407,6 @@ namespace OvermorrowMod.Common
                         Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)containerPosition.X, (int)(containerPosition.Y + descriptionHeight - yOverflow), (int)dividerWidth, 2), Color.Black * 0.25f);
                     }
 
-                    //if (containerOffset > keywordOffset) keywordOffset = containerOffset;
                     yOffset += height + 5;
                 }
             }
@@ -420,7 +421,6 @@ namespace OvermorrowMod.Common
 
                 foreach (string keyWord in KeyWords)
                 {
-                    //Vector2 containerPosition = new Vector2(x, y + offset) + new Vector2(ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X, 0);
                     Vector2 containerPosition = new Vector2(x + CONTAINER_WIDTH + CONTAINER_OFFSET + ChatManager.GetStringSize(FontAssets.MouseText.Value, widest, Vector2.One).X, y + offset);
 
                     Vector2 titleSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, keyWord, new Vector2(1f));
@@ -436,10 +436,9 @@ namespace OvermorrowMod.Common
                     {
                         Vector2 textSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, snippet.Text, new Vector2(0.95f), MAXIMUM_LENGTH);
                         height += textSize.Y;
-                        //if (textSize.X > keywordWidth) keywordWidth = textSize.X;
                     }
 
-                    if (y + height > Main.screenHeight)// y-Overflow check
+                    if (y + height > Main.screenHeight) // y-Overflow check
                     {
                         float yOverflow = y + height - Main.screenHeight;
                         containerPosition -= new Vector2(0, yOverflow);
@@ -457,8 +456,6 @@ namespace OvermorrowMod.Common
 
                     offset += height + 5 + BOTTOM_PADDING;
                 }
-
-                //Main.NewText(string.Join(",", KeyWords));
             }
 
             return base.PreDrawTooltip(item, lines, ref x, ref y);
@@ -501,7 +498,7 @@ namespace OvermorrowMod.Common
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            // Probably a better way to do this?
+            // TODO: Probably a better way to do this?
             #region Gun Replacements
             if (item.type == ItemID.PhoenixBlaster)
             {
