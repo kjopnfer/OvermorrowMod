@@ -474,23 +474,34 @@ namespace OvermorrowMod.Common
             return filtered.Split(';');
         }
 
-        // TODO: Add a thing for buffs later
-        private string ConvertBuffWords(string text)
+        private string ParseTooltipObjects(string text)
         {
-            string convertedText = text;
-
-            string pattern = @"(<Debuff:.*>)";
-            string filtered = string.Join(";", Regex.Matches(text, pattern)
-                                               .Cast<Match>()
-                                               .Select(m => m.Groups[1].Value));
-
-            MatchCollection matches = Regex.Matches(text, pattern);
-            foreach (Match match in matches)
+            Dictionary<string, string> ObjectWords = new Dictionary<string, string>()
             {
-                string newValue = match.Value.Replace("<Debuff:", "[c/ff5555:[");
-                newValue = newValue.Replace(">", "][c/ff5555:]]");
+                { "Buff", "50fa7b" },
+                { "Debuff", "ff5555" },
+                { "Projectile", "8be9fd" },
+            };
 
-                convertedText = convertedText.Replace(match.Value, newValue);
+            string convertedText = text;
+            foreach (KeyValuePair<string, string> objectWord in ObjectWords)
+            {
+                string type = objectWord.Key;
+                string hex = objectWord.Value;
+
+                string pattern = $@"(<{type}:.*>)";
+                /*string filtered = string.Join(";", Regex.Matches(text, pattern)
+                                                   .Cast<Match>()
+                                                   .Select(m => m.Groups[1].Value));*/
+
+                MatchCollection matches = Regex.Matches(text, pattern);
+                foreach (Match match in matches)
+                {
+                    string newValue = match.Value.Replace($"<{type}:", $"[c/{hex}:[");
+                    newValue = newValue.Replace(">", $"][c/{hex}:]]");
+
+                    convertedText = convertedText.Replace(match.Value, newValue);
+                }
             }
 
             return convertedText;
@@ -548,7 +559,7 @@ namespace OvermorrowMod.Common
             foreach (TooltipLine tooltip in tooltips)
             {
                 string newText = tooltip.Text;
-                newText = ConvertBuffWords(newText);
+                newText = ParseTooltipObjects(newText);
 
                 foreach (string keyword in KeyWords)
                 {
