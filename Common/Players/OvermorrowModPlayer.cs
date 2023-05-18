@@ -133,6 +133,8 @@ namespace OvermorrowMod.Common.Players
             // windBuff = false;
             MouseLampPlay = false;
 
+            DashShadow = false;
+
             minionCounts = 0;
 
             UVBubbles.Clear();
@@ -356,13 +358,19 @@ namespace OvermorrowMod.Common.Players
                 DashMovement();
             }
         }
-
+        public bool DashShadow = false;
         public override void PostUpdateEquips()
         {
             if (Player.mount.Active || Player.mount.Cart)
             {
                 Player.dashDelay = 10;
                 DashType = 0;
+            }
+
+            if (DashShadow)
+            {
+                Player.eocDash = 50;
+                Player.armorEffectDrawShadowEOCShield = true;
             }
 
             // Armor Sets
