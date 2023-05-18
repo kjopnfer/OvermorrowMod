@@ -4,6 +4,8 @@ using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
 using OvermorrowMod.Content.Items.Materials;
 using OvermorrowMod.Core;
+using OvermorrowMod.Core.Interfaces;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -13,8 +15,19 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Accessories.CapturedMirage
 {
-    public class CapturedMirage : ModItem
+    public class CapturedMirage : ModItem, ITooltipObject
     {
+        public List<TooltipObject> TooltipObjects()
+        {
+            return new List<TooltipObject>() { 
+                new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.UI + "Tooltips/WhiteHat").Value,
+                    "Mirage Arrow",
+                    " + Copies the effect of another random [c/FAD5A5:Arrow] from your ammo slots",
+                    0.5f,
+                    ProjectileTooltipType.Projectile),
+            };
+        }
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Captured Mirage");
@@ -66,5 +79,7 @@ namespace OvermorrowMod.Content.Items.Accessories.CapturedMirage
 
             return false;
         }
+
+
     }
 }

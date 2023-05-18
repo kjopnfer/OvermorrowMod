@@ -1,5 +1,8 @@
+using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
+using OvermorrowMod.Core;
+using OvermorrowMod.Core.Interfaces;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -7,8 +10,19 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Accessories.BearTrap
 {
-    public class BearTrap : ModItem
+    public class BearTrap : ModItem, ITooltipObject
     {
+        public List<TooltipObject> TooltipObjects()
+        {
+            return new List<TooltipObject>() {
+                new ProjectileTooltip(ModContent.Request<Texture2D>(AssetDirectory.UI + "Tooltips/WhiteHat").Value,
+                    "Bear Trap",
+                    " + Deals damage to an enemy that walks over when armed\n + Locks any ground enemy that activated this trap in place",
+                    1f,
+                    ProjectileTooltipType.Trap),
+            };
+        }
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Trapper's Armaments");
