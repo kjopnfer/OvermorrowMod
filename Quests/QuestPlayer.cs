@@ -14,7 +14,7 @@ using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Quests
 {
-    public class QuestPlayer : ModPlayer
+    public partial class QuestPlayer : ModPlayer
     {
         public string PlayerUUID { get; private set; } = Guid.NewGuid().ToString();
 
@@ -80,25 +80,23 @@ namespace OvermorrowMod.Quests
         private int markerCounter = 0;
         public override void PreUpdate()
         {
-            foreach (var (_, req) in Quests.State.GetActiveRequirementsOfType<TravelRequirementState>(this))
+            UpdateTravelMarkers();
+            AutoCompleteRequirements();
+        }
+
+        /// <summary>
+        /// Determines whether the player has an active Quest of the specified name.
+        /// <para>Based off of the internal class name for the Quest.</para>
+        /// </summary>
+        public bool FindActiveQuest(string name)
+        {
+            foreach (var quest in CurrentQuests)
             {
-                if (!req.IsCompleted)
-                {
-                    if (markerCounter % 30 == 0)
-                    {
-                        Particle.CreateParticle(Particle.ParticleType<Pulse>(), (req.Requirement as TravelRequirement).Location * 16f,
-                            Vector2.Zero, Color.Yellow, 1, 0.3f, 0, 0, 480);
-                    }
-
-                    if (Player.active && Player.Distance((req.Requirement as TravelRequirement).Location * 16) < 50)
-                    {
-                        req.IsCompleted = true;
-                    }
-                }
+                string questID = quest.Quest.QuestID.Split("OvermorrowMod.Quests.ModQuests.")[1];
+                if (questID == name) return true;
             }
-            markerCounter++;
 
-            base.PreUpdate();
+            return false;
         }
     }
 }

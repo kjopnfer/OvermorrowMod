@@ -15,14 +15,14 @@ namespace OvermorrowMod.Common
     {
         public static void Load()
         {
-            IL.Terraria.Projectile.AI_007_GrapplingHooks += GrappleCollision;
+            //IL.Terraria.Projectile.AI_007_GrapplingHooks += GrappleCollision;
             //IL.Terraria.Liquid.Update += UpdateWater;
             //IL.Terraria.Liquid.QuickWater += QuickWater;
         }
 
         public static void Unload()
         {
-            IL.Terraria.Projectile.AI_007_GrapplingHooks -= GrappleCollision;
+            //IL.Terraria.Projectile.AI_007_GrapplingHooks -= GrappleCollision;
 
             //IL.Terraria.Liquid.Update -= UpdateWater;
             //IL.Terraria.Liquid.QuickWater -= QuickWater;

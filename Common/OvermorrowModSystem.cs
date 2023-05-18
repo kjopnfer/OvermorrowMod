@@ -13,6 +13,10 @@ using Terraria.UI;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Detours;
 using OvermorrowMod.Common.TilePiles;
+using System;
+
+using static Terraria.ModLoader.ModContent;
+using OvermorrowMod.Content.Tiles.Town;
 
 namespace OvermorrowMod.Common
 {
@@ -47,6 +51,17 @@ namespace OvermorrowMod.Common
                 ScreenColor = new ScreenColor();
                 ScreenInterface.SetState(ScreenColor);
             }
+        }
+
+        public static int SojournTiles;
+        public override void TileCountsAvailable(ReadOnlySpan<int> tileCounts)
+        {
+            SojournTiles = tileCounts[TileType<CastleBrick>()] + tileCounts[TileType<DarkCastleBrick>()] + tileCounts[TileType<CastlePlatform>()] + tileCounts[TileType<CastleRoof>()];
+        }
+
+        public override void ResetNearbyTileEffects()
+        {
+            SojournTiles = 0;
         }
 
         public override void PostDrawTiles()

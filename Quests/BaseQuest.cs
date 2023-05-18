@@ -100,7 +100,7 @@ namespace OvermorrowMod.Quests
             {
                 ResetEffects(player);
                 GiveRewards(player);
-                Main.NewText("COMPLETED QUEST: " + QuestName, Color.Yellow);
+                //Main.NewText("COMPLETED QUEST: " + QuestName, Color.Yellow);
             }
             Quests.State.CompleteQuest(modPlayer, this);
         }

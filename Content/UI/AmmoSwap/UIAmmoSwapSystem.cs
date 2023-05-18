@@ -22,10 +22,10 @@ namespace OvermorrowMod.Content.UI.AmmoSwap
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
-            int DialogueBox = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Resource Bars"));
-            if (DialogueBox != -1)
+            int ResourceBars = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Resource Bars"));
+            if (ResourceBars != -1)
             {
-                layers.Insert(DialogueBox, new LegacyGameInterfaceLayer(
+                layers.Insert(ResourceBars, new LegacyGameInterfaceLayer(
                     "OvermorrowMod: Ammo",
                     delegate
                     {

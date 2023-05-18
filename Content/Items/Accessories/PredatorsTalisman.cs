@@ -29,7 +29,6 @@ namespace OvermorrowMod.Content.Items.Accessories
 
             player.GetArmorPenetration(DamageClass.Generic) += 5;
             player.GetCritChance(DamageClass.Generic) += 5;
-            player.GetDamage(DamageClass.Generic) += 3;
         }
 
         public override void AddRecipes()

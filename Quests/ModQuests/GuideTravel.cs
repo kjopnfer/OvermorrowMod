@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
 using System;
@@ -20,7 +20,7 @@ namespace OvermorrowMod.Quests.ModQuests
         {
             Requirements = new[]
             {
-                new TravelRequirement(() => new Vector2(Main.spawnTileX, Main.spawnTileY), "Main Spawn")
+                new TravelRequirement(() => new Vector2(Main.spawnTileX, Main.spawnTileY), "Travel to the Main Spawn", "Main Spawn")
             };
             Rewards = new[]
             {
@@ -34,4 +34,4 @@ namespace OvermorrowMod.Quests.ModQuests
             QuestEndDialogue.Add("You found it.");
         }
     }
-}
+}*/

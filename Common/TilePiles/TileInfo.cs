@@ -10,7 +10,7 @@ namespace OvermorrowMod.Common.TilePiles
         internal string name;
         internal Rectangle rectangle;
         internal Texture2D texture;
-        internal int ID;
+        internal int itemID;
         private int minStack;
         private int maxStack;
         internal bool active;
@@ -31,6 +31,7 @@ namespace OvermorrowMod.Common.TilePiles
         public SoundStyle deathSound;
         public SoundStyle grabSound;
         public bool canWiggle;
+        public bool canHighlight;
 
         public enum InteractionType
         {
@@ -55,7 +56,7 @@ namespace OvermorrowMod.Common.TilePiles
             rectangle.Width = tileObject.Width;
             rectangle.Height = tileObject.Height;
             texture = TileObjects.TileObjectTextures[identifier];
-            ID = tileObject.ItemID;
+            itemID = tileObject.ItemID;
             name = tileObject.Name;
             minStack = tileObject.MinStack;
             maxStack = tileObject.MaxStack;
@@ -65,6 +66,7 @@ namespace OvermorrowMod.Common.TilePiles
             deathSound = tileObject.DeathSound;
             grabSound = tileObject.GrabSound;
             canWiggle = tileObject.CanWiggle;
+            canHighlight = tileObject.CanHighlight;
 
             rectangle.X = ((int)coordinates.X - 1) * 16 + x;
             rectangle.Y = ((int)coordinates.Y - 2) * 16 + y;

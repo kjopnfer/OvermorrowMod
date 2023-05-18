@@ -104,7 +104,8 @@ namespace OvermorrowMod.Content.NPCs.Seer
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return spawnInfo.Player.ZoneOverworldHeight && !Main.dayTime ? SpawnCondition.OverworldNightMonster.Chance * 0.17f : 0f;
+            return 0f;
+            //return spawnInfo.Player.ZoneOverworldHeight && !Main.dayTime ? SpawnCondition.OverworldNightMonster.Chance * 0.17f : 0f;
         }
     }
 
