@@ -382,6 +382,8 @@ namespace OvermorrowMod.Common
                             if (Main.MouseScreen.X > Main.screenWidth / 2)
                                 containerPosition = new Vector2(x, y) - new Vector2(360, 0);
 
+                            titleColor = buffTooltip.Type == BuffTooltipType.Buff ? new Color(80, 250, 123) : new Color(255, 85, 85);
+
                             Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)(containerPosition.Y - yOverflow - 10), (int)CONTAINER_WIDTH, (int)height), color * 0.925f);
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, buffTooltip.Type.ToString(), new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight - yOverflow), subtitleColor, 0f, titleSize, baseTextSize);
 
