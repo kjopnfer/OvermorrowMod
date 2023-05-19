@@ -84,6 +84,8 @@ namespace OvermorrowMod.Common.Players
             smolBoi = false;
             // windBuff = false;
 
+            DashShadow = false;
+
             UVBubbles.Clear();
         }
 
@@ -265,6 +267,16 @@ namespace OvermorrowMod.Common.Players
         public override void PostUpdate()
         {
 
+        }
+
+        public bool DashShadow = false;
+        public override void PostUpdateEquips()
+        {
+            if (DashShadow)
+            {
+                Player.eocDash = 50;
+                Player.armorEffectDrawShadowEOCShield = true;
+            }
         }
 
         private bool CheckOnGround()
