@@ -2,7 +2,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
+using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.TilePiles;
+using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using System;
 using System.Collections.Generic;
@@ -11,9 +13,11 @@ using System.Xml;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
+using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using Microsoft.Xna.Framework.Input;
 
 namespace OvermorrowMod.Core
 {
@@ -33,6 +37,114 @@ namespace OvermorrowMod.Core
                 startRain = typeof(Main).GetMethod("StartRain", BindingFlags.Static | BindingFlags.NonPublic);
                 stopRain = typeof(Main).GetMethod("StopRain", BindingFlags.Static | BindingFlags.NonPublic);
             }
+        }
+        public static void Move(this NPC npc, Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
+        {
+            if (npc.Center.X < targetPosition.X)
+            {
+                npc.velocity.X += moveSpeed;
+
+                if (npc.velocity.X > maxSpeed) npc.velocity.X = maxSpeed;
+            }
+            else if (npc.Center.X > targetPosition.X)
+            {
+                npc.velocity.X -= moveSpeed;
+
+                if (npc.velocity.X < -maxSpeed) npc.velocity.X = -maxSpeed;
+            }
+
+            /*if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].HasTile)
+            {
+                if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].LeftSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].BottomSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= 12;
+                }
+            }*/
+
+            if (npc.collideY && npc.velocity.Y == 0)
+            {
+
+                if (Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].LeftSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].BottomSlope || Main.tile[npc.Hitbox.Center.X / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                    Main.tile[(int)(npc.Hitbox.BottomLeft().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                if (Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].LeftSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].BottomSlope ||
+                        Main.tile[(int)(npc.Hitbox.BottomRight().X) / 16, npc.Hitbox.Bottom / 16].RightSlope)
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY, 1, false, 0);
+
+                #region Jump Handling
+                if (npc.collideX || CheckGap(npc))
+                {
+                    npc.velocity.Y -= jumpSpeed;
+                }
+
+                #endregion
+            }
+        }
+
+        public static bool CheckKeyPress()
+        {
+            if (Main.keyState.IsKeyDown(Keys.Q) || Main.keyState.IsKeyDown(Keys.W) || Main.keyState.IsKeyDown(Keys.E) || Main.keyState.IsKeyDown(Keys.R) ||
+                Main.keyState.IsKeyDown(Keys.T) || Main.keyState.IsKeyDown(Keys.Y) || Main.keyState.IsKeyDown(Keys.U) || Main.keyState.IsKeyDown(Keys.I) ||
+                Main.keyState.IsKeyDown(Keys.O) || Main.keyState.IsKeyDown(Keys.P) || Main.keyState.IsKeyDown(Keys.OemCloseBrackets) || Main.keyState.IsKeyDown(Keys.OemOpenBrackets) ||
+                Main.keyState.IsKeyDown(Keys.A) || Main.keyState.IsKeyDown(Keys.S) || Main.keyState.IsKeyDown(Keys.D) || Main.keyState.IsKeyDown(Keys.F) ||
+                Main.keyState.IsKeyDown(Keys.G) || Main.keyState.IsKeyDown(Keys.H) || Main.keyState.IsKeyDown(Keys.J) || Main.keyState.IsKeyDown(Keys.K) ||
+                Main.keyState.IsKeyDown(Keys.L) || Main.keyState.IsKeyDown(Keys.OemSemicolon) || Main.keyState.IsKeyDown(Keys.OemQuotes) || Main.keyState.IsKeyDown(Keys.Z) ||
+                Main.keyState.IsKeyDown(Keys.Z) || Main.keyState.IsKeyDown(Keys.X) || Main.keyState.IsKeyDown(Keys.C) || Main.keyState.IsKeyDown(Keys.V) ||
+                Main.keyState.IsKeyDown(Keys.B) || Main.keyState.IsKeyDown(Keys.N) || Main.keyState.IsKeyDown(Keys.M) || Main.keyState.IsKeyDown(Keys.OemQuestion) ||
+                Main.keyState.IsKeyDown(Keys.OemComma) || Main.keyState.IsKeyDown(Keys.OemPeriod) || Main.keyState.IsKeyDown(Keys.Enter) || Main.keyState.IsKeyDown(Keys.Space) || 
+                Main.keyState.IsKeyDown(Keys.LeftShift) || Main.keyState.IsKeyDown(Keys.RightShift) || Main.keyState.IsKeyDown(Keys.Tab) || Main.keyState.IsKeyDown(Keys.OemTilde) || 
+                Main.keyState.IsKeyDown(Keys.OemBackslash) || Main.keyState.IsKeyDown(Keys.B) || Main.keyState.IsKeyDown(Keys.D0) || Main.keyState.IsKeyDown(Keys.D1) || 
+                Main.keyState.IsKeyDown(Keys.D2) || Main.keyState.IsKeyDown(Keys.D3) || Main.keyState.IsKeyDown(Keys.D4) || Main.keyState.IsKeyDown(Keys.D5) || 
+                Main.keyState.IsKeyDown(Keys.D6) || Main.keyState.IsKeyDown(Keys.D7) || Main.keyState.IsKeyDown(Keys.D8) || Main.keyState.IsKeyDown(Keys.D9) || 
+                Main.keyState.IsKeyDown(Keys.OemMinus) || Main.keyState.IsKeyDown(Keys.OemPlus))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool CheckGap(NPC npc)
+        {
+            Rectangle npcHitbox = npc.getRect();
+
+            Vector2 checkLeft = new Vector2(npcHitbox.BottomLeft().X, npcHitbox.BottomLeft().Y);
+            Vector2 checkRight = new Vector2(npcHitbox.BottomRight().X, npcHitbox.BottomRight().Y);
+            Vector2 hitboxDetection = (npc.velocity.X < 0 ? checkLeft : checkRight) / 16;
+
+            int directionOffset = npc.direction;
+
+            Tile tile = Framing.GetTileSafely((int)hitboxDetection.X + directionOffset, (int)hitboxDetection.Y);
+
+            return !tile.HasTile;
         }
 
         public static void SandstormStuff()
@@ -58,11 +170,102 @@ namespace OvermorrowMod.Core
             stopRain.Invoke(null, null);
         }
 
-        
+        /// <summary>
+        /// Determines whether or not the armor is equipped in a non-vanity slot
+        /// </summary>
+        public static bool CheckArmorEquipped(this Player player, int type)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (player.armor[i].type == type) return true;
+            }
+
+            return false;
+        }
+
+        public static bool CheckAccessoryEquipped(this Player player, int type)
+        {
+            for (int i = 13; i < 18; i++)
+            {
+                if (player.armor[i].type == type) return true;       
+            }
+
+            return false;
+        }
+
+        public static void SetWeaponType(this Item item, GunType gunType)
+        {
+            item.GetGlobalItem<GlobalGun>().WeaponType = gunType;
+        }
+
+        public static GunType GetWeaponType(this Item item)
+        {
+            return item.GetGlobalItem<GlobalGun>().WeaponType;
+        }
+
+        public static NPC FindClosestNPC(this Projectile projectile, float maxDetectDistance, NPC ignoreNPC = null)
+        {
+            NPC closestNPC = null;
+
+            // Using squared values in distance checks will let us skip square root calculations, drastically improving this method's speed.
+            float sqrMaxDetectDistance = maxDetectDistance * maxDetectDistance;
+
+            // Loop through all NPCs(max always 200)
+            for (int k = 0; k < Main.maxNPCs; k++)
+            {
+                NPC target = Main.npc[k];
+                // Check if NPC able to be targeted. It means that NPC is
+                // 1. active (alive)
+                // 2. chaseable (e.g. not a cultist archer)
+                // 3. max life bigger than 5 (e.g. not a critter)
+                // 4. can take damage (e.g. moonlord core after all it's parts are downed)
+                // 5. hostile (!friendly)
+                // 6. not immortal (e.g. not a target dummy)
+                //if (target.CanBeChasedBy())
+                if (target.active && target != ignoreNPC)
+                {
+                    // The DistanceSquared function returns a squared distance between 2 points, skipping relatively expensive square root calculations
+                    float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, projectile.Center);
+
+                    // Check if it is within the radius
+                    if (sqrDistanceToTarget < sqrMaxDetectDistance)
+                    {
+                        sqrMaxDetectDistance = sqrDistanceToTarget;
+                        closestNPC = target;
+                    }
+                }
+            }
+
+            return closestNPC;
+        }
+
+
         public static void PlaceTilePile<T, TE>(int x, int y) where T : ModTilePile<TE> where TE : BaseTilePile
         {
             PlaceObject(x, y, ModContent.TileType<T>());
-            int id = ModContent.GetInstance<TE>().Place(x - 1, y - 2); // this represents the top left corner
+
+            int xOffset = 0;
+            int yOffset = 0;
+            switch (ModContent.GetInstance<TE>().Style)
+            {
+                case BaseTilePile.TileStyle.Style2x2:
+                    yOffset = -1;
+                    break;
+                case BaseTilePile.TileStyle.Style3x2:
+                    xOffset = -1;
+                    yOffset = -1;
+                    break;
+                case BaseTilePile.TileStyle.Style3x3:
+                    xOffset = -1;
+                    yOffset = -2;
+                    break;
+                case BaseTilePile.TileStyle.Style6x3:
+                    xOffset = -3;
+                    yOffset = -2;
+                    break;
+            }
+
+            int id = ModContent.GetInstance<TE>().Place(x + xOffset, y + yOffset); // this represents the top left corner
             TE te = TileEntity.ByID[id] as TE;
             te.SetPosition(new Vector2(x, y));
             te.CreateTilePile();
@@ -416,6 +619,33 @@ namespace OvermorrowMod.Core
             element.Width.Set(width, widthPercent);
             element.Height.Set(height, heightPercent);
             appendTo.Append(element);
+        }
+
+        /// <summary>
+        /// Loops through the player's inventory and then places any suitable ammo types into the ammo slots if they are empty or the wrong ammo type.
+        /// </summary>
+        public static void AutofillAmmoSlots(Player player, int ammoID)
+        {
+            for (int j = 0; j <= 3; j++) // Check if any of the ammo slots are empty or are the right ammo
+            {
+                Item ammoItem = player.inventory[54 + j];
+                if (ammoItem.type != ItemID.None && ammoItem.ammo == ammoID) continue;
+
+                // Loop through the player's inventory in order to find any useable ammo types to use
+                for (int i = 0; i <= 49; i++)
+                {
+                    Item item = player.inventory[i];
+                    if (item.type == ItemID.None || item.ammo != ammoID) continue;
+
+                    //Main.NewText("Swapping " + i + " with " + (54 + j));
+
+                    Item tempItem = ammoItem;
+                    player.inventory[54 + j] = item;
+                    player.inventory[i] = tempItem;
+
+                    break;
+                }
+            }
         }
     }
 }

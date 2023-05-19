@@ -1,20 +1,24 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Players;
 using OvermorrowMod.Content.Items.Consumable;
 using OvermorrowMod.Core;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Xml;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Common
 {
-    public class OvermorrowGlobalItem : GlobalItem
+    public partial class OvermorrowGlobalItem : GlobalItem
     {
         public override bool InstancePerEntity => true;
 
@@ -39,8 +43,8 @@ namespace OvermorrowMod.Common
             {
                 dialoguePlayer.pickupWood = true;
 
-                XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideWood.xml");
-                dialoguePlayer.AddPopup(doc);
+                //XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "GuideWood.xml");
+                //dialoguePlayer.AddPopup(doc);
             }
 
             return base.OnPickup(item, player);
@@ -50,7 +54,7 @@ namespace OvermorrowMod.Common
         {
             if (Main.mouseItem.type == ModContent.ItemType<ReforgeStone>())
             {
-                return false;
+                //return false;
             }
 
             return base.ConsumeItem(item, player);

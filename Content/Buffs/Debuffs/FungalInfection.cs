@@ -13,10 +13,5 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
             Main.pvpBuff[Type] = false;
             Main.buffNoSave[Type] = true;
         }
-
-        public override void Update(NPC npc, ref int buffIndex)
-        {
-            npc.GetGlobalNPC<OvermorrowGlobalNPC>().FungiInfection = true;
-        }
     }
 }

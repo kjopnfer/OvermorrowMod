@@ -16,10 +16,5 @@ namespace OvermorrowMod.Content.Buffs
             Main.debuff[Type] = false;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
-
-        public override void Update(Player player, ref int buffIndex)
-        {
-            player.GetModPlayer<OvermorrowModPlayer>().iorichGuardianShield = true;
-        }
     }
 }

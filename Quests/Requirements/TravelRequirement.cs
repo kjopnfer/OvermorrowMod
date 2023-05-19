@@ -8,6 +8,7 @@ namespace OvermorrowMod.Quests.Requirements
 {
     public class TravelRequirement : BaseQuestRequirement<TravelRequirementState>
     {
+        public readonly string description;
         private Vector2? location = null;
         public Vector2 Location { get
             {
@@ -16,9 +17,11 @@ namespace OvermorrowMod.Quests.Requirements
             } }
         private readonly Func<Vector2> locationGenerator;
 
-        public TravelRequirement(Func<Vector2> locationGenerator, string id) : base(id)
+
+        public TravelRequirement(Func<Vector2> locationGenerator, string description, string id) : base(id)
         {
             this.locationGenerator = locationGenerator;
+            this.description = description;
         }
 
         public override string Description => $"Travel to {location}";

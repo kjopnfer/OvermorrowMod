@@ -9,6 +9,9 @@ using Terraria.ModLoader;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using Terraria.Audio;
 using OvermorrowMod.Content.Items.Misc;
+using OvermorrowMod.Content.Tiles.GuideCamp;
+using static OvermorrowMod.Common.TilePiles.BaseTilePile;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Common.TilePiles
 {
@@ -19,13 +22,53 @@ namespace OvermorrowMod.Common.TilePiles
         public override bool CreateDust(int i, int j, ref int type) => false;
         public override bool CanKillTile(int i, int j, ref bool blockDamaged) => false;
         public override bool KillSound(int i, int j, bool fail) => false;
+        public virtual TileStyle GridStyle => TileStyle.Style3x3;
+        public override string Texture => GetGridTexture();
+
+        private string GetGridTexture()
+        {
+            switch (GridStyle)
+            {
+                case TileStyle.Style2x2:
+                    return AssetDirectory.TilePiles + "Grid_2x2";
+                case TileStyle.Style3x2:
+                    return AssetDirectory.TilePiles + "Grid_3x2";
+                case TileStyle.Style3x3:
+                    return AssetDirectory.TilePiles + "Grid_3x3";
+                case TileStyle.Style4x3:
+                    return AssetDirectory.TilePiles + "Grid_4x3";
+                case TileStyle.Style6x3:
+                    return AssetDirectory.TilePiles + "Grid_6x3";
+                default:
+                    return AssetDirectory.TilePiles + "Grid_3x3";
+            }
+        }
+
         public override void SetStaticDefaults()
         {
             Main.tileNoAttach[Type] = true;
             Main.tileFrameImportant[Type] = true;
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3); // Probably should be changeable within the child
-            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<BasicLoot>().Hook_AfterPlacement, -1, 0, true); // FOR TESTING ONLY
+            switch (GridStyle)
+            {
+                case TileStyle.Style2x2:
+                    TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
+                    break;
+                case TileStyle.Style3x2:
+                    TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+                    break;
+                case TileStyle.Style3x3:
+                    TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+                    break;
+                case TileStyle.Style6x3:
+                    TileObjectData.newTile.CopyFrom(TileObjectData.Style6x3);
+                    break;
+            }
+
+            // FOR TESTING ONLY
+            // TILEPILES ARE NOT NATURALLY PLACED, THEREFORE BLURB TILES WILL ONLY USE THIS GIVEN PLACEMENT HOOK
+            // MUST BE UPDATED FOR ANY TILE PILE THAT NEEDS TO BE TESTED MANUALLY
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<GuideLogObjects>().Hook_AfterPlacement, -1, 0, true);
 
             MinPick = 55; // debugging
             TileObjectData.addTile(Type);
@@ -54,7 +97,7 @@ namespace OvermorrowMod.Common.TilePiles
                         if (tileObject.active)
                         {
                             tileObject.active = false;
-                            Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                            Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.itemID, tileObject.GetRandomStack());
 
                             SoundEngine.PlaySound(tileObject.deathSound);
                         }
@@ -66,7 +109,7 @@ namespace OvermorrowMod.Common.TilePiles
                     if (tileObject.active)
                     {
                         tileObject.active = false;
-                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.itemID, tileObject.GetRandomStack());
 
                         SoundEngine.PlaySound(tileObject.deathSound);
                     }
@@ -141,7 +184,7 @@ namespace OvermorrowMod.Common.TilePiles
 
                 Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                 Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-                Color hoverColor = tileObject.selected ? Color.Yellow : Lighting.GetColor(i, j);
+                Color hoverColor = tileObject.selected && tileObject.canHighlight ? Color.Yellow : Lighting.GetColor(i, j);
 
                 spriteBatch.Draw(tileObject.texture, pos + offScreenRange, null, hoverColor, wiggleRotation, Vector2.Zero, 1f, SpriteEffects.None, 0);
 
@@ -199,10 +242,11 @@ namespace OvermorrowMod.Common.TilePiles
             {
                 foreach (TileInfo tileObject in pile.PileContents)
                 {
-                    if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()) && tileObject.active)
+                    if (Main.MouseWorld.Between(tileObject.rectangle.TopLeft(), tileObject.rectangle.BottomRight()) && tileObject.active && tileObject.interactType == (int)TileInfo.InteractionType.Click)
                     {
                         tileObject.active = false;
-                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.ID, tileObject.GetRandomStack());
+                        Item.NewItem(new EntitySource_Misc("TilePileLoot"), tileObject.rectangle, tileObject.itemID, tileObject.GetRandomStack());
+                        //TilePileActions.PickupInteraction(tileObject);
 
                         SoundEngine.PlaySound(tileObject.grabSound);
                         break;

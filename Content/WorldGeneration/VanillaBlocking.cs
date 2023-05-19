@@ -27,6 +27,9 @@ namespace OvermorrowMod.Content.WorldGeneration
             int PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Sand"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
+            //PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dunes"));
+            //if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
             PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Generate Ice Biome"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 

@@ -12,6 +12,10 @@ namespace OvermorrowMod.Common.Particles
 
         private float scaleRate;
         private float initialScale;
+
+        int variant = Main.rand.Next(1, 3);
+
+        // customData[0] = scaleRate
         public override void OnSpawn()
         {
             scaleRate = particle.customData[0];
@@ -20,7 +24,7 @@ namespace OvermorrowMod.Common.Particles
 
         public override void Update()
         {
-            particle.velocity *= 0.95f;
+            particle.velocity *= 0.9f;
             particle.scale -= scaleRate;
 
             if (particle.scale <= 0) particle.Kill();
@@ -30,7 +34,6 @@ namespace OvermorrowMod.Common.Particles
         {
             spriteBatch.Reload(BlendState.Additive);
 
-            int variant = Main.rand.Next(1, 3);
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "fire_0" + variant).Value;
 
             Texture2D glowTexture = ModContent.Request<Texture2D>(AssetDirectory.Textures + "Spotlight").Value;

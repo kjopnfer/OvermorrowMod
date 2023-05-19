@@ -1,4 +1,4 @@
-﻿using OvermorrowMod.Quests.Requirements;
+﻿/*using OvermorrowMod.Quests.Requirements;
 using OvermorrowMod.Quests.Rewards;
 using Terraria;
 using Terraria.ID;
@@ -15,8 +15,8 @@ namespace OvermorrowMod.Quests.ModQuests
         {
             Requirements = new[]
             {
-                new ItemRequirement("workbench", ItemID.WorkBench, 1, true),
-                new ItemRequirement("torch", ItemID.Torch, 20, true)
+                new ItemRequirement("workbench", ItemID.WorkBench, 1, "Obtain 1 Workbench", true),
+                new ItemRequirement("torch", ItemID.Torch, 20, "Obtain 20 Torches", true)
             };
             Rewards = new[]
             {
@@ -39,4 +39,4 @@ namespace OvermorrowMod.Quests.ModQuests
             return Quests.HasCompletedQuest<GuideSlime>(player);
         }
     }
-}
+}*/

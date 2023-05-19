@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Content.Biomes;
+using OvermorrowMod.Content.Buffs.Debuffs;
 using OvermorrowMod.Content.Buffs.Hexes;
 using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Content.Items.Materials;
+using OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns;
 using OvermorrowMod.Content.NPCs.CaveFish;
 using OvermorrowMod.Content.Projectiles.Hexes;
 using System.Collections.Generic;
@@ -17,15 +19,55 @@ namespace OvermorrowMod.Common
     {
         public override bool InstancePerEntity => true;
 
-        public bool FungiInfection;
+        public bool BearTrapped;
         public bool LightningMarked;
 
         public int FungiTime;
 
         public override void ResetEffects(NPC npc)
         {
-            FungiInfection = false;
+            //BearTrapped = false;
             LightningMarked = false;
+        }
+
+        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref int damage, ref float knockback, ref bool crit)
+        {
+            if (npc.HasBuff<PhoenixMarkBuff>()) damage += (int)(damage * 0.25f);
+        }
+        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        {
+            if (npc.HasBuff<PhoenixMarkBuff>()) damage += (int)(damage * 0.2f);
+        }
+
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        {
+            Player owner = Main.player[projectile.owner];
+
+            if (npc.HasHex(Hex.HexType<CursedFlames>()))
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
+                    {
+                        Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
+                    }
+                }
+            }
+
+            if (npc.HasHex(Hex.HexType<LesserIchor>()))
+            {
+                if (Main.rand.NextBool(8))
+                {
+                    if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
+                    {
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<IchorStream>(), 12, 2f, owner.whoAmI);
+                        }
+                    }
+                }
+            }
+
         }
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
@@ -102,56 +144,39 @@ namespace OvermorrowMod.Common
             base.ModifyNPCLoot(npc, npcLoot);
         }
 
-        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
-        {
-            Player owner = Main.player[projectile.owner];
-
-            if (npc.HasHex(Hex.HexType<CursedFlames>()))
-            {
-                if (Main.rand.NextBool(10))
-                {
-                    if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
-                    {
-                        Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<CursedBall>(), 24, 2f, owner.whoAmI);
-                    }
-                }
-            }
-
-            if (npc.HasHex(Hex.HexType<LesserIchor>()))
-            {
-                if (Main.rand.NextBool(8))
-                {
-                    if (Main.netMode != NetmodeID.Server && Main.myPlayer == projectile.owner)
-                    {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 4, ModContent.ProjectileType<IchorStream>(), 12, 2f, owner.whoAmI);
-                        }
-                    }
-                }
-            }
-
-        }
 
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
+            if (npc.HasBuff<FungalInfection>())
+            {
+                npc.defense -= 2 * npc.buffType.Length;
+            }
+
             if (npc.HasHex(Hex.HexType<LesserIchor>()))
             {
                 npc.defense -= 8;
             }
+        }
 
-            if (npc.HasHex(Hex.HexType<SoulFlame>()))
+        public override bool PreAI(NPC npc)
+        {
+            if (BearTrapped)
             {
-                npc.defense -= 5;
+                npc.position.X = npc.oldPosition.X;
+                npc.velocity.X = 0;
+                npc.frameCounter = 0;
+                return false;
             }
+
+            return base.PreAI(npc);
         }
 
         public override void AI(NPC npc)
         {
-            if (FungiInfection)
+            if (npc.HasBuff<FungalInfection>())
             {
                 FungiTime++;
-                if (FungiTime > 24)
+                if (FungiTime % 24 == 0)
                 {
                     Vector2 position = npc.Center;
                     Vector2 targetPosition = Main.player[npc.target].Center;
@@ -160,14 +185,13 @@ namespace OvermorrowMod.Common
                     float speed = 0f;
                     Vector2 perturbedSpeed = new Vector2(direction.X, direction.Y).RotatedByRandom(MathHelper.ToRadians(360f));
                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + Main.rand.Next(-75, 76) - npc.width / 2, npc.Center.Y + Main.rand.Next(-75, 76) - npc.height / 2, perturbedSpeed.X * speed, perturbedSpeed.Y * speed, ProjectileID.TruffleSpore, npc.defense + 5, 0f, Main.myPlayer, npc.whoAmI, Main.myPlayer);
-                    FungiTime = 0;
                 }
             }
         }
 
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            if (FungiInfection)
+            if (npc.HasBuff<FungalInfection>())
             {
                 if (Main.rand.NextBool(10))
                 {

@@ -166,7 +166,6 @@ namespace OvermorrowMod.Common
                 Projectile.velocity = Projectile.velocity.SafeNormalize(-Vector2.UnitY);
                 Startup = true;
                 Positions = CreateLightning(Projectile.Center, Projectile.Center + Projectile.velocity * Length, Projectile.width/*, Sine*/);
-                SoundEngine.PlaySound(SoundID.Item, Projectile.Center);
             }
             return true;
         }

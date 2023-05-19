@@ -33,14 +33,14 @@ namespace OvermorrowMod.Content.Projectiles
             {
                 DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
                 
-                XmlDocument doc2 = ModUtils.GetXML(AssetDirectory.Popup + "Misery.xml");
+                /*XmlDocument doc2 = ModUtils.GetXML(AssetDirectory.Popup + "Misery.xml");
                 player.AddPopup(doc2);
 
                 XmlDocument doc3 = ModUtils.GetXML(AssetDirectory.Popup + "CPR.xml");
                 player.AddPopup(doc3);
 
                 XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "Reeses.xml");
-                player.AddPopup(doc);
+                player.AddPopup(doc);*/
             }
         }
     }
