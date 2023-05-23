@@ -102,7 +102,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Chicago");
-            Tooltip.SetDefault("<Reload>: Fire 2 bullets per click");
+            Tooltip.SetDefault("{Keyword:Reload} Fire 2 bullets per click");
         }
 
         public override void SafeSetDefaults()

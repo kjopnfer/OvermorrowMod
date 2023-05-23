@@ -45,12 +45,12 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
             {
                 if (line.Mod == "Terraria" && line.Name == "Tooltip1")
                 {
-                    line.Text = "Press [c/808080:{" + hotkey + "}] to place a <Projectile:Bear Trap>";
+                    line.Text = "Press <Key:" + hotkey + "> to place a <Projectile:Bear Trap>";
                 }
 
                 if (line.Mod == "Terraria" && line.Name == "Tooltip3")
                 {
-                    if (hotkey == "?") line.Text = "[c/808080:{?} This item requires a keybind to use]";
+                    if (hotkey == "?") line.Text = "<Key:?> This item requires a keybind to use";
                     else line.Text = "";
                 }
             }
@@ -61,6 +61,8 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
             Item.accessory = true;
             Item.width = 32;
             Item.height = 28;
+            Item.damage = 32;
+            Item.knockBack = 0f;
             Item.rare = ItemRarityID.Blue;
             Item.value = Item.sellPrice(0, 1, 0, 0);
         }

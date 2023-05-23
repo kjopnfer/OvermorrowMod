@@ -488,6 +488,7 @@ namespace OvermorrowMod.Common
                 { "Type", "FAD5A5" },
                 { "Increase", "58D68D" },
                 { "Decrease", "ff5555" },
+                { "Keyword", "ff79c6" },
             };
 
             string convertedText = text;
@@ -522,6 +523,7 @@ namespace OvermorrowMod.Common
         {
             Dictionary<string, string> ObjectWords = new Dictionary<string, string>()
             {
+                { "Key", "808080" },
                 { "Buff", "50fa7b" },
                 { "Debuff", "ff5555" },
                 { "Projectile", "8be9fd" },
@@ -535,15 +537,18 @@ namespace OvermorrowMod.Common
 
                 string pattern = $@"(<{type}:.*>)";
                 MatchCollection matches = Regex.Matches(text, pattern);
+
                 foreach (Match match in matches)
                 {
-                    string newValue = match.Value.Replace($"<{type}:", $"[c/{hex}:[");
-                    newValue = newValue.Replace(">", $"][c/{hex}:]]");
+                    //Main.NewText(text + " : " + match.Groups[1]);
+                    string newValue = match.Value.Replace($"<{type}:", $"[c/{hex}:{{");
+                    //newValue = newValue.Replace(">", $"][c/{hex}:]]");
 
                     convertedText = convertedText.Replace(match.Value, newValue);
                 }
             }
 
+            convertedText = convertedText.Replace(">", "}]");
             return convertedText;
         }
 
@@ -553,47 +558,47 @@ namespace OvermorrowMod.Common
             #region Gun Replacements
             if (item.type == ItemID.PhoenixBlaster)
             {
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Release a burst of flame, inflicting <Debuff:Phoenix Mark>"));
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "<Fail>: Damage yourself, inflicting <Debuff:On Fire!>"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "{Keyword:Reload:} Release a burst of flame, inflicting <Debuff:Phoenix Mark>"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "{Keyword:Fail:} Damage yourself, inflicting <Debuff:On Fire!>"));
             }
 
             if (item.type == ItemID.Musket)
             {
-                tooltips.Add(new TooltipLine(Mod, "Musket0", "<Reload>: Increase accuracy for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Musket0", "{Keyword:Reload:} Increase accuracy for each block clicked"));
             }
 
             if (item.type == ItemID.Boomstick)
             {
-                tooltips.Add(new TooltipLine(Mod, "Boomstick0", "<Reload>: Increase recoil and bullets fired for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Boomstick0", "{Keyword:Reload:} Increase recoil and bullets fired for each block clicked"));
             }
 
             if (item.type == ItemID.Revolver)
             {
-                tooltips.Add(new TooltipLine(Mod, "Revolver0", "<Reload>: Reload instantly. Your next clip has increased damage"));
+                tooltips.Add(new TooltipLine(Mod, "Revolver0", "{Keyword:Reload:} Reload instantly. Your next clip has increased damage"));
             }
 
             if (item.type == ItemID.Handgun)
             {
-                tooltips.Add(new TooltipLine(Mod, "Handgun0", "<Reload>: Your next clip has increased firing speed"));
+                tooltips.Add(new TooltipLine(Mod, "Handgun0", "{Keyword:Reload:} Your next clip has increased firing speed"));
             }
 
             if (item.type == ItemID.TheUndertaker)
             {
-                tooltips.Add(new TooltipLine(Mod, "Undertaker0", "<Reload>: Your next clip has 6 bullets and increased firing speed"));
-                tooltips.Add(new TooltipLine(Mod, "Undertaker1", "<Fail>: Your next clip has 2 bullets"));
+                tooltips.Add(new TooltipLine(Mod, "Undertaker0", "{Keyword:Reload:} Your next clip has 6 bullets and increased firing speed"));
+                tooltips.Add(new TooltipLine(Mod, "Undertaker1", "{Keyword:Fail:} Your next clip has 2 bullets"));
                 tooltips.Add(new TooltipLine(Mod, "Undertaker2", "Bullets deal more damage at point blank range"));
             }
 
             if (item.type == ItemID.QuadBarrelShotgun)
             {
-                tooltips.Add(new TooltipLine(Mod, "Quadbarrel0", "<Reload>: Increase number of bullets and recoil for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Quadbarrel0", "{Keyword:Reload:} Increase number of bullets and recoil for each block clicked"));
             }
             #endregion
 
             if (TooltipObjects.Count > 0 || KeyWords.Count > 0)
             {
                 if (!Main.keyState.IsKeyDown(Keys.LeftShift))
-                    tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "[c/808080:Hold {SHIFT} for more info]"));
+                    tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "<Key:Hold SHIFT for more info>"));
             }
 
             foreach (TooltipLine tooltip in tooltips)
@@ -602,13 +607,13 @@ namespace OvermorrowMod.Common
                 newText = ParseTooltipText(newText);
                 newText = ParseTooltipObjects(newText);
 
-                foreach (string keyword in KeyWords)
+                /*foreach (string keyword in KeyWords)
                 {
                     if (newText.Contains($"<{keyword}>"))
                     {
                         newText = newText.Replace($"<{keyword}>", $"[c/ff79c6:{keyword}]");
                     }
-                }
+                }*/
 
                 tooltip.Text = newText;
             }

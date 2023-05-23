@@ -221,10 +221,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Farlander");
-            Tooltip.SetDefault("<Reload>: Your next clip gains 1 piercing\n" +
-                "<Alt>: Increase view range and charge\n" +
-                "<Focus>: Gain increased damage and accuracy\n" +
-                "Improves charge time for each enemy hit by a <Focus> shot\n" +
+            Tooltip.SetDefault("{Keyword:Reload:} Your next clip gains 1 piercing\n" +
+                "{Keyword:Alt:} Increase view range and charge\n" +
+                "{Keyword:Focus:} Gain increased damage and accuracy\n" +
+                "Improves charge time for each enemy hit by a {Keyword:Focus} shot\n" +
                 "Charge bonus resets on miss");
         }
 
