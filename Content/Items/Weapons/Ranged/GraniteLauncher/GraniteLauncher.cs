@@ -155,7 +155,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         {
             DisplayName.SetDefault("Shockshard Launcher");
             Tooltip.SetDefault("{Keyword:Passive}: Gain 1 shard on Critical Hit\n" +
-                "{Keyword:Alt:} Activate all unarmed shards\n" +
+                "{Keyword:Alt}: Activate all unarmed shards\n" +
                 "Starts with 0 ammo and does not reload\n" +
                 "Launches high velocity shards that stick to blocks");
         }

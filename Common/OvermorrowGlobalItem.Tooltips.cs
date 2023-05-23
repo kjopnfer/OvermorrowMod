@@ -201,7 +201,7 @@ namespace OvermorrowMod.Common
         // From https://stackoverflow.com/a/12108823
         private string[] GetKeywords(string text)
         {
-            string filtered = string.Join(";", Regex.Matches(text, @"\<(.+?)\>")
+            string filtered = string.Join(";", Regex.Matches(text, @"\{Keyword:(.+?)\}")
                                     .Cast<Match>()
                                     .Select(m => m.Groups[1].Value));
             return filtered.Split(';');
@@ -213,16 +213,6 @@ namespace OvermorrowMod.Common
         {
             // Sort the tooltips based on priority
             var orderedTooltips = TooltipObjects.OrderBy(x => x.Priority).ToList();
-
-            foreach (TooltipLine line in lines)
-            {
-                string[] lineKeywords = GetKeywords(line.Text);
-                if (lineKeywords.Length > 0)
-                {
-                    foreach (string lineKeyword in lineKeywords)
-                        if (lineKeyword.Length > 0) KeyWords.Add(lineKeyword);
-                }
-            }
 
             float CONTAINER_WIDTH = 350;
 
@@ -552,46 +542,75 @@ namespace OvermorrowMod.Common
             return convertedText;
         }
 
+        /// <summary>
+        /// Determines whether or not the item is equipped in vanity based on if the 'Social' tooltip is displayed
+        /// </summary>
+        private bool CheckInVanity(List<TooltipLine> tooltips)
+        {
+            for (int lines = 0; lines < tooltips.Count; lines++)
+            {
+                if (tooltips[lines].Name == "Social") return true;
+            }
+
+            return false;
+        }
+
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
+            if (!CheckInVanity(tooltips))
+            {
+                switch (item.type)
+                {
+                    case ItemID.CowboyHat:
+                        tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike damage by {Increase:5%}"));
+                        break;
+                    case ItemID.CowboyJacket:
+                        tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike chance by {Increase:5%}\n{Type:Revolvers} gain an additional {Increase:5%} critical strike chance"));
+                        break;
+                    case ItemID.CowboyPants:
+                        tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased movement speed by {Increase:10%}"));
+                        break;
+                }
+            }
+
             // TODO: Probably a better way to do this?
             #region Gun Replacements
             if (item.type == ItemID.PhoenixBlaster)
             {
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "{Keyword:Reload:} Release a burst of flame, inflicting <Debuff:Phoenix Mark>"));
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "{Keyword:Fail:} Damage yourself, inflicting <Debuff:On Fire!>"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "{Keyword:Reload}: Release a burst of flame, inflicting <Debuff:Phoenix Mark>"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "{Keyword:Fail}: Damage yourself, inflicting <Debuff:On Fire!>"));
             }
 
             if (item.type == ItemID.Musket)
             {
-                tooltips.Add(new TooltipLine(Mod, "Musket0", "{Keyword:Reload:} Increase accuracy for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Musket0", "{Keyword:Reload}: Increase accuracy for each block clicked"));
             }
 
             if (item.type == ItemID.Boomstick)
             {
-                tooltips.Add(new TooltipLine(Mod, "Boomstick0", "{Keyword:Reload:} Increase recoil and bullets fired for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Boomstick0", "{Keyword:Reload}: Increase recoil and bullets fired for each block clicked"));
             }
 
             if (item.type == ItemID.Revolver)
             {
-                tooltips.Add(new TooltipLine(Mod, "Revolver0", "{Keyword:Reload:} Reload instantly. Your next clip has increased damage"));
+                tooltips.Add(new TooltipLine(Mod, "Revolver0", "{Keyword:Reload}: Reload instantly. Your next clip has increased damage"));
             }
 
             if (item.type == ItemID.Handgun)
             {
-                tooltips.Add(new TooltipLine(Mod, "Handgun0", "{Keyword:Reload:} Your next clip has increased firing speed"));
+                tooltips.Add(new TooltipLine(Mod, "Handgun0", "{Keyword:Reload}: Your next clip has increased firing speed"));
             }
 
             if (item.type == ItemID.TheUndertaker)
             {
-                tooltips.Add(new TooltipLine(Mod, "Undertaker0", "{Keyword:Reload:} Your next clip has 6 bullets and increased firing speed"));
-                tooltips.Add(new TooltipLine(Mod, "Undertaker1", "{Keyword:Fail:} Your next clip has 2 bullets"));
+                tooltips.Add(new TooltipLine(Mod, "Undertaker0", "{Keyword:Reload}: Your next clip has 6 bullets and increased firing speed"));
+                tooltips.Add(new TooltipLine(Mod, "Undertaker1", "{Keyword:Fail}: Your next clip has 2 bullets"));
                 tooltips.Add(new TooltipLine(Mod, "Undertaker2", "Bullets deal more damage at point blank range"));
             }
 
             if (item.type == ItemID.QuadBarrelShotgun)
             {
-                tooltips.Add(new TooltipLine(Mod, "Quadbarrel0", "{Keyword:Reload:} Increase number of bullets and recoil for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Quadbarrel0", "{Keyword:Reload}: Increase number of bullets and recoil for each block clicked"));
             }
             #endregion
 
@@ -599,6 +618,19 @@ namespace OvermorrowMod.Common
             {
                 if (!Main.keyState.IsKeyDown(Keys.LeftShift))
                     tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "<Key:Hold SHIFT for more info>"));
+            }
+
+            // ModifyTooltips runs before PreDraw, this catches the keywords before they are parsed
+            foreach (TooltipLine line in tooltips)
+            {
+                string[] lineKeywords = GetKeywords(line.Text);
+                if (lineKeywords.Length > 0)
+                {
+                    foreach (string lineKeyword in lineKeywords)
+                    {
+                        if (lineKeyword.Length > 0) KeyWords.Add(lineKeyword);
+                    }
+                }
             }
 
             foreach (TooltipLine tooltip in tooltips)
