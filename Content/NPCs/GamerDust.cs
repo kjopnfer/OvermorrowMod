@@ -35,8 +35,10 @@ namespace OvermorrowMod.Content.NPCs
             if (NPC.ai[0] == 0)
             {
                 Rotation = MathHelper.ToRadians(Main.rand.Next(-3, 4));
-                NPC.velocity = new Vector2(0f, Main.rand.Next(-30, 0) / 10f).RotatedBy(MathHelper.ToRadians(Main.rand.Next(-1500, 1500) / 100f));
+                NPC.velocity = new Vector2(Main.rand.Next(-2, 3), Main.rand.Next(-15, 0) / 10f).RotatedBy(MathHelper.ToRadians(Main.rand.Next(-1500, 1500) / 100f));
             }
+            if (NPC.velocity.X != 0)
+                NPC.velocity.X += (NPC.velocity.X < 0 ? 0.05f : -0.05f);
             NPC.rotation += Rotation + 0.05f;
             NPC.scale -= 0.005f;
             AlphaGetReal -= 0.01f;

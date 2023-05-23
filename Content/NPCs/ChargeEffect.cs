@@ -41,6 +41,11 @@ namespace OvermorrowMod.Content.NPCs
             spriteBatch.Draw(ModContent.Request<Texture2D>("OvermorrowMod/Content/NPCs/ChargeEffect").Value, Center - Main.screenPosition, null, Color.Cyan * AlphaGetReal, (Main.LocalPlayer.MountedCenter - Center).ToRotation() - MathHelper.ToRadians(-90), (NPC.Size / 2) * Scale, Scale, SpriteEffects.None, 0f);
             return false;
         }
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
+        }
         public override void AI()
         {
             bool AltAI = NPC.ai[1] == 1;

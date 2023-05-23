@@ -119,20 +119,25 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
             //player.delayUseItem = true;
             if (player.controlUseItem && AttackDelay <= 0)
             {
+                SoundEngine.PlaySound(SoundID.NPCHit25, player.MountedCenter);
                 for (int i = 0; Main.rand.Next(5, 8) > i; i++)
-                    Projectile.NewProjectile(null, player.Center, new Vector2((player.velocity.X + Main.rand.Next(10, 16)) * player.direction, 0).RotatedByRandom(MathHelper.ToRadians(22.5f)), ModContent.ProjectileType<Projectiles.GlimsporeBomb>(), 30, 0, player.whoAmI);
+                    Projectile.NewProjectile(null, player.Center, new Vector2((1.25f * player.velocity.X + Main.rand.Next(10, 16)) * player.direction, 0).RotatedByRandom(MathHelper.ToRadians(22.5f)), ModContent.ProjectileType<Projectiles.GlimsporeBomb>(), 30, 0, player.whoAmI);
                 AttackDelay = 60;
             }
             AttackDelay--;
         }
+        Vector2 GetMountCenter(Player player) => player.Center + new Vector2(16 * player.direction, 0) - new Vector2(Main.screenWidth, Main.screenHeight) / 2;
         public override bool UpdateFrame(Player mountedPlayer, int state, Vector2 velocity)
         {
             UpdateHitbox(mountedPlayer);
-            mountedPlayer.GetModPlayer<OvermorrowModPlayer>().PlayerFocusCamera(mountedPlayer.Center + new Vector2(16 * mountedPlayer.direction, 0) - new Vector2(Main.screenWidth, Main.screenHeight) / 2, 1, 1, 1);
+            mountedPlayer.GetModPlayer<OvermorrowModPlayer>().ScreenPos = GetMountCenter(mountedPlayer);
+
             return base.UpdateFrame(mountedPlayer, state, velocity);
         }
         public override void UpdateEffects(Player player)
         {
+            if (glow > 0f)
+                glow -= 0.05f;
             if (!CanStomp && !player.controlDown)
                 CanStomp = true;
             if (!player.controlDown)
@@ -148,9 +153,10 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
                 if (JumpCharge < 20)
                 {
                     if (JumpCharge == 0)
-                        SoundEngine.PlaySound(new SoundStyle($"OvermorrowModSounds/GlimsporeSquish"), player.Center);
+                        SoundEngine.PlaySound(new SoundStyle($"OvermorrowMod/Sounds/GlimsporeSquish"), player.Center);
                     //Main.NewText(JumpCharge, Color.Red);
                     JumpCharge += 0.25f;
+                    // deff do new effect
                     if (JumpCharge % 0.75f == 0)
                     {
                         float Radius = Main.rand.Next(20, 31) * 3;
@@ -160,15 +166,16 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
                     }
                     if (JumpCharge == 20)
                     {
+                        glow = 1f;
                         SoundEngine.PlaySound(SoundID.MaxMana, player.MountedCenter);
-                        float Radius = 15f;
+                        /*float Radius = 15f;
                         const int MaxCircles = 8;
                         for (int i = 0; MaxCircles > i; i++)
                         {
                             float Rotation = (MathHelper.TwoPi / MaxCircles) * i;
                             Vector2 EffectPos = new Vector2((MountData.textureWidth / 2) + 24 + player.Hitbox.X + ((float)Math.Cos(Rotation) * Radius), player.MountedCenter.Y + ((float)Math.Sin(Rotation) * Radius));
                             NPC.NewNPC(null, (int)EffectPos.X, (int)EffectPos.Y + 60, ModContent.NPCType<NPCs.ChargeEffect>(), ai1:1, ai2:Rotation);
-                        }
+                        }*/
                     }
                 }
                 if (player.velocity.Y == 0 && player.controlJump && JumpCharge > 0)
@@ -211,17 +218,28 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
                     player.GetModPlayer<OvermorrowModPlayer>().AddScreenShake(15, 6);
                     SoundEngine.PlaySound(SoundID.Item14, player.MountedCenter);
                     int[] DustGores = { GoreID.ChimneySmoke1, GoreID.ChimneySmoke2, GoreID.ChimneySmoke3, 220, 221, 222, 11, 12, 13, 61, 62, 63 };
-                    for (int i = (int)player.Center.X - 150; player.Center.X + 150 > i; i++)
+                    Rectangle AoE = new Rectangle((int)player.Center.X - 150, (int)player.MountedCenter.Y, 300, 200);
+                    for (int i = 0; Main.npc.Length > i; i++)
+                    {
+                        if (AoE.Contains(Main.npc[i].position.ToPoint()))
+                        {
+                            Main.npc[i].velocity.Y = -10;
+                            if (!Main.npc[i].townNPC)
+                                Main.npc[i].StrikeNPC(100, 00f, 0);
+                        }
+                    }
+                    for (int i = AoE.X; AoE.X + AoE.Width > i; i++)
                     {
                         if (i % 10 == 0)
                         {
-                            for(int j = (int)player.MountedCenter.Y; player.MountedCenter.Y + 200 > j; j++)
+                            for(int j = AoE.Y; AoE.Y + AoE.Height > j; j++)
                             {
                                 Vector2 Pos = new Vector2(i, j);
                                 Tile tile = Framing.GetTileSafely(Pos.ToTileCoordinates16());
                                 if (tile.HasTile && Main.tileSolid[tile.TileType])
                                 {
                                     //Gore.NewGore(Pos, new Vector2(0, -1), Main.rand.Next(825, 828), 1);
+                                    //Dust.NewDustPerfect(Pos, ModContent.DustType<Dusts.Steam>());
                                     NPC.NewNPC(null, (int)Pos.X, (int)Pos.Y, ModContent.NPCType<NPCs.GamerDust>());
                                     /*for (int k = 0; 1 > k; k++)
                                         Collision.HitTiles(Pos, new Vector2(Main.rand.Next(-2, 3), -15), 50, 50);*/
@@ -258,8 +276,9 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
             UpdateHitbox(player);
             player.Hitbox = new Rectangle(player.Hitbox.X /*+ ExtraHitboxX*/, player.Hitbox.Y, player.Hitbox.Width - ExtraHitboxX, player.Hitbox.Height);
             player.eocDash = 0;
-            //player.GetModPlayer<Overmorrow>().ScreenPos = Vector2.Zero;
+            player.GetModPlayer<OvermorrowModPlayer>().ScreenPos = null;
         }
+        public static float glow = 0f;
         public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow)
         {
             spriteEffects = SpriteEffects.None;
@@ -270,8 +289,18 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
                 frame = new Rectangle(0, 9 * 86, 64, 86);
             }
             frame.Height -= 2;
+            //Main.PlayerRenderer.DrawPlayer(Main.Camera, drawPlayer, drawPlayer.position, 0f, Vector2.Zero);
             return true;
         }
+
+        private void Mount_Draw(On.Terraria.Mount.orig_Draw orig, Mount self, List<DrawData> playerDrawData, int drawType, Player drawPlayer, Vector2 Position, Color drawColor, SpriteEffects playerEffect, float shadow)
+        {
+            Main.spriteBatch.End();
+            Effect effect = ModContent.Request<Effect>("OvermorrowMod/Effects/Flash").Value;
+            effect.Parameters["uIntensity"].SetValue(GlimsporeStomper.glow);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, Main.Transform);
+        }
+
         /*public override void JumpHeight(Player mountedPlayer, ref int jumpHeight, float xVelocity)
         {
             jumpHeight = 10;
@@ -285,4 +314,24 @@ namespace OvermorrowMod.Content.Items.Misc.StrangeSpore
                 jumpSeed = 0f;
         }*/
     }
+    /*public class StomperGlow : PlayerDrawLayer
+    {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) => drawInfo.drawPlayer.HasBuff<Buffs.GlimsporeStomperBuff>();
+        public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.MountBack);
+        protected override void Draw(ref PlayerDrawSet drawInfo)
+        {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
+        }
+    }*/
+    /*public class StomperRemoveGlow : PlayerDrawLayer
+    {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) => drawInfo.drawPlayer.HasBuff<Buffs.GlimsporeStomperBuff>();
+        public override Position GetDefaultPosition() => new AfterParent(PlayerDrawLayers.MountFront);
+        protected override void Draw(ref PlayerDrawSet drawInfo)
+        {
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
+        }
+    }*/
 }

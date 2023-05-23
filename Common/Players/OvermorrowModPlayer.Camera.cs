@@ -81,7 +81,7 @@ namespace OvermorrowMod.Common.Players
             TitleLength = showLength;
             ShowText = true;
         }
-
+        public Vector2? ScreenPos = null;
         public override void ModifyScreenPosition()
         {
             #region Camera Panning
@@ -173,6 +173,9 @@ namespace OvermorrowMod.Common.Players
             }
             #endregion
 
+            if (ScreenPos != null)
+                Main.screenPosition = ScreenPos.GetValueOrDefault();
+
             #region Screenshake
             if (!Main.gamePaused)
             {
@@ -195,6 +198,7 @@ namespace OvermorrowMod.Common.Players
                 if (!Main.gamePaused) TitleCounter++;
             }
             #endregion
+
         }
     }
 }
