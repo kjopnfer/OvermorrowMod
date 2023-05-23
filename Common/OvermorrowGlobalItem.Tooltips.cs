@@ -476,6 +476,48 @@ namespace OvermorrowMod.Common
             return filtered.Split(';');
         }
 
+        /// <summary>
+        /// Scans for tooltip text such as Damage or Weapon types. Does NOT create brackets.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private string ParseTooltipText(string text)
+        {
+            Dictionary<string, string> ObjectHighlights = new Dictionary<string, string>()
+            {
+                { "Type", "FAD5A5" },
+                { "Increase", "58D68D" },
+                { "Decrease", "ff5555" },
+            };
+
+            string convertedText = text;
+            foreach (KeyValuePair<string, string> objectWord in ObjectHighlights)
+            {
+                string type = objectWord.Key;
+                string hex = objectWord.Value;
+
+                string pattern = $@"({{{type}:.*}})";
+                MatchCollection matches = Regex.Matches(text, pattern);
+                foreach (Match match in matches)
+                {
+                    string newValue = match.Value.Replace($"{{{type}:", $"[c/{hex}:");
+                    //newValue = newValue.Replace("}", "]");
+
+                    convertedText = convertedText.Replace(match.Value, newValue);
+                }
+            }
+
+            // Putting this within the for loops confuses the parser
+            convertedText = convertedText.Replace("}", "]");
+
+            return convertedText;
+        }
+
+        /// <summary>
+        /// Scans for tooltip objects such as Buffs and Debuffs. Creates brackets where applicable.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         private string ParseTooltipObjects(string text)
         {
             Dictionary<string, string> ObjectWords = new Dictionary<string, string>()
@@ -492,10 +534,6 @@ namespace OvermorrowMod.Common
                 string hex = objectWord.Value;
 
                 string pattern = $@"(<{type}:.*>)";
-                /*string filtered = string.Join(";", Regex.Matches(text, pattern)
-                                                   .Cast<Match>()
-                                                   .Select(m => m.Groups[1].Value));*/
-
                 MatchCollection matches = Regex.Matches(text, pattern);
                 foreach (Match match in matches)
                 {
@@ -561,6 +599,7 @@ namespace OvermorrowMod.Common
             foreach (TooltipLine tooltip in tooltips)
             {
                 string newText = tooltip.Text;
+                newText = ParseTooltipText(newText);
                 newText = ParseTooltipObjects(newText);
 
                 foreach (string keyword in KeyWords)

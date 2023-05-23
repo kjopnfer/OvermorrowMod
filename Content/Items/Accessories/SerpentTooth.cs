@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Infernal Fang");
-            Tooltip.SetDefault("Increases all damage by 5");
+            Tooltip.SetDefault("Increases all damage by {Increase:5}");
         }
 
         public override void SetDefaults()
