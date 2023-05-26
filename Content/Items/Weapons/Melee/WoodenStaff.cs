@@ -32,9 +32,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             // Use Properties
             Item.useStyle = ItemUseStyleID.Shoot; // How you use the item (swinging, holding out, etc.)
-            Item.useAnimation = 12; // The length of the item's use animation in ticks (60 ticks == 1 second.)
-            Item.useTime = 18; // The length of the item's use time in ticks (60 ticks == 1 second.)
-            Item.UseSound = SoundID.Item71; // The sound that this item plays when used.
+            Item.useAnimation = 30; // The length of the item's use animation in ticks (60 ticks == 1 second.)
+            Item.useTime = 36; // The length of the item's use time in ticks (60 ticks == 1 second.)
+            Item.UseSound = SoundID.Item1; // The sound that this item plays when used.
             Item.autoReuse = false; // Allows the player to hold click to automatically use the item again. Most spears don't autoReuse, but it's possible when used in conjunction with CanUseItem()
 
             // Weapon Properties
@@ -141,6 +141,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Projectile.CloneDefaults(ProjectileID.Spear); // Clone the default values for a vanilla spear. Spear specific values set for width, height, aiStyle, friendly, penetrate, tileCollide, scale, hide, ownerHitCheck, and melee.
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override bool PreAI()

@@ -26,9 +26,9 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Sickening Snack");
-            Tooltip.SetDefault("Ranged attacks have a 33% chance to inflict <Debuff:Fungal Infection>\n" +
-                "Increase debuff durations on the target by 2 seconds on Ranged hits.\n" +
-                "If the target has less than 50% health, increase debuff durations by 4 seconds instead.\n" +
+            Tooltip.SetDefault("Ranged attacks have a {Increase:33%} chance to inflict <Debuff:Fungal Infection>\n" +
+                "Increase debuff durations on the target by {Increase:2} seconds on Ranged hits.\n" +
+                "If the target has less than 50% health, increase debuff durations by {Increase:4} seconds instead.\n" +
                 "Debuff durations can only be increased up to a maximum of 16 seconds.");
         }
 
