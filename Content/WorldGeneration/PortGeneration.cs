@@ -20,7 +20,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             int WaterChestIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Water Chests"));
             if (WaterChestIndex != -1)
             {
-                tasks.Insert(WaterChestIndex + 1, new PassLegacy("Ocean Port", GeneratePort));
+                //tasks.Insert(WaterChestIndex + 1, new PassLegacy("Ocean Port", GeneratePort));
             }
         }
 
