@@ -12,6 +12,8 @@ using OvermorrowMod.Core;
 using ReLogic.Content;
 using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
+using OvermorrowMod.Content.Items.Misc;
+using OvermorrowMod.Content.Items;
 
 namespace OvermorrowMod.Common.Players
 {
@@ -67,11 +69,20 @@ namespace OvermorrowMod.Common.Players
             smolBoi = false;
         }
 
+        public override IEnumerable<Item> AddStartingItems(bool mediumCoreDeath)
+        {
+            return new[] {
+                new Item(ModContent.ItemType<ModBook>()),
+                new Item(ModContent.ItemType<TesterBag>()),
+            };
+        }
+
         public override void ModifyStartingInventory(IReadOnlyDictionary<string, List<Item>> itemsByMod, bool mediumCoreDeath)
         {
             foreach (var list in itemsByMod)
             {
-                list.Value.Clear();
+                if (list.Key != "OvermorrowMod")
+                    list.Value.Clear();
             }
         }
 
