@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Cutscenes;
@@ -275,10 +275,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                             if (tempCounter == 62)
                             {
-                                /*DialoguePlayer dialoguePlayer = target.GetModPlayer<DialoguePlayer>();
-                                XmlDocument doc = ModUtils.GetXML(AssetDirectory.Popup + "Archer.xml");
-                                dialoguePlayer.AddPopup(doc);*/
-
                                 for (int i = 0; i < Main.rand.Next(3, 6); i++)
                                 {
                                     float randomScale = Main.rand.NextFloat(0.5f, 0.85f);
@@ -299,13 +295,6 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
                                 //    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(Main.rand.NextFloat(6, 10) * NPC.direction, -Main.rand.NextFloat(12, 17)), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
                                 //}
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(Main.rand.NextFloat(6, 10) * NPC.direction, -Main.rand.NextFloat(12, 16.5f)), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, 0, 0);
-
-
-                                /*for (int i = -1; i <= 1; i += 2)
-                                {
-                                    SplitArrow arrow = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(7 * NPC.direction, -12), ModContent.ProjectileType<SplitArrow>(), NPC.damage, 2f, Main.myPlayer, NPC.whoAmI, target.whoAmI).ModProjectile as SplitArrow;
-                                    arrow.ShootPosition = (target.Center + Vector2.UnitX * 32 * i) + new Vector2(target.velocity.X * 4, 0);
-                                }*/
                             }
                         }
                     }
@@ -779,3 +768,4 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         }
     }
 }
+*/
