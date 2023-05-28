@@ -158,7 +158,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 Projectile.timeLeft = duration;
             }
 
-            Projectile.velocity = Vector2.Normalize(Projectile.velocity); // Velocity isn't used in this spear implementation, but we use the field to store the spear's attack direction.
+            //Projectile.velocity = Vector2.Normalize(Projectile.velocity); // Velocity isn't used in this spear implementation, but we use the field to store the spear's attack direction.
+            Vector2 attackDirection = Vector2.Normalize(Projectile.velocity);
 
             float halfDuration = duration * 0.5f;
             float progress;
@@ -174,7 +175,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
 
             // Move the projectile from the HoldoutRangeMin to the HoldoutRangeMax and back, using SmoothStep for easing the movement
-            Projectile.Center = player.MountedCenter + Vector2.SmoothStep(Projectile.velocity * HoldoutRangeMin, Projectile.velocity * HoldoutRangeMax, progress);
+            Projectile.Center = player.MountedCenter + Vector2.SmoothStep(attackDirection * HoldoutRangeMin, attackDirection * HoldoutRangeMax, progress);
 
             // Apply proper rotation to the sprite.
             if (Projectile.spriteDirection == -1)
