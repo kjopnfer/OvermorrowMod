@@ -34,6 +34,8 @@ namespace OvermorrowMod.Content.Items
 
         public override void RightClick(Player player)
         {
+            player.QuickSpawnItem(null, ItemID.CopperPickaxe);
+
             player.QuickSpawnItem(null, ItemID.CowboyHat);
             player.QuickSpawnItem(null, ItemID.CowboyJacket);
             player.QuickSpawnItem(null, ItemID.CowboyPants);
