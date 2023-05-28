@@ -33,13 +33,13 @@ namespace OvermorrowMod.Common.Detours
 
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);
                 }
-                else if (npc.type == NPCID.Merchant)
+                /*else if (npc.type == NPCID.Merchant)
                 {
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/MerchantTest.xml"));
                     doc.LoadXml(text);
 
                     player.SetDialogue(texture, npc.GetChat(), 20, doc);
-                }
+                }*/
                 else if (npc.type == ModContent.NPCType<TownKid>())
                 {
                     text = System.Text.Encoding.UTF8.GetString(OvermorrowModFile.Instance.GetFileBytes("Common/Cutscenes/Dialogue/TownKid.xml"));
