@@ -20,7 +20,7 @@ namespace OvermorrowMod.Content.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Tester's Bag of Shit");
-            Tooltip.SetDefault("Right Click to obtain literally everything");
+            Tooltip.SetDefault("Used to obtain literally everything\n{$CommonItemTooltip.RightClickToOpen}");
         }
 
         public override void SetDefaults()
