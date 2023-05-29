@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Content.Biomes;
 using OvermorrowMod.Content.Items.Accessories;
 using Terraria;
@@ -15,6 +16,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
     {
         private const int MAX_FRAMES = 8;
 
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Red Strykebeak");
@@ -94,12 +96,25 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     if (NPC.Center.X <= player.Center.X && flySpeedX <= 2)
                         flySpeedX += 0.1f;
 
-                    if (NPC.Center.Y >= player.Center.Y - 45)
+                    if (NPC.Center.Y >= player.Center.Y - 75)
                     {
                         flySpeedY -= 0.1f;
                     }
                     else
                         if (flySpeedY <= 2) flySpeedY += 0.1f;
+
+                    // Nudge the NPC off the ground if they are too close
+                    if (TRay.CastLength(NPC.Center, Vector2.UnitY, 25) < 25)
+                    {
+                        flySpeedY -= 0.5f;
+                    }
+                    
+                    // Force the NPC to fly upwards and away if there is an obstacle in front of it
+                    if (TRay.CastLength(NPC.Center, Vector2.UnitX * NPC.direction, 45) < 45)
+                    {
+                        flySpeedX -= 0.25f * NPC.direction;
+                        flySpeedY -= 0.5f;
+                    }
 
                     break;
             }
