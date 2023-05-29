@@ -6,6 +6,7 @@ using OvermorrowMod.Content.Items.Accessories;
 using OvermorrowMod.Core;
 using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -53,9 +54,14 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
             // knockBackResist is the multiplier applied to the knockback the NPC receives when it takes damage
             NPC.knockBackResist = 0.5f;
+        }
 
-            //NPC.aiStyle = 5;
-            //AIType = NPCID.EaterofSouls;
+        public int idleDirection;
+        public int idleHeight;
+        public override void OnSpawn(IEntitySource source)
+        {
+            idleDirection = Main.rand.NextBool() ? 1 : -1;
+            idleHeight = Main.rand.Next(17, 24) * 10;
         }
 
         public enum AICase
@@ -73,8 +79,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
         Player player => Main.player[NPC.target];
 
-        bool canHitPlayer = false;
-
         float flySpeedX = 2;
         float flySpeedY = 0;
         float frameRate = 5;
@@ -89,24 +93,40 @@ namespace OvermorrowMod.Content.NPCs.Forest
         {
             switch (AIState)
             {
-                case (int)AICase.Angry:
-                    if (NPC.Center.X <= NPC.Center.X + 30 && flySpeedX <= 2)
+                case (int)AICase.Idle:
+                    if (idleDirection == 1)
                     {
-                        flySpeedX += 0.1f;
-                        NPC.direction = 1;
-                    }
-
-                    //if (NPC.Center.X <= player.Center.X && flySpeedX <= 2)
-                    //    flySpeedX += 0.1f;
-
-                    /*if (NPC.Center.Y >= player.Center.Y - 45)
-                    {
-                        flySpeedY -= 0.1f;
+                        if (NPC.Center.X <= NPC.Center.X + 30 && flySpeedX <= 2)
+                        {
+                            flySpeedX += 0.1f;
+                            NPC.direction = 1;
+                        }
                     }
                     else
-                        if (flySpeedY <= 2) flySpeedY += 0.1f;*/
+                    {
+                        if (NPC.Center.X >= NPC.Center.X - 30 && flySpeedX >= -2)
+                        {
+                            flySpeedX -= 0.1f;
+                            NPC.direction = -1;
+                        }
+                    }
+
+                    if (flySpeedY <= -4 || flySpeedY >= 4) flySpeedY = 0;
+
+                    // Nudge the NPC off the ground if they are too close
+                    if (TRay.CastLength(NPC.Center, Vector2.UnitY, idleHeight) < idleHeight || TRay.CastLength(NPC.Bottom, Vector2.UnitY, idleHeight) < idleHeight)
+                        flySpeedY -= 0.5f;
+                    else if (TRay.CastLength(NPC.Center, Vector2.UnitY, 1000) > 300) flySpeedY = 0;
+                    
+                    // Force the NPC to fly upwards and away if there is an obstacle in front of it
+                    if (TRay.CastLength(NPC.Center, Vector2.UnitX * NPC.direction, 100) < 100 || TRay.CastLength(NPC.Bottom, Vector2.UnitX * NPC.direction, 100) < 100)
+                    {
+                        flySpeedX -= 0.1f * NPC.direction;
+                        flySpeedY -= 1f;
+                    }
+
                     break;
-                case (int)AICase.Idle:
+                case (int)AICase.Angry:
                     frameRate = 5;
                     NPC.TargetClosest();
 
@@ -180,7 +200,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
                     if (AICounter > 120)
                     {
-                        AIState = (int)AICase.Idle;
+                        AIState = (int)AICase.Angry;
                         AICounter = 0;
                         aggroDelay = 60;
                     }
@@ -228,7 +248,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
                     if (AICounter >= 60)
                     {
-                        AIState = (int)AICase.Idle;
+                        AIState = (int)AICase.Angry;
                         AICounter = 0;
                         aggroDelay = 60;
                     }
@@ -265,7 +285,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             if (AIState == (int)AICase.Idle)
             {
                 NPC.friendly = false;
-                //AIState = (int)AICase.Angry;
+                AIState = (int)AICase.Angry;
             }
 
             flySpeedX += Utils.Clamp(projectile.velocity.X * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
