@@ -82,8 +82,9 @@ namespace OvermorrowMod.Content.NPCs.Forest
         float flySpeedX = 2;
         float flySpeedY = 0;
         float frameRate = 5;
-
         float aggroDelay = 60;
+
+        Vector2 idlePosition;
         Vector2 diveStartPosition;
         Vector2 diveTargetPosition;
 
@@ -94,9 +95,17 @@ namespace OvermorrowMod.Content.NPCs.Forest
             switch (AIState)
             {
                 case (int)AICase.Idle:
+                    if (AICounter++ == 0)
+                    {
+                        if (idleDirection == 1)
+                            idlePosition = NPC.Center + new Vector2(30, 0);
+                        else              
+                            idlePosition = NPC.Center + new Vector2(-30, 0);  
+                    }
+
                     if (idleDirection == 1)
                     {
-                        if (NPC.Center.X <= NPC.Center.X + 30 && flySpeedX <= 2)
+                        if (NPC.Center.X <= idlePosition.X && flySpeedX <= 2)
                         {
                             flySpeedX += 0.1f;
                             NPC.direction = 1;
@@ -104,27 +113,57 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     }
                     else
                     {
-                        if (NPC.Center.X >= NPC.Center.X - 30 && flySpeedX >= -2)
+                        if (NPC.Center.X >= idlePosition.X && flySpeedX >= -2)
                         {
                             flySpeedX -= 0.1f;
                             NPC.direction = -1;
                         }
                     }
 
-                    if (flySpeedY <= -4 || flySpeedY >= 4) flySpeedY = 0;
+                    // This creates the bobbing up/down motion
+                    if (NPC.Center.Y >= idlePosition.Y - 2)
+                    {
+                        flySpeedY -= 0.1f;
+
+                        if (idleDirection == 1)
+                            idlePosition = NPC.Center + new Vector2(30, 0);
+                        else
+                            idlePosition = NPC.Center + new Vector2(-30, 0);
+                    }
+                    else if (flySpeedY <= 2) flySpeedY += 0.1f;
+
+                    //if (flySpeedY <= -4 || flySpeedY >= 4) flySpeedY = 0;
 
                     // Nudge the NPC off the ground if they are too close
                     if (TRay.CastLength(NPC.Center, Vector2.UnitY, idleHeight) < idleHeight || TRay.CastLength(NPC.Bottom, Vector2.UnitY, idleHeight) < idleHeight)
-                        flySpeedY -= 0.5f;
-                    else if (TRay.CastLength(NPC.Center, Vector2.UnitY, 1000) > 300) flySpeedY = 0;
+                    {
+                        flySpeedY -= 0.1f;
+
+                        if (idleDirection == 1)
+                            idlePosition = NPC.Center + new Vector2(30, 0);
+                        else
+                            idlePosition = NPC.Center + new Vector2(-30, 0);
+                    }
                     
+                    if (TRay.CastLength(NPC.Center, Vector2.UnitY, 10000) > 300)
+                    {
+                        flySpeedY += 0.2f;
+                    }
+
+                    // Sometimes the bird decides to just launch upwards towards the sky uncontrollably
+                    if (flySpeedY <= -10) flySpeedY += 7;
+
                     // Force the NPC to fly upwards and away if there is an obstacle in front of it
                     if (TRay.CastLength(NPC.Center, Vector2.UnitX * NPC.direction, 100) < 100 || TRay.CastLength(NPC.Bottom, Vector2.UnitX * NPC.direction, 100) < 100)
                     {
                         flySpeedX -= 0.1f * NPC.direction;
                         flySpeedY -= 1f;
-                    }
 
+                        if (idleDirection == 1)
+                            idlePosition = NPC.Center + new Vector2(30, 0);
+                        else
+                            idlePosition = NPC.Center + new Vector2(-30, 0);
+                    }
                     break;
                 case (int)AICase.Angry:
                     frameRate = 5;
@@ -169,7 +208,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
                                 AIState = (int)AICase.Dive;
                         }
                     }
-
                     break;
                 case (int)AICase.Dive:
                     frameRate = 3;
@@ -204,7 +242,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         AICounter = 0;
                         aggroDelay = 60;
                     }
-
                     break;
                 case (int)AICase.Grab:
                     if (AICounter++ == 0)
@@ -252,7 +289,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         AICounter = 0;
                         aggroDelay = 60;
                     }
-
                     break;
             }
 
@@ -273,7 +309,8 @@ namespace OvermorrowMod.Content.NPCs.Forest
             if (AIState == (int)AICase.Idle)
             {
                 NPC.friendly = false;
-                //AIState = (int)AICase.Angry;
+                AIState = (int)AICase.Angry;
+                AICounter = 0;
 
                 //flySpeedX += knockback;
                 //flySpeedY += knockback;
@@ -286,6 +323,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             {
                 NPC.friendly = false;
                 AIState = (int)AICase.Angry;
+                AICounter = 0;
             }
 
             flySpeedX += Utils.Clamp(projectile.velocity.X * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
