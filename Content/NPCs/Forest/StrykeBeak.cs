@@ -18,7 +18,8 @@ namespace OvermorrowMod.Content.NPCs.Forest
     public class StrykeBeak : ModNPC
     {
         private const int MAX_FRAMES = 8;
-
+        public override bool? CanBeHitByItem(Player player, Item item) => true;
+        public override bool? CanBeHitByProjectile(Projectile projectile) => true;
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
             switch (AIState)
@@ -46,6 +47,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             NPC.damage = 20;
             NPC.defense = 6;
             NPC.lifeMax = 360;
+            NPC.friendly = true;
             NPC.aiStyle = -1;
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit28;
@@ -379,8 +381,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            // TODO: Reduce spawn chance after testing completion
-            return spawnInfo.Player.ZonePurity && Main.dayTime ? 0.5f : 0f;
+            return spawnInfo.Player.ZonePurity && Main.dayTime ? 0.25f : 0f;
         }
     }
 }
