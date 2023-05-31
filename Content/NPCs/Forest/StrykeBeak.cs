@@ -300,12 +300,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
             NPC.velocity.Y = flySpeedY;
         }
 
-        private void CheckGroundCollision()
-        {
-            //Tile tile = Main.tile[(int)(NPC.Center.X / 16), (int)(NPC.Center.Y / 16) + 16];
-            //if(tile.)
-        }
-
         public override void OnHitByItem(Player player, Item item, int damage, float knockback, bool crit)
         {
             if (AIState == (int)AICase.Idle)
