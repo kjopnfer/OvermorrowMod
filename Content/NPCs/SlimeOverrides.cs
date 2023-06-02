@@ -35,7 +35,7 @@ namespace OvermorrowMod.Content.NPCs
             switch (npc.type)
             {
                 case NPCID.GreenSlime:
-                    npc.aiStyle = -1;
+                    //npc.aiStyle = -1;
                     break;
             }
         }
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.NPCs
             {
                 if (npc.netID == NPCID.GreenSlime)
                 {
-                    npc.ai[1] = 1;
+                    //npc.ai[2] = 1;
                 }
             }
 
@@ -61,6 +61,10 @@ namespace OvermorrowMod.Content.NPCs
             Land = 3,
         }
 
+        // ai[0] is AI State
+        // ai[2] is not used because for some reason vanilla decides to stick whatever bonus drop in here
+        // ai[2] is AI Counter
+        // ai[3] is an AI Cycle (how many times the NPC has run through a state)
         public override bool PreAI(NPC npc)
         {
             if (npc.type == NPCID.BlueSlime)
@@ -71,62 +75,65 @@ namespace OvermorrowMod.Content.NPCs
                     switch (npc.ai[0])
                     {
                         case (int)AICase.Idle:
-                            if (npc.ai[1] == 1) npc.velocity.X = 0.1f;
+                            if (npc.ai[2] == 1) npc.velocity.X = 0.1f;
 
-                            if (npc.ai[1]++ >= 40)
+                            if (npc.ai[2]++ >= 40)
                             {
                                 npc.velocity.X = 0;
-                                npc.ai[1] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                                npc.ai[2] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
 
-                                if (npc.ai[2]++ >= 3)
+                                if (npc.ai[3]++ >= 3)
                                 {
                                     npc.ai[0] = (int)AICase.PreJump;
-                                    npc.ai[1] = 0;
                                     npc.ai[2] = 0;
+                                    npc.ai[3] = 0;
                                 }
                             }
                             break;
                         case (int)AICase.PreJump:
                             int bounceRate = 1;
-                            if (npc.ai[2] >= 4) bounceRate = 2;
+                            if (npc.ai[3] >= 4) bounceRate = 2;
 
-                            npc.ai[1] += bounceRate;
+                            npc.ai[2] += bounceRate;
 
-                            if (npc.ai[1] >= 12)
+                            if (npc.ai[2] >= 12)
                             {
-                                npc.ai[1] = 0;
-                                if (npc.ai[2]++ >= 8)
+                                npc.ai[2] = 0;
+                                if (npc.ai[3]++ >= 8)
                                 {
                                     npc.ai[0] = (int)AICase.Jump;
-                                    npc.ai[2] = 0;
+                                    npc.ai[3] = 0;
                                 }
                             }
                             break;
                         case (int)AICase.Jump:
-                            if (npc.ai[1]++ == 0)
+                            if (npc.ai[2]++ == 0)
                                 npc.velocity = new Vector2(2, -7);
 
                             // Sometimes the NPC gets stuck on weird blocks or ledges and only ends up jumping straight up
                             // This nudges the NPC while in midair to get over these obstacles
-                            if (npc.velocity.X == 0 && npc.ai[1] >= 5) npc.velocity.X = 2;
+                            if (npc.velocity.X == 0 && npc.ai[2] >= 5) npc.velocity.X = 2;
 
-                            if (npc.collideY && npc.ai[1] >= 15)
+                            if (npc.collideY && npc.ai[2] >= 15)
                             {
                                 if (npc.velocity.X != 0) npc.velocity.X = 0;
 
                                 npc.ai[0] = (int)AICase.Land;
-                                npc.ai[1] = 0;
+                                npc.ai[2] = 0;
                             }
                             break;
                         case (int)AICase.Land:
-                            if (npc.ai[1]++ >= 10)
+                            if (npc.ai[2]++ >= 10)
                             {
                                 npc.ai[0] = (int)AICase.Idle;
-                                npc.ai[1] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                                npc.ai[2] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
                             }
                             break;
                     }
-                    return false;
+
+                    // Allow the vanilla AI to run ONCE, after which the condition
+                    // will no longer be true after being assigned a bonus drop (which will never be 0)
+                    return npc.ai[1] == 0;
                 }
             }
 
@@ -136,7 +143,14 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void AI(NPC npc)
         {
-
+            if (npc.type == NPCID.BlueSlime)
+            {
+                // During the singular run instance, reset ai0 to be 0
+                if (npc.netID == NPCID.GreenSlime)
+                {
+                    if (npc.ai[0] < 0) npc.ai[0] = 0;
+                }
+            }
 
             base.AI(npc);
         }
@@ -161,36 +175,31 @@ namespace OvermorrowMod.Content.NPCs
         private const int FRAME_HEIGHT = 36;
         private const int FRAME_WIDTH = 40;
 
-        // ai[0] is AI State
-        // ai[1] is AI Counter
-        // ai[2] is an AI Cycle (how many times the NPC has run through a state)
         public override void FindFrame(NPC npc, int frameHeight)
         {
             if (npc.type == NPCID.BlueSlime)
             {
                 if (npc.netID == NPCID.GreenSlime)
                 {
-                    Main.NewText("ai1: " + npc.ai[1] + " frame: " + yFrame);
-
                     switch (npc.ai[0])
                     {
                         case (int)AICase.Idle:
                             xFrame = 0;
-                            if (npc.ai[1] % 8 == 0)
+                            if (npc.ai[2] % 8 == 0)
                                 yFrame++;
 
                             // For SOME FUCKING REASON THIS KEEPS HAPPENING
                             if (yFrame > 5) yFrame = 5;
 
-                            if (npc.ai[1] >= 40) yFrame = 0;
+                            if (npc.ai[2] >= 40) yFrame = 0;
                             break;
                         case (int)AICase.PreJump:
                             xFrame = 1;
 
-                            if (npc.ai[1] == 0 || npc.ai[1] >= 12)
+                            if (npc.ai[2] == 0 || npc.ai[2] >= 12)
                                 yFrame = 2;
 
-                            if (npc.ai[1] == 6)
+                            if (npc.ai[2] == 6)
                                 yFrame = 1;
                             break;
                         case (int)AICase.Jump:
@@ -216,10 +225,68 @@ namespace OvermorrowMod.Content.NPCs
                 var spriteEffects = npc.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Rectangle drawRectangle = new Rectangle(xFrame * FRAME_WIDTH, yFrame * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
 
+                if (npc.ai[1] == -1) npc.active = false;
+
                 if (npc.netID == NPCID.GreenSlime)
                 {
                     Color color = npc.color * Lighting.Brightness((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
                     float alpha = npc.alpha / 255f;
+                    if (npc.ai[1] != -1)
+                    {
+                        Texture2D bonusDrop = TextureAssets.Item[(int)npc.ai[1]].Value;
+                        float drawOffset = 0;
+                        if (xFrame == 0)
+                        {
+                            switch (yFrame)
+                            {
+                                case 0:
+                                case 1:
+                                    drawOffset = -4;
+                                    break;
+                                case 5:
+                                    drawOffset = -8;
+                                    break;
+                                case 2:
+                                case 3:
+                                    drawOffset = 4;
+                                    break;
+                                case 4:
+                                    drawOffset = -4;
+                                    break;
+                                default:
+                                    drawOffset = 0;
+                                    break;
+                            }
+                        }
+
+                        float dropScale = 0.7f;
+                        switch (npc.ai[1])
+                        {
+                            case 11:
+                            case 12:
+                            case 13:
+                            case 14:
+                            case 699:
+                            case 700:
+                            case 701:
+                            case 702:
+                                // Ores
+                                dropScale = 0.75f;
+                                break;
+                            case 71:
+                            case 72:
+                            case 73:
+                                // Coins
+                                dropScale = 0.9f;
+                                break;
+                            default:
+                                dropScale = 0.6f;
+                                break;
+                        }
+
+                        float drawDirection = npc.direction == 0 ? 1 : -1;
+                        spriteBatch.Draw(bonusDrop, npc.Center + new Vector2(drawOffset * drawDirection, 0) - Main.screenPosition, null, Color.White, npc.rotation, bonusDrop.Size() / 2, dropScale, SpriteEffects.None, 0);
+                    }
 
                     spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
                     return false;
