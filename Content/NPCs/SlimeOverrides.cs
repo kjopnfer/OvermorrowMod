@@ -35,16 +35,30 @@ namespace OvermorrowMod.Content.NPCs
             switch (npc.type)
             {
                 case NPCID.GreenSlime:
-                    //npc.aiStyle = -1;
+                    npc.aiStyle = -1;
                     break;
             }
+        }
+
+        public override void OnSpawn(NPC npc, IEntitySource source)
+        {
+            if (npc.type == NPCID.BlueSlime)
+            {
+                if (npc.netID == NPCID.GreenSlime)
+                {
+                    npc.ai[1] = 1;
+                }
+            }
+
+            base.OnSpawn(npc, source);
         }
 
         public enum AICase
         {
             Idle = 0,
-            Angry = 1,
-            Special = 2,
+            PreJump = 1,
+            Jump = 2,
+            Land = 3,
         }
 
         public override bool PreAI(NPC npc)
@@ -54,7 +68,64 @@ namespace OvermorrowMod.Content.NPCs
                 // This is so stupid why would Red do this
                 if (npc.netID == NPCID.GreenSlime)
                 {
-                    Main.NewText("green slime");
+                    switch (npc.ai[0])
+                    {
+                        case (int)AICase.Idle:
+                            if (npc.ai[1] == 1) npc.velocity.X = 0.1f;
+
+                            if (npc.ai[1]++ >= 40)
+                            {
+                                npc.velocity.X = 0;
+                                npc.ai[1] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+
+                                if (npc.ai[2]++ >= 3)
+                                {
+                                    npc.ai[0] = (int)AICase.PreJump;
+                                    npc.ai[1] = 0;
+                                    npc.ai[2] = 0;
+                                }
+                            }
+                            break;
+                        case (int)AICase.PreJump:
+                            int bounceRate = 1;
+                            if (npc.ai[2] >= 4) bounceRate = 2;
+
+                            npc.ai[1] += bounceRate;
+
+                            if (npc.ai[1] >= 12)
+                            {
+                                npc.ai[1] = 0;
+                                if (npc.ai[2]++ >= 8)
+                                {
+                                    npc.ai[0] = (int)AICase.Jump;
+                                    npc.ai[2] = 0;
+                                }
+                            }
+                            break;
+                        case (int)AICase.Jump:
+                            if (npc.ai[1]++ == 0)
+                                npc.velocity = new Vector2(2, -7);
+
+                            // Sometimes the NPC gets stuck on weird blocks or ledges and only ends up jumping straight up
+                            // This nudges the NPC while in midair to get over these obstacles
+                            if (npc.velocity.X == 0 && npc.ai[1] >= 5) npc.velocity.X = 2;
+
+                            if (npc.collideY && npc.ai[1] >= 15)
+                            {
+                                if (npc.velocity.X != 0) npc.velocity.X = 0;
+
+                                npc.ai[0] = (int)AICase.Land;
+                                npc.ai[1] = 0;
+                            }
+                            break;
+                        case (int)AICase.Land:
+                            if (npc.ai[1]++ >= 10)
+                            {
+                                npc.ai[0] = (int)AICase.Idle;
+                                npc.ai[1] = 1; // Set the AICounter to 1 so it doesnt immediately change frames when set to 0
+                            }
+                            break;
+                    }
                     return false;
                 }
             }
@@ -65,10 +136,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void AI(NPC npc)
         {
-            if (npc.type == NPCID.GreenSlime)
-            {
-                Main.NewText("green slime");
-            }
+
 
             base.AI(npc);
         }
@@ -87,13 +155,56 @@ namespace OvermorrowMod.Content.NPCs
         int xFrame = 1;
         int yFrame = 2;
         int frameCounter;
+        int frameTimer;
 
         private const int MAX_FRAMES = 6;
         private const int FRAME_HEIGHT = 36;
         private const int FRAME_WIDTH = 40;
 
+        // ai[0] is AI State
+        // ai[1] is AI Counter
+        // ai[2] is an AI Cycle (how many times the NPC has run through a state)
         public override void FindFrame(NPC npc, int frameHeight)
         {
+            if (npc.type == NPCID.BlueSlime)
+            {
+                if (npc.netID == NPCID.GreenSlime)
+                {
+                    Main.NewText("ai1: " + npc.ai[1] + " frame: " + yFrame);
+
+                    switch (npc.ai[0])
+                    {
+                        case (int)AICase.Idle:
+                            xFrame = 0;
+                            if (npc.ai[1] % 8 == 0)
+                                yFrame++;
+
+                            // For SOME FUCKING REASON THIS KEEPS HAPPENING
+                            if (yFrame > 5) yFrame = 5;
+
+                            if (npc.ai[1] >= 40) yFrame = 0;
+                            break;
+                        case (int)AICase.PreJump:
+                            xFrame = 1;
+
+                            if (npc.ai[1] == 0 || npc.ai[1] >= 12)
+                                yFrame = 2;
+
+                            if (npc.ai[1] == 6)
+                                yFrame = 1;
+                            break;
+                        case (int)AICase.Jump:
+                            xFrame = 1;
+                            yFrame = 0;
+                            break;
+                        case (int)AICase.Land:
+                            xFrame = 1;
+                            yFrame = 1;
+                            break;
+                    }
+                }
+            }
+
             base.FindFrame(npc, frameHeight);
         }
 
@@ -107,11 +218,10 @@ namespace OvermorrowMod.Content.NPCs
 
                 if (npc.netID == NPCID.GreenSlime)
                 {
-                    //npc.color = Color.LightGreen;
                     Color color = npc.color * Lighting.Brightness((int)npc.Center.X / 16, (int)npc.Center.Y / 16);
                     float alpha = npc.alpha / 255f;
 
-                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color * alpha, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
+                    spriteBatch.Draw(texture, npc.Center - Main.screenPosition, drawRectangle, color, npc.rotation, drawRectangle.Size() / 2, npc.scale, spriteEffects, 0);
                     return false;
                 }
             }
