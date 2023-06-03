@@ -62,7 +62,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
         public int idleHeight;
         public override void OnSpawn(IEntitySource source)
         {
-            idleDirection = Main.rand.NextBool() ? 1 : -1;
+            idleDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
             idleHeight = Main.rand.Next(17, 24) * 10;
         }
 

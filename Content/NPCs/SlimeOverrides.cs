@@ -45,11 +45,12 @@ namespace OvermorrowMod.Content.NPCs
         int idleJumpDirection = 1;
         public override void OnSpawn(NPC npc, IEntitySource source)
         {
+            // This shit doesn't run
             if (npc.type == NPCID.BlueSlime)
             {
                 if (npc.netID == NPCID.GreenSlime)
                 {
-                    //npc.ai[2] = 1;
+                    
                 }
             }
 
@@ -157,6 +158,8 @@ namespace OvermorrowMod.Content.NPCs
                 if (npc.netID == NPCID.GreenSlime)
                 {
                     if (npc.ai[0] < 0) npc.ai[0] = 0;
+
+                    idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
                 }
             }
 
