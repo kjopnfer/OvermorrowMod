@@ -13,6 +13,8 @@ using OvermorrowMod.Common;
 using System.Collections.Generic;
 using Terraria.Audio;
 using OvermorrowMod.Common.Particles;
+using Terraria.ModLoader.IO;
+using System.IO;
 
 namespace OvermorrowMod.Content.NPCs
 {
@@ -40,6 +42,7 @@ namespace OvermorrowMod.Content.NPCs
             }
         }
 
+        int idleJumpDirection = 1;
         public override void OnSpawn(NPC npc, IEntitySource source)
         {
             if (npc.type == NPCID.BlueSlime)
@@ -72,10 +75,13 @@ namespace OvermorrowMod.Content.NPCs
                 // This is so stupid why would Red do this
                 if (npc.netID == NPCID.GreenSlime)
                 {
+                    Player player = Main.player[npc.target];
+                    if (!player.active) npc.target = 255;
+
                     switch (npc.ai[0])
                     {
                         case (int)AICase.Idle:
-                            if (npc.ai[2] == 1) npc.velocity.X = 0.1f;
+                            if (npc.ai[2] == 1) npc.velocity.X = 0.1f * idleJumpDirection;
 
                             if (npc.ai[2]++ >= 40)
                             {
@@ -107,12 +113,14 @@ namespace OvermorrowMod.Content.NPCs
                             }
                             break;
                         case (int)AICase.Jump:
+                            if (npc.target != 255) idleJumpDirection = player.Center.X > npc.Center.X ? 1 : -1;
+
                             if (npc.ai[2]++ == 0)
-                                npc.velocity = new Vector2(2, -7);
+                                npc.velocity = new Vector2(2 * idleJumpDirection, -7);
 
                             // Sometimes the NPC gets stuck on weird blocks or ledges and only ends up jumping straight up
                             // This nudges the NPC while in midair to get over these obstacles
-                            if (npc.velocity.X == 0 && npc.ai[2] >= 5) npc.velocity.X = 2;
+                            if (npc.velocity.X == 0 && npc.ai[2] >= 5) npc.velocity.X = 2 * idleJumpDirection;
 
                             if (npc.collideY && npc.ai[2] >= 15)
                             {
@@ -157,14 +165,45 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void OnHitByItem(NPC npc, Player player, Item item, int damage, float knockback, bool crit)
         {
+            if (npc.type == NPCID.BlueSlime)
+            {
+                if (npc.netID == NPCID.GreenSlime)
+                    npc.TargetClosest();
+            }
+
             base.OnHitByItem(npc, player, item, damage, knockback, crit);
         }
 
         public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
         {
+            if (npc.type == NPCID.BlueSlime)
+            {
+                if (npc.netID == NPCID.GreenSlime)
+                    npc.TargetClosest();
+            }
+
             base.OnHitByProjectile(npc, projectile, damage, knockback, crit);
         }
 
+        public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+        {
+            if (npc.type == NPCID.BlueSlime)
+            {
+                if (npc.netID == NPCID.GreenSlime)
+                {
+                }
+            }
+        }
+
+        public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+        {
+            if (npc.type == NPCID.BlueSlime)
+            {
+                if (npc.netID == NPCID.GreenSlime)
+                {
+                }
+            }
+        }
 
         int xFrame = 1;
         int yFrame = 2;
@@ -181,6 +220,8 @@ namespace OvermorrowMod.Content.NPCs
             {
                 if (npc.netID == NPCID.GreenSlime)
                 {
+                    npc.direction = idleJumpDirection;
+
                     switch (npc.ai[0])
                     {
                         case (int)AICase.Idle:
@@ -222,10 +263,8 @@ namespace OvermorrowMod.Content.NPCs
             if (npc.type == NPCID.BlueSlime)
             {
                 Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.NPC + "Slime").Value;
-                var spriteEffects = npc.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                var spriteEffects = npc.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                 Rectangle drawRectangle = new Rectangle(xFrame * FRAME_WIDTH, yFrame * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT);
-
-                if (npc.ai[1] == -1) npc.active = false;
 
                 if (npc.netID == NPCID.GreenSlime)
                 {
@@ -259,7 +298,7 @@ namespace OvermorrowMod.Content.NPCs
                             }
                         }
 
-                        float dropScale = 0.7f;
+                        float dropScale;
                         switch (npc.ai[1])
                         {
                             case 11:
