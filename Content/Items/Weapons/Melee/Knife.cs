@@ -8,8 +8,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 	{
 		public override void SetDefaults()
 		{
-			Item.damage = 8;
-			Item.knockBack = 4f;
+			Item.damage = 4;
+			Item.knockBack = 2f;
 			Item.useStyle = ItemUseStyleID.Rapier; // Makes the player do the proper arm motion
 			Item.useAnimation = 12;
 			Item.useTime = 12;

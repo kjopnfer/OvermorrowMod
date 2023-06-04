@@ -32,14 +32,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             // Use Properties
             Item.useStyle = ItemUseStyleID.Shoot; // How you use the item (swinging, holding out, etc.)
-            Item.useAnimation = 12; // The length of the item's use animation in ticks (60 ticks == 1 second.)
-            Item.useTime = 18; // The length of the item's use time in ticks (60 ticks == 1 second.)
-            Item.UseSound = SoundID.Item71; // The sound that this item plays when used.
+            Item.useAnimation = 30; // The length of the item's use animation in ticks (60 ticks == 1 second.)
+            Item.useTime = 36; // The length of the item's use time in ticks (60 ticks == 1 second.)
+            Item.UseSound = SoundID.Item1; // The sound that this item plays when used.
             Item.autoReuse = false; // Allows the player to hold click to automatically use the item again. Most spears don't autoReuse, but it's possible when used in conjunction with CanUseItem()
 
             // Weapon Properties
-            Item.damage = 25;
-            Item.knockBack = 6.5f;
+            Item.damage = 12;
+            Item.knockBack = 3f;
             Item.noUseGraphic = true; // When true, the item's sprite will not be visible while the item is in use. This is true because the spear projectile is what's shown so we do not want to show the spear sprite as well.
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true; // Allows the item's animation to do damage. This is important because the spear is actually a projectile instead of an item. This prevents the melee hitbox of this item.
@@ -141,6 +141,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Projectile.CloneDefaults(ProjectileID.Spear); // Clone the default values for a vanilla spear. Spear specific values set for width, height, aiStyle, friendly, penetrate, tileCollide, scale, hide, ownerHitCheck, and melee.
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override bool PreAI()
@@ -156,7 +158,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 Projectile.timeLeft = duration;
             }
 
-            Projectile.velocity = Vector2.Normalize(Projectile.velocity); // Velocity isn't used in this spear implementation, but we use the field to store the spear's attack direction.
+            //Projectile.velocity = Vector2.Normalize(Projectile.velocity); // Velocity isn't used in this spear implementation, but we use the field to store the spear's attack direction.
+            Vector2 attackDirection = Vector2.Normalize(Projectile.velocity);
 
             float halfDuration = duration * 0.5f;
             float progress;
@@ -172,7 +175,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
 
             // Move the projectile from the HoldoutRangeMin to the HoldoutRangeMax and back, using SmoothStep for easing the movement
-            Projectile.Center = player.MountedCenter + Vector2.SmoothStep(Projectile.velocity * HoldoutRangeMin, Projectile.velocity * HoldoutRangeMax, progress);
+            Projectile.Center = player.MountedCenter + Vector2.SmoothStep(attackDirection * HoldoutRangeMin, attackDirection * HoldoutRangeMax, progress);
 
             // Apply proper rotation to the sprite.
             if (Projectile.spriteDirection == -1)

@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Angler Tooth");
-            Tooltip.SetDefault("7% increased crit chance");
+            Tooltip.SetDefault("{Increase:7%} increased crit chance");
         }
 
         public override void SetDefaults()

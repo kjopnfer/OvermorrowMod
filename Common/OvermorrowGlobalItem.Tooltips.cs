@@ -201,7 +201,7 @@ namespace OvermorrowMod.Common
         // From https://stackoverflow.com/a/12108823
         private string[] GetKeywords(string text)
         {
-            string filtered = string.Join(";", Regex.Matches(text, @"\<(.+?)\>")
+            string filtered = string.Join(";", Regex.Matches(text, @"\{Keyword:(.+?)\}")
                                     .Cast<Match>()
                                     .Select(m => m.Groups[1].Value));
             return filtered.Split(';');
@@ -213,16 +213,6 @@ namespace OvermorrowMod.Common
         {
             // Sort the tooltips based on priority
             var orderedTooltips = TooltipObjects.OrderBy(x => x.Priority).ToList();
-
-            foreach (TooltipLine line in lines)
-            {
-                string[] lineKeywords = GetKeywords(line.Text);
-                if (lineKeywords.Length > 0)
-                {
-                    foreach (string lineKeyword in lineKeywords)
-                        if (lineKeyword.Length > 0) KeyWords.Add(lineKeyword);
-                }
-            }
 
             float CONTAINER_WIDTH = 350;
 
@@ -382,6 +372,8 @@ namespace OvermorrowMod.Common
                             if (Main.MouseScreen.X > Main.screenWidth / 2)
                                 containerPosition = new Vector2(x, y) - new Vector2(360, 0);
 
+                            titleColor = buffTooltip.Type == BuffTooltipType.Buff ? new Color(80, 250, 123) : new Color(255, 85, 85);
+
                             Utils.DrawInvBG(Main.spriteBatch, new Rectangle((int)containerPosition.X - 10, (int)(containerPosition.Y - yOverflow - 10), (int)CONTAINER_WIDTH, (int)height), color * 0.925f);
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, buffTooltip.Type.ToString(), new Vector2(containerPosition.X + titleSize.X, containerPosition.Y + titleHeight - yOverflow), subtitleColor, 0f, titleSize, baseTextSize);
 
@@ -474,89 +466,186 @@ namespace OvermorrowMod.Common
             return filtered.Split(';');
         }
 
-        // TODO: Add a thing for buffs later
-        private string ConvertBuffWords(string text)
+        /// <summary>
+        /// Scans for tooltip text such as Damage or Weapon types. Does NOT create brackets.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private string ParseTooltipText(string text)
         {
-            string convertedText = text;
-
-            string pattern = @"(<Debuff:.*>)";
-            string filtered = string.Join(";", Regex.Matches(text, pattern)
-                                               .Cast<Match>()
-                                               .Select(m => m.Groups[1].Value));
-
-            MatchCollection matches = Regex.Matches(text, pattern);
-            foreach (Match match in matches)
+            Dictionary<string, string> ObjectHighlights = new Dictionary<string, string>()
             {
-                string newValue = match.Value.Replace("<Debuff:", "[c/ff5555:[");
-                newValue = newValue.Replace(">", "][c/ff5555:]]");
+                { "Type", "FAD5A5" },
+                { "Increase", "58D68D" },
+                { "Decrease", "ff5555" },
+                { "Keyword", "ff79c6" },
+            };
 
-                convertedText = convertedText.Replace(match.Value, newValue);
+            string convertedText = text;
+            foreach (KeyValuePair<string, string> objectWord in ObjectHighlights)
+            {
+                string type = objectWord.Key;
+                string hex = objectWord.Value;
+
+                string pattern = $@"({{{type}:.*}})";
+                MatchCollection matches = Regex.Matches(text, pattern);
+                foreach (Match match in matches)
+                {
+                    string newValue = match.Value.Replace($"{{{type}:", $"[c/{hex}:");
+                    //newValue = newValue.Replace("}", "]");
+
+                    convertedText = convertedText.Replace(match.Value, newValue);
+                }
             }
+
+            // Putting this within the for loops confuses the parser
+            convertedText = convertedText.Replace("}", "]");
 
             return convertedText;
         }
 
+        /// <summary>
+        /// Scans for tooltip objects such as Buffs and Debuffs. Creates brackets where applicable.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private string ParseTooltipObjects(string text)
+        {
+            Dictionary<string, string> ObjectWords = new Dictionary<string, string>()
+            {
+                { "Key", "808080" },
+                { "Buff", "50fa7b" },
+                { "Debuff", "ff5555" },
+                { "Projectile", "8be9fd" },
+            };
+
+            string convertedText = text;
+            foreach (KeyValuePair<string, string> objectWord in ObjectWords)
+            {
+                string type = objectWord.Key;
+                string hex = objectWord.Value;
+
+                string pattern = $@"(<{type}:.*>)";
+                MatchCollection matches = Regex.Matches(text, pattern);
+
+                foreach (Match match in matches)
+                {
+                    //Main.NewText(text + " : " + match.Groups[1]);
+                    string newValue = match.Value.Replace($"<{type}:", $"[c/{hex}:{{");
+                    //newValue = newValue.Replace(">", $"][c/{hex}:]]");
+
+                    convertedText = convertedText.Replace(match.Value, newValue);
+                }
+            }
+
+            convertedText = convertedText.Replace(">", "}]");
+            return convertedText;
+        }
+
+        /// <summary>
+        /// Determines whether or not the item is equipped in vanity based on if the 'Social' tooltip is displayed
+        /// </summary>
+        private bool CheckInVanity(List<TooltipLine> tooltips)
+        {
+            for (int lines = 0; lines < tooltips.Count; lines++)
+            {
+                if (tooltips[lines].Name == "Social") return true;
+            }
+
+            return false;
+        }
+
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
+            if (!CheckInVanity(tooltips))
+            {
+                switch (item.type)
+                {
+                    case ItemID.CowboyHat:
+                        tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike damage by {Increase:5%}"));
+                        break;
+                    case ItemID.CowboyJacket:
+                        tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased ranged critical strike chance by {Increase:5%}\n{Type:Revolvers} gain an additional {Increase:5%} critical strike chance"));
+                        break;
+                    case ItemID.CowboyPants:
+                        tooltips.Insert(3, new TooltipLine(Mod, "Tooltip", "Increased movement speed by {Increase:10%}"));
+                        break;
+                }
+            }
+
             // TODO: Probably a better way to do this?
             #region Gun Replacements
             if (item.type == ItemID.PhoenixBlaster)
             {
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "<Reload>: Release a burst of flame, inflicting <Debuff:Phoenix Mark>"));
-                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "<Fail>: Damage yourself, inflicting <Debuff:On Fire!>"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster0", "{Keyword:Reload}: Release a burst of flame, inflicting <Debuff:Phoenix Mark>"));
+                tooltips.Add(new TooltipLine(Mod, "PhoenixBlaster1", "{Keyword:Fail}: Damage yourself, inflicting <Debuff:On Fire!>"));
             }
 
             if (item.type == ItemID.Musket)
             {
-                tooltips.Add(new TooltipLine(Mod, "Musket0", "<Reload>: Increase accuracy for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Musket0", "{Keyword:Reload}: Increase accuracy for each block clicked"));
             }
 
             if (item.type == ItemID.Boomstick)
             {
-                tooltips.Add(new TooltipLine(Mod, "Boomstick0", "<Reload>: Increase recoil and bullets fired for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Boomstick0", "{Keyword:Reload}: Increase recoil and bullets fired for each block clicked"));
             }
 
             if (item.type == ItemID.Revolver)
             {
-                tooltips.Add(new TooltipLine(Mod, "Revolver0", "<Reload>: Reload instantly. Your next clip has increased damage"));
+                tooltips.Add(new TooltipLine(Mod, "Revolver0", "{Keyword:Reload}: Reload instantly. Your next clip has increased damage"));
             }
 
             if (item.type == ItemID.Handgun)
             {
-                tooltips.Add(new TooltipLine(Mod, "Handgun0", "<Reload>: Your next clip has increased firing speed"));
+                tooltips.Add(new TooltipLine(Mod, "Handgun0", "{Keyword:Reload}: Your next clip has increased firing speed"));
             }
 
             if (item.type == ItemID.TheUndertaker)
             {
-                tooltips.Add(new TooltipLine(Mod, "Undertaker0", "<Reload>: Your next clip has 6 bullets and increased firing speed"));
-                tooltips.Add(new TooltipLine(Mod, "Undertaker1", "<Fail>: Your next clip has 2 bullets"));
+                tooltips.Add(new TooltipLine(Mod, "Undertaker0", "{Keyword:Reload}: Your next clip has 6 bullets and increased firing speed"));
+                tooltips.Add(new TooltipLine(Mod, "Undertaker1", "{Keyword:Fail}: Your next clip has 2 bullets"));
                 tooltips.Add(new TooltipLine(Mod, "Undertaker2", "Bullets deal more damage at point blank range"));
             }
 
             if (item.type == ItemID.QuadBarrelShotgun)
             {
-                tooltips.Add(new TooltipLine(Mod, "Quadbarrel0", "<Reload>: Increase number of bullets and recoil for each block clicked"));
+                tooltips.Add(new TooltipLine(Mod, "Quadbarrel0", "{Keyword:Reload}: Increase number of bullets and recoil for each block clicked"));
             }
             #endregion
 
             if (TooltipObjects.Count > 0 || KeyWords.Count > 0)
             {
                 if (!Main.keyState.IsKeyDown(Keys.LeftShift))
-                    tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "[c/808080:Hold {SHIFT} for more info]"));
+                    tooltips.Add(new TooltipLine(Mod, "SetBonusKey", "<Key:Hold SHIFT for more info>"));
+            }
+
+            // ModifyTooltips runs before PreDraw, this catches the keywords before they are parsed
+            foreach (TooltipLine line in tooltips)
+            {
+                string[] lineKeywords = GetKeywords(line.Text);
+                if (lineKeywords.Length > 0)
+                {
+                    foreach (string lineKeyword in lineKeywords)
+                    {
+                        if (lineKeyword.Length > 0) KeyWords.Add(lineKeyword);
+                    }
+                }
             }
 
             foreach (TooltipLine tooltip in tooltips)
             {
                 string newText = tooltip.Text;
-                newText = ConvertBuffWords(newText);
+                newText = ParseTooltipText(newText);
+                newText = ParseTooltipObjects(newText);
 
-                foreach (string keyword in KeyWords)
+                /*foreach (string keyword in KeyWords)
                 {
                     if (newText.Contains($"<{keyword}>"))
                     {
                         newText = newText.Replace($"<{keyword}>", $"[c/ff79c6:{keyword}]");
                     }
-                }
+                }*/
 
                 tooltip.Text = newText;
             }

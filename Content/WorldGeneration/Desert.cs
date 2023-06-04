@@ -32,7 +32,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             int DesertIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
             if (DesertIndex != -1)
             {
-                tasks.Insert(DesertIndex + 1, new PassLegacy("Desert Temple", GenerateTemple));
+                //tasks.Insert(DesertIndex + 1, new PassLegacy("Desert Temple", GenerateTemple));
             }
         }
 

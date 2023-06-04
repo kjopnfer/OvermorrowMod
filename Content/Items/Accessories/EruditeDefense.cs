@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Erudite Defense Talisman");
-            Tooltip.SetDefault("Increases armor by 3");
+            Tooltip.SetDefault("Increases armor by {Increase:3}");
         }
 
         public override void SetDefaults()
