@@ -34,11 +34,12 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void SetDefaults(NPC npc)
         {
-            switch (npc.type)
+            if (npc.type == NPCID.BlueSlime)
             {
-                case NPCID.GreenSlime:
-                    //npc.aiStyle = -1;
-                    break;
+                if (npc.netID == NPCID.GreenSlime)
+                {
+                    npc.lifeMax = 30;
+                }
             }
         }
 

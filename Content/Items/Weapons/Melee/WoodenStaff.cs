@@ -38,8 +38,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Item.autoReuse = false; // Allows the player to hold click to automatically use the item again. Most spears don't autoReuse, but it's possible when used in conjunction with CanUseItem()
 
             // Weapon Properties
-            Item.damage = 25;
-            Item.knockBack = 6.5f;
+            Item.damage = 12;
+            Item.knockBack = 3f;
             Item.noUseGraphic = true; // When true, the item's sprite will not be visible while the item is in use. This is true because the spear projectile is what's shown so we do not want to show the spear sprite as well.
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true; // Allows the item's animation to do damage. This is important because the spear is actually a projectile instead of an item. This prevents the melee hitbox of this item.
