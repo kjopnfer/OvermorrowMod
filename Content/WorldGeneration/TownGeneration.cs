@@ -50,30 +50,24 @@ namespace OvermorrowMod.Content.WorldGeneration
         private void GenerateTownFoundation(GenerationProgress progress, GameConfiguration config)
         {
             progress.Message = "Excavating Sojourn";
-
-            // I don't know why the first one doesn't generate dude
-
             bool validArea = false;
 
-            // Pick a random spot in the world that is in midair
             int x = (int)(Main.maxTilesX * 0.75f);
             int y = (int)(Main.worldSurface * 0.35f);
 
-            while (!validArea)
-            {
-                // Loop downwards until we reach a solid tile
-                Tile tile = Framing.GetTileSafely(x, y);
-                while (!tile.HasTile)
-                {
-                    y++;
-                    tile = Framing.GetTileSafely(x, y);
-                }
 
-                if (Main.tileSolid[tile.TileType])
-                {
-                    validArea = true;
-                }
+            // Loop downwards until we reach a solid tile
+            Tile tile = Framing.GetTileSafely(x, y);
+            while (y - 200 < Main.worldSurface * 0.35f)
+            {
+                y++;
+                tile = Framing.GetTileSafely(x, y);
             }
+
+            /*if (Main.tileSolid[tile.TileType])
+            {
+                validArea = true;
+            }*/
 
             SojournLocation = new Vector2(x, y + 30) * 16;
 
@@ -138,6 +132,22 @@ namespace OvermorrowMod.Content.WorldGeneration
             Texture2D LiquidMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Liquids").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, TileMap, WallMapping, LiquidMap, null, null, null);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
+
+            WorldGen.TileRunner(x - (TileClear.width / 2), y - (TileClear.height / 2) + 30, 25, 1, TileID.ObsidianBrick, true);
+            WorldGen.TileRunner(x + (TileClear.width / 2), y - (TileClear.height / 2) + 45, 25, 1, TileID.ObsidianBrick, true);
+
+            for (int i = 0; i < 5; i++)
+            {
+                //WorldGen.digTunnel(x + (TileClear.width / 2) + (i * 20), y - (TileClear.height / 2) + 40 - (i * 10), 0, -20, 5, 20);
+                WorldGen.digTunnel(x - (TileClear.width / 2) - (i * 20), y - (TileClear.height / 2) + 30 - (i * 10), 0, -20, 5, 20);
+            }
+            //WorldGen.digTunnel(x - (TileClear.width / 2), y - (TileClear.height / 2) + 30, 0, 0, 1, 20);
+
+            for (int i = 0; i < 5; i++)
+            {
+                WorldGen.digTunnel(x + (TileClear.width / 2) + (i * 20), y - (TileClear.height / 2) + 40 - (i * 10), 0, -20, 6, 20);
+            }
+
         }
 
         /// <summary>
@@ -194,6 +204,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap, null, null, null);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
+            //WorldGen.TileRunner(x, y - (TileClear.height / 2), 10, 1,)
             /*if (spawnNPC)
             {
                 NPC.NewNPC(null, (x - (TileClear.width / 2) + 14) * 16, (y - (TileClear.height) + 26) * 16, ModContent.NPCType<SojournGuard>());

@@ -42,6 +42,15 @@ namespace OvermorrowMod.Content.WorldGeneration
             PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Oasis"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Living Trees"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle Temple"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Hives"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
             int DungeonIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dungeon"));
             if (DungeonIndex != -1) tasks.RemoveAt(DungeonIndex);
 
