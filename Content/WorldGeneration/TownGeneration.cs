@@ -106,6 +106,9 @@ namespace OvermorrowMod.Content.WorldGeneration
             }
         }
 
+        /// <summary>
+        /// First pass of the town to terraform the area where the town will be placed
+        /// </summary>
         public static void PlaceTownFoundation(int x, int y)
         {
             Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
@@ -123,7 +126,8 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
             {
-                [new Color(0, 0, 0)] = -2
+                [new Color(0, 0, 0)] = -2,
+                [new Color(90, 51, 37)] = TileID.Dirt,
             };
 
             Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Clear").Value;
@@ -136,12 +140,14 @@ namespace OvermorrowMod.Content.WorldGeneration
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
         }
 
+        /// <summary>
+        /// Second pass to place buildings, liquids, and walls
+        /// </summary>
         public static void PlaceTown(int x, int y, bool spawnNPC = false)
         {
             Dictionary<Color, int> TileMapping = new Dictionary<Color, int>
             {
-                //[new Color(53, 117, 60)] = TileID.Grass,
-                //[new Color(90, 51, 37)] = TileID.Dirt,
+                [new Color(90, 51, 37)] = TileID.Dirt,
                 //[new Color(132, 124, 110)] = TileID.Stone,
                 [new Color(107, 105, 101)] = ModContent.TileType<CastleBrick>(),
                 [new Color(170, 109, 48)] = ModContent.TileType<CastleRoof>(),
@@ -169,17 +175,22 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
             {
+                [new Color(0, 0, 0)] = -2,
+                //[new Color(90, 51, 37)] = TileID.Dirt,
+            };
+
+            Dictionary<Color, int> WallRemoval = new Dictionary<Color, int>
+            {
                 [new Color(0, 0, 0)] = -2
             };
 
-            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Clear", AssetRequestMode.ImmediateLoad).Value;
-            TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, TileRemoval);
-            //TileClear.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
+            // Secondary clear to remove any unexpected objects or tiles that vanilla may have placed nearby it
+            Texture2D ClearMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Clear_2", AssetRequestMode.ImmediateLoad).Value;
+            TexGen TileClear = BaseWorldGenTex.GetTexGenerator(ClearMap, TileRemoval, ClearMap, WallRemoval);
 
-            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D TileMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Structures", AssetRequestMode.ImmediateLoad).Value;
             Texture2D WallMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Walls", AssetRequestMode.ImmediateLoad).Value;
             Texture2D LiquidMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/Sojourn_Liquids", AssetRequestMode.ImmediateLoad).Value;
-            //Texture2D SlopeMap = ModContent.Request<Texture2D>(AssetDirectory.WorldGen + "Textures/CastleTown_Slope").Value;
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap, null, null, null);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
