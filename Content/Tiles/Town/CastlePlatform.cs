@@ -8,6 +8,7 @@ namespace OvermorrowMod.Content.Tiles.Town
 {
     public class CastlePlatform : ModTile
     {
+        public override bool CanExplode(int i, int j) => false;
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -18,6 +19,12 @@ namespace OvermorrowMod.Content.Tiles.Town
             Main.tileTable[Type] = true;
             Main.tileLavaDeath[Type] = true;
             TileID.Sets.Platforms[Type] = true;
+
+            AddToArray(ref TileID.Sets.RoomNeeds.CountsAsDoor);
+            AddMapEntry(new Color(94, 70, 56));
+
+            AdjTiles = new int[] { TileID.Platforms };
+
             TileObjectData.newTile.CoordinateHeights = new[] { 16 };
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
@@ -26,12 +33,13 @@ namespace OvermorrowMod.Content.Tiles.Town
             TileObjectData.newTile.StyleWrapLimit = 27;
             TileObjectData.newTile.UsesCustomCanPlace = false;
             TileObjectData.newTile.LavaDeath = true;
-            TileObjectData.addTile(Type);
-            AddToArray(ref TileID.Sets.RoomNeeds.CountsAsDoor);
-            AddMapEntry(new Color(93, 70, 52));
 
-            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.CastlePlatform>();
-            AdjTiles = new int[] { TileID.Platforms };
+            TileObjectData.addTile(Type);
+            
+
+            //ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.CastlePlatform>();
         }
+
+        public override void PostSetDefaults() => Main.tileNoSunLight[Type] = false;
     }
 }

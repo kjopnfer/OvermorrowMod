@@ -150,6 +150,46 @@ namespace OvermorrowMod.Content.WorldGeneration
 
         }
 
+        private static void PlacePlatforms(int x, int y)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                    WorldGen.PlaceTile(x + i, y + j, TileID.ObsidianBrick, false, true);
+            }
+
+            //WorldGen.PlaceTile(x - 2, y - 49, TileID.Platforms, true, true);
+
+            // Setting forced to true gives an object reference error apparently
+            WorldGen.PlaceTile(x - 2, y - 49, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 2, y - 49, (int)SlopeType.SlopeDownLeft);
+
+            WorldGen.PlaceTile(x - 3, y - 50, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 3, y - 50, (int)SlopeType.SlopeDownLeft);
+
+            WorldGen.PlaceTile(x - 4, y - 51, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 4, y - 51, (int)SlopeType.SlopeDownLeft);
+
+            WorldGen.PlaceTile(x - 5, y - 52, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 5, y - 52, (int)SlopeType.SlopeDownLeft);
+
+            WorldGen.PlaceTile(x - 6, y - 53, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 6, y - 53, (int)SlopeType.SlopeDownLeft);
+
+            WorldGen.PlaceTile(x - 7, y - 54, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 7, y - 54, (int)SlopeType.SlopeDownLeft);
+
+            WorldGen.PlaceTile(x - 6, y - 54, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 5, y - 54, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 4, y - 54, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 3, y - 54, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 2, y - 54, ModContent.TileType<CastlePlatform>(), true, false);
+
+            //var test = OvermorrowModFile.Instance.Find<ModTile>("CastlePlatform").Type;
+            //WorldGen.PlaceTile(x - 2, y - 49, test, true, true);
+
+        }
+
         /// <summary>
         /// Second pass to place buildings, liquids, and walls
         /// </summary>
@@ -162,9 +202,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(107, 105, 101)] = ModContent.TileType<CastleBrick>(),
                 [new Color(170, 109, 48)] = ModContent.TileType<CastleRoof>(),
                 [new Color(115, 81, 60)] = TileID.WoodBlock,
-                [new Color(94, 70, 56)] = TileID.WoodBlock, // Temporary
+                //[new Color(94, 70, 56)] = ModContent.TileType<CastlePlatform>(),
                 [new Color(67, 65, 64)] = ModContent.TileType<DarkCastleBrick>(),
-                [new Color(115, 78, 48)] = ModContent.TileType<CastlePlatform>(),
             };
 
             Dictionary<Color, int> WallMapping = new Dictionary<Color, int>
@@ -204,6 +243,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap, null, null, null);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
+            PlacePlatforms(x, y);
             //WorldGen.TileRunner(x, y - (TileClear.height / 2), 10, 1,)
             /*if (spawnNPC)
             {
