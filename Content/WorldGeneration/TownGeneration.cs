@@ -426,6 +426,46 @@ namespace OvermorrowMod.Content.WorldGeneration
 
 
             #endregion
+
+            #region Inn
+            for (int i = 0; i < 16; i += 2)
+            {
+                if (i == 6)
+                    for (int j = 0; j < 8; j++)
+                        WorldGen.PlaceTile(x + 177 + j, y - 48, ModContent.TileType<CastlePlatform>(), true, false);
+
+                WorldGen.PlaceTile(x + 180, y - 42 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x + 181, y - 42 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                WorldGen.PlaceTile(x + 178 + i, y - 57 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.SlopeTile(x + 178 + i, y - 57 - i, (int)SlopeType.SlopeDownRight);
+
+                if (i == 7)
+                {
+                    for (int j = 0; j < 10; j++)
+                        WorldGen.PlaceTile(x + 176 + j, y - 64, ModContent.TileType<CastlePlatform>(), true, false);
+                }
+            }
+
+            for (int i = 0; i < 8; i += 2)
+            {
+                if (i == 6)
+                {
+                    WorldGen.PlaceTile(x + 179, y - 72, ModContent.TileType<CastlePlatform>(), true, false);
+                    WorldGen.PlaceTile(x + 182, y - 72, ModContent.TileType<CastlePlatform>(), true, false);
+                }
+
+                WorldGen.PlaceTile(x + 180, y - 66 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x + 181, y - 66 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            for (int i = 0; i < 8; i++)
+                WorldGen.PlaceTile(x + 177 + i, y - 80, ModContent.TileType<CastlePlatform>(), true, false);
+
+            #endregion
         }
 
         /// <summary>
