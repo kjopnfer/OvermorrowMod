@@ -158,9 +158,8 @@ namespace OvermorrowMod.Content.WorldGeneration
                     WorldGen.PlaceTile(x + i, y + j, TileID.ObsidianBrick, false, true);
             }
 
-            //WorldGen.PlaceTile(x - 2, y - 49, TileID.Platforms, true, true);
-
             // Setting forced to true gives an object reference error apparently
+            #region Lower House
             WorldGen.PlaceTile(x - 2, y - 49, ModContent.TileType<CastlePlatform>(), true, false);
             WorldGen.SlopeTile(x - 2, y - 49, (int)SlopeType.SlopeDownLeft);
 
@@ -185,9 +184,248 @@ namespace OvermorrowMod.Content.WorldGeneration
             WorldGen.PlaceTile(x - 3, y - 54, ModContent.TileType<CastlePlatform>(), true, false);
             WorldGen.PlaceTile(x - 2, y - 54, ModContent.TileType<CastlePlatform>(), true, false);
 
-            //var test = OvermorrowModFile.Instance.Find<ModTile>("CastlePlatform").Type;
-            //WorldGen.PlaceTile(x - 2, y - 49, test, true, true);
+            WorldGen.PlaceTile(x - 7, y - 56, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 6, y - 56, ModContent.TileType<CastlePlatform>(), true, false);
 
+            WorldGen.PlaceTile(x - 7, y - 58, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 6, y - 58, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 7, y - 60, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 6, y - 60, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 5, y - 60, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 4, y - 60, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 3, y - 60, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 2, y - 60, ModContent.TileType<CastlePlatform>(), true, false);
+            #endregion
+
+            #region Castle
+            WorldGen.PlaceTile(x - 27, y - 101, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 27, y - 101, (int)SlopeType.SlopeDownRight);
+
+            WorldGen.PlaceTile(x - 26, y - 102, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 26, y - 102, (int)SlopeType.SlopeDownRight);
+
+            WorldGen.PlaceTile(x - 25, y - 103, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 25, y - 103, (int)SlopeType.SlopeDownRight);
+
+            WorldGen.PlaceTile(x - 24, y - 104, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 24, y - 104, (int)SlopeType.SlopeDownRight);
+
+            WorldGen.PlaceTile(x - 23, y - 105, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 23, y - 105, (int)SlopeType.SlopeDownRight);
+
+            WorldGen.PlaceTile(x - 22, y - 106, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 22, y - 106, (int)SlopeType.SlopeDownRight);
+
+            WorldGen.PlaceTile(x - 21, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 21, y - 107, (int)SlopeType.SlopeDownRight);
+
+            WorldGen.PlaceTile(x - 22, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 23, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 24, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 25, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 26, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 27, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 28, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 8, y - 109, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 7, y - 109, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 8, y - 111, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 7, y - 111, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 8, y - 113, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 7, y - 113, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 8, y - 115, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 7, y - 115, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 8, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 7, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 10, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 11, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 12, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 13, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 14, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 15, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 6; i++)
+            {
+                WorldGen.PlaceTile(x - 10 - i, y - 117, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            for (int i = 0; i < 8; i += 2)
+            {
+                WorldGen.PlaceTile(x - 1, y - 117 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x, y - 117 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x + 1, y - 123, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 2, y - 123, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 2, y - 123, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 2, y - 135, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.SlopeTile(x - 2, y - 135, (int)SlopeType.SlopeDownLeft);
+
+            WorldGen.PlaceTile(x - 46, y - 134, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 6; i++)
+            {
+                WorldGen.PlaceTile(x + 3 + i, y - 135 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.SlopeTile(x + 3 + i, y - 135 - i, (int)SlopeType.SlopeDownRight);
+            }
+
+            for (int i = 0; i < 12; i++)
+            {
+                WorldGen.PlaceTile(x + 9 - i, y - 140, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x + 13, y - 142, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x + 14, y - 142, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 20, y - 142, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 19, y - 142, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 5; i++)
+            {
+                WorldGen.PlaceTile(x - 10 - i, y - 136 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.SlopeTile(x - 10 - i, y - 136 - i, (int)SlopeType.SlopeDownLeft);
+            }
+
+            for (int i = 0; i < 9; i++)
+            {
+                WorldGen.PlaceTile(x - 15 + i, y - 140, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            for (int i = 0; i < 12; i += 2)
+            {
+                WorldGen.PlaceTile(x - 14, y - 142 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x - 13, y - 142 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x - 15, y - 152, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 12, y - 152, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 19, y - 151, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 20, y - 151, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 16; i += 2)
+            {
+                WorldGen.PlaceTile(x - 9, y - 154 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x - 8, y - 154 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x - 10, y - 168, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 7, y - 168, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 19, y - 162, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 18, y - 162, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 17, y - 162, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 3, y - 162, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 2, y - 162, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 10; i += 2)
+            {
+                WorldGen.PlaceTile(x - 12, y - 170 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x - 11, y - 170 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x - 13, y - 178, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 10, y - 178, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x + 25, y - 123, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 10; i += 2)
+            {
+                WorldGen.PlaceTile(x + 26, y - 123 + i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x + 27, y - 123 + i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x + 28, y - 123, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x + 36, y - 113, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x + 37, y - 113, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (i == 5) continue;
+                WorldGen.PlaceTile(x + 21 - i, y - 113, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            for (int i = 0; i < 16; i += 2)
+            {
+                WorldGen.PlaceTile(x + 14, y - 113 + i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x + 15, y - 113 + i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x + 13, y - 109, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x + 13, y - 107, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 7; i++)
+            {
+                WorldGen.PlaceTile(x + 18 + i, y - 99 + i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.SlopeTile(x + 18 + i, y - 99 + i, (int)SlopeType.SlopeDownLeft);
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                WorldGen.PlaceTile(x + 13 + i, y - 99, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.KillTile(x + 25, y - 121);
+
+            for (int j = 0; j < 18; j += 6)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    WorldGen.PlaceTile(x - 13 + i, y - 118 - j - i, ModContent.TileType<CastlePlatform>(), true, false);
+                    WorldGen.SlopeTile(x - 13 + i, y - 118 - j - i, (int)SlopeType.SlopeDownRight);
+                }
+
+                for (int i = 0; i < 9; i++)
+                {
+                    WorldGen.PlaceTile(x - 7 - i, y - 123 - j, ModContent.TileType<CastlePlatform>(), true, false);
+                }
+            }
+
+            for (int j = 0; j < 18; j += 6)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    WorldGen.PlaceTile(x - 41 + i, y - 118 - j - i, ModContent.TileType<CastlePlatform>(), true, false);
+                    WorldGen.SlopeTile(x - 41 + i, y - 118 - j - i, (int)SlopeType.SlopeDownRight);
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    WorldGen.PlaceTile(x - 34 - i, y - 123 - j, ModContent.TileType<CastlePlatform>(), true, false);
+                }
+            }
+
+            for (int i = 0; i < 14; i += 2)
+            {
+                WorldGen.PlaceTile(x - 41, y - 137 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x - 40, y - 137 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x - 39, y - 149, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 42, y - 149, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 31, y - 149, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 30, y - 149, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 31, y - 147, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 30, y - 147, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 31, y - 143, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.KillTile(x - 40, y - 136);
+
+
+            #endregion
         }
 
         /// <summary>
