@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Base;
 using OvermorrowMod.Content.NPCs.Town.Sojourn;
+using OvermorrowMod.Content.Tiles;
 using OvermorrowMod.Content.Tiles.TilePiles;
 using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core;
@@ -531,6 +532,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                 [new Color(66, 64, 60)] = ModContent.WallType<CastleWall>(),
                 [new Color(117, 86, 75)] = WallID.Dirt,
                 [new Color(67, 85, 69)] = WallID.Grass,
+                [new Color(0, 247, 255)] = ModContent.WallType<EmptyWall>(),
             };
 
             Dictionary<Color, int> TileRemoval = new Dictionary<Color, int>
