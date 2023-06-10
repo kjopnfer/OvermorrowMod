@@ -466,6 +466,55 @@ namespace OvermorrowMod.Content.WorldGeneration
                 WorldGen.PlaceTile(x + 177 + i, y - 80, ModContent.TileType<CastlePlatform>(), true, false);
 
             #endregion
+
+            #region Feyden's House
+            WorldGen.KillTile(x - 143, y - 101);
+
+            for (int i = 0; i < 12; i += 2)
+            {
+                WorldGen.PlaceTile(x - 143, y - 100 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x - 142, y - 100 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x - 141, y - 104, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 145, y - 104, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 145, y - 110, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 144, y - 110, ModContent.TileType<CastlePlatform>(), true, false);
+
+            WorldGen.PlaceTile(x - 114, y - 104, ModContent.TileType<CastlePlatform>(), true, false);
+            WorldGen.PlaceTile(x - 113, y - 104, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 6; i++)
+            {
+                WorldGen.PlaceTile(x - 121 + i, y - 105 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.SlopeTile(x - 121 + i, y - 105 - i, (int)SlopeType.SlopeDownRight);
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                WorldGen.PlaceTile(x - 121 + i, y - 110, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            for (int i = 0; i < 4; i++)
+                WorldGen.PlaceTile(x - 135 - i, y - 116, ModContent.TileType<CastlePlatform>(), true, false);
+
+            #endregion
+
+            #region Watch Tower
+            for (int i = 0; i < 12; i += 2)
+            {
+                WorldGen.PlaceTile(x - 216, y - 86 - i, ModContent.TileType<CastlePlatform>(), true, false);
+                WorldGen.PlaceTile(x - 215, y - 86 - i, ModContent.TileType<CastlePlatform>(), true, false);
+            }
+
+            WorldGen.PlaceTile(x - 213, y - 90, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 19; i++)
+                WorldGen.PlaceTile(x - 215 - i, y - 90, ModContent.TileType<CastlePlatform>(), true, false);
+
+            for (int i = 0; i < 17; i++)
+                WorldGen.PlaceTile(x - 213 - i, y - 96, ModContent.TileType<CastlePlatform>(), true, false);
+            #endregion
         }
 
         /// <summary>
