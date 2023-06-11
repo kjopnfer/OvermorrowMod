@@ -28,7 +28,7 @@ namespace OvermorrowMod.Content.Tiles.Town
 
 			ModTranslation name = CreateMapEntryName();
 			name.SetDefault("Wooden Chair");
-			AddMapEntry(new Color(72, 70, 79), name);
+			AddMapEntry(new Color(114, 85, 55), name);
 
 			TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
 			TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };

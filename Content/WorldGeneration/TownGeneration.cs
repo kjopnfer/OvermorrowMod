@@ -525,6 +525,18 @@ namespace OvermorrowMod.Content.WorldGeneration
             WorldGen.KillTile(x - 43, y - 109);
             ModUtils.PlaceObject(x - 43, y - 109, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
             ModUtils.PlaceObject(x - 41, y - 109, (ushort)ModContent.TileType<TownChair>(), 0, -1);
+            ModUtils.PlaceObject(x - 39, y - 111, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+            ModUtils.PlaceObject(x - 32, y - 109, TileID.ClosedDoor);
+
+            ModUtils.PlaceObject(x - 39, y - 103, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+            ModUtils.PlaceObject(x - 32, y - 101, TileID.ClosedDoor);
+
+            ModUtils.PlaceObject(x - 18, y - 101, TileID.ClosedDoor);
+
+            // The prison table with the lamp:
+            ModUtils.PlaceObject(x - 12, y - 98, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
+            ModUtils.PlaceObject(x - 12, y - 100, (ushort)ModContent.TileType<Lamp>());
+
             //WorldGen.KillTile(x - 41, y - 109);
             WorldGen.KillTile(x - 40, y - 109);
 
