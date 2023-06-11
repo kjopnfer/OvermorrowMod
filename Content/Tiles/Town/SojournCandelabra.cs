@@ -7,31 +7,28 @@ using Terraria.ObjectData;
 
 namespace OvermorrowMod.Content.Tiles.Town
 {
-    public class GarrisonBed : ModTile
+    public class SojournCandelabra : ModTile
     {
         public override bool CanExplode(int i, int j) => false;
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
+            Main.tileLighted[Type] = true;
 
-            TileObjectData.newTile.Width = 5;
+            TileObjectData.newTile.CopyFrom(TileObjectData.StyleOnTable1x1);
+            TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.CoordinateHeights = new int[2] { 16, 16 };
 
             TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.Origin = new Point16(1, 1);
+            TileObjectData.newTile.Origin = new Point16(0, 1);
 
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+            AddMapEntry(new Color(159, 131, 65));
+            ModTranslation name = CreateMapEntryName();
+            name.SetDefault("Candelabra");
+
             TileObjectData.addTile(Type);
-
-            AddMapEntry(new Color(74, 47, 33));
         }
     }
-
-    public class MaceBed : GarrisonBed { }
-
-    public class BootBed : GarrisonBed { }
 }

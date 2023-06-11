@@ -573,14 +573,17 @@ namespace OvermorrowMod.Content.WorldGeneration
 
             ModUtils.PlaceObject(x - 10, y - 179, (ushort)ModContent.TileType<TownChair>(), 0, 1);
             ModUtils.PlaceObject(x - 7, y - 179, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
-            WorldGen.KillTile(x - 6, y - 181);
             ModUtils.PlaceObject(x - 8, y - 181, (ushort)ModContent.TileType<Lamp>());
+
             // Dining Room
             ModUtils.PlaceObject(x - 21, y - 129, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
-            ModUtils.PlaceObject(x - 22, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, -1);
+            ModUtils.PlaceObject(x - 21, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, -1);
 
             ModUtils.PlaceObject(x - 29, y - 129, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
             ModUtils.PlaceObject(x - 29, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, 1);
+
+            ModUtils.PlaceObject(x - 26, y - 124, (ushort)ModContent.TileType<BanquetTable>());
+            ModUtils.PlaceObject(x - 26, y - 126, (ushort)ModContent.TileType<SojournCandelabra>());
 
             // Beds
             ModUtils.PlaceObject(x - 7, y - 141, (ushort)ModContent.TileType<SojournBookcase>(), 0, 1);
@@ -592,13 +595,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             // TODO: This is gonna have to face right
             ModUtils.PlaceObject(x - 2, y - 141, (ushort)ModContent.TileType<GarrisonBed>());
 
-            // TODO: Change this to mace bed
-            ModUtils.PlaceObject(x + 6, y - 141, (ushort)ModContent.TileType<GarrisonBed>());
-
-            WorldGen.KillTile(x + 6, y - 135);
-
-            // TODO: Change this to boot bed
-            ModUtils.PlaceObject(x + 7, y - 135, (ushort)ModContent.TileType<GarrisonBed>());
+            ModUtils.PlaceObject(x + 6, y - 141, (ushort)ModContent.TileType<MaceBed>());
+            ModUtils.PlaceObject(x + 7, y - 135, (ushort)ModContent.TileType<BootBed>());
             ModUtils.PlaceObject(x + 1, y - 135, (ushort)ModContent.TileType<CastleTable_Alt>(), 0, 1);
 
             //WorldGen.KillTile(x - 41, y - 109);
