@@ -537,8 +537,72 @@ namespace OvermorrowMod.Content.WorldGeneration
             ModUtils.PlaceObject(x - 12, y - 98, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
             ModUtils.PlaceObject(x - 12, y - 100, (ushort)ModContent.TileType<Lamp>());
 
+            ModUtils.PlaceObject(x - 14, y - 108, (ushort)ModContent.TileType<SojournBookcase>(), 0, -1);
+            ModUtils.PlaceObject(x - 11, y - 108, (ushort)ModContent.TileType<CastleTable_Alt>(), 0, 1);
+
+            // Job Board
+            ModUtils.PlaceObject(x + 4, y - 124, (ushort)ModContent.TileType<SojournBookcase>(), 0, 1);
+            ModUtils.PlaceObject(x + 8, y - 124, (ushort)ModContent.TileType<SojournBookcase>(), 0, 1);
+            ModUtils.PlaceObject(x + 1, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, -1);
+
+            ModUtils.PlaceObject(x + 12, y - 114, TileID.ClosedDoor);
+            ModUtils.PlaceObject(x - 4, y - 108, TileID.ClosedDoor);
+
+            // Rightmost Tower
+            WorldGen.KillTile(x + 27, y - 124);
+            ModUtils.PlaceObject(x + 26, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, 1);
+            ModUtils.PlaceObject(x + 29, y - 124, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
+            ModUtils.PlaceObject(x + 28, y - 126, (ushort)ModContent.TileType<Lamp>());
+
+            ModUtils.PlaceObject(x + 30, y - 118, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+            ModUtils.PlaceObject(x + 24, y - 114, (ushort)ModContent.TileType<SojournBookcase>(), 0, -1);
+            ModUtils.PlaceObject(x + 30, y - 114, (ushort)ModContent.TileType<GarrisonBed>());
+
+            // Left Tower
+            ModUtils.PlaceObject(x - 36, y - 136, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
+            ModUtils.PlaceObject(x - 36, y - 142, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+
+            ModUtils.PlaceObject(x - 40, y - 150, (ushort)ModContent.TileType<TownChair>(), 0, 1);
+            ModUtils.PlaceObject(x - 37, y - 150, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
+            ModUtils.PlaceObject(x - 37, y - 152, (ushort)ModContent.TileType<Lamp>());
+
+            // Middle Tower
+            ModUtils.PlaceObject(x - 13, y - 153, (ushort)ModContent.TileType<CastleTable_Alt>(), 0, -1);
+            ModUtils.PlaceObject(x - 12, y - 161, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+            ModUtils.PlaceObject(x - 8, y - 171, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+
+            ModUtils.PlaceObject(x - 10, y - 179, (ushort)ModContent.TileType<TownChair>(), 0, 1);
+            ModUtils.PlaceObject(x - 7, y - 179, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
+            WorldGen.KillTile(x - 6, y - 181);
+            ModUtils.PlaceObject(x - 8, y - 181, (ushort)ModContent.TileType<Lamp>());
+            // Dining Room
+            ModUtils.PlaceObject(x - 21, y - 129, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+            ModUtils.PlaceObject(x - 22, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, -1);
+
+            ModUtils.PlaceObject(x - 29, y - 129, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+            ModUtils.PlaceObject(x - 29, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, 1);
+
+            // Beds
+            ModUtils.PlaceObject(x - 7, y - 141, (ushort)ModContent.TileType<SojournBookcase>(), 0, 1);
+            ModUtils.PlaceObject(x - 10, y - 141, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
+
+            // TODO: Not sure if this is a banner but in case its a painting, this is the thing near the beds
+            ModUtils.PlaceObject(x + 3, y - 142, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+
+            // TODO: This is gonna have to face right
+            ModUtils.PlaceObject(x - 2, y - 141, (ushort)ModContent.TileType<GarrisonBed>());
+
+            // TODO: Change this to mace bed
+            ModUtils.PlaceObject(x + 6, y - 141, (ushort)ModContent.TileType<GarrisonBed>());
+
+            WorldGen.KillTile(x + 6, y - 135);
+
+            // TODO: Change this to boot bed
+            ModUtils.PlaceObject(x + 7, y - 135, (ushort)ModContent.TileType<GarrisonBed>());
+            ModUtils.PlaceObject(x + 1, y - 135, (ushort)ModContent.TileType<CastleTable_Alt>(), 0, 1);
+
             //WorldGen.KillTile(x - 41, y - 109);
-            WorldGen.KillTile(x - 40, y - 109);
+            //WorldGen.KillTile(x - 10, y - 109);
 
             #endregion
         }

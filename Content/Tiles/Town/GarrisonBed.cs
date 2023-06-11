@@ -7,35 +7,27 @@ using Terraria.ObjectData;
 
 namespace OvermorrowMod.Content.Tiles.Town
 {
-    public class Lamp : ModTile
+    public class GarrisonBed : ModTile
     {
         public override bool CanExplode(int i, int j) => false;
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
-            Main.tileLighted[Type] = true;
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.StyleOnTable1x1);
-            TileObjectData.newTile.Width = 2;
+            TileObjectData.newTile.Width = 5;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.CoordinateHeights = new int[2] { 16, 16 };
 
             TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.Origin = new Point16(0, 1);
+            TileObjectData.newTile.Origin = new Point16(1, 1);
 
-            AddMapEntry(new Color(209, 113, 46));
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Lamp");
-
+            TileObjectData.newTile.CoordinateWidth = 16;
+            TileObjectData.newTile.CoordinatePadding = 2;
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
             TileObjectData.addTile(Type);
-        }
 
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 0.6f;
-            g = 0.45f;
-            b = 0f;
+            AddMapEntry(new Color(74, 47, 33));
         }
     }
 }
