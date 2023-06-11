@@ -510,6 +510,27 @@ namespace OvermorrowMod.Content.WorldGeneration
             #endregion
         }
 
+        private static void PlaceFurniture(int x, int y)
+        {
+            #region Castle
+            for (int i = 0; i < 1; i++)
+            {
+                //WorldGen.PlaceTile(x - 43, y - 109, TileID.ObsidianBrick, true, true);
+                //WorldGen.KillTile(x - 43, y - 109);
+            }
+            //WorldGen.PlaceTile(x - 44, y - 109, TileID.ObsidianBrick, true, true);
+            //WorldGen.KillTile(x - 44, y - 109);
+
+            //WorldGen.PlaceTile(x - 43, y - 106, TileID.ObsidianBrick, true, false);
+            WorldGen.KillTile(x - 43, y - 109);
+            ModUtils.PlaceObject(x - 43, y - 109, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
+            ModUtils.PlaceObject(x - 41, y - 109, (ushort)ModContent.TileType<TownChair>(), 0, -1);
+            //WorldGen.KillTile(x - 41, y - 109);
+            WorldGen.KillTile(x - 40, y - 109);
+
+            #endregion
+        }
+
         /// <summary>
         /// Second pass to place buildings, liquids, and walls
         /// </summary>
@@ -550,7 +571,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             TexGen TileGen = BaseWorldGenTex.GetTexGenerator(TileMap, TileMapping, WallMap, WallMapping, LiquidMap);
             TileGen.Generate(x - (TileClear.width / 2), y - (TileClear.height), true, true);
 
-            PlacePlatforms(x, y); 
+            PlacePlatforms(x, y);
+            PlaceFurniture(x, y);
         }
     }
 }
