@@ -31,7 +31,29 @@ namespace OvermorrowMod.Content.Tiles.Town
         }
     }
 
-    public class MaceBed : GarrisonBed { }
+    public class MaceBed : GarrisonBed
+    {
+        public override void SetStaticDefaults()
+        {
+            Main.tileFrameImportant[Type] = true;
+            Main.tileNoAttach[Type] = true;
+
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style6x3);
+            TileObjectData.newTile.Width = 6;
+            TileObjectData.newTile.Height = 2;
+            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16 };
+
+            TileObjectData.newTile.UsesCustomCanPlace = true;
+            TileObjectData.newTile.Origin = new Point16(1, 1);
+
+            TileObjectData.newTile.CoordinateWidth = 16;
+            TileObjectData.newTile.CoordinatePadding = 2;
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+            TileObjectData.addTile(Type);
+
+            AddMapEntry(new Color(74, 47, 33));
+        }
+    }
 
     public class BootBed : GarrisonBed { }
 }

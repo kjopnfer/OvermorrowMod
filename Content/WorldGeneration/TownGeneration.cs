@@ -594,12 +594,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             ModUtils.PlaceObject(x - 10, y - 141, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
 
             // TODO: Not sure if this is a banner but in case its a painting, this is the thing near the beds
-            ModUtils.PlaceObject(x + 3, y - 142, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
+            ModUtils.PlaceObject(x + 3, y - 143, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
 
             // TODO: This is gonna have to face right
             ModUtils.PlaceObject(x - 2, y - 141, (ushort)ModContent.TileType<GarrisonBed>());
 
-            ModUtils.PlaceObject(x + 6, y - 141, (ushort)ModContent.TileType<MaceBed>());
+            ModUtils.PlaceObject(x + 5, y - 141, (ushort)ModContent.TileType<MaceBed>());
             ModUtils.PlaceObject(x + 7, y - 135, (ushort)ModContent.TileType<BootBed>());
             ModUtils.PlaceObject(x + 1, y - 135, (ushort)ModContent.TileType<CastleTable_Alt>(), 0, 1);
 
