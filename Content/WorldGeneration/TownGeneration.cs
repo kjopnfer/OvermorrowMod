@@ -543,13 +543,17 @@ namespace OvermorrowMod.Content.WorldGeneration
             // Job Board
             ModUtils.PlaceObject(x + 4, y - 124, (ushort)ModContent.TileType<SojournBookcase>(), 0, 1);
             ModUtils.PlaceObject(x + 8, y - 124, (ushort)ModContent.TileType<SojournBookcase>(), 0, 1);
+
+            WorldGen.KillTile(x - 1, y - 124);
+            ModUtils.PlaceObject(x - 1, y - 124, (ushort)ModContent.TileType<ScribeTable>(), 0, -1);
             ModUtils.PlaceObject(x + 1, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, -1);
+
+            ModUtils.PlaceObject(x + 4, y - 117, (ushort)ModContent.TileType<JobBoard>());
 
             ModUtils.PlaceObject(x + 12, y - 114, TileID.ClosedDoor);
             ModUtils.PlaceObject(x - 4, y - 108, TileID.ClosedDoor);
 
             // Rightmost Tower
-            WorldGen.KillTile(x + 27, y - 124);
             ModUtils.PlaceObject(x + 26, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, 1);
             ModUtils.PlaceObject(x + 29, y - 124, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
             ModUtils.PlaceObject(x + 28, y - 126, (ushort)ModContent.TileType<Lamp>());
