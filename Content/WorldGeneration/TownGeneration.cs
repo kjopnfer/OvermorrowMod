@@ -553,7 +553,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             ModUtils.PlaceObject(x + 12, y - 114, TileID.ClosedDoor);
             ModUtils.PlaceObject(x - 4, y - 108, TileID.ClosedDoor);
 
-            // Rightmost Tower
+            // Right Tower
             ModUtils.PlaceObject(x + 26, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, 1);
             ModUtils.PlaceObject(x + 29, y - 124, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
             ModUtils.PlaceObject(x + 28, y - 126, (ushort)ModContent.TileType<Lamp>());
@@ -561,6 +561,8 @@ namespace OvermorrowMod.Content.WorldGeneration
             ModUtils.PlaceObject(x + 30, y - 118, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
             ModUtils.PlaceObject(x + 24, y - 114, (ushort)ModContent.TileType<SojournBookcase>(), 0, -1);
             ModUtils.PlaceObject(x + 30, y - 114, (ushort)ModContent.TileType<GarrisonBed>());
+
+            ModUtils.PlaceObject(x + 28, y - 141, (ushort)ModContent.TileType<SojournFlag>());
 
             // Left Tower
             ModUtils.PlaceObject(x - 36, y - 136, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
@@ -579,6 +581,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             ModUtils.PlaceObject(x - 7, y - 179, (ushort)ModContent.TileType<CastleTable>(), 0, 1);
             ModUtils.PlaceObject(x - 8, y - 181, (ushort)ModContent.TileType<Lamp>());
 
+            ModUtils.PlaceObject(x - 10, y - 196, (ushort)ModContent.TileType<SojournFlag>());
             // Dining Room
             ModUtils.PlaceObject(x - 21, y - 129, (ushort)ModContent.TileType<GarrisonBanner>(), Main.rand.Next(0, 3));
             ModUtils.PlaceObject(x - 21, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, -1);
