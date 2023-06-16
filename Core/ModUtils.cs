@@ -38,6 +38,22 @@ namespace OvermorrowMod.Core
                 stopRain = typeof(Main).GetMethod("StopRain", BindingFlags.Static | BindingFlags.NonPublic);
             }
         }
+
+        public static bool OnScreen(Vector2 pos)
+        {
+            return pos.X > -16 && pos.X < Main.screenWidth + 16 && pos.Y > -16 && pos.Y < Main.screenHeight + 16;
+        }
+
+        public static bool OnScreen(Rectangle rect)
+        {
+            return rect.Intersects(new Rectangle(0, 0, Main.screenWidth, Main.screenHeight));
+        }
+
+        public static bool OnScreen(Vector2 pos, Vector2 size)
+        {
+            return OnScreen(new Rectangle((int)pos.X, (int)pos.Y, (int)size.X, (int)size.Y));
+        }
+
         public static void Move(this NPC npc, Vector2 targetPosition, float moveSpeed, float maxSpeed, float jumpSpeed)
         {
             if (npc.Center.X < targetPosition.X)

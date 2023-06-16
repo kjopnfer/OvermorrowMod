@@ -65,6 +65,7 @@ namespace OvermorrowMod.Common
             TileOverlay.ResizeTarget();
 
             On.Terraria.Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
+            On.Terraria.Main.DrawBackground += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             Main.OnPreDraw += TileOverlay.Main_OnPreDraw;
             On.Terraria.Main.Update += TileOverlay.Main_Update;
         }
@@ -108,6 +109,7 @@ namespace OvermorrowMod.Common
             Main.OnResolutionChanged -= Main_OnResolutionChanged;
 
             On.Terraria.Main.DrawProjectiles -= TileOverlay.Main_DrawProjectiles;
+            On.Terraria.Main.DrawBackground -= Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             Main.OnPreDraw -= TileOverlay.Main_OnPreDraw;
             On.Terraria.Main.Update -= TileOverlay.Main_Update;
 

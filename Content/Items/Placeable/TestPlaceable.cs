@@ -1,3 +1,4 @@
+using OvermorrowMod.Common.BackgroundObjects;
 using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core;
 using Terraria.ID;
@@ -27,7 +28,7 @@ namespace OvermorrowMod.Content.Items.Placeable
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = 2000;
-            Item.createTile = TileType<SojournFlag>();
+            Item.createTile = TileType<BackgroundObjectTestTile>();
         }
     }
 }
