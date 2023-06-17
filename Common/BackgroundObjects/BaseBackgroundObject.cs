@@ -37,8 +37,8 @@ namespace OvermorrowMod.Common.BackgroundObjects
 
         public sealed override bool IsTileValidForEntity(int x, int y)
         {
-            Main.NewText(BackgroundObjectTileCheck(x, y));
-            Kill(Position.X, Position.Y);
+            if (!BackgroundObjectTileCheck(x, y))
+                Kill(Position.X, Position.Y);
 
             return BackgroundObjectTileCheck(x, y);
         }
@@ -48,10 +48,7 @@ namespace OvermorrowMod.Common.BackgroundObjects
         /// </summary>
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
         {
-            // ModTileEntity.Place() handles checking if the entity can be placed, then places it for you
-            // Set "tileOrigin" to the same value you set TileObjectData.newTile.Origin to in the ModTile
-            Point16 tileOrigin = new Point16(1, 1);
-            int placedEntity = Place(i - tileOrigin.X, j - tileOrigin.Y);
+            int placedEntity = Place(i, j);
             return placedEntity;
         }
     }

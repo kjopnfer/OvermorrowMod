@@ -14,7 +14,7 @@ namespace OvermorrowMod.Common.Detours
             //Main.spriteBatch.Begin(default, default, default, default, default, default, Main.GameViewMatrix.TransformationMatrix);
             foreach (KeyValuePair<int, TileEntity> entity in TileEntity.ByID)
             {
-                if (entity.Value is BaseBackgroundObject backgroundObject && backgroundObject.IsOnScreen())
+                if (entity.Value is BaseBackgroundObject backgroundObject && backgroundObject.IsOnScreen() && backgroundObject.IsTileValidForEntity(entity.Value.Position.X, entity.Value.Position.Y))
                     backgroundObject.DrawObject(Main.spriteBatch);
             }
 
