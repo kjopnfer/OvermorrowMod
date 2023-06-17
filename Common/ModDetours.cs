@@ -64,8 +64,9 @@ namespace OvermorrowMod.Common
 
             TileOverlay.ResizeTarget();
 
+            On.Terraria.Main.CacheNPCDraws += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             On.Terraria.Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
-            On.Terraria.Main.DrawBackground += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
+            //On.Terraria.Main.DrawBackground += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             Main.OnPreDraw += TileOverlay.Main_OnPreDraw;
             On.Terraria.Main.Update += TileOverlay.Main_Update;
         }
@@ -108,8 +109,9 @@ namespace OvermorrowMod.Common
             On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture;
             Main.OnResolutionChanged -= Main_OnResolutionChanged;
 
+            On.Terraria.Main.CacheNPCDraws -= Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             On.Terraria.Main.DrawProjectiles -= TileOverlay.Main_DrawProjectiles;
-            On.Terraria.Main.DrawBackground -= Detours.BackgroundObjects.Main_DrawBackgroundObjects;
+            //On.Terraria.Main.DrawBackground -= Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             Main.OnPreDraw -= TileOverlay.Main_OnPreDraw;
             On.Terraria.Main.Update -= TileOverlay.Main_Update;
 
