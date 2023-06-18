@@ -6,6 +6,7 @@ using Terraria.DataStructures;
 using Terraria.Audio;
 using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Content.UI.JobBoard;
 
 namespace OvermorrowMod.Content.Tiles.Town
 {
@@ -46,7 +47,7 @@ namespace OvermorrowMod.Content.Tiles.Town
         public override bool RightClick(int i, int j)
         {
             SoundEngine.PlaySound(SoundID.MenuOpen, new Vector2(i * 16, j * 16));
-
+            UIJobBoardSystem.Instance.BoardState.showBoard = true;
             return true;
         }
 

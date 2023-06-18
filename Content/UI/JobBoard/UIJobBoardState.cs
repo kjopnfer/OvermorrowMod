@@ -44,6 +44,8 @@ namespace OvermorrowMod.Content.UI.JobBoard
             if (!showBoard) return;
 
             this.RemoveAllChildren();
+
+            Main.LocalPlayer.mouseInterface = true;
             ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
             ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
         }
