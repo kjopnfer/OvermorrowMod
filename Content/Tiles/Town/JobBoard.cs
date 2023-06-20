@@ -75,4 +75,21 @@ namespace OvermorrowMod.Content.Tiles.Town
             return base.PreDraw(i, j, spriteBatch);
         }
     }
+
+    public class JobBoard_TE : ModTileEntity
+    {
+        public override void Update()
+        {
+            base.Update();
+        }
+
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<JobBoard>())
+                Kill(Position.X, Position.Y);
+            
+            return tile.HasTile && tile.TileType == ModContent.TileType<JobBoard>();
+        }
+    }
 }

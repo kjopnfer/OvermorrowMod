@@ -1,26 +1,26 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.UI;
-using Terraria.GameContent.UI;
 using Terraria.GameContent.UI.Elements;
-using ReLogic.Graphics;
-using ReLogic.Content;
 using OvermorrowMod.Core;
-using Terraria.UI.Chat;
-using OvermorrowMod.Content.UI.AmmoSwap;
-using OvermorrowMod.Common.Cutscenes;
 using Terraria.Audio;
 
 namespace OvermorrowMod.Content.UI.JobBoard
 {
+    public class JobEntry
+    {
+        public int jobRank;
+        public string jobName;
+
+        public JobEntry(int rank, string name) {
+            jobRank = rank;
+            jobName = name;
+        }
+    }
+
     public class UIJobBoardState : UIState
     {
         // has 3 states:
