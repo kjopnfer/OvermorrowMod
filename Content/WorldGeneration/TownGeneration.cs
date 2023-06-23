@@ -549,7 +549,11 @@ namespace OvermorrowMod.Content.WorldGeneration
             ModUtils.PlaceObject(x + 1, y - 124, (ushort)ModContent.TileType<TownChair>(), 0, -1);
 
             ModUtils.PlaceObject(x + 4, y - 117, (ushort)ModContent.TileType<JobBoard>());
-            ModContent.GetInstance<JobBoard_TE>().Place(x + 4, y - 117);
+
+            int id = ModContent.GetInstance<JobBoard_TE>().Place(x + 2, y - 120);
+            //int id = ModContent.GetInstance<JobBoard_TE>().Place(x + 4, y - 117);
+            JobBoard_TE te = TileEntity.ByID[id] as JobBoard_TE;
+            te.boardID = (int)JobBoardID.Sojourn;
 
             ModUtils.PlaceObject(x + 12, y - 114, TileID.ClosedDoor);
             ModUtils.PlaceObject(x - 4, y - 108, TileID.ClosedDoor);

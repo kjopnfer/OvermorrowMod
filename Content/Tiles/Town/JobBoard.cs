@@ -10,6 +10,7 @@ using OvermorrowMod.Content.UI.JobBoard;
 using System.Collections.Generic;
 using OvermorrowMod.Quests;
 using Terraria.ModLoader.IO;
+using OvermorrowMod.Core;
 
 namespace OvermorrowMod.Content.Tiles.Town
 {
@@ -53,6 +54,8 @@ namespace OvermorrowMod.Content.Tiles.Town
             int left = i - tile.TileFrameX / 18;
             int top = j - tile.TileFrameY / 18;
 
+            Main.NewText(left + ", " + top);
+
             int index = ModContent.GetInstance<JobBoard_TE>().Find(left, top);
             if (index == -1) return null;
 
@@ -63,8 +66,9 @@ namespace OvermorrowMod.Content.Tiles.Town
         public override bool RightClick(int i, int j)
         {
             SoundEngine.PlaySound(SoundID.MenuOpen, new Vector2(i * 16, j * 16));
-            
-            JobBoard_TE tileEntity = FindTE(i, j);
+            Main.mouseRightRelease = false;
+            ModUtils.TryGetTileEntityAs(i, j, out JobBoard_TE tileEntity);
+
             if (tileEntity != null) UIJobBoardSystem.Instance.BoardState.OpenJobBoard(tileEntity);
             
             return true;
@@ -104,7 +108,7 @@ namespace OvermorrowMod.Content.Tiles.Town
     public class JobBoard_TE : ModTileEntity
     {
         public HashSet<BaseQuest> jobQuests { get; private set; }
-        private int boardID;
+        public int boardID;
 
         public override void SaveData(TagCompound tag)
         {
@@ -119,7 +123,7 @@ namespace OvermorrowMod.Content.Tiles.Town
         // TODO: make button to clear quests for testing
         private void GetAvailableQuest(int id)
         {
-            if (jobQuests.Count < 1) return;
+            if (jobQuests.Count > 1) return;
 
             //jobQuests.Add()
         }
