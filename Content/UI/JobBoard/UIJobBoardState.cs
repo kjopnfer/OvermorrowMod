@@ -7,6 +7,7 @@ using Terraria.UI;
 using Terraria.GameContent.UI.Elements;
 using OvermorrowMod.Core;
 using Terraria.Audio;
+using OvermorrowMod.Content.Tiles.Town;
 
 namespace OvermorrowMod.Content.UI.JobBoard
 {
@@ -15,7 +16,8 @@ namespace OvermorrowMod.Content.UI.JobBoard
         public int jobRank;
         public string jobName;
 
-        public JobEntry(int rank, string name) {
+        public JobEntry(int rank, string name)
+        {
             jobRank = rank;
             jobName = name;
         }
@@ -34,9 +36,13 @@ namespace OvermorrowMod.Content.UI.JobBoard
         internal UIJobBoardCloseButton closeButton = new UIJobBoardCloseButton();
 
         public bool showBoard = false;
-        public void OpenJobBoard()
+        private JobBoard_TE boardTileEntity;
+
+        // TODO: make a job entry ui object that gets created when running through hashset
+        public void OpenJobBoard(JobBoard_TE entity)
         {
             showBoard = true;
+            boardTileEntity = entity;
         }
 
         public override void Update(GameTime gameTime)
@@ -58,7 +64,13 @@ namespace OvermorrowMod.Content.UI.JobBoard
         /// <summary>
         /// Handles drawing of the board UI
         /// </summary>
-        private void DisplayBoard() { }
+        private void DisplayBoard()
+        {
+            if (boardTileEntity.jobQuests.Count > 0)
+            {
+
+            }
+        }
 
         /// <summary>
         /// Handles the closing animation of the board
@@ -75,7 +87,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "BookBack").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardBack").Value;
             spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, 1f, 0, 0);
         }
     }
