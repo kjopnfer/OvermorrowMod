@@ -41,8 +41,6 @@ namespace OvermorrowMod.Content.UI.JobBoard
         // TODO: make a job entry ui object that gets created when running through hashset
         public void OpenJobBoard(JobBoard_TE entity)
         {
-            Main.NewText("opened");
-
             showBoard = true;
             boardTileEntity = entity;
         }
@@ -57,7 +55,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
             ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
             ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
 
-            Main.NewText(boardTileEntity.boardID);
+            DisplayBoard();
         }
 
         /// <summary>
@@ -70,9 +68,13 @@ namespace OvermorrowMod.Content.UI.JobBoard
         /// </summary>
         private void DisplayBoard()
         {
-            if (boardTileEntity.jobQuests.Count > 0)
+            if (boardTileEntity.JobQuests.Count > 0)
             {
-
+                Main.NewText(boardTileEntity.JobQuests.Count);
+            }
+            else
+            {
+                Main.NewText("no");
             }
         }
 

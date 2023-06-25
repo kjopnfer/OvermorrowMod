@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using OvermorrowMod.Quests;
 using Terraria.ModLoader.IO;
 using OvermorrowMod.Core;
+using System.Linq;
 
 namespace OvermorrowMod.Content.Tiles.Town
 {
@@ -70,7 +71,7 @@ namespace OvermorrowMod.Content.Tiles.Town
             ModUtils.TryGetTileEntityAs(i, j, out JobBoard_TE tileEntity);
 
             if (tileEntity != null) UIJobBoardSystem.Instance.BoardState.OpenJobBoard(tileEntity);
-            
+
             return true;
         }
 
@@ -107,7 +108,7 @@ namespace OvermorrowMod.Content.Tiles.Town
 
     public class JobBoard_TE : ModTileEntity
     {
-        public HashSet<BaseQuest> jobQuests { get; private set; }
+        public HashSet<BaseQuest> JobQuests { get; private set; } = new HashSet<BaseQuest>();
         public int boardID;
 
         public override void SaveData(TagCompound tag)
@@ -123,7 +124,17 @@ namespace OvermorrowMod.Content.Tiles.Town
         // TODO: make button to clear quests for testing
         private void GetAvailableQuest(int id)
         {
-            if (jobQuests.Count > 1) return;
+            if (JobQuests.Count > 1) return;
+
+            var possibleQuests = Quests.Quests.QuestList.Values
+                .Where(q => q.IsValidQuest(boardID, Main.LocalPlayer))
+                .GroupBy(q => q.Priority)
+                .Max()
+                ?.ToList();
+
+            if (possibleQuests == null || !possibleQuests.Any()) return;
+
+            JobQuests.Add(possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)]);
 
             //jobQuests.Add()
         }
@@ -136,19 +147,17 @@ namespace OvermorrowMod.Content.Tiles.Town
         // alternatively, save the quest into another dictionary of active quests to reduce complexity of tracking
         public override void Update()
         {
-            for (int i = 0; i < ByID.Count; i++)
-            {
-                ByID.TryGetValue(i, out TileEntity entity);
 
-                // TODO: Make each town have a unique ID
-                if (entity is JobBoard_TE)
-                {
-                    GetAvailableQuest(i);
-                }
+            ByID.TryGetValue(ID, out TileEntity entity);
+
+            // TODO: Make each town have a unique ID
+            if (entity is JobBoard_TE)
+            {
+                GetAvailableQuest(ID);
             }
+
             //int id = 
             //GetAvailableQuest(ByID[Position.X / 16, Position.Y / 16]);
-            base.Update();
         }
 
         public override bool IsTileValidForEntity(int x, int y)
