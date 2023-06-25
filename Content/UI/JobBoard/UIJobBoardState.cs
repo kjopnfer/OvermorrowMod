@@ -8,6 +8,10 @@ using Terraria.GameContent.UI.Elements;
 using OvermorrowMod.Core;
 using Terraria.Audio;
 using OvermorrowMod.Content.Tiles.Town;
+using OvermorrowMod.Quests;
+using Terraria.UI.Chat;
+using Terraria.GameContent;
+using OvermorrowMod.Core.Interfaces;
 
 namespace OvermorrowMod.Content.UI.JobBoard
 {
@@ -53,6 +57,8 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
             Main.LocalPlayer.mouseInterface = true;
             ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
+            drawSpace.RemoveAllChildren();
+
             ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
 
             DisplayBoard();
@@ -70,7 +76,10 @@ namespace OvermorrowMod.Content.UI.JobBoard
         {
             if (boardTileEntity.JobQuests.Count > 0)
             {
-                Main.NewText(boardTileEntity.JobQuests.Count);
+                foreach (BaseQuest quest in boardTileEntity.JobQuests)
+                {
+                    ModUtils.AddElement(new UIJobBoardEntry(quest), 0, 0, 200, 200, drawSpace);
+                }
             }
             else
             {
@@ -95,6 +104,47 @@ namespace OvermorrowMod.Content.UI.JobBoard
         {
             Texture2D texture = ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardBack").Value;
             spriteBatch.Draw(texture, GetDimensions().Center(), null, Color.White, 0, texture.Size() / 2f, 1f, 0, 0);
+        }
+    }
+
+    public class UIJobBoardEntry : UIPanel
+    {
+        BaseQuest quest;
+        public UIJobBoardEntry(BaseQuest quest)
+        {
+            this.quest = quest;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 position = new Vector2(GetDimensions().X, GetDimensions().Y);
+            float textScale = 1.25f;
+            float titleScale = 2f;
+            float maxWidth = 200;
+
+            Texture2D temp = TextureAssets.MagicPixel.Value;
+            spriteBatch.Draw(temp, new Rectangle((int)position.X, (int)position.Y, (int)Width.Pixels, (int)Height.Pixels), Color.White);
+
+            float titleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, quest.QuestName, Vector2.One * titleScale, maxWidth).X;
+            float titleOffset = ChatManager.GetStringSize(FontAssets.MouseText.Value, quest.QuestName, Vector2.One * titleScale, maxWidth).Y + 20;
+            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, quest.QuestName, position + new Vector2((Width.Pixels - titleLength) / 2f, 0), Color.Black, 0f, Vector2.Zero, Vector2.One * titleScale, maxWidth);
+
+            foreach (IQuestRequirement requirement in quest.Requirements)
+            {
+                ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement.Description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
+            }
+
+            foreach (IQuestRequirement requirement in quest.Rewards)
+            {
+                ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement.Description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
+            }
+            //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, quest.Requirements[0]., position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * scale, maxWidth);
+
+            base.Draw(spriteBatch);
+        }
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
         }
     }
 
