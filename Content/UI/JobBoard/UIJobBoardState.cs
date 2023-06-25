@@ -12,6 +12,7 @@ using OvermorrowMod.Quests;
 using Terraria.UI.Chat;
 using Terraria.GameContent;
 using OvermorrowMod.Core.Interfaces;
+using OvermorrowMod.Quests.Rewards;
 
 namespace OvermorrowMod.Content.UI.JobBoard
 {
@@ -134,9 +135,13 @@ namespace OvermorrowMod.Content.UI.JobBoard
                 ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement.Description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
             }
 
-            foreach (IQuestRequirement requirement in quest.Rewards)
+            foreach (IQuestReward ireward in quest.Rewards)
             {
-                ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement.Description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
+                if (ireward is ItemReward reward)
+                {
+                    ModUtils.AddElement(new DisplayItemSlot(reward.type, reward.stack), 0, 100, 64, 64, this);
+                }
+                //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
             }
             //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, quest.Requirements[0]., position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * scale, maxWidth);
 
