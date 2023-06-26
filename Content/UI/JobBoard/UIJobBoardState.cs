@@ -48,21 +48,27 @@ namespace OvermorrowMod.Content.UI.JobBoard
         {
             showBoard = true;
             boardTileEntity = entity;
+
+            this.RemoveAllChildren();
+            ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
+            drawSpace.RemoveAllChildren();
+            ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
+            ModUtils.AddElement(new DisplayItemSlot(ItemID.CactusBathtub, 2), 600, 100, 42, 42, drawSpace);
+
+            DisplayBoard();
         }
 
         public override void Update(GameTime gameTime)
         {
             if (!showBoard) return;
 
-            this.RemoveAllChildren();
-
             Main.LocalPlayer.mouseInterface = true;
-            ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
-            drawSpace.RemoveAllChildren();
 
-            ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
+            //this.RemoveAllChildren();
+            //ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
+            //drawSpace.RemoveAllChildren();
+            //ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
 
-            DisplayBoard();
         }
 
         /// <summary>
@@ -86,6 +92,8 @@ namespace OvermorrowMod.Content.UI.JobBoard
             {
                 Main.NewText("no");
             }
+
+            Main.NewText("test");
         }
 
         /// <summary>
@@ -135,11 +143,12 @@ namespace OvermorrowMod.Content.UI.JobBoard
                 ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement.Description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
             }
 
+            this.RemoveAllChildren();
             foreach (IQuestReward ireward in quest.Rewards)
             {
                 if (ireward is ItemReward reward)
                 {
-                    ModUtils.AddElement(new DisplayItemSlot(reward.type, reward.stack), 0, 100, 64, 64, this);
+                    ModUtils.AddElement(new DisplayItemSlot(reward.type, reward.stack), 0, 100, 42, 42, this);
                 }
                 //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
             }

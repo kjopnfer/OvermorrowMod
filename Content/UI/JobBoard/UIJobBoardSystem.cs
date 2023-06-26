@@ -34,10 +34,10 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
-            int ResourceBars = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Resource Bars"));
-            if (ResourceBars != -1)
+            int layerIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+            if (layerIndex != -1)
             {
-                layers.Insert(ResourceBars, new LegacyGameInterfaceLayer(
+                layers.Insert(layerIndex, new LegacyGameInterfaceLayer(
                     "OvermorrowMod: Job Board",
                     delegate
                     {

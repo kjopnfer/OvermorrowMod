@@ -49,7 +49,6 @@ namespace OvermorrowMod.Content.UI
 
             CalculatedStyle style = GetDimensions();
 
-
             ItemSlot.Draw(spriteBatch, ref _item, 1, new Vector2(style.X, style.Y));
             if (ContainsPoint(Main.MouseScreen))
             {
