@@ -53,7 +53,6 @@ namespace OvermorrowMod.Content.UI.JobBoard
             ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
             drawSpace.RemoveAllChildren();
             ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
-            ModUtils.AddElement(new DisplayItemSlot(ItemID.CactusBathtub, 2), 600, 100, 42, 42, drawSpace);
 
             DisplayBoard();
         }
@@ -152,6 +151,9 @@ namespace OvermorrowMod.Content.UI.JobBoard
                 }
                 //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
             }
+
+            ModUtils.AddElement(new UIJobBoardAcceptButton(), 50, 150, 64, 32, this);
+
             //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, quest.Requirements[0]., position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * scale, maxWidth);
 
             base.Draw(spriteBatch);
@@ -189,4 +191,24 @@ namespace OvermorrowMod.Content.UI.JobBoard
         }
     }
 
+    public class UIJobBoardAcceptButton : UIElement
+    {
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+            bool isHovering = ContainsPoint(Main.MouseScreen);
+
+            //if (Parent.Parent is UIJobBoardState parent)
+            //{
+                Texture2D texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept").Value;
+                Color color = isHovering ? Color.White * 0.5f : Color.White;
+                spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
+            //}
+        }
+
+        public override void MouseDown(UIMouseEvent evt)
+        {
+            base.MouseDown(evt);
+        }
+    }
 }
