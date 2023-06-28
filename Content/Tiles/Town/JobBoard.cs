@@ -127,7 +127,8 @@ namespace OvermorrowMod.Content.Tiles.Town
             if (JobQuests.Count > 1) return;
 
             var possibleQuests = Quests.Quests.QuestList.Values
-                .Where(q => q.IsValidQuest(boardID, Main.LocalPlayer))
+                //.Where(q => q.IsValidQuest(boardID, Main.LocalPlayer))
+                .OfType<JobBoardQuest>()
                 .GroupBy(q => q.Priority)
                 .Max()
                 ?.ToList();
@@ -147,7 +148,6 @@ namespace OvermorrowMod.Content.Tiles.Town
         // alternatively, save the quest into another dictionary of active quests to reduce complexity of tracking
         public override void Update()
         {
-
             ByID.TryGetValue(ID, out TileEntity entity);
 
             // TODO: Make each town have a unique ID

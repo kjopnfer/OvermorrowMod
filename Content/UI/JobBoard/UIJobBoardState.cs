@@ -117,7 +117,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
     public class UIJobBoardEntry : UIPanel
     {
-        BaseQuest quest;
+        public BaseQuest quest { get; private set; }
         public UIJobBoardEntry(BaseQuest quest)
         {
             this.quest = quest;
@@ -198,16 +198,20 @@ namespace OvermorrowMod.Content.UI.JobBoard
             Vector2 pos = GetDimensions().ToRectangle().TopLeft();
             bool isHovering = ContainsPoint(Main.MouseScreen);
 
-            //if (Parent.Parent is UIJobBoardState parent)
-            //{
-                Texture2D texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept").Value;
-                Color color = isHovering ? Color.White * 0.5f : Color.White;
-                spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
-            //}
+            Texture2D texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept").Value;
+            Color color = isHovering ? Color.White * 0.5f : Color.White;
+            spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
         }
 
         public override void MouseDown(UIMouseEvent evt)
         {
+            if(Parent is UIJobBoardEntry boardEntry)
+            {
+                QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+                questPlayer.AddQuest(boardEntry.quest);
+            }
+            
+            Main.NewText("accept");
             base.MouseDown(evt);
         }
     }
