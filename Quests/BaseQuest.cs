@@ -95,7 +95,7 @@ namespace OvermorrowMod.Quests
             if (Quests.State.HasCompletedQuest(modPlayer, this)) success = false;
             var state = Quests.State.GetActiveQuestState(modPlayer, this);
             if (state == null) success = false;
-
+            //Main.NewText(success);
             if (success)
             {
                 ResetEffects(player);

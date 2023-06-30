@@ -91,8 +91,6 @@ namespace OvermorrowMod.Content.UI.JobBoard
             {
                 Main.NewText("no");
             }
-
-            Main.NewText("test");
         }
 
         /// <summary>
@@ -205,13 +203,45 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
         public override void MouseDown(UIMouseEvent evt)
         {
-            if(Parent is UIJobBoardEntry boardEntry)
+            if (Parent is UIJobBoardEntry boardEntry)
             {
                 QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
-                questPlayer.AddQuest(boardEntry.quest);
+                var quest = boardEntry.quest;
+
+                var idk = Quests.Quests.State.GetActiveQuests(questPlayer);
+                foreach (var stuff in idk)
+                {
+                    //Main.NewText(stuff.Quest.QuestName);
+                }
+
+
+                var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
+
+                //if(questState == null) Main.NewText("what");
+                //Main.NewText(Quests.Quests.State.IsDoingQuest(questPlayer, quest.QuestID));
+                //Main.NewText("Completed? " + questState.Completed);
+                if (questState != null/*Quests.Quests.State.CheckDoingQuest(questPlayer, quest.QuestID)*/ && !questState.Completed) 
+                {
+                    //var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
+                    if (quest.TryUpdateQuestRequirements(questPlayer, questState))
+                    {
+                        questPlayer.CompleteQuest(quest.QuestID);
+                        Main.NewText("COMPLETED QUEST: " + quest.QuestName, Color.Yellow);
+                        //questState.Completed = false;
+                    }
+                }
+                else
+                {
+                    if (questState != null)
+                    {
+                        if (questState.Completed) questState.Completed = false;
+                    }
+
+                    questPlayer.AddQuest(quest);
+                    Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
+                }
             }
-            
-            Main.NewText("accept");
+
             base.MouseDown(evt);
         }
     }

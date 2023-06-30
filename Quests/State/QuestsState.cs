@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Terraria;
 using Terraria.ModLoader.IO;
 
 namespace OvermorrowMod.Quests.State
@@ -18,15 +19,22 @@ namespace OvermorrowMod.Quests.State
 
         public void CompleteQuest(QuestPlayer player, BaseQuest quest)
         {
+            // Get the player's quest states from the dictionary
             if (!StatesByPlayer.TryGetValue(player.PlayerUUID, out var playerQuests))
             {
+                // Initialize empty dictionary if the player's quests states are not found
                 StatesByPlayer[player.PlayerUUID] = playerQuests = new Dictionary<string, BaseQuestState>();
             }
+
+            // Get the state of the quest given the quest's ID and set completion to true
             if (!playerQuests.TryGetValue(quest.QuestID, out var state))
             {
+                // Initialize the quest with a new state if not found
                 playerQuests[quest.QuestID] = state = quest.GetNewState();
             }
             state.Completed = true;
+
+            //if (quest.Repeatability != QuestRepeatability.Repeatable) state.Completed = true;
 
             if (quest.Repeatability == QuestRepeatability.OncePerWorld)
             {
@@ -69,8 +77,23 @@ namespace OvermorrowMod.Quests.State
             }
         }
 
+        /// <summary>
+        /// A variant of IsDoingQuest but without checking if the state is completed.
+        /// Created because I don't know why state completion is there when I just want to
+        /// know if the player is doing the quest in the first place and not having already finished it.
+        /// </summary>
+        public bool CheckDoingQuest(QuestPlayer player, string questID)
+        {
+            return StatesByPlayer.TryGetValue(player.PlayerUUID, out var quests)
+               && quests.TryGetValue(questID, out var questState);
+        }
+
         public bool IsDoingQuest(QuestPlayer player, string questID)
         {
+            /*Main.NewText(StatesByPlayer.TryGetValue(player.PlayerUUID, out var x));
+            Main.NewText(x.TryGetValue(questID, out var y));
+            Main.NewText(y.Completed);*/
+
             return StatesByPlayer.TryGetValue(player.PlayerUUID, out var quests)
                 && quests.TryGetValue(questID, out var questState)
                 && questState.Completed;
