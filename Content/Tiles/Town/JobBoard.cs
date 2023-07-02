@@ -127,9 +127,9 @@ namespace OvermorrowMod.Content.Tiles.Town
             if (JobQuests.Count > 1) return;
 
             var possibleQuests = Quests.Quests.QuestList.Values
-                .Where(q => q.IsValidQuest(boardID, Main.LocalPlayer))
-                //.OfType<JobBoardQuest>()
-                //.Where(q => q.BoardID == boardID)
+                //.Where(q => q.IsValidQuest(boardID, Main.LocalPlayer))
+                .OfType<JobBoardQuest>()
+                .Where(q => q.BoardID == boardID)
                 .GroupBy(q => q.Priority)
                 .Max()
                 ?.ToList();

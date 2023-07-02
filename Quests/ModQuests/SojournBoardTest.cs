@@ -9,13 +9,13 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Quests.ModQuests
 {
-    public class SojournBoardTest : BaseQuest
+    public class SojournBoardTest : JobBoardQuest
     {
         public override string QuestName => "Get Gel";
         public override QuestRepeatability Repeatability => QuestRepeatability.Repeatable;
         public override QuestType Type => QuestType.Fetch;
         public override int QuestGiver => (int)JobBoardID.Sojourn;
-        //public override int BoardID => (int)JobBoardID.Sojourn;
+        public override int BoardID => (int)JobBoardID.Sojourn;
 
         public override void SetDefaults()
         {
@@ -31,13 +31,13 @@ namespace OvermorrowMod.Quests.ModQuests
         }
     }
 
-    public class SojournBoardTest2 : BaseQuest
+    public class SojournBoardTest2 : JobBoardQuest
     {
         public override string QuestName => "Touch Dirt";
         public override QuestRepeatability Repeatability => QuestRepeatability.Repeatable;
         public override QuestType Type => QuestType.Fetch;
         public override int QuestGiver => (int)JobBoardID.Sojourn;
-        //public override int BoardID => (int)JobBoardID.Sojourn;
+        public override int BoardID => (int)JobBoardID.Sojourn;
 
         public override void SetDefaults()
         {
