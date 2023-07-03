@@ -124,7 +124,7 @@ namespace OvermorrowMod.Content.Tiles.Town
         // TODO: make button to clear quests for testing
         private void GetAvailableQuest(int id)
         {
-            if (JobQuests.Count > 1) return;
+            if (JobQuests.Count > 2) return;
 
             var possibleQuests = Quests.Quests.QuestList.Values
                 //.Where(q => q.IsValidQuest(boardID, Main.LocalPlayer))
@@ -136,7 +136,9 @@ namespace OvermorrowMod.Content.Tiles.Town
 
             if (possibleQuests == null || !possibleQuests.Any()) return;
 
-            JobQuests.Add(possibleQuests[Main.rand.Next(0, possibleQuests.Count - 1)]);
+            BaseQuest quest = possibleQuests[Main.rand.Next(0, possibleQuests.Count)];
+            if (!JobQuests.Contains(quest))
+                JobQuests.Add(quest);
 
             //jobQuests.Add()
         }

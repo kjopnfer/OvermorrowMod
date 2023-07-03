@@ -90,10 +90,6 @@ namespace OvermorrowMod.Quests.State
 
         public bool IsDoingQuest(QuestPlayer player, string questID)
         {
-            /*Main.NewText(StatesByPlayer.TryGetValue(player.PlayerUUID, out var x));
-            Main.NewText(x.TryGetValue(questID, out var y));
-            Main.NewText(y.Completed);*/
-
             return StatesByPlayer.TryGetValue(player.PlayerUUID, out var quests)
                 && quests.TryGetValue(questID, out var questState)
                 && questState.Completed;

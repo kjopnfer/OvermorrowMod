@@ -82,16 +82,30 @@ namespace OvermorrowMod.Content.UI.JobBoard
         {
             if (boardTileEntity.JobQuests.Count > 0)
             {
+                int entryCount = 0;
                 foreach (BaseQuest quest in boardTileEntity.JobQuests)
                 {
-                    ModUtils.AddElement(new UIJobBoardEntry(quest), 0, 0, 200, 200, drawSpace);
+                    Vector2 position = GetBoardEntryPosition(entryCount);
+                    ModUtils.AddElement(new UIJobBoardEntry(quest), (int)position.X, (int)position.Y, 200, 200, drawSpace);
+                    entryCount++;
                 }
+
+                Main.NewText(entryCount);
             }
             else
             {
                 Main.NewText("no");
             }
         }
+
+        private Vector2 GetBoardEntryPosition(int entryCount)
+        {
+            float xOffset = 220 * entryCount;
+            float yOffset = 0 * entryCount;
+
+            return new Vector2(xOffset, yOffset);
+        }
+
 
         /// <summary>
         /// Handles the closing animation of the board
@@ -193,12 +207,28 @@ namespace OvermorrowMod.Content.UI.JobBoard
     {
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Vector2 pos = GetDimensions().ToRectangle().TopLeft();
-            bool isHovering = ContainsPoint(Main.MouseScreen);
+            if (Parent is UIJobBoardEntry boardEntry)
+            {
+                QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+                var quest = boardEntry.quest;
+                var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
 
-            Texture2D texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept").Value;
-            Color color = isHovering ? Color.White * 0.5f : Color.White;
-            spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
+                Vector2 pos = GetDimensions().ToRectangle().TopLeft();
+                bool isHovering = ContainsPoint(Main.MouseScreen);
+
+                Texture2D texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardAccept").Value;
+                if (questState != null && !questState.Completed)
+                {
+                    //if (quest.CanHandInQuest(questPlayer, questState)
+                    Main.NewText(Quests.Quests.State.CheckDoingQuest(questPlayer, quest.QuestID) && quest.CanHandInQuest(questPlayer, questState));
+                    if (quest.TryUpdateQuestRequirements(questPlayer, questState))
+                        texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardTurnIn_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardTurnIn").Value;                 
+                }
+                //Main.NewText(questPlayer.IsDoingQuest(quest.QuestID));
+
+                Color color = isHovering ? Color.White * 0.5f : Color.White;
+                spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
+            }
         }
 
         public override void MouseDown(UIMouseEvent evt)
@@ -207,22 +237,10 @@ namespace OvermorrowMod.Content.UI.JobBoard
             {
                 QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
                 var quest = boardEntry.quest;
-
-                var idk = Quests.Quests.State.GetActiveQuests(questPlayer);
-                foreach (var stuff in idk)
-                {
-                    //Main.NewText(stuff.Quest.QuestName);
-                }
-
-
                 var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
 
-                //if(questState == null) Main.NewText("what");
-                //Main.NewText(Quests.Quests.State.IsDoingQuest(questPlayer, quest.QuestID));
-                //Main.NewText("Completed? " + questState.Completed);
                 if (questState != null/*Quests.Quests.State.CheckDoingQuest(questPlayer, quest.QuestID)*/ && !questState.Completed) 
                 {
-                    //var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
                     if (quest.TryUpdateQuestRequirements(questPlayer, questState))
                     {
                         questPlayer.CompleteQuest(quest.QuestID);
