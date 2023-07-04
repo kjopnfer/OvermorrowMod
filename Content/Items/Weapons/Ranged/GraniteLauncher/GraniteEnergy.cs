@@ -9,7 +9,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
+namespace OvermorrowMod.Content.Items.Weapons.Ranged
 {
     public class GraniteEnergy : ModProjectile, ITrailEntity
     {

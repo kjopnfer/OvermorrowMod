@@ -3,7 +3,7 @@ using OvermorrowMod.Common;
 using System;
 using Terraria;
 
-namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
+namespace OvermorrowMod.Content.Items.Weapons.Ranged
 {
     public class GraniteElectricity : Lightning
     {

@@ -12,7 +12,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
 
-namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
+namespace OvermorrowMod.Content.Items.Weapons.Ranged
 {
     public class GraniteLauncher_Held : HeldGun
     {
