@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Players;
-using OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;

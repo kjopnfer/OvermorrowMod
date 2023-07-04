@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
-using OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher;
 using OvermorrowMod.Core;
 using System.Collections.Generic;
 using Terraria;

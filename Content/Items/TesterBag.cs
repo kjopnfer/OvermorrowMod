@@ -6,7 +6,6 @@ using OvermorrowMod.Content.Items.Accessories.CapturedMirage;
 using OvermorrowMod.Content.Items.Accessories.PracticeTarget;
 using OvermorrowMod.Content.Items.Ammo;
 using OvermorrowMod.Content.Items.Weapons.Ranged;
-using OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
