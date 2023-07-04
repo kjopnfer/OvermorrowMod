@@ -124,7 +124,7 @@ namespace OvermorrowMod.Content.Tiles.Town
         // TODO: make button to clear quests for testing
         private void GetAvailableQuest(int id)
         {
-            if (JobQuests.Count > 2) return;
+            if (JobQuests.Count > 6) return;
 
             var possibleQuests = Quests.Quests.QuestList.Values
                 //.Where(q => q.IsValidQuest(boardID, Main.LocalPlayer))

@@ -52,4 +52,27 @@ namespace OvermorrowMod.Quests.ModQuests
             };
         }
     }
+
+    public class SojournBoardTest3 : JobBoardQuest
+    {
+        public override string QuestName => "Where is Grass";
+        public override QuestRepeatability Repeatability => QuestRepeatability.Repeatable;
+        public override QuestType Type => QuestType.Fetch;
+        public override int QuestGiver => (int)JobBoardID.Sojourn;
+        public override int BoardID => (int)JobBoardID.Sojourn;
+
+        public override void SetDefaults()
+        {
+            Requirements = new[]
+            {
+                new ItemRequirement("grass", ItemID.DirtBlock, 8, "Obtain 8 Grass Seeds", true)
+            };
+
+            Rewards = new[]
+            {
+                new ItemReward(ItemID.DirtBlock, 1)
+            };
+        }
+    }
+
 }

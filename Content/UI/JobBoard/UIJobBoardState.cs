@@ -13,6 +13,7 @@ using Terraria.UI.Chat;
 using Terraria.GameContent;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Rewards;
+using OvermorrowMod.Quests.Requirements;
 
 namespace OvermorrowMod.Content.UI.JobBoard
 {
@@ -151,7 +152,8 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
             foreach (IQuestRequirement requirement in quest.Requirements)
             {
-                ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement.Description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
+                if (requirement is ItemRequirement itemRequirement)
+                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, itemRequirement.description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
             }
 
             this.RemoveAllChildren();
@@ -222,7 +224,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
                     //if (quest.CanHandInQuest(questPlayer, questState)
                     Main.NewText(Quests.Quests.State.CheckDoingQuest(questPlayer, quest.QuestID) && quest.CanHandInQuest(questPlayer, questState));
                     if (quest.TryUpdateQuestRequirements(questPlayer, questState))
-                        texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardTurnIn_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardTurnIn").Value;                 
+                        texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardTurnIn_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardTurnIn").Value;
                 }
                 //Main.NewText(questPlayer.IsDoingQuest(quest.QuestID));
 
@@ -239,7 +241,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
                 var quest = boardEntry.quest;
                 var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
 
-                if (questState != null/*Quests.Quests.State.CheckDoingQuest(questPlayer, quest.QuestID)*/ && !questState.Completed) 
+                if (questState != null/*Quests.Quests.State.CheckDoingQuest(questPlayer, quest.QuestID)*/ && !questState.Completed)
                 {
                     if (quest.TryUpdateQuestRequirements(questPlayer, questState))
                     {
