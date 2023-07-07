@@ -63,7 +63,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
         double boardTimer = 0;
         public override void Update(GameTime gameTime)
         {
-            boardTimer += Main.dayRate;
+            if (!Main.gamePaused) boardTimer += Main.dayRate;
 
             if (!showBoard) return;
 
@@ -74,9 +74,11 @@ namespace OvermorrowMod.Content.UI.JobBoard
             if (Math.Floor(24 - boardTimer / 3600) <= 0) boardTimer = 0;
             //Main.NewText("Resets in: " + Math.Floor(24 - boardTimer / 3600) + " hours");
             drawSpace.RemoveChild(timerText);
-            float hours = (int)Math.Floor((totalTime - boardTimer) / 3600);
-            float minutes = (int)Math.Floor((totalTime - boardTimer) % 3600 / 60);
-            timerText = new UIText("Resets in: " + hours + ":" + minutes + " minutes", 1.25f);
+            string hours = Math.Floor((totalTime - boardTimer) / 3600).ToString();
+            string minutes = Math.Floor((totalTime - boardTimer) % 3600 / 60).ToString();
+            if (int.Parse(minutes) < 10) minutes = "0" + minutes;
+
+            timerText = new UIText("Resets in: " + hours.ToString() + ":" + minutes + " minutes", 1.25f);
             ModUtils.AddElement(timerText, 0, 450, 100, 100, drawSpace);
             //this.RemoveAllChildren();
             //ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
