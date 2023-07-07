@@ -1,4 +1,5 @@
 using OvermorrowMod.Common.Cutscenes;
+using OvermorrowMod.Content.Items.Weapons.Ranged;
 using OvermorrowMod.Content.Tiles.Town;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Requirements;
@@ -70,7 +71,55 @@ namespace OvermorrowMod.Quests.ModQuests
 
             Rewards = new[]
             {
-                new ItemReward(ItemID.DirtBlock, 1)
+                new ItemReward(ModContent.ItemType<WildEye>(), 1),
+                new ItemReward(ModContent.ItemType<GraniteLauncher>(), 1)
+            };
+        }
+    }
+
+    public class SojournBoardTest4 : JobBoardQuest
+    {
+        public override string QuestName => "Free Money";
+        public override QuestRepeatability Repeatability => QuestRepeatability.Repeatable;
+        public override QuestType Type => QuestType.Fetch;
+        public override int QuestGiver => (int)JobBoardID.Sojourn;
+        public override int BoardID => (int)JobBoardID.Sojourn;
+
+        public override void SetDefaults()
+        {
+            Requirements = new[]
+            {
+                new ItemRequirement("grass", ItemID.Torch, 2, "Obtain 1 Torch", true)
+            };
+
+            Rewards = new[]
+            {
+                new ItemReward(ItemID.GoldBar, 2),
+                new ItemReward(ItemID.GoldCoin, 2),
+            };
+        }
+    }
+
+    public class SojournBoardTest5 : JobBoardQuest
+    {
+        public override string QuestName => "Cowboy Time";
+        public override QuestRepeatability Repeatability => QuestRepeatability.Repeatable;
+        public override QuestType Type => QuestType.Fetch;
+        public override int QuestGiver => (int)JobBoardID.Sojourn;
+        public override int BoardID => (int)JobBoardID.Sojourn;
+
+        public override void SetDefaults()
+        {
+            Requirements = new[]
+            {
+                new ItemRequirement("grass", ItemID.GoldCoin, 2, "Obtain 2 Gold Coins", true)
+            };
+
+            Rewards = new[]
+            {
+                new ItemReward(ItemID.CowboyHat, 1),
+                new ItemReward(ItemID.CowboyJacket, 1),
+                new ItemReward(ItemID.CowboyPants, 1),
             };
         }
     }

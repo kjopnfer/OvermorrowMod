@@ -150,6 +150,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
 
     public class GraniteLauncher : ModGun<GraniteLauncher_Held>
     {
+        public override string Texture => AssetDirectory.Ranged + "GraniteLauncher/GraniteLauncher";
         public override GunType GunType => GunType.Launcher;
         public override void SetStaticDefaults()
         {

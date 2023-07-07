@@ -14,6 +14,7 @@ using Terraria.GameContent;
 using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Rewards;
 using OvermorrowMod.Quests.Requirements;
+using System;
 
 namespace OvermorrowMod.Content.UI.JobBoard
 {
@@ -40,6 +41,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
         // therefore should load and save jobs tied to the job board
         private UIJobBoardPanel drawSpace = new UIJobBoardPanel();
         internal UIJobBoardCloseButton closeButton = new UIJobBoardCloseButton();
+        private UIText timerText = new UIText("Time");
 
         public bool showBoard = false;
         private JobBoard_TE boardTileEntity;
@@ -58,12 +60,24 @@ namespace OvermorrowMod.Content.UI.JobBoard
             DisplayBoard();
         }
 
+        double boardTimer = 0;
         public override void Update(GameTime gameTime)
         {
+            boardTimer += Main.dayRate;
+
             if (!showBoard) return;
 
-            Main.LocalPlayer.mouseInterface = true;
+            //if (!Main.dayTime && Main.time >= 53999) Main.NewText("end day");
+            const int totalTime = 86400;
 
+            Main.LocalPlayer.mouseInterface = true;
+            if (Math.Floor(24 - boardTimer / 3600) <= 0) boardTimer = 0;
+            //Main.NewText("Resets in: " + Math.Floor(24 - boardTimer / 3600) + " hours");
+            drawSpace.RemoveChild(timerText);
+            float hours = (int)Math.Floor((totalTime - boardTimer) / 3600);
+            float minutes = (int)Math.Floor((totalTime - boardTimer) % 3600 / 60);
+            timerText = new UIText("Resets in: " + hours + ":" + minutes + " minutes", 1.25f);
+            ModUtils.AddElement(timerText, 0, 450, 100, 100, drawSpace);
             //this.RemoveAllChildren();
             //ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
             //drawSpace.RemoveAllChildren();
@@ -102,7 +116,9 @@ namespace OvermorrowMod.Content.UI.JobBoard
         private Vector2 GetBoardEntryPosition(int entryCount)
         {
             float xOffset = 220 * entryCount;
-            float yOffset = 0 * entryCount;
+            if (entryCount > 2) xOffset = 220 * (entryCount - 3);
+
+            float yOffset = (entryCount > 2 ? 220 : 0);
 
             return new Vector2(xOffset, yOffset);
         }
@@ -139,8 +155,8 @@ namespace OvermorrowMod.Content.UI.JobBoard
         public override void Draw(SpriteBatch spriteBatch)
         {
             Vector2 position = new Vector2(GetDimensions().X, GetDimensions().Y);
-            float textScale = 1.25f;
-            float titleScale = 2f;
+            float textScale = 1f;
+            float titleScale = 1.5f;
             float maxWidth = 200;
 
             Texture2D temp = TextureAssets.MagicPixel.Value;
@@ -157,11 +173,14 @@ namespace OvermorrowMod.Content.UI.JobBoard
             }
 
             this.RemoveAllChildren();
+            int rewardCount = 0;
             foreach (IQuestReward ireward in quest.Rewards)
             {
                 if (ireward is ItemReward reward)
                 {
-                    ModUtils.AddElement(new DisplayItemSlot(reward.type, reward.stack), 0, 100, 42, 42, this);
+                    int xOffset = 50 * rewardCount;
+                    ModUtils.AddElement(new DisplayItemSlot(reward.type, reward.stack), xOffset, 100, 42, 42, this);
+                    rewardCount++;
                 }
                 //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
             }

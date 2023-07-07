@@ -42,6 +42,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged
             }
         }
 
+        public override string Texture => AssetDirectory.Ranged + "GraniteLauncher/GraniteShard";
         public override bool? CanDamage() => !CollideTile;
         public override void SetStaticDefaults()
         {
