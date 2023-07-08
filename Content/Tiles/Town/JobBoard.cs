@@ -12,6 +12,7 @@ using OvermorrowMod.Quests;
 using Terraria.ModLoader.IO;
 using OvermorrowMod.Core;
 using System.Linq;
+using System;
 
 namespace OvermorrowMod.Content.Tiles.Town
 {
@@ -110,6 +111,7 @@ namespace OvermorrowMod.Content.Tiles.Town
     {
         public HashSet<BaseQuest> JobQuests { get; private set; } = new HashSet<BaseQuest>();
         public int boardID;
+        public double boardElapsedTime;
 
         public override void SaveData(TagCompound tag)
         {
@@ -122,7 +124,7 @@ namespace OvermorrowMod.Content.Tiles.Town
         }
 
         // TODO: make button to clear quests for testing
-        private void GetAvailableQuest(int id)
+        private void GetAvailableQuest()
         {
             if (JobQuests.Count > 6) return;
 
@@ -143,6 +145,16 @@ namespace OvermorrowMod.Content.Tiles.Town
             //jobQuests.Add()
         }
 
+        private void ObtainQuests()
+        {
+            while (JobQuests.Count < 6) GetAvailableQuest();
+        }
+
+        private void ResetJobBoard()
+        {
+            JobQuests.Clear();
+        }
+
         // on interact, pass in the tile entity id to the ui state
         // on update, try to grab an available quest
         // save quest to a dictionary
@@ -153,10 +165,24 @@ namespace OvermorrowMod.Content.Tiles.Town
         {
             ByID.TryGetValue(ID, out TileEntity entity);
 
+            // Temporary, this probably shouldn't happen
+            if (JobQuests.Count < 6) ObtainQuests();
+
             // TODO: Make each town have a unique ID
             if (entity is JobBoard_TE)
             {
-                GetAvailableQuest(ID);
+                if (!Main.gamePaused) boardElapsedTime += Main.dayRate;
+                //GetAvailableQuest();
+
+                const int totalHours = 24;
+                if (Math.Floor(totalHours - boardElapsedTime / 3600) <= 0)
+                {
+                    boardElapsedTime = 0;
+                    ResetJobBoard();
+                    ObtainQuests();
+
+                    UIJobBoardSystem.Instance.BoardState.ResetJobBoard();
+                }
             }
 
             //int id = 

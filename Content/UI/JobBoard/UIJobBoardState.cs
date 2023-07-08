@@ -60,22 +60,30 @@ namespace OvermorrowMod.Content.UI.JobBoard
             DisplayBoard();
         }
 
-        double boardTimer = 0;
+        public void ResetJobBoard()
+        {
+            this.RemoveAllChildren();
+            ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
+            drawSpace.RemoveAllChildren();
+            ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
+
+            DisplayBoard();
+        }
+
+        //double boardTimer = 0;
         public override void Update(GameTime gameTime)
         {
-            if (!Main.gamePaused) boardTimer += Main.dayRate;
-
             if (!showBoard) return;
 
-            //if (!Main.dayTime && Main.time >= 53999) Main.NewText("end day");
             const int totalTime = 86400;
-
             Main.LocalPlayer.mouseInterface = true;
-            if (Math.Floor(24 - boardTimer / 3600) <= 0) boardTimer = 0;
-            //Main.NewText("Resets in: " + Math.Floor(24 - boardTimer / 3600) + " hours");
+
             drawSpace.RemoveChild(timerText);
+
+            double boardTimer = boardTileEntity.boardElapsedTime;
             string hours = Math.Floor((totalTime - boardTimer) / 3600).ToString();
             string minutes = Math.Floor((totalTime - boardTimer) % 3600 / 60).ToString();
+
             if (int.Parse(minutes) < 10) minutes = "0" + minutes;
 
             timerText = new UIText("Resets in: " + hours.ToString() + ":" + minutes + " minutes", 1.25f);
