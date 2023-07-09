@@ -44,7 +44,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
         private UIText timerText = new UIText("Time");
 
         public bool showBoard = false;
-        private JobBoard_TE boardTileEntity;
+        public JobBoard_TE boardTileEntity { get; private set; }
 
         // TODO: make a job entry ui object that gets created when running through hashset
         public void OpenJobBoard(JobBoard_TE entity)
@@ -288,6 +288,24 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
                     questPlayer.AddQuest(quest);
                     Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
+
+                    // When a quest is accepted, add it into the board with the following info:
+                    if (Parent.Parent.Parent is UIJobBoardState boardState)
+                    {
+                        var acceptedQuests = boardState.boardTileEntity.AcceptedQuests;
+                        if (!acceptedQuests.ContainsKey(questPlayer.PlayerUUID))
+                        {
+                            QuestTakerInfo info = new QuestTakerInfo(questPlayer.PlayerUUID, questPlayer.Name);
+                            info.Quests.Add(quest);
+
+                            acceptedQuests.Add(questPlayer.PlayerUUID, info);
+                        }
+                        else
+                        {
+                            acceptedQuests[questPlayer.PlayerUUID].Quests.Add(quest);
+                        }
+                    }
+                    // PlayerUUID, player name, and the accepted quest object
                 }
             }
 

@@ -107,9 +107,23 @@ namespace OvermorrowMod.Content.Tiles.Town
         Sojourn = -42069
     }
 
+    public struct QuestTakerInfo
+    {
+        public string UUID { get; }
+        public string Name { get; }
+        public List<BaseQuest> Quests { get; }
+        public QuestTakerInfo(string UUID, string Name) : this()
+        {
+            this.UUID = UUID;
+            this.Name = Name;
+        }
+    }
+
     public class JobBoard_TE : ModTileEntity
     {
         public HashSet<BaseQuest> JobQuests { get; private set; } = new HashSet<BaseQuest>();
+        public Dictionary<string, QuestTakerInfo> AcceptedQuests { get; private set; } = new Dictionary<string, QuestTakerInfo>();
+
         public int boardID;
         public double boardElapsedTime;
 
@@ -153,6 +167,10 @@ namespace OvermorrowMod.Content.Tiles.Town
         private void ResetJobBoard()
         {
             JobQuests.Clear();
+
+            // loop through quests that are accepted (playerID, questObject)
+            // use the player ID to remove the questObject from the dictionary
+
         }
 
         // on interact, pass in the tile entity id to the ui state

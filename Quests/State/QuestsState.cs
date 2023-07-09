@@ -17,6 +17,12 @@ namespace OvermorrowMod.Quests.State
                 ?? Enumerable.Empty<BaseQuestState>();
         }
 
+        public void RemoveQuest(QuestPlayer player)
+        {
+            List<BaseQuestState> states = StatesByPlayer.GetValueOrDefault(player.PlayerUUID)?.Values?.Where(state => !state.Completed)?.ToList();
+            
+        }
+
         public void CompleteQuest(QuestPlayer player, BaseQuest quest)
         {
             // Get the player's quest states from the dictionary
