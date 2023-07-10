@@ -17,10 +17,14 @@ namespace OvermorrowMod.Quests.State
                 ?? Enumerable.Empty<BaseQuestState>();
         }
 
-        public void RemoveQuest(QuestPlayer player)
+        public void RemoveQuest(QuestPlayer player, BaseQuest quest)
         {
-            List<BaseQuestState> states = StatesByPlayer.GetValueOrDefault(player.PlayerUUID)?.Values?.Where(state => !state.Completed)?.ToList();
-            
+            StatesByPlayer[player.PlayerUUID].Remove(quest.QuestID);
+        }
+
+        public void RemoveQuest(string playerID, BaseQuest quest)
+        {
+            StatesByPlayer[playerID].Remove(quest.QuestID);
         }
 
         public void CompleteQuest(QuestPlayer player, BaseQuest quest)

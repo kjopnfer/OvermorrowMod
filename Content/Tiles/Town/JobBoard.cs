@@ -169,8 +169,12 @@ namespace OvermorrowMod.Content.Tiles.Town
             JobQuests.Clear();
 
             // loop through quests that are accepted (playerID, questObject)
-            // use the player ID to remove the questObject from the dictionary
-
+            foreach (var player in AcceptedQuests)
+            {
+                // use the player ID to remove the questObject from the dictionary
+                foreach (var quest in player.Value.Quests)
+                    Quests.Quests.State.RemoveQuest(player.Key, quest);
+            }
         }
 
         // on interact, pass in the tile entity id to the ui state
