@@ -111,8 +111,8 @@ namespace OvermorrowMod.Content.Tiles.Town
     {
         public string UUID { get; }
         public string Name { get; }
-        public List<BaseQuest> Quests { get; }
-        public QuestTakerInfo(string UUID, string Name) : this()
+        public List<BaseQuest> Quests { get; } = new List<BaseQuest>();
+        public QuestTakerInfo(string UUID, string Name)
         {
             this.UUID = UUID;
             this.Name = Name;

@@ -251,7 +251,7 @@ namespace OvermorrowMod.Content.UI.JobBoard
                 if (questState != null && !questState.Completed)
                 {
                     //if (quest.CanHandInQuest(questPlayer, questState)
-                    Main.NewText(Quests.Quests.State.CheckDoingQuest(questPlayer, quest.QuestID) && quest.CanHandInQuest(questPlayer, questState));
+                    //Main.NewText(Quests.Quests.State.CheckDoingQuest(questPlayer, quest.QuestID) && quest.CanHandInQuest(questPlayer, questState));
                     if (quest.TryUpdateQuestRequirements(questPlayer, questState))
                         texture = isHovering ? ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardTurnIn_Hover").Value : ModContent.Request<Texture2D>(AssetDirectory.UI + "BoardTurnIn").Value;
                 }
