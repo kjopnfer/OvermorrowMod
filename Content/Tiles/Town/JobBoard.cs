@@ -197,7 +197,7 @@ namespace OvermorrowMod.Content.Tiles.Town
                 //GetAvailableQuest();
 
                 const int totalHours = 24;
-                if (Math.Floor(totalHours - boardElapsedTime / 3600) <= 0)
+                if (totalHours - boardElapsedTime / 3600 <= 0)
                 {
                     boardElapsedTime = 0;
                     ResetJobBoard();
