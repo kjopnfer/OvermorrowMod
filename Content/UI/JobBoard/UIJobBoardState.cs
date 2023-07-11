@@ -62,12 +62,15 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
         public void ResetJobBoard()
         {
-            this.RemoveAllChildren();
-            ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
-            drawSpace.RemoveAllChildren();
-            ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
+            if (showBoard)
+            {
+                //this.RemoveAllChildren();
+                //ModUtils.AddElement(drawSpace, Main.screenWidth / 2 - 375, Main.screenHeight / 2 - 250, 750, 500, this);
+                drawSpace.RemoveAllChildren();
+                ModUtils.AddElement(closeButton, 700, 0, 22, 22, drawSpace);
 
-            DisplayBoard();
+                DisplayBoard();
+            }
         }
 
         //double boardTimer = 0;
