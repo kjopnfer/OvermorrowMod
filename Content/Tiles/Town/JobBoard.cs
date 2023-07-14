@@ -119,9 +119,31 @@ namespace OvermorrowMod.Content.Tiles.Town
         }
     }
 
+    public struct QuestInfo
+    {
+        public bool Taken = false;
+        public BaseQuest Quest;
+
+        public QuestInfo(BaseQuest Quest)
+        {
+            this.Quest = Quest;
+        }
+    }
+
+    public enum QuestStatus
+    {
+        Unclaimed = 0,
+        InProgress = 1,
+        Completed = 2
+    }
+
     public class JobBoard_TE : ModTileEntity
     {
-        public HashSet<BaseQuest> JobQuests { get; private set; } = new HashSet<BaseQuest>();
+        //public HashSet<BaseQuest> JobQuests { get; private set; } = new HashSet<BaseQuest>();
+        /// <summary>
+        /// Contains the BaseQuest object and whether or not the quest has been claimed from the board
+        /// </summary>
+        public Dictionary<BaseQuest, QuestStatus> JobQuests { get; private set; } = new Dictionary<BaseQuest, QuestStatus>();
         public Dictionary<string, QuestTakerInfo> AcceptedQuests { get; private set; } = new Dictionary<string, QuestTakerInfo>();
 
         public int boardID;
@@ -153,8 +175,10 @@ namespace OvermorrowMod.Content.Tiles.Town
             if (possibleQuests == null || !possibleQuests.Any()) return;
 
             BaseQuest quest = possibleQuests[Main.rand.Next(0, possibleQuests.Count)];
-            if (!JobQuests.Contains(quest))
-                JobQuests.Add(quest);
+            if (!JobQuests.ContainsKey(quest))
+                JobQuests.Add(quest, QuestStatus.Unclaimed);
+            //if (!JobQuests.Contains(quest))
+            //    JobQuests.Add(quest);
 
             //jobQuests.Add()
         }

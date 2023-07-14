@@ -111,14 +111,14 @@ namespace OvermorrowMod.Content.UI.JobBoard
             if (boardTileEntity.JobQuests.Count > 0)
             {
                 int entryCount = 0;
-                foreach (BaseQuest quest in boardTileEntity.JobQuests)
+                foreach (BaseQuest quest in boardTileEntity.JobQuests.Keys)
                 {
                     Vector2 position = GetBoardEntryPosition(entryCount);
-                    ModUtils.AddElement(new UIJobBoardEntry(quest), (int)position.X, (int)position.Y, 200, 200, drawSpace);
+                    QuestStatus status = boardTileEntity.JobQuests[quest];
+                    ModUtils.AddElement(new UIJobBoardEntry(quest, status), (int)position.X, (int)position.Y, 200, 200, drawSpace);
+
                     entryCount++;
                 }
-
-                Main.NewText(entryCount);
             }
             else
             {
@@ -160,9 +160,11 @@ namespace OvermorrowMod.Content.UI.JobBoard
     public class UIJobBoardEntry : UIPanel
     {
         public BaseQuest quest { get; private set; }
-        public UIJobBoardEntry(BaseQuest quest)
+        public QuestStatus status { get; private set; }
+        public UIJobBoardEntry(BaseQuest quest, QuestStatus status)
         {
             this.quest = quest;
+            this.status = status;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -177,30 +179,58 @@ namespace OvermorrowMod.Content.UI.JobBoard
 
             float titleLength = ChatManager.GetStringSize(FontAssets.MouseText.Value, quest.QuestName, Vector2.One * titleScale, maxWidth).X;
             float titleOffset = ChatManager.GetStringSize(FontAssets.MouseText.Value, quest.QuestName, Vector2.One * titleScale, maxWidth).Y + 20;
-            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, quest.QuestName, position + new Vector2((Width.Pixels - titleLength) / 2f, 0), Color.Black, 0f, Vector2.Zero, Vector2.One * titleScale, maxWidth);
-
-            foreach (IQuestRequirement requirement in quest.Requirements)
-            {
-                if (requirement is ItemRequirement itemRequirement)
-                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, itemRequirement.description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
-            }
-
-            this.RemoveAllChildren();
-            int rewardCount = 0;
-            foreach (IQuestReward ireward in quest.Rewards)
-            {
-                if (ireward is ItemReward reward)
-                {
-                    int xOffset = 50 * rewardCount;
-                    ModUtils.AddElement(new DisplayItemSlot(reward.type, reward.stack), xOffset, 100, 42, 42, this);
-                    rewardCount++;
-                }
-                //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, requirement, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
-            }
-
-            ModUtils.AddElement(new UIJobBoardAcceptButton(), 50, 150, 64, 32, this);
 
             //ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, quest.Requirements[0]., position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * scale, maxWidth);
+            if (status == QuestStatus.Unclaimed)
+            {
+                ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, quest.QuestName, position + new Vector2((Width.Pixels - titleLength) / 2f, 0), Color.Black, 0f, Vector2.Zero, Vector2.One * titleScale, maxWidth);
+
+                foreach (IQuestRequirement requirement in quest.Requirements)
+                {
+                    if (requirement is ItemRequirement itemRequirement)
+                        ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, itemRequirement.description, position + new Vector2(0, titleOffset), Color.Black, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
+                }
+
+                this.RemoveAllChildren();
+                int rewardCount = 0;
+                foreach (IQuestReward ireward in quest.Rewards)
+                {
+                    if (ireward is ItemReward reward)
+                    {
+                        int xOffset = 50 * rewardCount;
+                        ModUtils.AddElement(new DisplayItemSlot(reward.type, reward.stack), xOffset, 100, 42, 42, this);
+                        rewardCount++;
+                    }
+                }
+
+                ModUtils.AddElement(new UIJobBoardAcceptButton(), 50, 150, 64, 32, this);
+            }
+            else
+            {
+
+                QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
+                var questState = Quests.Quests.State.GetActiveQuestState(questPlayer, quest);
+
+                spriteBatch.Draw(temp, new Rectangle((int)position.X, (int)position.Y, (int)Width.Pixels, (int)Height.Pixels), Color.Black * 0.8f);
+                if (Parent.Parent is UIJobBoardState boardState)
+                {
+                    foreach (var kvp in boardState.boardTileEntity.AcceptedQuests)
+                    {
+                        string questStatus = status == QuestStatus.InProgress ? "Claimed by: " : "Completed by: ";
+                        if (kvp.Value.Quests.Contains(quest)) ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, questStatus + kvp.Value.Name, position + new Vector2(0, titleOffset), Color.White, 0f, Vector2.Zero, Vector2.One * textScale, maxWidth);
+                    }
+
+                    this.RemoveAllChildren();
+                    if (questState != null && !questState.Completed)
+                    {
+                        if (quest.TryUpdateQuestRequirements(questPlayer, questState))
+                        {
+                            ModUtils.AddElement(new UIJobBoardAcceptButton(), 50, 150, 64, 32, this);
+                            //questState.Completed = false;
+                        }
+                    }
+                }
+            }
 
             base.Draw(spriteBatch);
         }
@@ -261,13 +291,14 @@ namespace OvermorrowMod.Content.UI.JobBoard
                 //Main.NewText(questPlayer.IsDoingQuest(quest.QuestID));
 
                 Color color = isHovering ? Color.White * 0.5f : Color.White;
+
                 spriteBatch.Draw(texture, pos + new Vector2(texture.Width / 2f, texture.Height / 2f), null, color, 0f, texture.Size() / 2f, 1f, 0, 0);
             }
         }
 
         public override void MouseDown(UIMouseEvent evt)
         {
-            if (Parent is UIJobBoardEntry boardEntry)
+            if (Parent is UIJobBoardEntry boardEntry && Parent.Parent.Parent is UIJobBoardState boardState)
             {
                 QuestPlayer questPlayer = Main.LocalPlayer.GetModPlayer<QuestPlayer>();
                 var quest = boardEntry.quest;
@@ -277,9 +308,13 @@ namespace OvermorrowMod.Content.UI.JobBoard
                 {
                     if (quest.TryUpdateQuestRequirements(questPlayer, questState))
                     {
+                        boardState.boardTileEntity.JobQuests[quest] = QuestStatus.Completed;
+
                         questPlayer.CompleteQuest(quest.QuestID);
                         Main.NewText("COMPLETED QUEST: " + quest.QuestName, Color.Yellow);
                         //questState.Completed = false;
+
+                        boardState.ResetJobBoard();
                     }
                 }
                 else
@@ -293,21 +328,23 @@ namespace OvermorrowMod.Content.UI.JobBoard
                     Main.NewText("ACCEPTED QUEST: " + quest.QuestName, Color.Yellow);
 
                     // When a quest is accepted, add it into the board with the following info:
-                    if (Parent.Parent.Parent is UIJobBoardState boardState)
-                    {
-                        var acceptedQuests = boardState.boardTileEntity.AcceptedQuests;
-                        if (!acceptedQuests.ContainsKey(questPlayer.PlayerUUID))
-                        {
-                            QuestTakerInfo info = new QuestTakerInfo(questPlayer.PlayerUUID, questPlayer.Name);
-                            info.Quests.Add(quest);
 
-                            acceptedQuests.Add(questPlayer.PlayerUUID, info);
-                        }
-                        else
-                        {
-                            acceptedQuests[questPlayer.PlayerUUID].Quests.Add(quest);
-                        }
+                    boardState.boardTileEntity.JobQuests[quest] = QuestStatus.InProgress;
+
+                    var acceptedQuests = boardState.boardTileEntity.AcceptedQuests;
+                    if (!acceptedQuests.ContainsKey(questPlayer.PlayerUUID))
+                    {
+                        QuestTakerInfo info = new QuestTakerInfo(questPlayer.PlayerUUID, Main.LocalPlayer.name);
+                        info.Quests.Add(quest);
+                        acceptedQuests.Add(questPlayer.PlayerUUID, info);
                     }
+                    else
+                    {
+                        acceptedQuests[questPlayer.PlayerUUID].Quests.Add(quest);
+                    }
+
+                    boardState.ResetJobBoard();
+
                     // PlayerUUID, player name, and the accepted quest object
                 }
             }
