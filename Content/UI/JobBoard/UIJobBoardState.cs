@@ -15,6 +15,7 @@ using OvermorrowMod.Core.Interfaces;
 using OvermorrowMod.Quests.Rewards;
 using OvermorrowMod.Quests.Requirements;
 using System;
+using OvermorrowMod.Common.JobBoard;
 
 namespace OvermorrowMod.Content.UI.JobBoard
 {

@@ -13,6 +13,7 @@ using Terraria.ModLoader.IO;
 using OvermorrowMod.Core;
 using System.Linq;
 using System;
+using OvermorrowMod.Common.JobBoard;
 
 namespace OvermorrowMod.Content.Tiles.Town
 {
@@ -107,36 +108,6 @@ namespace OvermorrowMod.Content.Tiles.Town
         Sojourn = -42069
     }
 
-    public struct QuestTakerInfo
-    {
-        public string UUID { get; }
-        public string Name { get; }
-        public List<BaseQuest> Quests { get; } = new List<BaseQuest>();
-        public QuestTakerInfo(string UUID, string Name)
-        {
-            this.UUID = UUID;
-            this.Name = Name;
-        }
-    }
-
-    public struct QuestInfo
-    {
-        public bool Taken = false;
-        public BaseQuest Quest;
-
-        public QuestInfo(BaseQuest Quest)
-        {
-            this.Quest = Quest;
-        }
-    }
-
-    public enum QuestStatus
-    {
-        Unclaimed = 0,
-        InProgress = 1,
-        Completed = 2
-    }
-
     public class JobBoard_TE : ModTileEntity
     {
         //public HashSet<BaseQuest> JobQuests { get; private set; } = new HashSet<BaseQuest>();
@@ -152,11 +123,13 @@ namespace OvermorrowMod.Content.Tiles.Town
         public override void SaveData(TagCompound tag)
         {
             tag["boardID"] = boardID;
+            tag["boardElapsedTime"] = boardElapsedTime;
         }
 
         public override void LoadData(TagCompound tag)
         {
             boardID = tag.Get<int>("boardID");
+            boardElapsedTime = tag.Get<double>("boardElapsedTime");
         }
 
         // TODO: make button to clear quests for testing
