@@ -107,7 +107,7 @@ namespace OvermorrowMod.Content.Tiles.Town
     {
         Sojourn = -42069
     }
-
+    
     public class JobBoard_TE : ModTileEntity
     {
         //public HashSet<BaseQuest> JobQuests { get; private set; } = new HashSet<BaseQuest>();
