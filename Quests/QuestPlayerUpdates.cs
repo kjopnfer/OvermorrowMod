@@ -12,12 +12,17 @@ namespace OvermorrowMod.Quests
 {
     public partial class QuestPlayer : ModPlayer
     {
+        public bool grabbedAxe = false;
+
         private void RequirementCompleteAction(string id)
         {
             DialoguePlayer dialoguePlayer = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
 
             switch (id)
             {
+                case "axe":
+                    grabbedAxe = true;
+                    break;
                 case "wood":
                     dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampGel.xml"));
                     break;
