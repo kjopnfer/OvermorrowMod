@@ -13,6 +13,7 @@ namespace OvermorrowMod.Quests
     public partial class QuestPlayer : ModPlayer
     {
         public bool grabbedAxe = false;
+        public bool showCampfireArrow = false;
 
         private void RequirementCompleteAction(string id)
         {
@@ -28,6 +29,9 @@ namespace OvermorrowMod.Quests
                     break;
                 case "gel":
                     dialoguePlayer.AddNPCPopup(NPCID.Guide, ModUtils.GetXML(AssetDirectory.Popup + "GuideCampTorch.xml"));
+                    break;
+                case "torches":
+                    showCampfireArrow = true;
                     break;
             }
         }
@@ -56,7 +60,7 @@ namespace OvermorrowMod.Quests
 
                     foreach (var clause in chainRequirement.AllClauses)
                     {
-                        if (clause is ItemRequirement)
+                        if (clause is ItemRequirement || clause is MiscRequirement)
                         {
                             if (clause.CanHandInRequirement(this, questState) && !clause.IsCompleted(this, questState))
                             {
