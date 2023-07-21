@@ -8,12 +8,22 @@ using OvermorrowMod.Core;
 using OvermorrowMod.Content.Tiles.GuideCamp.TileObjects;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Quests;
+using System;
 
 namespace OvermorrowMod.Content.Tiles.GuideCamp
 {
     public class AxeStump : ModTilePile<AxeStumpObjects>
     {
         public override BaseTilePile.TileStyle GridStyle => BaseTilePile.TileStyle.Style2x2;
+
+        int offsetCounter = 0;
+        int markerFrame = 2;
+        public override void AnimateTile(ref int frame, ref int frameCounter)
+        {
+            frameCounter++;
+            offsetCounter = frameCounter;
+            if (offsetCounter % 24 == 0) markerFrame = markerFrame == 2 ? 3 : 2;
+        }
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
@@ -27,14 +37,15 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
                 {
                     Vector2 offScreenRange = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                     Vector2 drawPos = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreenRange;
-                    int frame = 2;
+                    float yOffset = MathHelper.Lerp(8, 12, (float)Math.Sin(offsetCounter / 24f));
+
 
                     Texture2D texture = ModContent.Request<Texture2D>("OvermorrowMod/Quests/QuestAlert").Value;
-                    Rectangle drawRectangle = new Rectangle(0, texture.Height / 6 * frame, texture.Width, texture.Height / 6);
+                    Rectangle drawRectangle = new Rectangle(0, texture.Height / 6 * markerFrame, texture.Width, texture.Height / 6);
 
                     spriteBatch.Draw(
                         texture,
-                        new Vector2(drawPos.X + 16, drawPos.Y - 8),
+                        new Vector2(drawPos.X + 16, drawPos.Y - yOffset),
                         drawRectangle,
                         Color.White,
                         0f,
