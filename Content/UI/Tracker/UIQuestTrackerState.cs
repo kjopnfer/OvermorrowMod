@@ -70,7 +70,8 @@ namespace OvermorrowMod.Content.UI.Tracker
 
                 }
 
-                questEntries.Add(new QuestEntry(quest.QuestName, objectives));
+                bool canTurnIn = quest.TryUpdateQuestRequirements(questPlayer, questState);
+                questEntries.Add(new QuestEntry(quest.QuestName, objectives, canTurnIn));
             }
 
             //questEntries.Add(new QuestEntry("Stryke's Stryfe", new List<QuestObjective>() { new QuestObjective(0, 1, "Defeat Stryfe of Phantasia") }));
@@ -147,7 +148,7 @@ namespace OvermorrowMod.Content.UI.Tracker
                 description = miscRequirement.description;
             }
 
-            return new QuestObjective(progress, amount, description);
+            return new QuestObjective(progress, amount, description, requirementClause.IsCompleted(questPlayer, questState));
         }
     }
 
@@ -243,22 +244,47 @@ namespace OvermorrowMod.Content.UI.Tracker
                 foreach (QuestEntry entry in state.questEntries)
                 {
                     int offset = 30 + entryCount * 10;
+                    Color titleColor = entry.CanTurnIn ? new Color(127, 255, 212) : Color.Yellow;
 
-                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, entry.Name, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + offset + entryOffset), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
+                    ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, entry.Name, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + offset + entryOffset), titleColor, 0f, Vector2.Zero, Vector2.One * 0.9f, MAXIMUM_LENGTH);
 
                     int objectiveCount = 0;
                     int objectivePadding = 0;
-                    foreach (QuestObjective objective in entry.Objectives)
+                    if (entry.CanTurnIn)
                     {
                         objectiveCount++;
 
-                        string objectiveText = "- " + objective.Progress + "/" + objective.Quantity + " " + objective.Description;
-                        Color textColor = objective.Progress >= objective.Quantity ? new Color(127, 255, 212) : Color.White;
+                        string objectiveText = "- Can be turned in!";
+
+                        Color textColor = new Color(127, 255, 212);
                         TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, textColor).ToArray();
                         ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + INITIAL_OBJECTIVE_OFFSET + offset + entryOffset + objectivePadding), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
 
                         entryOffset += objectiveSnippets.Length * 15 + (GetNumberLines(objectiveText, (int)MAXIMUM_LENGTH) * 20);
-                        //objectivePadding += 5;
+                    }
+                    else
+                    {
+                        foreach (QuestObjective objective in entry.Objectives)
+                        {
+                            objectiveCount++;
+
+                            string objectiveText = "- " + objective.Progress + "/" + objective.Quantity + " " + objective.Description;
+                            if (objective.IsCompleted) objectiveText = "    " + objective.Description;
+
+                            Color textColor = objective.IsCompleted ? new Color(127, 255, 212) : Color.White;
+                            TextSnippet[] objectiveSnippets = ChatManager.ParseMessage(objectiveText, textColor).ToArray();
+                            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, objectiveSnippets, new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + INITIAL_OBJECTIVE_OFFSET + offset + entryOffset + objectivePadding), Color.Yellow, 0f, Vector2.Zero, Vector2.One * 0.9f, out var hoveredSnippet, MAXIMUM_LENGTH);
+
+                            if (objective.IsCompleted)
+                            {
+                                Vector2 checkBoxOffset = new Vector2(8, 8);
+                                Texture2D checkTexture = ModContent.Request<Texture2D>(AssetDirectory.UI + "QuestBox_Checked").Value;
+                                spriteBatch.Draw(checkTexture, checkBoxOffset + new Vector2(GetDimensions().X + LEFT_PADDING, GetDimensions().Y + INITIAL_OBJECTIVE_OFFSET + offset + entryOffset + objectivePadding), null, Color.White, 0f, checkTexture.Size() / 2f, 1f, SpriteEffects.None, 0f);
+                            }
+
+                            entryOffset += objectiveSnippets.Length * 15 + (GetNumberLines(objectiveText, (int)MAXIMUM_LENGTH) * 20);
+                            //objectivePadding += 5;
+                        }
                     }
 
                     entryOffset += 20; // Always increase by 20 because of the entry's name height is ~20
@@ -276,11 +302,13 @@ namespace OvermorrowMod.Content.UI.Tracker
     {
         public string Name;
         public List<QuestObjective> Objectives;
+        public bool CanTurnIn;
 
-        public QuestEntry(string name, List<QuestObjective> objectives)
+        public QuestEntry(string name, List<QuestObjective> objectives, bool canTurnIn)
         {
             Name = name;
             Objectives = objectives;
+            CanTurnIn = canTurnIn;
         }
     }
 
@@ -289,12 +317,14 @@ namespace OvermorrowMod.Content.UI.Tracker
         public int Progress;
         public int Quantity;
         public string Description;
+        public bool IsCompleted;
 
-        public QuestObjective(int progress, int quantity, string description)
+        public QuestObjective(int progress, int quantity, string description, bool isCompleted = false)
         {
             Progress = progress;
             Quantity = quantity;
             Description = description;
+            IsCompleted = isCompleted;
         }
     }
 }
