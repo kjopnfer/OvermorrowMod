@@ -69,6 +69,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
     public class WoodenStaff_Held : ModProjectile
     {
+        public override bool? CanHitNPC(NPC target) => !target.friendly && inSwingState;
+
+        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        {
+            if (HoldCounter >= heavySwingThreshold) damage = (int)(damage * 1.5f);
+        }
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Wooden Staff");
@@ -84,6 +91,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 120;
+
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         Player player => Main.player[Projectile.owner];
@@ -106,7 +116,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             HandleWeaponUse();
         }
 
-
         private void HandleWeaponUse()
         {
             // The weapon will always default to the light attack animations
@@ -115,45 +124,56 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             // Prevent weapon from being used again while in release state
             if (player.controlUseItem && !justReleasedWeapon) HandleWeaponHold();
-
-            if (!player.controlUseItem && HoldCounter > 0) HandleWeaponRelease();
+            else if (HoldCounter > 0) HandleWeaponRelease();
         }
 
         public int maxHoldCount = 60;
         private void HandleWeaponHold()
         {
-            if (HoldCounter < maxHoldCount) Main.NewText(HoldCounter++);
+            if (HoldCounter < maxHoldCount) HoldCounter++;
 
+            if (AICounter <= backTime)
+            {
+                AICounter++;
+                swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+            }
         }
 
-        
+        float backTime => HoldCounter > heavySwingThreshold ? 20 : 15;
+        float forwardTime => HoldCounter > heavySwingThreshold ? 15 : 10;
+        float holdTime => HoldCounter > heavySwingThreshold ? 10 : 7;
+
+        int heavySwingThreshold = 15;
+
         private bool justReleasedWeapon = false;
         private bool inReleaseState = false;
+        private bool inSwingState = false;
         private void HandleWeaponRelease()
         {
-
             // On weapon release is when we execute the attack animation
             if (!justReleasedWeapon)
             {
                 justReleasedWeapon = true;
 
-                if (HoldCounter < 15) Main.NewText("light attack");
-                if (HoldCounter >= 15) Main.NewText("heavy attack");
-            }
-
-            float backTime = 20;
-            float forwardTime = 20;
-            float holdTime = 10;
+                if (HoldCounter < heavySwingThreshold) Main.NewText("light attack");
+                if (HoldCounter >= heavySwingThreshold) Main.NewText("heavy attack");
+            } 
 
             AICounter++;
             if (AICounter <= backTime) 
                 swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
-            if (AICounter > backTime && AICounter <= backTime + forwardTime) 
+            if (AICounter > backTime && AICounter <= backTime + forwardTime)
+            {
+                inSwingState = true;
                 swingAngle = MathHelper.Lerp(100, -75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
+            }
 
             if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
+            {
+                inSwingState = false;
                 swingAngle = MathHelper.Lerp(-75, 0, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+            }
 
             // HoldCounter gets reset to zero at the end of the attack animation
             if (AICounter >= backTime + forwardTime + holdTime)
@@ -171,14 +191,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
 
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
+            Vector2 positionOffset = (player.direction == -1 ? new Vector2(8, 12) : new Vector2(8, -12)).RotatedBy(Projectile.rotation);
+
+            Main.spriteBatch.Draw(texture, Projectile.Center + positionOffset - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
         }
 
         public float swingAngle = 0;
         private void HandleArmDrawing()
         {
             float staffRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
-            Main.NewText(staffRotation);
 
             Projectile.rotation = staffRotation;
             Projectile.spriteDirection = Main.MouseWorld.X < player.Center.X ? -1 : 1;
@@ -196,6 +217,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             return base.Colliding(projHitbox, targetHitbox);
+        }
+
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            hitbox.Width = 30;
+            hitbox.Height = 30;
+
+
+            Vector2 positionOffset = new Vector2(25, -40 * player.direction).RotatedBy(Projectile.rotation);
+            hitbox.X = (int)(Projectile.Center.X + positionOffset.X);
+            hitbox.Y = (int)(Projectile.Center.Y + positionOffset.Y);
+
+            base.ModifyDamageHitbox(ref hitbox);
         }
 
         public override void Kill(int timeLeft)
