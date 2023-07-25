@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OvermorrowMod.Common;
 using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Core;
@@ -131,6 +132,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         private void HandleWeaponHold()
         {
             if (HoldCounter < maxHoldCount) HoldCounter++;
+            if (HoldCounter > heavySwingThreshold && flashCounter <= 15) flashCounter++;
 
             if (AICounter <= backTime)
             {
@@ -153,6 +155,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             // On weapon release is when we execute the attack animation
             if (!justReleasedWeapon)
             {
+                flashCounter = 0;
                 justReleasedWeapon = true;
 
                 if (HoldCounter < heavySwingThreshold) Main.NewText("light attack");
@@ -186,6 +189,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
         }
 
+        int flashCounter = 0;
         private void HandleWeaponDrawing(Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
@@ -193,7 +197,16 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             Vector2 positionOffset = (player.direction == -1 ? new Vector2(8, 12) : new Vector2(8, -12)).RotatedBy(Projectile.rotation);
 
-            Main.spriteBatch.Draw(texture, Projectile.Center + positionOffset - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
+            float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 5f), 0, 1);
+
+            Effect effect = OvermorrowModFile.Instance.Whiteout.Value;
+            effect.Parameters["WhiteoutColor"].SetValue(Color.White.ToVector3());
+            effect.Parameters["WhiteoutProgress"].SetValue(flashProgress);
+            effect.CurrentTechnique.Passes["Whiteout"].Apply();
+
+            Color lerpColor = Color.Lerp(lightColor, Color.White, flashProgress);
+
+            Main.spriteBatch.Draw(texture, Projectile.Center + positionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
         }
 
         public float swingAngle = 0;
