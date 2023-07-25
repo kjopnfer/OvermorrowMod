@@ -157,10 +157,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
                 if (HoldCounter < heavySwingThreshold) Main.NewText("light attack");
                 if (HoldCounter >= heavySwingThreshold) Main.NewText("heavy attack");
-            } 
+            }
 
             AICounter++;
-            if (AICounter <= backTime) 
+            if (AICounter <= backTime)
                 swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
             if (AICounter > backTime && AICounter <= backTime + forwardTime)
@@ -211,7 +211,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             float backRotation = player.direction == -1 ? -150 : -30;
             player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(backRotation));
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
-
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -221,13 +220,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            hitbox.Width = 30;
-            hitbox.Height = 30;
+            hitbox.Width = 50;
+            hitbox.Height = 50;
 
-
-            Vector2 positionOffset = new Vector2(25, -40 * player.direction).RotatedBy(Projectile.rotation);
-            hitbox.X = (int)(Projectile.Center.X + positionOffset.X);
-            hitbox.Y = (int)(Projectile.Center.Y + positionOffset.Y);
+            Vector2 positionOffset = new Vector2(25, -10 * player.direction).RotatedBy(Projectile.rotation);
+            hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + positionOffset.X);
+            hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + positionOffset.Y);
 
             base.ModifyDamageHitbox(ref hitbox);
         }
