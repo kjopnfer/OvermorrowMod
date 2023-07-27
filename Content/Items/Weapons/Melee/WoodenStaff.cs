@@ -102,16 +102,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public ref float AICounter => ref Projectile.ai[0];
 
         /// <summary>
+        /// How long the player has gone without taking an action. Used to determine combo time.
+        /// </summary>
+        public float InactiveCounter = 0;
+        public float InactiveLimit = 60;
+
+        /// <summary>
         /// How long the player has held down the weapon, separate from the counter that handles actions
         /// </summary>
         public ref float HoldCounter => ref Projectile.ai[1];
 
+        private bool IsExecutingAction = false;
         public override void AI()
         {
             if (player.active && player.HeldItem.type == ModContent.ItemType<WoodenStaff>()) Projectile.timeLeft = 10;
 
             Projectile.width = Projectile.height = 40;
             player.heldProj = Projectile.whoAmI;
+
+            if (InactiveCounter == InactiveLimit) Projectile.Kill();
+            if (!IsExecutingAction) InactiveCounter++;
 
             HandleArmDrawing();
             HandleWeaponUse();
@@ -131,6 +141,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public int maxHoldCount = 60;
         private void HandleWeaponHold()
         {
+            InactiveCounter = 0;
+            IsExecutingAction = true;
+
             if (HoldCounter < maxHoldCount) HoldCounter++;
             if (HoldCounter > heavySwingThreshold && flashCounter <= 15) flashCounter++;
 
@@ -141,9 +154,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
         }
 
-        float backTime => HoldCounter > heavySwingThreshold ? 20 : 15;
-        float forwardTime => HoldCounter > heavySwingThreshold ? 15 : 10;
-        float holdTime => HoldCounter > heavySwingThreshold ? 10 : 7;
+        float backTime => HoldCounter > heavySwingThreshold ? 15 : 15;
+        float forwardTime => HoldCounter > heavySwingThreshold ? 5 : 10;
+        float holdTime => HoldCounter > heavySwingThreshold ? 7 : 7;
 
         int heavySwingThreshold = 15;
 
@@ -186,6 +199,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 swingAngle = 0;
 
                 justReleasedWeapon = false;
+                IsExecutingAction = false;
+                InactiveCounter = 0;
             }
         }
 
