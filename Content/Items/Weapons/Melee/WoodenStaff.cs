@@ -6,8 +6,10 @@ using OvermorrowMod.Common.VanillaOverrides.Gun;
 using OvermorrowMod.Core;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -48,6 +50,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             // Projectile Properties
             Item.shootSpeed = 2.2f; // The speed of the projectile measured in pixels per frame.
             Item.shoot = ModContent.ProjectileType<WoodenStaff_Held>(); // The projectile that is fired from this weapon
+        }
+
+        public int attackIndex = 1;
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            attackIndex++;
+            if (attackIndex > 2) attackIndex = 0;
+
+            Main.NewText(attackIndex);
+
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex);
+
+            return false;
         }
 
         public override void HoldItem(Player player)
@@ -97,9 +112,31 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Projectile.localNPCHitCooldown = 20;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            base.SendExtraAI(writer);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            base.ReceiveExtraAI(reader);
+        }
+
         Player player => Main.player[Projectile.owner];
 
-        public ref float AICounter => ref Projectile.ai[0];
+        public ref float ComboIndex => ref Projectile.ai[0];
+        public ref float AICounter => ref Projectile.ai[1];
+
+
+        // TODO: OnSpawn Hook with combo initializer
+
+        /// <summary>
+        /// Initializes swing and damage values based on the combo index
+        /// </summary>
+        private void InitializeValues()
+        {
+
+        }
 
         /// <summary>
         /// How long the player has gone without taking an action. Used to determine combo time.
@@ -110,7 +147,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         /// <summary>
         /// How long the player has held down the weapon, separate from the counter that handles actions
         /// </summary>
-        public ref float HoldCounter => ref Projectile.ai[1];
+        public float HoldCounter = 0; // TODO: Sync this with ExtraAI
 
         private bool IsExecutingAction = false;
         public override void AI()
@@ -127,6 +164,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             HandleWeaponUse();
         }
 
+        Vector2 positionOffset;
         private void HandleWeaponUse()
         {
             // The weapon will always default to the light attack animations
@@ -136,9 +174,14 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             // Prevent weapon from being used again while in release state
             if (player.controlUseItem && !justReleasedWeapon) HandleWeaponHold();
             else if (HoldCounter > 0) HandleWeaponRelease();
+
+            Projectile.Center = player.RotatedRelativePoint(player.MountedCenter + positionOffset);
         }
 
         public int maxHoldCount = 60;
+        /// <summary>
+        /// Executed whenever the player holds down left mouse, used to draw the weapon moving back or any other prep effects.
+        /// </summary>
         private void HandleWeaponHold()
         {
             InactiveCounter = 0;
@@ -150,7 +193,22 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             if (AICounter <= backTime)
             {
                 AICounter++;
-                swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                switch (ComboIndex)
+                {
+                    case 0:
+                        positionOffset = (player.direction == -1 ? new Vector2(14, -4) : new Vector2(10, 6)).RotatedBy(Projectile.rotation);
+                        swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        break;
+                    case 2:
+                        float xOffset = MathHelper.Lerp(14, -10, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        positionOffset = (player.direction == -1 ? new Vector2(xOffset, -4) : new Vector2(xOffset, 6)).RotatedBy(Projectile.rotation);
+                        break;
+                    default:
+                        positionOffset = (player.direction == -1 ? new Vector2(14, -4) : new Vector2(10, 6)).RotatedBy(Projectile.rotation);
+                        swingAngle = MathHelper.Lerp(0, -135, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        break;
+                }
+
             }
         }
 
@@ -172,24 +230,71 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 justReleasedWeapon = true;
                 lastMousePosition = Main.MouseWorld;
 
-                if (HoldCounter < heavySwingThreshold) Main.NewText("light attack");
-                if (HoldCounter >= heavySwingThreshold) Main.NewText("heavy attack");
+                //if (HoldCounter < heavySwingThreshold) Main.NewText("light attack");
+                //if (HoldCounter >= heavySwingThreshold) Main.NewText("heavy attack");
+            }
+
+            switch (ComboIndex)
+            {
+                case 2:
+                    float xOffset = MathHelper.Lerp(14, -10, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                    if (AICounter <= backTime)
+                        xOffset = MathHelper.Lerp(14, -10, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+
+                    if (AICounter > backTime && AICounter <= backTime + forwardTime)
+                    {
+                        inSwingState = true;
+
+                        xOffset = MathHelper.Lerp(-10, 18, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                    }
+
+                    if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
+                        xOffset = MathHelper.Lerp(18, -10, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+
+                    positionOffset = (player.direction == -1 ? new Vector2(xOffset, -4) : new Vector2(xOffset, 6)).RotatedBy(Projectile.rotation);
+                    break;
+                default:
+                    positionOffset = (player.direction == -1 ? new Vector2(14, -4) : new Vector2(10, 6)).RotatedBy(Projectile.rotation);
+                    break;
             }
 
             AICounter++;
-            if (AICounter <= backTime)
-                swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
-
-            if (AICounter > backTime && AICounter <= backTime + forwardTime)
+            switch (ComboIndex)
             {
-                inSwingState = true;
-                swingAngle = MathHelper.Lerp(100, -75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
-            }
+                case 0:
+                    if (AICounter <= backTime)
+                        swingAngle = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
-            if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
-            {
-                inSwingState = false;
-                swingAngle = MathHelper.Lerp(-75, 0, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+                    if (AICounter > backTime && AICounter <= backTime + forwardTime)
+                    {
+                        inSwingState = true;
+                        swingAngle = MathHelper.Lerp(100, -75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
+                    }
+
+                    if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
+                    {
+                        inSwingState = false;
+                        swingAngle = MathHelper.Lerp(-75, 0, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+                    }
+                    break;
+                case 2:
+                    break;
+                default:
+                    if (AICounter <= backTime)
+                        swingAngle = MathHelper.Lerp(0, -135, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+
+                    if (AICounter > backTime && AICounter <= backTime + forwardTime)
+                    {
+                        inSwingState = true;
+                        swingAngle = MathHelper.Lerp(-135, 75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
+                    }
+
+                    if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
+                    {
+                        inSwingState = false;
+                        swingAngle = MathHelper.Lerp(75, 0, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+                    }
+                    break;
             }
 
             // HoldCounter gets reset to zero at the end of the attack animation
@@ -213,7 +318,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
 
-            Vector2 positionOffset = (player.direction == -1 ? new Vector2(8, 12) : new Vector2(8, -12)).RotatedBy(Projectile.rotation);
+            Vector2 positionOffset;
+            float rotationOffset;
+            switch (ComboIndex)
+            {
+                case 0:
+                    positionOffset = new Vector2(8, -12 * player.direction).RotatedBy(Projectile.rotation);
+                    rotationOffset = 0;
+                    break;
+                default:
+                    positionOffset = new Vector2(16, -2 * player.direction).RotatedBy(Projectile.rotation);
+                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
+                    break;
+            }
 
             float flashProgress = Utils.Clamp((float)Math.Sin(flashCounter / 5f), 0, 1);
 
@@ -224,7 +341,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             Color lerpColor = Color.Lerp(lightColor, Color.White, flashProgress);
 
-            Main.spriteBatch.Draw(texture, Projectile.Center + positionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
+            Main.spriteBatch.Draw(texture, Projectile.Center + positionOffset - Main.screenPosition, null, lerpColor, Projectile.rotation + rotationOffset, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
         }
 
         public float swingAngle = 0;
@@ -236,9 +353,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             float staffRotation = player.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
             Projectile.rotation = staffRotation;
-
-            Vector2 positionOffset = (player.direction == -1 ? new Vector2(14, -4) : new Vector2(10, 6)).RotatedBy(staffRotation);
-            Projectile.Center = player.RotatedRelativePoint(player.MountedCenter + positionOffset);
 
             float backRotation = player.direction == -1 ? -150 : -30;
             player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(backRotation));
@@ -255,9 +369,22 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             hitbox.Width = 50;
             hitbox.Height = 50;
 
-            Vector2 positionOffset = new Vector2(25, -10 * player.direction).RotatedBy(Projectile.rotation);
-            hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + positionOffset.X);
-            hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + positionOffset.Y);
+            Vector2 hitboxOffset;
+            switch (ComboIndex)
+            {
+                case 2:
+                    hitbox.Height = 45;
+
+                    hitboxOffset = new Vector2(40, -4 * player.direction).RotatedBy(Projectile.rotation);
+                    hitbox.X = (int)(Projectile.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
+                    hitbox.Y = (int)(Projectile.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
+                    break;
+                default:
+                    hitboxOffset = new Vector2(25, -10 * player.direction).RotatedBy(Projectile.rotation);
+                    hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
+                    hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
+                    break;
+            }
 
             base.ModifyDamageHitbox(ref hitbox);
         }
