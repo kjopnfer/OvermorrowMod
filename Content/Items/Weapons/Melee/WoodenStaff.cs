@@ -161,8 +161,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         int heavySwingThreshold = 15;
 
         private bool justReleasedWeapon = false;
-        private bool inReleaseState = false;
         private bool inSwingState = false;
+        private Vector2 lastMousePosition;
         private void HandleWeaponRelease()
         {
             // On weapon release is when we execute the attack animation
@@ -170,6 +170,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             {
                 flashCounter = 0;
                 justReleasedWeapon = true;
+                lastMousePosition = Main.MouseWorld;
 
                 if (HoldCounter < heavySwingThreshold) Main.NewText("light attack");
                 if (HoldCounter >= heavySwingThreshold) Main.NewText("heavy attack");
@@ -201,6 +202,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 justReleasedWeapon = false;
                 IsExecutingAction = false;
                 InactiveCounter = 0;
+
+                Projectile.Kill();
             }
         }
 
@@ -227,11 +230,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public float swingAngle = 0;
         private void HandleArmDrawing()
         {
-            float staffRotation = player.Center.DirectionTo(Main.MouseWorld).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
-
-            Projectile.rotation = staffRotation;
-            Projectile.spriteDirection = Main.MouseWorld.X < player.Center.X ? -1 : 1;
+            Vector2 mousePosition = justReleasedWeapon ? lastMousePosition : Main.MouseWorld;
+            Projectile.spriteDirection = mousePosition.X < player.Center.X ? -1 : 1;
             player.direction = Projectile.spriteDirection;
+
+            float staffRotation = player.Center.DirectionTo(mousePosition).ToRotation() + MathHelper.ToRadians(swingAngle) * -player.direction;
+            Projectile.rotation = staffRotation;
 
             Vector2 positionOffset = (player.direction == -1 ? new Vector2(14, -4) : new Vector2(10, 6)).RotatedBy(staffRotation);
             Projectile.Center = player.RotatedRelativePoint(player.MountedCenter + positionOffset);
