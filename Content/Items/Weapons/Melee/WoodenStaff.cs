@@ -89,7 +89,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
         {
-            if (HoldCounter >= heavySwingThreshold) damage = (int)(damage * 1.5f);
+            if (HoldCounter >= heavySwingThreshold)
+            {
+                damage = (int)(damage * 1.5f);
+                knockback *= 2;
+            }
         }
 
         public override void SetStaticDefaults()
@@ -129,13 +133,21 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
 
         // TODO: OnSpawn Hook with combo initializer
+        public override void OnSpawn(IEntitySource source)
+        {
+            InitializeValues();
+        }
 
         /// <summary>
         /// Initializes swing and damage values based on the combo index
         /// </summary>
         private void InitializeValues()
         {
-
+            switch (ComboIndex)
+            {
+                default:
+                    break;
+            }
         }
 
         /// <summary>
@@ -212,9 +224,51 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
         }
 
-        float backTime => HoldCounter > heavySwingThreshold ? 15 : 15;
-        float forwardTime => HoldCounter > heavySwingThreshold ? 5 : 10;
-        float holdTime => HoldCounter > heavySwingThreshold ? 7 : 7;
+        //float backTime => HoldCounter > heavySwingThreshold ? 15 : 15;
+        float backTime
+        {
+            get
+            {
+                switch (ComboIndex)
+                {
+                    case 1:
+                        return 20;
+                    default:
+                        return 15;
+                }
+            }
+        }
+
+        //float forwardTime => HoldCounter > heavySwingThreshold ? 5 : 10;
+        float forwardTime
+        {
+            get
+            {
+                switch (ComboIndex)
+                {
+                    case 1:
+                        return HoldCounter > heavySwingThreshold ? 7 : 12;
+                    case 2:
+                        return HoldCounter > heavySwingThreshold ? 8 : 12;
+                    default:
+                        return HoldCounter > heavySwingThreshold ? 5 : 10;
+                }
+            }
+        }
+        //float holdTime => HoldCounter > heavySwingThreshold ? 7 : 7;
+        float holdTime
+        {
+            get
+            {
+                switch (ComboIndex)
+                {
+                    case 1:
+                        return 10;
+                    default:
+                        return 7;
+                }
+            }
+        }
 
         int heavySwingThreshold = 15;
 
