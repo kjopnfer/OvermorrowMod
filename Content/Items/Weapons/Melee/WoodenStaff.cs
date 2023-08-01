@@ -208,7 +208,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                         break;
                     case 2:
                         float xOffset = MathHelper.Lerp(20, 6, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
-                        //positionOffset = (player.direction == -1 ? new Vector2(xOffset, -4) : new Vector2(xOffset, 6)).RotatedBy(Projectile.rotation);
                         positionOffset = new Vector2(xOffset, 0);
 
                         break;
@@ -429,17 +428,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             switch (ComboIndex)
             {
                 case 2:
-                    hitbox.Height = 45;
-                    // TODO: set the sprite position to the position of the hitbox
-                    //hitboxOffset = new Vector2(80, -4 * player.direction).RotatedBy(Projectile.rotation);
-
-                    // YEAH THANKS FOR MAKING ME APPLY TO TWICE??? THE FUCK???????? I ALREADY GAVE IT ROTATION LIKE 50 LINES AGO
+                    hitbox.Height = 45;           
                     hitboxOffset = positionOffset.RotatedBy(Projectile.rotation);
-                    //float xOffset = MathHelper.Lerp(-8, -28, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
-                    //positionOffset = (player.direction == -1 ? new Vector2(xOffset, -4) : new Vector2(xOffset, 6)).RotatedBy(Projectile.rotation);
-
-                    //hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X + positionOffset.X);
-                    //hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y + positionOffset.Y);
+     
                     hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
                     hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
                     break;
