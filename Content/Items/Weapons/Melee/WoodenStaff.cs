@@ -410,8 +410,56 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Projectile.rotation = staffRotation;
 
             float backRotation = player.direction == -1 ? -150 : -30;
-            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(backRotation));
-            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
+
+            switch (ComboIndex)
+            {
+                case 2:
+                    if (AICounter < backTime + 2)
+                    {
+                        float progress = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        if (progress < 50)
+                        {
+                            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(-90));
+                        }
+                        else
+                        {
+                            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(-90));
+                        }
+                    }
+
+                    if (justReleasedWeapon) // For some reason the arm resets while holding the staff back
+                    {
+                        if (AICounter > backTime && AICounter <= backTime + forwardTime)
+                        {
+                            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
+                        }
+
+                        if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
+                        {
+                            float progress = MathHelper.Lerp(0, 100, ModUtils.EaseOutQuint(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+                            if (progress < 50)
+                            {
+                                player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, Projectile.rotation + MathHelper.ToRadians(-90));
+                            }
+                            else
+                            {
+                                player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.ThreeQuarters, Projectile.rotation + MathHelper.ToRadians(-90));
+                            }
+                        }
+                    }
+
+                    break;
+                default:
+                    player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(backRotation));
+                    player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
+                    break;
+            }
+
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -428,9 +476,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             switch (ComboIndex)
             {
                 case 2:
-                    hitbox.Height = 45;           
+                    hitbox.Height = 45;
                     hitboxOffset = positionOffset.RotatedBy(Projectile.rotation);
-     
+
                     hitbox.X = (int)(player.Center.X - (hitbox.Width / 2f) + hitboxOffset.X);
                     hitbox.Y = (int)(player.Center.Y - (hitbox.Height / 2f) + hitboxOffset.Y);
                     break;
