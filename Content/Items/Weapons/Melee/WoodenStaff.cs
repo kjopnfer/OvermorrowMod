@@ -289,6 +289,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
                     if (AICounter > backTime && AICounter <= backTime + forwardTime)
                     {
+                        if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
+
                         inSwingState = true;
                         xOffset = MathHelper.Lerp(6, 32, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
                     }
@@ -334,6 +336,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
                     if (AICounter > backTime && AICounter <= backTime + forwardTime)
                     {
+                        if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
+
                         inSwingState = true;
                         swingAngle = MathHelper.Lerp(-135, 75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
                     }
