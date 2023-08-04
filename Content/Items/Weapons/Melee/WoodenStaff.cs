@@ -37,7 +37,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot; // How you use the item (swinging, holding out, etc.)
             Item.useAnimation = 30; // The length of the item's use animation in ticks (60 ticks == 1 second.)
             Item.useTime = 36; // The length of the item's use time in ticks (60 ticks == 1 second.)
-            Item.UseSound = SoundID.Item1; // The sound that this item plays when used.
+            //Item.UseSound = SoundID.Item1; // The sound that this item plays when used.
             Item.autoReuse = false; // Allows the player to hold click to automatically use the item again. Most spears don't autoReuse, but it's possible when used in conjunction with CanUseItem()
 
             // Weapon Properties
@@ -57,8 +57,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             attackIndex++;
             if (attackIndex > 2) attackIndex = 0;
-
-            Main.NewText(attackIndex);
 
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex);
 
@@ -316,6 +314,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
                     if (AICounter > backTime && AICounter <= backTime + forwardTime)
                     {
+                        if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
+
                         inSwingState = true;
                         swingAngle = MathHelper.Lerp(100, -75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
                     }
@@ -459,7 +459,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + MathHelper.ToRadians(-90));
                     break;
             }
-
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
