@@ -18,9 +18,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override void SetDefaults()
 		{
-			Item.damage = 4;
+			Item.damage = 10;
 			Item.knockBack = 2f;
-			Item.useStyle = ItemUseStyleID.Rapier; // Makes the player do the proper arm motion
+			Item.useStyle = ItemUseStyleID.Thrust; // Makes the player do the proper arm motion
 			Item.useAnimation = 12;
 			Item.useTime = 12;
 			Item.width = 32;
@@ -81,7 +81,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Projectile.timeLeft = 120;
 
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 3;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -197,7 +197,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     case 1:
                         return 10;
                     default:
-                        return 5;
+                        return 15;
                 }
             }
         }
@@ -220,7 +220,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             get
             {
-                return 7;
+                return 10;
             }
         }
 
@@ -275,40 +275,39 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             {
                 case 0:
                     if (AICounter <= backTime)
-                        swingAngle = MathHelper.Lerp(0, 75, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        swingAngle = MathHelper.Lerp(-45, 95, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
                     if (AICounter > backTime && AICounter <= backTime + forwardTime)
                     {
                         if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
 
                         inSwingState = true;
-                        swingAngle = MathHelper.Lerp(75, -75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
+                        swingAngle = MathHelper.Lerp(95, -75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
                     }
 
                     if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
                     {
                         inSwingState = false;
-                        swingAngle = MathHelper.Lerp(-75, 0, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+                        swingAngle = MathHelper.Lerp(-75, -25, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
                     }
                     break;
-                case 2:
-                    break;
+                
                 default:
                     if (AICounter <= backTime)
-                        swingAngle = MathHelper.Lerp(0, -135, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+                        swingAngle = MathHelper.Lerp(-45, -105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
 
                     if (AICounter > backTime && AICounter <= backTime + forwardTime)
                     {
                         if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
 
                         inSwingState = true;
-                        swingAngle = MathHelper.Lerp(-135, 35, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
+                        swingAngle = MathHelper.Lerp(-105, 35, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
                     }
 
                     if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
                     {
                         inSwingState = false;
-                        swingAngle = MathHelper.Lerp(35, 0, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+                        swingAngle = MathHelper.Lerp(35, -45, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
                     }
                     break;
             }
@@ -341,11 +340,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             switch (ComboIndex)
             {
                 case 0:
-                    spritePositionOffset = new Vector2(-4, 12 * player.direction).RotatedBy(Projectile.rotation);
-                    rotationOffset = -270;
+                    spritePositionOffset = new Vector2(-16, 12 * player.direction).RotatedBy(Projectile.rotation);
+                    rotationOffset = MathHelper.ToRadians(45 * player.direction);
                     break;
                 case 1:
-                    spritePositionOffset = new Vector2(0, 12 * player.direction).RotatedBy(Projectile.rotation);
+                    spritePositionOffset = new Vector2(-8, 12 * player.direction).RotatedBy(Projectile.rotation);
                     rotationOffset = MathHelper.ToRadians(-45 * player.direction);
                     break;
                 case 2:
@@ -429,8 +428,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            hitbox.Width = 25;
-            hitbox.Height = 25;
+            hitbox.Width = 35;
+            hitbox.Height = 35;
 
             Vector2 hitboxOffset;
             switch (ComboIndex)
