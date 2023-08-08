@@ -13,30 +13,29 @@ using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
-	public class Knife : ModItem
-	{
+    public class Knife : ModItem
+    {
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override void SetDefaults()
-		{
-			Item.damage = 10;
-			Item.knockBack = 2f;
-			Item.useStyle = ItemUseStyleID.Thrust; // Makes the player do the proper arm motion
-			Item.useAnimation = 12;
-			Item.useTime = 12;
-			Item.width = 32;
-			Item.height = 32;
-			Item.UseSound = SoundID.Item1;
-			Item.DamageType = DamageClass.MeleeNoSpeed;
-			Item.autoReuse = true;
-			Item.noUseGraphic = true; // The sword is actually a "projectile", so the item should not be visible when used
-			Item.noMelee = true; // The projectile will do the damage and not the item
+        {
+            Item.damage = 10;
+            Item.knockBack = 2f;
+            Item.useStyle = ItemUseStyleID.Thrust; // Makes the player do the proper arm motion
+            Item.useAnimation = 12;
+            Item.useTime = 12;
+            Item.width = 32;
+            Item.height = 32;
+            Item.DamageType = DamageClass.MeleeNoSpeed;
+            Item.autoReuse = true;
+            Item.noUseGraphic = true; // The sword is actually a "projectile", so the item should not be visible when used
+            Item.noMelee = true; // The projectile will do the damage and not the item
 
-			Item.rare = ItemRarityID.White;
-			Item.value = Item.sellPrice(0, 0, 0, 10);
+            Item.rare = ItemRarityID.White;
+            Item.value = Item.sellPrice(0, 0, 0, 10);
 
-			Item.shoot = ModContent.ProjectileType<Knife_Held>(); // The projectile is what makes a shortsword work
-			Item.shootSpeed = 2.1f; // This value bleeds into the behavior of the projectile as velocity, keep that in mind when tweaking values
-		}
+            Item.shoot = ModContent.ProjectileType<Knife_Held>(); // The projectile is what makes a shortsword work
+            Item.shootSpeed = 2.1f; // This value bleeds into the behavior of the projectile as velocity, keep that in mind when tweaking values
+        }
 
         public int attackIndex = 1;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -44,9 +43,17 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             attackIndex++;
             if (attackIndex > 1) attackIndex = 0;
 
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex);
+            if (player.altFunctionUse == 2)
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, -1);
+            else
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex);
 
             return false;
+        }
+
+        public override bool AltFunctionUse(Player player)
+        {
+            return true;
         }
     }
 
@@ -132,13 +139,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         private bool IsExecutingAction = false;
         public override void AI()
         {
-            if (player.active && player.HeldItem.type == ModContent.ItemType<WoodenStaff>()) Projectile.timeLeft = 10;
+            if (player.active && player.HeldItem.type == ModContent.ItemType<Knife>()) Projectile.timeLeft = 10;
 
             Projectile.width = Projectile.height = 40;
             player.heldProj = Projectile.whoAmI;
-
-            if (InactiveCounter == InactiveLimit) Projectile.Kill();
-            if (!IsExecutingAction) InactiveCounter++;
 
             HandleArmDrawing();
             HandleWeaponUse();
@@ -147,9 +151,19 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         Vector2 positionOffset;
         private void HandleWeaponUse()
         {
-            //if (player.controlUseItem && !justReleasedWeapon) HandleWeaponHold();
-            //else if (HoldCounter > 0) HandleWeaponRelease();
-            HandleWeaponRelease();
+            if (ComboIndex == -1)
+            {
+                Main.NewText("right click " + (player.altFunctionUse == 2));
+                Main.NewText("released click " + (!justReleasedWeapon));
+
+                if (Main.mouseRight && !justReleasedWeapon) HandleWeaponHold();
+                else if (HoldCounter > 0)
+                {
+                    HandleWeaponRelease();
+                }
+            }
+            else
+                HandleWeaponRelease();
 
             Projectile.Center = player.RotatedRelativePoint(player.MountedCenter);
         }
@@ -160,6 +174,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         /// </summary>
         private void HandleWeaponHold()
         {
+            Main.NewText("test" + HoldCounter);
+
             InactiveCounter = 0;
             IsExecutingAction = true;
 
@@ -178,7 +194,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     case 2:
                         float xOffset = MathHelper.Lerp(20, 6, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
                         positionOffset = new Vector2(xOffset, 0);
-
+                        break;
+                    case -1:
+                        swingAngle = MathHelper.Lerp(0, 105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
                         break;
                     default:
                         positionOffset = (player.direction == -1 ? new Vector2(14, -4) : new Vector2(10, 6)).RotatedBy(Projectile.rotation);
@@ -208,6 +226,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             {
                 switch (ComboIndex)
                 {
+                    case -1:
+                        return 4;
                     case 2:
                         return 8;
                     default:
@@ -220,7 +240,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             get
             {
-                return 10;
+                return ComboIndex == -1 ? 4 : 10;
             }
         }
 
@@ -273,6 +293,32 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             // Angle
             switch (ComboIndex)
             {
+                case -1:
+                    if (AICounter <= backTime)
+                        swingAngle = MathHelper.Lerp(0, 105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
+
+                    if (AICounter > backTime && AICounter <= backTime + forwardTime)
+                    {
+                        if (!inSwingState) SoundEngine.PlaySound(SoundID.Item1, player.Center);
+
+                        inSwingState = true;
+                        swingAngle = MathHelper.Lerp(105, 15, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
+                    }
+
+                    if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
+                    {
+                        inSwingState = false;
+                        swingAngle = MathHelper.Lerp(15, -45, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
+                    }
+
+                    if (AICounter >= backTime + forwardTime + holdTime)
+                    {
+                        Vector2 throwVelocity = Vector2.Normalize(Projectile.DirectionTo(Main.MouseWorld));
+                        Projectile.NewProjectile(null, Projectile.Center, throwVelocity * 10, ModContent.ProjectileType<Knife_Thrown>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.rotation);
+
+                        Projectile.Kill();
+                    }
+                    break;
                 case 0:
                     if (AICounter <= backTime)
                         swingAngle = MathHelper.Lerp(-45, 95, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
@@ -291,7 +337,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                         swingAngle = MathHelper.Lerp(-75, -25, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
                     }
                     break;
-                
+
                 default:
                     if (AICounter <= backTime)
                         swingAngle = MathHelper.Lerp(-45, -105, ModUtils.EaseOutQuint(Utils.Clamp(AICounter, 0, backTime) / backTime));
@@ -334,11 +380,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             Texture2D texture = TextureAssets.Item[ModContent.ItemType<Knife>()].Value;
             var spriteEffects = player.direction == 1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
-            Main.NewText(ComboIndex);
+
             Vector2 spritePositionOffset = Vector2.Zero;
             float rotationOffset = 0f;
             switch (ComboIndex)
             {
+                case -1:
+                    spritePositionOffset = new Vector2(6, 0).RotatedBy(Projectile.rotation);
+                    rotationOffset = MathHelper.ToRadians(120 * player.direction);
+                    break;
                 case 0:
                     spritePositionOffset = new Vector2(-16, 12 * player.direction).RotatedBy(Projectile.rotation);
                     rotationOffset = MathHelper.ToRadians(45 * player.direction);
@@ -468,4 +518,50 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         }
     }
 
+    public class Knife_Thrown : ModProjectile
+    {
+        public override string Texture => AssetDirectory.Empty;
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Knife");
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.width = Projectile.height = 32;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.aiStyle = -1;
+            Projectile.penetrate = -1;
+            Projectile.friendly = true;
+            Projectile.tileCollide = true;
+            Projectile.ignoreWater = true;
+            Projectile.timeLeft = 120;
+
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 3;
+
+        }
+
+        public override void AI()
+        {
+            if (Projectile.ai[0] == 0) Projectile.rotation = Projectile.ai[1];
+
+            Projectile.rotation += 0.3f;
+
+            if (Projectile.ai[0]++ > 10)
+                Projectile.velocity.Y += 0.25f;
+
+            Projectile.velocity.X *= 0.99f;
+
+            base.AI();
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Item[ModContent.ItemType<Knife>()].Value;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 1);
+
+            return base.PreDraw(ref lightColor);
+        }
+    }
 }
