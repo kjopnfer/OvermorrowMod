@@ -16,6 +16,13 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
     public class Knife : ModItem
     {
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] <= 0;
+
+        public override void SetStaticDefaults()
+        {
+            Tooltip.SetDefault("{Keyword:Alt}: Throw the knife. Hold down to increase {Keyword:Focus}\n" +
+                "{Keyword:Focus}: Gain 20% increased critical strike chance");
+        }
+
         public override void SetDefaults()
         {
             Item.damage = 10;
@@ -152,11 +159,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         Vector2 positionOffset;
         private void HandleWeaponUse()
         {
+            // Throwing knife behavior
             if (ComboIndex == -1)
             {
-                Main.NewText("right click " + (player.altFunctionUse == 2));
-                Main.NewText("released click " + (!justReleasedWeapon));
-
                 if (Main.mouseRight && !justReleasedWeapon) HandleWeaponHold();
                 else if (HoldCounter > 0)
                 {
@@ -175,8 +180,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         /// </summary>
         private void HandleWeaponHold()
         {
-            Main.NewText("test" + HoldCounter);
-
             InactiveCounter = 0;
             IsExecutingAction = true;
 
@@ -317,6 +320,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                         Vector2 throwVelocity = Vector2.Normalize(Projectile.DirectionTo(Main.MouseWorld));
                         Projectile proj = Projectile.NewProjectileDirect(null, Projectile.Center, throwVelocity * 10, ModContent.ProjectileType<Knife_Thrown>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.rotation);
                         proj.CritChance = Projectile.CritChance;
+                        if (HoldCounter >= heavySwingThreshold) proj.CritChance += 20;
 
                         Projectile.Kill();
                     }
@@ -543,7 +547,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Projectile.friendly = true;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 600;
 
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 3;
@@ -552,20 +556,43 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void AI()
         {
-            if (Projectile.ai[0] == 0) Projectile.rotation = Projectile.ai[1];
-
-            if (Projectile.velocity != Vector2.Zero)
+            if (Projectile.ai[0] == 0)
             {
-                Projectile.rotation += 0.3f;
+                Projectile.rotation = Projectile.ai[1];
+                Projectile.ai[1] = 0;
+            }
+
+            Projectile.velocity.X *= 0.99f;
+
+            if (!groundCollided)
+            {
+                Projectile.rotation += 0.48f * (Projectile.velocity.X > 0 ? 1 : -1);
 
                 if (Projectile.ai[0]++ > 10)
                     Projectile.velocity.Y += 0.25f;
+            }
+            else
+            {
+                if (Projectile.ai[1] == 60f)
+                {
+                    Projectile.velocity.X *= 0.01f;
+                    oldPosition = Projectile.Center;
+                }
 
-                Projectile.velocity.X *= 0.99f;
+                float rotationFactor = MathHelper.Lerp(0.48f, 0f, Utils.Clamp(Projectile.ai[1]++, 0, 60f) / 60f);
+                Projectile.rotation += rotationFactor * (Projectile.velocity.X > 0 ? 1 : -1);
+
+                Projectile.velocity.Y *= 0.96f;
+
+                if (Projectile.ai[1] > 60f)
+                {
+                    //Projectile.rotation = MathHelper.Lerp(oldRotation, MathHelper.TwoPi + oldRotation, Utils.Clamp(Projectile.ai[1], 0, 20f) / 20f);
+                    Projectile.Center = Vector2.Lerp(oldPosition, oldPosition - Vector2.UnitY * -16, (float)Math.Sin((Projectile.ai[1] - 60f) / 40f));
+                }
             }
 
             // Check for if the owner has picked up the knife after it has landed
-            if (Projectile.velocity == Vector2.Zero)
+            if (groundCollided)
             {
                 foreach (Player player in Main.player)
                 {
@@ -574,24 +601,60 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     if (player.Hitbox.Intersects(Projectile.Hitbox)) Projectile.Kill();
                 }
             }
+
             base.AI();
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
+            float activeAlpha = MathHelper.Lerp(0f, 1f, Utils.Clamp(Projectile.timeLeft, 0, 60f) / 60f);
+            if (groundCollided)
+            {
+                float alpha = 0.65f * activeAlpha;
+                Main.spriteBatch.Reload(BlendState.Additive);
+
+                Texture2D outline = ModContent.Request<Texture2D>(AssetDirectory.Textures + "RingSolid").Value;
+                Main.spriteBatch.Draw(outline, Projectile.Center - Main.screenPosition, null, Color.Orange * alpha, Projectile.rotation, outline.Size() / 2f, 1f * 0.1f, SpriteEffects.None, 1);
+
+                outline = ModContent.Request<Texture2D>(AssetDirectory.Textures + "star_05").Value;
+                Main.spriteBatch.Draw(outline, Projectile.Center - Main.screenPosition, null, Color.Orange * alpha, Projectile.rotation, outline.Size() / 2f, 1f * 0.5f, SpriteEffects.None, 1);
+
+                Main.spriteBatch.Reload(BlendState.AlphaBlend);
+            }
+
             Texture2D texture = TextureAssets.Item[ModContent.ItemType<Knife>()].Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 1);
+            SpriteEffects spriteEffects = Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+            Color color = Projectile.velocity == Vector2.Zero ? Color.White : lightColor;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * activeAlpha, Projectile.rotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
 
             return base.PreDraw(ref lightColor);
         }
 
+        bool groundCollided = false;
+        float oldRotation;
+        Vector2 oldPosition;
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            if (Projectile.velocity != Vector2.Zero)
+
+            if (!groundCollided)
             {
-                Projectile.timeLeft = 120;
-                Projectile.velocity = Vector2.Zero;
+                groundCollided = true;
+                Projectile.tileCollide = false;
+
+                //Projectile.velocity.X += 1f;
+                Projectile.velocity.X *= 0.5f;
+                Projectile.velocity.Y = -2.2f;
+                Projectile.timeLeft = 600;
             }
+            /*if (Projectile.velocity != Vector2.Zero)
+            {
+                Projectile.timeLeft = 600;
+                Projectile.velocity = Vector2.Zero;
+                Projectile.rotation = MathHelper.ToRadians(45);
+
+                oldPosition = Projectile.Center;
+                oldRotation = Projectile.rotation;
+            }*/
 
             return false;
         }
