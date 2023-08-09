@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
     public class Knife : ModItem
     {
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()] <= 0;
         public override void SetDefaults()
         {
             Item.damage = 10;
@@ -25,6 +25,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Item.useTime = 12;
             Item.width = 32;
             Item.height = 32;
+            Item.crit = 20;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.autoReuse = true;
             Item.noUseGraphic = true; // The sword is actually a "projectile", so the item should not be visible when used
@@ -44,9 +45,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             if (attackIndex > 1) attackIndex = 0;
 
             if (player.altFunctionUse == 2)
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, -1);
+                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, -1);
             else
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex);
+                Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, attackIndex);
 
             return false;
         }
@@ -314,7 +315,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     if (AICounter >= backTime + forwardTime + holdTime)
                     {
                         Vector2 throwVelocity = Vector2.Normalize(Projectile.DirectionTo(Main.MouseWorld));
-                        Projectile.NewProjectile(null, Projectile.Center, throwVelocity * 10, ModContent.ProjectileType<Knife_Thrown>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.rotation);
+                        Projectile proj = Projectile.NewProjectileDirect(null, Projectile.Center, throwVelocity * 10, ModContent.ProjectileType<Knife_Thrown>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.rotation);
+                        proj.CritChance = Projectile.CritChance;
 
                         Projectile.Kill();
                     }
@@ -521,6 +523,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
     public class Knife_Thrown : ModProjectile
     {
         public override string Texture => AssetDirectory.Empty;
+
+        public override bool? CanDamage()
+        {
+            return Projectile.velocity != Vector2.Zero;
+        }
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Knife");
@@ -546,13 +554,26 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             if (Projectile.ai[0] == 0) Projectile.rotation = Projectile.ai[1];
 
-            Projectile.rotation += 0.3f;
+            if (Projectile.velocity != Vector2.Zero)
+            {
+                Projectile.rotation += 0.3f;
 
-            if (Projectile.ai[0]++ > 10)
-                Projectile.velocity.Y += 0.25f;
+                if (Projectile.ai[0]++ > 10)
+                    Projectile.velocity.Y += 0.25f;
 
-            Projectile.velocity.X *= 0.99f;
+                Projectile.velocity.X *= 0.99f;
+            }
 
+            // Check for if the owner has picked up the knife after it has landed
+            if (Projectile.velocity == Vector2.Zero)
+            {
+                foreach (Player player in Main.player)
+                {
+                    if (player.whoAmI != Projectile.owner) continue;
+
+                    if (player.Hitbox.Intersects(Projectile.Hitbox)) Projectile.Kill();
+                }
+            }
             base.AI();
         }
 
@@ -562,6 +583,17 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 1);
 
             return base.PreDraw(ref lightColor);
+        }
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            if (Projectile.velocity != Vector2.Zero)
+            {
+                Projectile.timeLeft = 120;
+                Projectile.velocity = Vector2.Zero;
+            }
+
+            return false;
         }
     }
 }
