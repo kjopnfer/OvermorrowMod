@@ -530,7 +530,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override bool? CanDamage()
         {
-            return Projectile.velocity != Vector2.Zero;
+            return !groundCollided;
         }
 
         public override void SetStaticDefaults()
@@ -562,10 +562,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 Projectile.ai[1] = 0;
             }
 
-            Projectile.velocity.X *= 0.99f;
-
             if (!groundCollided)
             {
+                Projectile.velocity.X *= 0.99f;
                 Projectile.rotation += 0.48f * (Projectile.velocity.X > 0 ? 1 : -1);
 
                 if (Projectile.ai[0]++ > 10)
@@ -573,6 +572,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }
             else
             {
+                Projectile.velocity.X *= 0.97f;
+
                 if (Projectile.ai[1] == 60f)
                 {
                     Projectile.velocity.X *= 0.01f;
@@ -587,7 +588,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 if (Projectile.ai[1] > 60f)
                 {
                     //Projectile.rotation = MathHelper.Lerp(oldRotation, MathHelper.TwoPi + oldRotation, Utils.Clamp(Projectile.ai[1], 0, 20f) / 20f);
-                    Projectile.Center = Vector2.Lerp(oldPosition, oldPosition - Vector2.UnitY * -16, (float)Math.Sin((Projectile.ai[1] - 60f) / 40f));
+                    Projectile.Center = Vector2.Lerp(oldPosition, oldPosition - Vector2.UnitY * -24, (float)Math.Sin((Projectile.ai[1] - 60f) / 40f));
                 }
             }
 
@@ -597,7 +598,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 foreach (Player player in Main.player)
                 {
                     if (player.whoAmI != Projectile.owner) continue;
-
                     if (player.Hitbox.Intersects(Projectile.Hitbox)) Projectile.Kill();
                 }
             }
@@ -635,16 +635,17 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         Vector2 oldPosition;
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-
-            if (!groundCollided)
+            if (!groundCollided && Projectile.velocity.Y > 0)
             {
                 groundCollided = true;
-                Projectile.tileCollide = false;
 
                 //Projectile.velocity.X += 1f;
                 Projectile.velocity.X *= 0.5f;
-                Projectile.velocity.Y = -2.2f;
+                Projectile.velocity.Y = Main.rand.NextFloat(-2.2f, -1f);
                 Projectile.timeLeft = 600;
+            } else
+            {
+                Projectile.velocity *= -0.5f;
             }
             /*if (Projectile.velocity != Vector2.Zero)
             {
