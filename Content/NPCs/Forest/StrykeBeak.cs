@@ -18,8 +18,8 @@ namespace OvermorrowMod.Content.NPCs.Forest
     public class StrykeBeak : ModNPC
     {
         private const int MAX_FRAMES = 8;
-        public override bool? CanBeHitByItem(Player player, Item item) => true;
-        public override bool? CanBeHitByProjectile(Projectile projectile) => true;
+        /*public override bool? CanBeHitByItem(Player player, Item item) => true;
+        public override bool? CanBeHitByProjectile(Projectile projectile) => true;*/
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
             switch (AIState)
@@ -46,7 +46,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             NPC.height = 38;
             NPC.damage = 20;
             NPC.defense = 6;
-            NPC.lifeMax = 360;
+            NPC.lifeMax = 200;
             NPC.friendly = true;
             NPC.aiStyle = -1;
             NPC.noGravity = true;
@@ -101,22 +101,27 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     {
                         if (idleDirection == 1)
                             idlePosition = NPC.Center + new Vector2(30, 0);
-                        else              
-                            idlePosition = NPC.Center + new Vector2(-30, 0);  
+                        else
+                            idlePosition = NPC.Center + new Vector2(-30, 0);
                     }
 
                     if (idleDirection == 1)
                     {
+                        if (NPC.velocity.X <= 2) NPC.velocity.X += 0.05f;
                         if (NPC.Center.X <= idlePosition.X && flySpeedX <= 2)
                         {
+                            //NPC.velocity.X += 0.05f;
                             flySpeedX += 0.1f;
                             NPC.direction = 1;
                         }
                     }
                     else
                     {
+                        if (NPC.velocity.X >= -2) NPC.velocity.X -= 0.05f;
+
                         if (NPC.Center.X >= idlePosition.X && flySpeedX >= -2)
                         {
+                            //NPC.velocity.X -= 0.05f;
                             flySpeedX -= 0.1f;
                             NPC.direction = -1;
                         }
@@ -125,6 +130,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     // This creates the bobbing up/down motion
                     if (NPC.Center.Y >= idlePosition.Y - 2)
                     {
+                        NPC.velocity.Y -= 0.1f;
                         flySpeedY -= 0.1f;
 
                         if (idleDirection == 1)
@@ -132,7 +138,12 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         else
                             idlePosition = NPC.Center + new Vector2(-30, 0);
                     }
-                    else if (flySpeedY <= 2) flySpeedY += 0.1f;
+                    else if (flySpeedY <= 2)
+                    {
+                        flySpeedY += 0.1f;
+                        NPC.velocity.Y += 0.1f;
+                    }
+
 
                     //if (flySpeedY <= -4 || flySpeedY >= 4) flySpeedY = 0;
 
@@ -140,16 +151,18 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     if (TRay.CastLength(NPC.Center, Vector2.UnitY, idleHeight) < idleHeight || TRay.CastLength(NPC.Bottom, Vector2.UnitY, idleHeight) < idleHeight)
                     {
                         flySpeedY -= 0.1f;
+                        NPC.velocity.Y -= 0.1f;
 
                         if (idleDirection == 1)
                             idlePosition = NPC.Center + new Vector2(30, 0);
                         else
                             idlePosition = NPC.Center + new Vector2(-30, 0);
                     }
-                    
+
                     if (TRay.CastLength(NPC.Center, Vector2.UnitY, 10000) > 300)
                     {
                         flySpeedY += 0.2f;
+                        NPC.velocity.Y += 0.2f;
                     }
 
                     // Sometimes the bird decides to just launch upwards towards the sky uncontrollably
@@ -159,7 +172,10 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     if (TRay.CastLength(NPC.Center, Vector2.UnitX * NPC.direction, 100) < 100 || TRay.CastLength(NPC.Bottom, Vector2.UnitX * NPC.direction, 100) < 100)
                     {
                         flySpeedX -= 0.1f * NPC.direction;
+                        NPC.velocity.X -= 0.1f * NPC.direction;
+
                         flySpeedY -= 1f;
+                        NPC.velocity.Y -= 1f;
 
                         if (idleDirection == 1)
                             idlePosition = NPC.Center + new Vector2(30, 0);
@@ -171,27 +187,46 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     frameRate = 5;
                     NPC.TargetClosest();
 
-                    if (NPC.Center.X >= player.Center.X && flySpeedX >= -2) // flies to players x position
-                        flySpeedX -= 0.1f;
+                    if (NPC.Center.X >= player.Center.X)
+                    {
+                        if (NPC.velocity.X >= -2) NPC.velocity.X -= 0.05f;
+                        if (flySpeedX >= -2) flySpeedX -= 0.1f;
+                    }
 
-                    if (NPC.Center.X <= player.Center.X && flySpeedX <= 2)
-                        flySpeedX += 0.1f;
+                    if (NPC.Center.X <= player.Center.X)
+                    {
+                        if (NPC.velocity.X <= 2) NPC.velocity.X += 0.05f;
+                        if (flySpeedX <= 2) flySpeedX += 0.1f;
+                    }
 
                     if (NPC.Center.Y >= player.Center.Y - 75)
                     {
+                        NPC.velocity.Y -= 0.1f;
                         flySpeedY -= 0.1f;
                     }
                     else
-                        if (flySpeedY <= 2) flySpeedY += 0.1f;
+                    {
+                        if (flySpeedY <= 2)
+                        {
+                            NPC.velocity.Y += 0.1f;
+                            flySpeedY += 0.1f;
+                        }
+                    }
 
                     // Nudge the NPC off the ground if they are too close
                     if (TRay.CastLength(NPC.Center, Vector2.UnitY, 25) < 25)
+                    {
+                        NPC.velocity.Y -= 0.5f;
                         flySpeedY -= 0.5f;
+                    }
 
                     // Force the NPC to fly upwards and away if there is an obstacle in front of it
                     if (TRay.CastLength(NPC.Center, Vector2.UnitX * NPC.direction, 45) < 45)
                     {
+                        NPC.velocity.X -= 0.25f * NPC.direction;
                         flySpeedX -= 0.25f * NPC.direction;
+
+                        NPC.velocity.Y -= 0.5f;
                         flySpeedY -= 0.5f;
                     }
 
@@ -213,6 +248,9 @@ namespace OvermorrowMod.Content.NPCs.Forest
                     break;
                 case (int)AICase.Dive:
                     frameRate = 3;
+
+                    NPC.velocity = Vector2.Zero;
+
                     flySpeedX = 0;
                     flySpeedY = 0;
 
@@ -225,9 +263,6 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
                         NPC.netUpdate = true;
                     }
-
-                    //Dust target = Dust.NewDustDirect(diveTargetPosition, 1, 1, DustID.Torch);
-                    //target.noGravity = true;
 
                     if (AICounter >= 60 && AICounter <= 120)
                     {
@@ -257,32 +292,54 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         diveStartPosition = NPC.Center;
                         diveTargetPosition = player.Center + new Vector2(0, grabOffset);
 
-                        if (NPC.Center.X >= diveTargetPosition.X && flySpeedX >= -2) // flies to players x position
-                            flySpeedX -= 0.1f;
+                        if (NPC.Center.X >= diveTargetPosition.X)
+                        {
+                            if (flySpeedX >= -2) flySpeedX -= 0.1f;
+                            if (NPC.velocity.X >= -2) NPC.velocity.X -= 0.05f;
+                        }
 
-                        if (NPC.Center.X <= diveTargetPosition.X && flySpeedX <= 2)
-                            flySpeedX += 0.1f;
+                        if (NPC.Center.X <= diveTargetPosition.X)
+                        {
+                            if (flySpeedX <= 2) flySpeedX += 0.1f;
+                            if (NPC.velocity.X <= 2) NPC.velocity.X += 0.05f;
+                        }
 
                         if (NPC.Center.Y >= diveTargetPosition.Y - 75)
+                        {
                             flySpeedY -= 0.1f;
+                            NPC.velocity.Y -= 0.1f;
+                        }
                         else
-                            if (flySpeedY <= 2) flySpeedY += 0.1f;
+                        {
+                            if (flySpeedY <= 2)
+                            {
+                                NPC.velocity.Y += 0.1f;
+                                flySpeedY += 0.1f;
+                            }
+                        }
                     }
                     else if (AICounter < 45)
                     {
                         flySpeedX = 0;
                         flySpeedY = -2;
+
+                        NPC.velocity.X = 0;
+                        NPC.velocity.Y = -2;
                     }
                     else if (AICounter < 60)
                     {
                         flySpeedX = 0;
                         flySpeedY = 8;
+
+                        NPC.velocity.X = 0;
+                        NPC.velocity.Y = 8;
                     }
 
                     if (TRay.CastLength(NPC.Center, Vector2.UnitY, 24) < 24)
                     {
                         AICounter = 60;
                         flySpeedY = -2;
+                        NPC.velocity.Y = -2;
                     }
 
                     if (AICounter >= 60)
@@ -296,8 +353,10 @@ namespace OvermorrowMod.Content.NPCs.Forest
 
             if (AIState == (int)AICase.Angry) NPC.rotation = NPC.velocity.X * 0.075f;
 
-            NPC.velocity.X = flySpeedX;
-            NPC.velocity.Y = flySpeedY;
+            //NPC.velocity.X = flySpeedX;
+            //NPC.velocity.Y = flySpeedY;
+
+            Main.NewText("flyspeed: [" + flySpeedX + ", " + flySpeedY + "] vs velocity: [" + NPC.velocity.X + ", " + NPC.velocity.Y + "]");
         }
 
         public override void OnHitByItem(Player player, Item item, int damage, float knockback, bool crit)
@@ -322,8 +381,8 @@ namespace OvermorrowMod.Content.NPCs.Forest
                 AICounter = 0;
             }
 
-            flySpeedX += Utils.Clamp(projectile.velocity.X * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
-            flySpeedY += Utils.Clamp(projectile.velocity.Y * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
+            //flySpeedX += Utils.Clamp(projectile.velocity.X * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
+            //flySpeedY += Utils.Clamp(projectile.velocity.Y * (projectile.knockBack * NPC.knockBackResist), -2f, 2f);
         }
 
         private int frame = 0;

@@ -49,9 +49,10 @@ namespace OvermorrowMod.Content.NPCs
             // This shit doesn't run
             if (npc.type == NPCID.BlueSlime)
             {
+
                 if (npc.netID == NPCID.GreenSlime)
                 {
-                    
+                    npc.lifeMax = 30;
                 }
             }
 
@@ -159,6 +160,10 @@ namespace OvermorrowMod.Content.NPCs
                 if (npc.netID == NPCID.GreenSlime)
                 {
                     if (npc.ai[0] < 0) npc.ai[0] = 0;
+
+                    // For some stupid reason I can't do this in SetDefaults or OnSpawn
+                    npc.lifeMax = 30;
+                    npc.life = 30;
 
                     idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
                 }

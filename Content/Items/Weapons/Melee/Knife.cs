@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI.Chat;
 
 namespace OvermorrowMod.Content.Items.Weapons.Melee
 {
@@ -43,6 +44,15 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             Item.shoot = ModContent.ProjectileType<Knife_Held>(); // The projectile is what makes a shortsword work
             Item.shootSpeed = 2.1f; // This value bleeds into the behavior of the projectile as velocity, keep that in mind when tweaking values
+        }
+
+        // Draw knife counter in inventory
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            if (Main.playerInventory) return;
+
+            int knifeCount = 1 - Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()];
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, knifeCount.ToString(), position + new Vector2(0f, 22f) * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, Main.inventoryScale);
         }
 
         public int attackIndex = 1;
@@ -624,7 +634,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
             Texture2D texture = TextureAssets.Item[ModContent.ItemType<Knife>()].Value;
             SpriteEffects spriteEffects = Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
-            Color color = Projectile.velocity == Vector2.Zero ? Color.White : lightColor;
+            Color color = groundCollided ? Color.White : lightColor;
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, color * activeAlpha, Projectile.rotation, texture.Size() / 2f, Projectile.scale, spriteEffects, 1);
 
             return base.PreDraw(ref lightColor);
