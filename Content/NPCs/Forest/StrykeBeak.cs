@@ -47,7 +47,7 @@ namespace OvermorrowMod.Content.NPCs.Forest
             NPC.damage = 20;
             NPC.defense = 6;
             NPC.lifeMax = 200;
-            NPC.friendly = true;
+            //NPC.friendly = true;
             NPC.aiStyle = -1;
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit28;
@@ -199,25 +199,41 @@ namespace OvermorrowMod.Content.NPCs.Forest
                         if (flySpeedX <= 2) flySpeedX += 0.1f;
                     }
 
-                    if (NPC.Center.Y >= player.Center.Y - 75)
+                    // NPC is too high up from the player, move downwards
+                    if (NPC.Center.Y <= player.Center.Y - (16 * 5))
                     {
-                        NPC.velocity.Y -= 0.1f;
-                        flySpeedY -= 0.1f;
+                        Main.NewText("wtf!!!!!!!!");
+                        if (NPC.velocity.Y <= 2f) NPC.velocity.Y += 0.1f;
+
+                        // Prevent the NPC from moving in a straight line when the y velocity stays the same
+                        if (Main.rand.NextBool(3)) NPC.velocity.Y += 0.05f;
+
+                        flySpeedY += 0.1f;
                     }
                     else
                     {
-                        if (flySpeedY <= 2)
+                        Main.NewText("wtf???");
+
+
+                        /*if (flySpeedY <= -2)
                         {
                             NPC.velocity.Y += 0.1f;
                             flySpeedY += 0.1f;
-                        }
+                        }*/
                     }
 
                     // Nudge the NPC off the ground if they are too close
-                    if (TRay.CastLength(NPC.Center, Vector2.UnitY, 25) < 25)
+                    /*if (TRay.CastLength(NPC.Center, Vector2.UnitY, 25) < 25)
                     {
+                        Main.NewText("go up");
                         NPC.velocity.Y -= 0.5f;
                         flySpeedY -= 0.5f;
+                    }*/
+                    if (TRay.CastLength(NPC.Center, Vector2.UnitY, 128) < 128)
+                    {
+                        Main.NewText("go up");
+                        NPC.velocity.Y -= 0.1f;
+                        flySpeedY -= 0.1f;
                     }
 
                     // Force the NPC to fly upwards and away if there is an obstacle in front of it
