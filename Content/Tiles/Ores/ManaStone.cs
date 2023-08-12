@@ -28,7 +28,6 @@ namespace OvermorrowMod.Content.Tiles.Ores
             Main.tileLighted[Type] = true;
             HitSound = SoundID.Tink;
             MinPick = 65;
-            ItemDrop/* tModPorter Note: Removed. Tiles and walls will drop the item which places them automatically. Use RegisterItemDrop to alter the automatic drop if necessary. */ = ModContent.ItemType<CrystalMana>();
             AddMapEntry(new Color(51, 204, 255), name);
         }
 

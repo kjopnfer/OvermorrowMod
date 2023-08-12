@@ -19,7 +19,6 @@ namespace OvermorrowMod.Content.Tiles.Ambient
             HitSound = SoundID.Tink;
             MinPick = 65;
             AddMapEntry(new Color(102, 255, 255), name);
-            ItemDrop/* tModPorter Note: Removed. Tiles and walls will drop the item which places them automatically. Use RegisterItemDrop to alter the automatic drop if necessary. */ = ModContent.ItemType<Content.Items.Misc.BlueCrystal>();
         }
 
         public override bool CanExplode(int i, int j)

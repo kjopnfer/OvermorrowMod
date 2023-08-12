@@ -24,7 +24,6 @@ namespace OvermorrowMod.Content.Tiles.Ores
             Main.tileLighted[Type] = true;
             HitSound = SoundID.Tink;
             MinPick = 40;
-            ItemDrop/* tModPorter Note: Removed. Tiles and walls will drop the item which places them automatically. Use RegisterItemDrop to alter the automatic drop if necessary. */ = ModContent.ItemType<EruditeOre>();
             AddMapEntry(new Color(51, 204, 51), name);
         }
 

@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 namespace OvermorrowMod.Content.NPCs.Town
 {
     [AutoloadHead]
-    public class RuneSeller : ModNPC
+    public class RuneSeller : ModNPC // This NPC is outdated
     {
         public override string Texture => "OvermorrowMod/Content/NPCs/Town/RuneSeller";
 
@@ -78,21 +78,23 @@ namespace OvermorrowMod.Content.NPCs.Town
             return Main.rand.Next(dialogue);
         }
 
+        public override void AddShops()
+        {
+            base.AddShops();
+        }
+
         public override void ModifyActiveShop(string shopName, Item[] items)
         {
-            shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
+            /*shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
             nextSlot++;
 
             shop.item[nextSlot].SetDefaults(ModContent.ItemType<BeanSummon>());
-            nextSlot++;
+            nextSlot++;*/
         }
 
         public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
-            if (firstButton)
-            {
-                shop = true;
-            }
+           
         }
 
         public override void SetChatButtons(ref string button, ref string button2)
