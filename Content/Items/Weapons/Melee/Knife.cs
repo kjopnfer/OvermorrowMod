@@ -566,8 +566,6 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void AI()
         {
-            Projectile.timeLeft = 120;
-
             Tile bottomLeftTile = Main.tile[(int)Projectile.Hitbox.BottomLeft().X / 16, (int)Projectile.Hitbox.BottomLeft().Y / 16];
             Tile bottomRightTile = Main.tile[(int)Projectile.Hitbox.BottomRight().X / 16, (int)Projectile.Hitbox.BottomRight().Y / 16];
 
@@ -611,6 +609,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
                 if (Projectile.ai[1] > 60f)
                 {
+                    Projectile.tileCollide = false;
                     //Projectile.rotation = MathHelper.Lerp(oldRotation, MathHelper.TwoPi + oldRotation, Utils.Clamp(Projectile.ai[1], 0, 20f) / 20f);
                     Projectile.Center = Vector2.Lerp(oldPosition, oldPosition - Vector2.UnitY * -24, (float)Math.Sin((Projectile.ai[1] - 60f) / 40f));
                 }

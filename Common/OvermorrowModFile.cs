@@ -232,7 +232,7 @@ namespace OvermorrowMod.Common
 
         }
 
-        public override void AddRecipes()
+        public override void AddRecipes()/* tModPorter Note: Removed. Use ModSystem.AddRecipes */
         {
             Recipe.Create(ItemID.ChainKnife)
                 .AddIngredient(ItemID.Chain, 6)
