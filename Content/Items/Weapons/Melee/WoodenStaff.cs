@@ -22,10 +22,10 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wooden Staff");
+            // DisplayName.SetDefault("Wooden Staff");
             ItemID.Sets.SkipsInitialUseSound[Item.type] = true; // This skips use animation-tied sound playback, so that we're able to make it be tied to use time instead in the UseItem() hook.
             ItemID.Sets.Spears[Item.type] = true; // This allows the game to recognize our new item as a spear.
-            Tooltip.SetDefault("{Keyword:Focus}: Gain increased damage and knockback");
+            // Tooltip.SetDefault("{Keyword:Focus}: Gain increased damage and knockback");
         }
 
         public override void SetDefaults()
@@ -86,18 +86,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
     {
         public override bool? CanHitNPC(NPC target) => !target.friendly && inSwingState;
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (HoldCounter >= heavySwingThreshold)
             {
-                damage = (int)(damage * 1.5f);
-                knockback *= 2;
+                modifiers.SourceDamage *= 1.5f;
+                modifiers.Knockback *= 2;
             }
         }
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Wooden Staff");
+            // DisplayName.SetDefault("Wooden Staff");
         }
 
         public override void SetDefaults()

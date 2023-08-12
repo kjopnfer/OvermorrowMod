@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Armor.Masks
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dripplord Mask");
+            // DisplayName.SetDefault("Dripplord Mask");
         }
 
         public override void SetDefaults()

@@ -172,26 +172,22 @@ namespace OvermorrowMod.Content.NPCs
             base.AI(npc);
         }
 
-        public override void OnHitByItem(NPC npc, Player player, Item item, int damage, float knockback, bool crit)
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
         {
             if (npc.type == NPCID.BlueSlime)
             {
                 if (npc.netID == NPCID.GreenSlime)
                     npc.TargetClosest();
             }
-
-            base.OnHitByItem(npc, player, item, damage, knockback, crit);
         }
 
-        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
             if (npc.type == NPCID.BlueSlime)
             {
                 if (npc.netID == NPCID.GreenSlime)
                     npc.TargetClosest();
             }
-
-            base.OnHitByProjectile(npc, projectile, damage, knockback, crit);
         }
 
         public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)

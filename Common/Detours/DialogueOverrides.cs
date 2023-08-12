@@ -11,7 +11,7 @@ namespace OvermorrowMod.Common.Detours
 {
     public class DialogueOverrides
     {
-        public static void GUIChatDrawInner(On.Terraria.Main.orig_GUIChatDrawInner orig, Main self)
+        public static void GUIChatDrawInner(Terraria.On_Main.orig_GUIChatDrawInner orig, Main self)
         {
             DialoguePlayer player = Main.LocalPlayer.GetModPlayer<DialoguePlayer>();
             if (player.GetDialogue() == null && Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory)

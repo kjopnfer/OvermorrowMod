@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.NPCs.GraniteClamper
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Granite Clamper");
+            // DisplayName.SetDefault("Granite Clamper");
         }
         int timer = 0;
 

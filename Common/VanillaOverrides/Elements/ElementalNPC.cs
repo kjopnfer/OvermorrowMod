@@ -32,7 +32,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             return null;
         }
 
-        public override void OnHitByItem(NPC npc, Player player, Item item, int damage, float knockback, bool crit)
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
         {
             CombatText text = GetRecentCombatText();
             if (text == null) return;
@@ -43,7 +43,7 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             if (modifier < 1) text.color = Color.DarkRed;
         }
 
-        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref int damage, ref float knockback, ref bool crit)
+        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
             float modifier = ElementalModifiers.GetModifier(item.Elemental().ElementTypes, ElementResistance, ElementWeakness);
 
@@ -51,10 +51,11 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             if (modifier > 1) text.color = Color.Green;
             if (modifier < 1) text.color = Color.Red;
 
-            damage = (int)Math.Round(damage * modifier);
+            // Commented out because we're not using elemental modifiers at the moment
+            //damage = (int)Math.Round(damage * modifier);
         }
 
-        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
             CombatText text = GetRecentCombatText();
             if (text == null) return;
@@ -65,10 +66,10 @@ namespace OvermorrowMod.Common.VanillaOverrides.Elements
             if (modifier < 1) text.color = Color.DarkRed;
         }
 
-        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
             float modifier = ElementalModifiers.GetModifier(projectile.Elemental().ElementTypes, ElementResistance, ElementWeakness);
-            damage = (int)Math.Round(damage * modifier);
+            //damage = (int)Math.Round(damage * modifier);
         }
     }
 }

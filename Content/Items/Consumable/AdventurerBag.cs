@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Consumable
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Guide's Rucksack");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
+            // DisplayName.SetDefault("Guide's Rucksack");
+            // Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
         }
 
         public override void SetDefaults()
@@ -103,8 +103,8 @@ namespace OvermorrowMod.Content.Items.Consumable
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Guide's Rucksack");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
+            // DisplayName.SetDefault("Guide's Rucksack");
+            // Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
         }
 
         public override void SetDefaults()

@@ -9,8 +9,8 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lacusite Bar");
-            Tooltip.SetDefault("'Has a strong affinity for water'");
+            // DisplayName.SetDefault("Lacusite Bar");
+            // Tooltip.SetDefault("'Has a strong affinity for water'");
         }
 
         public override void SetDefaults()

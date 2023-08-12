@@ -16,8 +16,8 @@ namespace OvermorrowMod.Content.Items.Materials
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cursed Ore");
-            Tooltip.SetDefault("Used to craft cursed items\n'Touching it grants visions of various cursed images from the Internet'");
+            // DisplayName.SetDefault("Cursed Ore");
+            // Tooltip.SetDefault("Used to craft cursed items\n'Touching it grants visions of various cursed images from the Internet'");
         }
 
         public override void SetDefaults()

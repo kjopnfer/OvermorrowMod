@@ -20,7 +20,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         public override bool? CanDamage() => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Slime Flask");
+            // DisplayName.SetDefault("Slime Flask");
         }
 
         public override void SetDefaults()
@@ -55,7 +55,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         public override string Texture => AssetDirectory.Textures + "Slime_" + Main.rand.Next(1, 4);
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("SLIME EXPLOSION");
+            // DisplayName.SetDefault("SLIME EXPLOSION");
         }
 
         public override void SetDefaults()

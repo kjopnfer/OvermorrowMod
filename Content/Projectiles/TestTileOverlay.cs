@@ -18,7 +18,7 @@ namespace OvermorrowMod.Content.Projectiles
         public override string Texture => AssetDirectory.Textures + "SLIME";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("SLIME TEST");
+            // DisplayName.SetDefault("SLIME TEST");
         }
 
         public override void SetDefaults()

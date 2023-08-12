@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sussy Beam Test");
+            // DisplayName.SetDefault("Sussy Beam Test");
         }
         public override void SetDefaults()
         {
@@ -206,7 +206,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sussy Beam Test");
+            // DisplayName.SetDefault("Sussy Beam Test");
         }
         public override void SetDefaults()
         {
@@ -326,7 +326,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("SANDFALL2");
+            // DisplayName.SetDefault("SANDFALL2");
         }
         public override void SetDefaults()
         {
@@ -449,7 +449,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("SANDFALL");
+            // DisplayName.SetDefault("SANDFALL");
         }
         public override void SetDefaults()
         {
@@ -541,7 +541,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sussy Beam Test 2");
+            // DisplayName.SetDefault("Sussy Beam Test 2");
         }
         public override void SetDefaults()
         {

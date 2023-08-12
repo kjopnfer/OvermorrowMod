@@ -8,8 +8,8 @@ namespace OvermorrowMod.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Stinky Cheese");
-            Tooltip.SetDefault("'Stinky'");
+            // DisplayName.SetDefault("Stinky Cheese");
+            // Tooltip.SetDefault("'Stinky'");
         }
 
         public override void SetDefaults()

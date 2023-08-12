@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -26,8 +27,8 @@ namespace OvermorrowMod.Content.Tiles.GuideCamp
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Campfire");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Campfire");
             AddMapEntry(new Color(238, 145, 105), name);
         }
 

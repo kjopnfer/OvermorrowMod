@@ -10,7 +10,7 @@ namespace OvermorrowMod.Common.NPCs
         bool RunOnce = true;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("A");
+            // DisplayName.SetDefault("A");
         }
 
         public override void SetDefaults()
@@ -52,7 +52,7 @@ namespace OvermorrowMod.Common.NPCs
         public override string Texture => "OvermorrowMod/Common/NPCs/MovingBlock";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("A2");
+            // DisplayName.SetDefault("A2");
         }
 
         public override void SetDefaults()

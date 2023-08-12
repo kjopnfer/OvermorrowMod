@@ -99,8 +99,8 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override int GetRandomPrefix() => meleePrefixes[Main.rand.Next(0, meleePrefixes.Length)];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Melee Reforge Stone");
-            Tooltip.SetDefault("Used to apply modifiers to Melee weapons");
+            // DisplayName.SetDefault("Melee Reforge Stone");
+            // Tooltip.SetDefault("Used to apply modifiers to Melee weapons");
             ItemID.Sets.CanGetPrefixes[Type] = true;
         }
 
@@ -120,8 +120,8 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override int GetRandomPrefix() => rangedPrefixes[Main.rand.Next(0, rangedPrefixes.Length)];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ranged Reforge Stone");
-            Tooltip.SetDefault("Used to apply modifiers to Ranged weapons");
+            // DisplayName.SetDefault("Ranged Reforge Stone");
+            // Tooltip.SetDefault("Used to apply modifiers to Ranged weapons");
             ItemID.Sets.CanGetPrefixes[Type] = true;
         }
 
@@ -140,8 +140,8 @@ namespace OvermorrowMod.Content.Items.Consumable
         public override int GetRandomPrefix() => magicPrefixes[Main.rand.Next(0, magicPrefixes.Length)];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Magic Reforge Stone");
-            Tooltip.SetDefault("Used to apply modifiers to Ranged weapons");
+            // DisplayName.SetDefault("Magic Reforge Stone");
+            // Tooltip.SetDefault("Used to apply modifiers to Ranged weapons");
             ItemID.Sets.CanGetPrefixes[Type] = true;
         }
 

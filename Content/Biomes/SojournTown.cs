@@ -14,7 +14,7 @@ namespace OvermorrowMod.Content.Biomes
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sojourn");
+            // DisplayName.SetDefault("Sojourn");
         }
 
         public override bool IsBiomeActive(Player player)

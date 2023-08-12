@@ -21,7 +21,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Volatile Orb");
+            // DisplayName.SetDefault("Volatile Orb");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
         }

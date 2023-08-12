@@ -15,10 +15,10 @@ namespace OvermorrowMod.Content.NPCs.Carts
     {
         public List<Item> shopItems = new List<Item>();
         public override bool CheckActive() => false;
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money) => false;
+        public override bool CanTownNPCSpawn(int numTownNPCs)/* tModPorter Suggestion: Copy the implementation of NPC.SpawnAllowed_Merchant in vanilla if you to count money, and be sure to set a flag when unlocked, so you don't count every tick. */ => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Merchant Cart");
+            // DisplayName.SetDefault("Merchant Cart");
             NPCID.Sets.ActsLikeTownNPC[Type] = true;
         }
 
@@ -39,12 +39,9 @@ namespace OvermorrowMod.Content.NPCs.Carts
             button = Language.GetTextValue("LegacyInterface.28");
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
-            if (firstButton)
-            {
-                shop = true;
-            }
+            
         }
 
         public override string GetChat()
@@ -107,16 +104,12 @@ namespace OvermorrowMod.Content.NPCs.Carts
             shopItems = tag.Get<List<Item>>("shopItems");
         }
 
-        public override void SetupShop(Chest shop, ref int nextSlot)
+        public override void AddShops()
         {
-            shop.item[nextSlot].SetDefaults(ItemID.ChainKnife);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ItemID.Banana);
-            nextSlot++;
-
-            shop.item[nextSlot].SetDefaults(ItemID.AcidDye);
-            nextSlot++;
+            var shop = new NPCShop(Type)
+                .Add(ItemID.ChainKnife)
+                .Add(ItemID.Banana)
+                .Add(ItemID.AcidDye);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace OvermorrowMod.Common.NPCs
             }
         }
 
-        public override void SetupShop(Chest shop, ref int nextSlot)
+        public override void ModifyActiveShop(string shopName, Item[] items)
         {
             for (int k = 0; k < NPCShop.item.Length && k < shop.item.Length; k++)
             {

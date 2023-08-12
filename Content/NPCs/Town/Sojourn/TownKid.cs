@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Town Kid");
+            // DisplayName.SetDefault("Town Kid");
             Main.npcFrameCount[NPC.type] = 9;
         }
 

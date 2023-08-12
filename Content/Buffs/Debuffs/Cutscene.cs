@@ -8,8 +8,8 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Awestruck");
-            Description.SetDefault("what on gods green earth");
+            // DisplayName.SetDefault("Awestruck");
+            // Description.SetDefault("what on gods green earth");
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;

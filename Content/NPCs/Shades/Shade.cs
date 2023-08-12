@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.NPCs.Shades
         public override bool CheckActive() => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("???");
+            // DisplayName.SetDefault("???");
         }
 
         public override void SetDefaults()

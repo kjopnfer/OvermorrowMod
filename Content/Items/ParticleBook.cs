@@ -13,8 +13,8 @@ namespace OvermorrowMod.Content.Items
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Particle Book");
-            Tooltip.SetDefault("Right Click to change particle type");
+            // DisplayName.SetDefault("Particle Book");
+            // Tooltip.SetDefault("Right Click to change particle type");
         }
 
         public override void SetDefaults()

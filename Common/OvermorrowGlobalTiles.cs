@@ -15,7 +15,7 @@ namespace OvermorrowMod.Common
             base.PlaceInWorld(i, j, type, item);
         }
 
-        public override bool Drop(int i, int j, int type)
+        public override void Drop(int i, int j, int type)/* tModPorter Suggestion: Use CanDrop to decide if items can drop, use this method to drop additional items. See documentation. */
         {
             SharedAIState.State2x2.Invalidate(i, j);
             if (Main.netMode != NetmodeID.MultiplayerClient && !WorldGen.noTileActions && !WorldGen.gen)

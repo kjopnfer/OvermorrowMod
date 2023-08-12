@@ -82,7 +82,7 @@ namespace OvermorrowMod.Content.Projectiles.NPCs.Town
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Particle.CreateParticle(Particle.ParticleType<Pulse>(), Projectile.Center, Vector2.Zero, Color.Black, 1, 1, 0, 1f);
         }

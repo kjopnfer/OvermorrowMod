@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Castle Table");
+            // DisplayName.SetDefault("Castle Table");
         }
 
         public override void SetDefaults()
@@ -31,7 +31,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Furniture
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Castle Table");
+            // DisplayName.SetDefault("Castle Table");
         }
 
         public override void SetDefaults()

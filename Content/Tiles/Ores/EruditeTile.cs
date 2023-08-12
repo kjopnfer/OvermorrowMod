@@ -5,6 +5,7 @@ using OvermorrowMod.Core;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Tiles.Ores
@@ -13,8 +14,8 @@ namespace OvermorrowMod.Content.Tiles.Ores
     {
         public override void SetStaticDefaults()
         {
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Erudite");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Erudite");
             Main.tileSolid[Type] = true;
             Main.tileSpelunker[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -23,7 +24,7 @@ namespace OvermorrowMod.Content.Tiles.Ores
             Main.tileLighted[Type] = true;
             HitSound = SoundID.Tink;
             MinPick = 40;
-            ItemDrop = ModContent.ItemType<EruditeOre>();
+            ItemDrop/* tModPorter Note: Removed. Tiles and walls will drop the item which places them automatically. Use RegisterItemDrop to alter the automatic drop if necessary. */ = ModContent.ItemType<EruditeOre>();
             AddMapEntry(new Color(51, 204, 51), name);
         }
 

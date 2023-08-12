@@ -7,7 +7,7 @@ namespace OvermorrowMod.Common
     {
         public OrbitEntityContainer Container { get; } = new OrbitEntityContainer();
 
-        public override void OnEnterWorld(Player player)
+        public override void OnEnterWorld()
         {
             Container.ResetProjectiles();
         }

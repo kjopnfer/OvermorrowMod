@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.TreeGuns
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bramble Blaster");
+            // DisplayName.SetDefault("Bramble Blaster");
         }
         public override void SetDefaults()
         {

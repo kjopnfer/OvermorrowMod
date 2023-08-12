@@ -153,11 +153,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         public override GunType GunType => GunType.Launcher;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shockshard Launcher");
-            Tooltip.SetDefault("Launches high velocity shards that stick to blocks\n" +
+            // DisplayName.SetDefault("Shockshard Launcher");
+            /* Tooltip.SetDefault("Launches high velocity shards that stick to blocks\n" +
                 "{Keyword:Passive}: Gain 1 shard on Critical Hit\n" +
                 "{Keyword:Alt}: Activate all unarmed shards\n" +
-                "Starts with 0 ammo and does not reload");
+                "Starts with 0 ammo and does not reload"); */
         }
 
         public override void SafeSetDefaults()

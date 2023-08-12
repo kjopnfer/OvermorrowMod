@@ -11,7 +11,7 @@ namespace OvermorrowMod.Content.Items.Armor.Galvan
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Galvan Helmet");
+            // DisplayName.SetDefault("Galvan Helmet");
         }
 
         public override void SetDefaults()

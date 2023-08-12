@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Items.Armor.Masks
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gra-Knight Mask");
+            // DisplayName.SetDefault("Gra-Knight Mask");
         }
 
         public override void SetDefaults()

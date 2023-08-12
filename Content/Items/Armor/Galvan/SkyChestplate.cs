@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Armor.Galvan
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Galvan Breastplate");
+            // DisplayName.SetDefault("Ancient Galvan Breastplate");
         }
 
         public override void SetDefaults()

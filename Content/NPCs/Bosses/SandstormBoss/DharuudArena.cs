@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.SandnadoHostile;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dhood Arena");
+            // DisplayName.SetDefault("Dhood Arena");
         }
         public override void SetDefaults()
         {

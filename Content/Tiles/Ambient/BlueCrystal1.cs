@@ -75,7 +75,7 @@ namespace OvermorrowMod.Content.Tiles.Ambient
             };
             TileObjectData.addTile(Type);
             DustType = DustID.DungeonSpirit;
-            ItemDrop = ModContent.ItemType<Content.Items.Misc.BlueCrystal>();
+            ItemDrop/* tModPorter Note: Removed. Tiles and walls will drop the item which places them automatically. Use RegisterItemDrop to alter the automatic drop if necessary. */ = ModContent.ItemType<Content.Items.Misc.BlueCrystal>();
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)

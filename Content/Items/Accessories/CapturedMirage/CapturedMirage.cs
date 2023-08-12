@@ -30,8 +30,8 @@ namespace OvermorrowMod.Content.Items.Accessories.CapturedMirage
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Captured Mirage");
-            Tooltip.SetDefault("{Keyword:Focus}: Fire an additional <Projectile:Mirage Arrow>");
+            // DisplayName.SetDefault("Captured Mirage");
+            // Tooltip.SetDefault("{Keyword:Focus}: Fire an additional <Projectile:Mirage Arrow>");
         }
 
         public override void SetDefaults()

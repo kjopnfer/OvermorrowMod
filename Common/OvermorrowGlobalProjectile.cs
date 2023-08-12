@@ -65,7 +65,7 @@ namespace OvermorrowMod.Common
         }
 
 
-        public override void ModifyHitNPC(Projectile projectile, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
@@ -267,7 +267,7 @@ namespace OvermorrowMod.Common
             base.Kill(projectile, timeLeft);
         }
 
-        public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();

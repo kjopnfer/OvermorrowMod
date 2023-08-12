@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => CanFall;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("");
+            // DisplayName.SetDefault("");
         }
 
         public override void SetDefaults()

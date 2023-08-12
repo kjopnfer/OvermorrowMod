@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Armor.SSARG
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("S.S.A.R.G Stompers");
+            // DisplayName.SetDefault("S.S.A.R.G Stompers");
         }
 
         public override void SetDefaults()

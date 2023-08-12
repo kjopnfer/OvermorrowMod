@@ -25,11 +25,11 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Trapper's Armaments");
-            Tooltip.SetDefault("Gain a <Projectile:Bear Trap> after dealing at least 70 Ranged damage in a single hit\n" +
+            // DisplayName.SetDefault("Trapper's Armaments");
+            /* Tooltip.SetDefault("Gain a <Projectile:Bear Trap> after dealing at least 70 Ranged damage in a single hit\n" +
                 "Place [?] to place a <Projectile:Bear Trap>\n" +
                 "You can have only up to 3 traps active at a time\n" +
-                "[?] This item requires a keybind to use!");
+                "[?] This item requires a keybind to use!"); */
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)

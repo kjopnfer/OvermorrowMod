@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 {
     public class PortGeneration : ModSystem
     {
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int WaterChestIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Water Chests"));
             if (WaterChestIndex != -1)

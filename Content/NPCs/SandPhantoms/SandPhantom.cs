@@ -27,7 +27,7 @@ namespace OvermorrowMod.Content.NPCs.SandPhantoms
         public override bool CheckActive() => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sand Phantom");
+            // DisplayName.SetDefault("Sand Phantom");
             Main.npcFrameCount[NPC.type] = 18;
             NPCID.Sets.TrailCacheLength[NPC.type] = 7;
             NPCID.Sets.TrailingMode[NPC.type] = 1;

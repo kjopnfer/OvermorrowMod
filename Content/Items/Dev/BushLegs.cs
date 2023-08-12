@@ -10,8 +10,8 @@ namespace OvermorrowMod.Content.Items.Dev
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Bush-man's Legs");
-            Tooltip.SetDefault("'Ah yes, chlamydia mod'");
+            // DisplayName.SetDefault("Bush-man's Legs");
+            // Tooltip.SetDefault("'Ah yes, chlamydia mod'");
         }
 
         public override void SetDefaults()

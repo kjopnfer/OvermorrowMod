@@ -20,8 +20,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("{Keyword:Alt}: Throw the knife. Hold down to increase {Keyword:Focus}\n" +
-                "{Keyword:Focus}: Gain 20% increased critical strike chance");
+            /* Tooltip.SetDefault("{Keyword:Alt}: Throw the knife. Hold down to increase {Keyword:Focus}\n" +
+                "{Keyword:Focus}: Gain 20% increased critical strike chance"); */
         }
 
         public override void SetDefaults()
@@ -80,18 +80,18 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         public override string Texture => AssetDirectory.Empty;
         public override bool? CanHitNPC(NPC target) => !target.friendly && inSwingState;
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (HoldCounter >= heavySwingThreshold)
             {
-                damage = (int)(damage * 1.5f);
-                knockback *= 2;
+                modifiers.SourceDamage *= 1.5f;
+                modifiers.Knockback *= 2;
             }
         }
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Knife");
+            // DisplayName.SetDefault("Knife");
         }
 
         public override void SetDefaults()
@@ -545,7 +545,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Knife");
+            // DisplayName.SetDefault("Knife");
         }
 
         public override void SetDefaults()

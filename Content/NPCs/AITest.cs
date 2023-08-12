@@ -28,7 +28,7 @@ namespace OvermorrowMod.Content.NPCs
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lil' Cubey");
+            // DisplayName.SetDefault("Lil' Cubey");
             Main.npcFrameCount[Type] = 1;
         }
 

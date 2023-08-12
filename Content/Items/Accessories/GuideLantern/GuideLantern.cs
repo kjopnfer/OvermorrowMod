@@ -10,8 +10,8 @@ namespace OvermorrowMod.Content.Items.Accessories.GuideLantern
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Guide's Lantern");
-            Tooltip.SetDefault("Automatically provides light when not performing other actions");
+            // DisplayName.SetDefault("Guide's Lantern");
+            // Tooltip.SetDefault("Automatically provides light when not performing other actions");
         }
 
         public override void SetDefaults()

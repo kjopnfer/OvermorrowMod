@@ -64,7 +64,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public float endValue;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mighty Hammer");
+            // DisplayName.SetDefault("Mighty Hammer");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -151,7 +151,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (owner != null && owner.NPC.active) ScreenShake.ScreenShakeEvent(Projectile.Center, 8, 4, 100);
 
@@ -204,11 +204,11 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
     {
         public float sine = (float)Math.PI / 2;
         public override bool PreDraw(ref Color lightColor) => false;
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) { Projectile.timeLeft = 180; }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) { Projectile.timeLeft = 180; }
         public override string Texture => AssetDirectory.NPC + "Mercenary/Paladin/PaladinHammer";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mighty Hammer");
+            // DisplayName.SetDefault("Mighty Hammer");
         }
 
         public override void SetDefaults()
@@ -261,7 +261,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override bool PreDraw(ref Color lightColor) => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shockwave");
+            // DisplayName.SetDefault("Shockwave");
         }
 
         public override void SetDefaults()
@@ -464,7 +464,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Unity");
+            // DisplayName.SetDefault("Unity");
         }
         public override void SetDefaults()
         {
@@ -584,7 +584,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
         public override bool PreDraw(ref Color lightColor) => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rookie Paladin");
+            // DisplayName.SetDefault("Rookie Paladin");
         }
 
         public override void SetDefaults()
@@ -608,7 +608,7 @@ namespace OvermorrowMod.Content.NPCs.Mercenary.Paladin
             CheckCollision();
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             //ram the non-boss npc and send them flying
             if (target.knockBackResist < 1 && !target.boss)

@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.DataStructures;
@@ -23,8 +24,8 @@ namespace OvermorrowMod.Content.Tiles.Town
             TileObjectData.newTile.AnchorWall = true;
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Window");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Window");
             AddMapEntry(new Color(68, 84, 108), name);
         }
     }
@@ -46,8 +47,8 @@ namespace OvermorrowMod.Content.Tiles.Town
             TileObjectData.newTile.AnchorWall = true;
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Window");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Window");
             AddMapEntry(new Color(68, 84, 108), name);
         }
     }

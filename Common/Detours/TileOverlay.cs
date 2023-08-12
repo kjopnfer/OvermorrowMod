@@ -27,7 +27,7 @@ namespace OvermorrowMod.Common.Detours
             });
         }
 
-        public static void Main_Update(On.Terraria.Main.orig_Update orig, Main self, GameTime gameTime)
+        public static void Main_Update(Terraria.On_Main.orig_Update orig, Main self, GameTime gameTime)
         {
             if (OvermorrowModFile.Instance != null) OvermorrowModFile.Instance.CheckScreenSize();
 
@@ -95,7 +95,7 @@ namespace OvermorrowMod.Common.Detours
             //oldScreenPos = Main.screenPosition;
         }
 
-        public static void Main_DrawProjectiles(On.Terraria.Main.orig_DrawProjectiles orig, Main self)
+        public static void Main_DrawProjectiles(Terraria.On_Main.orig_DrawProjectiles orig, Main self)
         {
             orig(self);
 

@@ -4,6 +4,7 @@ using OvermorrowMod.Content.Items.Materials;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OvermorrowMod.Content.Tiles.Ores
@@ -12,8 +13,8 @@ namespace OvermorrowMod.Content.Tiles.Ores
     {
         public override void SetStaticDefaults()
         {
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Lacusite");
+            LocalizedText name = CreateMapEntryName();
+            // name.SetDefault("Lacusite");
             Main.tileSolid[Type] = true;
             Main.tileSpelunker[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -23,7 +24,7 @@ namespace OvermorrowMod.Content.Tiles.Ores
             HitSound = SoundID.Tink;
             MinPick = 55;
             MineResist = 2f;
-            ItemDrop = ModContent.ItemType<WaterOre>();
+            ItemDrop/* tModPorter Note: Removed. Tiles and walls will drop the item which places them automatically. Use RegisterItemDrop to alter the automatic drop if necessary. */ = ModContent.ItemType<WaterOre>();
             AddMapEntry(new Color(102, 255, 255), name);
         }
 

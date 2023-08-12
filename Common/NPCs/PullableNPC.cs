@@ -15,7 +15,7 @@ namespace OvermorrowMod.Common.NPCs
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pullable");
+            // DisplayName.SetDefault("Pullable");
         }
 
         public override void SetDefaults()

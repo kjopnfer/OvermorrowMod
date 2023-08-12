@@ -8,7 +8,7 @@ namespace OvermorrowMod.Content.Buffs.Debuffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Marked");
+            // DisplayName.SetDefault("Marked");
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = false;
             Main.buffNoSave[Type] = true;
