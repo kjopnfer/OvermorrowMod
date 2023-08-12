@@ -550,7 +550,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 2;
+            Projectile.width = Projectile.height = 2; // Make the hitbox small to prevent hitting the ground too early
             Projectile.DamageType = DamageClass.Melee;
             Projectile.aiStyle = -1;
             Projectile.penetrate = -1;
@@ -568,8 +568,12 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             Projectile.timeLeft = 120;
 
-            if (Main.tile[(int)Projectile.Hitbox.BottomLeft().X / 16, (int)Projectile.Hitbox.BottomLeft().Y / 16].HasTile ||
-                Main.tile[(int)Projectile.Hitbox.BottomRight().X / 16, (int)Projectile.Hitbox.BottomRight().Y / 16].HasTile) HandleCollisionBounce();
+            Tile bottomLeftTile = Main.tile[(int)Projectile.Hitbox.BottomLeft().X / 16, (int)Projectile.Hitbox.BottomLeft().Y / 16];
+            Tile bottomRightTile = Main.tile[(int)Projectile.Hitbox.BottomRight().X / 16, (int)Projectile.Hitbox.BottomRight().Y / 16];
+
+            // These are for weird slopes that don't trigger the collision code normally
+            if ((bottomLeftTile.HasTile && Main.tileSolid[bottomLeftTile.TileType]) || 
+                (bottomRightTile.HasTile && Main.tileSolid[bottomRightTile.TileType])) HandleCollisionBounce();
 
             if (Projectile.ai[0] == 0)
             {
@@ -577,9 +581,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                 Projectile.ai[1] = 0;
             }
 
-            if (Projectile.ai[0] < 10)
-                Projectile.width = Projectile.height = 2;
-            else
+            // Make the hitbox normal again after 1/6th of a second
+            if (Projectile.ai[0] > 10)
                 Projectile.width = Projectile.height = 32;
 
 
