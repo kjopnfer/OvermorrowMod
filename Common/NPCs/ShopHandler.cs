@@ -48,18 +48,19 @@ namespace OvermorrowMod.Common.NPCs
                 {
                     NPC.ai[0] = -1;
                     Main.playerInventory = false;
-                    NPC.StrikeNPCNoInteraction(9999, 0, 1);
+                    NPC.Kill();
                 }
             }
         }
 
         public override void ModifyActiveShop(string shopName, Item[] items)
         {
-            for (int k = 0; k < NPCShop.item.Length && k < shop.item.Length; k++)
+            // I forgot what this does
+            /*for (int k = 0; k < NPCShop.item.Length && k < shop.item.Length; k++)
             {
                 shop.item[k] = NPCShop.item[k];
                 nextSlot++;
-            }
+            }*/
         }
     }
 }

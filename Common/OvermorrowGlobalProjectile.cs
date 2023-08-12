@@ -70,45 +70,31 @@ namespace OvermorrowMod.Common
             Player player = Main.player[projectile.owner];
             BowPlayer bowPlayer = player.GetModPlayer<BowPlayer>();
 
-            if (WildEyeCrit) crit = true;
+            if (WildEyeCrit) modifiers.SetCrit();
 
             if (Undertaker)
             {
-                float pointBlankBonus = MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
-                damage += (int)(damage * pointBlankBonus);
+                float pointBlankBonus = 1 + MathHelper.Lerp(1.5f, 0, UndertakerCounter / 15f);
+                modifiers.SourceDamage *= pointBlankBonus;
             }
 
             if (IsPowerShot)
             {
-                damage += (int)(damage * 0.25f);
+                modifiers.SourceDamage *= 1.25f;
             }
 
-            if (projectile.type == ModContent.ProjectileType<ObsidianArrowProjectile>() && crit)
+            if (projectile.type == ModContent.ProjectileType<ObsidianArrowProjectile>())
             {
-                damage += (int)(damage * 0.25f);
+                modifiers.CritDamage *= 1.25f;
             }
 
             #region Armor
-            if (player.CheckArmorEquipped(ItemID.CowboyHat) && crit && projectile.DamageType == DamageClass.Ranged)
+            if (player.CheckArmorEquipped(ItemID.CowboyHat) && projectile.DamageType == DamageClass.Ranged)
             {
-                damage += (int)(damage * 0.10f);
+                modifiers.CritDamage *= 1.1f;
             }
 
-            if (player.GetModPlayer<GunPlayer>().CowBoySet && crit && SourceGunType == GunType.Revolver)
-            {
-                NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
-                if (closestNPC != null)
-                {
-                    projectile.usesLocalNPCImmunity = true;
-                    projectile.localNPCHitCooldown = -1;
-                    projectile.velocity = Vector2.Normalize(projectile.DirectionTo(closestNPC.Center)) * 12f;
-                    if (!HasRebounded)
-                    {
-                        projectile.penetrate = 2;
-                        HasRebounded = true;
-                    }
-                }
-            }
+            
             #endregion
 
             #region Accessories
@@ -285,6 +271,22 @@ namespace OvermorrowMod.Common
                 if (FarlanderPowerShot)
                 {
                     if (gunPlayer.FarlanderSpeedBoost < 4) gunPlayer.FarlanderSpeedBoost++;
+                }
+            }
+
+            if (player.GetModPlayer<GunPlayer>().CowBoySet && hit.Crit && SourceGunType == GunType.Revolver)
+            {
+                NPC closestNPC = projectile.FindClosestNPC(16 * 30f, target);
+                if (closestNPC != null)
+                {
+                    projectile.usesLocalNPCImmunity = true;
+                    projectile.localNPCHitCooldown = -1;
+                    projectile.velocity = Vector2.Normalize(projectile.DirectionTo(closestNPC.Center)) * 12f;
+                    if (!HasRebounded)
+                    {
+                        projectile.penetrate = 2;
+                        HasRebounded = true;
+                    }
                 }
             }
         }

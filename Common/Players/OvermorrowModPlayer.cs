@@ -172,7 +172,7 @@ namespace OvermorrowMod.Common.Players
         }
 
 
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Projectile, consider using OnHitNPC instead */
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (proj.DamageType == DamageClass.Ranged)
             {
@@ -187,7 +187,7 @@ namespace OvermorrowMod.Common.Players
                     if (Main.rand.NextBool(3)) target.AddBuff(ModContent.BuffType<FungalInfection>(), 180);
                 }
 
-                if (BearTrap && damage >= 70)
+                if (BearTrap && damageDone >= 70)
                 {
                     if (BearTrapCounter < 3)
                     {

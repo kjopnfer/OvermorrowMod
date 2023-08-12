@@ -105,7 +105,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
 
                     if (player.Hitbox.Intersects(hitRectangle))
                     {
-                        player.Hurt(PlayerDeathReason.LegacyDefault(), 25, 0, false, false, false, -1);
+                        player.Hurt(PlayerDeathReason.LegacyDefault(), 25, 0);
                         player.AddBuff(BuffID.OnFire, 180);
                     }
                 }
