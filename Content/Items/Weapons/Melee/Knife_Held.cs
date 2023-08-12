@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+/*using Microsoft.Xna.Framework;
 using OvermorrowMod.Core;
 using Terraria;
 using Terraria.Enums;
@@ -124,3 +124,4 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 		}
 	}
 }
+*/
