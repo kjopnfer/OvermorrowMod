@@ -550,7 +550,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 32;
+            Projectile.width = Projectile.height = 2;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.aiStyle = -1;
             Projectile.penetrate = -1;
@@ -566,11 +566,22 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
 
         public override void AI()
         {
+            Projectile.timeLeft = 120;
+
+            if (Main.tile[(int)Projectile.Hitbox.BottomLeft().X / 16, (int)Projectile.Hitbox.BottomLeft().Y / 16].HasTile ||
+                Main.tile[(int)Projectile.Hitbox.BottomRight().X / 16, (int)Projectile.Hitbox.BottomRight().Y / 16].HasTile) HandleCollisionBounce();
+
             if (Projectile.ai[0] == 0)
             {
                 Projectile.rotation = Projectile.ai[1];
                 Projectile.ai[1] = 0;
             }
+
+            if (Projectile.ai[0] < 10)
+                Projectile.width = Projectile.height = 2;
+            else
+                Projectile.width = Projectile.height = 32;
+
 
             if (!groundCollided)
             {
@@ -647,13 +658,9 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
         {
             if (!groundCollided && Projectile.velocity.Y > 0)
             {
-                groundCollided = true;
-
-                //Projectile.velocity.X += 1f;
-                Projectile.velocity.X *= 0.5f;
-                Projectile.velocity.Y = Main.rand.NextFloat(-2.2f, -1f);
-                Projectile.timeLeft = 600;
-            } else
+                HandleCollisionBounce();
+            }
+            else
             {
                 Projectile.velocity *= -0.5f;
             }
@@ -668,6 +675,16 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             }*/
 
             return false;
+        }
+
+        private void HandleCollisionBounce()
+        {
+            if (groundCollided) return;
+
+            groundCollided = true;
+            Projectile.velocity.X *= 0.5f;
+            Projectile.velocity.Y = Main.rand.NextFloat(-2.2f, -1f);
+            Projectile.timeLeft = 600;
         }
     }
 }
