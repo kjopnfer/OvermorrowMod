@@ -257,7 +257,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                     case 1:
                         return 10;
                     default:
-                        return 7;
+                        return 15;
                 }
             }
         }
@@ -323,7 +323,8 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
                         swingAngle = MathHelper.Lerp(100, -75, ModUtils.EaseInCubic(Utils.Clamp(AICounter - backTime, 0, forwardTime) / forwardTime));
                     }
 
-                    if (AICounter > backTime + forwardTime && AICounter <= backTime + forwardTime + holdTime)
+                    // The last 5 ticks does some stupid last second rotation thing and I don't care to fix it properly
+                    if (AICounter > backTime + forwardTime && AICounter < backTime + forwardTime + holdTime - 5)
                     {
                         inSwingState = false;
                         swingAngle = MathHelper.Lerp(-75, 0, ModUtils.EaseInQuart(Utils.Clamp(AICounter - (backTime + forwardTime), 0, holdTime) / holdTime));
@@ -356,7 +357,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             {
                 AICounter = 0;
                 HoldCounter = 0;
-                swingAngle = 0;
+                //swingAngle = 0;
 
                 justReleasedWeapon = false;
                 IsExecutingAction = false;
