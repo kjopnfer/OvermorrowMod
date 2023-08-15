@@ -52,7 +52,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Melee
             if (Main.playerInventory) return;
 
             int knifeCount = 1 - Main.LocalPlayer.ownedProjectileCounts[ModContent.ProjectileType<Knife_Thrown>()];
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, knifeCount.ToString(), position + new Vector2(0f, 22f) * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, Main.inventoryScale);
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, knifeCount.ToString(), position + new Vector2(-18f, 2f) * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, Main.inventoryScale);
         }
 
         public int attackIndex = 1;
