@@ -55,7 +55,6 @@ namespace OvermorrowMod.Common
 
             Terraria.On_Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
             On_Main.CacheNPCDraws += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
-            On_Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
             //On.Terraria.Main.DrawBackground += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             Main.OnPreDraw += TileOverlay.Main_OnPreDraw;
             Terraria.On_Main.Update += TileOverlay.Main_Update;
