@@ -8,7 +8,7 @@ namespace OvermorrowMod.Common.Detours
     // Code adapted from the Starlight River repository
     public class BackgroundObjects
     { 
-        public static void Main_DrawBackgroundObjects(On.Terraria.Main.orig_CacheNPCDraws orig, Main self)
+        public static void Main_DrawBackgroundObjects(On_Main.orig_CacheNPCDraws orig, Main self)
         {
             foreach (KeyValuePair<int, TileEntity> entity in TileEntity.ByID)
             {

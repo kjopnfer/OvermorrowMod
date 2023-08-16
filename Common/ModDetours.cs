@@ -1,22 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.Detours;
-using OvermorrowMod.Common.NPCs;
-using OvermorrowMod.Common.Particles;
 using OvermorrowMod.Common.Primitives;
-using OvermorrowMod.Content.NPCs.Bosses.Eye;
-using OvermorrowMod.Content.NPCs.Bosses.SandstormBoss;
 using OvermorrowMod.Content.NPCs.Carts;
-using OvermorrowMod.Content.NPCs.Town.Sojourn;
 using OvermorrowMod.Core;
-using System;
 using System.Collections.Generic;
-using System.Xml;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -65,8 +54,8 @@ namespace OvermorrowMod.Common
             TileOverlay.ResizeTarget();
 
             Terraria.On_Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
-            On.Terraria.Main.CacheNPCDraws += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
-            On.Terraria.Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
+            On_Main.CacheNPCDraws += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
+            On_Main.DrawProjectiles += TileOverlay.Main_DrawProjectiles;
             //On.Terraria.Main.DrawBackground += Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             Main.OnPreDraw += TileOverlay.Main_OnPreDraw;
             Terraria.On_Main.Update += TileOverlay.Main_Update;
@@ -111,8 +100,8 @@ namespace OvermorrowMod.Common
             Main.OnResolutionChanged -= Main_OnResolutionChanged;
 
             Terraria.On_Main.DrawProjectiles -= TileOverlay.Main_DrawProjectiles;
-            On.Terraria.Main.CacheNPCDraws -= Detours.BackgroundObjects.Main_DrawBackgroundObjects;
-            On.Terraria.Main.DrawProjectiles -= TileOverlay.Main_DrawProjectiles;
+            Terraria.On_Main.CacheNPCDraws -= Detours.BackgroundObjects.Main_DrawBackgroundObjects;
+            Terraria.On_Main.DrawProjectiles -= TileOverlay.Main_DrawProjectiles;
             //On.Terraria.Main.DrawBackground -= Detours.BackgroundObjects.Main_DrawBackgroundObjects;
             Main.OnPreDraw -= TileOverlay.Main_OnPreDraw;
             Terraria.On_Main.Update -= TileOverlay.Main_Update;
