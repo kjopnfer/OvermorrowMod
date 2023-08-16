@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Fragment");
+            // DisplayName.SetDefault("Forbidden Fragment");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
         }
@@ -144,7 +144,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/Fragment";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Light Warping Bullets");
+            // DisplayName.SetDefault("Light Warping Bullets");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
         }
@@ -286,7 +286,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Fragment");
+            // DisplayName.SetDefault("Forbidden Fragment");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
         }
@@ -328,7 +328,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "OvermorrowMod/Content/NPCs/Bosses/SandstormBoss/Fragment";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forbidden Fragment");
+            // DisplayName.SetDefault("Forbidden Fragment");
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
         }

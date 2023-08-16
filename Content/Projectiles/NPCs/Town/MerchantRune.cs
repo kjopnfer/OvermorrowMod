@@ -13,7 +13,7 @@ namespace OvermorrowMod.Content.Projectiles.NPCs.Town
         Vector2 initPos = Vector2.Zero;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rune Circle");
+            // DisplayName.SetDefault("Rune Circle");
         }
 
         public override void SetDefaults()

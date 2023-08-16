@@ -26,7 +26,6 @@ namespace OvermorrowMod.Content.Tiles.Town
             MinPick = 95;
             MineResist = 2f;
 
-            ItemDrop = ModContent.ItemType<Items.Placeable.Tiles.RuinBrick>();
             AddMapEntry(new Color(67, 65, 64));
         }
     }

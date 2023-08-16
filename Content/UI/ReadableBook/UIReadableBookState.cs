@@ -124,7 +124,7 @@ namespace OvermorrowMod.Content.UI.ReadableBook
             }
         }
 
-        public override void MouseDown(UIMouseEvent evt)
+        public override void LeftMouseDown(UIMouseEvent evt)
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 
@@ -150,7 +150,7 @@ namespace OvermorrowMod.Content.UI.ReadableBook
             }
         }
 
-        public override void MouseDown(UIMouseEvent evt)
+        public override void LeftMouseDown(UIMouseEvent evt)
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 
@@ -176,7 +176,7 @@ namespace OvermorrowMod.Content.UI.ReadableBook
             }
         }
 
-        public override void MouseDown(UIMouseEvent evt)
+        public override void LeftMouseDown(UIMouseEvent evt)
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
 

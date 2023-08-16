@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Armor.Kagenoi
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Kagenoi Armor");
+            // DisplayName.SetDefault("Kagenoi Armor");
             //Tooltip.SetDefault("5% increased melee damage");
         }
 

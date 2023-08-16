@@ -22,7 +22,7 @@ namespace OvermorrowMod.Content.WorldGeneration
 {
     public class StoneLayers : ModSystem
     {
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int HiveIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Hives"));
             if (HiveIndex != -1)
@@ -53,16 +53,16 @@ namespace OvermorrowMod.Content.WorldGeneration
             for (int i = 0; i < 36; i++)
             {
                 int x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
-                int y = WorldGen.genRand.Next((int)(WorldGen.rockLayer - 50), Main.maxTilesY - 200);
+                int y = WorldGen.genRand.Next((int)(GenVars.rockLayer - 50), Main.maxTilesY - 200);
 
                 ShadeShack shack = new ShadeShack();
 
                 // This shit doesn't actually check blocks properly
                 Tile tile = Framing.GetTileSafely(x, y);
-                while (!shack.Place(new Point(x, y), WorldGen.structures) && !tile.HasTile)
+                while (!shack.Place(new Point(x, y), GenVars.structures) && !tile.HasTile)
                 {
                     x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
-                    y = WorldGen.genRand.Next((int)(WorldGen.rockLayer - 50), Main.maxTilesY - 200);
+                    y = WorldGen.genRand.Next((int)(GenVars.rockLayer - 50), Main.maxTilesY - 200);
 
                     tile = Framing.GetTileSafely(x, y);
                 }
@@ -77,16 +77,16 @@ namespace OvermorrowMod.Content.WorldGeneration
             for (int i = 0; i < 36; i++)
             {
                 int x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
-                int y = WorldGen.genRand.Next((int)(WorldGen.rockLayer - 50), Main.maxTilesY - 200);
+                int y = WorldGen.genRand.Next((int)(GenVars.rockLayer - 50), Main.maxTilesY - 200);
 
                 MoleMine mine = new MoleMine();
 
                 // This shit doesn't actually check blocks properly
                 Tile tile = Framing.GetTileSafely(x, y);
-                while (!mine.Place(new Point(x, y), WorldGen.structures) && !tile.HasTile && !ValidTiles.Contains(tile.TileType))
+                while (!mine.Place(new Point(x, y), GenVars.structures) && !tile.HasTile && !ValidTiles.Contains(tile.TileType))
                 {
                     x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
-                    y = WorldGen.genRand.Next((int)(WorldGen.rockLayer - 50), Main.maxTilesY - 200);
+                    y = WorldGen.genRand.Next((int)(GenVars.rockLayer - 50), Main.maxTilesY - 200);
 
                     tile = Framing.GetTileSafely(x, y);
                 }
@@ -100,12 +100,12 @@ namespace OvermorrowMod.Content.WorldGeneration
             for (int i = 0; i < 16; i++)
             {
                 int x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
-                int y = WorldGen.genRand.Next(WorldGen.lavaLine - 20, Main.maxTilesY - 200);
+                int y = WorldGen.genRand.Next(GenVars.lavaLine - 20, Main.maxTilesY - 200);
 
                 CrawlerNest nest = new CrawlerNest();
                 Tile tile = Framing.GetTileSafely(x, y);
 
-                while (!nest.Place(new Point(x, y), WorldGen.structures) && tile.TileType != ModContent.TileType<CrunchyStone>())
+                while (!nest.Place(new Point(x, y), GenVars.structures) && tile.TileType != ModContent.TileType<CrunchyStone>())
                 {
                     x = WorldGen.genRand.Next(600, Main.maxTilesX - 600);
                     y = WorldGen.genRand.Next(Main.maxTilesY - 400, Main.maxTilesY - 200);
@@ -124,7 +124,7 @@ namespace OvermorrowMod.Content.WorldGeneration
             {
                 for (int y = 0; y < Main.maxTilesY; y++)
                 {
-                    if (y > WorldGen.lavaLine - 100 && y < Main.maxTilesY)
+                    if (y > GenVars.lavaLine - 100 && y < Main.maxTilesY)
                     {
                         Tile tile = Framing.GetTileSafely(x, y);
                         if (tile.TileType == TileID.Stone)
@@ -158,7 +158,7 @@ namespace OvermorrowMod.Content.WorldGeneration
                     // Spawns on the opposite side of the dungeon, if dungeon is to the left then spawn on the right outer fourths
                     if (DungeonLeft ? x > Main.maxTilesX - (Main.maxTilesX / 4) : x < Main.maxTilesX / 4)
                     {
-                        if (y > Main.worldSurface && y < WorldGen.lavaLine - 100)
+                        if (y > Main.worldSurface && y < GenVars.lavaLine - 100)
                         {
                             Tile tile = Framing.GetTileSafely(x, y);
                             if (tile.TileType == TileID.Stone)

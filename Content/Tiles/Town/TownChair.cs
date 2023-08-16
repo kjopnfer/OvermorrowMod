@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.DataStructures;
@@ -26,9 +27,9 @@ namespace OvermorrowMod.Content.Tiles.Town
 			AddToArray(ref TileID.Sets.RoomNeeds.CountsAsChair);
 			AdjTiles = new int[] { TileID.Chairs };
 
-			ModTranslation name = CreateMapEntryName();
-			name.SetDefault("Wooden Chair");
-			AddMapEntry(new Color(72, 70, 79), name);
+			LocalizedText name = CreateMapEntryName();
+			// name.SetDefault("Wooden Chair");
+			AddMapEntry(new Color(114, 85, 55), name);
 
 			TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
 			TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };

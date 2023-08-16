@@ -30,7 +30,7 @@ namespace OvermorrowMod.Content.NPCs.Seer
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Seer");
+            // DisplayName.SetDefault("Seer");
 
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
             {

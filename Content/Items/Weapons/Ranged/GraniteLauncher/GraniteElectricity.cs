@@ -10,7 +10,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         public float maxTime = 15;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Granite Electricity");
+            // DisplayName.SetDefault("Granite Electricity");
         }
 
         public override void SafeSetDefaults()

@@ -9,7 +9,7 @@ namespace OvermorrowMod.Content.Items.Placeable.Tiles
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aged Planks");
+            // DisplayName.SetDefault("Aged Planks");
         }
 
         public override void SetDefaults()

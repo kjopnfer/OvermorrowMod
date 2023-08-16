@@ -137,7 +137,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             for (int i = 0; i < 12; i++)
             {
@@ -146,7 +146,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Magic.TriVerutums
             }
         }
 
-        public override void OnHitPvp(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (!TriVerutums.ReadyProjectiles.Contains(Projectile.whoAmI))
                 TriVerutums.ReadyProjectiles.Add(Projectile.whoAmI);

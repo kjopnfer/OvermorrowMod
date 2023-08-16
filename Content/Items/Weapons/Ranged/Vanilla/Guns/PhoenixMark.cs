@@ -15,7 +15,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
         public override bool? CanDamage() => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phoenix Burst");
+            // DisplayName.SetDefault("Phoenix Burst");
         }
 
         public override void SetDefaults()
@@ -81,7 +81,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.Vanilla.Guns
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Phoenix Mark");
+            // DisplayName.SetDefault("Phoenix Mark");
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = false;
             Main.buffNoSave[Type] = true;

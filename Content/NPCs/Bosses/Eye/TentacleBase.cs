@@ -19,7 +19,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Eye");
+            // DisplayName.SetDefault("Eye");
         }
 
         public override void SetDefaults()
@@ -60,7 +60,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             base.OnSpawn(source);
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (Main.netMode == NetmodeID.Server)
             {
@@ -256,7 +256,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
             }
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
             if (Main.netMode == NetmodeID.Server)
             {
@@ -371,7 +371,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override string Texture => AssetDirectory.Textures + "VortexCenter";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("???");
+            // DisplayName.SetDefault("???");
         }
 
         public override void SetDefaults()

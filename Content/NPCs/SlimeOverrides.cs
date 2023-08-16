@@ -49,9 +49,10 @@ namespace OvermorrowMod.Content.NPCs
             // This shit doesn't run
             if (npc.type == NPCID.BlueSlime)
             {
+
                 if (npc.netID == NPCID.GreenSlime)
                 {
-                    
+                    npc.lifeMax = 30;
                 }
             }
 
@@ -160,6 +161,10 @@ namespace OvermorrowMod.Content.NPCs
                 {
                     if (npc.ai[0] < 0) npc.ai[0] = 0;
 
+                    // For some stupid reason I can't do this in SetDefaults or OnSpawn
+                    npc.lifeMax = 30;
+                    npc.life = 30;
+
                     idleJumpDirection = npc.Center.X / 16 > Main.maxTilesX / 2 ? -1 : 1;
                 }
             }
@@ -167,26 +172,22 @@ namespace OvermorrowMod.Content.NPCs
             base.AI(npc);
         }
 
-        public override void OnHitByItem(NPC npc, Player player, Item item, int damage, float knockback, bool crit)
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
         {
             if (npc.type == NPCID.BlueSlime)
             {
                 if (npc.netID == NPCID.GreenSlime)
                     npc.TargetClosest();
             }
-
-            base.OnHitByItem(npc, player, item, damage, knockback, crit);
         }
 
-        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
             if (npc.type == NPCID.BlueSlime)
             {
                 if (npc.netID == NPCID.GreenSlime)
                     npc.TargetClosest();
             }
-
-            base.OnHitByProjectile(npc, projectile, damage, knockback, crit);
         }
 
         public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)

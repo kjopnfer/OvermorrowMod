@@ -153,11 +153,11 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
         public override GunType GunType => GunType.Launcher;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shockshard Launcher");
-            Tooltip.SetDefault("{Keyword:Passive}: Gain 1 shard on Critical Hit\n" +
+            // DisplayName.SetDefault("Shockshard Launcher");
+            /* Tooltip.SetDefault("Launches high velocity shards that stick to blocks\n" +
+                "{Keyword:Passive}: Gain 1 shard on Critical Hit\n" +
                 "{Keyword:Alt}: Activate all unarmed shards\n" +
-                "Starts with 0 ammo and does not reload\n" +
-                "Launches high velocity shards that stick to blocks");
+                "Starts with 0 ammo and does not reload"); */
         }
 
         public override void SafeSetDefaults()
@@ -178,7 +178,7 @@ namespace OvermorrowMod.Content.Items.Weapons.Ranged.GraniteLauncher
             if (Main.playerInventory) return;
 
             int shardCount = Main.LocalPlayer.GetModPlayer<GunPlayer>().GraniteEnergyCount;
-            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, shardCount.ToString(), position + new Vector2(0f, 10f) * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, Main.inventoryScale);
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, shardCount.ToString(), position + new Vector2(-18f, 2f) * Main.inventoryScale, Color.White, 0f, Vector2.Zero, new Vector2(Main.inventoryScale), -1f, Main.inventoryScale);
         }
 
         public bool InHotbar(Player player, int type)

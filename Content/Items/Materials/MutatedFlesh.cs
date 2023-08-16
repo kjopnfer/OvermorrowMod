@@ -7,7 +7,7 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mutated Flesh");
+            // DisplayName.SetDefault("Mutated Flesh");
         }
 
         public override void SetDefaults()

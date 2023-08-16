@@ -2,10 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OvermorrowMod.Common;
 using OvermorrowMod.Common.Players;
-using OvermorrowMod.Common.Cutscenes;
 using OvermorrowMod.Common.TilePiles;
 using OvermorrowMod.Common.VanillaOverrides.Gun;
-using OvermorrowMod.Content.Tiles.TilePiles;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -13,7 +11,6 @@ using System.Xml;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Events;
-using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -21,7 +18,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace OvermorrowMod.Core
 {
-    public static class ModUtils
+    public static partial class ModUtils
     {
         public static MethodInfo startRain;
         public static MethodInfo stopRain;
@@ -158,7 +155,7 @@ namespace OvermorrowMod.Core
         public static void PlaceObject(int x, int y, int TileType, int style = 0, int direction = -1)
         {
             WorldGen.PlaceObject(x, y, TileType, true, style, 0, -1, direction);
-            NetMessage.SendObjectPlacment(-1, x, y, TileType, style, 0, -1, direction);
+            NetMessage.SendObjectPlacement(-1, x, y, TileType, style, 0, -1, direction);
         }
 
         public static void StartRain()
@@ -537,35 +534,7 @@ namespace OvermorrowMod.Core
             //return Shuffle<T>(new List<T>(array)).ToArray();
         }
 
-        public static float EaseOutQuad(float x)
-        {
-            return 1 - (1 - x) * (1 - x);
-        }
-
-        public static float EaseOutCirc(float x)
-        {
-            return (float)Math.Sqrt(1 - Math.Pow(x - 1, 2));
-        }
-
-        public static float EaseOutQuint(float x)
-        {
-            return (float)(1 - Math.Pow(1 - x, 5));
-        }
-
-        public static float EaseInQuad(float x)
-        {
-            return x * x;
-        }
-
-        public static float EaseInCubic(float x)
-        {
-            return x * x * x;
-        }
-
-        public static float EaseInQuart(float x)
-        {
-            return x * x * x * x;
-        }
+        
 
         /// <summary>
         /// Modified version of Player.Hurt, which ignores defense.

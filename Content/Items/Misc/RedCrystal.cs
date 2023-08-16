@@ -7,8 +7,8 @@ namespace OvermorrowMod.Content.Items.Misc
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Resonance Crystal of Primality");
-            Tooltip.SetDefault("Used to enhance your strength");
+            // DisplayName.SetDefault("Resonance Crystal of Primality");
+            // Tooltip.SetDefault("Used to enhance your strength");
         }
 
         public override void SetDefaults()

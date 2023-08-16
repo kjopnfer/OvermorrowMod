@@ -39,7 +39,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Eye
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Drainer of Cthulhu");
+            // DisplayName.SetDefault("Drainer of Cthulhu");
             Main.npcFrameCount[NPC.type] = 2;
 
             NPCID.Sets.TrailCacheLength[NPC.type] = 100;

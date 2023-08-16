@@ -73,7 +73,7 @@ namespace OvermorrowMod.Content.Items.Accessories.BearTrap
                         if (npc.friendly || !npc.active || !npc.Hitbox.Intersects(Projectile.Hitbox)) continue;
 
                         trappedNPC = npc;
-                        trappedNPC.StrikeNPC(69, 0f, 0);
+                        trappedNPC.StrikeNPC(new NPC.HitInfo { Damage = 69 });
 
                         AICase = (int)AIState.Triggered;
                         Projectile.timeLeft = 180;

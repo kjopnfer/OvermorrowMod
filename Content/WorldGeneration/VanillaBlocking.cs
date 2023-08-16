@@ -22,13 +22,16 @@ namespace OvermorrowMod.Content.WorldGeneration
 {
     public class VanillaBlocking : ModSystem
     {
-        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight)
+        public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             int PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Sand"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
             //PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dunes"));
             //if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Sand Patches"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
             PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Generate Ice Biome"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
@@ -37,6 +40,15 @@ namespace OvermorrowMod.Content.WorldGeneration
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
             PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Oasis"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Living Trees"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle Temple"));
+            if (PassIndex != -1) tasks.RemoveAt(PassIndex);
+
+            PassIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Hives"));
             if (PassIndex != -1) tasks.RemoveAt(PassIndex);
 
             int DungeonIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dungeon"));

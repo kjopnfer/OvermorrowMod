@@ -20,7 +20,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.Bandits
         public Color TrailColor(float progress) => ModUtils.Lerp3(new Color(216, 44, 4), new Color(254, 121, 2), new Color(253, 221, 3), progress) * progress;
         public float TrailSize(float progress) => 20;
         public Type TrailType() => typeof(TorchTrail);
-        public override void OnHitPlayer(Player target, int damage, bool crit) => target.AddBuff(BuffID.OnFire, 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire, 120);
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) => behindNPCsAndTiles.Add(index);
         public override bool ShouldUpdatePosition() => !CollideTile;
         public override bool? CanDamage() => !CollideTile;

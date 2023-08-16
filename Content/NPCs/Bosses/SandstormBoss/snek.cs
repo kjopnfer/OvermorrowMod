@@ -23,7 +23,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => AssetDirectory.Empty;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("snek BARRIER EEEeeeeEK");
+            // DisplayName.SetDefault("snek BARRIER EEEeeeeEK");
         }
 
         public override void SetDefaults()

@@ -45,7 +45,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Town Guard");
+            // DisplayName.SetDefault("Town Guard");
             Main.npcFrameCount[NPC.type] = 1;
         }
 
@@ -68,7 +68,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Town Guard");
+            // DisplayName.SetDefault("Town Guard");
             Main.npcFrameCount[NPC.type] = 1;
         }
 
@@ -91,7 +91,7 @@ namespace OvermorrowMod.Content.NPCs.Town.Sojourn
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Town Guard");
+            // DisplayName.SetDefault("Town Guard");
             Main.npcFrameCount[NPC.type] = 1;
         }
 

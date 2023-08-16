@@ -17,7 +17,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.LostSoulFriendly;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lightning Node");
+            // DisplayName.SetDefault("Lightning Node");
         }
 
         public override void SetDefaults()
@@ -132,7 +132,7 @@ namespace OvermorrowMod.Content.NPCs.Bosses.SandstormBoss
         public float maxTime = 15;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ancient Electricity");
+            // DisplayName.SetDefault("Ancient Electricity");
         }
 
         public override void SafeSetDefaults()

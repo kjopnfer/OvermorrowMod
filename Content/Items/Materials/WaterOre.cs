@@ -10,8 +10,8 @@ namespace OvermorrowMod.Content.Items.Materials
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Lacusite Ore");
-            Tooltip.SetDefault("'Drips with water'");
+            // DisplayName.SetDefault("Lacusite Ore");
+            // Tooltip.SetDefault("'Drips with water'");
         }
 
         public override void SetDefaults()
